@@ -3,7 +3,11 @@
   // separate Worker (../jev), whose more specific route takes precedence over this one.
   "name": "esbjug-consult",
   "compatibility_date": "2026-09-01",
-  "assets": { "directory": "." },
+  "main": ".worker/index.js",
+  // run_worker_first: www is redirected before any file is served.
+  "assets": { "directory": ".", "binding": "ASSETS", "run_worker_first": true },
+  // Only the real domain; no parallel *.workers.dev copy.
+  "workers_dev": false,
   // All of esbjugconsult.com except /jev*, which the more specific route in ../jev takes.
   "routes": [
     { "pattern": "esbjugconsult.com/*", "zone_name": "esbjugconsult.com" },
