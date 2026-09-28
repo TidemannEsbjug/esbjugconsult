@@ -164,8 +164,8 @@ const code=()=>{k.classList.add('c');let i=0;const t=setInterval(()=>{i++;
   k.textContent=[...'kode'].map((c,j)=>j<i/4?c:G[Math.random()*G.length|0]).join('');
   if(i>=16){clearInterval(t);k.textContent='kode';setTimeout(()=>k.classList.remove('c'),1400)}},55)};
 const flare=g=>{d.classList.remove('f');void d.offsetWidth;d.classList.add('f');setTimeout(()=>d.classList.toggle('g',g),800)};
-const run=()=>{code();setTimeout(()=>flare(true),3200);setTimeout(()=>flare(false),6400)};
-setTimeout(run,1200);setInterval(run,11000);
+const run=()=>{code();setTimeout(()=>flare(true),600);setTimeout(()=>flare(false),3800)};
+setTimeout(()=>{run();setInterval(run,11000)},4000);
 })();
 // Halvtoneprikker i blekk som bølger og sveller rundt pekeren. Én fragment-shader, ingen bibliotek.
 (()=>{
