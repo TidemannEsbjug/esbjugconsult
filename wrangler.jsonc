@@ -1,0 +1,12 @@
+{
+  // The main site as static files on Cloudflare. esbjugconsult.com/jev* is served by a
+  // separate Worker (../jev), whose more specific route takes precedence over this one.
+  "name": "esbjug-consult",
+  "compatibility_date": "2026-09-01",
+  "assets": { "directory": "." },
+  // All of esbjugconsult.com except /jev*, which the more specific route in ../jev takes.
+  "routes": [
+    { "pattern": "esbjugconsult.com/*", "zone_name": "esbjugconsult.com" },
+    { "pattern": "www.esbjugconsult.com/*", "zone_name": "esbjugconsult.com" }
+  ]
+}
