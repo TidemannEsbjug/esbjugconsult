@@ -23,6 +23,19 @@
   .m{margin-top:clamp(40px,8vh,80px);max-width:34em;text-transform:none;letter-spacing:.02em;font-weight:500;line-height:1.6}
   .bar{margin:10px 0 0;height:6px;background:rgba(13,13,18,.12);border-radius:3px;overflow:hidden}
   .bar i{display:block;height:100%;width:calc(var(--p)*1%);background:var(--ink)}
+  /* «kode»: blir en terminalbit som dekodes. «design»: fargerikt lys som gjør ordet om til glass. */
+  .kd{display:inline-block;position:relative;white-space:nowrap}
+  .kd.c{font:700 .8em/1 "SF Mono",Menlo,monospace;letter-spacing:0;color:var(--y);background:var(--ink);box-shadow:0 0 0 .12em var(--ink);border-radius:.08em;vertical-align:.08em}
+  .kd.c::after{content:"";position:absolute;right:.04em;top:.02em;width:.42em;height:1em;background:var(--y);animation:bl .5s steps(1) infinite}
+  @keyframes bl{50%{opacity:0}}
+  .ds{position:relative;display:inline-block;transition:color .5s}
+  .ds::before,.ds::after{content:attr(data-t);position:absolute;left:0;top:0;pointer-events:none}
+  .ds::before{color:transparent;background:linear-gradient(100deg,transparent 30%,#ff3d8b 38%,#ffb400 44%,#fff 50%,#2fd1ff 56%,#7a5cff 62%,transparent 70%) -60% 0/260% 100% no-repeat;-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 .1em rgba(255,61,139,.55)) drop-shadow(0 0 .22em rgba(47,209,255,.4));opacity:0}
+  .ds.f::before{opacity:1;animation:fl 1.6s cubic-bezier(.4,0,.6,1) forwards}
+  @keyframes fl{to{background-position:160% 0}}
+  .ds::after{color:transparent;background:linear-gradient(165deg,#fff 0%,rgba(255,255,255,.35) 30%,rgba(255,255,255,.08) 48%,rgba(255,255,255,.7) 60%,rgba(255,255,255,.18) 78%,rgba(255,255,255,.55) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-stroke:1.5px rgba(13,13,18,.42);filter:drop-shadow(0 .06em .1em rgba(13,13,18,.35));opacity:0;transition:opacity .6s}
+  .ds.g{color:transparent}
+  .ds.g::after{opacity:1}
   h2{margin:clamp(88px,16vh,160px) 0 0;font-weight:850;font-size:clamp(44px,8vw,112px);line-height:.95;letter-spacing:-.045em}
   h4{margin:clamp(40px,7vh,72px) 0 0}
   h4+.p{margin-top:14px}
@@ -49,7 +62,7 @@
 <body>
 <main>
   <div class="mono k"><span>&gt; Tidemann Esbjug</span><span>28.09.2026</span></div>
-  <h1>Hovedbudskapet jeg prøver å rope fra taket på bygninger i disse dager er at kode og design har gått gjennom en revolusjon som ikke må oversees.</h1>
+  <h1 aria-label="Hovedbudskapet jeg prøver å rope fra taket på bygninger i disse dager er at kode og design har gått gjennom en revolusjon som ikke må oversees."><span aria-hidden="true">Hovedbudskapet jeg prøver å rope fra taket på bygninger i disse dager er at <span class="kd">kode</span> og <span class="ds" data-t="design">design</span> har gått gjennom en revolusjon som ikke må oversees.</span></h1>
   <p class="b">Å kjøpe nettsider, apper eller digital markedsføring i dag for samme pris som før er absurd. Det er også masse muligheter som tidligere var for dyre å begi seg ut på.</p>
   <a class="t" href="mailto:KONTAKT@DOMENE">Snakk med meg om alt dette.</a>
   <h2>Jobber med nå</h2>
@@ -136,6 +149,19 @@ document.querySelectorAll('[data-since]').forEach(e=>{
   const d=(Date.now()-new Date(e.dataset.since+'-01'))/864e5,m=Math.floor(d/30.44);
   e.textContent+=' · '+(m>0?m+' mnd':Math.max(1,Math.floor(d/7))+' uker');
 });
+// «kode» og «design» i overskriften får hver sin lille animasjon, i fast rytme.
+(()=>{
+if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+const k=document.querySelector('.kd'),d=document.querySelector('.ds'),G='{}<>/=;$#_01[]*';
+const fix=()=>{k.style.width='';k.style.width=k.getBoundingClientRect().width+'px'};
+document.fonts.ready.then(fix);addEventListener('resize',fix);
+const code=()=>{k.classList.add('c');let i=0;const t=setInterval(()=>{i++;
+  k.textContent=[...'kode'].map((c,j)=>j<i/4?c:G[Math.random()*G.length|0]).join('');
+  if(i>=16){clearInterval(t);k.textContent='kode';setTimeout(()=>k.classList.remove('c'),1400)}},55)};
+const flare=g=>{d.classList.remove('f');void d.offsetWidth;d.classList.add('f');setTimeout(()=>d.classList.toggle('g',g),800)};
+const run=()=>{code();setTimeout(()=>flare(true),3200);setTimeout(()=>flare(false),6400)};
+setTimeout(run,1200);setInterval(run,11000);
+})();
 // Halvtoneprikker i blekk som bølger og sveller rundt pekeren. Én fragment-shader, ingen bibliotek.
 (()=>{
 const c=document.getElementById('c'),gl=c.getContext('webgl',{antialias:false});
