@@ -10,6 +10,8 @@
 <style>
   :root{--y:#FFDE59;--ink:#0d0d12;--g:clamp(16px,6vw,96px)}
   *{box-sizing:border-box}
+  html{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+  img,video{-webkit-user-drag:none}
   html,body{margin:0;background:var(--y);color:var(--ink)}
   body{font-family:-apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;min-height:100svh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
   main{padding:var(--g);padding-bottom:0;max-width:1180px;width:100%;margin:0 auto}
@@ -149,6 +151,8 @@
 </main>
 <canvas id="c" aria-hidden="true"></canvas>
 <script>
+// Ingen markering eller kopiering av tekst (brukerens valg).
+['copy','cut','selectstart','dragstart'].forEach(t=>document.addEventListener(t,e=>e.preventDefault()));
 // «Siden mai 2026» får varigheten regnet ut ved hver visning, så den aldri blir utdatert.
 document.querySelectorAll('[data-since]').forEach(e=>{
   const d=(Date.now()-new Date(e.dataset.since+'-01'))/864e5,m=Math.floor(d/30.44);
