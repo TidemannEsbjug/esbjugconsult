@@ -25,11 +25,9 @@
   .bar i{display:block;height:100%;width:calc(var(--p)*1%);background:var(--ink)}
   /* «kode»: blir en terminalbit som dekodes. «design»: fargerikt lys som gjør ordet om til glass. */
   .kd{display:inline-block;position:relative;white-space:nowrap;padding:.06em .12em;margin:-.06em -.12em;border-radius:.1em}
-  .kd i{font-style:normal}
+  .kd i{font-style:normal;display:inline-block;transform-origin:0 50%}
   .kd.c{background:var(--ink)}
-  .kd.c i{font:700 .8em/1 "SF Mono",Menlo,monospace;letter-spacing:0;color:var(--y)}
-  .kd.c::after{content:"";position:absolute;right:.14em;top:.14em;width:.38em;height:.86em;background:var(--y);animation:bl .5s steps(1) infinite}
-  @keyframes bl{50%{opacity:0}}
+  .kd.c i{font:800 1em/1 "SF Mono",ui-monospace,Menlo,monospace;letter-spacing:-.04em;color:var(--y)}
   .ds{position:relative;display:inline-block;transition:color .5s}
   .ds::before,.ds::after{content:attr(data-t);position:absolute;left:0;top:0;pointer-events:none}
   .ds::before{color:transparent;background:linear-gradient(100deg,transparent 30%,#ff3d8b 38%,#ffb400 44%,#fff 50%,#2fd1ff 56%,#7a5cff 62%,transparent 70%) -60% 0/260% 100% no-repeat;-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 .1em rgba(255,61,139,.55)) drop-shadow(0 0 .22em rgba(47,209,255,.4));opacity:0}
@@ -162,9 +160,11 @@ if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
 const k=document.querySelector('.kd'),ki=k.firstChild,d=document.querySelector('.ds'),G='{}<>/=;$#_01[]*';
 const fix=()=>{k.style.width='';k.style.width=k.getBoundingClientRect().width+'px'};
 document.fonts.ready.then(fix);addEventListener('resize',fix);
-const code=()=>{k.classList.add('c');let i=0;const t=setInterval(()=>{i++;
+const code=()=>{k.classList.add('c');ki.style.transform='';
+  const r=(k.clientWidth-2*parseFloat(getComputedStyle(k).paddingLeft))/ki.getBoundingClientRect().width;
+  if(r<1)ki.style.transform='scaleX('+r+')';let i=0;const t=setInterval(()=>{i++;
   ki.textContent=[...'kode'].map((c,j)=>j<i/2.5?c:G[Math.random()*G.length|0]).join('');
-  if(i>=10){clearInterval(t);ki.textContent='kode';setTimeout(()=>k.classList.remove('c'),700)}},40)};
+  if(i>=10){clearInterval(t);ki.textContent='kode';setTimeout(()=>{k.classList.remove('c');ki.style.transform=''},700)}},40)};
 const flare=g=>{d.classList.remove('f');void d.offsetWidth;d.classList.add('f');setTimeout(()=>d.classList.toggle('g',g),500)};
 const run=()=>{code();setTimeout(()=>flare(true),600);setTimeout(()=>flare(false),2600)};
 setTimeout(()=>{run();setInterval(run,11000)},4000);
