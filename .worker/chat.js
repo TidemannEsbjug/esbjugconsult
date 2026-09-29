@@ -16,7 +16,8 @@
 
 const MAX_TEXT = 2000;
 const HISTORY = 200;
-const MAX_FILE = 25 * 1024 * 1024;
+const MAX_FILE = 25 * 1024 * 1024;        // visitors
+const MAX_FILE_OWNER = 95 * 1024 * 1024;  // the owner (video from the phone)
 
 export async function handleChat(request, env, url) {
   const hub = env.CHAT.get(env.CHAT.idFromName("hub"));
@@ -70,7 +71,7 @@ async function upload(request, env, url, hub, fromOwner) {
   const mime = (request.headers.get("Content-Type") || "application/octet-stream").split(";")[0].trim().slice(0, 100);
   const size = Number(request.headers.get("Content-Length") || 0);
   if (!/^[a-zA-Z0-9-]{8,64}$/.test(vid)) return new Response("Bad vid", { status: 400 });
-  if (!size || size > MAX_FILE) return new Response("Too large", { status: 413 });
+  if (!size || size > (fromOwner ? MAX_FILE_OWNER : MAX_FILE)) return new Response("Too large", { status: 413 });
   const internal = (p, body) => hub.fetch(new Request(`https://hub${p}`, {
     method: "POST", headers: { "x-role": "internal" }, body: JSON.stringify(body) }));
   const ok = await internal("/internal/can-upload", { vid, fromOwner });
@@ -169,7 +170,7 @@ export class ChatHub {
         if (!b.fromOwner) {
           const v = this.visitor(b.vid);
           const where = [v?.city, v?.country].filter(Boolean).join(", ") || "Besøkende";
-          const what = b.mime.startsWith("audio/") ? "🎤 Lydmelding" : b.mime.startsWith("image/") ? "🖼️ Bilde" : `📎 ${b.name}`;
+          const what = b.mime.startsWith("audio/") ? "🎤 Lydmelding" : b.mime.startsWith("image/") ? "🖼️ Bilde" : b.mime.startsWith("video/") ? "🎬 Video" : `📎 ${b.name}`;
           this.ctx.waitUntil(this.push(where, what, b.vid));
         }
         return Response.json({ ok: true, m: msg });
@@ -325,7 +326,7 @@ export class ChatHub {
     const r = this.sql.exec(`SELECT * FROM visitors WHERE vid=?`, vid).toArray()[0];
     if (!r) return null;
     const last = this.sql.exec(`SELECT from_owner, text, ts, kind, mime FROM messages WHERE vid=? ORDER BY id DESC LIMIT 1`, vid).toArray()[0];
-    if (last?.kind === "file") last.text = last.mime?.startsWith("audio/") ? "🎤 Lydmelding" : last.mime?.startsWith("image/") ? "🖼️ Bilde" : `📎 ${last.text}`;
+    if (last?.kind === "file") last.text = last.mime?.startsWith("audio/") ? "🎤 Lydmelding" : last.mime?.startsWith("image/") ? "🖼️ Bilde" : last.mime?.startsWith("video/") ? "🎬 Video" : `📎 ${last.text}`;
     return {
       vid: r.vid, online: this.online(vid, closing), firstSeen: r.first_seen, lastSeen: r.last_seen,
       city: r.city, region: r.region, country: r.country, lat: r.lat, lon: r.lon, tz: r.tz,

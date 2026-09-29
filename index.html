@@ -135,6 +135,7 @@
   /* Filer i chatten, og knappene for vedlegg og lydopptak. */
   .ch-m p.file{padding:6px;background:none}
   .ch-m p.file audio{display:block;width:250px;max-width:100%;height:40px}
+  .ch-m p.file video{display:block;width:260px;max-width:100%;max-height:320px;border-radius:12px;background:#000}
   .ch-m p.file img{display:block;max-width:240px;max-height:260px;border-radius:12px;cursor:zoom-in}
   .ch-m p.file a{display:block;padding:9px 12px;border-radius:14px;background:#26262e;color:#f3f1ea;text-decoration:none}
   .ch-m .me.file a{background:var(--y);color:var(--ink)}
@@ -337,6 +338,7 @@ const control=(a,on)=>{if(a==='focus'){if(on)open(true);focus(on)}else if(a==='e
 const kb=n=>n>1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' kB';
 const fileEl=(p,m)=>{p.classList.add('file');const src='/chat/file/'+m.file;
   if(m.mime.startsWith('audio/')){const a=document.createElement('audio');a.controls=true;a.preload='metadata';a.src=src;p.append(a)}
+  else if(m.mime.startsWith('video/')){const v=document.createElement('video');v.controls=true;v.playsInline=true;v.preload='metadata';v.src=src;p.append(v)}
   else if(m.mime.startsWith('image/')){const i=document.createElement('img');i.src=src;i.alt=m.name;i.loading='lazy';i.onclick=()=>open_(src);p.append(i)}
   else{const a=document.createElement('a');a.href=src;a.target='_blank';a.rel='noopener';a.textContent='📎 '+m.name+' · '+kb(m.size);p.append(a)}};
 const open_=u=>window.open(u,'_blank','noopener');
