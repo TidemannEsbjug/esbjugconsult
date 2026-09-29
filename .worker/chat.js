@@ -268,7 +268,7 @@ export class ChatHub {
     if (!devices.length) return [{ error: "no devices" }];
     const jwt = await this.apnsJwt();
     const payload = JSON.stringify({
-      aps: { alert: { title, body: body.length > 180 ? body.slice(0, 177) + "…" : body }, sound: "default", "thread-id": vid || "esbjug", "mutable-content": 0 },
+      aps: { alert: { title, body: body.length > 180 ? body.slice(0, 177) + "…" : body }, sound: "klirr.caf", "thread-id": vid || "esbjug", "mutable-content": 0 },
       vid,
     });
     const results = [];
