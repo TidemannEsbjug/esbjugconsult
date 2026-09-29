@@ -165,14 +165,6 @@
   .cc-mute.on{background:var(--y);color:var(--ink)}
   /* Speilet i appen: ingen chat, ingen banner. */
   .speil #chat,.speil #cookies{display:none!important}
-  /* Status ved chatknappen og i chatten: grønn = tilgjengelig, gul = i møte, lilla måne = sover. */
-  .ch-st{display:inline-flex;align-items:center;gap:5px;margin-left:4px;padding:4px 8px 4px 7px;border-radius:999px;background:rgba(255,222,89,.14);font-size:12px;font-weight:600}
-  .ch-st[hidden]{display:none}
-  .ch-st i{width:7px;height:7px;border-radius:50%;background:#3ddc84}
-  .ch-st.møte i,.ch-s.møte i{background:#ffb400}
-  .ch-st.sover i,.ch-s.sover i{background:#9b8cff}
-  .ch-s.på i{background:#3ddc84;opacity:.6}
-  .ch-s.på.on i{opacity:1}
   /* Samtalelinje: chatten minimert under en samtale, så man kan navigere fritt. */
   .ch-pill{display:flex;align-items:center;gap:6px;padding:6px;border-radius:999px;background:var(--ink);box-shadow:0 8px 24px rgba(13,13,18,.3)}
   .ch-pill[hidden]{display:none}
@@ -184,6 +176,38 @@
   .cp-mute.on{background:var(--y);color:var(--ink)}
   .cp-end{background:#ff3d57;color:#fff}
   .ch-pill svg{width:18px;height:18px}
+  /* Status som bevegelse. Tilgjengelig: grønne ringer pulserer ut. I møte: oransje ring som puster. Sover: z-er svever opp. */
+  .ch-b::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none}
+  .ch-b.på::after{animation:pulsG 2.6s ease-out infinite}
+  @keyframes pulsG{0%{box-shadow:0 0 0 0 rgba(61,220,132,.6)}70%{box-shadow:0 0 0 14px rgba(61,220,132,0)}100%{box-shadow:0 0 0 0 rgba(61,220,132,0)}}
+  .ch-b.på::before{content:"";position:absolute;top:9px;left:30px;width:8px;height:8px;border-radius:50%;background:#3ddc84;box-shadow:0 0 0 2px var(--ink)}
+  .ch-b.møte{box-shadow:0 0 0 3px #ff8a00,0 8px 24px rgba(13,13,18,.25)}
+  .ch-b.møte::after{animation:pulsO 2.2s ease-in-out infinite}
+  @keyframes pulsO{50%{box-shadow:0 0 0 7px rgba(255,138,0,.28)}}
+  /* Natt: knappen og chatvinduet blir nattblå, z-ene stiger opp over knappen. */
+  .ch-b.sover{background:#1f2c55;color:#cfdcff;box-shadow:0 8px 24px rgba(20,30,70,.35)}
+  .natt .ch-p{background:#141b33}
+  .natt .ch-h{border-bottom-color:rgba(160,180,255,.18)}
+  .natt .ch-h b{color:#cfdcff}
+  .natt .ch-m .him{background:#222b4a}
+  .natt .ch-f textarea{background:#1b2340}
+  .zz{display:none}
+  .sover .zz{display:block;position:absolute;right:4px;bottom:100%;width:40px;height:44px;margin-bottom:2px;pointer-events:none}
+  .zz i{width:auto;height:auto;background:none;border-radius:0;position:absolute;left:0;bottom:0;font-weight:800;font-size:13px;line-height:1;font-family:inherit;font-style:normal;color:#1f2c55;opacity:0;animation:zz 3s ease-in infinite}
+  .zz i:nth-child(2){animation-delay:1s;font-size:16px}
+  .zz i:nth-child(3){animation-delay:2s;font-size:19px}
+  @keyframes zz{0%{opacity:0;transform:translate(0,0) rotate(-10deg)}20%{opacity:1}100%{opacity:0;transform:translate(16px,-38px) rotate(12deg)}}
+  .ch-s .zz{position:relative;right:auto;top:auto;width:34px;height:16px;display:none;margin-right:4px}
+  .ch-s.sover .zz{display:inline-block}
+  .ch-s .zz i{color:#9b8cff;font-size:10px;bottom:-2px}
+  .ch-s .zz i:nth-child(2){font-size:12px}
+  .ch-s .zz i:nth-child(3){font-size:14px}
+  .ch-s.sover>i{display:none}
+  .ch-s.på i{background:#3ddc84;opacity:.6}
+  .ch-s.på.on>i{opacity:1;animation:pulsDot 2s ease-out infinite}
+  @keyframes pulsDot{0%{box-shadow:0 0 0 0 rgba(61,220,132,.6)}80%{box-shadow:0 0 0 7px rgba(61,220,132,0)}}
+  .ch-s.møte>i{background:#ff8a00}
+  @media (prefers-reduced-motion:reduce){.ch-b::after,.zz i,.ch-s.på.on>i{animation:none}.sover .zz i{opacity:1}.zz i:nth-child(2){transform:translate(7px,-12px)}.zz i:nth-child(3){transform:translate(14px,-24px)}}
   canvas{display:block;width:100%;height:38vh;min-height:220px;margin-top:auto;touch-action:pan-y}
 </style>
 </head>
@@ -319,14 +343,13 @@
   <div><button type="button" class="ck-ja">Godta</button><button type="button" class="ck-nei">Bare nødvendige</button></div>
 </section>
 <div class="ch" id="chat">
-  <button class="ch-b" type="button" aria-label="Chat med Tidemann" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Chat<span class="ch-st" hidden><i></i><span></span></span><i class="ch-n" hidden></i></button>
+  <button class="ch-b" type="button" aria-label="Chat med Tidemann" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Chat<span class="zz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span><i class="ch-n" hidden></i></button>
   <div class="ch-pill" hidden><button type="button" class="cp-open" aria-label="Åpne chatten"><i></i><span class="cp-t">I samtale med Tidemann</span></button><button type="button" class="cp-mute" aria-label="Lyd av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><button type="button" class="cp-end" aria-label="Legg på"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 9c-3.3 0-6.3.9-8.6 2.5-.5.4-.6 1-.3 1.5l1.6 2.5c.3.5.9.7 1.4.5l2.8-1c.5-.2.8-.7.8-1.2V12c1.4-.4 3-.4 4.6 0v1.8c0 .5.3 1 .8 1.2l2.8 1c.5.2 1.1 0 1.4-.5l1.6-2.5c.3-.5.2-1.1-.3-1.5C18.3 9.9 15.3 9 12 9z"/></svg></button></div>
   <section class="ch-p" role="dialog" aria-label="Chat med Tidemann" hidden>
-    <div class="ch-h"><div><b>Tidemann Esbjug</b><span class="ch-s"><i></i><span>Svarer fra telefonen</span></span></div><div class="ch-a"><button class="ch-del" type="button">Slett samtalen</button><button class="ch-x" type="button" aria-label="Lukk chat">×</button></div></div>
+    <div class="ch-h"><div><b>Tidemann Esbjug</b><span class="ch-s"><i></i><span class="zz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span><span>Svarer fra telefonen</span></span></div><div class="ch-a"><button class="ch-del" type="button">Slett samtalen</button><button class="ch-x" type="button" aria-label="Lukk chat">×</button></div></div>
     <div class="ch-call" hidden><div class="cc-i"><span class="cc-dot"></span><div><b class="cc-t">Tidemann ringer deg</b><span class="cc-s">Lydsamtale i nettleseren</span></div></div><div class="cc-b"><button type="button" class="cc-ans">Svar</button><button type="button" class="cc-dec">Avslå</button><button type="button" class="cc-mute" hidden>Lyd av</button><button type="button" class="cc-min" hidden>Minimer</button><button type="button" class="cc-end" hidden>Legg på</button></div><audio class="cc-audio" autoplay playsinline></audio></div>
-    <div class="ch-m" aria-live="polite"><p class="hint">Skriv her, så kommer det rett på telefonen min.</p></div>
+    <div class="ch-m" aria-live="polite"></div>
     <form class="ch-f"><span class="ch-more" hidden><button type="button" class="ch-att" aria-label="Legg ved fil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5l-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l8.6-8.6a3.7 3.7 0 0 1 5.2 5.2l-8.6 8.6a1.8 1.8 0 0 1-2.6-2.6l7.9-7.9"/></svg></button><button type="button" class="ch-mic" aria-label="Spill inn lydmelding"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><input type="file" class="ch-file" hidden></span><textarea rows="1" maxlength="2000" placeholder="Skriv en melding …" aria-label="Melding"></textarea><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
-    <p class="ch-pv">Meldingene og omtrentlig sted (by, ut fra IP-adressen) lagres, så jeg kan svare. Jeg kan se hvor på siden du er mens du chatter. <a href="#" class="ck-endre">Informasjonskapsler</a></p>
   </section>
 </div>
 <canvas id="c" aria-hidden="true"></canvas>
@@ -462,12 +485,13 @@ addEventListener('pointermove',e=>{lx=Math.round(e.clientX);ly=Math.round(e.clie
 addEventListener('pointerdown',e=>{lx=Math.round(e.clientX);ly=Math.round(e.clientY);lclick=[lx,ly];lqueue()},{passive:true});
 setTimeout(lqueue,300);
 // Tidemanns status (settes i appen) + om appen er åpen. Vises i chatten og ved siden av chatknappen.
-let ownerOn=false,stat='available';const chip=$('.ch-st');
+let ownerOn=false,stat='available';
 const STAT={available:['Tilgjengelig','på'],meeting:['I møte','møte'],sleeping:['Sover','sover']};
+// Statusen vises som animasjon på chatknappen (grønne ringer, oransje ring, z-er), med tekst bare når Tidemann er i møte.
 const render=()=>{const [label,cls]=STAT[stat]||STAT.available;
-  chip.hidden=false;chip.className='ch-st '+cls;chip.lastChild.textContent=label;
+  btn.classList.remove('på','møte','sover');btn.classList.add(cls);document.getElementById('chat').classList.toggle('natt',stat==='sleeping');btn.setAttribute('aria-label','Chat med Tidemann ('+label.toLowerCase()+')');
   st.className='ch-s '+cls+(ownerOn&&stat==='available'?' on':'');
-  st.lastChild.textContent=stat==='sleeping'?'Sover nå, svarer når jeg våkner':stat==='meeting'?'I møte, svarer etterpå':ownerOn?'Tidemann er her nå':'Tilgjengelig, svarer fra telefonen'};
+  st.lastChild.textContent=stat==='sleeping'?'':stat==='meeting'?'I møte, kan kanskje svare':ownerOn?'Tidemann er her nå':'Svarer fra telefonen'};
 const owner=on=>{ownerOn=on;render()};
 const setStat=v=>{stat=v;render()};
 fetch('/chat/status').then(r=>r.json()).then(j=>{ownerOn=!!j.owner;setStat(j.status)}).catch(()=>{});
