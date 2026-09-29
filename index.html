@@ -411,7 +411,7 @@ mic.onclick=async()=>{
   catch{ta.placeholder='Fikk ikke tilgang til mikrofonen.'}};
 // Lydsamtale (WebRTC). Tidemann ringer fra appen; lyden går direkte mellom nettleseren og telefonen hans.
 const ICE=[{urls:['stun:stun.cloudflare.com:3478','stun:stun.l.google.com:19302']}];
-const getIce=()=>fetch('/chat/ice').then(r=>r.json()).then(j=>j.iceServers&&j.iceServers.length?j.iceServers:ICE).catch(()=>ICE);
+const getIce=()=>fetch('/chat/ice?vid='+encodeURIComponent(vid)).then(r=>r.json()).then(j=>j.iceServers&&j.iceServers.length?j.iceServers:ICE).catch(()=>ICE);
 const cc=$('.ch-call'),ccT=$('.cc-t'),ccS=$('.cc-s'),ccA=$('.cc-audio'),bAns=$('.cc-ans'),bDec=$('.cc-dec'),bMute=$('.cc-mute'),bEnd=$('.cc-end');
 let pc=null,local=null,clock=null,t1=0;
 const rtc=d=>{if(ws&&ws.readyState===1)ws.send(JSON.stringify({t:'rtc',data:d}))};

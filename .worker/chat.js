@@ -46,6 +46,7 @@ export async function handleChat(request, env, url) {
     headers.set("x-role", "visitor");
     headers.set("x-vid", vid);
     headers.set("x-geo", encodeURIComponent(JSON.stringify(geo)));
+    headers.set("x-ip", request.headers.get("CF-Connecting-IP") || "");
     return hub.fetch(new Request(request.url, { headers }));
   }
 
@@ -56,10 +57,21 @@ export async function handleChat(request, env, url) {
   }
 
   if (path === "/chat/ice") {
-    const origin = request.headers.get("Origin") || "";
+    // TURN costs money per GB, so relay credentials go only to the owner app or to a visitor the owner is
+    // calling right now (the hub knows). Everyone else gets STUN only.
     const owner = env.ADMIN_TOKEN && request.headers.get("Authorization") === `Bearer ${env.ADMIN_TOKEN}`;
-    if (!owner && origin && !/^https:\/\/(www\.)?esbjugconsult\.com$/.test(origin)) return new Response("Forbidden", { status: 403 });
-    return Response.json({ iceServers: await iceServers(env) }, { headers: { "cache-control": "no-store" } });
+    let allowed = owner;
+    if (!owner) {
+      const origin = request.headers.get("Origin") || "";
+      const vid = url.searchParams.get("vid") || "";
+      // Browsers send no Origin on same-origin GETs; Sec-Fetch-Site says the same. The real gate is the in-call check.
+      const ours = /^https:\/\/(www\.)?esbjugconsult\.com$/.test(origin) || request.headers.get("Sec-Fetch-Site") === "same-origin";
+      if (ours && /^[a-zA-Z0-9-]{8,64}$/.test(vid)) {
+        const r = await hub.fetch(new Request("https://hub/internal/in-call", { method: "POST", headers: { "x-role": "internal" }, body: JSON.stringify({ vid }) }));
+        allowed = r.ok;
+      }
+    }
+    return Response.json({ iceServers: allowed ? await iceServers(env) : [STUN] }, { headers: { "cache-control": "no-store" } });
   }
 
   if (path === "/chat/rec" && request.method === "POST") {
@@ -89,24 +101,21 @@ export async function handleChat(request, env, url) {
 }
 
 // ICE servers for calls: STUN always; TURN from Cloudflare Realtime when TURN_KEY_ID/TURN_KEY_TOKEN are set.
-// Credentials live 24 h and are reused for 12 h per Worker instance.
+// Fresh credentials per call, valid 1 hour, so a leaked set is worthless soon after.
 const STUN = { urls: ["stun:stun.cloudflare.com:3478", "stun:stun.l.google.com:19302"] };
-let turnCache = { until: 0, servers: [] };
 async function iceServers(env) {
   if (!env.TURN_KEY_ID || !env.TURN_KEY_TOKEN) return [STUN];
-  if (Date.now() < turnCache.until) return [STUN, ...turnCache.servers];
   try {
     const r = await fetch(`https://rtc.live.cloudflare.com/v1/turn/keys/${env.TURN_KEY_ID}/credentials/generate-ice-servers`, {
       method: "POST",
       headers: { Authorization: `Bearer ${env.TURN_KEY_TOKEN}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ ttl: 86400 }),
+      body: JSON.stringify({ ttl: 3600 }),
     });
     if (!r.ok) return [STUN];
     const j = await r.json();
     const list = Array.isArray(j.iceServers) ? j.iceServers : j.iceServers ? [j.iceServers] : [];
     // TURN only (Cloudflare's reply may also contain its STUN entry, which STUN already covers).
     const servers = list.map((s) => ({ ...s, urls: [].concat(s.urls).filter((u) => u.startsWith("turn")) })).filter((s) => s.urls.length);
-    turnCache = { until: Date.now() + 12 * 3600e3, servers };
     return [STUN, ...servers];
   } catch {
     return [STUN];
@@ -181,6 +190,8 @@ export class ChatHub {
     this.pruned = 0;
     this.sql.exec(`CREATE TABLE IF NOT EXISTS kv (k TEXT PRIMARY KEY, v TEXT)`);
     this.jwt = null;
+    this.pushLog = [];          // times of recent pushes (global cap)
+    this.pushLast = new Map();  // vid -> last push time
   }
 
   async fetch(request) {
@@ -199,9 +210,11 @@ export class ChatHub {
          ON CONFLICT(vid) DO UPDATE SET last_seen=excluded.last_seen, city=excluded.city, region=excluded.region,
            country=excluded.country, lat=excluded.lat, lon=excluded.lon, tz=excluded.tz, ua=excluded.ua, lang=excluded.lang`,
         vid, now, now, geo.city, geo.region, geo.country, geo.lat, geo.lon, geo.tz, ua, lang);
+      const ip = request.headers.get("x-ip") || "";
+      if (ip && this.ctx.getWebSockets(`ip:${ip}`).length >= 10) return new Response("Too many connections", { status: 429 });
       const pair = new WebSocketPair();
-      this.ctx.acceptWebSocket(pair[1], ["v", `v:${vid}`]);
-      pair[1].serializeAttachment({ role: "visitor", vid, rate: [] });
+      this.ctx.acceptWebSocket(pair[1], ["v", `v:${vid}`, ...(ip ? [`ip:${ip}`] : [])]);
+      pair[1].serializeAttachment({ role: "visitor", vid, rate: [], win: 0, n: 0 });
       const ex = this.sql.exec(`SELECT extras FROM visitors WHERE vid=?`, vid).toArray()[0];
       pair[1].send(JSON.stringify({ t: "history", msgs: this.history(vid), owner: this.ownerOnline(), extras: !!ex?.extras, status: this.status() }));
       this.toOwners({ t: "presence", v: this.visitor(vid) });
@@ -210,6 +223,10 @@ export class ChatHub {
 
     if (role === "internal") {
       const b = await request.json();
+      if (url.pathname === "/internal/in-call") {
+        const t = Number(this.sql.exec(`SELECT v FROM kv WHERE k=?`, `call:${b.vid}`).toArray()[0]?.v || 0);
+        return t && Date.now() - t < 2 * 3600e3 && this.online(b.vid) ? new Response("ok") : new Response("no", { status: 403 });
+      }
       if (url.pathname === "/internal/status") {
         return Response.json({ status: this.status(), owner: this.ownerOnline() }, { headers: { "cache-control": "no-store" } });
       }
@@ -293,6 +310,12 @@ export class ChatHub {
     const a = ws.deserializeAttachment() || {};
 
     if (a.role === "visitor") {
+      // At most 40 messages per second per connection (live/rec/rtc are the busy ones); drop the rest.
+      const sec = Math.floor(Date.now() / 1000);
+      if (a.win !== sec) { a.win = sec; a.n = 0; }
+      if (++a.n > 40) return;
+      if (a.n === 1 || m.t === "msg") ws.serializeAttachment(a);
+      if (typeof raw === "string" && raw.length > 150000) return;
       if (m.t === "page" && typeof m.page === "string") {
         this.sql.exec(`UPDATE visitors SET page=?, last_seen=? WHERE vid=?`, m.page.slice(0, 200), Date.now(), a.vid);
         this.toOwners({ t: "presence", v: this.visitor(a.vid) });
@@ -347,6 +370,10 @@ export class ChatHub {
         // Control buttons in the owner app change the visitor's page (e.g. "focus").
         const ctl = { t: "ctl", action: m.action, on: !!m.on };
         if (m.action === "extras") this.sql.exec(`UPDATE visitors SET extras=? WHERE vid=?`, m.on ? 1 : 0, m.vid);
+        if (m.action === "call") {
+          if (m.on) this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, `call:${m.vid}`, String(Date.now()));
+          else this.sql.exec(`DELETE FROM kv WHERE k=?`, `call:${m.vid}`);
+        }
         this.toVisitor(m.vid, ctl);
         this.toOwners({ ...ctl, vid: m.vid });
       } else if (m.t === "rtc" && typeof m.vid === "string" && m.data && JSON.stringify(m.data).length < 20000) {
@@ -454,6 +481,9 @@ export class ChatHub {
     const v = this.sql.exec(`SELECT city, country, ua FROM visitors WHERE vid=?`, vid).toArray()[0];
     if (!v) return;
     const now = Date.now();
+    const known = this.sql.exec(`SELECT events FROM sessions WHERE sid=?`, b.sid).toArray()[0];
+    if (!known && this.sql.exec(`SELECT COUNT(*) AS n FROM sessions WHERE vid=? AND start>?`, vid, now - 864e5).one().n >= 60) return;
+    if (known && known.events > 30000) return;
     const m = b.meta || {};
     this.sql.exec(`INSERT OR IGNORE INTO sessions (sid, vid, start, last, vw, vh, page, ref, city, country, ua) VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
       b.sid, vid, now, now, m.vw || null, m.vh || null, String(m.page || "").slice(0, 200), String(m.ref || "").slice(0, 300), v.city, v.country, v.ua);
@@ -503,6 +533,15 @@ export class ChatHub {
 
   async push(title, body, vid) {
     if (!this.env.APNS_KEY || !this.env.APNS_KEY_ID) return [{ error: "APNs not configured" }];
+    // Anti-spam: one push per visitor per 20 s, at most 30 pushes per 10 minutes in total.
+    const now = Date.now();
+    if (vid) {
+      if (now - (this.pushLast.get(vid) || 0) < 20000) return [{ skipped: "throttled" }];
+      this.pushLog = this.pushLog.filter((t) => now - t < 600000);
+      if (this.pushLog.length >= 30) return [{ skipped: "global cap" }];
+      this.pushLast.set(vid, now);
+      this.pushLog.push(now);
+    }
     const devices = this.sql.exec(`SELECT token, env FROM devices`).toArray();
     if (!devices.length) return [{ error: "no devices" }];
     const jwt = await this.apnsJwt();
