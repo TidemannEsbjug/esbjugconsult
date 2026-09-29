@@ -122,6 +122,30 @@
   .focus .ch-f textarea{font-size:17px;padding:13px 15px}
   .focus .ch-f button{width:52px}
   @media (max-width:520px){.focus .ch-p{right:0;bottom:0;transform:none;width:100vw;height:100svh;border-radius:0}}
+  /* Åpne/lukke-overgang: vokser ut fra hjørnet på PC, glir opp nedenfra på mobil. */
+  .ch-p{transform-origin:100% 100%}
+  .ch-p.in{animation:chIn .42s cubic-bezier(.2,.9,.25,1.05)}
+  .ch-p.out{animation:chOut .24s ease-in forwards}
+  @keyframes chIn{from{opacity:0;scale:.86;translate:0 18px}}
+  @keyframes chOut{to{opacity:0;scale:.9;translate:0 14px}}
+  @media (max-width:520px){.ch-p.in{animation:chInM .42s cubic-bezier(.2,.9,.25,1)}.ch-p.out{animation:chOutM .3s cubic-bezier(.5,0,.8,.4) forwards}}
+  @keyframes chInM{from{translate:0 100%}}
+  @keyframes chOutM{to{translate:0 100%}}
+  @media (prefers-reduced-motion:reduce){.ch-p.in,.ch-p.out{animation:none}}
+  /* Filer i chatten, og knappene for vedlegg og lydopptak. */
+  .ch-m p.file{padding:6px;background:none}
+  .ch-m p.file audio{display:block;width:250px;max-width:100%;height:40px}
+  .ch-m p.file img{display:block;max-width:240px;max-height:260px;border-radius:12px;cursor:zoom-in}
+  .ch-m p.file a{display:block;padding:9px 12px;border-radius:14px;background:#26262e;color:#f3f1ea;text-decoration:none}
+  .ch-m .me.file a{background:var(--y);color:var(--ink)}
+  .ch-m p.up{opacity:.6}
+  .ch-m p.err{background:#5a1e27;color:#fff}
+  .ch-more{display:flex;gap:6px}
+  .ch-more[hidden]{display:none}
+  .ch-more button{border:0;border-radius:12px;background:#26262e;color:var(--y);width:44px;cursor:pointer;display:grid;place-items:center}
+  .ch-more svg{width:19px;height:19px}
+  .ch-mic.rec{background:#ff3d57;color:#fff;animation:recp 1.2s ease-in-out infinite}
+  @keyframes recp{50%{box-shadow:0 0 0 6px rgba(255,61,87,.25)}}
   canvas{display:block;width:100%;height:38vh;min-height:220px;margin-top:auto;touch-action:pan-y}
 </style>
 </head>
@@ -261,7 +285,7 @@
   <section class="ch-p" role="dialog" aria-label="Chat med Tidemann" hidden>
     <div class="ch-h"><div><b>Tidemann Esbjug</b><span class="ch-s"><i></i><span>Svarer fra telefonen</span></span></div><div class="ch-a"><button class="ch-del" type="button">Slett samtalen</button><button class="ch-x" type="button" aria-label="Lukk chat">×</button></div></div>
     <div class="ch-m" aria-live="polite"><p class="hint">Skriv her, så kommer det rett på telefonen min.</p></div>
-    <form class="ch-f"><textarea rows="1" maxlength="2000" placeholder="Skriv en melding …" aria-label="Melding"></textarea><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
+    <form class="ch-f"><span class="ch-more" hidden><button type="button" class="ch-att" aria-label="Legg ved fil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5l-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l8.6-8.6a3.7 3.7 0 0 1 5.2 5.2l-8.6 8.6a1.8 1.8 0 0 1-2.6-2.6l7.9-7.9"/></svg></button><button type="button" class="ch-mic" aria-label="Spill inn lydmelding"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><input type="file" class="ch-file" hidden></span><textarea rows="1" maxlength="2000" placeholder="Skriv en melding …" aria-label="Melding"></textarea><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
     <p class="ch-pv">Meldingene og omtrentlig sted (by, ut fra IP-adressen) lagres, så jeg kan svare. <a href="#" class="ck-endre">Informasjonskapsler</a></p>
   </section>
 </div>
@@ -290,7 +314,12 @@ cb.querySelector('.ck-ja').onclick=()=>decide(true);cb.querySelector('.ck-nei').
 document.querySelectorAll('.ck-endre').forEach(a=>a.onclick=e=>{e.preventDefault();cb.hidden=false});
 if(!consent)cb.hidden=false;
 let ws,wait=1000,seen=new Set(),unread=0,lastTyping=0;
-const open=o=>{pan.hidden=!o;btn.hidden=o;btn.setAttribute('aria-expanded',o);if(o){unread=0;badge.hidden=true;box.scrollTop=box.scrollHeight;setTimeout(()=>ta.focus(),50)}};
+const still=matchMedia('(prefers-reduced-motion: reduce)');
+const open=o=>{btn.setAttribute('aria-expanded',o);
+  if(!o){if(pan.hidden)return;if(still.matches){pan.hidden=true;btn.hidden=false;return}
+    pan.classList.remove('in');pan.classList.add('out');pan.addEventListener('animationend',()=>{pan.classList.remove('out');pan.hidden=true;btn.hidden=false},{once:true});return}
+  if(pan.hidden){pan.hidden=false;btn.hidden=true;pan.classList.remove('out');pan.classList.add('in');pan.addEventListener('animationend',()=>pan.classList.remove('in'),{once:true})}
+  if(o){unread=0;badge.hidden=true;box.scrollTop=box.scrollHeight;setTimeout(()=>ta.focus(),50)}};
 btn.onclick=()=>{open(true);if(!ws)connect()};
 // «Slett samtalen»: to trykk, så slettes alt hos Tidemann og på serveren, og du får en ny, tom samtale.
 const del=$('.ch-del');let armed=0;
@@ -301,15 +330,42 @@ const cleared=()=>{box.querySelectorAll('p:not(.hint)').forEach(p=>p.remove());s
 const hehe=()=>{const o=document.createElement('div');o.className='hh';o.setAttribute('aria-hidden','true');
   [...'hehe'].forEach((c,i)=>{const sp=document.createElement('span');sp.textContent=c;sp.style.animationDelay=i*70+'ms';o.append(sp)});
   document.body.append(o);setTimeout(()=>o.remove(),3200)};
-const add=(m,live)=>{if(seen.has(m.id))return;seen.add(m.id);if(live&&m.owner&&/^\s*hehe[!.\s]*$/i.test(m.text))hehe();const p=document.createElement('p');p.className=m.owner?'him':'me';p.textContent=m.text;box.append(p);box.scrollTop=box.scrollHeight;
+const add=(m,live)=>{if(seen.has(m.id))return;seen.add(m.id);if(live&&m.owner&&/^\s*hehe[!.\s]*$/i.test(m.text))hehe();const p=document.createElement('p');p.className=m.owner?'him':'me';if(m.kind==='file')fileEl(p,m);else p.textContent=m.text;box.append(p);box.scrollTop=box.scrollHeight;
   if(m.owner&&pan.hidden){unread++;badge.textContent=unread;badge.hidden=false;open(true)}};
 const focus=on=>document.documentElement.classList.toggle('focus',on);
-const control=(a,on)=>{if(a==='focus'){if(on)open(true);focus(on)}};
+const control=(a,on)=>{if(a==='focus'){if(on)open(true);focus(on)}else if(a==='extras'){extras(on);if(on)open(true)}};
+const kb=n=>n>1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' kB';
+const fileEl=(p,m)=>{p.classList.add('file');const src='/chat/file/'+m.file;
+  if(m.mime.startsWith('audio/')){const a=document.createElement('audio');a.controls=true;a.preload='metadata';a.src=src;p.append(a)}
+  else if(m.mime.startsWith('image/')){const i=document.createElement('img');i.src=src;i.alt=m.name;i.loading='lazy';i.onclick=()=>open_(src);p.append(i)}
+  else{const a=document.createElement('a');a.href=src;a.target='_blank';a.rel='noopener';a.textContent='📎 '+m.name+' · '+kb(m.size);p.append(a)}};
+const open_=u=>window.open(u,'_blank','noopener');
+// «Mer chat» (slås på av Tidemann): vedlegg og lydopptak.
+const more=$('.ch-more'),fin=$('.ch-file'),mic=$('.ch-mic');
+const extras=on=>{more.hidden=!on};
+const up=async(blob,name)=>{const tmp=document.createElement('p');tmp.className='me up';tmp.textContent='Sender '+name+' …';box.append(tmp);box.scrollTop=box.scrollHeight;
+  try{const r=await fetch('/chat/upload?vid='+encodeURIComponent(vid)+'&name='+encodeURIComponent(name),{method:'POST',headers:{'Content-Type':blob.type||'application/octet-stream'},body:blob});
+    if(!r.ok)throw new Error(r.status===413?'Filen er for stor (maks 25 MB).':'Kunne ikke sende filen.');tmp.remove()}
+  catch(e){tmp.textContent=e.message;tmp.classList.add('err')}};
+$('.ch-att').onclick=()=>fin.click();
+fin.onchange=()=>{[...fin.files].forEach(f=>up(f,f.name));fin.value=''};
+let rec=null,chunks=[],t0=0,tick=null;
+mic.onclick=async()=>{
+  if(rec){rec.stop();return}
+  try{const st=await navigator.mediaDevices.getUserMedia({audio:true});
+    const type=['audio/mp4','audio/webm;codecs=opus','audio/webm'].find(t=>MediaRecorder.isTypeSupported(t))||'';
+    rec=new MediaRecorder(st,type?{mimeType:type}:{});chunks=[];
+    rec.ondataavailable=e=>chunks.push(e.data);
+    rec.onstop=()=>{st.getTracks().forEach(x=>x.stop());clearInterval(tick);mic.classList.remove('rec');ta.placeholder='Skriv en melding …';
+      const b=new Blob(chunks,{type:rec.mimeType.split(';')[0]});rec=null;if(b.size>800)up(b,'Lydmelding.'+(b.type.includes('mp4')?'m4a':'webm'))};
+    rec.start();t0=Date.now();mic.classList.add('rec');
+    const show=()=>{const s=Math.floor((Date.now()-t0)/1000);ta.placeholder='Tar opp '+Math.floor(s/60)+':'+String(s%60).padStart(2,'0')+' · trykk på mikrofonen for å sende'};show();tick=setInterval(show,500)}
+  catch{ta.placeholder='Fikk ikke tilgang til mikrofonen.'}};
 const owner=on=>{st.classList.toggle('on',on);st.lastChild.textContent=on?'Tidemann er her nå':'Svarer fra telefonen'};
 const connect=()=>{ws=new WebSocket('wss://'+location.host+'/chat/ws?vid='+encodeURIComponent(vid));
   ws.onopen=()=>{wait=1000;ws.send(JSON.stringify({t:'page',page:location.pathname+location.hash}))};
   ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch{return}
-    if(m.t==='history'){m.msgs.forEach(x=>add(x,false));owner(m.owner)}else if(m.t==='cleared')cleared();else if(m.t==='ctl')control(m.action,m.on);else if(m.t==='msg')add(m.m,true);else if(m.t==='owner')owner(m.online)};
+    if(m.t==='history'){m.msgs.forEach(x=>add(x,false));owner(m.owner);extras(!!m.extras)}else if(m.t==='cleared')cleared();else if(m.t==='ctl')control(m.action,m.on);else if(m.t==='msg')add(m.m,true);else if(m.t==='owner')owner(m.online)};
   ws.onclose=()=>{setTimeout(connect,wait);wait=Math.min(wait*2,30000)}};
 if(consent==='ja')connect();
 const send=()=>{const text=ta.value.trim();if(!text||!ws||ws.readyState!==1)return;ws.send(JSON.stringify({t:'msg',text}));ta.value='';ta.style.height=''};
