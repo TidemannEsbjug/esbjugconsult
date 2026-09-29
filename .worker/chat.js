@@ -169,6 +169,11 @@ export class ChatHub {
         this.toOwners({ t: "presence", v: this.visitor(m.vid) });
       } else if (m.t === "history" && typeof m.vid === "string") {
         ws.send(JSON.stringify({ t: "history", vid: m.vid, msgs: this.history(m.vid) }));
+      } else if (m.t === "ctl" && typeof m.vid === "string" && /^[a-z]{1,20}$/.test(m.action || "")) {
+        // Control buttons in the owner app change the visitor's page (e.g. "focus").
+        const ctl = { t: "ctl", action: m.action, on: !!m.on };
+        this.toVisitor(m.vid, ctl);
+        this.toOwners({ ...ctl, vid: m.vid });
       } else if (m.t === "delete" && typeof m.vid === "string") {
         this.sql.exec(`DELETE FROM messages WHERE vid=?`, m.vid);
         this.sql.exec(`DELETE FROM visitors WHERE vid=?`, m.vid);

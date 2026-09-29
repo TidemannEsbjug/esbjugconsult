@@ -109,6 +109,19 @@
   .ck-nei{background:#26262e;color:#f3f1ea}
   .ck-endre{color:inherit}
   @media (max-width:520px){.ck{bottom:84px}}
+  /* Kontroll fra Tidemann: «fokus» flytter chatten til midten, gjør den større og skjuler resten av siden. */
+  .ch-p{transition:right .55s cubic-bezier(.2,.8,.2,1),bottom .55s cubic-bezier(.2,.8,.2,1),transform .55s cubic-bezier(.2,.8,.2,1),width .55s cubic-bezier(.2,.8,.2,1),height .55s cubic-bezier(.2,.8,.2,1),border-radius .55s}
+  main,canvas{transition:opacity .45s ease,filter .45s ease}
+  .focus main,.focus canvas{opacity:0;filter:blur(8px);pointer-events:none}
+  .focus .ch-p{right:50%;bottom:50%;transform:translate(50%,50%);width:min(760px,calc(100vw - 32px));height:min(80svh,800px);border-radius:24px;box-shadow:0 30px 80px rgba(13,13,18,.35)}
+  .focus .ch-h{padding:22px 24px 18px 26px}
+  .focus .ch-h b{font-size:20px}
+  .focus .ch-m{padding:24px 26px;gap:10px}
+  .focus .ch-m p{font-size:18px;padding:11px 15px;border-radius:16px}
+  .focus .ch-f{padding:16px 18px}
+  .focus .ch-f textarea{font-size:17px;padding:13px 15px}
+  .focus .ch-f button{width:52px}
+  @media (max-width:520px){.focus .ch-p{right:0;bottom:0;transform:none;width:100vw;height:100svh;border-radius:0}}
   canvas{display:block;width:100%;height:38vh;min-height:220px;margin-top:auto;touch-action:pan-y}
 </style>
 </head>
@@ -284,17 +297,19 @@ const del=$('.ch-del');let armed=0;
 del.onclick=()=>{if(Date.now()-armed>3000){armed=Date.now();del.textContent='Trykk igjen for å slette';setTimeout(()=>{if(Date.now()-armed>=3000)del.textContent='Slett samtalen'},3100);return}
   armed=0;del.textContent='Slett samtalen';if(ws&&ws.readyState===1)ws.send(JSON.stringify({t:'forget'}));else cleared()};
 const cleared=()=>{box.querySelectorAll('p:not(.hint)').forEach(p=>p.remove());seen.clear();vid=crypto.randomUUID();if(consent==='ja')setC('esbjug_id',vid);
-  if(ws){ws.onclose=null;ws.close();ws=null;connect()}};$('.ch-x').onclick=()=>open(false);
+  if(ws){ws.onclose=null;ws.close();ws=null;connect()}};$('.ch-x').onclick=()=>{focus(false);open(false)};
 const hehe=()=>{const o=document.createElement('div');o.className='hh';o.setAttribute('aria-hidden','true');
   [...'hehe'].forEach((c,i)=>{const sp=document.createElement('span');sp.textContent=c;sp.style.animationDelay=i*70+'ms';o.append(sp)});
   document.body.append(o);setTimeout(()=>o.remove(),3200)};
 const add=(m,live)=>{if(seen.has(m.id))return;seen.add(m.id);if(live&&m.owner&&/^\s*hehe[!.\s]*$/i.test(m.text))hehe();const p=document.createElement('p');p.className=m.owner?'him':'me';p.textContent=m.text;box.append(p);box.scrollTop=box.scrollHeight;
   if(m.owner&&pan.hidden){unread++;badge.textContent=unread;badge.hidden=false;open(true)}};
+const focus=on=>document.documentElement.classList.toggle('focus',on);
+const control=(a,on)=>{if(a==='focus'){if(on)open(true);focus(on)}};
 const owner=on=>{st.classList.toggle('on',on);st.lastChild.textContent=on?'Tidemann er her nå':'Svarer fra telefonen'};
 const connect=()=>{ws=new WebSocket('wss://'+location.host+'/chat/ws?vid='+encodeURIComponent(vid));
   ws.onopen=()=>{wait=1000;ws.send(JSON.stringify({t:'page',page:location.pathname+location.hash}))};
   ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch{return}
-    if(m.t==='history'){m.msgs.forEach(x=>add(x,false));owner(m.owner)}else if(m.t==='cleared')cleared();else if(m.t==='msg')add(m.m,true);else if(m.t==='owner')owner(m.online)};
+    if(m.t==='history'){m.msgs.forEach(x=>add(x,false));owner(m.owner)}else if(m.t==='cleared')cleared();else if(m.t==='ctl')control(m.action,m.on);else if(m.t==='msg')add(m.m,true);else if(m.t==='owner')owner(m.online)};
   ws.onclose=()=>{setTimeout(connect,wait);wait=Math.min(wait*2,30000)}};
 if(consent==='ja')connect();
 const send=()=>{const text=ta.value.trim();if(!text||!ws||ws.readyState!==1)return;ws.send(JSON.stringify({t:'msg',text}));ta.value='';ta.style.height=''};
