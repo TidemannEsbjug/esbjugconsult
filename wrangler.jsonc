@@ -9,6 +9,11 @@
   // Only the real domain; no parallel *.workers.dev copy.
   "workers_dev": false,
   // All of esbjugconsult.com except /jev*, which the more specific route in ../jev takes.
+  // Live chat: one Durable Object holds every socket and the conversations (SQLite storage).
+  "durable_objects": { "bindings": [{ "name": "CHAT", "class_name": "ChatHub" }] },
+  "migrations": [{ "tag": "chat-v1", "new_sqlite_classes": ["ChatHub"] }],
+  // Push to the owner's iPhone app. Secrets (wrangler secret put): ADMIN_TOKEN, APNS_KEY, APNS_KEY_ID.
+  "vars": { "APNS_TEAM_ID": "N5BKVM258S", "APNS_TOPIC": "deviatehigh.EsbjugChat" },
   "routes": [
     { "pattern": "esbjugconsult.com/*", "zone_name": "esbjugconsult.com" },
     { "pattern": "www.esbjugconsult.com/*", "zone_name": "esbjugconsult.com" }
