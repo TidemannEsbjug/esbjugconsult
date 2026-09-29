@@ -489,7 +489,7 @@ const STAT={available:['Tilgjengelig','på'],meeting:['I møte','møte'],sleepin
 const render=()=>{const [label,cls]=STAT[stat]||STAT.available;
   btn.classList.remove('på','møte','sover');btn.classList.add(cls);document.getElementById('chat').classList.toggle('natt',stat==='sleeping');btn.setAttribute('aria-label','Chat med Tidemann ('+label.toLowerCase()+')');
   st.className='ch-s '+cls+(ownerOn&&stat==='available'?' on':'');
-  st.lastChild.textContent=stat==='sleeping'?'':stat==='meeting'?'I møte, kan kanskje svare':ownerOn?'Tidemann er her nå':'Svarer fra telefonen'};
+  st.lastChild.textContent=stat==='sleeping'?'Sover, opp klokken 04:00 - svarer når jeg er våken':stat==='meeting'?'I møte, kan kanskje svare':ownerOn?'Tidemann er her nå':'Svarer fra telefonen'};
 const owner=on=>{ownerOn=on;render()};
 const setStat=v=>{stat=v;render()};
 fetch('/chat/status').then(r=>r.json()).then(j=>{ownerOn=!!j.owner;setStat(j.status)}).catch(()=>{});
