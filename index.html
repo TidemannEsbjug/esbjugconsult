@@ -165,6 +165,25 @@
   .cc-mute.on{background:var(--y);color:var(--ink)}
   /* Speilet i appen: ingen chat, ingen banner. */
   .speil #chat,.speil #cookies{display:none!important}
+  /* Status ved chatknappen og i chatten: grønn = tilgjengelig, gul = i møte, lilla måne = sover. */
+  .ch-st{display:inline-flex;align-items:center;gap:5px;margin-left:4px;padding:4px 8px 4px 7px;border-radius:999px;background:rgba(255,222,89,.14);font-size:12px;font-weight:600}
+  .ch-st[hidden]{display:none}
+  .ch-st i{width:7px;height:7px;border-radius:50%;background:#3ddc84}
+  .ch-st.møte i,.ch-s.møte i{background:#ffb400}
+  .ch-st.sover i,.ch-s.sover i{background:#9b8cff}
+  .ch-s.på i{background:#3ddc84;opacity:.6}
+  .ch-s.på.on i{opacity:1}
+  /* Samtalelinje: chatten minimert under en samtale, så man kan navigere fritt. */
+  .ch-pill{display:flex;align-items:center;gap:6px;padding:6px;border-radius:999px;background:var(--ink);box-shadow:0 8px 24px rgba(13,13,18,.3)}
+  .ch-pill[hidden]{display:none}
+  .ch-pill button{border:0;cursor:pointer;font-family:inherit}
+  .cp-open{display:flex;align-items:center;gap:8px;background:none;color:var(--y);font-weight:700;font-size:14px;padding:6px 8px 6px 10px;font-variant-numeric:tabular-nums}
+  .cp-open i{width:9px;height:9px;border-radius:50%;background:#3ddc84;animation:ring 1.6s ease-in-out infinite}
+  .cp-mute,.cp-end{width:38px;height:38px;border-radius:50%;display:grid;place-items:center}
+  .cp-mute{background:#2c2c35;color:#f3f1ea}
+  .cp-mute.on{background:var(--y);color:var(--ink)}
+  .cp-end{background:#ff3d57;color:#fff}
+  .ch-pill svg{width:18px;height:18px}
   canvas{display:block;width:100%;height:38vh;min-height:220px;margin-top:auto;touch-action:pan-y}
 </style>
 </head>
@@ -300,10 +319,11 @@
   <div><button type="button" class="ck-ja">Godta</button><button type="button" class="ck-nei">Bare nødvendige</button></div>
 </section>
 <div class="ch" id="chat">
-  <button class="ch-b" type="button" aria-label="Chat med Tidemann" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Chat<i class="ch-n" hidden></i></button>
+  <button class="ch-b" type="button" aria-label="Chat med Tidemann" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Chat<span class="ch-st" hidden><i></i><span></span></span><i class="ch-n" hidden></i></button>
+  <div class="ch-pill" hidden><button type="button" class="cp-open" aria-label="Åpne chatten"><i></i><span class="cp-t">I samtale med Tidemann</span></button><button type="button" class="cp-mute" aria-label="Lyd av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><button type="button" class="cp-end" aria-label="Legg på"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 9c-3.3 0-6.3.9-8.6 2.5-.5.4-.6 1-.3 1.5l1.6 2.5c.3.5.9.7 1.4.5l2.8-1c.5-.2.8-.7.8-1.2V12c1.4-.4 3-.4 4.6 0v1.8c0 .5.3 1 .8 1.2l2.8 1c.5.2 1.1 0 1.4-.5l1.6-2.5c.3-.5.2-1.1-.3-1.5C18.3 9.9 15.3 9 12 9z"/></svg></button></div>
   <section class="ch-p" role="dialog" aria-label="Chat med Tidemann" hidden>
     <div class="ch-h"><div><b>Tidemann Esbjug</b><span class="ch-s"><i></i><span>Svarer fra telefonen</span></span></div><div class="ch-a"><button class="ch-del" type="button">Slett samtalen</button><button class="ch-x" type="button" aria-label="Lukk chat">×</button></div></div>
-    <div class="ch-call" hidden><div class="cc-i"><span class="cc-dot"></span><div><b class="cc-t">Tidemann ringer deg</b><span class="cc-s">Lydsamtale i nettleseren</span></div></div><div class="cc-b"><button type="button" class="cc-ans">Svar</button><button type="button" class="cc-dec">Avslå</button><button type="button" class="cc-mute" hidden>Lyd av</button><button type="button" class="cc-end" hidden>Legg på</button></div><audio class="cc-audio" autoplay playsinline></audio></div>
+    <div class="ch-call" hidden><div class="cc-i"><span class="cc-dot"></span><div><b class="cc-t">Tidemann ringer deg</b><span class="cc-s">Lydsamtale i nettleseren</span></div></div><div class="cc-b"><button type="button" class="cc-ans">Svar</button><button type="button" class="cc-dec">Avslå</button><button type="button" class="cc-mute" hidden>Lyd av</button><button type="button" class="cc-min" hidden>Minimer</button><button type="button" class="cc-end" hidden>Legg på</button></div><audio class="cc-audio" autoplay playsinline></audio></div>
     <div class="ch-m" aria-live="polite"><p class="hint">Skriv her, så kommer det rett på telefonen min.</p></div>
     <form class="ch-f"><span class="ch-more" hidden><button type="button" class="ch-att" aria-label="Legg ved fil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5l-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l8.6-8.6a3.7 3.7 0 0 1 5.2 5.2l-8.6 8.6a1.8 1.8 0 0 1-2.6-2.6l7.9-7.9"/></svg></button><button type="button" class="ch-mic" aria-label="Spill inn lydmelding"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><input type="file" class="ch-file" hidden></span><textarea rows="1" maxlength="2000" placeholder="Skriv en melding …" aria-label="Melding"></textarea><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
     <p class="ch-pv">Meldingene og omtrentlig sted (by, ut fra IP-adressen) lagres, så jeg kan svare. Jeg kan se hvor på siden du er mens du chatter. <a href="#" class="ck-endre">Informasjonskapsler</a></p>
@@ -337,11 +357,14 @@ cb.querySelector('.ck-ja').onclick=()=>decide(true);cb.querySelector('.ck-nei').
 document.querySelectorAll('.ck-endre').forEach(a=>a.onclick=e=>{e.preventDefault();cb.hidden=false});
 if(!consent)cb.hidden=false;
 let ws,wait=1000,seen=new Set(),unread=0,lastTyping=0;
+const pill=$('.ch-pill'),pillT=$('.cp-t');
+// Chatten lukket: under en samtale vises samtalelinjen, ellers chatknappen.
+const dock=()=>{const inCall=typeof pc!=='undefined'&&pc;pill.hidden=!inCall;btn.hidden=!!inCall};
 const still=matchMedia('(prefers-reduced-motion: reduce)');
 const open=o=>{btn.setAttribute('aria-expanded',o);setTimeout(()=>typeof lqueue==='function'&&lqueue(),450);
-  if(!o){if(pan.hidden)return;if(still.matches){pan.hidden=true;btn.hidden=false;return}
-    pan.classList.remove('in');pan.classList.add('out');pan.addEventListener('animationend',()=>{pan.classList.remove('out');pan.hidden=true;btn.hidden=false},{once:true});return}
-  if(pan.hidden){pan.hidden=false;btn.hidden=true;pan.classList.remove('out');pan.classList.add('in');pan.addEventListener('animationend',()=>pan.classList.remove('in'),{once:true})}
+  if(!o){if(pan.hidden)return;if(still.matches){pan.hidden=true;dock();return}
+    pan.classList.remove('in');pan.classList.add('out');pan.addEventListener('animationend',()=>{pan.classList.remove('out');pan.hidden=true;dock()},{once:true});return}
+  if(pan.hidden){pan.hidden=false;btn.hidden=true;pill.hidden=true;pan.classList.remove('out');pan.classList.add('in');pan.addEventListener('animationend',()=>pan.classList.remove('in'),{once:true})}
   if(o){unread=0;badge.hidden=true;box.scrollTop=box.scrollHeight;setTimeout(()=>ta.focus(),50)}};
 btn.onclick=()=>{open(true);if(!ws)connect()};
 // «Slett samtalen»: to trykk, så slettes alt hos Tidemann og på serveren, og du får en ny, tom samtale.
@@ -388,25 +411,31 @@ mic.onclick=async()=>{
   catch{ta.placeholder='Fikk ikke tilgang til mikrofonen.'}};
 // Lydsamtale (WebRTC). Tidemann ringer fra appen; lyden går direkte mellom nettleseren og telefonen hans.
 const ICE=[{urls:['stun:stun.cloudflare.com:3478','stun:stun.l.google.com:19302']}];
+const getIce=()=>fetch('/chat/ice').then(r=>r.json()).then(j=>j.iceServers&&j.iceServers.length?j.iceServers:ICE).catch(()=>ICE);
 const cc=$('.ch-call'),ccT=$('.cc-t'),ccS=$('.cc-s'),ccA=$('.cc-audio'),bAns=$('.cc-ans'),bDec=$('.cc-dec'),bMute=$('.cc-mute'),bEnd=$('.cc-end');
 let pc=null,local=null,clock=null,t1=0;
 const rtc=d=>{if(ws&&ws.readyState===1)ws.send(JSON.stringify({t:'rtc',data:d}))};
-const btns=(...show)=>[bAns,bDec,bMute,bEnd].forEach(b=>b.hidden=!show.includes(b));
+const bMin=$('.cc-min');
+const btns=(...show)=>[bAns,bDec,bMute,bMin,bEnd].forEach(b=>b.hidden=!show.includes(b));
 const ringing=()=>{open(true);cc.hidden=false;cc.classList.add('ring');ccT.textContent='Tidemann ringer deg';ccS.textContent='Lydsamtale i nettleseren';btns(bAns,bDec)};
-const endCall=msg=>{if(pc){pc.close();pc=null}if(local){local.getTracks().forEach(t=>t.stop());local=null}clearInterval(clock);cc.classList.remove('ring');
+const endCall=msg=>{if(pc){pc.close();pc=null}if(!pill.hidden){pill.hidden=true;btn.hidden=false}if(local){local.getTracks().forEach(t=>t.stop());local=null}clearInterval(clock);cc.classList.remove('ring');
   if(cc.hidden)return;ccT.textContent=msg||'Samtalen er avsluttet';ccS.textContent='';btns();setTimeout(()=>{if(!pc)cc.hidden=true},2500)};
 bAns.onclick=async()=>{cc.classList.remove('ring');ccT.textContent='Kobler til …';ccS.textContent='';btns(bEnd);
   try{local=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}})}
   catch{rtc({type:'decline',reason:'mic'});endCall('Fikk ikke tilgang til mikrofonen');return}
-  pc=new RTCPeerConnection({iceServers:ICE});local.getTracks().forEach(t=>pc.addTrack(t,local));
+  pc=new RTCPeerConnection({iceServers:await getIce()});local.getTracks().forEach(t=>pc.addTrack(t,local));
   pc.onicecandidate=e=>{if(e.candidate)rtc({cand:e.candidate})};
   pc.ontrack=e=>{ccA.srcObject=e.streams[0];ccA.play().catch(()=>{})};
   pc.onconnectionstatechange=()=>{const st=pc&&pc.connectionState;
-    if(st==='connected'){ccT.textContent='I samtale med Tidemann';btns(bMute,bEnd);t1=Date.now();clearInterval(clock);
-      clock=setInterval(()=>{const x=Math.floor((Date.now()-t1)/1000);ccS.textContent=Math.floor(x/60)+':'+String(x%60).padStart(2,'0')},500)}
+    if(st==='connected'){ccT.textContent='I samtale med Tidemann';btns(bMute,bMin,bEnd);t1=Date.now();clearInterval(clock);
+      clock=setInterval(()=>{const x=Math.floor((Date.now()-t1)/1000),tt=Math.floor(x/60)+':'+String(x%60).padStart(2,'0');ccS.textContent=tt;pillT.textContent='I samtale · '+tt},500)}
     else if(st==='failed')endCall('Fikk ikke koblet til samtalen')};
   rtc({type:'ready'})};
 bDec.onclick=()=>{rtc({type:'decline'});endCall('Du avslo samtalen')};
+bMin.onclick=()=>open(false);
+$('.cp-open').onclick=()=>open(true);
+$('.cp-end').onclick=()=>{rtc({type:'bye'});endCall()};
+$('.cp-mute').onclick=()=>{bMute.click();$('.cp-mute').classList.toggle('on',bMute.classList.contains('on'))};
 bEnd.onclick=()=>{rtc({type:'bye'});endCall()};
 bMute.onclick=()=>{const on=!bMute.classList.contains('on');bMute.classList.toggle('on',on);bMute.textContent=on?'Lyd på':'Lyd av';local&&local.getAudioTracks().forEach(t=>t.enabled=!on)};
 const onRtc=async d=>{try{
@@ -432,11 +461,20 @@ addEventListener('scroll',lqueue,{passive:true});addEventListener('resize',lqueu
 addEventListener('pointermove',e=>{lx=Math.round(e.clientX);ly=Math.round(e.clientY);lqueue()},{passive:true});
 addEventListener('pointerdown',e=>{lx=Math.round(e.clientX);ly=Math.round(e.clientY);lclick=[lx,ly];lqueue()},{passive:true});
 setTimeout(lqueue,300);
-const owner=on=>{st.classList.toggle('on',on);st.lastChild.textContent=on?'Tidemann er her nå':'Svarer fra telefonen'};
+// Tidemanns status (settes i appen) + om appen er åpen. Vises i chatten og ved siden av chatknappen.
+let ownerOn=false,stat='available';const chip=$('.ch-st');
+const STAT={available:['Tilgjengelig','på'],meeting:['I møte','møte'],sleeping:['Sover','sover']};
+const render=()=>{const [label,cls]=STAT[stat]||STAT.available;
+  chip.hidden=false;chip.className='ch-st '+cls;chip.lastChild.textContent=label;
+  st.className='ch-s '+cls+(ownerOn&&stat==='available'?' on':'');
+  st.lastChild.textContent=stat==='sleeping'?'Sover nå, svarer når jeg våkner':stat==='meeting'?'I møte, svarer etterpå':ownerOn?'Tidemann er her nå':'Tilgjengelig, svarer fra telefonen'};
+const owner=on=>{ownerOn=on;render()};
+const setStat=v=>{stat=v;render()};
+fetch('/chat/status').then(r=>r.json()).then(j=>{ownerOn=!!j.owner;setStat(j.status)}).catch(()=>{});
 const connect=()=>{ws=new WebSocket('wss://'+location.host+'/chat/ws?vid='+encodeURIComponent(vid));
   ws.onopen=()=>{wait=1000;ws.send(JSON.stringify({t:'page',page:location.pathname+location.hash}))};
   ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch{return}
-    if(m.t==='history'){m.msgs.forEach(x=>add(x,false));owner(m.owner);extras(!!m.extras)}else if(m.t==='cleared')cleared();else if(m.t==='ctl')control(m.action,m.on);else if(m.t==='rtc')onRtc(m.data);else if(m.t==='msg')add(m.m,true);else if(m.t==='owner')owner(m.online)};
+    if(m.t==='history'){m.msgs.forEach(x=>add(x,false));ownerOn=!!m.owner;if(m.status)stat=m.status;render();extras(!!m.extras)}else if(m.t==='status')setStat(m.v);else if(m.t==='cleared')cleared();else if(m.t==='ctl')control(m.action,m.on);else if(m.t==='rtc')onRtc(m.data);else if(m.t==='msg')add(m.m,true);else if(m.t==='owner')owner(m.online)};
   ws.onclose=()=>{setTimeout(connect,wait);wait=Math.min(wait*2,30000)}};
 if(consent==='ja')connect();
 const send=()=>{const text=ta.value.trim();if(!text||!ws||ws.readyState!==1)return;ws.send(JSON.stringify({t:'msg',text}));ta.value='';ta.style.height=''};

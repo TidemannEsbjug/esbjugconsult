@@ -11,6 +11,8 @@
 //   POST /chat/admin/upload?vid=&name=            owner sends a file (raw body, Content-Type)
 //   POST /chat/upload?vid=&name=                  visitor sends a file (only after the owner turned on «Mer chat»)
 //   GET  /chat/file/<key>                         a file from R2, with Range support (Safari needs it for audio)
+//   GET  /chat/ice                                STUN + short-lived Cloudflare TURN credentials for calls
+//   GET  /chat/status                             the owner's status (available/meeting/sleeping) + whether the app is open
 //   POST /chat/rec                                last batch of a visit recording (sendBeacon when the page closes)
 //   GET  /chat/admin/sessions[?vid=]              recorded visits (consented visitors only, kept 30 days)
 //   GET  /chat/admin/session?sid=                 one recording's events, for replay in the app
@@ -49,6 +51,17 @@ export async function handleChat(request, env, url) {
 
   if (path.startsWith("/chat/file/")) return serveFile(request, env, path.slice("/chat/file/".length));
 
+  if (path === "/chat/status") {
+    return hub.fetch(new Request("https://hub/internal/status", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }));
+  }
+
+  if (path === "/chat/ice") {
+    const origin = request.headers.get("Origin") || "";
+    const owner = env.ADMIN_TOKEN && request.headers.get("Authorization") === `Bearer ${env.ADMIN_TOKEN}`;
+    if (!owner && origin && !/^https:\/\/(www\.)?esbjugconsult\.com$/.test(origin)) return new Response("Forbidden", { status: 403 });
+    return Response.json({ iceServers: await iceServers(env) }, { headers: { "cache-control": "no-store" } });
+  }
+
   if (path === "/chat/rec" && request.method === "POST") {
     const origin = request.headers.get("Origin") || "";
     if (origin && !/^https:\/\/(www\.)?esbjugconsult\.com$/.test(origin)) return new Response("Forbidden", { status: 403 });
@@ -73,6 +86,31 @@ export async function handleChat(request, env, url) {
   }
 
   return new Response("Not found", { status: 404 });
+}
+
+// ICE servers for calls: STUN always; TURN from Cloudflare Realtime when TURN_KEY_ID/TURN_KEY_TOKEN are set.
+// Credentials live 24 h and are reused for 12 h per Worker instance.
+const STUN = { urls: ["stun:stun.cloudflare.com:3478", "stun:stun.l.google.com:19302"] };
+let turnCache = { until: 0, servers: [] };
+async function iceServers(env) {
+  if (!env.TURN_KEY_ID || !env.TURN_KEY_TOKEN) return [STUN];
+  if (Date.now() < turnCache.until) return [STUN, ...turnCache.servers];
+  try {
+    const r = await fetch(`https://rtc.live.cloudflare.com/v1/turn/keys/${env.TURN_KEY_ID}/credentials/generate-ice-servers`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${env.TURN_KEY_TOKEN}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ ttl: 86400 }),
+    });
+    if (!r.ok) return [STUN];
+    const j = await r.json();
+    const list = Array.isArray(j.iceServers) ? j.iceServers : j.iceServers ? [j.iceServers] : [];
+    // TURN only (Cloudflare's reply may also contain its STUN entry, which STUN already covers).
+    const servers = list.map((s) => ({ ...s, urls: [].concat(s.urls).filter((u) => u.startsWith("turn")) })).filter((s) => s.urls.length);
+    turnCache = { until: Date.now() + 12 * 3600e3, servers };
+    return [STUN, ...servers];
+  } catch {
+    return [STUN];
+  }
 }
 
 // Upload: the hub says yes/no (visitor needs «Mer chat»), the bytes go to R2, then the hub posts the message.
@@ -141,6 +179,7 @@ export class ChatHub {
     this.sql.exec(`CREATE INDEX IF NOT EXISTS sessions_vid ON sessions (vid, start)`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS rec (sid TEXT, seq INTEGER, data TEXT, PRIMARY KEY (sid, seq))`);
     this.pruned = 0;
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS kv (k TEXT PRIMARY KEY, v TEXT)`);
     this.jwt = null;
   }
 
@@ -164,13 +203,16 @@ export class ChatHub {
       this.ctx.acceptWebSocket(pair[1], ["v", `v:${vid}`]);
       pair[1].serializeAttachment({ role: "visitor", vid, rate: [] });
       const ex = this.sql.exec(`SELECT extras FROM visitors WHERE vid=?`, vid).toArray()[0];
-      pair[1].send(JSON.stringify({ t: "history", msgs: this.history(vid), owner: this.ownerOnline(), extras: !!ex?.extras }));
+      pair[1].send(JSON.stringify({ t: "history", msgs: this.history(vid), owner: this.ownerOnline(), extras: !!ex?.extras, status: this.status() }));
       this.toOwners({ t: "presence", v: this.visitor(vid) });
       return new Response(null, { status: 101, webSocket: pair[0] });
     }
 
     if (role === "internal") {
       const b = await request.json();
+      if (url.pathname === "/internal/status") {
+        return Response.json({ status: this.status(), owner: this.ownerOnline() }, { headers: { "cache-control": "no-store" } });
+      }
       if (url.pathname === "/internal/rec") {
         this.record(b.vid, b);
         return new Response("ok");
@@ -206,7 +248,7 @@ export class ChatHub {
       const pair = new WebSocketPair();
       this.ctx.acceptWebSocket(pair[1], ["o"]);
       pair[1].serializeAttachment({ role: "owner" });
-      pair[1].send(JSON.stringify({ t: "state", visitors: this.allVisitors() }));
+      pair[1].send(JSON.stringify({ t: "state", visitors: this.allVisitors(), status: this.status() }));
       this.toVisitors({ t: "owner", online: true });
       return new Response(null, { status: 101, webSocket: pair[0] });
     }
@@ -315,6 +357,10 @@ export class ChatHub {
       } else if (m.t === "delsession" && typeof m.sid === "string") {
         this.sql.exec(`DELETE FROM rec WHERE sid=?`, m.sid);
         this.sql.exec(`DELETE FROM sessions WHERE sid=?`, m.sid);
+      } else if (m.t === "setstatus" && ["available", "meeting", "sleeping"].includes(m.v)) {
+        this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('status', ?)`, m.v);
+        this.toVisitors({ t: "status", v: m.v });
+        this.toOwners({ t: "status", v: m.v, status: m.v });
       } else if (m.t === "ping") {
         ws.send(JSON.stringify({ t: "pong" }));
       }
@@ -394,6 +440,10 @@ export class ChatHub {
       `SELECT vid FROM visitors WHERE last_seen > ? AND (vid IN (SELECT DISTINCT vid FROM messages) OR last_seen > ?)
        ORDER BY last_seen DESC LIMIT 300`, since, Date.now() - 864e5).toArray();
     return rows.map((r) => this.visitor(r.vid)).filter(Boolean);
+  }
+
+  status() {
+    return this.sql.exec(`SELECT v FROM kv WHERE k='status'`).toArray()[0]?.v || "available";
   }
 
   // ---------- visit recordings ----------
