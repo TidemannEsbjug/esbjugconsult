@@ -11,6 +11,9 @@
 //   POST /chat/admin/upload?vid=&name=            owner sends a file (raw body, Content-Type)
 //   POST /chat/upload?vid=&name=                  visitor sends a file (only after the owner turned on «Mer chat»)
 //   GET  /chat/file/<key>                         a file from R2, with Range support (Safari needs it for audio)
+//   POST /chat/rec                                last batch of a visit recording (sendBeacon when the page closes)
+//   GET  /chat/admin/sessions[?vid=]              recorded visits (consented visitors only, kept 30 days)
+//   GET  /chat/admin/session?sid=                 one recording's events, for replay in the app
 //
 // Location is Cloudflare's IP lookup (city/region/country/lat/lon), never the browser's GPS.
 
@@ -45,6 +48,14 @@ export async function handleChat(request, env, url) {
   }
 
   if (path.startsWith("/chat/file/")) return serveFile(request, env, path.slice("/chat/file/".length));
+
+  if (path === "/chat/rec" && request.method === "POST") {
+    const origin = request.headers.get("Origin") || "";
+    if (origin && !/^https:\/\/(www\.)?esbjugconsult\.com$/.test(origin)) return new Response("Forbidden", { status: 403 });
+    const body = await request.text();
+    if (body.length > 200000) return new Response("Too large", { status: 413 });
+    return hub.fetch(new Request("https://hub/internal/rec", { method: "POST", headers: { "x-role": "internal" }, body }));
+  }
 
   if (path === "/chat/upload" && request.method === "POST") {
     const origin = request.headers.get("Origin") || "";
@@ -123,6 +134,13 @@ export class ChatHub {
       try { this.sql.exec(`ALTER TABLE messages ADD COLUMN ${col}`); } catch {}
     }
     try { this.sql.exec(`ALTER TABLE visitors ADD COLUMN extras INTEGER DEFAULT 0`); } catch {}
+    // Visit recordings: one row per page visit, events in chunks (arrays of snapshots, JSON).
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS sessions (
+      sid TEXT PRIMARY KEY, vid TEXT, start INTEGER, last INTEGER, dur INTEGER DEFAULT 0, events INTEGER DEFAULT 0,
+      vw INTEGER, vh INTEGER, page TEXT, ref TEXT, city TEXT, country TEXT, ua TEXT, maxpct INTEGER DEFAULT 0, clicks INTEGER DEFAULT 0)`);
+    this.sql.exec(`CREATE INDEX IF NOT EXISTS sessions_vid ON sessions (vid, start)`);
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS rec (sid TEXT, seq INTEGER, data TEXT, PRIMARY KEY (sid, seq))`);
+    this.pruned = 0;
     this.jwt = null;
   }
 
@@ -153,6 +171,10 @@ export class ChatHub {
 
     if (role === "internal") {
       const b = await request.json();
+      if (url.pathname === "/internal/rec") {
+        this.record(b.vid, b);
+        return new Response("ok");
+      }
       if (url.pathname === "/internal/can-upload") {
         if (b.fromOwner) return new Response("ok");
         const v = this.sql.exec(`SELECT extras FROM visitors WHERE vid=?`, b.vid).toArray()[0];
@@ -199,6 +221,21 @@ export class ChatHub {
       const results = await this.push("Esbjug Consult", "Push virker 👋", null);
       return Response.json({ results });
     }
+    if (url.pathname === "/chat/admin/sessions") {
+      const vid = url.searchParams.get("vid");
+      const rows = (vid
+        ? this.sql.exec(`SELECT * FROM sessions WHERE vid=? ORDER BY start DESC LIMIT 200`, vid)
+        : this.sql.exec(`SELECT * FROM sessions ORDER BY start DESC LIMIT 300`)).toArray();
+      const chatted = new Set(this.sql.exec(`SELECT DISTINCT vid FROM messages`).toArray().map((r) => r.vid));
+      return Response.json({ sessions: rows.map((r) => ({ ...r, chatted: chatted.has(r.vid) })) });
+    }
+    if (url.pathname === "/chat/admin/session") {
+      const sid = url.searchParams.get("sid") || "";
+      const meta = this.sql.exec(`SELECT * FROM sessions WHERE sid=?`, sid).toArray()[0];
+      if (!meta) return new Response("Not found", { status: 404 });
+      const events = this.sql.exec(`SELECT data FROM rec WHERE sid=? ORDER BY seq`, sid).toArray().flatMap((r) => JSON.parse(r.data));
+      return Response.json({ meta, events });
+    }
     if (url.pathname === "/chat/admin/messages") {
       const vid = url.searchParams.get("vid") || "";
       return Response.json({ msgs: this.history(vid) });
@@ -225,6 +262,8 @@ export class ChatHub {
       } else if (m.t === "rtc" && m.data && JSON.stringify(m.data).length < 20000) {
         // Voice call signalling (offer/answer/ICE) from the visitor's browser to the owner app.
         this.toOwners({ t: "rtc", vid: a.vid, data: m.data });
+      } else if (m.t === "rec") {
+        this.record(a.vid, m);
       } else if (m.t === "live" && m.d && typeof m.d === "object") {
         // Live view: scroll/pointer from the visitor, only while the owner is watching.
         this.toOwners({ t: "live", vid: a.vid, d: m.d });
@@ -273,6 +312,9 @@ export class ChatHub {
       } else if (m.t === "delete" && typeof m.vid === "string") {
         await this.wipe(m.vid);
         this.toOwners({ t: "deleted", vid: m.vid });
+      } else if (m.t === "delsession" && typeof m.sid === "string") {
+        this.sql.exec(`DELETE FROM rec WHERE sid=?`, m.sid);
+        this.sql.exec(`DELETE FROM sessions WHERE sid=?`, m.sid);
       } else if (m.t === "ping") {
         ws.send(JSON.stringify({ t: "pong" }));
       }
@@ -319,6 +361,8 @@ export class ChatHub {
     const keys = this.sql.exec(`SELECT file FROM messages WHERE vid=? AND file IS NOT NULL`, vid).toArray().map((r) => r.file);
     this.sql.exec(`DELETE FROM messages WHERE vid=?`, vid);
     this.sql.exec(`DELETE FROM visitors WHERE vid=?`, vid);
+    this.sql.exec(`DELETE FROM rec WHERE sid IN (SELECT sid FROM sessions WHERE vid=?)`, vid);
+    this.sql.exec(`DELETE FROM sessions WHERE vid=?`, vid);
     if (keys.length) await this.env.FILES.delete(keys);
   }
 
@@ -350,6 +394,35 @@ export class ChatHub {
       `SELECT vid FROM visitors WHERE last_seen > ? AND (vid IN (SELECT DISTINCT vid FROM messages) OR last_seen > ?)
        ORDER BY last_seen DESC LIMIT 300`, since, Date.now() - 864e5).toArray();
     return rows.map((r) => this.visitor(r.vid)).filter(Boolean);
+  }
+
+  // ---------- visit recordings ----------
+
+  // A batch from a consented visitor's page: {sid, meta?, ev:[{t,sy,vw,vh,dh,mx,my,c,chat,f}]}.
+  record(vid, b) {
+    if (typeof vid !== "string" || !/^[a-zA-Z0-9-]{8,64}$/.test(b.sid || "") || !Array.isArray(b.ev) || b.ev.length > 1200) return;
+    const v = this.sql.exec(`SELECT city, country, ua FROM visitors WHERE vid=?`, vid).toArray()[0];
+    if (!v) return;
+    const now = Date.now();
+    const m = b.meta || {};
+    this.sql.exec(`INSERT OR IGNORE INTO sessions (sid, vid, start, last, vw, vh, page, ref, city, country, ua) VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
+      b.sid, vid, now, now, m.vw || null, m.vh || null, String(m.page || "").slice(0, 200), String(m.ref || "").slice(0, 300), v.city, v.country, v.ua);
+    if (b.ev.length) {
+      const seq = this.sql.exec(`SELECT COUNT(*) AS n FROM rec WHERE sid=?`, b.sid).one().n;
+      this.sql.exec(`INSERT INTO rec (sid, seq, data) VALUES (?, ?, ?)`, b.sid, seq, JSON.stringify(b.ev));
+      const lastT = b.ev[b.ev.length - 1].t | 0;
+      const pct = Math.max(0, ...b.ev.map((e) => (e.dh > 0 ? Math.min(100, Math.round(((e.sy + e.vh) / e.dh) * 100)) : 0)));
+      const clicks = b.ev.filter((e) => Array.isArray(e.c)).length;
+      this.sql.exec(`UPDATE sessions SET last=?, dur=MAX(dur, ?), events=events+?, maxpct=MAX(maxpct, ?), clicks=clicks+? WHERE sid=?`,
+        now, lastT, b.ev.length, pct, clicks, b.sid);
+    }
+    // Keep 30 days, pruned at most once an hour.
+    if (now - this.pruned > 3600e3) {
+      this.pruned = now;
+      const old = now - 30 * 864e5;
+      this.sql.exec(`DELETE FROM rec WHERE sid IN (SELECT sid FROM sessions WHERE start < ?)`, old);
+      this.sql.exec(`DELETE FROM sessions WHERE start < ?`, old);
+    }
   }
 
   // ---------- fan-out ----------

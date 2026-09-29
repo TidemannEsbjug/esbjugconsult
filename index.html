@@ -296,7 +296,7 @@
   </div>
 </main>
 <section class="ck" id="cookies" role="dialog" aria-label="Informasjonskapsler" hidden>
-  <p><b>Informasjonskapsler</b>Chatten bruker én informasjonskapsel for å kjenne deg igjen mellom besøk, og viser meg omtrentlig hvor du er (by, ut fra IP-adressen) og hvor på siden du er mens du er her. Ingen reklame, og ingen sporing utenfor denne siden.</p>
+  <p><b>Informasjonskapsler</b>Chatten bruker én informasjonskapsel for å kjenne deg igjen mellom besøk, og viser meg omtrentlig hvor du er (by, ut fra IP-adressen) og hvor på siden du er mens du er her. Besøket tas opp (rulling og klikk, aldri det du skriver), så jeg kan gjøre siden bedre. Opptak slettes etter 30 dager. Ingen reklame, og ingen sporing utenfor denne siden.</p>
   <div><button type="button" class="ck-ja">Godta</button><button type="button" class="ck-nei">Bare nødvendige</button></div>
 </section>
 <div class="ch" id="chat">
@@ -338,7 +338,7 @@ document.querySelectorAll('.ck-endre').forEach(a=>a.onclick=e=>{e.preventDefault
 if(!consent)cb.hidden=false;
 let ws,wait=1000,seen=new Set(),unread=0,lastTyping=0;
 const still=matchMedia('(prefers-reduced-motion: reduce)');
-const open=o=>{btn.setAttribute('aria-expanded',o);
+const open=o=>{btn.setAttribute('aria-expanded',o);setTimeout(()=>typeof lqueue==='function'&&lqueue(),450);
   if(!o){if(pan.hidden)return;if(still.matches){pan.hidden=true;btn.hidden=false;return}
     pan.classList.remove('in');pan.classList.add('out');pan.addEventListener('animationend',()=>{pan.classList.remove('out');pan.hidden=true;btn.hidden=false},{once:true});return}
   if(pan.hidden){pan.hidden=false;btn.hidden=true;pan.classList.remove('out');pan.classList.add('in');pan.addEventListener('animationend',()=>pan.classList.remove('in'),{once:true})}
@@ -413,14 +413,25 @@ const onRtc=async d=>{try{
   if(d.sdp&&pc){await pc.setRemoteDescription(d.sdp);await pc.setLocalDescription(await pc.createAnswer());rtc({sdp:pc.localDescription})}
   else if(d.cand&&pc)await pc.addIceCandidate(d.cand);
   else if(d.type==='bye')endCall('Tidemann la på')}catch(e){console.warn(e)}};
-// Live-visning: mens Tidemann ser på (ctl «live»), sendes rulleposisjon, skjermstørrelse og peker/klikk, maks ti ganger i sekundet.
-let live=false,lq=null,lt=0,lx=-1,ly=-1,lclick=null,ltimer=null;
-const lsend=()=>{ltimer=null;lt=Date.now();if(!live||!ws||ws.readyState!==1)return;
-  ws.send(JSON.stringify({t:'live',d:{sy:Math.round(scrollY),vw:innerWidth,vh:innerHeight,dh:document.documentElement.scrollHeight,mx:lx,my:ly,c:lclick,chat:!pan.hidden,f:document.documentElement.classList.contains('focus')}}));lclick=null};
-const lqueue=()=>{if(!live||ltimer)return;ltimer=setTimeout(lsend,Math.max(0,100-(Date.now()-lt)))};
+// Live-visning og opptak. Samme målinger: rulling, skjermstørrelse, peker/klikk og om chatten er åpen, maks ti ganger i sekundet.
+// Live går til Tidemann bare mens han ser på (ctl «live»). Opptak lagres bare med samtykke («Godta»), aldri det du skriver.
+let live=false,lt=0,lx=-1,ly=-1,lclick=null,ltimer=null;
+const sid=crypto.randomUUID(),rt0=performance.now();let rbuf=[],rmeta={vw:innerWidth,vh:innerHeight,page:location.pathname+location.hash,ref:document.referrer};
+const snap=()=>({sy:Math.round(scrollY),vw:innerWidth,vh:innerHeight,dh:document.documentElement.scrollHeight,mx:lx,my:ly,c:lclick,chat:!pan.hidden,f:document.documentElement.classList.contains('focus')});
+const lsend=()=>{ltimer=null;lt=Date.now();const d=snap();lclick=null;
+  if(consent==='ja'){rbuf.push({t:Math.round(performance.now()-rt0),...d});if(rbuf.length>=1200)rflush()}
+  if(live&&ws&&ws.readyState===1)ws.send(JSON.stringify({t:'live',d}))};
+const lqueue=()=>{if(!(live||consent==='ja')||ltimer)return;ltimer=setTimeout(lsend,Math.max(0,100-(Date.now()-lt)))};
+const rflush=beacon=>{if(consent!=='ja'||(!rbuf.length&&!rmeta))return;const b={sid,vid,ev:rbuf,meta:rmeta||undefined};
+  if(beacon){if(navigator.sendBeacon('/chat/rec',JSON.stringify(b))){rbuf=[];rmeta=null}}
+  else if(ws&&ws.readyState===1){ws.send(JSON.stringify({t:'rec',...b}));rbuf=[];rmeta=null}};
+setInterval(()=>rflush(false),5000);
+addEventListener('pagehide',()=>{lsend();rflush(true)});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){lsend();rflush(true)}});
 addEventListener('scroll',lqueue,{passive:true});addEventListener('resize',lqueue);
 addEventListener('pointermove',e=>{lx=Math.round(e.clientX);ly=Math.round(e.clientY);lqueue()},{passive:true});
 addEventListener('pointerdown',e=>{lx=Math.round(e.clientX);ly=Math.round(e.clientY);lclick=[lx,ly];lqueue()},{passive:true});
+setTimeout(lqueue,300);
 const owner=on=>{st.classList.toggle('on',on);st.lastChild.textContent=on?'Tidemann er her nå':'Svarer fra telefonen'};
 const connect=()=>{ws=new WebSocket('wss://'+location.host+'/chat/ws?vid='+encodeURIComponent(vid));
   ws.onopen=()=>{wait=1000;ws.send(JSON.stringify({t:'page',page:location.pathname+location.hash}))};
