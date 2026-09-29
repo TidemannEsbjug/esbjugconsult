@@ -89,6 +89,12 @@
   .ch-f button svg{width:18px;height:18px}
   .ch-pv{margin:0;padding:0 14px 12px;font-size:11px;line-height:1.4;opacity:.5}
   @media (max-width:520px){.ch-p{right:0;bottom:0;width:100vw;height:100svh;border-radius:0}}
+  /* «hehe» fra Tidemann: hele siden blir gul med et stort, sprettende hehe. */
+  .hh{position:fixed;inset:0;z-index:10;background:var(--y);display:flex;align-items:center;justify-content:center;pointer-events:none;animation:hhbg 2.8s ease forwards}
+  .hh span{display:inline-block;font-weight:850;font-size:clamp(110px,28vw,420px);letter-spacing:-.05em;line-height:1;color:var(--ink);opacity:0;animation:hhl 2.8s cubic-bezier(.3,1.4,.5,1) forwards}
+  @keyframes hhbg{0%{opacity:0}8%{opacity:1}84%{opacity:1}100%{opacity:0}}
+  @keyframes hhl{0%{opacity:0;transform:translateY(70%) scale(.3) rotate(-14deg)}20%{opacity:1;transform:translateY(-10%) scale(1.1) rotate(5deg)}30%{transform:none}45%{transform:translateY(-4%) rotate(-3deg)}58%{transform:none}80%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-50%) scale(.7) rotate(8deg)}}
+  @media (prefers-reduced-motion:reduce){.hh span{animation:hhbg 2.8s ease forwards}}
   canvas{display:block;width:100%;height:38vh;min-height:220px;margin-top:auto;touch-action:pan-y}
 </style>
 </head>
@@ -243,13 +249,16 @@ let vid;try{vid=localStorage.getItem('esbjug-vid');if(!vid){vid=crypto.randomUUI
 let ws,wait=1000,seen=new Set(),unread=0,lastTyping=0;
 const open=o=>{pan.hidden=!o;btn.hidden=o;btn.setAttribute('aria-expanded',o);if(o){unread=0;badge.hidden=true;box.scrollTop=box.scrollHeight;setTimeout(()=>ta.focus(),50)}};
 btn.onclick=()=>open(true);$('.ch-x').onclick=()=>open(false);
-const add=m=>{if(seen.has(m.id))return;seen.add(m.id);const p=document.createElement('p');p.className=m.owner?'him':'me';p.textContent=m.text;box.append(p);box.scrollTop=box.scrollHeight;
+const hehe=()=>{const o=document.createElement('div');o.className='hh';o.setAttribute('aria-hidden','true');
+  [...'hehe'].forEach((c,i)=>{const sp=document.createElement('span');sp.textContent=c;sp.style.animationDelay=i*70+'ms';o.append(sp)});
+  document.body.append(o);setTimeout(()=>o.remove(),3200)};
+const add=(m,live)=>{if(seen.has(m.id))return;seen.add(m.id);if(live&&m.owner&&/^\s*hehe[!.\s]*$/i.test(m.text))hehe();const p=document.createElement('p');p.className=m.owner?'him':'me';p.textContent=m.text;box.append(p);box.scrollTop=box.scrollHeight;
   if(m.owner&&pan.hidden){unread++;badge.textContent=unread;badge.hidden=false;open(true)}};
 const owner=on=>{st.classList.toggle('on',on);st.lastChild.textContent=on?'Tidemann er her nå':'Svarer fra telefonen'};
 const connect=()=>{ws=new WebSocket('wss://'+location.host+'/chat/ws?vid='+encodeURIComponent(vid));
   ws.onopen=()=>{wait=1000;ws.send(JSON.stringify({t:'page',page:location.pathname+location.hash}))};
   ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch{return}
-    if(m.t==='history'){m.msgs.forEach(add);owner(m.owner)}else if(m.t==='msg')add(m.m);else if(m.t==='owner')owner(m.online)};
+    if(m.t==='history'){m.msgs.forEach(add);owner(m.owner)}else if(m.t==='msg')add(m.m,true);else if(m.t==='owner')owner(m.online)};
   ws.onclose=()=>{setTimeout(connect,wait);wait=Math.min(wait*2,30000)}};
 connect();
 const send=()=>{const text=ta.value.trim();if(!text||!ws||ws.readyState!==1)return;ws.send(JSON.stringify({t:'msg',text}));ta.value='';ta.style.height=''};
