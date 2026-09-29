@@ -18,6 +18,9 @@
   main{padding:var(--g);padding-bottom:0;max-width:1180px;width:100%;margin:0 auto}
   .mono{font:600 13px/1.5 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase}
   .k{opacity:.72;display:flex;gap:1.5em;flex-wrap:wrap}
+  .k .kl{margin-left:auto;color:inherit;text-decoration:none;border:2px solid var(--ink);border-radius:999px;padding:5px 14px;line-height:1.3;letter-spacing:.1em}
+  .k .kl:hover{background:var(--ink);color:var(--y)}
+  .k .kl:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
   h1{margin:clamp(28px,6vh,64px) 0 0;font-weight:850;font-size:clamp(28px,4.4vw,56px);line-height:1.06;letter-spacing:-.035em}
   p.b{margin:28px 0 0;max-width:38em;font-size:clamp(18px,1.6vw,22px);line-height:1.45;font-weight:500}
   a.t{display:inline-block;margin-top:32px;background:var(--ink);color:var(--y);font-weight:700;font-size:clamp(18px,1.8vw,23px);padding:13px 22px 14px;border-radius:999px;text-decoration:none;letter-spacing:-.01em;transition:transform .2s}
@@ -206,12 +209,17 @@
   @keyframes pulsDot{0%{box-shadow:0 0 0 0 rgba(61,220,132,.6)}80%{box-shadow:0 0 0 7px rgba(61,220,132,0)}}
   .ch-s.møte>i{background:#ff8a00}
   @media (prefers-reduced-motion:reduce){.ch-b::after,.zz i,.ch-s.på.on>i{animation:none}.sover .zz i{opacity:1}.zz i:nth-child(2){transform:translate(7px,-12px)}.zz i:nth-child(3){transform:translate(14px,-24px)}}
+  /* «Sende mail istedet?»: liten knapp over skrivefeltet når chatten er åpnet fra «Snakk med meg om alt dette.» */
+  .ch-mail{align-self:center;margin:0 auto 8px;padding:8px 14px;border-radius:999px;background:#26262e;color:var(--y);font-size:14px;font-weight:600;text-decoration:none}
+  .ch-mail[hidden]{display:none}
+  .ch-mail:hover{background:#33333d}
+  .natt .ch-mail{background:#222b4a;color:#cfdcff}
   canvas{display:block;width:100%;height:38vh;min-height:220px;margin-top:auto;touch-action:pan-y}
 </style>
 </head>
 <body>
 <main>
-  <div class="mono k"><span>&gt; Tidemann Esbjug</span><span>29.09.2026</span></div>
+  <div class="mono k"><span>&gt; Tidemann Esbjug</span><span>29.09.2026</span><a class="kl" href="/login/">Kunde-login &rarr;</a></div>
   <h1 aria-label="Hovedbudskapet jeg prøver å rope fra taket på bygninger i disse dager er at kode og design har gått gjennom en revolusjon som ikke må oversees."><span aria-hidden="true">Hovedbudskapet jeg prøver å rope fra taket på bygninger i disse dager er at <span class="kd"><i>kode</i></span> og <span class="ds" data-t="design">design</span> har gått gjennom en revolusjon som ikke må oversees.</span></h1>
   <p class="b">Å kjøpe nettsider, apper eller digital markedsføring i dag for samme pris som før er absurd. Det er også masse muligheter som tidligere var for dyre til å begi seg ut på.</p>
   <a class="t" href="mailto:tidemann@esbjugconsult.com">Snakk med meg om alt dette.</a>
@@ -347,6 +355,7 @@
     <div class="ch-h"><div><b>Tidemann Esbjug</b><span class="ch-s"><i></i><span class="zz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span><span>Svarer fra telefonen</span></span></div><div class="ch-a"><button class="ch-del" type="button">Slett samtalen</button><button class="ch-x" type="button" aria-label="Lukk chat">×</button></div></div>
     <div class="ch-call" hidden><div class="cc-i"><span class="cc-dot"></span><div><b class="cc-t">Tidemann ringer deg</b><span class="cc-s">Lydsamtale i nettleseren</span></div></div><div class="cc-b"><button type="button" class="cc-ans">Svar</button><button type="button" class="cc-dec">Avslå</button><button type="button" class="cc-mute" hidden>Lyd av</button><button type="button" class="cc-min" hidden>Minimer</button><button type="button" class="cc-end" hidden>Legg på</button></div><audio class="cc-audio" autoplay playsinline></audio></div>
     <div class="ch-m" aria-live="polite"></div>
+    <a class="ch-mail" href="mailto:tidemann@esbjugconsult.com" hidden>Sende mail istedet?</a>
     <form class="ch-f"><span class="ch-more" hidden><button type="button" class="ch-att" aria-label="Legg ved fil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5l-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l8.6-8.6a3.7 3.7 0 0 1 5.2 5.2l-8.6 8.6a1.8 1.8 0 0 1-2.6-2.6l7.9-7.9"/></svg></button><button type="button" class="ch-mic" aria-label="Spill inn lydmelding"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><input type="file" class="ch-file" hidden></span><textarea rows="1" maxlength="2000" placeholder="Skriv en melding …" aria-label="Melding"></textarea><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
   </section>
 </div>
@@ -388,12 +397,16 @@ const open=o=>{btn.setAttribute('aria-expanded',o);setTimeout(()=>typeof lqueue=
   if(pan.hidden){pan.hidden=false;btn.hidden=true;pill.hidden=true;pan.classList.remove('out');pan.classList.add('in');pan.addEventListener('animationend',()=>pan.classList.remove('in'),{once:true})}
   if(o){unread=0;badge.hidden=true;box.scrollTop=box.scrollHeight;setTimeout(()=>ta.focus(),50)}};
 btn.onclick=()=>{open(true);if(!ws)connect()};
+// «Snakk med meg om alt dette.» åpner chatten, med «Sende mail istedet?» som vei videre til e-post.
+// Knappen vises bare når chatten er åpnet derfra, ikke fra chatknappen.
+const mailBtn=$('.ch-mail');
+document.querySelector('a.t').addEventListener('click',e=>{e.preventDefault();mailBtn.hidden=false;open(true);if(!ws)connect()});
 // «Slett samtalen»: to trykk, så slettes alt hos Tidemann og på serveren, og du får en ny, tom samtale.
 const del=$('.ch-del');let armed=0;
 del.onclick=()=>{if(Date.now()-armed>3000){armed=Date.now();del.textContent='Trykk igjen for å slette';setTimeout(()=>{if(Date.now()-armed>=3000)del.textContent='Slett samtalen'},3100);return}
   armed=0;del.textContent='Slett samtalen';if(ws&&ws.readyState===1)ws.send(JSON.stringify({t:'forget'}));else cleared()};
 const cleared=()=>{box.querySelectorAll('p:not(.hint)').forEach(p=>p.remove());seen.clear();vid=crypto.randomUUID();if(consent==='ja')setC('esbjug_id',vid);
-  if(ws){ws.onclose=null;ws.close();ws=null;connect()}};$('.ch-x').onclick=()=>{focus(false);open(false)};
+  if(ws){ws.onclose=null;ws.close();ws=null;connect()}};$('.ch-x').onclick=()=>{focus(false);open(false);mailBtn.hidden=true};
 const hehe=()=>{const o=document.createElement('div');o.className='hh';o.setAttribute('aria-hidden','true');
   [...'hehe'].forEach((c,i)=>{const sp=document.createElement('span');sp.textContent=c;sp.style.animationDelay=i*70+'ms';o.append(sp)});
   document.body.append(o);setTimeout(()=>o.remove(),3200)};

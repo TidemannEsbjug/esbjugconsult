@@ -1,7 +1,8 @@
 // https://esbjugconsult.com is the one address: www and plain http go there with the same path, so
 // www.esbjugconsult.com/jev ends up at the Jev module too. /chat/* is the live chat; everything
-// else is the static site.
+// else is the static site. /login/ (customer portal) and /kunde/ (behind login) are in kunde.js.
 import { handleChat } from "./chat.js";
+import { handleKunde } from "./kunde.js";
 export { ChatHub } from "./chat.js";
 
 export default {
@@ -13,6 +14,8 @@ export default {
       return Response.redirect(url.toString(), 301);
     }
     if (url.pathname.startsWith("/chat/")) return handleChat(request, env, url);
+    // /login/ er kundeportalen, /kunde/ er lukket bak innlogging.
+    if (url.pathname.startsWith("/login/") || url.pathname.startsWith("/kunde/")) return handleKunde(request, env, url);
     return env.ASSETS.fetch(request);
   },
 };
