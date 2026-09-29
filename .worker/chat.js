@@ -222,6 +222,9 @@ export class ChatHub {
         await this.wipe(a.vid);
         this.toVisitor(a.vid, { t: "cleared" });
         this.toOwners({ t: "deleted", vid: a.vid });
+      } else if (m.t === "rtc" && m.data && JSON.stringify(m.data).length < 20000) {
+        // Voice call signalling (offer/answer/ICE) from the visitor's browser to the owner app.
+        this.toOwners({ t: "rtc", vid: a.vid, data: m.data });
       } else if (m.t === "typing") {
         this.toOwners({ t: "typing", vid: a.vid });
       } else if (m.t === "msg" && typeof m.text === "string") {
@@ -262,6 +265,8 @@ export class ChatHub {
         if (m.action === "extras") this.sql.exec(`UPDATE visitors SET extras=? WHERE vid=?`, m.on ? 1 : 0, m.vid);
         this.toVisitor(m.vid, ctl);
         this.toOwners({ ...ctl, vid: m.vid });
+      } else if (m.t === "rtc" && typeof m.vid === "string" && m.data && JSON.stringify(m.data).length < 20000) {
+        this.toVisitor(m.vid, { t: "rtc", data: m.data });
       } else if (m.t === "delete" && typeof m.vid === "string") {
         await this.wipe(m.vid);
         this.toOwners({ t: "deleted", vid: m.vid });
