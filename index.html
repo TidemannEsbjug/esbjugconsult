@@ -6,7 +6,7 @@
 <title>Esbjug Consult</title>
 <meta name="description" content="Kode og design har gått gjennom en revolusjon som ikke må oversees.">
 <meta name="theme-color" content="#FFDE59">
-<script>document.documentElement.classList.add("js")</script>
+<script>document.documentElement.classList.add("js");if(/[?&]speil=1/.test(location.search))document.documentElement.classList.add("speil","vis")</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23FFDE59'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%230d0d12'/%3E%3C/svg%3E">
 <style>
   :root{--y:#FFDE59;--ink:#0d0d12;--g:clamp(16px,6vw,96px)}
@@ -135,7 +135,7 @@
   /* Filer i chatten, og knappene for vedlegg og lydopptak. */
   .ch-m p.file{padding:6px;background:none}
   .ch-m p.file audio{display:block;width:250px;max-width:100%;height:40px}
-  .ch-m p.file video{display:block;width:260px;max-width:100%;max-height:320px;border-radius:12px;background:#000}
+  .ch-m p.file video{display:block;width:auto;height:auto;max-width:min(260px,100%);max-height:400px;border-radius:12px}
   .ch-m p.file img{display:block;max-width:240px;max-height:260px;border-radius:12px;cursor:zoom-in}
   .ch-m p.file a{display:block;padding:9px 12px;border-radius:14px;background:#26262e;color:#f3f1ea;text-decoration:none}
   .ch-m .me.file a{background:var(--y);color:var(--ink)}
@@ -163,6 +163,8 @@
   .cc-dec,.cc-end{background:#ff3d57;color:#fff}
   .cc-mute{background:#2c2c35;color:#f3f1ea}
   .cc-mute.on{background:var(--y);color:var(--ink)}
+  /* Speilet i appen: ingen chat, ingen banner. */
+  .speil #chat,.speil #cookies{display:none!important}
   canvas{display:block;width:100%;height:38vh;min-height:220px;margin-top:auto;touch-action:pan-y}
 </style>
 </head>
@@ -294,7 +296,7 @@
   </div>
 </main>
 <section class="ck" id="cookies" role="dialog" aria-label="Informasjonskapsler" hidden>
-  <p><b>Informasjonskapsler</b>Chatten bruker én informasjonskapsel for å kjenne deg igjen mellom besøk, og viser meg omtrentlig hvor du er (by, ut fra IP-adressen) mens du er på siden. Ingen reklame, og ingen sporing utenfor denne siden.</p>
+  <p><b>Informasjonskapsler</b>Chatten bruker én informasjonskapsel for å kjenne deg igjen mellom besøk, og viser meg omtrentlig hvor du er (by, ut fra IP-adressen) og hvor på siden du er mens du er her. Ingen reklame, og ingen sporing utenfor denne siden.</p>
   <div><button type="button" class="ck-ja">Godta</button><button type="button" class="ck-nei">Bare nødvendige</button></div>
 </section>
 <div class="ch" id="chat">
@@ -304,20 +306,23 @@
     <div class="ch-call" hidden><div class="cc-i"><span class="cc-dot"></span><div><b class="cc-t">Tidemann ringer deg</b><span class="cc-s">Lydsamtale i nettleseren</span></div></div><div class="cc-b"><button type="button" class="cc-ans">Svar</button><button type="button" class="cc-dec">Avslå</button><button type="button" class="cc-mute" hidden>Lyd av</button><button type="button" class="cc-end" hidden>Legg på</button></div><audio class="cc-audio" autoplay playsinline></audio></div>
     <div class="ch-m" aria-live="polite"><p class="hint">Skriv her, så kommer det rett på telefonen min.</p></div>
     <form class="ch-f"><span class="ch-more" hidden><button type="button" class="ch-att" aria-label="Legg ved fil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5l-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l8.6-8.6a3.7 3.7 0 0 1 5.2 5.2l-8.6 8.6a1.8 1.8 0 0 1-2.6-2.6l7.9-7.9"/></svg></button><button type="button" class="ch-mic" aria-label="Spill inn lydmelding"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><input type="file" class="ch-file" hidden></span><textarea rows="1" maxlength="2000" placeholder="Skriv en melding …" aria-label="Melding"></textarea><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
-    <p class="ch-pv">Meldingene og omtrentlig sted (by, ut fra IP-adressen) lagres, så jeg kan svare. <a href="#" class="ck-endre">Informasjonskapsler</a></p>
+    <p class="ch-pv">Meldingene og omtrentlig sted (by, ut fra IP-adressen) lagres, så jeg kan svare. Jeg kan se hvor på siden du er mens du chatter. <a href="#" class="ck-endre">Informasjonskapsler</a></p>
   </section>
 </div>
 <canvas id="c" aria-hidden="true"></canvas>
 <script>
 // Vis «Jobber med nå» ved første scroll, hjul, sveip, tast eller trykk på pilen.
 (()=>{const r=document.documentElement,show=()=>r.classList.add('vis');
-if(scrollY>2||location.hash)show();
+if(scrollY>2||location.hash||r.classList.contains('speil'))show();
 addEventListener('scroll',()=>{if(scrollY>2)show()},{passive:true});
 ['wheel','touchmove'].forEach(t=>addEventListener(t,show,{passive:true,once:true}));
 addEventListener('keydown',e=>{if(['ArrowDown','PageDown','End',' '].includes(e.key))show()});})();
 // Chat: kobler til når siden åpnes (så Tidemann ser at noen er her), meldinger går rett til telefonen hans.
 (()=>{
 if(location.protocol!=='https:')return;
+// Speilet i Esbjug Chat-appen: samme side, uten chat og uten å telle som besøkende. Appen styrer rullingen.
+if(document.documentElement.classList.contains('speil')){let ty=0;window.__rull=y=>{ty=y};
+  const step=()=>{const d=ty-scrollY;if(Math.abs(d)>.5)scrollTo(0,scrollY+d*.35);requestAnimationFrame(step)};step();return}
 const $=q=>document.querySelector('#chat '+q),btn=$('.ch-b'),pan=$('.ch-p'),box=$('.ch-m'),form=$('.ch-f'),ta=$('textarea'),st=$('.ch-s'),badge=$('.ch-n');
 const getC=n=>(document.cookie.split('; ').find(c=>c.startsWith(n+'='))||'').slice(n.length+1);
 const setC=(n,v)=>{document.cookie=n+'='+v+'; Max-Age=31536000; Path=/; SameSite=Lax; Secure'};
@@ -351,9 +356,10 @@ const hehe=()=>{const o=document.createElement('div');o.className='hh';o.setAttr
 const add=(m,live)=>{if(seen.has(m.id))return;seen.add(m.id);if(live&&m.owner&&/^\s*hehe[!.\s]*$/i.test(m.text))hehe();const p=document.createElement('p');p.className=m.owner?'him':'me';if(m.kind==='file')fileEl(p,m);else p.textContent=m.text;box.append(p);box.scrollTop=box.scrollHeight;
   if(m.owner&&pan.hidden){unread++;badge.textContent=unread;badge.hidden=false;open(true)}};
 const focus=on=>document.documentElement.classList.toggle('focus',on);
-const control=(a,on)=>{if(a==='focus'){if(on)open(true);focus(on)}else if(a==='extras'){extras(on);if(on)open(true)}else if(a==='call'){if(on)ringing();else if(!pc)endCall('Tidemann la på')}};
+const control=(a,on)=>{if(a==='focus'){if(on)open(true);focus(on)}else if(a==='extras'){extras(on);if(on)open(true)}else if(a==='live'){live=on;if(on)lsend()}else if(a==='call'){if(on)ringing();else if(!pc)endCall('Tidemann la på')}};
 const kb=n=>n>1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' kB';
-const fileEl=(p,m)=>{p.classList.add('file');const src='/chat/file/'+m.file;
+const bottom=()=>{box.scrollTop=box.scrollHeight};
+const fileEl=(p,m)=>{p.classList.add('file');const src='/chat/file/'+m.file;setTimeout(()=>{p.querySelectorAll('img,video,audio').forEach(e=>{e.addEventListener('load',bottom);e.addEventListener('loadedmetadata',bottom)})})
   if(m.mime.startsWith('audio/')){const a=document.createElement('audio');a.controls=true;a.preload='metadata';a.src=src;p.append(a)}
   else if(m.mime.startsWith('video/')){const v=document.createElement('video');v.controls=true;v.playsInline=true;v.preload='metadata';v.src=src;p.append(v)}
   else if(m.mime.startsWith('image/')){const i=document.createElement('img');i.src=src;i.alt=m.name;i.loading='lazy';i.onclick=()=>open_(src);p.append(i)}
@@ -407,6 +413,14 @@ const onRtc=async d=>{try{
   if(d.sdp&&pc){await pc.setRemoteDescription(d.sdp);await pc.setLocalDescription(await pc.createAnswer());rtc({sdp:pc.localDescription})}
   else if(d.cand&&pc)await pc.addIceCandidate(d.cand);
   else if(d.type==='bye')endCall('Tidemann la på')}catch(e){console.warn(e)}};
+// Live-visning: mens Tidemann ser på (ctl «live»), sendes rulleposisjon, skjermstørrelse og peker/klikk, maks ti ganger i sekundet.
+let live=false,lq=null,lt=0,lx=-1,ly=-1,lclick=null,ltimer=null;
+const lsend=()=>{ltimer=null;lt=Date.now();if(!live||!ws||ws.readyState!==1)return;
+  ws.send(JSON.stringify({t:'live',d:{sy:Math.round(scrollY),vw:innerWidth,vh:innerHeight,dh:document.documentElement.scrollHeight,mx:lx,my:ly,c:lclick,chat:!pan.hidden,f:document.documentElement.classList.contains('focus')}}));lclick=null};
+const lqueue=()=>{if(!live||ltimer)return;ltimer=setTimeout(lsend,Math.max(0,100-(Date.now()-lt)))};
+addEventListener('scroll',lqueue,{passive:true});addEventListener('resize',lqueue);
+addEventListener('pointermove',e=>{lx=Math.round(e.clientX);ly=Math.round(e.clientY);lqueue()},{passive:true});
+addEventListener('pointerdown',e=>{lx=Math.round(e.clientX);ly=Math.round(e.clientY);lclick=[lx,ly];lqueue()},{passive:true});
 const owner=on=>{st.classList.toggle('on',on);st.lastChild.textContent=on?'Tidemann er her nå':'Svarer fra telefonen'};
 const connect=()=>{ws=new WebSocket('wss://'+location.host+'/chat/ws?vid='+encodeURIComponent(vid));
   ws.onopen=()=>{wait=1000;ws.send(JSON.stringify({t:'page',page:location.pathname+location.hash}))};

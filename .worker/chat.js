@@ -225,6 +225,9 @@ export class ChatHub {
       } else if (m.t === "rtc" && m.data && JSON.stringify(m.data).length < 20000) {
         // Voice call signalling (offer/answer/ICE) from the visitor's browser to the owner app.
         this.toOwners({ t: "rtc", vid: a.vid, data: m.data });
+      } else if (m.t === "live" && m.d && typeof m.d === "object") {
+        // Live view: scroll/pointer from the visitor, only while the owner is watching.
+        this.toOwners({ t: "live", vid: a.vid, d: m.d });
       } else if (m.t === "typing") {
         this.toOwners({ t: "typing", vid: a.vid });
       } else if (m.t === "msg" && typeof m.text === "string") {
