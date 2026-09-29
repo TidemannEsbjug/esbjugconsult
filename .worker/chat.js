@@ -129,6 +129,12 @@ export class ChatHub {
       if (m.t === "page" && typeof m.page === "string") {
         this.sql.exec(`UPDATE visitors SET page=?, last_seen=? WHERE vid=?`, m.page.slice(0, 200), Date.now(), a.vid);
         this.toOwners({ t: "presence", v: this.visitor(a.vid) });
+      } else if (m.t === "forget") {
+        // The visitor deletes their own conversation: messages and the visitor record go, everywhere.
+        this.sql.exec(`DELETE FROM messages WHERE vid=?`, a.vid);
+        this.sql.exec(`DELETE FROM visitors WHERE vid=?`, a.vid);
+        this.toVisitor(a.vid, { t: "cleared" });
+        this.toOwners({ t: "deleted", vid: a.vid });
       } else if (m.t === "typing") {
         this.toOwners({ t: "typing", vid: a.vid });
       } else if (m.t === "msg" && typeof m.text === "string") {
