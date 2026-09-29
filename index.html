@@ -59,14 +59,10 @@
   .n b{display:block;font-size:clamp(28px,3.4vw,44px);font-weight:850;letter-spacing:-.03em;line-height:1}
   .n span{display:block;margin-top:8px;font-size:14px;line-height:1.35;opacity:.8}
   @media (max-width:640px){.n{grid-template-columns:1fr 1fr}dl{grid-template-columns:1fr 1fr}}
-  /* «Jobber med nå» og alt under er skjult til man scroller; pilen viser at det finnes mer. */
+  /* «Jobber med nå» og alt under er skjult til man scroller. */
   .js .rv{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
   .js.vis .rv{opacity:1;transform:none}
-  .cue{position:fixed;left:50%;bottom:26px;width:46px;height:46px;margin-left:-23px;display:grid;place-items:center;border-radius:50%;background:var(--ink);color:var(--y);transition:opacity .4s,transform .4s;animation:bob 1.8s ease-in-out infinite;z-index:2}
-  .cue svg{width:20px;height:20px}
-  html:not(.js) .cue,.vis .cue{opacity:0;pointer-events:none;transform:translateY(12px)}
-  @keyframes bob{50%{translate:0 6px}}
-  @media (prefers-reduced-motion:reduce){.js .rv{transition:none;transform:none}.cue{animation:none}}
+  @media (prefers-reduced-motion:reduce){.js .rv{transition:none;transform:none}}
   .p img.wide{aspect-ratio:4/1}
   canvas{display:block;width:100%;height:38vh;min-height:220px;margin-top:auto;touch-action:pan-y}
 </style>
@@ -89,6 +85,7 @@
       <div><dt>Størrelse</dt><dd>Enkel konsultasjon i liten skala</dd></div>
       <div><dt>Jeg gjør</dt><dd>Markedsføringsstrategi og restrukturering</dd></div>
     </dl>
+    <img class="wide" src="media/laks.jpg" alt="Laks som hopper, tegnet i gult og svart" loading="lazy" width="1600" height="400">
     <div class="s">
       <p>Sammen har vi allerede gjort spennende fremskritt, i stor grad ved hjelp av analyse fra Claude Code.</p>
       <p>Ved å laste inn Google Ads-tall fra deres eksisterende byrå, fant vi store besparelser som følge av ineffektivitet i targeting og for høye administrasjonsgebyr. Det var en case hvor ledelsen hadde gitt fullstendig tillit til byrået, og jeg tror ikke jeg vil finne denne type besparelser like enkelt i de fleste bedrifter.</p>
@@ -143,6 +140,7 @@
       <div><dt>Størrelse</dt><dd>204 000 linjer kode</dd></div>
       <div><dt>Jeg gjør</dt><dd>Alt</dd></div>
     </dl>
+    <img class="wide" src="media/app.jpg" alt="Abstrakte mobiltelefoner i gult og svart" loading="lazy" width="1600" height="400">
     <div class="n">
       <div><b>180 000</b><span>linjer Swift i selve appen</span></div>
       <div><b>24 000</b><span>linjer serverkode</span></div>
@@ -166,7 +164,7 @@
 
   <section class="p">
     <h3>Operasjonell IT-sikkerhet for hacket familie</h3>
-    <!--IMG-SIKKERHET-->
+    <img class="wide" src="media/sikkerhet.jpg" alt="Hengelås og skjold i gult og svart" loading="lazy" width="1600" height="400">
     <div class="s">
       <p>En bekjent kom til meg med en case hvor en venn av ham hadde fått noen av kontoene sine hacket, uhyggelige beskjeder, og var veldig bekymret for overvåkning og videre hacking.</p>
       <p>Jeg sjekket mange systemer og nettverk etter trusler, med stor hjelp av et system jeg bygget med Claude Code, med verktøy som LuLu og KnockKnock for å lage rapporter kjørt gjennom Claude Code, i tillegg til et eget verktøy jeg bygget ved navn ACHILLES.</p>
@@ -195,7 +193,6 @@
   </div>
   </div>
 </main>
-<a class="cue" href="#jobber" aria-label="Se hva jeg jobber med"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></a>
 <canvas id="c" aria-hidden="true"></canvas>
 <script>
 // Vis «Jobber med nå» ved første scroll, hjul, sveip, tast eller trykk på pilen.
@@ -203,8 +200,7 @@
 if(scrollY>2||location.hash)show();
 addEventListener('scroll',()=>{if(scrollY>2)show()},{passive:true});
 ['wheel','touchmove'].forEach(t=>addEventListener(t,show,{passive:true,once:true}));
-addEventListener('keydown',e=>{if(['ArrowDown','PageDown','End',' '].includes(e.key))show()});
-document.querySelector('.cue').addEventListener('click',show);})();
+addEventListener('keydown',e=>{if(['ArrowDown','PageDown','End',' '].includes(e.key))show()});})();
 // Ingen markering eller kopiering av tekst (brukerens valg).
 ['copy','cut','selectstart','dragstart'].forEach(t=>document.addEventListener(t,e=>e.preventDefault()));
 // «Siden mai 2026» får varigheten regnet ut ved hver visning, så den aldri blir utdatert.
