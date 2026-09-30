@@ -481,7 +481,7 @@ export class ChatHub {
   }
 
   // Push for a new visitor on the site (when the owner has turned it on in the app). Own caps: one per
-  // visitor per 30 min, at most 20 per 10 minutes, and the normal notification sound (coins are for messages).
+  // visitor per 30 min, at most 20 per 10 minutes. Same coin sound as messages (the owner's choice).
   async pushVisit(vid) {
     const now = Date.now();
     this.visitLast = this.visitLast || new Map();
@@ -497,7 +497,7 @@ export class ChatHub {
     let country = v.country || "";
     try { country = new Intl.DisplayNames(["nb"], { type: "region" }).of(v.country) || country; } catch {}
     const where = [v.city, country].filter(Boolean).join(", ") || "Ukjent sted";
-    await this.push("Ny besøkende", [where, device].filter(Boolean).join(" · "), vid, { sound: "default", thread: "besok", throttle: false });
+    await this.push("Ny besøkende", [where, device].filter(Boolean).join(" · "), vid, { thread: "besok", throttle: false });
   }
 
   status() {
