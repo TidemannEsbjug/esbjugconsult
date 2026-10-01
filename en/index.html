@@ -233,6 +233,13 @@
   .lang-flag-gb .no,.lang-flag-no .gb{display:none}
   .lang:hover span:last-child{text-decoration:underline;text-underline-offset:3px}
   .en-note{margin:12px 0 0;font-size:12px;opacity:.7;text-transform:none;letter-spacing:.02em}
+  /* Puls fra Apple Watch: liten svart merkelapp til venstre for chatknappen, hjertet slår i pulsens takt. */
+  .ch-hr{position:absolute;right:calc(100% + 10px);bottom:5px;display:flex;align-items:center;gap:6px;background:var(--ink);color:var(--y);padding:9px 12px 9px 10px;border-radius:999px;font-weight:700;font-size:15px;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums;box-shadow:0 8px 24px rgba(13,13,18,.25)}
+  .ch-hr[hidden]{display:none}
+  .ch-hr svg{width:17px;height:17px;color:#ff3d57;animation:beat var(--beat,1s) ease-in-out infinite}
+  .ch-hr small{font-size:11px;font-weight:600;opacity:.65}
+  @keyframes beat{0%,100%{transform:scale(1)}14%{transform:scale(1.3)}28%{transform:scale(.94)}42%{transform:scale(1.12)}60%{transform:scale(1)}}
+  @media (prefers-reduced-motion:reduce){.ch-hr svg{animation:none}}
   canvas{display:block;width:100%;height:38vh;min-height:220px;margin-top:auto;touch-action:pan-y}
 </style>
 </head>
@@ -378,6 +385,7 @@
   <div><button type="button" class="ck-ja">Accept</button><button type="button" class="ck-nei">Only necessary</button></div>
 </section>
 <div class="ch" id="chat">
+  <div class="ch-hr" hidden title="Tidemann's heart rate, live from Apple Watch"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b>–</b><small>bpm</small></div>
   <button class="ch-b" type="button" aria-label="Chat with Tidemann" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Chat<span class="zz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span><i class="ch-n" hidden></i></button>
   <div class="ch-pill" hidden><button type="button" class="cp-open" aria-label="Open the chat"><i></i><span class="cp-t">In a call with Tidemann</span></button><button type="button" class="cp-mute" aria-label="Mute"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><button type="button" class="cp-end" aria-label="Hang up"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 9c-3.3 0-6.3.9-8.6 2.5-.5.4-.6 1-.3 1.5l1.6 2.5c.3.5.9.7 1.4.5l2.8-1c.5-.2.8-.7.8-1.2V12c1.4-.4 3-.4 4.6 0v1.8c0 .5.3 1 .8 1.2l2.8 1c.5.2 1.1 0 1.4-.5l1.6-2.5c.3-.5.2-1.1-.3-1.5C18.3 9.9 15.3 9 12 9z"/></svg></button></div>
   <section class="ch-p" role="dialog" aria-label="Chat with Tidemann" hidden>
@@ -536,13 +544,19 @@ const render=()=>{const [label,cls]=STAT[stat]||STAT.available;
   btn.classList.remove('på','møte','sover');btn.classList.add(cls);document.getElementById('chat').classList.toggle('natt',stat==='sleeping');btn.setAttribute('aria-label','Chat with Tidemann ('+label.toLowerCase()+')');
   st.className='ch-s '+cls+(ownerOn&&stat==='available'?' on':'');
   st.lastChild.textContent=stat==='sleeping'?'Asleep, up at 04:00 - I\'ll reply when I\'m awake':stat==='meeting'?'In a meeting, might be able to reply':ownerOn?'Tidemann is here now':'Don\'t hesitate! Go, go, go!'};
+// Puls live fra Tidemanns Apple Watch (bare mens han deler den). Hjertet slår i pulsens takt og forsvinner etter 20 s uten måling.
+let hrBpm=null,hrTimer=null;const hrEl=$('.ch-hr'),hrN=hrEl.querySelector('b');
+const updHr=()=>{hrEl.hidden=!hrBpm||btn.hidden};
+const setHr=b=>{hrBpm=b||null;clearTimeout(hrTimer);if(hrBpm){hrN.textContent=hrBpm;hrEl.style.setProperty('--beat',(60/hrBpm).toFixed(3)+'s');hrTimer=setTimeout(()=>setHr(null),20000)}updHr()};
+new MutationObserver(updHr).observe(btn,{attributes:true,attributeFilter:['hidden']});
+setInterval(()=>{if(!ws||ws.readyState!==1)fetch('/chat/status').then(r=>r.json()).then(j=>{if(j.hr)setHr(j.hr)}).catch(()=>{})},8000);
 const owner=on=>{ownerOn=on;render()};
 const setStat=v=>{stat=v;render()};
-fetch('/chat/status').then(r=>r.json()).then(j=>{ownerOn=!!j.owner;setStat(j.status)}).catch(()=>{});
+fetch('/chat/status').then(r=>r.json()).then(j=>{ownerOn=!!j.owner;setStat(j.status);if(j.hr)setHr(j.hr)}).catch(()=>{});
 const connect=()=>{ws=new WebSocket('wss://'+location.host+'/chat/ws?vid='+encodeURIComponent(vid));
   ws.onopen=()=>{wait=1000;ws.send(JSON.stringify({t:'page',page:location.pathname+location.hash}))};
   ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch{return}
-    if(m.t==='history'){m.msgs.forEach(x=>add(x,false));ownerOn=!!m.owner;if(m.status)stat=m.status;render();extras(!!m.extras)}else if(m.t==='status')setStat(m.v);else if(m.t==='cleared')cleared();else if(m.t==='ctl')control(m.action,m.on);else if(m.t==='rtc')onRtc(m.data);else if(m.t==='msg')add(m.m,true);else if(m.t==='owner')owner(m.online)};
+    if(m.t==='history'){if(m.hr)setHr(m.hr);m.msgs.forEach(x=>add(x,false));ownerOn=!!m.owner;if(m.status)stat=m.status;render();extras(!!m.extras)}else if(m.t==='status')setStat(m.v);else if(m.t==='hr')setHr(m.bpm);else if(m.t==='cleared')cleared();else if(m.t==='ctl')control(m.action,m.on);else if(m.t==='rtc')onRtc(m.data);else if(m.t==='msg')add(m.m,true);else if(m.t==='owner')owner(m.online)};
   ws.onclose=()=>{setTimeout(connect,wait);wait=Math.min(wait*2,30000)}};
 if(consent==='ja')connect();
 const send=()=>{const text=ta.value.trim();if(!text||!ws||ws.readyState!==1)return;ws.send(JSON.stringify({t:'msg',text}));ta.value='';ta.style.height=''};

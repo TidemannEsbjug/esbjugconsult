@@ -162,6 +162,7 @@ T = [
     ('class="ck-nei">Bare nødvendige</button>', 'class="ck-nei">Only necessary</button>'),
 
     # --- chatten (markup) ---
+    ('title="Tidemanns puls, live fra Apple Watch"', 'title="Tidemann\'s heart rate, live from Apple Watch"'),
     ('aria-label="Chat med Tidemann"', 'aria-label="Chat with Tidemann"'),
     ('aria-label="Åpne chatten"', 'aria-label="Open the chat"'),
     ('aria-label="Lyd av"', 'aria-label="Mute"'),

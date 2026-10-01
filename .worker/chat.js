@@ -240,7 +240,7 @@ export class ChatHub {
       this.ctx.acceptWebSocket(pair[1], ["v", `v:${vid}`, ...(ip ? [`ip:${ip}`] : [])]);
       pair[1].serializeAttachment({ role: "visitor", vid, rate: [], win: 0, n: 0 });
       const ex = this.sql.exec(`SELECT extras FROM visitors WHERE vid=?`, vid).toArray()[0];
-      pair[1].send(JSON.stringify({ t: "history", msgs: this.history(vid), owner: this.ownerOnline(), extras: !!ex?.extras, status: this.status() }));
+      pair[1].send(JSON.stringify({ t: "history", msgs: this.history(vid), owner: this.ownerOnline(), extras: !!ex?.extras, status: this.status(), hr: this.liveHr() }));
       this.toOwners({ t: "presence", v: this.visitor(vid) });
       if (newVisit && this.setting("notifyVisits") === "1") this.ctx.waitUntil(this.pushVisit(vid));
       this.ctx.waitUntil(this.ensureAlarm());
@@ -254,7 +254,7 @@ export class ChatHub {
         return t && Date.now() - t < 2 * 3600e3 && this.online(b.vid) ? new Response("ok") : new Response("no", { status: 403 });
       }
       if (url.pathname === "/internal/status") {
-        return Response.json({ status: this.status(), owner: this.ownerOnline() }, { headers: { "cache-control": "no-store" } });
+        return Response.json({ status: this.status(), owner: this.ownerOnline(), hr: this.liveHr() }, { headers: { "cache-control": "no-store" } });
       }
       if (url.pathname === "/internal/rec") {
         this.record(b.vid, b);
@@ -326,6 +326,14 @@ export class ChatHub {
       return Response.json({ meta, events });
     }
     // For the watch app and replies from notifications (no socket there): list, reply, mark read.
+    // Live heart rate from the Apple Watch (only while the owner shares it; never stored).
+    if (url.pathname === "/chat/admin/hr" && request.method === "POST") {
+      const { bpm } = await request.json();
+      const v = Number.isFinite(bpm) && bpm > 25 && bpm < 240 ? Math.round(bpm) : null;
+      this.hr = v ? { bpm: v, ts: Date.now() } : null;
+      this.toVisitors({ t: "hr", bpm: v });
+      return Response.json({ ok: true });
+    }
     if (url.pathname === "/chat/admin/visitors") {
       return Response.json({ visitors: this.allVisitors(), status: this.status() });
     }
@@ -522,6 +530,10 @@ export class ChatHub {
       `SELECT vid FROM visitors WHERE last_seen > ? AND (vid IN (SELECT DISTINCT vid FROM messages) OR last_seen > ?)
        ORDER BY last_seen DESC LIMIT 300`, since, Date.now() - 864e5).toArray();
     return rows.map((r) => this.visitor(r.vid)).filter(Boolean);
+  }
+
+  liveHr() {
+    return this.hr && Date.now() - this.hr.ts < 20000 ? this.hr.bpm : null;
   }
 
   setting(k) {
