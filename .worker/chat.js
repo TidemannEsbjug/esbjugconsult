@@ -13,6 +13,7 @@
 //   GET  /chat/file/<key>                         a file from R2, with Range support (Safari needs it for audio)
 //   GET  /chat/ice                                STUN + short-lived Cloudflare TURN credentials for calls
 //   GET  /chat/status                             the owner's status (available/meeting/sleeping) + whether the app is open
+//   GET  /chat/hr                                 today's heart rate from the owner's Apple Watch (Oslo day, per minute) + live bpm
 //   POST /chat/rec                                last batch of a visit recording (sendBeacon when the page closes)
 //   GET  /chat/admin/sessions[?vid=]              recorded visits (consented visitors only, kept 30 days)
 //   GET  /chat/admin/session?sid=                 one recording's events, for replay in the app
@@ -54,6 +55,10 @@ export async function handleChat(request, env, url) {
 
   if (path === "/chat/status") {
     return hub.fetch(new Request("https://hub/internal/status", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }));
+  }
+
+  if (path === "/chat/hr") {
+    return hub.fetch(new Request("https://hub/internal/hr", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }));
   }
 
   if (path === "/chat/ice") {
@@ -170,6 +175,19 @@ export function osloTime(ts) {
   return { hour: Number(parts.find((p) => p.type === "hour").value), minute: Number(parts.find((p) => p.type === "minute").value) };
 }
 
+// Oslo midnight (as a UTC timestamp) for the Oslo day that ts falls in. Oslo is UTC+1 or UTC+2, so midnight is
+// one of two candidates; the right one is the candidate that reads 00:00 in Oslo (also on the DST change days).
+export function osloMidnight(ts) {
+  const p = Object.fromEntries(new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Oslo", year: "numeric", month: "2-digit", day: "2-digit" })
+    .formatToParts(new Date(ts)).map((x) => [x.type, x.value]));
+  const utc = Date.UTC(Number(p.year), Number(p.month) - 1, Number(p.day));
+  for (const h of [1, 2]) {
+    const t = utc - h * 3600e3, o = osloTime(t);
+    if (o.hour === 0 && o.minute === 0) return t;
+  }
+  return utc - 3600e3;
+}
+
 // Next :00/:15/:30/:45 after ts (Oslo is a whole-hour offset from UTC, so UTC quarters line up).
 export function nextQuarter(ts) {
   return Math.floor(ts / 900e3) * 900e3 + 900e3;
@@ -210,6 +228,10 @@ export class ChatHub {
     this.sql.exec(`CREATE TABLE IF NOT EXISTS rec (sid TEXT, seq INTEGER, data TEXT, PRIMARY KEY (sid, seq))`);
     this.pruned = 0;
     this.sql.exec(`CREATE TABLE IF NOT EXISTS kv (k TEXT PRIMARY KEY, v TEXT)`);
+    // Heart rate samples from the owner's Apple Watch, for the day graph on the site. Kept 48 hours.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS hr (ts INTEGER PRIMARY KEY, bpm INTEGER)`);
+    this.hrSaved = 0;
+    this.hrPruned = 0;
     this.jwt = null;
     this.pushLog = [];          // times of recent pushes (global cap)
     this.pushLast = new Map();  // vid -> last push time
@@ -255,6 +277,9 @@ export class ChatHub {
       }
       if (url.pathname === "/internal/status") {
         return Response.json({ status: this.status(), owner: this.ownerOnline(), hr: this.liveHr() }, { headers: { "cache-control": "no-store" } });
+      }
+      if (url.pathname === "/internal/hr") {
+        return Response.json(this.hrDay(), { headers: { "cache-control": "no-store" } });
       }
       if (url.pathname === "/internal/rec") {
         this.record(b.vid, b);
@@ -326,11 +351,21 @@ export class ChatHub {
       return Response.json({ meta, events });
     }
     // For the watch app and replies from notifications (no socket there): list, reply, mark read.
-    // Live heart rate from the Apple Watch (only while the owner shares it; never stored).
+    // Live heart rate from the Apple Watch (only while the owner shares it). {bpm:null} = sharing stopped.
+    // Samples are also stored (at most one per 4 s) for today's graph at the top of the site.
     if (url.pathname === "/chat/admin/hr" && request.method === "POST") {
       const { bpm } = await request.json();
       const v = Number.isFinite(bpm) && bpm > 25 && bpm < 240 ? Math.round(bpm) : null;
-      this.hr = v ? { bpm: v, ts: Date.now() } : null;
+      const now = Date.now();
+      this.hr = { bpm: v, ts: now };
+      if (v && now - this.hrSaved >= 4000) {
+        this.hrSaved = now;
+        this.sql.exec(`INSERT OR REPLACE INTO hr (ts, bpm) VALUES (?, ?)`, now, v);
+      }
+      if (now - this.hrPruned > 3600e3) {
+        this.hrPruned = now;
+        this.sql.exec(`DELETE FROM hr WHERE ts < ?`, now - 48 * 3600e3);
+      }
       this.toVisitors({ t: "hr", bpm: v });
       return Response.json({ ok: true });
     }
@@ -533,7 +568,21 @@ export class ChatHub {
   }
 
   liveHr() {
-    return this.hr && Date.now() - this.hr.ts < 20000 ? this.hr.bpm : null;
+    // Memory only: while sharing, the watch posts every ~5 s, which keeps the hub awake (and refills this after a deploy).
+    return this.hr && this.hr.bpm && Date.now() - this.hr.ts < 20000 ? this.hr.bpm : null;
+  }
+
+  // Today (Oslo) as one average per minute: pts = [[minutes since midnight, bpm], ...]. The endpoint is public, so the
+  // aggregate is reused for 30 s (the page adds live samples itself); at most two scans of the day per minute.
+  hrDay() {
+    const now = Date.now(), start = osloMidnight(now);
+    if (!this.hrMemo || this.hrMemo.start !== start || now - this.hrMemo.at > 30000) {
+      const rows = this.sql.exec(
+        `SELECT CAST((ts - ?) / 60000 AS INTEGER) AS m, CAST(ROUND(AVG(bpm)) AS INTEGER) AS b FROM hr WHERE ts >= ? GROUP BY m ORDER BY m`,
+        start, start).toArray();
+      this.hrMemo = { start, at: now, pts: rows.map((r) => [r.m, r.b]) };
+    }
+    return { start, now, live: this.liveHr(), pts: this.hrMemo.pts };
   }
 
   setting(k) {

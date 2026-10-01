@@ -233,19 +233,29 @@
   .lang-flag-gb .no,.lang-flag-no .gb{display:none}
   .lang:hover span:last-child{text-decoration:underline;text-underline-offset:3px}
   .en-note{margin:12px 0 0;font-size:12px;opacity:.7;text-transform:none;letter-spacing:.02em}
-  /* Puls fra Apple Watch: liten svart merkelapp til venstre for chatknappen, hjertet slår i pulsens takt. */
-  .ch-hr{position:absolute;right:calc(100% + 10px);bottom:5px;display:flex;align-items:center;gap:6px;background:var(--ink);color:var(--y);padding:9px 12px 9px 10px;border-radius:999px;font-weight:700;font-size:15px;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums;box-shadow:0 8px 24px rgba(13,13,18,.25)}
-  .ch-hr[hidden]{display:none}
-  .ch-hr svg{width:17px;height:17px;color:#ff3d57;animation:beat var(--beat,1s) ease-in-out infinite}
-  .ch-hr small{font-size:11px;font-weight:600;opacity:.65}
+  /* Puls fra Apple Watch øverst ved datoen. Hjertet slår i pulsens takt mens den strømmes; grafen er dagen så langt (snitt per minutt). */
+  .hp{display:inline-flex;align-items:center;gap:8px}
+  .hp[hidden]{display:none}
+  .hp .hj{width:13px;height:13px;flex:none;color:#e0233c}
+  .hp.live .hj{animation:beat var(--beat,1s) ease-in-out infinite}
+  .hp:not(.live) .hj{color:inherit;opacity:.4}
+  .hp .hb{font-variant-numeric:tabular-nums;white-space:nowrap}
+  .hp:not(.live) .hb{visibility:hidden;order:1}
+  .hp .g{width:112px;height:18px;flex:none;display:block;overflow:visible;touch-action:none;cursor:crosshair}
+  .hp .g path{fill:none;stroke:currentColor;stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round}
+  .hp .g .gd,.hp .g .gs{fill:currentColor}
+  .hp .i{width:15px;height:15px;flex:none;padding:0;border:1.5px solid currentColor;border-radius:50%;background:none;color:inherit;font:700 9px/1 "SF Mono",Menlo,monospace;letter-spacing:0;text-transform:none;display:grid;place-items:center;cursor:pointer}
+  .hp .i:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .hp-tip{position:absolute;z-index:60;background:var(--ink);color:var(--y);font-size:11px;line-height:1.3;letter-spacing:.04em;text-transform:none;padding:6px 9px;border-radius:6px;white-space:nowrap;pointer-events:none;box-shadow:0 6px 18px rgba(13,13,18,.2)}
+  .hp-tip[hidden]{display:none}
   @keyframes beat{0%,100%{transform:scale(1)}14%{transform:scale(1.3)}28%{transform:scale(.94)}42%{transform:scale(1.12)}60%{transform:scale(1)}}
-  @media (prefers-reduced-motion:reduce){.ch-hr svg{animation:none}}
+  @media (prefers-reduced-motion:reduce){.hp.live .hj{animation:none}}
   canvas{display:block;width:100%;height:38vh;min-height:220px;margin-top:auto;touch-action:pan-y}
 </style>
 </head>
 <body>
 <main>
-  <div class="mono k"><span>&gt; Tidemann Esbjug</span><a class="lang" href="/en/" hreflang="en" lang="en" aria-label="English"><span class="lang-flag-gb"><svg class="gb" viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg><svg class="no" viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span>English</span></a><span>01.10.2026</span><!-- Skjult inntil videre: <a class="kl" href="/login/">Kunde-login &rarr;</a> --></div>
+  <div class="mono k"><span>&gt; Tidemann Esbjug</span><a class="lang" href="/en/" hreflang="en" lang="en" aria-label="English"><span class="lang-flag-gb"><svg class="gb" viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg><svg class="no" viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span>English</span></a><span>01.10.2026</span><span class="hp" hidden role="group" aria-label="Puls i dag"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><span class="hb"><b>00</b> bpm</span><svg class="g" viewBox="0 0 112 18" aria-hidden="true"></svg><button class="i" type="button" aria-label="Strømmes live fra Apple Watch">i</button></span><!-- Skjult inntil videre: <a class="kl" href="/login/">Kunde-login &rarr;</a> --></div>
   <!--EN-MERKNAD-->
   <h1 aria-label="Hovedbudskapet jeg prøver å rope fra taket på bygninger i disse dager er at kode og design har gått gjennom en revolusjon som ikke må oversees."><span aria-hidden="true">Hovedbudskapet jeg prøver å rope fra taket på bygninger i disse dager er at <span class="kd"><i>kode</i></span> og <span class="ds" data-t="design">design</span> har gått gjennom en revolusjon som ikke må oversees.</span></h1>
   <p class="b">Å kjøpe nettsider, apper eller digital markedsføring i dag for samme pris som før er absurd. Det er også masse muligheter som tidligere var for dyre til å begi seg ut på.</p>
@@ -384,8 +394,8 @@
   <p class="ck-full" hidden>Chatten bruker én informasjonskapsel for å kjenne deg igjen mellom besøk, og viser meg omtrentlig hvor du er (by, ut fra IP-adressen) og hvor på siden du er mens du er her. Besøket tas opp (rulling og klikk, aldri det du skriver), så jeg kan gjøre siden bedre. Opptak slettes etter 30 dager. Ingen reklame, og ingen sporing utenfor denne siden.</p>
   <div><button type="button" class="ck-ja">Godta</button><button type="button" class="ck-nei">Bare nødvendige</button></div>
 </section>
+<div class="hp-tip mono" hidden></div>
 <div class="ch" id="chat">
-  <div class="ch-hr" hidden title="Tidemanns puls, live fra Apple Watch"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b>–</b><small>bpm</small></div>
   <button class="ch-b" type="button" aria-label="Chat med Tidemann" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Chat<span class="zz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span><i class="ch-n" hidden></i></button>
   <div class="ch-pill" hidden><button type="button" class="cp-open" aria-label="Åpne chatten"><i></i><span class="cp-t">I samtale med Tidemann</span></button><button type="button" class="cp-mute" aria-label="Lyd av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><button type="button" class="cp-end" aria-label="Legg på"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 9c-3.3 0-6.3.9-8.6 2.5-.5.4-.6 1-.3 1.5l1.6 2.5c.3.5.9.7 1.4.5l2.8-1c.5-.2.8-.7.8-1.2V12c1.4-.4 3-.4 4.6 0v1.8c0 .5.3 1 .8 1.2l2.8 1c.5.2 1.1 0 1.4-.5l1.6-2.5c.3-.5.2-1.1-.3-1.5C18.3 9.9 15.3 9 12 9z"/></svg></button></div>
   <section class="ch-p" role="dialog" aria-label="Chat med Tidemann" hidden>
@@ -404,6 +414,53 @@ if(scrollY>2||location.hash||r.classList.contains('speil'))show();
 addEventListener('scroll',()=>{if(scrollY>2)show()},{passive:true});
 ['wheel','touchmove'].forEach(t=>addEventListener(t,show,{passive:true,once:true}));
 addEventListener('keydown',e=>{if(['ArrowDown','PageDown','End',' '].includes(e.key))show()});})();
+// Puls øverst, egen blokk: kjører også i speilet i appen. Chatten under gir den nye målinger med hrTop(bpm) og sier fra når socketen er åpen.
+const hrTop=(()=>{
+// Live fra Tidemanns Apple Watch (bare mens han deler den) og dagens graf, ett snitt per minutt i Oslo-døgnet.
+// Hjertet slår i pulsens takt; uten måling på 20 s står det stille. Pek eller dra på grafen for klokkeslett og puls.
+const hp=document.querySelector('.hp'),hpN=hp.querySelector('b'),hpG=hp.querySelector('.g'),hpI=hp.querySelector('.i'),tip=document.querySelector('.hp-tip');
+const GW=112,GH=18,NS='http://www.w3.org/2000/svg',hhmm=new Intl.DateTimeFormat('nb-NO',{timeZone:'Europe/Oslo',hour:'2-digit',minute:'2-digit'}),oDay=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Oslo'});
+let hrBpm=null,hrTimer=null,day=null,skew=0,tipBy=null,tipT=0,viaWs=0,loading=0,lastLoad=0,lastX=null,sock=()=>false;
+const nowM=()=>Math.floor((Date.now()+skew-day.start)/60000);
+// Nytt døgn etter Oslo-datoen, ikke etter 1440 minutter: døgnet har 23 eller 25 timer når klokka stilles.
+const newDay=()=>oDay.format(Date.now()+skew)!==oDay.format(day.start);
+const svgEl=(n,a)=>{const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);hpG.append(e);return e};
+const scale=()=>{const p=day.pts,m0=p[0][0],m1=Math.max(p[p.length-1][0],m0+5);let lo=Infinity,hi=-Infinity;for(const[,b]of p){lo=Math.min(lo,b);hi=Math.max(hi,b)}
+  const pad=Math.max(3,(20-(hi-lo))/2);lo-=pad;hi+=pad;return{x:m=>(m-m0)/(m1-m0)*GW,y:b=>GH-1-(b-lo)/(hi-lo)*(GH-2)}};
+const drawHr=()=>{const has=!!(day&&day.pts.length);hp.hidden=!has&&!hrBpm;hp.classList.toggle('live',!!hrBpm);hpG.textContent='';hpG.style.display=has?'':'none';if(!has)return;
+  const{x,y}=scale();let d='',prev=-9;
+  for(const[m,b]of day.pts){const pt=x(m).toFixed(1)+' '+y(b).toFixed(1);d+=m-prev>3?'M'+pt+'L'+pt:'L'+pt;prev=m}
+  svgEl('path',{d});const l=day.pts[day.pts.length-1];if(hrBpm)svgEl('circle',{class:'gd',cx:x(l[0]),cy:y(l[1]),r:2.2});
+  if(tipBy==='g'&&lastX!=null)mark()};
+// Én henting om gangen, så et svar aldri kan starte en ny henting av seg selv.
+const loadHr=()=>{if(loading)return;loading=1;lastLoad=Date.now();
+  fetch('/chat/hr').then(r=>r.ok?r.json():Promise.reject()).then(j=>{skew=j.now-Date.now();day={start:j.start,pts:j.pts};if(j.live)setHr(j.live);else drawHr()}).catch(()=>{}).finally(()=>{loading=0})};
+const addLive=b=>{if(!day)return;if(newDay()){if(Date.now()-lastLoad>30000)loadHr();return}const m=nowM(),p=day.pts,l=p[p.length-1];
+  if(l&&l[0]===m){l[2]=(l[2]||1)+1;l[1]=Math.round(l[1]+(b-l[1])/l[2])}else if(!l||m>l[0])p.push([m,b,1])};
+const setHr=b=>{hrBpm=b||null;clearTimeout(hrTimer);if(hrBpm){hpN.textContent=hrBpm;hp.style.setProperty('--beat',(60/hrBpm).toFixed(3)+'s');addLive(hrBpm);hrTimer=setTimeout(()=>setHr(null),20000)}drawHr()};
+const showTip=(text,el,cx)=>{tip.textContent=text;tip.hidden=false;const r=el.getBoundingClientRect(),w=tip.offsetWidth;
+  const l=Math.max(8,Math.min(r.left+(cx??r.width/2)-w/2,document.documentElement.clientWidth-w-8));tip.style.left=l+scrollX+'px';tip.style.top=r.bottom+scrollY+8+'px'};
+const hideTip=()=>{tip.hidden=true;tipBy=null;lastX=null;hpG.querySelector('.gs')?.remove()};
+const mark=()=>{const{x,y}=scale(),px=lastX-hpG.getBoundingClientRect().left;let best=day.pts[0];
+  for(const p of day.pts)if(Math.abs(x(p[0])-px)<Math.abs(x(best[0])-px))best=p;
+  const c=hpG.querySelector('.gs')||svgEl('circle',{class:'gs',r:2.6});c.setAttribute('cx',x(best[0]));c.setAttribute('cy',y(best[1]));
+  tipBy='g';showTip(hhmm.format(day.start+best[0]*60000)+' · '+best[1]+' bpm',hpG,x(best[0]))};
+const scrub=e=>{if(!day||!day.pts.length)return;clearTimeout(tipT);lastX=e.clientX;mark()};
+hpG.addEventListener('pointerdown',scrub);hpG.addEventListener('pointermove',scrub);
+hpG.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse')hideTip()});
+hpG.addEventListener('pointerup',e=>{if(e.pointerType!=='mouse')tipT=setTimeout(hideTip,1500)});
+const info=()=>{clearTimeout(tipT);hpG.querySelector('.gs')?.remove();lastX=null;tipBy='i';showTip(hpI.getAttribute('aria-label'),hpI)};
+hpI.addEventListener('mouseenter',info);hpI.addEventListener('focus',info);hpI.addEventListener('click',info);
+hpI.addEventListener('mouseleave',()=>{if(tipBy==='i'&&document.activeElement!==hpI)hideTip()});hpI.addEventListener('blur',()=>{if(tipBy==='i')hideTip()});
+// pointerdown, ikke click: iPhone sender ikke click for trykk på flater uten egen klikkhandling.
+document.addEventListener('pointerdown',e=>{if(tipBy==='i'&&!hpI.contains(e.target))hideTip()});addEventListener('resize',hideTip);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&(!day||Date.now()-lastLoad>60000))loadHr()});
+// Med åpen chatsocket kommer pulsen derfra; ellers spør siden selv hvert 8. s (bare når fanen vises).
+setInterval(()=>{if(document.visibilityState==='visible'&&!sock()&&Date.now()-viaWs>15000)fetch('/chat/status').then(r=>r.json()).then(j=>{if(j.hr)setHr(j.hr)}).catch(()=>{})},8000);
+setInterval(()=>{if(!day||newDay())loadHr()},300000);
+loadHr();
+return Object.assign((b,ws)=>{if(ws)viaWs=Date.now();setHr(b)},{sock:f=>{sock=f}});
+})();
 // Chat: kobler til når siden åpnes (så Tidemann ser at noen er her), meldinger går rett til telefonen hans.
 (()=>{
 if(location.protocol!=='https:')return;
@@ -544,20 +601,15 @@ const render=()=>{const [label,cls]=STAT[stat]||STAT.available;
   btn.classList.remove('på','møte','sover');btn.classList.add(cls);document.getElementById('chat').classList.toggle('natt',stat==='sleeping');btn.setAttribute('aria-label','Chat med Tidemann ('+label.toLowerCase()+')');
   st.className='ch-s '+cls+(ownerOn&&stat==='available'?' on':'');
   st.lastChild.textContent=stat==='sleeping'?'Sover, opp klokken 04:00 - svarer når jeg er våken':stat==='meeting'?'I møte, kan kanskje svare':ownerOn?'Tidemann er her nå':'Ikke nøl! Go, go, go!'};
-// Puls live fra Tidemanns Apple Watch (bare mens han deler den). Hjertet slår i pulsens takt og forsvinner etter 20 s uten måling.
-let hrBpm=null,hrTimer=null;const hrEl=$('.ch-hr'),hrN=hrEl.querySelector('b');
-const updHr=()=>{hrEl.hidden=!hrBpm||btn.hidden};
-const setHr=b=>{hrBpm=b||null;clearTimeout(hrTimer);if(hrBpm){hrN.textContent=hrBpm;hrEl.style.setProperty('--beat',(60/hrBpm).toFixed(3)+'s');hrTimer=setTimeout(()=>setHr(null),20000)}updHr()};
-new MutationObserver(updHr).observe(btn,{attributes:true,attributeFilter:['hidden']});
-setInterval(()=>{if(!ws||ws.readyState!==1)fetch('/chat/status').then(r=>r.json()).then(j=>{if(j.hr)setHr(j.hr)}).catch(()=>{})},8000);
 const owner=on=>{ownerOn=on;render()};
 const setStat=v=>{stat=v;render()};
-fetch('/chat/status').then(r=>r.json()).then(j=>{ownerOn=!!j.owner;setStat(j.status);if(j.hr)setHr(j.hr)}).catch(()=>{});
+fetch('/chat/status').then(r=>r.json()).then(j=>{ownerOn=!!j.owner;setStat(j.status);if(j.hr)hrTop(j.hr)}).catch(()=>{});
 const connect=()=>{ws=new WebSocket('wss://'+location.host+'/chat/ws?vid='+encodeURIComponent(vid));
   ws.onopen=()=>{wait=1000;ws.send(JSON.stringify({t:'page',page:location.pathname+location.hash}))};
   ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch{return}
-    if(m.t==='history'){if(m.hr)setHr(m.hr);m.msgs.forEach(x=>add(x,false));ownerOn=!!m.owner;if(m.status)stat=m.status;render();extras(!!m.extras)}else if(m.t==='status')setStat(m.v);else if(m.t==='hr')setHr(m.bpm);else if(m.t==='cleared')cleared();else if(m.t==='ctl')control(m.action,m.on);else if(m.t==='rtc')onRtc(m.data);else if(m.t==='msg')add(m.m,true);else if(m.t==='owner')owner(m.online)};
+    if(m.t==='history'){if(m.hr)hrTop(m.hr);m.msgs.forEach(x=>add(x,false));ownerOn=!!m.owner;if(m.status)stat=m.status;render();extras(!!m.extras)}else if(m.t==='status')setStat(m.v);else if(m.t==='hr')hrTop(m.bpm,true);else if(m.t==='cleared')cleared();else if(m.t==='ctl')control(m.action,m.on);else if(m.t==='rtc')onRtc(m.data);else if(m.t==='msg')add(m.m,true);else if(m.t==='owner')owner(m.online)};
   ws.onclose=()=>{setTimeout(connect,wait);wait=Math.min(wait*2,30000)}};
+hrTop.sock(()=>!!ws&&ws.readyState===1);
 if(consent==='ja')connect();
 const send=()=>{const text=ta.value.trim();if(!text||!ws||ws.readyState!==1)return;ws.send(JSON.stringify({t:'msg',text}));ta.value='';ta.style.height=''};
 form.onsubmit=e=>{e.preventDefault();send()};
