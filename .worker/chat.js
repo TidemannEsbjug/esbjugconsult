@@ -15,6 +15,7 @@
 //   GET  /chat/ice                                STUN + short-lived Cloudflare TURN credentials for calls
 //   GET  /chat/status                             the owner's status (available/meeting/sleeping) + whether the app is open
 //   GET  /chat/hr                                 today's heart rate from the owner's Apple Watch (Oslo day, per minute) + live bpm
+//   POST /chat/besok                              the page was shown from a prefetch/prerender: same visit push as a page load
 //   POST /chat/poke                               «Få meg til å få høyere puls»: a push to the owner (only while his pulse is live)
 //   POST /chat/rec                                last batch of a visit recording (sendBeacon when the page closes)
 //   GET  /chat/admin/sessions[?vid=]              recorded visits (consented visitors only, kept 30 days)
@@ -61,6 +62,13 @@ export async function handleChat(request, env, url) {
 
   if (path === "/chat/hr") {
     return hub.fetch(new Request("https://hub/internal/hr", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }));
+  }
+
+  if (path === "/chat/besok" && request.method === "POST") {
+    const origin = request.headers.get("Origin") || "";
+    if (!/^https:\/\/(www\.)?esbjugconsult\.com$/.test(origin) && !/^http:\/\/localhost(:\d+)?$/.test(origin)) return new Response("Forbidden", { status: 403 });
+    await pageVisit(request, env, url, true);
+    return new Response(null, { status: 204 });
   }
 
   if (path === "/chat/poke" && request.method === "POST") {
@@ -188,11 +196,15 @@ export function osloTime(ts) {
 // A visit notification straight from the browser's request for the page itself: no cookie, no script, nothing stored
 // on the device or here. Only real navigations to the two pages count (not prefetch, bots, or the app's mirror view).
 const BOT = /bot|crawl|spider|slurp|facebookexternalhit|embedly|preview|headless|lighthouse|pingdom|uptime|monitor|curl|wget|python|httpclient|okhttp|java\//i;
-export function pageVisit(request, env, url) {
+// preloaded: the page was shown from a prefetch/prerender (the browser sent no request on the click), so the page itself
+// reports it with POST /chat/besok and the navigation checks don't apply.
+export function pageVisit(request, env, url, preloaded = false) {
   const h = request.headers;
-  if (request.method !== "GET" || !/^\/(en\/)?(index\.html)?$/.test(url.pathname) || url.searchParams.has("speil")) return null;
-  if (h.get("Sec-Fetch-Mode") !== "navigate" || h.get("Sec-Fetch-Dest") !== "document") return null;
-  if (/prefetch|prerender/i.test((h.get("Sec-Purpose") || "") + (h.get("Purpose") || ""))) return null;
+  if (!preloaded) {
+    if (request.method !== "GET" || !/^\/(en\/)?(index\.html)?$/.test(url.pathname) || url.searchParams.has("speil")) return null;
+    if (h.get("Sec-Fetch-Mode") !== "navigate" || h.get("Sec-Fetch-Dest") !== "document") return null;
+    if (/prefetch|prerender/i.test((h.get("Sec-Purpose") || "") + (h.get("Purpose") || ""))) return null;
+  }
   const ua = (h.get("User-Agent") || "").slice(0, 300);
   if (!ua || BOT.test(ua)) return null;
   const cookie = h.get("Cookie") || "";

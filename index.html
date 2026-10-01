@@ -550,6 +550,10 @@ setInterval(()=>{if(!day||newDay())loadHr()},300000);
 loadHr();
 return Object.assign((b,ws)=>{if(ws)viaWs=Date.now();setHr(b)},{sock:f=>{sock=f}});
 })();
+// Vist fra forhåndslasting (Google, Chrome): nettleseren sendte ingen ny forespørsel ved klikket, så siden melder besøket selv.
+(()=>{if(document.documentElement.classList.contains('speil'))return;const besok=()=>{const n=performance.getEntriesByType('navigation')[0];
+  if(n&&(n.deliveryType==='navigational-prefetch'||n.activationStart>0))fetch('/chat/besok',{method:'POST'}).catch(()=>{})};
+  if(document.prerendering)document.addEventListener('prerenderingchange',besok,{once:true});else besok()})();
 // Chat: kobler til når siden åpnes (så Tidemann ser at noen er her), meldinger går rett til telefonen hans.
 (()=>{
 if(location.protocol!=='https:')return;
@@ -565,12 +569,12 @@ try{localStorage.removeItem('esbjug-vid')}catch{}
 let consent=getC('esbjug_samtykke'),vid=consent==='ja'&&getC('esbjug_id')||crypto.randomUUID();
 if(consent==='ja')setC('esbjug_id',vid);
 const cb=document.getElementById('cookies');
-const decide=ok=>{consent=ok?'ja':'nei';setC('esbjug_samtykke',consent);cb.hidden=true;if(ok){setC('esbjug_id',vid);if(!ws)connect()}};
+const decide=ok=>{consent=ok?'ja':'nei';setC('esbjug_samtykke',consent);cb.hidden=true;ckc.hidden=true;if(ok){setC('esbjug_id',vid);if(!ws)connect()}};
 cb.querySelector('.ck-ja').onclick=()=>decide(true);cb.querySelector('.ck-nei').onclick=()=>decide(false);
-document.querySelectorAll('.ck-endre').forEach(a=>a.onclick=e=>{e.preventDefault();cb.hidden=false});
+document.querySelectorAll('.ck-endre').forEach(a=>a.onclick=e=>{e.preventDefault();cb.hidden=false;ckc.hidden=true});
 // × lukker uten samtykke og uten å lagre noe: ingenting samles inn, og banneret kommer igjen neste besøk.
 let lukket=false;try{lukket=sessionStorage.getItem('esbjug_ck_lukket')==='1'}catch{}
-cb.querySelector('.ck-x').onclick=()=>{cb.hidden=true;try{sessionStorage.setItem('esbjug_ck_lukket','1')}catch{}};
+cb.querySelector('.ck-x').onclick=()=>{cb.hidden=true;try{sessionStorage.setItem('esbjug_ck_lukket','1')}catch{};if(!pan.hidden)askCk()};
 cb.querySelector('.ck-mer').onclick=e=>{const f=cb.querySelector('.ck-full'),o=f.hidden;f.hidden=!o;e.target.setAttribute('aria-expanded',o);e.target.textContent=o?'Vis mindre':'Les mer'};
 if(!consent&&!lukket)cb.hidden=false;
 let ws,wait=1000,seen=new Set(),unread=0,lastTyping=0;
