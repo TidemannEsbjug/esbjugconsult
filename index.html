@@ -425,7 +425,7 @@ const nowM=()=>Math.floor((Date.now()+skew-day.start)/60000);
 // Nytt døgn etter Oslo-datoen, ikke etter 1440 minutter: døgnet har 23 eller 25 timer når klokka stilles.
 const newDay=()=>oDay.format(Date.now()+skew)!==oDay.format(day.start);
 const svgEl=(n,a)=>{const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);hpG.append(e);return e};
-const scale=()=>{const p=day.pts,m0=p[0][0],m1=Math.max(p[p.length-1][0],m0+5);let lo=Infinity,hi=-Infinity;for(const[,b]of p){lo=Math.min(lo,b);hi=Math.max(hi,b)}
+const scale=()=>{const p=day.pts,m1=p[p.length-1][0],m0=Math.min(p[0][0],m1-5);let lo=Infinity,hi=-Infinity;for(const[,b]of p){lo=Math.min(lo,b);hi=Math.max(hi,b)}
   const pad=Math.max(3,(20-(hi-lo))/2);lo-=pad;hi+=pad;return{x:m=>(m-m0)/(m1-m0)*GW,y:b=>GH-1-(b-lo)/(hi-lo)*(GH-2)}};
 const drawHr=()=>{const has=!!(day&&day.pts.length);hp.hidden=!has&&!hrBpm;hp.classList.toggle('live',!!hrBpm);hpG.textContent='';hpG.style.display=has?'':'none';if(!has)return;
   const{x,y}=scale();let d='',prev=-9;
