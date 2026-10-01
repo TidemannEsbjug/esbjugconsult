@@ -164,6 +164,26 @@ async function serveFile(request, env, key) {
   return new Response(obj.body, { headers });
 }
 
+// Oslo wall-clock time for a timestamp.
+export function osloTime(ts) {
+  const parts = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Oslo", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(new Date(ts));
+  return { hour: Number(parts.find((p) => p.type === "hour").value), minute: Number(parts.find((p) => p.type === "minute").value) };
+}
+
+// Next :00/:15/:30/:45 after ts (Oslo is a whole-hour offset from UTC, so UTC quarters line up).
+export function nextQuarter(ts) {
+  return Math.floor(ts / 900e3) * 900e3 + 900e3;
+}
+
+// What the automatic status should change to, or null for no change.
+export function autoStatus({ hour, minute, status, autoSlept, active }) {
+  const night = hour >= 21 || hour < 4;
+  if (night) return status !== "sleeping" && !active ? "sleeping" : null;
+  // Daytime: wake up at 04:00 (any «sleeping»), and later only undo a night-time automatic sleep.
+  if (status === "sleeping" && ((hour === 4 && minute < 15) || autoSlept)) return "available";
+  return null;
+}
+
 export class ChatHub {
   constructor(ctx, env) {
     this.ctx = ctx;
@@ -222,6 +242,7 @@ export class ChatHub {
       pair[1].send(JSON.stringify({ t: "history", msgs: this.history(vid), owner: this.ownerOnline(), extras: !!ex?.extras, status: this.status() }));
       this.toOwners({ t: "presence", v: this.visitor(vid) });
       if (newVisit && this.setting("notifyVisits") === "1") this.ctx.waitUntil(this.pushVisit(vid));
+      this.ctx.waitUntil(this.ensureAlarm());
       return new Response(null, { status: 101, webSocket: pair[0] });
     }
 
@@ -270,6 +291,8 @@ export class ChatHub {
       this.ctx.acceptWebSocket(pair[1], ["o"]);
       pair[1].serializeAttachment({ role: "owner" });
       pair[1].send(JSON.stringify({ t: "state", visitors: this.allVisitors(), status: this.status(), notifyVisits: this.setting("notifyVisits") === "1" }));
+      this.touchOwner();
+      await this.ensureAlarm();
       this.toVisitors({ t: "owner", online: true });
       return new Response(null, { status: 101, webSocket: pair[0] });
     }
@@ -358,6 +381,7 @@ export class ChatHub {
     }
 
     if (a.role === "owner") {
+      this.touchOwner();
       if (m.t === "msg" && typeof m.text === "string" && typeof m.vid === "string") {
         const text = m.text.trim().slice(0, MAX_TEXT);
         if (!text) return;
@@ -389,9 +413,8 @@ export class ChatHub {
         this.sql.exec(`DELETE FROM rec WHERE sid=?`, m.sid);
         this.sql.exec(`DELETE FROM sessions WHERE sid=?`, m.sid);
       } else if (m.t === "setstatus" && ["available", "meeting", "sleeping"].includes(m.v)) {
-        this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('status', ?)`, m.v);
-        this.toVisitors({ t: "status", v: m.v });
-        this.toOwners({ t: "status", v: m.v, status: m.v });
+        this.sql.exec(`DELETE FROM kv WHERE k='autoSlept'`);
+        this.setStatus(m.v);
       } else if (m.t === "setnotify" && typeof m.v === "boolean") {
         this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('notifyVisits', ?)`, m.v ? "1" : "0");
         this.toOwners({ t: "notify", notifyVisits: m.v });
@@ -411,6 +434,7 @@ export class ChatHub {
       this.sql.exec(`UPDATE visitors SET last_seen=? WHERE vid=?`, Date.now(), a.vid);
       this.toOwners({ t: "presence", v: this.visitor(a.vid, ws) });
     } else if (a.role === "owner") {
+      this.touchOwner();
       if (!this.ownerOnline(ws)) this.toVisitors({ t: "owner", online: false });
     }
   }
@@ -498,6 +522,39 @@ export class ChatHub {
     try { country = new Intl.DisplayNames(["nb"], { type: "region" }).of(v.country) || country; } catch {}
     const where = [v.city, country].filter(Boolean).join(", ") || "Ukjent sted";
     await this.push("Ny besøkende", [where, device].filter(Boolean).join(" · "), vid, { thread: "besok", throttle: false });
+  }
+
+  setStatus(v) {
+    this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('status', ?)`, v);
+    this.toVisitors({ t: "status", v });
+    this.toOwners({ t: "status", v, status: v });
+  }
+
+  touchOwner() {
+    this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('ownerActive', ?)`, String(Date.now()));
+  }
+
+  // ---------- automatic night status ----------
+  // Every quarter hour (Oslo time): from 21:00 to 04:00 the status becomes «sleeping» unless the owner is using
+  // the app or used it in the last 30 minutes; at 04:00 it goes back to «available».
+
+  async ensureAlarm() {
+    if ((await this.ctx.storage.getAlarm()) == null) await this.ctx.storage.setAlarm(nextQuarter(Date.now()));
+  }
+
+  async alarm() {
+    const now = Date.now();
+    const { hour, minute } = osloTime(now);
+    const active = this.ownerOnline() || now - Number(this.setting("ownerActive") || 0) < 30 * 60e3;
+    const next = autoStatus({ hour, minute, status: this.status(), autoSlept: this.setting("autoSlept") === "1", active });
+    if (next === "sleeping") {
+      this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('autoSlept', '1')`);
+      this.setStatus("sleeping");
+    } else if (next === "available") {
+      this.sql.exec(`DELETE FROM kv WHERE k='autoSlept'`);
+      this.setStatus("available");
+    }
+    await this.ctx.storage.setAlarm(nextQuarter(now + 1000));
   }
 
   status() {
