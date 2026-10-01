@@ -219,6 +219,12 @@
   .tanke p{margin:0 0 .7em;font-size:16px;line-height:1.5}
   .tanke .tk-t{font:600 12px/1.5 "SF Mono",Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;opacity:.7;margin-bottom:.9em}
   .tanke a{color:inherit;text-underline-offset:3px;overflow-wrap:anywhere;font-size:14px}
+  .ck{padding-right:44px}
+  .ck .ck-x{flex:none;border-radius:0;font-weight:400;position:absolute;top:8px;right:10px;border:0;background:none;color:#f3f1ea;opacity:.6;font-size:24px;line-height:1;cursor:pointer;padding:4px 6px;font-size:26px}
+  .ck-x:hover{opacity:1}
+  .ck .ck-mer{flex:none;display:inline;border-radius:0;border:0;background:none;padding:0;color:var(--y);font:inherit;font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+  .ck-full{margin-top:8px!important;font-size:13px;opacity:.8}
+  .ck-full[hidden]{display:none}
   canvas{display:block;width:100%;height:38vh;min-height:220px;margin-top:auto;touch-action:pan-y}
 </style>
 </head>
@@ -357,7 +363,9 @@
   </div>
 </main>
 <section class="ck" id="cookies" role="dialog" aria-label="Informasjonskapsler" hidden>
-  <p><b>Informasjonskapsler</b>Chatten bruker én informasjonskapsel for å kjenne deg igjen mellom besøk, og viser meg omtrentlig hvor du er (by, ut fra IP-adressen) og hvor på siden du er mens du er her. Besøket tas opp (rulling og klikk, aldri det du skriver), så jeg kan gjøre siden bedre. Opptak slettes etter 30 dager. Ingen reklame, og ingen sporing utenfor denne siden.</p>
+  <button type="button" class="ck-x" aria-label="Lukk uten å godta">×</button>
+  <p><b>Informasjonskapsler</b>Jeg bruker informasjonskapsler til chatten og til å se hvordan siden brukes, så den kan bli bedre. <button type="button" class="ck-mer" aria-expanded="false">Les mer</button></p>
+  <p class="ck-full" hidden>Chatten bruker én informasjonskapsel for å kjenne deg igjen mellom besøk, og viser meg omtrentlig hvor du er (by, ut fra IP-adressen) og hvor på siden du er mens du er her. Besøket tas opp (rulling og klikk, aldri det du skriver), så jeg kan gjøre siden bedre. Opptak slettes etter 30 dager. Ingen reklame, og ingen sporing utenfor denne siden.</p>
   <div><button type="button" class="ck-ja">Godta</button><button type="button" class="ck-nei">Bare nødvendige</button></div>
 </section>
 <div class="ch" id="chat">
@@ -397,7 +405,11 @@ const cb=document.getElementById('cookies');
 const decide=ok=>{consent=ok?'ja':'nei';setC('esbjug_samtykke',consent);cb.hidden=true;if(ok){setC('esbjug_id',vid);if(!ws)connect()}};
 cb.querySelector('.ck-ja').onclick=()=>decide(true);cb.querySelector('.ck-nei').onclick=()=>decide(false);
 document.querySelectorAll('.ck-endre').forEach(a=>a.onclick=e=>{e.preventDefault();cb.hidden=false});
-if(!consent)cb.hidden=false;
+// × lukker uten samtykke og uten å lagre noe: ingenting samles inn, og banneret kommer igjen neste besøk.
+let lukket=false;try{lukket=sessionStorage.getItem('esbjug_ck_lukket')==='1'}catch{}
+cb.querySelector('.ck-x').onclick=()=>{cb.hidden=true;try{sessionStorage.setItem('esbjug_ck_lukket','1')}catch{}};
+cb.querySelector('.ck-mer').onclick=e=>{const f=cb.querySelector('.ck-full'),o=f.hidden;f.hidden=!o;e.target.setAttribute('aria-expanded',o);e.target.textContent=o?'Vis mindre':'Les mer'};
+if(!consent&&!lukket)cb.hidden=false;
 let ws,wait=1000,seen=new Set(),unread=0,lastTyping=0;
 const pill=$('.ch-pill'),pillT=$('.cp-t');
 // Chatten lukket: under en samtale vises samtalelinjen, ellers chatknappen.
