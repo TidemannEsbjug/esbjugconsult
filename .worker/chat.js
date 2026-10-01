@@ -8,6 +8,7 @@
 //   GET  /chat/admin/ws           owner socket    (Authorization: Bearer ADMIN_TOKEN)
 //   POST /chat/admin/device       {token, env}    register the phone for push
 //   POST /chat/admin/test-push                    send a test push to every registered phone
+//   GET  /chat/admin/devices                      registered push devices (app, env, added, token end)
 //   POST /chat/admin/upload?vid=&name=            owner sends a file (raw body, Content-Type)
 //   POST /chat/upload?vid=&name=                  visitor sends a file (only after the owner turned on «Mer chat»)
 //   GET  /chat/file/<key>                         a file from R2, with Range support (Safari needs it for audio)
@@ -350,6 +351,11 @@ export class ChatHub {
       this.sql.exec(`INSERT OR REPLACE INTO devices (token, env, added, topic) VALUES (?, ?, ?, ?)`,
         token, env === "production" ? "production" : "sandbox", Date.now(), t);
       return Response.json({ ok: true });
+    }
+    // Which phones/watches get pushes (for debugging delivery): app, environment, when registered, end of the token.
+    if (url.pathname === "/chat/admin/devices") {
+      const rows = this.sql.exec(`SELECT token, env, added, topic FROM devices ORDER BY added`).toArray();
+      return Response.json({ devices: rows.map((d) => ({ topic: d.topic || this.env.APNS_TOPIC, env: d.env, added: new Date(d.added).toISOString(), tail: d.token.slice(-6) })) });
     }
     if (url.pathname === "/chat/admin/test-push" && request.method === "POST") {
       const results = await this.push("Esbjug Consult", "Push virker", null);
@@ -777,7 +783,7 @@ export class ChatHub {
           body: payload,
         });
         const text = await r.text();
-        results.push({ status: r.status, body: text.slice(0, 200) });
+        results.push({ status: r.status, body: text.slice(0, 200), topic: d.topic || this.env.APNS_TOPIC, tail: d.token.slice(-6) });
         if (r.status === 410 || /BadDeviceToken|Unregistered|DeviceTokenNotForTopic/.test(text)) {
           this.sql.exec(`DELETE FROM devices WHERE token=?`, d.token);
         }
