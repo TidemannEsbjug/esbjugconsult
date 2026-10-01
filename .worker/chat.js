@@ -201,6 +201,7 @@ export class ChatHub {
       try { this.sql.exec(`ALTER TABLE messages ADD COLUMN ${col}`); } catch {}
     }
     try { this.sql.exec(`ALTER TABLE visitors ADD COLUMN extras INTEGER DEFAULT 0`); } catch {}
+    try { this.sql.exec(`ALTER TABLE devices ADD COLUMN topic TEXT`); } catch {}   // iPhone app or watch app bundle id
     // Visit recordings: one row per page visit, events in chunks (arrays of snapshots, JSON).
     this.sql.exec(`CREATE TABLE IF NOT EXISTS sessions (
       sid TEXT PRIMARY KEY, vid TEXT, start INTEGER, last INTEGER, dur INTEGER DEFAULT 0, events INTEGER DEFAULT 0,
@@ -297,10 +298,12 @@ export class ChatHub {
       return new Response(null, { status: 101, webSocket: pair[0] });
     }
     if (url.pathname === "/chat/admin/device" && request.method === "POST") {
-      const { token, env } = await request.json();
+      const { token, env, topic } = await request.json();
       if (!/^[0-9a-f]{64,200}$/i.test(token || "")) return new Response("Bad token", { status: 400 });
-      this.sql.exec(`INSERT OR REPLACE INTO devices (token, env, added) VALUES (?, ?, ?)`,
-        token, env === "production" ? "production" : "sandbox", Date.now());
+      // The watch app registers itself too, so notifications reach phone and watch at the same time.
+      const t = topic === `${this.env.APNS_TOPIC}.watchkitapp` ? topic : this.env.APNS_TOPIC;
+      this.sql.exec(`INSERT OR REPLACE INTO devices (token, env, added, topic) VALUES (?, ?, ?, ?)`,
+        token, env === "production" ? "production" : "sandbox", Date.now(), t);
       return Response.json({ ok: true });
     }
     if (url.pathname === "/chat/admin/test-push" && request.method === "POST") {
@@ -651,7 +654,7 @@ export class ChatHub {
       this.pushLast.set(vid, now);
       this.pushLog.push(now);
     }
-    const devices = this.sql.exec(`SELECT token, env FROM devices`).toArray();
+    const devices = this.sql.exec(`SELECT token, env, topic FROM devices`).toArray();
     if (!devices.length) return [{ error: "no devices" }];
     const jwt = await this.apnsJwt();
     const payload = JSON.stringify({
@@ -665,7 +668,7 @@ export class ChatHub {
         const r = await fetch(`https://${host}/3/device/${d.token}`, {
           method: "POST",
           headers: {
-            authorization: `bearer ${jwt}`, "apns-topic": this.env.APNS_TOPIC,
+            authorization: `bearer ${jwt}`, "apns-topic": d.topic || this.env.APNS_TOPIC,
             "apns-push-type": "alert", "apns-priority": "10", "content-type": "application/json",
           },
           body: payload,
