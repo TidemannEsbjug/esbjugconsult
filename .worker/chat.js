@@ -185,6 +185,24 @@ export function osloTime(ts) {
   return { hour: Number(parts.find((p) => p.type === "hour").value), minute: Number(parts.find((p) => p.type === "minute").value) };
 }
 
+// A visit notification straight from the browser's request for the page itself: no cookie, no script, nothing stored
+// on the device or here. Only real navigations to the two pages count (not prefetch, bots, or the app's mirror view).
+const BOT = /bot|crawl|spider|slurp|facebookexternalhit|embedly|preview|headless|lighthouse|pingdom|uptime|monitor|curl|wget|python|httpclient|okhttp|java\//i;
+export function pageVisit(request, env, url) {
+  const h = request.headers;
+  if (request.method !== "GET" || !/^\/(en\/)?(index\.html)?$/.test(url.pathname) || url.searchParams.has("speil")) return null;
+  if (h.get("Sec-Fetch-Mode") !== "navigate" || h.get("Sec-Fetch-Dest") !== "document") return null;
+  if (/prefetch|prerender/i.test((h.get("Sec-Purpose") || "") + (h.get("Purpose") || ""))) return null;
+  const ua = (h.get("User-Agent") || "").slice(0, 300);
+  if (!ua || BOT.test(ua)) return null;
+  const cookie = h.get("Cookie") || "";
+  const vid = /(?:^|;\s*)esbjug_samtykke=ja(?:;|$)/.test(cookie) && (cookie.match(/(?:^|;\s*)esbjug_id=([a-zA-Z0-9-]{8,64})(?:;|$)/) || [])[1] || "";
+  const cf = request.cf || {};
+  const body = JSON.stringify({ vid, ip: h.get("CF-Connecting-IP") || "", city: cf.city || "", country: cf.country || "", ua });
+  const hub = env.CHAT.get(env.CHAT.idFromName("hub"));
+  return hub.fetch(new Request("https://hub/internal/visit", { method: "POST", headers: { "x-role": "internal" }, body })).catch(() => {});
+}
+
 // The network a poke comes from: an IPv4 address as is, an IPv6 address as its /64 prefix.
 export function pokeNet(ip) {
   if (!ip.includes(":")) return ip;
@@ -263,12 +281,12 @@ export class ChatHub {
       const vid = request.headers.get("x-vid");
       const geo = JSON.parse(decodeURIComponent(request.headers.get("x-geo") || "%7B%7D"));
       const now = Date.now();
-      // A visit worth a push (the owner wants more rather than fewer): every page load (the page sends ny=1 on its
-      // first socket, also when an old tab's socket still looks open), or a reconnect after more than 2 minutes away
-      // (the page was in the background on a phone). Plain reconnects after a network blip don't count.
+      // Page loads are notified from the HTML request itself (pageVisit), for every visitor. The socket only adds a
+      // push when an open page comes back after more than 2 minutes away (in the background on a phone). The page sends
+      // ny=1 on its first socket, which was already notified; plain reconnects after a network blip don't count.
       const prev = this.sql.exec(`SELECT last_seen FROM visitors WHERE vid=?`, vid).toArray()[0];
       const pageLoad = url.searchParams.get("ny") === "1";
-      const newVisit = pageLoad || (!this.online(vid) && (!prev || now - prev.last_seen > 2 * 60e3));
+      const newVisit = !pageLoad && !this.online(vid) && !!prev && now - prev.last_seen > 2 * 60e3;
       const ua = (request.headers.get("User-Agent") || "").slice(0, 300);
       const lang = (request.headers.get("Accept-Language") || "").split(",")[0].slice(0, 20);
       this.sql.exec(
@@ -285,7 +303,7 @@ export class ChatHub {
       const ex = this.sql.exec(`SELECT extras FROM visitors WHERE vid=?`, vid).toArray()[0];
       pair[1].send(JSON.stringify({ t: "history", msgs: this.history(vid), owner: this.ownerOnline(), extras: !!ex?.extras, status: this.status(), hr: this.liveHr() }));
       this.toOwners({ t: "presence", v: this.visitor(vid) });
-      if (newVisit && this.setting("notifyVisits") === "1") this.ctx.waitUntil(this.pushVisit(vid, !prev));
+      if (newVisit && this.setting("notifyVisits") === "1") this.ctx.waitUntil(this.pushVisit({ key: vid, vid, first: false, city: geo.city, country: geo.country, ua }));
       this.ctx.waitUntil(this.ensureAlarm());
       return new Response(null, { status: 101, webSocket: pair[0] });
     }
@@ -301,6 +319,14 @@ export class ChatHub {
       }
       if (url.pathname === "/internal/hr") {
         return Response.json(this.hrDay(), { headers: { "cache-control": "no-store" } });
+      }
+      if (url.pathname === "/internal/visit") {
+        if (this.setting("notifyVisits") === "1") {
+          // A cookie id only comes with consent; without it nothing about the visitor is stored, the push is all.
+          const known = b.vid && this.sql.exec(`SELECT 1 FROM visitors WHERE vid=?`, b.vid).toArray().length > 0;
+          await this.pushVisit({ key: b.vid || "n:" + pokeNet(b.ip || ""), vid: known ? b.vid : null, first: !known, city: b.city, country: b.country, ua: b.ua });
+        }
+        return new Response("ok");
       }
       if (url.pathname === "/internal/poke") {
         return Response.json(this.poke(b), { headers: { "cache-control": "no-store" } });
@@ -642,23 +668,23 @@ export class ChatHub {
 
   // Push for a visit (when the owner has turned it on in the app). Own caps: one per visitor per 15 s (stops reload
   // spam), at most 20 per 10 minutes in total. Same coin sound as messages (the owner's choice).
-  async pushVisit(vid, first) {
+  // key: the visitor's cookie id, or "n:" + network for visitors without consent. vid only for known visitors (tapping
+  // the push opens them in the app).
+  async pushVisit({ key, vid, first, city, country, ua }) {
     const now = Date.now();
     this.visitLast = this.visitLast || new Map();
     this.visitLog = (this.visitLog || []).filter((t) => now - t < 600000);
-    if (now - (this.visitLast.get(vid) || 0) < 15e3 || this.visitLog.length >= 20) return;
+    if (now - (this.visitLast.get(key) || 0) < 15e3 || this.visitLog.length >= 20) return;
     for (const [k, t] of this.visitLast) if (now - t > 15e3) this.visitLast.delete(k);
-    this.visitLast.set(vid, now);
+    this.visitLast.set(key, now);
     this.visitLog.push(now);
-    const v = this.visitor(vid);
-    if (!v) return;
-    const ua = v.ua || "";
+    ua = ua || "";
     const device = /iPhone/.test(ua) ? "iPhone" : /iPad/.test(ua) ? "iPad" : /Android/.test(ua) ? "Android"
       : /Mac OS X/.test(ua) ? "Mac" : /Windows/.test(ua) ? "Windows" : "";
-    let country = v.country || "";
-    try { country = new Intl.DisplayNames(["nb"], { type: "region" }).of(v.country) || country; } catch {}
-    const where = [v.city, country].filter(Boolean).join(", ") || "Ukjent sted";
-    await this.push(first ? "Ny besøkende" : "Besøkende tilbake", [where, device].filter(Boolean).join(" · "), vid, { thread: "besok", throttle: false, category: "VISIT" });
+    let land = "";
+    try { const n = new Intl.DisplayNames(["nb"], { type: "region" }).of(country); if (n && n !== country) land = n; } catch {}
+    const where = [city, land].filter(Boolean).join(", ") || "Ukjent sted";
+    await this.push(first ? "Ny besøkende" : "Besøkende tilbake", [where, device].filter(Boolean).join(" · "), vid || null, { thread: "besok", throttle: false, category: "VISIT" });
   }
 
   setStatus(v) {
@@ -681,6 +707,12 @@ export class ChatHub {
 
   async alarm() {
     const now = Date.now();
+    // Everyone gets a socket now, so visitors without consent leave a row per page load (a new random id each time).
+    // Rows with no messages and no recordings go after 7 days; conversations and recorded visits stay as before.
+    if (now - (this.visPruned || 0) > 3600e3) {
+      this.visPruned = now;
+      this.sql.exec(`DELETE FROM visitors WHERE last_seen < ? AND vid NOT IN (SELECT DISTINCT vid FROM messages) AND vid NOT IN (SELECT DISTINCT vid FROM sessions)`, now - 7 * 864e5);
+    }
     const { hour, minute } = osloTime(now);
     const active = this.ownerOnline() || now - Number(this.setting("ownerActive") || 0) < 30 * 60e3;
     const next = autoStatus({ hour, minute, status: this.status(), autoSlept: this.setting("autoSlept") === "1", active });

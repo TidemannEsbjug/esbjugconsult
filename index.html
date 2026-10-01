@@ -216,6 +216,16 @@
   .ch-mail[hidden]{display:none}
   .ch-mail:hover{background:#33333d}
   .natt .ch-mail{background:#222b4a;color:#cfdcff}
+  /* Spørsmål i chatten til den som har sagt nei til informasjonskapsler: like store knapper, vises én gang per fane. */
+  .ch-ck{margin:0 12px 8px;padding:10px 12px;border-radius:14px;background:#26262e;font-size:13px;line-height:1.4}
+  .ch-ck[hidden]{display:none}
+  .ch-ck p{margin:0 0 8px}
+  .ch-ck div{display:flex;gap:8px}
+  .ch-ck button{flex:1;border:1.5px solid rgba(255,222,89,.55);background:none;color:var(--y);border-radius:999px;padding:7px 10px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer}
+  .ch-ck button:hover{background:rgba(255,222,89,.1)}
+  .ch-ck button:focus-visible{outline:2px solid var(--y);outline-offset:2px}
+  .natt .ch-ck{background:#222b4a;color:#cfdcff}
+  .natt .ch-ck button{color:#cfdcff;border-color:rgba(207,220,255,.5)}
   /* Et tillegg skrevet senere: tynn strek til venstre og litt mindre skrift, adskilt uten å ligne et kommentarfelt. */
   .tanke{margin:26px 0 0;padding:2px 0 2px 18px;border-left:2px solid var(--ink);max-width:46em}
   .tanke p{margin:0 0 .7em;font-size:16px;line-height:1.5}
@@ -430,7 +440,7 @@
 <section class="ck" id="cookies" role="dialog" aria-label="Informasjonskapsler" hidden>
   <button type="button" class="ck-x" aria-label="Lukk uten å godta">×</button>
   <p><b>Informasjonskapsler</b>Jeg bruker informasjonskapsler til chatten og til å se hvordan siden brukes, så den kan bli bedre. <button type="button" class="ck-mer" aria-expanded="false">Les mer</button></p>
-  <p class="ck-full" hidden>Chatten bruker én informasjonskapsel for å kjenne deg igjen mellom besøk, og viser meg omtrentlig hvor du er (by, ut fra IP-adressen) og hvor på siden du er mens du er her. Besøket tas opp (rulling og klikk, aldri det du skriver), så jeg kan gjøre siden bedre. Opptak slettes etter 30 dager. Ingen reklame, og ingen sporing utenfor denne siden.</p>
+  <p class="ck-full" hidden>Chatten bruker én informasjonskapsel for å kjenne deg igjen mellom besøk, og viser meg omtrentlig hvor du er (by, ut fra IP-adressen) og hvor på siden du er mens du er her. Besøket tas opp (rulling og klikk, aldri det du skriver), så jeg kan gjøre siden bedre. Opptak slettes etter 30 dager. Når du er på siden, ser jeg at noen er her, omtrent hvor (by) og hvilken enhet. Ingen reklame, og ingen sporing utenfor denne siden.</p>
   <div><button type="button" class="ck-ja">Godta</button><button type="button" class="ck-nei">Bare nødvendige</button></div>
 </section>
 <div class="hp-tip mono" hidden></div>
@@ -451,6 +461,7 @@
     <div class="ch-call" hidden><div class="cc-i"><span class="cc-dot"></span><div><b class="cc-t">Tidemann ringer deg</b><span class="cc-s">Lydsamtale i nettleseren</span></div></div><div class="cc-b"><button type="button" class="cc-ans">Svar</button><button type="button" class="cc-dec">Avslå</button><button type="button" class="cc-mute" hidden>Lyd av</button><button type="button" class="cc-min" hidden>Minimer</button><button type="button" class="cc-end" hidden>Legg på</button></div><audio class="cc-audio" autoplay playsinline></audio></div>
     <div class="ch-m" aria-live="polite"></div>
     <a class="ch-mail" href="mailto:tidemann@esbjugconsult.com" hidden>Sende mail istedet?</a>
+    <div class="ch-ck" hidden><p>Vil du at chatten skal huske deg til neste gang? Da bruker jeg informasjonskapsler til chatten og til å se hvordan siden brukes.</p><div><button type="button" class="ch-ck-ja">Ja, godta</button><button type="button" class="ch-ck-nei">Nei takk</button></div></div>
     <form class="ch-f"><span class="ch-more" hidden><button type="button" class="ch-att" aria-label="Legg ved fil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5l-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l8.6-8.6a3.7 3.7 0 0 1 5.2 5.2l-8.6 8.6a1.8 1.8 0 0 1-2.6-2.6l7.9-7.9"/></svg></button><button type="button" class="ch-mic" aria-label="Spill inn lydmelding"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><input type="file" class="ch-file" hidden></span><textarea rows="1" maxlength="2000" placeholder="Skriv en melding …" aria-label="Melding"></textarea><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
   </section>
 </div>
@@ -549,8 +560,8 @@ const $=q=>document.querySelector('#chat '+q),btn=$('.ch-b'),pan=$('.ch-p'),box=
 const getC=n=>(document.cookie.split('; ').find(c=>c.startsWith(n+'='))||'').slice(n.length+1);
 const setC=(n,v)=>{document.cookie=n+'='+v+'; Max-Age=31536000; Path=/; SameSite=Lax; Secure'};
 try{localStorage.removeItem('esbjug-vid')}catch{}
-// Med samtykke: en informasjonskapsel kjenner besøkende igjen, og chatten kobler til med en gang (Tidemann ser at du er her).
-// Uten: ingenting lagres, og chatten kobler til først når du åpner den.
+// Chatten kobler til med en gang for alle (Tidemann ser at noen er her). Med samtykke kjenner en informasjonskapsel
+// deg igjen til neste gang; uten får siden en ny tilfeldig id hver gang, og ingenting lagres på enheten.
 let consent=getC('esbjug_samtykke'),vid=consent==='ja'&&getC('esbjug_id')||crypto.randomUUID();
 if(consent==='ja')setC('esbjug_id',vid);
 const cb=document.getElementById('cookies');
@@ -571,11 +582,17 @@ const open=o=>{btn.setAttribute('aria-expanded',o);setTimeout(()=>typeof lqueue=
   if(!o){if(pan.hidden)return;if(still.matches){pan.hidden=true;dock();return}
     pan.classList.remove('in');pan.classList.add('out');pan.addEventListener('animationend',()=>{pan.classList.remove('out');pan.hidden=true;dock()},{once:true});return}
   if(pan.hidden){pan.hidden=false;btn.hidden=true;pill.hidden=true;pan.classList.remove('out');pan.classList.add('in');pan.addEventListener('animationend',()=>pan.classList.remove('in'),{once:true})}
-  if(o){unread=0;badge.hidden=true;box.scrollTop=box.scrollHeight;setTimeout(()=>ta.focus(),50)}};
+  if(o){askCk();unread=0;badge.hidden=true;box.scrollTop=box.scrollHeight;setTimeout(()=>ta.focus(),50)}};
 btn.onclick=()=>{open(true);if(!ws)connect()};
 // «Snakk med meg om alt dette.» åpner chatten, med «Sende mail istedet?» som vei videre til e-post.
 // Knappen vises bare når chatten er åpnet derfra, ikke fra chatknappen.
 const mailBtn=$('.ch-mail');
+// Har du sagt nei til informasjonskapsler (eller lukket banneret), spør chatten én gang per fane om den kan huske deg.
+// «Ja, godta» gir samme samtykke som banneret, og samtalen du har nå blir husket.
+const ckc=$('.ch-ck');let ckNei=false;try{ckNei=sessionStorage.getItem('esbjug_ck_chat')==='nei'}catch{}
+const askCk=()=>{ckc.hidden=consent==='ja'||!cb.hidden||ckNei};
+ckc.querySelector('.ch-ck-ja').onclick=()=>{decide(true);ckc.hidden=true;ta.focus()};
+ckc.querySelector('.ch-ck-nei').onclick=()=>{ckNei=true;ckc.hidden=true;try{sessionStorage.setItem('esbjug_ck_chat','nei')}catch{};ta.focus()};
 document.querySelector('a.t').addEventListener('click',e=>{e.preventDefault();mailBtn.hidden=false;open(true);if(!ws)connect()});
 // «Slett samtalen»: to trykk, så slettes alt hos Tidemann og på serveren, og du får en ny, tom samtale.
 const del=$('.ch-del');let armed=0;
@@ -690,7 +707,7 @@ const connect=()=>{ws=new WebSocket('wss://'+location.host+'/chat/ws?vid='+encod
     if(m.t==='history'){if(m.hr)hrTop(m.hr);m.msgs.forEach(x=>add(x,false));ownerOn=!!m.owner;if(m.status)stat=m.status;render();extras(!!m.extras)}else if(m.t==='status')setStat(m.v);else if(m.t==='hr')hrTop(m.bpm,true);else if(m.t==='cleared')cleared();else if(m.t==='ctl')control(m.action,m.on);else if(m.t==='rtc')onRtc(m.data);else if(m.t==='msg')add(m.m,true);else if(m.t==='owner')owner(m.online)};
   ws.onclose=()=>{setTimeout(connect,wait);wait=Math.min(wait*2,30000)}};
 hrTop.sock(()=>!!ws&&ws.readyState===1);
-if(consent==='ja')connect();
+connect();
 const send=()=>{const text=ta.value.trim();if(!text||!ws||ws.readyState!==1)return;ws.send(JSON.stringify({t:'msg',text}));ta.value='';ta.style.height=''};
 form.onsubmit=e=>{e.preventDefault();send()};
 ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});
