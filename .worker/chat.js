@@ -322,6 +322,27 @@ export class ChatHub {
       const events = this.sql.exec(`SELECT data FROM rec WHERE sid=? ORDER BY seq`, sid).toArray().flatMap((r) => JSON.parse(r.data));
       return Response.json({ meta, events });
     }
+    // For the watch app and replies from notifications (no socket there): list, reply, mark read.
+    if (url.pathname === "/chat/admin/visitors") {
+      return Response.json({ visitors: this.allVisitors(), status: this.status() });
+    }
+    if (url.pathname === "/chat/admin/reply" && request.method === "POST") {
+      const { vid, text } = await request.json();
+      const t = typeof text === "string" ? text.trim().slice(0, MAX_TEXT) : "";
+      if (typeof vid !== "string" || !t) return new Response("Bad request", { status: 400 });
+      this.touchOwner();
+      const msg = this.store(vid, true, t);
+      this.sql.exec(`UPDATE visitors SET unread = 0 WHERE vid=?`, vid);
+      this.toVisitor(vid, { t: "msg", m: msg });
+      this.toOwners({ t: "msg", vid, m: msg, v: this.visitor(vid) });
+      return Response.json({ ok: true, m: msg });
+    }
+    if (url.pathname === "/chat/admin/read" && request.method === "POST") {
+      const { vid } = await request.json();
+      this.sql.exec(`UPDATE visitors SET unread = 0 WHERE vid=?`, vid);
+      this.toOwners({ t: "presence", v: this.visitor(vid) });
+      return Response.json({ ok: true });
+    }
     if (url.pathname === "/chat/admin/messages") {
       const vid = url.searchParams.get("vid") || "";
       return Response.json({ msgs: this.history(vid) });
@@ -521,7 +542,7 @@ export class ChatHub {
     let country = v.country || "";
     try { country = new Intl.DisplayNames(["nb"], { type: "region" }).of(v.country) || country; } catch {}
     const where = [v.city, country].filter(Boolean).join(", ") || "Ukjent sted";
-    await this.push("Ny besøkende", [where, device].filter(Boolean).join(" · "), vid, { thread: "besok", throttle: false });
+    await this.push("Ny besøkende", [where, device].filter(Boolean).join(" · "), vid, { thread: "besok", throttle: false, category: "VISIT" });
   }
 
   setStatus(v) {
@@ -634,7 +655,7 @@ export class ChatHub {
     if (!devices.length) return [{ error: "no devices" }];
     const jwt = await this.apnsJwt();
     const payload = JSON.stringify({
-      aps: { alert: { title, body: body.length > 180 ? body.slice(0, 177) + "…" : body }, sound: opt.sound || "klirr.caf", "thread-id": opt.thread || vid || "esbjug", "mutable-content": 0 },
+      aps: { alert: { title, body: body.length > 180 ? body.slice(0, 177) + "…" : body }, sound: opt.sound || "klirr.caf", "thread-id": opt.thread || vid || "esbjug", ...(vid ? { category: opt.category || "MSG" } : {}), "mutable-content": 0 },
       vid,
     });
     const results = [];
