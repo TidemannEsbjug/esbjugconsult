@@ -14,6 +14,7 @@
 //   GET  /chat/ice                                STUN + short-lived Cloudflare TURN credentials for calls
 //   GET  /chat/status                             the owner's status (available/meeting/sleeping) + whether the app is open
 //   GET  /chat/hr                                 today's heart rate from the owner's Apple Watch (Oslo day, per minute) + live bpm
+//   POST /chat/poke                               «Få meg til å få høyere puls»: a push to the owner (only while his pulse is live)
 //   POST /chat/rec                                last batch of a visit recording (sendBeacon when the page closes)
 //   GET  /chat/admin/sessions[?vid=]              recorded visits (consented visitors only, kept 30 days)
 //   GET  /chat/admin/session?sid=                 one recording's events, for replay in the app
@@ -32,7 +33,7 @@ export async function handleChat(request, env, url) {
   if (path === "/chat/ws") {
     if (request.headers.get("Upgrade") !== "websocket") return new Response("Expected WebSocket", { status: 426 });
     const origin = request.headers.get("Origin") || "";
-    if (origin && !/^https:\/\/(www\.)?esbjugconsult\.com$/.test(origin) && !origin.startsWith("http://localhost")) {
+    if (origin && !/^https:\/\/(www\.)?esbjugconsult\.com$/.test(origin) && !/^http:\/\/localhost(:\d+)?$/.test(origin)) {
       return new Response("Forbidden", { status: 403 });
     }
     const vid = url.searchParams.get("vid") || "";
@@ -59,6 +60,14 @@ export async function handleChat(request, env, url) {
 
   if (path === "/chat/hr") {
     return hub.fetch(new Request("https://hub/internal/hr", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }));
+  }
+
+  if (path === "/chat/poke" && request.method === "POST") {
+    const origin = request.headers.get("Origin") || "";
+    if (!/^https:\/\/(www\.)?esbjugconsult\.com$/.test(origin) && !/^http:\/\/localhost(:\d+)?$/.test(origin)) return new Response("Forbidden", { status: 403 });
+    const cf = request.cf || {};
+    const body = JSON.stringify({ ip: request.headers.get("CF-Connecting-IP") || "", city: cf.city || "", country: cf.country || "" });
+    return hub.fetch(new Request("https://hub/internal/poke", { method: "POST", headers: { "x-role": "internal" }, body }));
   }
 
   if (path === "/chat/ice") {
@@ -175,6 +184,14 @@ export function osloTime(ts) {
   return { hour: Number(parts.find((p) => p.type === "hour").value), minute: Number(parts.find((p) => p.type === "minute").value) };
 }
 
+// The network a poke comes from: an IPv4 address as is, an IPv6 address as its /64 prefix.
+export function pokeNet(ip) {
+  if (!ip.includes(":")) return ip;
+  const [a, b = ""] = ip.split("::");
+  const h = a ? a.split(":") : [], t = b ? b.split(":") : [];
+  return [...h, ...Array(Math.max(0, 8 - h.length - t.length)).fill("0"), ...t].slice(0, 4).join(":");
+}
+
 // Oslo midnight (as a UTC timestamp) for the Oslo day that ts falls in. Oslo is UTC+1 or UTC+2, so midnight is
 // one of two candidates; the right one is the candidate that reads 00:00 in Oslo (also on the DST change days).
 export function osloMidnight(ts) {
@@ -280,6 +297,9 @@ export class ChatHub {
       }
       if (url.pathname === "/internal/hr") {
         return Response.json(this.hrDay(), { headers: { "cache-control": "no-store" } });
+      }
+      if (url.pathname === "/internal/poke") {
+        return Response.json(this.poke(b), { headers: { "cache-control": "no-store" } });
       }
       if (url.pathname === "/internal/rec") {
         this.record(b.vid, b);
@@ -583,6 +603,28 @@ export class ChatHub {
       this.hrMemo = { start, at: now, pts: rows.map((r) => [r.m, r.b]) };
     }
     return { start, now, live: this.liveHr(), pts: this.hrMemo.pts };
+  }
+
+  // A visitor pressed «Få meg til å få høyere puls». Only while the pulse is live (so never at night), at most one per
+  // network per 10 minutes (IPv4 address, or IPv6 /64, since one device can hold a whole /64) and 6 per 10 minutes in
+  // total; the push is the same as for messages, without a reply button.
+  poke({ ip, city, country }) {
+    if (!this.liveHr()) return { ok: false, why: "notlive" };
+    const now = Date.now();
+    const net = pokeNet(ip || "");
+    this.pokeLast = this.pokeLast || new Map();
+    this.pokeLog = (this.pokeLog || []).filter((t) => now - t < 600000);
+    if (now - (this.pokeLast.get(net) || 0) < 600000) return { ok: false, why: "wait" };
+    if (this.pokeLog.length >= 6) return { ok: false, why: "cap" };
+    for (const [k, t] of this.pokeLast) if (now - t > 600000) this.pokeLast.delete(k);
+    this.pokeLast.set(net, now);
+    this.pokeLog.push(now);
+    // Only a real country name (Tor gives "T1", unknown "XX"); otherwise the push says «Noen på siden».
+    let land = "";
+    try { const n = new Intl.DisplayNames(["nb"], { type: "region" }).of(country); if (n && n !== country) land = n; } catch {}
+    const where = [city, land].filter(Boolean).join(", ");
+    this.ctx.waitUntil(this.push("Høyere puls", where ? `Noen i ${where} vil gi deg hjertebank` : "Noen på siden vil gi deg hjertebank", null, { thread: "puls" }));
+    return { ok: true };
   }
 
   setting(k) {
