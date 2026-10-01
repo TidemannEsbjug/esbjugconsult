@@ -307,7 +307,7 @@ export class ChatHub {
       return Response.json({ ok: true });
     }
     if (url.pathname === "/chat/admin/test-push" && request.method === "POST") {
-      const results = await this.push("Esbjug Consult", "Push virker 👋", null);
+      const results = await this.push("Esbjug Consult", "Push virker", null);
       return Response.json({ results });
     }
     if (url.pathname === "/chat/admin/sessions") {
