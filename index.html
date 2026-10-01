@@ -682,7 +682,9 @@ const render=()=>{const [label,cls]=STAT[stat]||STAT.available;
 const owner=on=>{ownerOn=on;render()};
 const setStat=v=>{stat=v;render()};
 fetch('/chat/status').then(r=>r.json()).then(j=>{ownerOn=!!j.owner;setStat(j.status);if(j.hr)hrTop(j.hr)}).catch(()=>{});
-const connect=()=>{ws=new WebSocket('wss://'+location.host+'/chat/ws?vid='+encodeURIComponent(vid));
+// ny=1 bare på sidens første socket: da er det en ny sidevisning (varsel til Tidemann), ikke en gjenoppkobling.
+let nyside=1;
+const connect=()=>{ws=new WebSocket('wss://'+location.host+'/chat/ws?vid='+encodeURIComponent(vid)+(nyside?'&ny=1':''));nyside=0;
   ws.onopen=()=>{wait=1000;ws.send(JSON.stringify({t:'page',page:location.pathname+location.hash}))};
   ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch{return}
     if(m.t==='history'){if(m.hr)hrTop(m.hr);m.msgs.forEach(x=>add(x,false));ownerOn=!!m.owner;if(m.status)stat=m.status;render();extras(!!m.extras)}else if(m.t==='status')setStat(m.v);else if(m.t==='hr')hrTop(m.bpm,true);else if(m.t==='cleared')cleared();else if(m.t==='ctl')control(m.action,m.on);else if(m.t==='rtc')onRtc(m.data);else if(m.t==='msg')add(m.m,true);else if(m.t==='owner')owner(m.online)};

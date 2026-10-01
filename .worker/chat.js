@@ -263,9 +263,12 @@ export class ChatHub {
       const vid = request.headers.get("x-vid");
       const geo = JSON.parse(decodeURIComponent(request.headers.get("x-geo") || "%7B%7D"));
       const now = Date.now();
-      // A new visit = not on the site right now and last seen more than 10 minutes ago (or never).
+      // A visit worth a push (the owner wants more rather than fewer): every page load (the page sends ny=1 on its
+      // first socket, also when an old tab's socket still looks open), or a reconnect after more than 2 minutes away
+      // (the page was in the background on a phone). Plain reconnects after a network blip don't count.
       const prev = this.sql.exec(`SELECT last_seen FROM visitors WHERE vid=?`, vid).toArray()[0];
-      const newVisit = !this.online(vid) && (!prev || now - prev.last_seen > 10 * 60e3);
+      const pageLoad = url.searchParams.get("ny") === "1";
+      const newVisit = pageLoad || (!this.online(vid) && (!prev || now - prev.last_seen > 2 * 60e3));
       const ua = (request.headers.get("User-Agent") || "").slice(0, 300);
       const lang = (request.headers.get("Accept-Language") || "").split(",")[0].slice(0, 20);
       this.sql.exec(
@@ -282,7 +285,7 @@ export class ChatHub {
       const ex = this.sql.exec(`SELECT extras FROM visitors WHERE vid=?`, vid).toArray()[0];
       pair[1].send(JSON.stringify({ t: "history", msgs: this.history(vid), owner: this.ownerOnline(), extras: !!ex?.extras, status: this.status(), hr: this.liveHr() }));
       this.toOwners({ t: "presence", v: this.visitor(vid) });
-      if (newVisit && this.setting("notifyVisits") === "1") this.ctx.waitUntil(this.pushVisit(vid));
+      if (newVisit && this.setting("notifyVisits") === "1") this.ctx.waitUntil(this.pushVisit(vid, !prev));
       this.ctx.waitUntil(this.ensureAlarm());
       return new Response(null, { status: 101, webSocket: pair[0] });
     }
@@ -637,13 +640,14 @@ export class ChatHub {
     return this.sql.exec(`SELECT v FROM kv WHERE k=?`, k).toArray()[0]?.v;
   }
 
-  // Push for a new visitor on the site (when the owner has turned it on in the app). Own caps: one per
-  // visitor per 30 min, at most 20 per 10 minutes. Same coin sound as messages (the owner's choice).
-  async pushVisit(vid) {
+  // Push for a visit (when the owner has turned it on in the app). Own caps: one per visitor per 15 s (stops reload
+  // spam), at most 20 per 10 minutes in total. Same coin sound as messages (the owner's choice).
+  async pushVisit(vid, first) {
     const now = Date.now();
     this.visitLast = this.visitLast || new Map();
     this.visitLog = (this.visitLog || []).filter((t) => now - t < 600000);
-    if (now - (this.visitLast.get(vid) || 0) < 30 * 60e3 || this.visitLog.length >= 20) return;
+    if (now - (this.visitLast.get(vid) || 0) < 15e3 || this.visitLog.length >= 20) return;
+    for (const [k, t] of this.visitLast) if (now - t > 15e3) this.visitLast.delete(k);
     this.visitLast.set(vid, now);
     this.visitLog.push(now);
     const v = this.visitor(vid);
@@ -654,7 +658,7 @@ export class ChatHub {
     let country = v.country || "";
     try { country = new Intl.DisplayNames(["nb"], { type: "region" }).of(v.country) || country; } catch {}
     const where = [v.city, country].filter(Boolean).join(", ") || "Ukjent sted";
-    await this.push("Ny besøkende", [where, device].filter(Boolean).join(" · "), vid, { thread: "besok", throttle: false, category: "VISIT" });
+    await this.push(first ? "Ny besøkende" : "Besøkende tilbake", [where, device].filter(Boolean).join(" · "), vid, { thread: "besok", throttle: false, category: "VISIT" });
   }
 
   setStatus(v) {
