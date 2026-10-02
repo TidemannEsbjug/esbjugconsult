@@ -30,12 +30,11 @@
   /* Levende gradient inni knappen: rødt, grønt og gult flyter rolig rundt og puster sakte inn og ut. Ikke knyttet til pulsen. */
   a.t{position:relative;isolation:isolate;overflow:hidden}
   a.t::before,a.t::after{content:"";position:absolute;z-index:-1;pointer-events:none;width:220%;height:420%;left:-60%;top:-160%;opacity:0;filter:blur(10px)}
-  a.t::before{background:radial-gradient(closest-side,rgba(235,20,50,1),rgba(235,20,50,.55) 45%,transparent);animation:tFlyt1 23s ease-in-out infinite alternate,tAnd1 9s ease-in-out infinite}
-  a.t::after{background:radial-gradient(closest-side,rgba(20,235,120,.95),rgba(20,235,120,.5) 45%,transparent);animation:tFlyt2 29s ease-in-out infinite alternate,tAnd2 11s ease-in-out -4s infinite}
+  a.t::before{background:radial-gradient(closest-side,rgba(235,20,50,1),rgba(235,20,50,.55) 45%,transparent);animation:tFlyt1 41s ease-in-out infinite alternate,tAnd 16s ease-in-out infinite}
+  a.t::after{background:radial-gradient(closest-side,rgba(20,235,120,.95),rgba(20,235,120,.5) 45%,transparent);animation:tFlyt2 53s ease-in-out infinite alternate,tAnd 16s ease-in-out infinite}
   @keyframes tFlyt1{0%{transform:translate(-22%,6%) scale(1)}50%{transform:translate(6%,-8%) scale(1.25)}100%{transform:translate(26%,4%) scale(.9)}}
   @keyframes tFlyt2{0%{transform:translate(24%,-6%) scale(1.1)}50%{transform:translate(-8%,8%) scale(.9)}100%{transform:translate(-26%,-4%) scale(1.2)}}
-  @keyframes tAnd1{0%,100%{opacity:0}50%{opacity:.75}}
-  @keyframes tAnd2{0%,100%{opacity:0}50%{opacity:.7}}
+  /* Samme pust og fase for rødt og grønt, så de alltid kommer og går sammen. */ @keyframes tAnd{0%,100%{opacity:0}50%{opacity:.38}}
   @media (prefers-reduced-motion:reduce){a.t::before,a.t::after{animation:none;opacity:.2}}
   a.t:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
   .m{margin-top:clamp(40px,8vh,80px);max-width:34em;text-transform:none;letter-spacing:.02em;font-weight:500;line-height:1.6}
