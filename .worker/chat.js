@@ -9,6 +9,7 @@
 //   POST /chat/admin/device       {token, env}    register the phone for push
 //   POST /chat/admin/test-push                    send a test push to every registered phone
 //   GET  /chat/admin/devices                      registered push devices (app, env, added, token end)
+//   POST /chat/admin/reset-teller                 start the unique-visitor counter over
 //   POST /chat/admin/upload?vid=&name=            owner sends a file (raw body, Content-Type)
 //   POST /chat/upload?vid=&name=                  visitor sends a file (only after the owner turned on «Mer chat»)
 //   GET  /chat/file/<key>                         a file from R2, with Range support (Safari needs it for audio)
@@ -44,7 +45,7 @@ export async function handleChat(request, env, url) {
     const geo = {
       city: cf.city || "", region: cf.region || "", country: cf.country || "",
       lat: cf.latitude ? Number(cf.latitude) : null, lon: cf.longitude ? Number(cf.longitude) : null,
-      tz: cf.timezone || "",
+      tz: cf.timezone || "", org: cf.asOrganization || "",
     };
     const headers = new Headers(request.headers);
     headers.set("x-role", "visitor");
@@ -199,6 +200,18 @@ export function osloTime(ts) {
 const BOT = /bot|crawl|spider|slurp|facebookexternalhit|embedly|preview|headless|lighthouse|pingdom|uptime|monitor|curl|wget|python|httpclient|okhttp|java\//i;
 // preloaded: the page was shown from a prefetch/prerender (the browser sent no request on the click), so the page itself
 // reports it with POST /chat/besok and the navigation checks don't apply.
+// Signs that a visitor is a robot rather than a person: a data-centre network, an automated browser, a Chrome that is years
+// old, no language. Such visitors only count (and only show in «her nå») after a real interaction with the page.
+const DC = /amazon|aws|google cloud|google llc|microsoft|azure|digitalocean|ovh|hetzner|linode|akamai|oracle|alibaba|tencent|vultr|choopa|constant company|scaleway|contabo|leaseweb|m247|datacamp|hostinger|ionos|zenlayer|psychz|quadranet|colocrossing|frantech|cogent|hostroyale|servers australia|worldstream|g-core|gcore/i;
+export function robotHint({ ua, lang, org, webdriver }) {
+  if (webdriver) return "automatisert nettleser";
+  const c = /Chrome\/(\d+)/.exec(ua || "");
+  if (c && Number(c[1]) < 130 && !/Edg|OPR|SamsungBrowser|YaBrowser/.test(ua)) return "gammel Chrome";
+  if (!lang) return "ingen språk";
+  if (DC.test(org || "")) return "datasenter";
+  return "";
+}
+
 export function pageVisit(request, env, url, preloaded = false) {
   const h = request.headers;
   if (!preloaded) {
@@ -209,6 +222,7 @@ export function pageVisit(request, env, url, preloaded = false) {
   const ua = (h.get("User-Agent") || "").slice(0, 300);
   if (!ua || BOT.test(ua)) return null;
   const cookie = h.get("Cookie") || "";
+  if (/(?:^|;\s*)esbjug_eier=1(?:;|$)/.test(cookie) || url.searchParams.has("eier")) return null;
   const vid = /(?:^|;\s*)esbjug_samtykke=ja(?:;|$)/.test(cookie) && (cookie.match(/(?:^|;\s*)esbjug_id=([a-zA-Z0-9-]{8,64})(?:;|$)/) || [])[1] || "";
   const cf = request.cf || {};
   const body = JSON.stringify({ vid, ip: h.get("CF-Connecting-IP") || "", city: cf.city || "", country: cf.country || "", ua });
@@ -331,17 +345,23 @@ export class ChatHub {
         vid, now, now, geo.city, geo.region, geo.country, geo.lat, geo.lon, geo.tz, ua, lang);
       const ip = request.headers.get("x-ip") || "";
       if (ip && this.ctx.getWebSockets(`ip:${ip}`).length >= 10) return new Response("Too many connections", { status: 429 });
-      // A page load by a real browser may add one to the unique-visitor counter (ny: this visitor made it go up).
-      const seen = pageLoad && !BOT.test(ua) ? await this.countVisit({ vid, consent: url.searchParams.get("c") === "1", ip, ua }) : { ny: false, nr: null };
+      // Unique-visitor counter: a known visitor gets their number back right away. A new one is only counted when the page
+      // reports a person (an interaction, or 12 s on the page if nothing looks robotic): see «menneske» below.
+      const sus = robotHint({ ua, lang, org: geo.org, webdriver: url.searchParams.get("w") === "1" });
+      const consent = url.searchParams.get("c") === "1";
+      const eier = url.searchParams.get("e") === "1";   // one of the owner's own browsers (?eier): never counted
+      const vk = pageLoad && !eier && !BOT.test(ua) ? await this.visitKey({ vid, consent, ip, ua }) : null;
+      const nr = vk ? vk.own : null;
+      const pend = vk && !nr ? { day: vk.day, k: vk.k, net: vk.net, ipnet: pokeNet(ip), consent } : null;
       const pair = new WebSocketPair();
       this.ctx.acceptWebSocket(pair[1], ["v", `v:${vid}`, ...(ip ? [`ip:${ip}`] : [])]);
-      pair[1].serializeAttachment({ role: "visitor", vid, rate: [], win: 0, n: 0, nr: seen.nr });
+      pair[1].serializeAttachment({ role: "visitor", vid, rate: [], win: 0, n: 0, nr, pend, sus, t0: now, ok: !!nr || eier, eier });
       const ex = this.sql.exec(`SELECT extras FROM visitors WHERE vid=?`, vid).toArray()[0];
       const count = { live: this.liveCount(), total: this.uniqTotal() };
-      pair[1].send(JSON.stringify({ t: "history", msgs: this.history(vid), owner: this.ownerOnline(), extras: !!ex?.extras, status: this.status(), hr: this.liveHr(), count: { ...count, ny: seen.ny, nr: seen.nr } }));
+      pair[1].send(JSON.stringify({ t: "history", msgs: this.history(vid), owner: this.ownerOnline(), extras: !!ex?.extras, status: this.status(), hr: this.liveHr(), count: { ...count, nr, pend: !!pend, meg: !eier && (!sus || !!nr) } }));
       this.send(this.ctx.getWebSockets("v").filter((w) => w !== pair[1]), { t: "count", ...count });
       this.toOwners({ t: "presence", v: this.visitor(vid) });
-      if (newVisit && this.setting("notifyVisits") === "1") this.ctx.waitUntil(this.pushVisit({ key: vid, vid, first: false, city: geo.city, country: geo.country, ua }));
+      if (newVisit && !eier && this.setting("notifyVisits") === "1") this.ctx.waitUntil(this.pushVisit({ key: vid, vid, first: false, city: geo.city, country: geo.country, ua }));
       this.ctx.waitUntil(this.ensureAlarm());
       return new Response(null, { status: 101, webSocket: pair[0] });
     }
@@ -404,6 +424,7 @@ export class ChatHub {
       const pair = new WebSocketPair();
       this.ctx.acceptWebSocket(pair[1], ["o"]);
       pair[1].serializeAttachment({ role: "owner" });
+      this.rememberOwnerNet(request.headers.get("CF-Connecting-IP") || "");
       pair[1].send(JSON.stringify({ t: "state", visitors: this.allVisitors(), status: this.status(), notifyVisits: this.setting("notifyVisits") === "1" }));
       this.touchOwner();
       await this.ensureAlarm();
@@ -423,6 +444,14 @@ export class ChatHub {
     if (url.pathname === "/chat/admin/devices") {
       const rows = this.sql.exec(`SELECT token, env, added, topic FROM devices ORDER BY added`).toArray();
       return Response.json({ devices: rows.map((d) => ({ topic: d.topic || this.env.APNS_TOPIC, env: d.env, added: new Date(d.added).toISOString(), tail: d.token.slice(-6) })) });
+    }
+    // Start the visitor counter over (the owner's choice, e.g. when only he and robots had been counted).
+    if (url.pathname === "/chat/admin/reset-teller" && request.method === "POST") {
+      this.sql.exec(`DELETE FROM uniq`);
+      this.sql.exec(`DELETE FROM nr`);
+      this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('uniqTotal', '0')`);
+      this.toVisitors({ t: "count", live: this.liveCount(), total: 0 });
+      return Response.json({ ok: true, total: 0 });
     }
     if (url.pathname === "/chat/admin/test-push" && request.method === "POST") {
       const results = await this.push("Esbjug Consult", "Push virker", null);
@@ -506,6 +535,19 @@ export class ChatHub {
       if (m.t === "page" && typeof m.page === "string") {
         this.sql.exec(`UPDATE visitors SET page=?, last_seen=? WHERE vid=?`, m.page.slice(0, 200), Date.now(), a.vid);
         this.toOwners({ t: "presence", v: this.visitor(a.vid) });
+      } else if (m.t === "menneske") {
+        // The page saw a person: an interaction (k:"i"), or 12 s on the page (k:"t", only if nothing looked robotic).
+        if (!a.ok && (m.k === "i" || (!a.sus && Date.now() - a.t0 >= 12000))) {
+          a.ok = true;
+          if (a.pend) {
+            const n = this.confirmVisit(a.pend, a.vid);
+            a.pend = null;
+            if (n) { a.nr = n; ws.send(JSON.stringify({ t: "nr", nr: n, total: this.uniqTotal() })); }
+          }
+          ws.serializeAttachment(a);
+          this.toVisitors({ t: "count", live: this.liveCount(), total: this.uniqTotal() });
+          this.toOwners({ t: "presence", v: this.visitor(a.vid) });
+        }
       } else if (m.t === "samtykke") {
         // The visitor accepted cookies during this visit: their number from today follows the cookie id from now on.
         if (a.nr) this.sql.exec(`INSERT OR IGNORE INTO nr (vid, n) VALUES (?, ?)`, a.vid, a.nr);
@@ -594,8 +636,16 @@ export class ChatHub {
     const a = ws.deserializeAttachment() || {};
     try { ws.close(1000); } catch {}
     if (a.role === "visitor") {
-      this.sql.exec(`UPDATE visitors SET last_seen=? WHERE vid=?`, Date.now(), a.vid);
-      this.toOwners({ t: "presence", v: this.visitor(a.vid, ws) });
+      const robot = !a.ok && a.t0 && (a.sus || Date.now() - a.t0 < 10000) && !this.online(a.vid, ws)
+        && !this.sql.exec(`SELECT 1 FROM messages WHERE vid=? LIMIT 1`, a.vid).toArray().length && !this.sql.exec(`SELECT 1 FROM nr WHERE vid=?`, a.vid).toArray().length;
+      if (robot) {
+        // Never moved, scrolled or tapped, and gone again within 10 s (or looked robotic): not a visitor after all.
+        this.sql.exec(`DELETE FROM visitors WHERE vid=?`, a.vid);
+        this.toOwners({ t: "deleted", vid: a.vid });
+      } else {
+        this.sql.exec(`UPDATE visitors SET last_seen=? WHERE vid=?`, Date.now(), a.vid);
+        this.toOwners({ t: "presence", v: this.visitor(a.vid, ws) });
+      }
       this.send(this.ctx.getWebSockets("v").filter((w) => w !== ws), { t: "count", live: this.liveCount(ws), total: this.uniqTotal() });
     } else if (a.role === "owner") {
       this.touchOwner();
@@ -674,7 +724,7 @@ export class ChatHub {
     for (const w of this.ctx.getWebSockets("v")) {
       if (w === closing || w.readyState !== 1) continue;
       const a = w.deserializeAttachment();
-      if (a && a.vid) ids.add(a.vid);
+      if (a && a.vid && !a.eier && (!a.sus || a.ok)) ids.add(a.vid);
     }
     return ids.size;
   }
@@ -683,9 +733,9 @@ export class ChatHub {
     return Number(this.setting("uniqTotal") || 0);
   }
 
-  // Returns { ny: this visit made the counter go up, nr: the visitor's number }. A consented visitor keeps one number for
-  // good (table nr); others are recognised for the rest of the day by network + browser, and count again another day.
-  async countVisit({ vid, consent, ip, ua }) {
+  // The day's key for a visitor and their number if they already have one. A consented visitor keeps one number for good
+  // (table nr); others are recognised for the rest of the day by network + browser, and count again another day.
+  async visitKey({ vid, consent, ip, ua }) {
     const day = osloDay(Date.now());
     let salt = this.setting("uniqSalt") || "";
     if (!salt.startsWith(day + ":")) {
@@ -696,22 +746,42 @@ export class ChatHub {
     const net = await sha256hex(salt + "|" + pokeNet(ip || ""));
     const k = "a:" + (await sha256hex(salt + "|" + net + "|" + ua));
     const today = this.sql.exec(`SELECT n FROM uniq WHERE day=? AND k=?`, day, k).toArray()[0];
+    let own = null;
     if (consent) {
-      const own = this.sql.exec(`SELECT n FROM nr WHERE vid=?`, vid).toArray()[0];
-      if (own) return { ny: false, nr: own.n };
-      if (today && today.n) {
-        this.sql.exec(`INSERT OR IGNORE INTO nr (vid, n) VALUES (?, ?)`, vid, today.n);
-        return { ny: false, nr: today.n };
-      }
+      own = this.sql.exec(`SELECT n FROM nr WHERE vid=?`, vid).toArray()[0]?.n || null;
+      if (!own && today && today.n) { own = today.n; this.sql.exec(`INSERT OR IGNORE INTO nr (vid, n) VALUES (?, ?)`, vid, own); }
     } else if (today) {
-      return { ny: false, nr: today.n || null };
+      own = today.n || null;
     }
-    if (this.sql.exec(`SELECT COUNT(*) AS n FROM uniq WHERE day=? AND net=?`, day, net).one().n >= 3) return { ny: false, nr: null };
+    return { day, k, net, own };
+  }
+
+  // A person was seen: they get the next number. Not the owner's own network, at most 3 new per network per day.
+  confirmVisit(p, vid) {
+    if (p.day !== osloDay(Date.now()) || this.ownerNets().includes(p.ipnet)) return null;
+    const had = this.sql.exec(`SELECT n FROM uniq WHERE day=? AND k=?`, p.day, p.k).toArray()[0];
+    if (had) return had.n || null;
+    if (this.sql.exec(`SELECT COUNT(*) AS n FROM uniq WHERE day=? AND net=?`, p.day, p.net).one().n >= 3) return null;
     const n = this.uniqTotal() + 1;
-    this.sql.exec(`INSERT OR REPLACE INTO uniq (day, k, net, n) VALUES (?, ?, ?, ?)`, day, k, net, n);
-    if (consent) this.sql.exec(`INSERT OR REPLACE INTO nr (vid, n) VALUES (?, ?)`, vid, n);
+    this.sql.exec(`INSERT OR REPLACE INTO uniq (day, k, net, n) VALUES (?, ?, ?, ?)`, p.day, p.k, p.net, n);
+    if (p.consent) this.sql.exec(`INSERT OR REPLACE INTO nr (vid, n) VALUES (?, ?)`, vid, n);
     this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('uniqTotal', ?)`, String(n));
-    return { ny: true, nr: n };
+    return n;
+  }
+
+  // The networks the owner's app connects from (last 60 days), so his own visits don't count as unique visitors.
+  ownerNets() {
+    try { return Object.keys(JSON.parse(this.setting("ownerNets") || "{}")); } catch { return []; }
+  }
+
+  rememberOwnerNet(ip) {
+    if (!ip) return;
+    let m = {};
+    try { m = JSON.parse(this.setting("ownerNets") || "{}"); } catch {}
+    const now = Date.now();
+    m[pokeNet(ip)] = now;
+    for (const k of Object.keys(m)) if (now - m[k] > 60 * 864e5) delete m[k];
+    this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('ownerNets', ?)`, JSON.stringify(m));
   }
 
   liveHr() {

@@ -535,6 +535,12 @@
 </div>
 <canvas id="c" aria-hidden="true"></canvas>
 <script>
+// Tidemanns egne enheter: åpne siden én gang med ?eier, så teller ikke denne nettleseren som besøkende og gir ikke varsel.
+(()=>{const q=new URLSearchParams(location.search);if(!q.has('eier'))return;document.cookie='esbjug_eier=1; Max-Age=31536000; Path=/; SameSite=Lax; Secure';
+  q.delete('eier');history.replaceState(null,'',location.pathname+(q.toString()?'?'+q:'')+location.hash);
+  const t=document.createElement('div');t.textContent='Denne nettleseren er merket som din. Den teller ikke som besøkende.';
+  t.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:2000;background:#0d0d12;color:#FFDE59;padding:10px 16px;border-radius:999px;font:600 14px -apple-system,Arial,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.25)';
+  addEventListener('DOMContentLoaded',()=>{document.body.append(t);setTimeout(()=>t.remove(),5000)})})();
 // Vis «Jobber med nå» ved første scroll, hjul, sveip, tast eller trykk på pilen.
 (()=>{const r=document.documentElement,show=()=>r.classList.add('vis');
 if(scrollY>2||location.hash||r.classList.contains('speil'))show();
@@ -646,21 +652,25 @@ return Object.assign((b,ws)=>{if(ws)viaWs=Date.now();setHr(b)},{sock:f=>{sock=f}
 // Telleren øverst får tall fra chatsocketen: teller(live, totalt, ny). Første gang vises tallene ett hakk lavere og ruller
 // så opp, med «+1 · det er deg» under tallet som gikk opp (unike besøkende hvis du er ny i dag, ellers «her nå»).
 const teller=(()=>{const a=document.querySelector('.tl-a'),u=document.querySelector('.tl-b'),nL=a.querySelector('.od'),nU=u.querySelector('.od'),sr=document.querySelector('.tl-sr');
-  const still=matchMedia('(prefers-reduced-motion: reduce)'),fmt=n=>Math.max(0,n).toLocaleString('nb-NO');let first=true,cur=[0,0];
+  const still=matchMedia('(prefers-reduced-motion: reduce)'),fmt=n=>Math.max(0,n).toLocaleString('nb-NO');let first=true,cur=[0,0],nrVist=false;
   const set=(el,n,anim)=>{const s=fmt(n);if(el.dataset.s===s)return;
     if(el.dataset.s===undefined||el.dataset.s.length!==s.length){el.textContent='';for(const ch of s){if(/\d/.test(ch)){const d=document.createElement('span'),r=document.createElement('span');d.className='d';r.className='r';
       for(let i=0;i<10;i++){const x=document.createElement('span');x.textContent=i;r.append(x)}d.append(r);el.append(d)}else el.append(ch)}anim=false}
     let i=0;const rs=el.querySelectorAll('.r');for(const ch of s)if(/\d/.test(ch)){const r=rs[i++];if(!anim||still.matches)r.style.transition='none';r.style.transform='translateY(calc(var(--dh) * '+(-ch)+'))';if(!anim||still.matches){void r.offsetWidth;r.style.transition=''}}
     el.dataset.s=s};
   const label=()=>{sr.textContent=cur[0]+' '+a.dataset.l+', '+cur[1]+' '+u.dataset.l};
-  // Første gang: ny besøkende ser tallet rulle opp med «+1 · du er nr. 15»; kjente ser «Du er nr. 15» (samme tall) eller
-  // «Du var nr. 15» (tallet har gått forbi dem). Uten nummer (sjelden) får «her nå» «+1 · det er deg».
-  return(live,total,ny,nr)=>{a.hidden=u.hidden=false;cur=[live,total];label();
-    if(!first){set(nL,live,true);set(nU,total,true);return}
-    first=false;set(nL,Math.max(0,live-1),false);set(nU,ny?Math.max(0,total-1):total,false);
-    const it=nr?u:a;if(nr)u.querySelector('.tl-deg').textContent=u.dataset[ny?'ny':total>nr?'var':'er'].replace('{n}',fmt(nr));
-    const go=()=>setTimeout(()=>{set(nL,cur[0],true);set(nU,cur[1],true);it.classList.add('deg');setTimeout(()=>it.classList.remove('deg'),4500)},900);
-    if(document.visibilityState==='visible')go();else document.addEventListener('visibilitychange',go,{once:true})}})();
+  const show=(it,txt)=>{if(txt)it.querySelector('.tl-deg').textContent=txt;it.classList.add('deg');setTimeout(()=>it.classList.remove('deg'),4500)};
+  // c = {live, total, nr, meg}. Første gang ruller «her nå» opp med deg (meg: du teller med); kjente får «Du er/var nr. N».
+  const api=c=>{a.hidden=u.hidden=false;cur=[c.live,c.total];label();
+    if(!first){set(nL,c.live,true);set(nU,c.total,true);return}
+    first=false;const meg=!!c.meg;set(nL,meg?Math.max(0,c.live-1):c.live,false);set(nU,c.total,false);
+    const go=()=>setTimeout(()=>{set(nL,cur[0],true);set(nU,cur[1],true);
+      if(c.nr)show(u,u.dataset[cur[1]>c.nr?'var':'er'].replace('{n}',fmt(c.nr)));else if(meg&&!nrVist)show(a)},900);
+    if(document.visibilityState==='visible')go();else document.addEventListener('visibilitychange',go,{once:true})};
+  // Siden har sett et menneske, og serveren ga deg neste nummer: tallet ruller opp med «+1 · du er nr. N».
+  api.nr=(n,total)=>{nrVist=true;cur[1]=total;label();set(nU,Math.max(0,total-1),false);a.classList.remove('deg');
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{set(nU,total,true);show(u,u.dataset.ny.replace('{n}',fmt(n)))}))};
+  return api})();
 // Språkbryteren: kula glir over før siden byttes (med Cmd/Ctrl-klikk åpnes den andre siden som vanlig).
 document.querySelectorAll('.lang').forEach(a=>a.addEventListener('click',e=>{if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.button)return;e.preventDefault();
   a.classList.add('gaar');setTimeout(()=>{location.href=a.href},matchMedia('(prefers-reduced-motion: reduce)').matches?0:300)}));
@@ -818,12 +828,21 @@ const render=()=>{const [label,cls]=STAT[stat]||STAT.available;
 const owner=on=>{ownerOn=on;render()};
 const setStat=v=>{stat=v;render()};
 fetch('/chat/status').then(r=>r.json()).then(j=>{ownerOn=!!j.owner;setStat(j.status);if(j.hr)hrTop(j.hr)}).catch(()=>{});
+// Menneske eller robot: første ekte bevegelse, rulling, trykk eller tast (eller 13 s med siden synlig) meldes én gang.
+// Først da teller serveren deg som unik besøkende; roboter som bare laster siden og går, teller ikke.
+const vakt=()=>{let sendt=false,syn=0,lx=null,ly=null,dist=0;const evs=['wheel','touchstart','keydown','click'];
+  const send=k=>{if(sendt||!ws||ws.readyState!==1)return;sendt=true;ws.send(JSON.stringify({t:'menneske',k}));av()};
+  const pm=e=>{if(!e.isTrusted)return;if(lx!=null)dist+=Math.abs(e.clientX-lx)+Math.abs(e.clientY-ly);lx=e.clientX;ly=e.clientY;if(dist>40)send('i')};
+  const ev=e=>{if(e.isTrusted)send('i')};
+  addEventListener('pointermove',pm,{passive:true});evs.forEach(t=>addEventListener(t,ev,{passive:true}));
+  const iv=setInterval(()=>{if(document.visibilityState==='visible'&&++syn>=13)send('t')},1000);
+  const av=()=>{removeEventListener('pointermove',pm);evs.forEach(t=>removeEventListener(t,ev));clearInterval(iv)}};
 // ny=1 bare på sidens første socket: da er det en ny sidevisning (varsel til Tidemann), ikke en gjenoppkobling.
 let nyside=1;
-const connect=()=>{ws=new WebSocket('wss://'+location.host+'/chat/ws?vid='+encodeURIComponent(vid)+(nyside?'&ny=1':'')+(consent==='ja'?'&c=1':''));nyside=0;
+const connect=()=>{ws=new WebSocket('wss://'+location.host+'/chat/ws?vid='+encodeURIComponent(vid)+(nyside?'&ny=1':'')+(consent==='ja'?'&c=1':'')+(navigator.webdriver?'&w=1':'')+(getC('esbjug_eier')==='1'?'&e=1':''));nyside=0;
   ws.onopen=()=>{wait=1000;ws.send(JSON.stringify({t:'page',page:location.pathname+location.hash}))};
   ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch{return}
-    if(m.t==='history'){if(m.hr)hrTop(m.hr);if(m.count)teller(m.count.live,m.count.total,m.count.ny,m.count.nr);m.msgs.forEach(x=>add(x,false));ownerOn=!!m.owner;if(m.status)stat=m.status;render();extras(!!m.extras)}else if(m.t==='status')setStat(m.v);else if(m.t==='hr')hrTop(m.bpm,true);else if(m.t==='count')teller(m.live,m.total);else if(m.t==='cleared')cleared();else if(m.t==='ctl')control(m.action,m.on);else if(m.t==='rtc')onRtc(m.data);else if(m.t==='msg')add(m.m,true);else if(m.t==='owner')owner(m.online)};
+    if(m.t==='history'){if(m.hr)hrTop(m.hr);if(m.count){teller(m.count);if(m.count.pend)vakt()}m.msgs.forEach(x=>add(x,false));ownerOn=!!m.owner;if(m.status)stat=m.status;render();extras(!!m.extras)}else if(m.t==='status')setStat(m.v);else if(m.t==='hr')hrTop(m.bpm,true);else if(m.t==='count')teller({live:m.live,total:m.total});else if(m.t==='nr')teller.nr(m.nr,m.total);else if(m.t==='cleared')cleared();else if(m.t==='ctl')control(m.action,m.on);else if(m.t==='rtc')onRtc(m.data);else if(m.t==='msg')add(m.m,true);else if(m.t==='owner')owner(m.online)};
   ws.onclose=()=>{setTimeout(connect,wait);wait=Math.min(wait*2,30000)}};
 hrTop.sock(()=>!!ws&&ws.readyState===1);
 connect();
