@@ -27,6 +27,11 @@
   p.b{margin:28px 0 0;max-width:38em;font-size:clamp(18px,1.6vw,22px);line-height:1.45;font-weight:500}
   a.t{display:inline-block;margin-top:32px;background:var(--ink);color:var(--y);font-weight:700;font-size:clamp(18px,1.8vw,23px);padding:13px 22px 14px;border-radius:999px;text-decoration:none;letter-spacing:-.01em;transition:transform .2s}
   a.t:hover{transform:translateY(-2px)}
+  /* Live puls fra Apple Watch: svak gradient som glir og et mykt lysslag i pulsens takt (--beat settes av setHr). Står stille uten live måling. */
+  a.t.live{background:linear-gradient(105deg,var(--ink) 0%,var(--ink) 35%,#2a2a1d 50%,var(--ink) 65%,var(--ink) 100%) 0 0/300% 100%;animation:tGrad calc(var(--beat,.85s)*6) ease-in-out infinite,tSlag var(--beat,.85s) ease-out infinite}
+  @keyframes tGrad{0%{background-position:100% 0}100%{background-position:-100% 0}}
+  @keyframes tSlag{0%{box-shadow:0 0 0 0 rgba(255,222,89,.28)}60%,100%{box-shadow:0 0 0 9px rgba(255,222,89,0)}}
+  @media (prefers-reduced-motion:reduce){a.t.live{animation:none}}
   a.t:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
   .m{margin-top:clamp(40px,8vh,80px);max-width:34em;text-transform:none;letter-spacing:.02em;font-weight:500;line-height:1.6}
   .bar{margin:10px 0 0;height:6px;background:rgba(13,13,18,.12);border-radius:3px;overflow:hidden}
@@ -571,7 +576,8 @@ const loadHr=()=>{if(loading)return;loading=1;lastLoad=Date.now();
   fetch('/chat/hr').then(r=>r.ok?r.json():Promise.reject()).then(j=>{skew=j.now-Date.now();day={start:j.start,pts:j.pts};if(j.live)setHr(j.live);else drawHr()}).catch(()=>{}).finally(()=>{loading=0})};
 const addLive=b=>{if(!day)return;if(newDay()){if(Date.now()-lastLoad>30000)loadHr();return}const m=nowM(),p=day.pts,l=p[p.length-1];
   if(l&&l[0]===m){l[2]=(l[2]||1)+1;l[1]=Math.round(l[1]+(b-l[1])/l[2])}else if(!l||m>l[0])p.push([m,b,1])};
-const setHr=b=>{hrBpm=b||null;clearTimeout(hrTimer);hpO.setAttribute('aria-label',hrBpm?hpL+', '+hrBpm+' bpm':hpL);if(hrBpm){hpN.textContent=hrBpm;hp.style.setProperty('--beat',(60/hrBpm).toFixed(3)+'s');addLive(hrBpm);hrTimer=setTimeout(()=>setHr(null),20000)}else hpN.textContent='–';drawHr()};
+const tBtn=document.querySelector('a.t');
+const setHr=b=>{hrBpm=b||null;clearTimeout(hrTimer);tBtn.classList.toggle('live',!!hrBpm);hpO.setAttribute('aria-label',hrBpm?hpL+', '+hrBpm+' bpm':hpL);if(hrBpm){hpN.textContent=hrBpm;hp.style.setProperty('--beat',(60/hrBpm).toFixed(3)+'s');tBtn.style.setProperty('--beat',(60/hrBpm).toFixed(3)+'s');addLive(hrBpm);hrTimer=setTimeout(()=>setHr(null),20000)}else hpN.textContent='–';drawHr()};
 // Fullskjerm: perioden som vises (I dag bruker de samme minuttsnittene som den lille grafen, pluss livemålinger),
 // én akse, hårfine rutelinjer, fylt flate under linjen, krysshår med verdi ved peker, trykk eller piltast.
 const kv=(c,v)=>{pp.querySelector(c).textContent=v};
