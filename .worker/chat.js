@@ -226,6 +226,16 @@ export function pokeNet(ip) {
 
 // Oslo midnight (as a UTC timestamp) for the Oslo day that ts falls in. Oslo is UTC+1 or UTC+2, so midnight is
 // one of two candidates; the right one is the candidate that reads 00:00 in Oslo (also on the DST change days).
+// The Oslo calendar day of ts as YYYY-MM-DD.
+export function osloDay(ts) {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Oslo" }).format(new Date(ts));
+}
+
+async function sha256hex(text) {
+  const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, "0")).join("");
+}
+
 export function osloMidnight(ts) {
   const p = Object.fromEntries(new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Oslo", year: "numeric", month: "2-digit", day: "2-digit" })
     .formatToParts(new Date(ts)).map((x) => [x.type, x.value]));
@@ -279,6 +289,14 @@ export class ChatHub {
     this.sql.exec(`CREATE TABLE IF NOT EXISTS kv (k TEXT PRIMARY KEY, v TEXT)`);
     // Heart rate samples from the owner's Apple Watch, for the graphs on the site. Kept 35 days.
     this.sql.exec(`CREATE TABLE IF NOT EXISTS hr (ts INTEGER PRIMARY KEY, bpm INTEGER)`);
+    // Today's unique visitors for the counter on the site (salted hashes, emptied every Oslo midnight).
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS uniq (day TEXT, k TEXT, net TEXT, PRIMARY KEY (day, k))`);
+    if (this.setting("uniqTotal") == null) {
+      // Start the counter from what the site has already seen: each browser once per day, robots and test runs left out.
+      const rows = this.sql.exec(`SELECT DISTINCT CAST(first_seen / 86400000 AS INTEGER) AS d, city, ua FROM visitors`).toArray();
+      const n = rows.filter((r) => r.ua && !BOT.test(r.ua)).length;
+      this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('uniqTotal', ?)`, String(n));
+    }
     this.hrSaved = 0;
     this.hrPruned = 0;
     this.jwt = null;
@@ -310,11 +328,15 @@ export class ChatHub {
         vid, now, now, geo.city, geo.region, geo.country, geo.lat, geo.lon, geo.tz, ua, lang);
       const ip = request.headers.get("x-ip") || "";
       if (ip && this.ctx.getWebSockets(`ip:${ip}`).length >= 10) return new Response("Too many connections", { status: 429 });
+      // A page load by a real browser may add one to the unique-visitor counter (ny: this visitor made it go up).
+      const fresh = pageLoad && !BOT.test(ua) ? await this.countVisit({ vid, consent: url.searchParams.get("c") === "1", ip, ua }) : false;
       const pair = new WebSocketPair();
       this.ctx.acceptWebSocket(pair[1], ["v", `v:${vid}`, ...(ip ? [`ip:${ip}`] : [])]);
       pair[1].serializeAttachment({ role: "visitor", vid, rate: [], win: 0, n: 0 });
       const ex = this.sql.exec(`SELECT extras FROM visitors WHERE vid=?`, vid).toArray()[0];
-      pair[1].send(JSON.stringify({ t: "history", msgs: this.history(vid), owner: this.ownerOnline(), extras: !!ex?.extras, status: this.status(), hr: this.liveHr() }));
+      const count = { live: this.liveCount(), total: this.uniqTotal() };
+      pair[1].send(JSON.stringify({ t: "history", msgs: this.history(vid), owner: this.ownerOnline(), extras: !!ex?.extras, status: this.status(), hr: this.liveHr(), count: { ...count, ny: fresh } }));
+      this.send(this.ctx.getWebSockets("v").filter((w) => w !== pair[1]), { t: "count", ...count });
       this.toOwners({ t: "presence", v: this.visitor(vid) });
       if (newVisit && this.setting("notifyVisits") === "1") this.ctx.waitUntil(this.pushVisit({ key: vid, vid, first: false, city: geo.city, country: geo.country, ua }));
       this.ctx.waitUntil(this.ensureAlarm());
@@ -568,6 +590,7 @@ export class ChatHub {
     if (a.role === "visitor") {
       this.sql.exec(`UPDATE visitors SET last_seen=? WHERE vid=?`, Date.now(), a.vid);
       this.toOwners({ t: "presence", v: this.visitor(a.vid, ws) });
+      this.send(this.ctx.getWebSockets("v").filter((w) => w !== ws), { t: "count", live: this.liveCount(ws), total: this.uniqTotal() });
     } else if (a.role === "owner") {
       this.touchOwner();
       if (!this.ownerOnline(ws)) this.toVisitors({ t: "owner", online: false });
@@ -633,6 +656,41 @@ export class ChatHub {
       `SELECT vid FROM visitors WHERE last_seen > ? AND (vid IN (SELECT DISTINCT vid FROM messages) OR last_seen > ?)
        ORDER BY last_seen DESC LIMIT 300`, since, Date.now() - 864e5).toArray();
     return rows.map((r) => this.visitor(r.vid)).filter(Boolean);
+  }
+
+  // ---------- visitor counter on the site ----------
+  // On the site now = distinct visitor ids with an open socket. Unique visitors = each person once per Oslo day, added
+  // up: a consented visitor by cookie id, others by a hash of network + browser with a salt that changes every day. The
+  // salt and the day's hashes are deleted at midnight, so nothing can be traced back. At most 3 new per network per day.
+  liveCount(closing) {
+    const ids = new Set();
+    for (const w of this.ctx.getWebSockets("v")) {
+      if (w === closing || w.readyState !== 1) continue;
+      const a = w.deserializeAttachment();
+      if (a && a.vid) ids.add(a.vid);
+    }
+    return ids.size;
+  }
+
+  uniqTotal() {
+    return Number(this.setting("uniqTotal") || 0);
+  }
+
+  async countVisit({ vid, consent, ip, ua }) {
+    const day = osloDay(Date.now());
+    let salt = this.setting("uniqSalt") || "";
+    if (!salt.startsWith(day + ":")) {
+      salt = day + ":" + crypto.randomUUID();
+      this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('uniqSalt', ?)`, salt);
+      this.sql.exec(`DELETE FROM uniq WHERE day <> ?`, day);
+    }
+    const net = await sha256hex(salt + "|" + pokeNet(ip || ""));
+    const k = consent ? "v:" + vid : "a:" + (await sha256hex(salt + "|" + net + "|" + ua));
+    if (this.sql.exec(`SELECT 1 FROM uniq WHERE day=? AND k=?`, day, k).toArray().length) return false;
+    if (this.sql.exec(`SELECT COUNT(*) AS n FROM uniq WHERE day=? AND net=?`, day, net).one().n >= 3) return false;
+    this.sql.exec(`INSERT INTO uniq (day, k, net) VALUES (?, ?, ?)`, day, k, net);
+    this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('uniqTotal', ?)`, String(this.uniqTotal() + 1));
+    return true;
   }
 
   liveHr() {
