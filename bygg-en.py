@@ -8,7 +8,7 @@ Kjør etter endringer i index.html:  python3 bygg-en.py  (og publiser med npx wr
 import pathlib, re, sys
 
 HER = pathlib.Path(__file__).parent
-no = (HER / "index.html").read_text()
+no = (HER / "index.html").read_text(encoding="utf-8")
 
 # (norsk, engelsk). Rekkefølgen betyr noe der en tekst er en del av en annen: lange først.
 T = [
@@ -280,5 +280,5 @@ if left:
     sys.exit(1)
 
 (HER / "en").mkdir(exist_ok=True)
-(HER / "en" / "index.html").write_text(out)
+(HER / "en" / "index.html").write_text(out, encoding="utf-8", newline="\n")
 print(f"en/index.html skrevet ({len(T)} oversettelser)")
