@@ -237,11 +237,27 @@
   .ck .ck-mer{flex:none;display:inline;border-radius:0;border:0;background:none;padding:0;color:var(--y);font:inherit;font-weight:600;line-height:1;vertical-align:baseline;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
   .ck-full{margin-top:8px!important;font-size:13px;opacity:.8}
   .ck-full[hidden]{display:none}
-  /* Språkvalg ved navnet øverst: britisk flagg på norsk side, norsk flagg på engelsk side. */
-  .lang{display:inline-flex;align-items:center;gap:7px;color:inherit;text-decoration:none}
-  .lang svg{width:20px;height:12px;border-radius:2px;box-shadow:0 0 0 1px rgba(13,13,18,.25);display:block}
-  .lang-flag-gb .no,.lang-flag-no .gb{display:none}
-  .lang:hover span:last-child{text-decoration:underline;text-underline-offset:3px}
+  /* Språkbryter: norsk og britisk flagg i én pille. Den svarte kula ligger bak språket du leser og glir over når du bytter;
+     nettlesere med view transitions toner deretter mellom de to sidene mens bryteren står stille. */
+  .lang{position:relative;display:inline-flex;align-items:center;gap:2px;padding:2px;border:2px solid var(--ink);border-radius:999px;color:inherit;text-decoration:none;vertical-align:middle;line-height:0;view-transition-name:lang;-webkit-tap-highlight-color:transparent}
+  .lang-k{position:absolute;top:2px;left:2px;width:30px;height:20px;border-radius:999px;background:var(--ink);transition:transform .38s cubic-bezier(.34,1.45,.55,1)}
+  .lang .lf{position:relative;width:30px;height:20px;display:grid;place-items:center}
+  .lang .lf svg{width:18px;height:12px;border-radius:2px;display:block;box-shadow:0 0 0 1px rgba(255,255,255,.3);transition:filter .3s,opacity .3s,transform .3s}
+  .lang .lf.gb svg,.lang.en .lf.no svg,.lang.gaar .lf.no svg{filter:grayscale(1);opacity:.5}
+  .lang.en .lf.gb svg,.lang.gaar .lf.gb svg,.lang.en.gaar .lf.no svg{filter:none;opacity:1}
+  .lang.en.gaar .lf.gb svg{filter:grayscale(1);opacity:.5}
+  .lang.en .lang-k,.lang.gaar .lang-k{transform:translateX(32px)}
+  .lang.en.gaar .lang-k{transform:none}
+  .lang.lang:hover .lf.lf svg{filter:none;opacity:1}
+  .lang:hover .lf svg{transform:scale(1.06)}
+  .lang:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+  @view-transition{navigation:auto}
+  ::view-transition-group(lang){animation-duration:0s}
+  ::view-transition-old(root){animation:lgUt .26s ease both}
+  ::view-transition-new(root){animation:lgInn .42s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes lgUt{to{opacity:0;filter:blur(3px)}}
+  @keyframes lgInn{from{opacity:0;filter:blur(3px);transform:translateY(6px)}}
+  @media (prefers-reduced-motion:reduce){.lang-k,.lang .lf svg{transition:none}::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
   .en-note{margin:12px 0 0;font-size:12px;opacity:.7;text-transform:none;letter-spacing:.02em}
   /* Puls fra Apple Watch øverst ved datoen. Hjertet slår i pulsens takt mens den strømmes; grafen er dagen så langt (snitt per minutt). */
   .hp{display:inline-flex;align-items:center;gap:8px}
@@ -330,7 +346,7 @@
 </head>
 <body>
 <main>
-  <div class="mono k"><span>&gt; Tidemann Esbjug</span><a class="lang" href="/en/" hreflang="en" lang="en" aria-label="English"><span class="lang-flag-gb"><svg class="gb" viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg><svg class="no" viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span>English</span></a><span>02.10.2026</span><span class="hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Puls i dag"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><span class="hb"><b>00</b> bpm</span><svg class="g" viewBox="0 0 112 18" aria-hidden="true"></svg></button><button class="i" type="button" aria-label="Strømmes live fra Apple Watch">i</button></span><!-- Skjult inntil videre: <a class="kl" href="/login/">Kunde-login &rarr;</a> --></div>
+  <div class="mono k"><span>&gt; Tidemann Esbjug</span><a class="lang" href="/en/" hreflang="en" aria-label="Språk: norsk. Bytt til engelsk"><span class="lang-k" aria-hidden="true"></span><span class="lf no" aria-hidden="true"><svg viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span class="lf gb" aria-hidden="true"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg></span></a><span>02.10.2026</span><span class="hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Puls i dag"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><span class="hb"><b>00</b> bpm</span><svg class="g" viewBox="0 0 112 18" aria-hidden="true"></svg></button><button class="i" type="button" aria-label="Strømmes live fra Apple Watch">i</button></span><!-- Skjult inntil videre: <a class="kl" href="/login/">Kunde-login &rarr;</a> --></div>
   <!--EN-MERKNAD-->
   <h1 aria-label="Hovedbudskapet jeg prøver å rope fra taket på bygninger i disse dager er at kode og design har gått gjennom en revolusjon som ikke må oversees."><span aria-hidden="true">Hovedbudskapet jeg prøver å rope fra taket på bygninger i disse dager er at <span class="kd"><i>kode</i></span> og <span class="ds" data-t="design">design</span> har gått gjennom en revolusjon som ikke må oversees.</span></h1>
   <p class="b">Å kjøpe nettsider, apper eller digital markedsføring i dag for samme pris som før er absurd. Det er også masse muligheter som tidligere var for dyre til å begi seg ut på.</p>
@@ -612,6 +628,10 @@ setInterval(()=>{if(!day||newDay())loadHr()},300000);
 loadHr();
 return Object.assign((b,ws)=>{if(ws)viaWs=Date.now();setHr(b)},{sock:f=>{sock=f}});
 })();
+// Språkbryteren: kula glir over før siden byttes (med Cmd/Ctrl-klikk åpnes den andre siden som vanlig).
+document.querySelectorAll('.lang').forEach(a=>a.addEventListener('click',e=>{if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.button)return;e.preventDefault();
+  a.classList.add('gaar');setTimeout(()=>{location.href=a.href},matchMedia('(prefers-reduced-motion: reduce)').matches?0:300)}));
+addEventListener('pageshow',e=>{if(e.persisted)document.querySelectorAll('.lang.gaar').forEach(a=>a.classList.remove('gaar'))});
 // Vist fra forhåndslasting (Google, Chrome): nettleseren sendte ingen ny forespørsel ved klikket, så siden melder besøket selv.
 (()=>{if(document.documentElement.classList.contains('speil'))return;const besok=()=>{const n=performance.getEntriesByType('navigation')[0];
   if(n&&(n.deliveryType==='navigational-prefetch'||n.activationStart>0))fetch('/chat/besok',{method:'POST'}).catch(()=>{})};

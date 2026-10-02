@@ -251,10 +251,10 @@ for a, b in T:
 out = re.sub(r'(src|poster)="media/', r'\1="/media/', out)
 
 # Flagget: på den engelske siden går det tilbake til norsk, og notatet om oversettelsen vises.
-out = out.replace('<a class="lang" href="/en/" hreflang="en" lang="en" aria-label="English">',
-                  '<a class="lang" href="/" hreflang="nb" lang="nb" aria-label="Norsk">')
-out = out.replace('<span class="lang-flag-gb"', '<span class="lang-flag-no"')
-out = out.replace('>English</span></a>', '>Norsk</span></a>')
+lenke = '<a class="lang" href="/en/" hreflang="en" aria-label="Språk: norsk. Bytt til engelsk">'
+if lenke not in out:
+    print("Fant ikke språkbryteren i index.html"); sys.exit(1)
+out = out.replace(lenke, '<a class="lang en" href="/" hreflang="nb" aria-label="Language: English. Switch to Norwegian">')
 out = out.replace('<!--EN-MERKNAD-->',
                   '<p class="en-note mono">Auto translated with Claude from Norwegian - excuse any strangeness :)</p>')
 
