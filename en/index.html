@@ -28,10 +28,13 @@
   a.t{display:inline-block;margin-top:32px;background:var(--ink);color:var(--y);font-weight:700;font-size:clamp(18px,1.8vw,23px);padding:13px 22px 14px;border-radius:999px;text-decoration:none;letter-spacing:-.01em;transition:transform .2s}
   a.t:hover{transform:translateY(-2px)}
   /* Live puls fra Apple Watch: svak gradient som glir og et mykt lysslag i pulsens takt (--beat settes av setHr). Står stille uten live måling. */
-  a.t.live{background:linear-gradient(105deg,var(--ink) 0%,var(--ink) 35%,#2a2a1d 50%,var(--ink) 65%,var(--ink) 100%) 0 0/300% 100%;animation:tGrad calc(var(--beat,.85s)*6) ease-in-out infinite,tSlag var(--beat,.85s) ease-out infinite}
-  @keyframes tGrad{0%{background-position:100% 0}100%{background-position:-100% 0}}
-  @keyframes tSlag{0%{box-shadow:0 0 0 0 rgba(255,222,89,.28)}60%,100%{box-shadow:0 0 0 9px rgba(255,222,89,0)}}
-  @media (prefers-reduced-motion:reduce){a.t.live{animation:none}}
+  /* Samme dobbeltslag og varighet som hjertet (keyframes beat): knappen slår, og rødt/grønt/gult lyser opp bak teksten på slagene. */
+  a.t.live{position:relative;isolation:isolate;overflow:hidden;animation:tBeat var(--beat,.85s) ease-in-out infinite,tRing var(--beat,.85s) ease-in-out infinite}
+  a.t.live::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(60% 140% at 12% 100%,rgba(224,35,60,.85),transparent 70%),radial-gradient(55% 140% at 90% 0%,rgba(61,220,132,.65),transparent 70%),radial-gradient(45% 120% at 52% 50%,rgba(255,222,89,.35),transparent 75%);animation:tGlow var(--beat,.85s) ease-in-out infinite}
+  @keyframes tBeat{0%,100%{transform:scale(1)}14%{transform:scale(1.05)}28%{transform:scale(.985)}42%{transform:scale(1.03)}60%{transform:scale(1)}}
+  @keyframes tGlow{0%,100%{opacity:.18}14%{opacity:1}28%{opacity:.3}42%{opacity:.7}60%{opacity:.18}}
+  @keyframes tRing{0%,100%{box-shadow:0 0 0 0 rgba(224,35,60,0)}14%{box-shadow:0 0 18px 3px rgba(224,35,60,.4)}28%{box-shadow:0 0 4px 0 rgba(224,35,60,.1)}42%{box-shadow:0 0 14px 2px rgba(61,220,132,.3)}60%{box-shadow:0 0 0 0 rgba(61,220,132,0)}}
+  @media (prefers-reduced-motion:reduce){a.t.live,a.t.live::before{animation:none}}
   a.t:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
   .m{margin-top:clamp(40px,8vh,80px);max-width:34em;text-transform:none;letter-spacing:.02em;font-weight:500;line-height:1.6}
   .bar{margin:10px 0 0;height:6px;background:rgba(13,13,18,.12);border-radius:3px;overflow:hidden}
