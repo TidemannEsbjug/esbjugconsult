@@ -29,19 +29,25 @@
   a.t:hover{transform:translateY(-2px)}
   /* Levende gradient inni knappen: rødt, grønt og gult flyter rolig rundt og puster sakte inn og ut. Ikke knyttet til pulsen. */
   a.t{position:relative;isolation:isolate;overflow:hidden}
-  a.t::before{content:"";position:absolute;inset:-30%;z-index:-1;pointer-events:none;background:radial-gradient(45% 80% at 20% 30%,rgba(235,20,50,1),transparent 72%),radial-gradient(45% 80% at 80% 70%,rgba(20,235,120,.95),transparent 72%);opacity:0;animation:tFlyt 19s ease-in-out infinite alternate,tAnd 9s ease-in-out infinite}
-  @keyframes tFlyt{0%{transform:translate(-8%,4%) rotate(0deg) scale(1)}33%{transform:translate(6%,-5%) rotate(60deg) scale(1.15)}66%{transform:translate(-4%,-3%) rotate(150deg) scale(.95)}100%{transform:translate(8%,5%) rotate(240deg) scale(1.1)}}
-  @keyframes tAnd{0%,100%{opacity:0}50%{opacity:.75}}
-  @media (prefers-reduced-motion:reduce){a.t::before{animation:none;opacity:.25}}
+  a.t::before,a.t::after{content:"";position:absolute;z-index:-1;pointer-events:none;width:220%;height:420%;left:-60%;top:-160%;opacity:0;filter:blur(10px)}
+  a.t::before{background:radial-gradient(closest-side,rgba(235,20,50,1),rgba(235,20,50,.55) 45%,transparent);animation:tFlyt1 23s ease-in-out infinite alternate,tAnd1 9s ease-in-out infinite}
+  a.t::after{background:radial-gradient(closest-side,rgba(20,235,120,.95),rgba(20,235,120,.5) 45%,transparent);animation:tFlyt2 29s ease-in-out infinite alternate,tAnd2 11s ease-in-out -4s infinite}
+  @keyframes tFlyt1{0%{transform:translate(-22%,6%) scale(1)}50%{transform:translate(6%,-8%) scale(1.25)}100%{transform:translate(26%,4%) scale(.9)}}
+  @keyframes tFlyt2{0%{transform:translate(24%,-6%) scale(1.1)}50%{transform:translate(-8%,8%) scale(.9)}100%{transform:translate(-26%,-4%) scale(1.2)}}
+  @keyframes tAnd1{0%,100%{opacity:0}50%{opacity:.75}}
+  @keyframes tAnd2{0%,100%{opacity:0}50%{opacity:.7}}
+  @media (prefers-reduced-motion:reduce){a.t::before,a.t::after{animation:none;opacity:.2}}
   a.t:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
   .m{margin-top:clamp(40px,8vh,80px);max-width:34em;text-transform:none;letter-spacing:.02em;font-weight:500;line-height:1.6}
   .bar{margin:10px 0 0;height:6px;background:rgba(13,13,18,.12);border-radius:3px;overflow:hidden}
   .bar i{display:block;height:100%;width:calc(var(--p)*1%);background:var(--ink)}
   /* «kode»: blir en terminalbit som dekodes. «design»: fargerikt lys som gjør ordet om til glass. */
   .kd{display:inline-block;position:relative;white-space:nowrap;padding:.06em .12em;margin:-.06em -.12em;border-radius:.1em}
-  .kd i{font-style:normal;display:inline-block;transform-origin:0 50%}
+  /* «kode» styrer layouten med en usynlig kopi; den animerte teksten ligger absolutt oppå, så høyden og grunnlinjen aldri endres under animasjonen. */
+  .kd::before{content:"kode";visibility:hidden}
+  .kd i{font-style:normal;position:absolute;left:.12em;top:0;bottom:0;display:flex;align-items:center;line-height:inherit;transform-origin:0 50%}
   .kd.c{background:var(--ink)}
-  .kd.c i{font:800 1em/1 "SF Mono",ui-monospace,Menlo,monospace;letter-spacing:-.04em;color:var(--y)}
+  .kd.c i{font-family:"SF Mono",ui-monospace,Menlo,monospace;font-weight:800;letter-spacing:-.04em;color:var(--y)}
   .ds{position:relative;display:inline-block;transition:color .5s}
   .ds::before,.ds::after{content:attr(data-t);position:absolute;left:0;top:0;pointer-events:none}
   .ds::before{color:transparent;background:linear-gradient(100deg,transparent 30%,#ff3d8b 38%,#ffb400 44%,#fff 50%,#2fd1ff 56%,#7a5cff 62%,transparent 70%) -60% 0/260% 100% no-repeat;-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 .1em rgba(255,61,139,.55)) drop-shadow(0 0 .22em rgba(47,209,255,.4));opacity:0}
