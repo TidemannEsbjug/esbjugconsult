@@ -291,6 +291,9 @@ export class ChatHub {
     this.sql.exec(`CREATE TABLE IF NOT EXISTS hr (ts INTEGER PRIMARY KEY, bpm INTEGER)`);
     // Today's unique visitors for the counter on the site (salted hashes, emptied every Oslo midnight).
     this.sql.exec(`CREATE TABLE IF NOT EXISTS uniq (day TEXT, k TEXT, net TEXT, PRIMARY KEY (day, k))`);
+    try { this.sql.exec(`ALTER TABLE uniq ADD COLUMN n INTEGER`); } catch {}   // the visitor's number that day
+    // Visitor numbers for consented visitors (cookie id), kept so the site can say «Du var nr. 15» on later visits.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS nr (vid TEXT PRIMARY KEY, n INTEGER)`);
     if (this.setting("uniqTotal") == null) {
       // Start the counter from what the site has already seen: each browser once per day, robots and test runs left out.
       const rows = this.sql.exec(`SELECT DISTINCT CAST(first_seen / 86400000 AS INTEGER) AS d, city, ua FROM visitors`).toArray();
@@ -329,13 +332,13 @@ export class ChatHub {
       const ip = request.headers.get("x-ip") || "";
       if (ip && this.ctx.getWebSockets(`ip:${ip}`).length >= 10) return new Response("Too many connections", { status: 429 });
       // A page load by a real browser may add one to the unique-visitor counter (ny: this visitor made it go up).
-      const fresh = pageLoad && !BOT.test(ua) ? await this.countVisit({ vid, consent: url.searchParams.get("c") === "1", ip, ua }) : false;
+      const seen = pageLoad && !BOT.test(ua) ? await this.countVisit({ vid, consent: url.searchParams.get("c") === "1", ip, ua }) : { ny: false, nr: null };
       const pair = new WebSocketPair();
       this.ctx.acceptWebSocket(pair[1], ["v", `v:${vid}`, ...(ip ? [`ip:${ip}`] : [])]);
-      pair[1].serializeAttachment({ role: "visitor", vid, rate: [], win: 0, n: 0 });
+      pair[1].serializeAttachment({ role: "visitor", vid, rate: [], win: 0, n: 0, nr: seen.nr });
       const ex = this.sql.exec(`SELECT extras FROM visitors WHERE vid=?`, vid).toArray()[0];
       const count = { live: this.liveCount(), total: this.uniqTotal() };
-      pair[1].send(JSON.stringify({ t: "history", msgs: this.history(vid), owner: this.ownerOnline(), extras: !!ex?.extras, status: this.status(), hr: this.liveHr(), count: { ...count, ny: fresh } }));
+      pair[1].send(JSON.stringify({ t: "history", msgs: this.history(vid), owner: this.ownerOnline(), extras: !!ex?.extras, status: this.status(), hr: this.liveHr(), count: { ...count, ny: seen.ny, nr: seen.nr } }));
       this.send(this.ctx.getWebSockets("v").filter((w) => w !== pair[1]), { t: "count", ...count });
       this.toOwners({ t: "presence", v: this.visitor(vid) });
       if (newVisit && this.setting("notifyVisits") === "1") this.ctx.waitUntil(this.pushVisit({ key: vid, vid, first: false, city: geo.city, country: geo.country, ua }));
@@ -503,6 +506,9 @@ export class ChatHub {
       if (m.t === "page" && typeof m.page === "string") {
         this.sql.exec(`UPDATE visitors SET page=?, last_seen=? WHERE vid=?`, m.page.slice(0, 200), Date.now(), a.vid);
         this.toOwners({ t: "presence", v: this.visitor(a.vid) });
+      } else if (m.t === "samtykke") {
+        // The visitor accepted cookies during this visit: their number from today follows the cookie id from now on.
+        if (a.nr) this.sql.exec(`INSERT OR IGNORE INTO nr (vid, n) VALUES (?, ?)`, a.vid, a.nr);
       } else if (m.t === "forget") {
         // The visitor deletes their own conversation: messages and the visitor record go, everywhere.
         await this.wipe(a.vid);
@@ -623,6 +629,7 @@ export class ChatHub {
     const keys = this.sql.exec(`SELECT file FROM messages WHERE vid=? AND file IS NOT NULL`, vid).toArray().map((r) => r.file);
     this.sql.exec(`DELETE FROM messages WHERE vid=?`, vid);
     this.sql.exec(`DELETE FROM visitors WHERE vid=?`, vid);
+    this.sql.exec(`DELETE FROM nr WHERE vid=?`, vid);
     this.sql.exec(`DELETE FROM rec WHERE sid IN (SELECT sid FROM sessions WHERE vid=?)`, vid);
     this.sql.exec(`DELETE FROM sessions WHERE vid=?`, vid);
     if (keys.length) await this.env.FILES.delete(keys);
@@ -659,9 +666,9 @@ export class ChatHub {
   }
 
   // ---------- visitor counter on the site ----------
-  // On the site now = distinct visitor ids with an open socket. Unique visitors = each person once per Oslo day, added
-  // up: a consented visitor by cookie id, others by a hash of network + browser with a salt that changes every day. The
-  // salt and the day's hashes are deleted at midnight, so nothing can be traced back. At most 3 new per network per day.
+  // On the site now = distinct visitor ids with an open socket. Unique visitors: a consented visitor once (by cookie id),
+  // others once per Oslo day by a hash of network + browser with a salt that changes every day. The salt and the day's
+  // hashes are deleted at midnight, so nothing can be traced back. At most 3 new per network per day.
   liveCount(closing) {
     const ids = new Set();
     for (const w of this.ctx.getWebSockets("v")) {
@@ -676,6 +683,8 @@ export class ChatHub {
     return Number(this.setting("uniqTotal") || 0);
   }
 
+  // Returns { ny: this visit made the counter go up, nr: the visitor's number }. A consented visitor keeps one number for
+  // good (table nr); others are recognised for the rest of the day by network + browser, and count again another day.
   async countVisit({ vid, consent, ip, ua }) {
     const day = osloDay(Date.now());
     let salt = this.setting("uniqSalt") || "";
@@ -685,12 +694,24 @@ export class ChatHub {
       this.sql.exec(`DELETE FROM uniq WHERE day <> ?`, day);
     }
     const net = await sha256hex(salt + "|" + pokeNet(ip || ""));
-    const k = consent ? "v:" + vid : "a:" + (await sha256hex(salt + "|" + net + "|" + ua));
-    if (this.sql.exec(`SELECT 1 FROM uniq WHERE day=? AND k=?`, day, k).toArray().length) return false;
-    if (this.sql.exec(`SELECT COUNT(*) AS n FROM uniq WHERE day=? AND net=?`, day, net).one().n >= 3) return false;
-    this.sql.exec(`INSERT INTO uniq (day, k, net) VALUES (?, ?, ?)`, day, k, net);
-    this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('uniqTotal', ?)`, String(this.uniqTotal() + 1));
-    return true;
+    const k = "a:" + (await sha256hex(salt + "|" + net + "|" + ua));
+    const today = this.sql.exec(`SELECT n FROM uniq WHERE day=? AND k=?`, day, k).toArray()[0];
+    if (consent) {
+      const own = this.sql.exec(`SELECT n FROM nr WHERE vid=?`, vid).toArray()[0];
+      if (own) return { ny: false, nr: own.n };
+      if (today && today.n) {
+        this.sql.exec(`INSERT OR IGNORE INTO nr (vid, n) VALUES (?, ?)`, vid, today.n);
+        return { ny: false, nr: today.n };
+      }
+    } else if (today) {
+      return { ny: false, nr: today.n || null };
+    }
+    if (this.sql.exec(`SELECT COUNT(*) AS n FROM uniq WHERE day=? AND net=?`, day, net).one().n >= 3) return { ny: false, nr: null };
+    const n = this.uniqTotal() + 1;
+    this.sql.exec(`INSERT OR REPLACE INTO uniq (day, k, net, n) VALUES (?, ?, ?, ?)`, day, k, net, n);
+    if (consent) this.sql.exec(`INSERT OR REPLACE INTO nr (vid, n) VALUES (?, ?)`, vid, n);
+    this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('uniqTotal', ?)`, String(n));
+    return { ny: true, nr: n };
   }
 
   liveHr() {
