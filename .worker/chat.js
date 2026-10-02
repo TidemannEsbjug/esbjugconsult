@@ -61,7 +61,8 @@ export async function handleChat(request, env, url) {
   }
 
   if (path === "/chat/hr") {
-    return hub.fetch(new Request("https://hub/internal/hr", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }));
+    const r = ["dag", "uke", "mnd"].includes(url.searchParams.get("r")) ? url.searchParams.get("r") : "dag";
+    return hub.fetch(new Request("https://hub/internal/hr", { method: "POST", headers: { "x-role": "internal" }, body: JSON.stringify({ r }) }));
   }
 
   if (path === "/chat/besok" && request.method === "POST") {
@@ -276,7 +277,7 @@ export class ChatHub {
     this.sql.exec(`CREATE TABLE IF NOT EXISTS rec (sid TEXT, seq INTEGER, data TEXT, PRIMARY KEY (sid, seq))`);
     this.pruned = 0;
     this.sql.exec(`CREATE TABLE IF NOT EXISTS kv (k TEXT PRIMARY KEY, v TEXT)`);
-    // Heart rate samples from the owner's Apple Watch, for the day graph on the site. Kept 48 hours.
+    // Heart rate samples from the owner's Apple Watch, for the graphs on the site. Kept 35 days.
     this.sql.exec(`CREATE TABLE IF NOT EXISTS hr (ts INTEGER PRIMARY KEY, bpm INTEGER)`);
     this.hrSaved = 0;
     this.hrPruned = 0;
@@ -330,7 +331,7 @@ export class ChatHub {
         return Response.json({ status: this.status(), owner: this.ownerOnline(), hr: this.liveHr() }, { headers: { "cache-control": "no-store" } });
       }
       if (url.pathname === "/internal/hr") {
-        return Response.json(this.hrDay(), { headers: { "cache-control": "no-store" } });
+        return Response.json(this.hrRange(b.r), { headers: { "cache-control": "no-store" } });
       }
       if (url.pathname === "/internal/visit") {
         if (this.setting("notifyVisits") === "1") {
@@ -431,7 +432,7 @@ export class ChatHub {
       }
       if (now - this.hrPruned > 3600e3) {
         this.hrPruned = now;
-        this.sql.exec(`DELETE FROM hr WHERE ts < ?`, now - 48 * 3600e3);
+        this.sql.exec(`DELETE FROM hr WHERE ts < ?`, now - 35 * 864e5);
       }
       this.toVisitors({ t: "hr", bpm: v });
       return Response.json({ ok: true });
@@ -639,17 +640,26 @@ export class ChatHub {
     return this.hr && this.hr.bpm && Date.now() - this.hr.ts < 20000 ? this.hr.bpm : null;
   }
 
-  // Today (Oslo) as one average per minute: pts = [[minutes since midnight, bpm], ...]. The endpoint is public, so the
-  // aggregate is reused for 30 s (the page adds live samples itself); at most two scans of the day per minute.
-  hrDay() {
-    const now = Date.now(), start = osloMidnight(now);
-    if (!this.hrMemo || this.hrMemo.start !== start || now - this.hrMemo.at > 30000) {
+  // A period from Oslo midnight: dag = today (one average per minute), uke = 7 days (per 10 min), mnd = 30 days (per hour).
+  // pts = [[minutes since start, bpm], ...]; beats = the sum of the per-minute averages (one minute of measuring at 70 bpm
+  // = 70 beats), mins = measured minutes. The endpoint is public, so each period is reused for 30 s (dag) or 2 min.
+  hrRange(r = "dag") {
+    const P = { dag: [0, 1, 30e3], uke: [6, 10, 120e3], mnd: [29, 60, 120e3] }[r] || [0, 1, 30e3];
+    const now = Date.now(), start = osloMidnight(now - P[0] * 864e5), step = P[1];
+    this.hrMemo = this.hrMemo instanceof Map ? this.hrMemo : new Map();
+    let m = this.hrMemo.get(r);
+    if (!m || m.start !== start || now - m.at > P[2]) {
       const rows = this.sql.exec(
-        `SELECT CAST((ts - ?) / 60000 AS INTEGER) AS m, CAST(ROUND(AVG(bpm)) AS INTEGER) AS b FROM hr WHERE ts >= ? GROUP BY m ORDER BY m`,
-        start, start).toArray();
-      this.hrMemo = { start, at: now, pts: rows.map((r) => [r.m, r.b]) };
+        `SELECT CAST((ts - ?) / ? AS INTEGER) * ? AS m, CAST(ROUND(AVG(bpm)) AS INTEGER) AS b FROM hr WHERE ts >= ? GROUP BY 1 ORDER BY 1`,
+        start, step * 60000, step, start).toArray();
+      const t = this.sql.exec(
+        `SELECT CAST(ROUND(COALESCE(SUM(b), 0)) AS INTEGER) AS beats, COUNT(*) AS mins, CAST(ROUND(MIN(b)) AS INTEGER) AS lo, CAST(ROUND(MAX(b)) AS INTEGER) AS hi
+         FROM (SELECT AVG(bpm) AS b FROM hr WHERE ts >= ? GROUP BY CAST((ts - ?) / 60000 AS INTEGER))`,
+        start, start).one();
+      m = { start, at: now, pts: rows.map((x) => [x.m, x.b]), beats: t.beats, mins: t.mins, lo: t.lo, hi: t.hi };
+      this.hrMemo.set(r, m);
     }
-    return { start, now, live: this.liveHr(), pts: this.hrMemo.pts };
+    return { r, start, now, step, live: this.liveHr(), pts: m.pts, beats: m.beats, mins: m.mins, lo: m.lo, hi: m.hi };
   }
 
   // A visitor pressed «Få meg til å få høyere puls». Only while the pulse is live (so never at night), at most one per
