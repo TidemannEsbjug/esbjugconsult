@@ -19,7 +19,8 @@
   body{font-family:-apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;min-height:100svh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
   main{padding:var(--g);padding-bottom:0;max-width:1180px;width:100%;margin:0 auto}
   .mono{font:600 13px/1.5 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase}
-  .k{opacity:.72;display:flex;gap:1.5em;flex-wrap:wrap}
+  .k{opacity:.72;display:flex;align-items:center;gap:10px 1.5em;flex-wrap:wrap}
+  main>.k:first-child{min-height:24px}
   .k .kl{margin-left:auto;color:inherit;text-decoration:none;border:2px solid var(--ink);border-radius:999px;padding:5px 14px;line-height:1.3;letter-spacing:.1em}
   .k .kl:hover{background:var(--ink);color:var(--y)}
   .k .kl:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
@@ -239,14 +240,14 @@
   .ck-full[hidden]{display:none}
   /* Språkbryter: norsk og britisk flagg i én pille. Den svarte kula ligger bak språket du leser og glir over når du bytter;
      nettlesere med view transitions toner deretter mellom de to sidene mens bryteren står stille. */
-  .lang{position:relative;display:inline-flex;align-items:center;gap:2px;padding:2px;border:2px solid var(--ink);border-radius:999px;color:inherit;text-decoration:none;vertical-align:middle;line-height:0;view-transition-name:lang;-webkit-tap-highlight-color:transparent}
-  .lang-k{position:absolute;top:2px;left:2px;width:30px;height:20px;border-radius:999px;background:var(--ink);transition:transform .38s cubic-bezier(.34,1.45,.55,1)}
-  .lang .lf{position:relative;width:30px;height:20px;display:grid;place-items:center}
-  .lang .lf svg{width:18px;height:12px;border-radius:2px;display:block;box-shadow:0 0 0 1px rgba(255,255,255,.3);transition:filter .3s,opacity .3s,transform .3s}
+  .lang{position:relative;display:inline-flex;align-items:center;gap:2px;padding:1.5px;margin-left:auto;border:1.5px solid var(--ink);border-radius:999px;color:inherit;text-decoration:none;vertical-align:middle;line-height:0;view-transition-name:lang;-webkit-tap-highlight-color:transparent}
+  .lang-k{position:absolute;top:1.5px;left:1.5px;width:28px;height:18px;border-radius:999px;background:var(--ink);transition:transform .38s cubic-bezier(.34,1.45,.55,1)}
+  .lang .lf{position:relative;width:28px;height:18px;display:grid;place-items:center}
+  .lang .lf svg{width:17px;height:11px;border-radius:2px;display:block;box-shadow:0 0 0 1px rgba(255,255,255,.3);transition:filter .3s,opacity .3s,transform .3s}
   .lang .lf.gb svg,.lang.en .lf.no svg,.lang.gaar .lf.no svg{filter:grayscale(1);opacity:.5}
   .lang.en .lf.gb svg,.lang.gaar .lf.gb svg,.lang.en.gaar .lf.no svg{filter:none;opacity:1}
   .lang.en.gaar .lf.gb svg{filter:grayscale(1);opacity:.5}
-  .lang.en .lang-k,.lang.gaar .lang-k{transform:translateX(32px)}
+  .lang.en .lang-k,.lang.gaar .lang-k{transform:translateX(30px)}
   .lang.en.gaar .lang-k{transform:none}
   .lang.lang:hover .lf.lf svg{filter:none;opacity:1}
   .lang:hover .lf svg{transform:scale(1.06)}
@@ -346,7 +347,7 @@
 </head>
 <body>
 <main>
-  <div class="mono k"><span>&gt; Tidemann Esbjug</span><a class="lang en" href="/" hreflang="nb" aria-label="Language: English. Switch to Norwegian"><span class="lang-k" aria-hidden="true"></span><span class="lf no" aria-hidden="true"><svg viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span class="lf gb" aria-hidden="true"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg></span></a><span>02.10.2026</span><span class="hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Heart rate today"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><span class="hb"><b>00</b> bpm</span><svg class="g" viewBox="0 0 112 18" aria-hidden="true"></svg></button><button class="i" type="button" aria-label="Streamed live from Apple Watch">i</button></span><!-- Skjult inntil videre: <a class="kl" href="/login/">Customer login &rarr;</a> --></div>
+  <div class="mono k"><span>&gt; Tidemann Esbjug</span><span>02.10.2026</span><span class="hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Heart rate today"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><span class="hb"><b>00</b> bpm</span><svg class="g" viewBox="0 0 112 18" aria-hidden="true"></svg></button><button class="i" type="button" aria-label="Streamed live from Apple Watch">i</button></span><a class="lang en" href="/" hreflang="nb" aria-label="Language: English. Switch to Norwegian"><span class="lang-k" aria-hidden="true"></span><span class="lf no" aria-hidden="true"><svg viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span class="lf gb" aria-hidden="true"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg></span></a><!-- Skjult inntil videre: <a class="kl" href="/login/">Customer login &rarr;</a> --></div>
   <p class="en-note mono">Auto translated with Claude from Norwegian - excuse any strangeness :)</p>
   <h1 aria-label="The main message I keep shouting from the rooftops these days is that code and design have gone through a revolution that must not be overlooked."><span aria-hidden="true">The main message I keep shouting from the rooftops these days is that <span class="kd"><i>code</i></span> and <span class="ds" data-t="design">design</span> have gone through a revolution that must not be overlooked.</span></h1>
   <p class="b">Buying websites, apps or digital marketing today at the same price as before is absurd. There are also lots of opportunities that used to be too expensive to take on.</p>
