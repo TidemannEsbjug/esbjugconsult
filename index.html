@@ -20,7 +20,6 @@
   main{position:relative;padding:var(--g);padding-top:calc(var(--g) + 24px);padding-bottom:0;max-width:1180px;width:100%;margin:0 auto}
   .mono{font:600 13px/1.5 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase}
   .k{opacity:.72;display:flex;align-items:center;gap:10px 1.5em;flex-wrap:wrap}
-  main>.k:first-child{min-height:24px}
   .k .kl{margin-left:auto;color:inherit;text-decoration:none;border:2px solid var(--ink);border-radius:999px;padding:5px 14px;line-height:1.3;letter-spacing:.1em}
   .k .kl:hover{background:var(--ink);color:var(--y)}
   .k .kl:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
@@ -241,7 +240,8 @@
   /* Teller øverst: på siden nå og unike besøkende. Sifrene ruller som en kilometerteller; den som kommer ser «+1 · det er deg». */
   /* Toppmodulen: tre store tall under navnet. Puls live fra Apple Watch, hvor mange som er her nå og unike besøkende.
      Hårfine skillestreker mellom og ingen ramme rundt, så toppen fortsatt er åpen. */
-  .st{display:flex;align-items:flex-start;flex-wrap:wrap;row-gap:18px;margin-top:20px}
+  .st{display:flex;align-items:flex-start;flex-wrap:wrap;row-gap:18px}
+  .st+.k{margin-top:24px}
   .st-i{position:relative;display:flex;flex-direction:column;gap:8px;padding-left:0;border-left:0}
   .st-i[hidden]{display:none}
   .st-i:not([hidden])~.st-i{margin-left:clamp(20px,2.6vw,36px);padding-left:clamp(20px,2.6vw,36px);border-left:1px solid rgba(13,13,18,.18)}
@@ -256,11 +256,14 @@
   .od .r span{display:block;height:var(--dh)}
   .st-i.deg .od{background:var(--ink);color:var(--y)}
   .tl-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-  .tl-deg{position:absolute;left:0;top:calc(100% + 10px);background:var(--ink);color:var(--y);padding:6px 11px;border-radius:999px;font:600 12px/1 "SF Mono",Menlo,monospace;letter-spacing:.04em;white-space:nowrap;opacity:0;transform:translateY(-6px) scale(.9);transform-origin:14px 0;transition:opacity .35s,transform .5s cubic-bezier(.34,1.5,.5,1);pointer-events:none;z-index:2}
+  .tl-deg{position:absolute;left:-3px;bottom:-4px;background:var(--ink);color:var(--y);padding:6px 11px;border-radius:999px;font:600 12px/1 "SF Mono",Menlo,monospace;letter-spacing:.04em;white-space:nowrap;opacity:0;transform:translateY(-6px) scale(.9);transform-origin:14px 0;transition:opacity .35s,transform .5s cubic-bezier(.34,1.5,.5,1);pointer-events:none;z-index:2}
   .tl-deg::before{content:"";position:absolute;left:14px;top:-5px;border:5px solid transparent;border-top:0;border-bottom-color:var(--ink)}
   .st-i.deg .tl-deg{opacity:1;transform:none}
+  .st-l{transition:opacity .25s}
+  .st-i.deg .st-l{opacity:0}
   @media (max-width:560px){.st{display:grid;grid-template-columns:auto 1fr;column-gap:0}.st .hp{grid-column:1/-1}
-    .st-i:not([hidden])~.st-i{margin-left:0;padding-left:0;border-left:0}.st-i:not([hidden])~.st-i.tl-b{margin-left:24px;padding-left:24px;border-left:1px solid rgba(13,13,18,.18)}}
+    .st-i:not([hidden])~.st-i{margin-left:0;padding-left:0;border-left:0}.st-i:not([hidden])~.st-i.tl-b{margin-left:20px;padding-left:20px;border-left:1px solid rgba(13,13,18,.18)}
+    .st .tl-a{min-width:124px}.tl-deg{font-size:11px;letter-spacing:0;padding:5px 9px}}
   @media (prefers-reduced-motion:reduce){.od .r{transition:none}.tl-dot{animation:none}}
   /* Språkbryter: norsk og britisk flagg i én pille. Den svarte kula ligger bak språket du leser og glir over når du bytter;
      nettlesere med view transitions toner deretter mellom de to sidene mens bryteren står stille. */
@@ -289,16 +292,14 @@
   .hp.live .hj{animation:beat var(--beat,1s) ease-in-out infinite}
   .hp:not(.live) .hj{color:inherit;opacity:.35}
   .hp:not(.live) .hb-n{opacity:.35}
+  .hp .hp-av,.hp:not(.live) .hp-on{display:none}
+  .hp:not(.live) .hp-av{display:inline}
   .hp .g{width:120px;height:30px;flex:none;display:block;overflow:visible}
   .hp-o{display:inline-flex;align-items:center;border:0;background:none;color:inherit;font:inherit;letter-spacing:inherit;padding:6px 10px;margin:-6px -10px;border-radius:14px;cursor:pointer;transition:background .2s}
   .hp-o:hover,.hp-o[aria-expanded="true"]{background:rgba(13,13,18,.07)}
   .hp-o:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
   .hp .g path{fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
   .hp .g .gd{fill:currentColor}
-  .hp .i{width:16px;height:16px;flex:none;padding:0;border:1.5px solid currentColor;border-radius:50%;background:none;color:inherit;font:700 9px/1 "SF Mono",Menlo,monospace;letter-spacing:0;text-transform:none;display:grid;place-items:center;cursor:pointer}
-  .hp .i:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
-  .hp-tip{position:absolute;z-index:60;background:var(--ink);color:var(--y);font-size:11px;line-height:1.3;letter-spacing:.04em;text-transform:none;padding:6px 9px;border-radius:6px;white-space:nowrap;pointer-events:none;box-shadow:0 6px 18px rgba(13,13,18,.2)}
-  .hp-tip[hidden]{display:none}
   @keyframes beat{0%,100%{transform:scale(1)}14%{transform:scale(1.3)}28%{transform:scale(.94)}42%{transform:scale(1.12)}60%{transform:scale(1)}}
   /* Pulsen i fullskjerm: stort livetall med EKG-linje i pulsens takt, hjerteslagteller, I dag / 7 dager / 30 dager. */
   html.hpp-open{overflow:hidden}
@@ -368,8 +369,8 @@
 </head>
 <body>
 <main>
+  <div class="st"><div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Puls i dag"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg></span></button><span class="st-l"><span class="hp-on">Live fra Apple Watch</span><span class="hp-av">Ikke live akkurat nå</span></span></div><div class="st-i tl-a" hidden data-l="her nå"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">her nå</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><div class="st-i tl-b" hidden data-l="unike besøkende"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unike besøkende</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><span class="tl-sr"></span></div>
   <div class="mono k"><span>&gt; Tidemann Esbjug</span><span>02.10.2026</span><a class="lang" href="/en/" hreflang="en" aria-label="Språk: norsk. Bytt til engelsk"><span class="lang-k" aria-hidden="true"></span><span class="lf no" aria-hidden="true"><svg viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span class="lf gb" aria-hidden="true"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg></span></a><!-- Skjult inntil videre: <a class="kl" href="/login/">Kunde-login &rarr;</a> --></div>
-  <div class="st"><div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Puls i dag"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg></span></button><span class="st-l">bpm<button class="i" type="button" aria-label="Strømmes live fra Apple Watch">i</button></span></div><div class="st-i tl-a" hidden data-l="her nå"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">her nå</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><div class="st-i tl-b" hidden data-l="unike besøkende"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unike besøkende</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><span class="tl-sr"></span></div>
   <!--EN-MERKNAD-->
   <h1 aria-label="Hovedbudskapet jeg prøver å rope fra taket på bygninger i disse dager er at kode og design har gått gjennom en revolusjon som ikke må oversees."><span aria-hidden="true">Hovedbudskapet jeg prøver å rope fra taket på bygninger i disse dager er at <span class="kd"><i>kode</i></span> og <span class="ds" data-t="design">design</span> har gått gjennom en revolusjon som ikke må oversees.</span></h1>
   <p class="b">Å kjøpe nettsider, apper eller digital markedsføring i dag for samme pris som før er absurd. Det er også masse muligheter som tidligere var for dyre til å begi seg ut på.</p>
@@ -508,7 +509,6 @@
   <p class="ck-full" hidden>Chatten bruker én informasjonskapsel for å kjenne deg igjen mellom besøk, og viser meg omtrentlig hvor du er (by, ut fra IP-adressen) og hvor på siden du er mens du er her. Besøket tas opp (rulling og klikk, aldri det du skriver), så jeg kan gjøre siden bedre. Opptak slettes etter 30 dager. Når du er på siden, ser jeg at noen er her, omtrent hvor (by) og hvilken enhet. Ingen reklame, og ingen sporing utenfor denne siden.</p>
   <div><button type="button" class="ck-ja">Godta</button><button type="button" class="ck-nei">Bare nødvendige</button></div>
 </section>
-<div class="hp-tip mono" hidden></div>
 <section class="hpp" role="dialog" aria-modal="true" aria-label="Puls i dag" hidden data-dag="hjerteslag i dag" data-uke="hjerteslag siste 7 dager" data-mnd="hjerteslag siste 30 dager" data-t="t" data-min="min">
   <div class="hpp-in">
     <div class="hpp-top mono"><span class="hpp-live"><i></i><span class="hpp-s">Strømmes live fra Apple Watch</span></span><button class="hpp-x" type="button" aria-label="Lukk">&times;</button></div>
@@ -545,10 +545,10 @@ addEventListener('keydown',e=>{if(['ArrowDown','PageDown','End',' '].includes(e.
 const hrTop=(()=>{
 // Live fra Tidemanns Apple Watch (bare mens han deler den) og dagens graf, ett snitt per minutt i Oslo-døgnet.
 // Hjertet slår i pulsens takt; uten måling på 20 s står det stille. Pek eller dra på grafen for klokkeslett og puls.
-const hp=document.querySelector('.hp'),hpO=hp.querySelector('.hp-o'),hpL=hpO.getAttribute('aria-label'),hpN=hp.querySelector('.hb-n'),hpG=hp.querySelector('.g'),hpI=hp.querySelector('.i'),tip=document.querySelector('.hp-tip');
+const hp=document.querySelector('.hp'),hpO=hp.querySelector('.hp-o'),hpL=hpO.getAttribute('aria-label'),hpN=hp.querySelector('.hb-n'),hpG=hp.querySelector('.g');
 const pp=document.querySelector('.hpp'),ppN=pp.querySelector('.hpp-n'),ppC=pp.querySelector('.hpp-c'),ppS=ppC.querySelector('svg'),ppT=pp.querySelector('.hpp-t'),ppB=pp.querySelector('.hpp-b'),ppM=pp.querySelector('.hpp-m'),ppX=pp.querySelector('.hpp-x');
 const GW=120,GH=30,NS='http://www.w3.org/2000/svg',hhmm=new Intl.DateTimeFormat('nb-NO',{timeZone:'Europe/Oslo',hour:'2-digit',minute:'2-digit'}),oDay=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Oslo'});
-let hrBpm=null,hrTimer=null,day=null,skew=0,tipBy=null,viaWs=0,loading=0,lastLoad=0,sock=()=>false,big=null,ppI=null,ppTT=0,pokeT=0,busy=0,rng='dag';
+let hrBpm=null,hrTimer=null,day=null,skew=0,viaWs=0,loading=0,lastLoad=0,sock=()=>false,big=null,ppI=null,ppTT=0,pokeT=0,busy=0,rng='dag';
 const rdata={};
 const nowM=()=>Math.floor((Date.now()+skew-day.start)/60000);
 // Nytt døgn etter Oslo-datoen, ikke etter 1440 minutter: døgnet har 23 eller 25 timer når klokka stilles.
@@ -566,14 +566,6 @@ const loadHr=()=>{if(loading)return;loading=1;lastLoad=Date.now();
 const addLive=b=>{if(!day)return;if(newDay()){if(Date.now()-lastLoad>30000)loadHr();return}const m=nowM(),p=day.pts,l=p[p.length-1];
   if(l&&l[0]===m){l[2]=(l[2]||1)+1;l[1]=Math.round(l[1]+(b-l[1])/l[2])}else if(!l||m>l[0])p.push([m,b,1])};
 const setHr=b=>{hrBpm=b||null;clearTimeout(hrTimer);hpO.setAttribute('aria-label',hrBpm?hpL+', '+hrBpm+' bpm':hpL);if(hrBpm){hpN.textContent=hrBpm;hp.style.setProperty('--beat',(60/hrBpm).toFixed(3)+'s');addLive(hrBpm);hrTimer=setTimeout(()=>setHr(null),20000)}else hpN.textContent='–';drawHr()};
-const showTip=(text,el,cx)=>{tip.textContent=text;tip.hidden=false;const r=el.getBoundingClientRect(),w=tip.offsetWidth;
-  const l=Math.max(8,Math.min(r.left+(cx??r.width/2)-w/2,document.documentElement.clientWidth-w-8));tip.style.left=l+scrollX+'px';tip.style.top=r.bottom+scrollY+8+'px'};
-const hideTip=()=>{tip.hidden=true;tipBy=null};
-const info=()=>{tipBy='i';showTip(hpI.getAttribute('aria-label'),hpI)};
-hpI.addEventListener('mouseenter',info);hpI.addEventListener('focus',info);hpI.addEventListener('click',info);
-hpI.addEventListener('mouseleave',()=>{if(tipBy==='i'&&document.activeElement!==hpI)hideTip()});hpI.addEventListener('blur',()=>{if(tipBy==='i')hideTip()});
-// pointerdown, ikke click: iPhone sender ikke click for trykk på flater uten egen klikkhandling.
-document.addEventListener('pointerdown',e=>{if(tipBy==='i'&&!hpI.contains(e.target))hideTip()});addEventListener('resize',hideTip);
 // Fullskjerm: perioden som vises (I dag bruker de samme minuttsnittene som den lille grafen, pluss livemålinger),
 // én akse, hårfine rutelinjer, fylt flate under linjen, krysshår med verdi ved peker, trykk eller piltast.
 const kv=(c,v)=>{pp.querySelector(c).textContent=v};
@@ -628,7 +620,7 @@ pp.querySelectorAll('.hpp-tabs button').forEach(b=>b.addEventListener('click',()
   (rng==='dag'?Promise.resolve():loadR(rng)).then(()=>{drawBig();countUp()})}));
 // Åpne og lukke: klikk på pulsen øverst, × eller Esc. Siden bak står stille så lenge visningen er åpen.
 const openP=on=>{pp.hidden=!on;hpO.setAttribute('aria-expanded',on);document.documentElement.classList.toggle('hpp-open',on);cancelAnimationFrame(raf);
-  if(on){hideTip();sizeEkg();drawBig();countUp();if(!still.matches)raf=requestAnimationFrame(frame);ppX.focus({preventScroll:true})}else{ppI=null;cancelAnimationFrame(cntA);hpO.focus({preventScroll:true})}};
+  if(on){sizeEkg();drawBig();countUp();if(!still.matches)raf=requestAnimationFrame(frame);ppX.focus({preventScroll:true})}else{ppI=null;cancelAnimationFrame(cntA);hpO.focus({preventScroll:true})}};
 hpO.addEventListener('click',()=>openP(true));ppX.addEventListener('click',()=>openP(false));
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!pp.hidden)openP(false)});
 addEventListener('resize',()=>{if(!pp.hidden){sizeEkg();drawBig()}});

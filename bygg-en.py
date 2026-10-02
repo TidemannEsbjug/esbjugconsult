@@ -166,6 +166,7 @@ T = [
     ('Strømmes live fra Apple Watch', 'Streamed live from Apple Watch'),
     ('Graf over pulsen. Bruk piltastene for å se hvert punkt.', 'Graph of the heart rate. Use the arrow keys to step through each point.'),
     ('Ikke live akkurat nå', 'Not live right now'),
+    ('>Live fra Apple Watch<', '>Live from Apple Watch<'),
     ('<span>Lavest</span>', '<span>Lowest</span>'),
     ('<span>Snitt</span>', '<span>Average</span>'),
     ('<span>Høyest</span>', '<span>Highest</span>'),
