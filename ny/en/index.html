@@ -6,17 +6,20 @@
 <meta name="robots" content="noindex,nofollow">
 <title>Esbjug Consult</title>
 <meta name="description" content="Code and design have gone through a revolution that must not be overlooked.">
-<meta name="theme-color" content="#FFDE59">
+<meta name="theme-color" content="#cfe4f6">
 <link rel="alternate" hreflang="nb" href="https://esbjugconsult.com/">
 <link rel="alternate" hreflang="en" href="https://esbjugconsult.com/en/">
 <script>document.documentElement.classList.add("js");if(/[?&]speil=1/.test(location.search))document.documentElement.classList.add("speil","vis")</script>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23FFDE59'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%230d0d12'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2300205B'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%23BA0C2F' stroke='%23fff' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preload" href="/media/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-  :root{--y:#FFDE59;--ink:#0d0d12;--g:clamp(16px,6vw,96px)}
+  @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces.woff2) format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+  @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces-italic.woff2) format("woff2");font-weight:100 900;font-style:italic;font-display:swap}
+  :root{--y:#fff;--ink:#00205B;--bg:#cfe4f6;--r:#BA0C2F;--serif:"Fraunces",Georgia,"Times New Roman",serif;--g:clamp(16px,6vw,96px)}
   *{box-sizing:border-box}
   html{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
   img,video{-webkit-user-drag:none}
-  html,body{margin:0;background:var(--y);color:var(--ink)}
+  html,body{margin:0;background:var(--bg);color:var(--ink)}
   body{font-family:-apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;min-height:100svh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
   main{position:relative;padding:0 var(--g);max-width:1180px;width:100%;margin:0 auto}
   /* Hero: video i full bredde og høyde bak toppen av siden. */
@@ -24,13 +27,23 @@
   .hero-v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
   .hero-i{position:relative;z-index:1;width:100%;padding:var(--g)}
   /* Teksten står på en lys glassplate oppå videoen: uskarp bakgrunn, fint korn og en lys kant som fanger lyset. */
-  .hero-k{--hp:clamp(24px,4vw,56px);position:relative;isolation:isolate;max-width:1040px;border-radius:28px;padding:var(--hp);padding-top:calc(var(--hp) + 50px);background:linear-gradient(135deg,rgba(255,255,255,.7),rgba(255,255,255,.48));-webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5);border:1px solid rgba(255,255,255,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(255,255,255,.25),0 24px 60px rgba(13,13,18,.18)}
+  .hero-k{--hp:clamp(24px,4vw,56px);position:relative;isolation:isolate;max-width:1040px;border-radius:28px;padding:var(--hp);padding-top:calc(var(--hp) + 50px);background:linear-gradient(135deg,rgba(255,255,255,.7),rgba(255,255,255,.48));-webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5);border:1px solid rgba(255,255,255,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(255,255,255,.25),0 24px 60px rgba(0,32,91,.18)}
   .hero-k::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;opacity:.22;mix-blend-mode:soft-light;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.2 -.1'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E")}
   .hero-k::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;background:linear-gradient(115deg,rgba(255,255,255,.5),rgba(255,255,255,0) 28%,rgba(255,255,255,0) 72%,rgba(255,255,255,.22))}
   .hero .lang{top:var(--hp);left:var(--hp)}
   .hero .st+.k{margin-top:0}
   .hero .st:has(.st-i:not([hidden])){margin-bottom:clamp(28px,5vh,48px)}
   @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.hero-k{background:rgba(255,255,255,.82)}}
+  /* Slagordet i en egen liten glassboks under hovedboksen. */
+  .slag{display:inline-block;margin:clamp(16px,2.2vw,28px) 0 0;padding:.62em 1.15em .7em;border-radius:999px;font:italic 500 clamp(19px,2.1vw,28px)/1.2 var(--serif);letter-spacing:-.01em;background:linear-gradient(135deg,rgba(255,255,255,.7),rgba(255,255,255,.48));-webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5);border:1px solid rgba(255,255,255,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(255,255,255,.25),0 24px 60px rgba(0,32,91,.18)}
+  .slag em{color:var(--r);font-weight:600}
+  @media (max-width:520px){.slag{border-radius:22px}.hero-i{padding-bottom:88px}}
+  /* V2: serif i overskriftene. */
+  h1,h2,.p h3,.s em,.n b{font-family:var(--serif);font-weight:600;letter-spacing:-.022em}
+  h1{line-height:1.08}
+  h2{font-weight:500;letter-spacing:-.03em}
+  .s em{font-weight:500;font-style:italic}
+  .s em.i{font-family:inherit;font-style:italic}
   @media (prefers-reduced-motion:reduce){.hero-v{display:none}.hero{background:#9db4c8 url(/media/hero.jpg) center/cover}}
   .mono{font:600 13px/1.5 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase}
   .k{opacity:.72;display:flex;align-items:center;gap:10px 1.5em;flex-wrap:wrap}
@@ -39,25 +52,25 @@
   .k .kl:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
   h1{margin:14px 0 0;font-weight:850;font-size:clamp(28px,4.4vw,56px);line-height:1.06;letter-spacing:-.035em}
   p.b{margin:28px 0 0;max-width:38em;font-size:clamp(18px,1.6vw,22px);line-height:1.45;font-weight:500}
-  a.t{display:inline-block;margin-top:32px;background:var(--ink);color:var(--y);font-weight:700;font-size:clamp(18px,1.8vw,23px);padding:13px 22px 14px;border-radius:999px;text-decoration:none;letter-spacing:-.01em;transition:transform .2s}
+  a.t{display:inline-block;margin-top:32px;background:var(--r);color:#fff;font-weight:700;font-size:clamp(18px,1.8vw,23px);padding:13px 22px 14px;border-radius:999px;text-decoration:none;letter-spacing:-.01em;transition:transform .2s}
   a.t:hover{transform:translateY(-2px)}
   a.t:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
   .m{margin-top:clamp(40px,8vh,80px);max-width:34em;text-transform:none;letter-spacing:.02em;font-weight:500;line-height:1.6}
-  .bar{margin:10px 0 0;height:6px;background:rgba(13,13,18,.12);border-radius:3px;overflow:hidden}
+  .bar{margin:10px 0 0;height:6px;background:rgba(0,32,91,.12);border-radius:3px;overflow:hidden}
   .bar i{display:block;height:100%;width:calc(var(--p)*1%);background:var(--ink)}
   /* «kode»: blir en terminalbit som dekodes. «design»: fargerikt lys som gjør ordet om til glass. */
   .kd{display:inline-block;position:relative;white-space:nowrap;padding:.06em .12em;margin:-.06em -.12em;border-radius:.1em}
   /* «kode» styrer layouten med en usynlig kopi; den animerte teksten ligger absolutt oppå, så høyden og grunnlinjen aldri endres under animasjonen. */
   .kd::before{content:"kode";visibility:hidden}
   .kd i{font-style:normal;position:absolute;left:.12em;top:0;bottom:0;display:flex;align-items:center;line-height:inherit;transform-origin:0 50%}
-  .kd.c{background:var(--ink)}
+  .kd.c{background:var(--r)}
   .kd.c i{font-family:"SF Mono",ui-monospace,Menlo,monospace;font-weight:800;letter-spacing:-.04em;color:var(--y)}
   .ds{position:relative;display:inline-block;transition:color .5s}
   .ds::before,.ds::after{content:attr(data-t);position:absolute;left:0;top:0;pointer-events:none}
   .ds::before{color:transparent;background:linear-gradient(100deg,transparent 30%,#ff3d8b 38%,#ffb400 44%,#fff 50%,#2fd1ff 56%,#7a5cff 62%,transparent 70%) -60% 0/260% 100% no-repeat;-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 .1em rgba(255,61,139,.55)) drop-shadow(0 0 .22em rgba(47,209,255,.4));opacity:0}
   .ds.f::before{opacity:1;animation:fl 1s cubic-bezier(.4,0,.6,1) forwards}
   @keyframes fl{to{background-position:160% 0}}
-  .ds::after{color:transparent;background:linear-gradient(165deg,#fff 0%,rgba(255,255,255,.35) 30%,rgba(255,255,255,.08) 48%,rgba(255,255,255,.7) 60%,rgba(255,255,255,.18) 78%,rgba(255,255,255,.55) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-stroke:1.5px rgba(13,13,18,.42);filter:drop-shadow(0 .06em .1em rgba(13,13,18,.35));opacity:0;transition:opacity .6s}
+  .ds::after{color:transparent;background:linear-gradient(165deg,#fff 0%,rgba(255,255,255,.35) 30%,rgba(255,255,255,.08) 48%,rgba(255,255,255,.7) 60%,rgba(255,255,255,.18) 78%,rgba(255,255,255,.55) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-stroke:1.5px rgba(0,32,91,.42);filter:drop-shadow(0 .06em .1em rgba(0,32,91,.35));opacity:0;transition:opacity .6s}
   .ds.g{color:transparent}
   .ds.g::after{opacity:1}
   h2{margin:clamp(88px,16vh,160px) 0 0;font-weight:850;font-size:clamp(44px,8vw,112px);line-height:.95;letter-spacing:-.045em}
@@ -73,7 +86,7 @@
   dt{font:600 11px/1.4 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;opacity:.6}
   dd{margin:4px 0 0;font-size:16px;line-height:1.35;font-weight:500}
   .x{display:inline-block;width:7em;height:.9em;vertical-align:-.1em;background:var(--ink)}
-  .p video,.p img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;margin-top:22px;border-radius:14px;background:#0F1115}
+  .p video,.p img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;margin-top:22px;border-radius:14px;background:#00205B}
   .p a{color:inherit;text-underline-offset:3px}
   .n{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;margin-top:22px;border-radius:14px;overflow:hidden}
   .n div{background:var(--ink);color:var(--y);padding:18px 18px 20px}
@@ -87,26 +100,26 @@
   .p img.wide{aspect-ratio:4/1}
   /* Chat: boble nede til høyre, panel i svart og gult. */
   .ch{position:fixed;right:18px;bottom:18px;z-index:5;font-family:inherit}
-  .ch-b{display:flex;align-items:center;gap:8px;border:0;cursor:pointer;background:var(--ink);color:var(--y);font-weight:700;font-size:16px;line-height:1;font-family:inherit;padding:13px 18px 13px 15px;border-radius:999px;box-shadow:0 8px 24px rgba(13,13,18,.25);position:relative}
+  .ch-b{display:flex;align-items:center;gap:8px;border:0;cursor:pointer;background:var(--ink);color:var(--y);font-weight:700;font-size:16px;line-height:1;font-family:inherit;padding:13px 18px 13px 15px;border-radius:999px;box-shadow:0 8px 24px rgba(0,32,91,.25);position:relative}
   .ch-b svg{width:20px;height:20px}
   .ch-n{position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;border-radius:10px;background:#ff3d57;color:#fff;font-weight:700;font-size:12px;line-height:20px;font-family:inherit;text-align:center;font-style:normal}
-  .ch-p{position:fixed;right:18px;bottom:18px;width:min(380px,calc(100vw - 36px));height:min(540px,calc(100svh - 36px));background:var(--ink);color:#f3f1ea;border-radius:18px;box-shadow:0 18px 50px rgba(13,13,18,.35);display:flex;flex-direction:column;overflow:hidden}
+  .ch-p{position:fixed;right:18px;bottom:18px;width:min(380px,calc(100vw - 36px));height:min(540px,calc(100svh - 36px));background:var(--ink);color:#f2f6fb;border-radius:18px;box-shadow:0 18px 50px rgba(0,32,91,.35);display:flex;flex-direction:column;overflow:hidden}
   .ch-p[hidden],.ch-b[hidden]{display:none}
-  .ch-h{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 14px 18px;border-bottom:1px solid rgba(255,222,89,.15)}
+  .ch-h{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 14px 18px;border-bottom:1px solid rgba(255,255,255,.15)}
   .ch-h b{display:block;color:var(--y);font-size:16px}
   .ch-s{display:flex;align-items:center;gap:6px;margin-top:3px;font-size:12px;opacity:.75}
   .ch-s i{width:7px;height:7px;border-radius:50%;background:#8a8a8a}
   .ch-s.on i{background:#3ddc84}
   .ch-a{display:flex;align-items:center;gap:6px}
-  .ch-del{border:0;background:none;color:#f3f1ea;opacity:.55;font-size:12px;font-family:inherit;cursor:pointer;padding:4px 6px;text-decoration:underline;text-underline-offset:3px}
+  .ch-del{border:0;background:none;color:#f2f6fb;opacity:.55;font-size:12px;font-family:inherit;cursor:pointer;padding:4px 6px;text-decoration:underline;text-underline-offset:3px}
   .ch-del:hover{opacity:.9}
   .ch-x{border:0;background:none;color:var(--y);font-size:26px;line-height:1;cursor:pointer;padding:0 4px}
   .ch-m{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px}
   .ch-m p{margin:0;max-width:82%;padding:9px 12px;border-radius:14px;font-size:15px;line-height:1.35;white-space:pre-wrap;overflow-wrap:anywhere}
   .ch-m .me{align-self:flex-end;background:var(--y);color:var(--ink);border-bottom-right-radius:4px}
-  .ch-m .him{align-self:flex-start;background:#26262e;border-bottom-left-radius:4px}
-  .ch-f{display:flex;gap:8px;padding:12px;border-top:1px solid rgba(255,222,89,.15)}
-  .ch-f textarea{flex:1;resize:none;border:0;border-radius:12px;background:#1d1d24;color:#f3f1ea;font-size:15px;line-height:1.35;font-family:inherit;padding:10px 12px;max-height:120px;-webkit-user-select:text;user-select:text;outline:none}
+  .ch-m .him{align-self:flex-start;background:#12357a;border-bottom-left-radius:4px}
+  .ch-f{display:flex;gap:8px;padding:12px;border-top:1px solid rgba(255,255,255,.15)}
+  .ch-f textarea{flex:1;resize:none;border:0;border-radius:12px;background:#0c2c6e;color:#f2f6fb;font-size:15px;line-height:1.35;font-family:inherit;padding:10px 12px;max-height:120px;-webkit-user-select:text;user-select:text;outline:none}
   .ch-f textarea:focus{box-shadow:0 0 0 2px var(--y)}
   .ch-f button{border:0;border-radius:12px;background:var(--y);color:var(--ink);width:44px;cursor:pointer;display:grid;place-items:center}
   .ch-f button svg{width:18px;height:18px}
@@ -118,21 +131,21 @@
   @keyframes hhl{0%{opacity:0;transform:translateY(70%) scale(.3) rotate(-14deg)}20%{opacity:1;transform:translateY(-10%) scale(1.1) rotate(5deg)}30%{transform:none}45%{transform:translateY(-4%) rotate(-3deg)}58%{transform:none}80%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-50%) scale(.7) rotate(8deg)}}
   @media (prefers-reduced-motion:reduce){.hh span{animation:hhbg 2.8s ease forwards}}
   /* Samtykke til informasjonskapsler: nede til venstre, like store knapper for ja og nei. */
-  .ck{position:fixed;left:18px;bottom:18px;z-index:6;width:min(400px,calc(100vw - 36px));background:var(--ink);color:#f3f1ea;border-radius:16px;padding:16px 16px 14px;box-shadow:0 14px 40px rgba(13,13,18,.3);font-size:14px;line-height:1.45}
+  .ck{position:fixed;left:18px;bottom:18px;z-index:6;width:min(400px,calc(100vw - 36px));background:var(--ink);color:#f2f6fb;border-radius:16px;padding:16px 16px 14px;box-shadow:0 14px 40px rgba(0,32,91,.3);font-size:14px;line-height:1.45}
   .ck[hidden]{display:none}
   .ck p{margin:0}
   .ck b{display:block;color:var(--y);margin-bottom:4px;font-size:15px}
   .ck div{display:flex;gap:8px;margin-top:12px}
   .ck button{flex:1;border:0;border-radius:999px;padding:10px 12px;font-weight:700;font-size:14px;line-height:1;font-family:inherit;cursor:pointer}
   .ck-ja{background:var(--y);color:var(--ink)}
-  .ck-nei{background:#26262e;color:#f3f1ea}
+  .ck-nei{background:#12357a;color:#f2f6fb}
   .ck-endre{color:inherit}
   @media (max-width:520px){.ck{bottom:84px}}
   /* Kontroll fra Tidemann: «fokus» flytter chatten til midten, gjør den større og skjuler resten av siden. */
   .ch-p{transition:right .55s cubic-bezier(.2,.8,.2,1),bottom .55s cubic-bezier(.2,.8,.2,1),transform .55s cubic-bezier(.2,.8,.2,1),width .55s cubic-bezier(.2,.8,.2,1),height .55s cubic-bezier(.2,.8,.2,1),border-radius .55s}
   main,.hero,canvas{transition:opacity .45s ease,filter .45s ease}
   .focus main,.focus .hero,.focus canvas{opacity:0;filter:blur(8px);pointer-events:none}
-  .focus .ch-p{right:50%;bottom:50%;transform:translate(50%,50%);width:min(760px,calc(100vw - 32px));height:min(80svh,800px);border-radius:24px;box-shadow:0 30px 80px rgba(13,13,18,.35)}
+  .focus .ch-p{right:50%;bottom:50%;transform:translate(50%,50%);width:min(760px,calc(100vw - 32px));height:min(80svh,800px);border-radius:24px;box-shadow:0 30px 80px rgba(0,32,91,.35)}
   .focus .ch-h{padding:22px 24px 18px 26px}
   .focus .ch-h b{font-size:20px}
   .focus .ch-m{padding:24px 26px;gap:10px}
@@ -156,18 +169,18 @@
   .ch-m p.file audio{display:block;width:250px;max-width:100%;height:40px}
   .ch-m p.file video{display:block;width:auto;height:auto;max-width:min(260px,100%);max-height:400px;border-radius:12px}
   .ch-m p.file img{display:block;max-width:240px;max-height:260px;border-radius:12px;cursor:zoom-in}
-  .ch-m p.file a{display:block;padding:9px 12px;border-radius:14px;background:#26262e;color:#f3f1ea;text-decoration:none}
+  .ch-m p.file a{display:block;padding:9px 12px;border-radius:14px;background:#12357a;color:#f2f6fb;text-decoration:none}
   .ch-m .me.file a{background:var(--y);color:var(--ink)}
   .ch-m p.up{opacity:.6}
   .ch-m p.err{background:#5a1e27;color:#fff}
   .ch-more{display:flex;gap:6px}
   .ch-more[hidden]{display:none}
-  .ch-more button{border:0;border-radius:12px;background:#26262e;color:var(--y);width:44px;cursor:pointer;display:grid;place-items:center}
+  .ch-more button{border:0;border-radius:12px;background:#12357a;color:var(--y);width:44px;cursor:pointer;display:grid;place-items:center}
   .ch-more svg{width:19px;height:19px}
   .ch-mic.rec{background:#ff3d57;color:#fff;animation:recp 1.2s ease-in-out infinite}
   @keyframes recp{50%{box-shadow:0 0 0 6px rgba(255,61,87,.25)}}
   /* Lydsamtale: kort øverst i chatten når Tidemann ringer. */
-  .ch-call{margin:12px 12px 0;padding:14px;border-radius:16px;background:#1b1b22;border:1px solid rgba(255,222,89,.25)}
+  .ch-call{margin:12px 12px 0;padding:14px;border-radius:16px;background:#0a2a6b;border:1px solid rgba(255,255,255,.25)}
   .ch-call[hidden]{display:none}
   .cc-i{display:flex;align-items:center;gap:12px}
   .cc-i b{display:block;color:var(--y);font-size:16px}
@@ -178,20 +191,20 @@
   .cc-b{display:flex;gap:8px;margin-top:12px}
   .cc-b button{flex:1;border:0;border-radius:999px;padding:11px;font-weight:700;font-size:14px;line-height:1;font-family:inherit;cursor:pointer}
   .cc-b button[hidden]{display:none}
-  .cc-ans{background:#3ddc84;color:#0d0d12}
+  .cc-ans{background:#3ddc84;color:#00205B}
   .cc-dec,.cc-end{background:#ff3d57;color:#fff}
-  .cc-mute{background:#2c2c35;color:#f3f1ea}
+  .cc-mute{background:#183d85;color:#f2f6fb}
   .cc-mute.on{background:var(--y);color:var(--ink)}
   /* Speilet i appen: ingen chat, ingen banner. */
   .speil #chat,.speil #cookies{display:none!important}
   /* Samtalelinje: chatten minimert under en samtale, så man kan navigere fritt. */
-  .ch-pill{display:flex;align-items:center;gap:6px;padding:6px;border-radius:999px;background:var(--ink);box-shadow:0 8px 24px rgba(13,13,18,.3)}
+  .ch-pill{display:flex;align-items:center;gap:6px;padding:6px;border-radius:999px;background:var(--ink);box-shadow:0 8px 24px rgba(0,32,91,.3)}
   .ch-pill[hidden]{display:none}
   .ch-pill button{border:0;cursor:pointer;font-family:inherit}
   .cp-open{display:flex;align-items:center;gap:8px;background:none;color:var(--y);font-weight:700;font-size:14px;padding:6px 8px 6px 10px;font-variant-numeric:tabular-nums}
   .cp-open i{width:9px;height:9px;border-radius:50%;background:#3ddc84;animation:ring 1.6s ease-in-out infinite}
   .cp-mute,.cp-end{width:38px;height:38px;border-radius:50%;display:grid;place-items:center}
-  .cp-mute{background:#2c2c35;color:#f3f1ea}
+  .cp-mute{background:#183d85;color:#f2f6fb}
   .cp-mute.on{background:var(--y);color:var(--ink)}
   .cp-end{background:#ff3d57;color:#fff}
   .ch-pill svg{width:18px;height:18px}
@@ -200,7 +213,7 @@
   .ch-b.på::after{animation:pulsG 2.6s ease-out infinite}
   @keyframes pulsG{0%{box-shadow:0 0 0 0 rgba(61,220,132,.6)}70%{box-shadow:0 0 0 14px rgba(61,220,132,0)}100%{box-shadow:0 0 0 0 rgba(61,220,132,0)}}
   .ch-b.på::before{content:"";position:absolute;top:9px;left:30px;width:8px;height:8px;border-radius:50%;background:#3ddc84;box-shadow:0 0 0 2px var(--ink)}
-  .ch-b.møte{box-shadow:0 0 0 3px #ff8a00,0 8px 24px rgba(13,13,18,.25)}
+  .ch-b.møte{box-shadow:0 0 0 3px #ff8a00,0 8px 24px rgba(0,32,91,.25)}
   .ch-b.møte::after{animation:pulsO 2.2s ease-in-out infinite}
   @keyframes pulsO{50%{box-shadow:0 0 0 7px rgba(255,138,0,.28)}}
   /* Natt: knappen og chatvinduet blir nattblå, z-ene stiger opp over knappen. */
@@ -228,17 +241,17 @@
   .ch-s.møte>i{background:#ff8a00}
   @media (prefers-reduced-motion:reduce){.ch-b::after,.zz i,.ch-s.på.on>i{animation:none}.sover .zz i{opacity:1}.zz i:nth-child(2){transform:translate(7px,-12px)}.zz i:nth-child(3){transform:translate(14px,-24px)}}
   /* «Sende mail istedet?»: liten knapp til venstre over skrivefeltet når chatten er åpnet fra «Talk to me about all of this.» */
-  .ch-mail{align-self:flex-start;margin:0 12px 8px;padding:8px 14px;border-radius:999px;background:#26262e;color:var(--y);font-size:14px;font-weight:600;text-decoration:none}
+  .ch-mail{align-self:flex-start;margin:0 12px 8px;padding:8px 14px;border-radius:999px;background:#12357a;color:var(--y);font-size:14px;font-weight:600;text-decoration:none}
   .ch-mail[hidden]{display:none}
-  .ch-mail:hover{background:#33333d}
+  .ch-mail:hover{background:#1f4690}
   .natt .ch-mail{background:#222b4a;color:#cfdcff}
   /* Spørsmål i chatten til den som har sagt nei til informasjonskapsler: like store knapper, vises én gang per fane. */
-  .ch-ck{margin:0 12px 8px;padding:10px 12px;border-radius:14px;background:#26262e;font-size:13px;line-height:1.4}
+  .ch-ck{margin:0 12px 8px;padding:10px 12px;border-radius:14px;background:#12357a;font-size:13px;line-height:1.4}
   .ch-ck[hidden]{display:none}
   .ch-ck p{margin:0 0 8px}
   .ch-ck div{display:flex;gap:8px}
-  .ch-ck button{flex:1;border:1.5px solid rgba(255,222,89,.55);background:none;color:var(--y);border-radius:999px;padding:7px 10px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer}
-  .ch-ck button:hover{background:rgba(255,222,89,.1)}
+  .ch-ck button{flex:1;border:1.5px solid rgba(255,255,255,.55);background:none;color:var(--y);border-radius:999px;padding:7px 10px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer}
+  .ch-ck button:hover{background:rgba(255,255,255,.1)}
   .ch-ck button:focus-visible{outline:2px solid var(--y);outline-offset:2px}
   .natt .ch-ck{background:#222b4a;color:#cfdcff}
   .natt .ch-ck button{color:#cfdcff;border-color:rgba(207,220,255,.5)}
@@ -248,7 +261,7 @@
   .tanke .tk-t{font:600 12px/1.5 "SF Mono",Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;opacity:.7;margin-bottom:.9em}
   .tanke a{color:inherit;text-underline-offset:3px;overflow-wrap:anywhere;font-size:14px}
   .ck{padding-right:44px;line-height:1.35}
-  .ck .ck-x{flex:none;border-radius:0;font-weight:400;position:absolute;top:8px;right:10px;border:0;background:none;color:#f3f1ea;opacity:.6;font-size:24px;line-height:1;cursor:pointer;padding:4px 6px;font-size:26px}
+  .ck .ck-x{flex:none;border-radius:0;font-weight:400;position:absolute;top:8px;right:10px;border:0;background:none;color:#f2f6fb;opacity:.6;font-size:24px;line-height:1;cursor:pointer;padding:4px 6px;font-size:26px}
   .ck-x:hover{opacity:1}
   .ck .ck-mer{flex:none;display:inline;border-radius:0;border:0;background:none;padding:0;color:var(--y);font:inherit;font-weight:600;line-height:1;vertical-align:baseline;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
   .ck-full{margin-top:8px!important;font-size:13px;opacity:.8}
@@ -260,9 +273,9 @@
   .st+.k{margin-top:clamp(56px,10vh,104px)}
   .st-i{position:relative;display:flex;flex-direction:column;gap:8px;padding-left:0;border-left:0}
   .st-i[hidden]{display:none}
-  .st-i:not([hidden])~.st-i{margin-left:clamp(20px,2.6vw,36px);padding-left:clamp(20px,2.6vw,36px);border-left:1px solid rgba(13,13,18,.18)}
+  .st-i:not([hidden])~.st-i{margin-left:clamp(20px,2.6vw,36px);padding-left:clamp(20px,2.6vw,36px);border-left:1px solid rgba(0,32,91,.18)}
   .st-v{display:flex;align-items:center;gap:12px;font:850 clamp(32px,3.4vw,46px)/1 -apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;letter-spacing:-.04em;font-variant-numeric:tabular-nums;white-space:nowrap}
-  .st-l{display:flex;align-items:center;gap:8px;min-height:18px;font:600 11px/1 "SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(13,13,18,.62)}
+  .st-l{display:flex;align-items:center;gap:8px;min-height:18px;font:600 11px/1 "SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(0,32,91,.62)}
   .st-c{position:relative;display:flex;flex-direction:column;gap:8px}
   .tl-dot{width:.24em;height:.24em;flex:none;border-radius:50%;background:#16a34a;animation:tlDot 2.4s ease-out infinite}
   @keyframes tlDot{0%{box-shadow:0 0 0 0 rgba(22,163,74,.5)}70%,100%{box-shadow:0 0 0 .26em rgba(22,163,74,0)}}
@@ -278,7 +291,7 @@
   .st-l{transition:opacity .25s}
   .st-i.deg .st-l{opacity:0}
   @media (max-width:560px){.st{display:grid;grid-template-columns:auto 1fr;column-gap:0}.st .hp{grid-column:1/-1}
-    .st-i:not([hidden])~.st-i{margin-left:0;padding-left:0;border-left:0}.st-i:not([hidden])~.st-i.tl-b{margin-left:20px;padding-left:20px;border-left:1px solid rgba(13,13,18,.18)}
+    .st-i:not([hidden])~.st-i{margin-left:0;padding-left:0;border-left:0}.st-i:not([hidden])~.st-i.tl-b{margin-left:20px;padding-left:20px;border-left:1px solid rgba(0,32,91,.18)}
     .st .tl-a{min-width:124px}.tl-deg{font-size:11px;letter-spacing:0;padding:5px 9px}}
   @media (prefers-reduced-motion:reduce){.od .r{transition:none}.tl-dot{animation:none}}
   /* Språkbryter: norsk og britisk flagg i én pille. Den svarte kula ligger bak språket du leser og glir over når du bytter;
@@ -312,7 +325,7 @@
   .hp:not(.live) .hp-av{display:inline}
   .hp .g{width:120px;height:30px;flex:none;display:block;overflow:visible}
   .hp-o{display:inline-flex;align-items:center;border:0;background:none;color:inherit;font:inherit;letter-spacing:inherit;padding:6px 10px;margin:-6px -10px;border-radius:14px;cursor:pointer;transition:background .2s}
-  .hp-o:hover,.hp-o[aria-expanded="true"]{background:rgba(13,13,18,.07)}
+  .hp-o:hover,.hp-o[aria-expanded="true"]{background:rgba(0,32,91,.07)}
   .hp-o:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
   .hp .g path{fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
   .hp .g .gd{fill:currentColor}
@@ -327,11 +340,11 @@
   .hpp-live{display:flex;align-items:center;gap:10px}
   .hpp-live i{width:9px;height:9px;flex:none;border-radius:50%;background:#ff3d57}
   .hpp.live .hpp-live i{animation:hppDot 1.6s ease-out infinite}
-  .hpp:not(.live) .hpp-live i{background:rgba(255,222,89,.3)}
+  .hpp:not(.live) .hpp-live i{background:rgba(255,255,255,.3)}
   @keyframes hppDot{0%{box-shadow:0 0 0 0 rgba(255,61,87,.6)}80%,100%{box-shadow:0 0 0 10px rgba(255,61,87,0)}}
   .hpp-s{opacity:.7;font-size:11px}
-  .hpp-x{width:48px;height:48px;flex:none;border:1.5px solid rgba(255,222,89,.28);border-radius:50%;background:none;color:var(--y);font:300 30px/1 -apple-system,Arial,sans-serif;cursor:pointer;display:grid;place-items:center;transition:background .2s,transform .3s}
-  .hpp-x:hover{background:rgba(255,222,89,.12);transform:rotate(90deg)}
+  .hpp-x{width:48px;height:48px;flex:none;border:1.5px solid rgba(255,255,255,.28);border-radius:50%;background:none;color:var(--y);font:300 30px/1 -apple-system,Arial,sans-serif;cursor:pointer;display:grid;place-items:center;transition:background .2s,transform .3s}
+  .hpp-x:hover{background:rgba(255,255,255,.12);transform:rotate(90deg)}
   .hpp-x:focus-visible{outline:2px solid var(--y);outline-offset:3px}
   .hpp-hero{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:10px 40px;flex:none}
   .hpp-ekg{display:block;width:100%;height:clamp(44px,9vh,104px);min-height:0;margin:0;flex:none;opacity:.8;pointer-events:none;touch-action:auto}
@@ -339,8 +352,8 @@
   .hpp-h .hj{width:clamp(36px,min(6vw,7vh),76px);height:clamp(36px,min(6vw,7vh),76px);flex:none;color:#ff3d57;filter:drop-shadow(0 0 26px rgba(255,61,87,.5));transition:color .3s}
   .hpp-h .hj.slag{animation:hppSlag .34s cubic-bezier(.2,.8,.2,1)}
   @keyframes hppSlag{0%{transform:scale(1)}30%{transform:scale(1.22)}60%{transform:scale(.96)}100%{transform:scale(1)}}
-  .hpp:not(.live) .hpp-h .hj{color:rgba(255,222,89,.35);filter:none}
-  .hpp-n{font-size:clamp(64px,min(18vw,17vh),220px);font-weight:850;letter-spacing:-.055em;line-height:.82;font-variant-numeric:tabular-nums;text-shadow:0 0 70px rgba(255,222,89,.2)}
+  .hpp:not(.live) .hpp-h .hj{color:rgba(255,255,255,.35);filter:none}
+  .hpp-n{font-size:clamp(64px,min(18vw,17vh),220px);font-weight:850;letter-spacing:-.055em;line-height:.82;font-variant-numeric:tabular-nums;text-shadow:0 0 70px rgba(255,255,255,.2)}
   .hpp-u{font:600 clamp(13px,1.4vw,16px)/1 "SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;opacity:.6;align-self:flex-end;margin-bottom:.9em}
   .hpp-off{font-size:clamp(26px,min(5vw,6vh),52px);font-weight:850;letter-spacing:-.02em}
   .hpp.live .hpp-off,.hpp:not(.live) .hpp-n,.hpp:not(.live) .hpp-u,.hpp:not(.live) .hpp-b{display:none}
@@ -350,7 +363,7 @@
   .hpp-cn.tikk{animation:hppTikk .3s ease-out}
   @keyframes hppTikk{0%{color:#fff3b0}100%{color:var(--y)}}
   .hpp-cl{opacity:.7}
-  .hpp-tabs{display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(255,222,89,.08);align-self:flex-start;flex:none}
+  .hpp-tabs{display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(255,255,255,.08);align-self:flex-start;flex:none}
   .hpp-tabs button{border:0;background:none;color:var(--y);opacity:.7;font:600 12px/1 "SF Mono",Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;padding:10px 14px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s,opacity .2s}
   .hpp-tabs button:hover{opacity:1}
   .hpp-tabs button[aria-selected="true"]{background:var(--y);color:var(--ink);opacity:1}
@@ -358,27 +371,27 @@
   .hpp-c{position:relative;flex:1 1 auto;min-height:80px;outline:none;touch-action:none;cursor:crosshair;border-radius:8px}
   .hpp-c:focus-visible{box-shadow:0 0 0 2px var(--y)}
   .hpp-c svg{position:absolute;inset:0;display:block;width:100%;height:100%;overflow:visible;pointer-events:none}
-  .hpp-c .ln{fill:none;stroke:var(--y);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;filter:drop-shadow(0 0 6px rgba(255,222,89,.35))}
+  .hpp-c .ln{fill:none;stroke:var(--y);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;filter:drop-shadow(0 0 6px rgba(255,255,255,.35))}
   .hpp-c .ar{fill:url(#hppGrad);stroke:none}
-  .hpp-c .gr{stroke:rgba(255,222,89,.12);stroke-width:1}
-  .hpp-c text{fill:rgba(255,222,89,.55);font:500 10px "SF Mono",Menlo,monospace}
-  .hpp-c .xh{stroke:rgba(255,222,89,.55);stroke-width:1}
+  .hpp-c .gr{stroke:rgba(255,255,255,.12);stroke-width:1}
+  .hpp-c text{fill:rgba(255,255,255,.55);font:500 10px "SF Mono",Menlo,monospace}
+  .hpp-c .xh{stroke:rgba(255,255,255,.55);stroke-width:1}
   .hpp-c .dt{fill:var(--y);stroke:var(--ink);stroke-width:2}
-  .hpp-c .tom{fill:rgba(255,222,89,.45);font-size:12px}
+  .hpp-c .tom{fill:rgba(255,255,255,.45);font-size:12px}
   .hpp-t{position:absolute;transform:translate(-50%,calc(-100% - 12px));background:var(--y);color:var(--ink);border-radius:8px;padding:6px 9px;font:600 11px/1.25 "SF Mono",Menlo,monospace;white-space:nowrap;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.35)}
   .hpp-t b{font:850 16px/1 -apple-system,"SF Pro Display",Arial,sans-serif}
-  .hpp-k{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding-top:clamp(8px,1.6vh,16px);border-top:1px solid rgba(255,222,89,.12);flex:none}
+  .hpp-k{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding-top:clamp(8px,1.6vh,16px);border-top:1px solid rgba(255,255,255,.12);flex:none}
   .hpp-k span{display:block;font:600 10px/1.4 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;opacity:.55}
   .hpp-k b{font-size:clamp(17px,min(2.6vw,3.2vh),30px);font-weight:850;letter-spacing:-.02em;font-variant-numeric:tabular-nums;white-space:nowrap}
   @media (max-width:520px){.hpp-k{grid-template-columns:repeat(2,1fr);row-gap:8px}}
   @media (max-height:640px){.hpp-ekg{display:none}}
   @media (max-height:500px){.hpp-k{display:none}}
-  .hpp-b{display:block;flex:none;margin:0;width:100%;border:0;border-radius:999px;background:var(--y);color:var(--ink);font:800 clamp(16px,1.8vw,19px)/1.2 -apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;padding:18px 22px;cursor:pointer;transition:transform .15s,box-shadow .2s;box-shadow:0 0 0 0 rgba(255,222,89,.4)}
-  .hpp-b:hover{transform:translateY(-1px);box-shadow:0 10px 40px rgba(255,222,89,.25)}
+  .hpp-b{display:block;flex:none;margin:0;width:100%;border:0;border-radius:999px;background:var(--y);color:var(--ink);font:800 clamp(16px,1.8vw,19px)/1.2 -apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;padding:18px 22px;cursor:pointer;transition:transform .15s,box-shadow .2s;box-shadow:0 0 0 0 rgba(255,255,255,.4)}
+  .hpp-b:hover{transform:translateY(-1px);box-shadow:0 10px 40px rgba(255,255,255,.25)}
   .hpp-b:active{transform:scale(.98)}
   .hpp-b:focus-visible{outline:2px solid var(--y);outline-offset:3px}
   .hpp-m:focus{outline:none}
-  .hpp-m{flex:none;margin:0;text-align:center;font-weight:800;font-size:clamp(16px,1.8vw,19px);line-height:1.2;padding:17px 22px;border:1.5px solid rgba(255,222,89,.4);border-radius:999px}
+  .hpp-m{flex:none;margin:0;text-align:center;font-weight:800;font-size:clamp(16px,1.8vw,19px);line-height:1.2;padding:17px 22px;border:1.5px solid rgba(255,255,255,.4);border-radius:999px}
   @media (prefers-reduced-motion:reduce){.hp.live .hj,.hpp-h .hj.slag,.hpp.live .hpp-live i,.hpp-cn.tikk{animation:none}.hpp{animation:none}}
   canvas{display:block;width:100%;height:38vh;min-height:220px;margin-top:auto;touch-action:pan-y}
 </style>
@@ -395,6 +408,7 @@
   <p class="b">Buying websites, apps or digital marketing today at the same price as before is absurd. There are also lots of opportunities that used to be too expensive to take on.</p>
   <a class="t" href="mailto:tidemann@esbjugconsult.com">Talk to me about all of this.</a>
   </div>
+  <p class="slag">When life gives you lemons, <em>demand caviar</em></p>
   </div>
 </header>
 <main>
@@ -410,7 +424,7 @@
       <div><dt>Size</dt><dd>Simple consulting on a small scale</dd></div>
       <div><dt>I do</dt><dd>Marketing strategy and restructuring</dd></div>
     </dl>
-    <img class="wide" src="/media/laks.jpg" alt="A leaping salmon, drawn in yellow and black" loading="lazy" width="1600" height="400">
+    <img class="wide" src="/media/ny-laks.jpg" alt="A leaping salmon, drawn in red and blue" loading="lazy" width="1600" height="400">
     <div class="s">
       <p>Together we have already made exciting progress, largely thanks to analysis from Claude Code.</p>
       <p>By loading in Google Ads numbers from their existing agency, we found large savings caused by inefficient targeting and administration fees that were too high. It was a case where management had placed complete trust in the agency, and I don't think I'll find savings like these as easily in most companies.</p>
@@ -465,7 +479,7 @@
       <div><dt>Size</dt><dd>204,000 lines of code</dd></div>
       <div><dt>I do</dt><dd>Everything</dd></div>
     </dl>
-    <img class="wide" src="/media/app.jpg" alt="Two phones side by side, in yellow and black" loading="lazy" width="1600" height="400">
+    <img class="wide" src="/media/ny-app.jpg" alt="Two phones side by side, in blue and white" loading="lazy" width="1600" height="400">
     <div class="n">
       <div><b>180,000</b><span>lines of Swift in the app itself</span></div>
       <div><b>24,000</b><span>lines of server code</span></div>
@@ -489,7 +503,7 @@
 
   <section class="p">
     <h3>Operational IT security for a hacked family</h3>
-    <img class="wide" src="/media/sikkerhet.jpg" alt="A padlock in yellow and black" loading="lazy" width="1600" height="400">
+    <img class="wide" src="/media/ny-sikkerhet.jpg" alt="A padlock in blue and white" loading="lazy" width="1600" height="400">
     <div class="s">
       <p>An acquaintance came to me with a case where a friend of his had had some of his accounts hacked, had received unsettling messages, and was very worried about surveillance and further hacking.</p>
       <p>I checked many systems and networks for threats, with a lot of help from a system I built with Claude Code, using tools like LuLu and KnockKnock to produce reports run through Claude Code, plus a tool of my own called ACHILLES.</p>
@@ -562,7 +576,7 @@
 (()=>{const q=new URLSearchParams(location.search);if(!q.has('eier'))return;document.cookie='esbjug_eier=1; Max-Age=31536000; Path=/; SameSite=Lax; Secure';
   q.delete('eier');history.replaceState(null,'',location.pathname+(q.toString()?'?'+q:'')+location.hash);
   const t=document.createElement('div');t.textContent='Denne nettleseren er merket som din. Den teller ikke som besøkende.';
-  t.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:2000;background:#0d0d12;color:#FFDE59;padding:10px 16px;border-radius:999px;font:600 14px -apple-system,Arial,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.25)';
+  t.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:2000;background:#00205B;color:#fff;padding:10px 16px;border-radius:999px;font:600 14px -apple-system,Arial,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.25)';
   addEventListener('DOMContentLoaded',()=>{document.body.append(t);setTimeout(()=>t.remove(),5000)})})();
 // Vis «Jobber med nå» ved første scroll, hjul, sveip, tast eller trykk på pilen.
 (()=>{const r=document.documentElement,show=()=>r.classList.add('vis');
@@ -613,7 +627,7 @@ const drawBig=()=>{if(pp.hidden)return;pp.classList.toggle('live',!!hrBpm);if(hr
   const m1=rng==='dag'?p[p.length-1][0]:Math.floor((Date.now()+skew-c.start)/60000),m0=rng==='dag'?Math.min(p[0][0],m1-10):0;
   let y0=Math.floor((lo-2)/st)*st,y1=Math.ceil((hi+2)/st)*st;if(y1-y0<2*st)y1=y0+2*st;
   const X=m=>L+(m-m0)/Math.max(1,m1-m0)*(W-L-R),Y=b=>T+(1-(b-y0)/(y1-y0))*(H-T-B);big={X,Y};ppS.setAttribute('viewBox','0 0 '+W+' '+H);
-  const g=svgEl('linearGradient',{id:'hppGrad',x1:0,y1:0,x2:0,y2:1},svgEl('defs',{},ppS));svgEl('stop',{offset:0,'stop-color':'#FFDE59','stop-opacity':.28},g);svgEl('stop',{offset:1,'stop-color':'#FFDE59','stop-opacity':0},g);
+  const g=svgEl('linearGradient',{id:'hppGrad',x1:0,y1:0,x2:0,y2:1},svgEl('defs',{},ppS));svgEl('stop',{offset:0,'stop-color':'#fff','stop-opacity':.28},g);svgEl('stop',{offset:1,'stop-color':'#fff','stop-opacity':0},g);
   for(let v=y0;v<=y1;v+=st){svgEl('line',{class:'gr',x1:L,x2:W-R,y1:Y(v),y2:Y(v)},ppS);svgEl('text',{x:L-6,y:Y(v)+3.5,'text-anchor':'end'},ppS).textContent=v}
   const span=m1-m0,xs=rng==='dag'?([5,10,15,30,60,120,180,240,360].find(x=>span/x<=5)||720):rng==='uke'?1440:1440*5;
   for(let m=Math.ceil(m0/xs)*xs;m<=m1;m+=xs){const x=X(m),t=c.start+m*60000;svgEl('text',{x,y:H-6,'text-anchor':x<L+18?'start':x>W-R-18?'end':'middle'},ppS).textContent=rng==='dag'?hhmm.format(t):rng==='uke'?wd.format(t):dm.format(t)}
@@ -640,7 +654,7 @@ const pqrst=t=>{const G=(c,w,a)=>a*Math.exp(-(((t-c)/w)**2));return G(.06,.025,.
 const onR=()=>{hj.classList.remove('slag');void hj.offsetWidth;hj.classList.add('slag');cnt++;if(cntDone){cn.textContent=fmt(cnt);cn.classList.remove('tikk');void cn.offsetWidth;cn.classList.add('tikk')}};
 const frame=ts=>{raf=requestAnimationFrame(frame);const dt=Math.min(.05,(ts-(lastF||ts))/1000);lastF=ts;if(!buf)return;
   if(hrBpm){const iv=60/hrBpm,sp=ew/4.5;acc+=dt*sp;while(acc>=1){acc--;const p0=ph;ph+=1/sp;if(ph>=iv)ph-=iv;if(p0<.175&&ph>=.175)onR();buf[ei]=pqrst(ph);ei=(ei+1)%ew;for(let k=1;k<=18;k++)buf[(ei+k)%ew]=NaN}}
-  ex.clearRect(0,0,ew,eh);if(!hrBpm)return;const base=eh*.62,amp=eh*.46;ex.lineWidth=2;ex.lineJoin='round';ex.strokeStyle='#FFDE59';ex.shadowColor='rgba(255,222,89,.7)';ex.shadowBlur=10;ex.beginPath();let on=false;
+  ex.clearRect(0,0,ew,eh);if(!hrBpm)return;const base=eh*.62,amp=eh*.46;ex.lineWidth=2;ex.lineJoin='round';ex.strokeStyle='#fff';ex.shadowColor='rgba(255,255,255,.7)';ex.shadowBlur=10;ex.beginPath();let on=false;
   for(let x=0;x<ew;x++){const v=buf[x];if(Number.isNaN(v)){on=false;continue}const y=base-v*amp;if(on)ex.lineTo(x,y);else{ex.moveTo(x,y);on=true}}ex.stroke();
   const hx=(ei-1+ew)%ew,hv=buf[hx];if(!Number.isNaN(hv)){ex.shadowBlur=18;ex.fillStyle='#fff6c4';ex.beginPath();ex.arc(hx,base-hv*amp,3,0,7);ex.fill()}};
 // Perioder: 7 og 30 dager hentes når fanen velges (serveren regner snitt per 10 min / per time).
@@ -910,7 +924,7 @@ void main(){
   float f=smoothstep(.95,.05,u.y+w);
   vec2 d=q-M.xy;f+=M.z*exp(-dot(d,d)/(2.*pow(90.*D,2.)));
   float r=clamp(f,0.,1.)*s*.72,a=smoothstep(r+D,r-D,length(p-q));
-  gl_FragColor=vec4(mix(vec3(1.,.871,.349),vec3(.051,.051,.071),a),1.);
+  gl_FragColor=vec4(mix(vec3(.812,.894,.965),vec3(0.,.125,.357),a),1.);
 }`;
 const sh=(t,src)=>{const o=gl.createShader(t);gl.shaderSource(o,src);gl.compileShader(o);return o};
 const pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,vs));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,fs));gl.linkProgram(pr);gl.useProgram(pr);
