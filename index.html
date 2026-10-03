@@ -17,7 +17,21 @@
   img,video{-webkit-user-drag:none}
   html,body{margin:0;background:var(--y);color:var(--ink)}
   body{font-family:-apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;min-height:100svh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
-  main{position:relative;padding:var(--g);padding-top:calc(var(--g) + 46px);padding-bottom:0;max-width:1180px;width:100%;margin:0 auto}
+  main{position:relative;padding:0 var(--g);max-width:1180px;width:100%;margin:0 auto}
+  /* Hero: video i full bredde og høyde. Overskriften står i himmelen, ingress og knapp nede på vannet, så horisonten er fri. */
+  .hero{position:relative;min-height:100svh;display:flex;overflow:hidden;background:#e4e6ea}
+  .hero-v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+  .hero::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,0) 46%,rgba(255,255,255,0) 58%,rgba(255,255,255,.3))}
+  .hero-i{position:relative;z-index:1;display:flex;flex-direction:column;width:100%;max-width:1180px;margin:0 auto;padding:clamp(18px,3vw,36px) var(--g) clamp(28px,5vw,56px)}
+  .hero .k{opacity:1}
+  .hero .k>span{opacity:.72}
+  .hero h1{margin-top:clamp(18px,4.5vh,48px)}
+  .hero-b{margin-top:auto;padding-top:clamp(150px,26vh,300px);display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:32px 48px}
+  .hero-t{flex:1 1 22em;max-width:34em}
+  .hero p.b{margin:0}
+  .hero a.t{margin-top:24px}
+  @media (max-width:520px){.hero .k{flex-wrap:nowrap;gap:0 1em;font-size:11px;letter-spacing:.08em;white-space:nowrap}.hero-i{padding-bottom:88px}}
+  @media (prefers-reduced-motion:reduce){.hero-v{display:none}.hero{background:#e4e6ea url(/media/hero.jpg) center/cover}}
   .mono{font:600 13px/1.5 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase}
   .k{opacity:.72;display:flex;align-items:center;gap:10px 1.5em;flex-wrap:wrap}
   .k .kl{margin-left:auto;color:inherit;text-decoration:none;border:2px solid var(--ink);border-radius:999px;padding:5px 14px;line-height:1.3;letter-spacing:.1em}
@@ -116,8 +130,8 @@
   @media (max-width:520px){.ck{bottom:84px}}
   /* Kontroll fra Tidemann: «fokus» flytter chatten til midten, gjør den større og skjuler resten av siden. */
   .ch-p{transition:right .55s cubic-bezier(.2,.8,.2,1),bottom .55s cubic-bezier(.2,.8,.2,1),transform .55s cubic-bezier(.2,.8,.2,1),width .55s cubic-bezier(.2,.8,.2,1),height .55s cubic-bezier(.2,.8,.2,1),border-radius .55s}
-  main,canvas{transition:opacity .45s ease,filter .45s ease}
-  .focus main,.focus canvas{opacity:0;filter:blur(8px);pointer-events:none}
+  main,.hero,canvas{transition:opacity .45s ease,filter .45s ease}
+  .focus main,.focus .hero,.focus canvas{opacity:0;filter:blur(8px);pointer-events:none}
   .focus .ch-p{right:50%;bottom:50%;transform:translate(50%,50%);width:min(760px,calc(100vw - 32px));height:min(80svh,800px);border-radius:24px;box-shadow:0 30px 80px rgba(13,13,18,.35)}
   .focus .ch-h{padding:22px 24px 18px 26px}
   .focus .ch-h b{font-size:20px}
@@ -243,7 +257,6 @@
   /* Toppmodulen: tre store tall under navnet. Puls live fra Apple Watch, hvor mange som er her nå og unike besøkende.
      Hårfine skillestreker mellom og ingen ramme rundt, så toppen fortsatt er åpen. */
   .st{display:flex;align-items:flex-start;flex-wrap:wrap;row-gap:18px}
-  .st+.k{margin-top:clamp(56px,10vh,104px)}
   .st-i{position:relative;display:flex;flex-direction:column;gap:8px;padding-left:0;border-left:0}
   .st-i[hidden]{display:none}
   .st-i:not([hidden])~.st-i{margin-left:clamp(20px,2.6vw,36px);padding-left:clamp(20px,2.6vw,36px);border-left:1px solid rgba(13,13,18,.18)}
@@ -269,7 +282,7 @@
   @media (prefers-reduced-motion:reduce){.od .r{transition:none}.tl-dot{animation:none}}
   /* Språkbryter: norsk og britisk flagg i én pille. Den svarte kula ligger bak språket du leser og glir over når du bytter;
      nettlesere med view transitions toner deretter mellom de to sidene mens bryteren står stille. */
-  .lang{position:absolute;top:max(12px,calc(var(--g) - 20px));left:var(--g);display:inline-flex;align-items:center;gap:2px;padding:1.5px;border:1.5px solid var(--ink);border-radius:999px;color:inherit;text-decoration:none;vertical-align:middle;line-height:0;view-transition-name:lang;-webkit-tap-highlight-color:transparent}
+  .lang{margin-left:auto;position:relative;display:inline-flex;align-items:center;gap:2px;padding:1.5px;border:1.5px solid var(--ink);border-radius:999px;color:inherit;text-decoration:none;vertical-align:middle;line-height:0;view-transition-name:lang;-webkit-tap-highlight-color:transparent}
   .lang-k{position:absolute;top:1.5px;left:1.5px;width:32px;height:21px;border-radius:999px;background:var(--ink);transition:transform .38s cubic-bezier(.34,1.45,.55,1)}
   .lang .lf{position:relative;width:32px;height:21px;display:grid;place-items:center}
   .lang .lf svg{width:20px;height:13px;border-radius:2px;display:block;box-shadow:0 0 0 1px rgba(255,255,255,.3);transition:filter .3s,opacity .3s,transform .3s}
@@ -370,13 +383,22 @@
 </style>
 </head>
 <body>
-<main>
-  <div class="st"><div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Puls i dag"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg></span></button><span class="st-l"><span class="hp-on">Live fra Apple Watch</span><span class="hp-av">Ikke live akkurat nå</span></span></div><div class="st-i tl-a" hidden data-l="her nå"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">her nå</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><div class="st-i tl-b" hidden data-l="unike besøkende" data-ny="+1 · du er nr. {n}" data-er="Du er nr. {n}" data-var="Du var nr. {n}"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unike besøkende</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><span class="tl-sr"></span></div>
+<header class="hero">
+  <video class="hero-v" poster="media/hero.jpg" autoplay muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1" disablepictureinpicture><source src="media/hero-720.mp4" media="(max-width:760px)" type="video/mp4"><source src="media/hero.mp4" type="video/mp4"></video>
+  <div class="hero-i">
   <div class="mono k"><span>&gt; Tidemann Esbjug</span><span>03.10.2026</span><a class="lang" href="/en/" hreflang="en" aria-label="Språk: norsk. Bytt til engelsk"><span class="lang-k" aria-hidden="true"></span><span class="lf no" aria-hidden="true"><svg viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span class="lf gb" aria-hidden="true"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg></span></a><!-- Skjult inntil videre: <a class="kl" href="/login/">Kunde-login &rarr;</a> --></div>
   <!--EN-MERKNAD-->
   <h1 aria-label="Hovedbudskapet jeg prøver å rope fra taket på bygninger i disse dager er at kode og design har gått gjennom en revolusjon som ikke må oversees."><span aria-hidden="true">Hovedbudskapet jeg prøver å rope fra taket på bygninger i disse dager er at <span class="kd"><i>kode</i></span> og <span class="ds" data-t="design">design</span> har gått gjennom en revolusjon som ikke må oversees.</span></h1>
+  <div class="hero-b">
+  <div class="hero-t">
   <p class="b">Å kjøpe nettsider, apper eller digital markedsføring i dag for samme pris som før er absurd. Det er også masse muligheter som tidligere var for dyre til å begi seg ut på.</p>
   <a class="t" href="mailto:tidemann@esbjugconsult.com">Snakk med meg om alt dette.</a>
+  </div>
+  <div class="st"><div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Puls i dag"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg></span></button><span class="st-l"><span class="hp-on">Live fra Apple Watch</span><span class="hp-av">Ikke live akkurat nå</span></span></div><div class="st-i tl-a" hidden data-l="her nå"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">her nå</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><div class="st-i tl-b" hidden data-l="unike besøkende" data-ny="+1 · du er nr. {n}" data-er="Du er nr. {n}" data-var="Du var nr. {n}"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unike besøkende</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><span class="tl-sr"></span></div>
+  </div>
+  </div>
+</header>
+<main>
   <div class="rv" id="jobber">
   <h2>Jobber med nå</h2>
 
