@@ -4,11 +4,15 @@
 Hver norsk tekst byttes mot sin engelske oversettelse. Finnes ikke en norsk tekst lenger (fordi den er
 endret på den norske siden), stopper skriptet og sier hvilken, så oversettelsen kan oppdateres.
 Kjør etter endringer i index.html:  python3 bygg-en.py  (og publiser med npx wrangler deploy).
+Arbeidskopien i ny/ (V2, ikke indeksert):  python3 bygg-en.py ny  lager ny/en/index.html fra ny/index.html.
 """
 import pathlib, re, sys
 
 HER = pathlib.Path(__file__).parent
-no = (HER / "index.html").read_text(encoding="utf-8")
+MAPPE = sys.argv[1].strip("/") if len(sys.argv) > 1 else ""
+ROT = HER / MAPPE
+PRE = f"/{MAPPE}/" if MAPPE else "/"
+no = (ROT / "index.html").read_text(encoding="utf-8")
 
 # (norsk, engelsk). Rekkefølgen betyr noe der en tekst er en del av en annen: lange først.
 T = [
@@ -257,10 +261,10 @@ for a, b in T:
 out = re.sub(r'(src|poster)="media/', r'\1="/media/', out)
 
 # Flagget: på den engelske siden går det tilbake til norsk, og notatet om oversettelsen vises.
-lenke = '<a class="lang" href="/en/" hreflang="en" aria-label="Språk: norsk. Bytt til engelsk">'
+lenke = f'<a class="lang" href="{PRE}en/" hreflang="en" aria-label="Språk: norsk. Bytt til engelsk">'
 if lenke not in out:
     print("Fant ikke språkbryteren i index.html"); sys.exit(1)
-out = out.replace(lenke, '<a class="lang en" href="/" hreflang="nb" aria-label="Language: English. Switch to Norwegian">')
+out = out.replace(lenke, f'<a class="lang en" href="{PRE}" hreflang="nb" aria-label="Language: English. Switch to Norwegian">')
 out = out.replace('<!--EN-MERKNAD-->',
                   '<p class="en-note mono">Auto translated with Claude from Norwegian - excuse any strangeness :)</p>')
 
@@ -279,6 +283,6 @@ if left:
     print("Norsk tekst igjen på den engelske siden:", left)
     sys.exit(1)
 
-(HER / "en").mkdir(exist_ok=True)
-(HER / "en" / "index.html").write_text(out, encoding="utf-8", newline="\n")
-print(f"en/index.html skrevet ({len(T)} oversettelser)")
+(ROT / "en").mkdir(exist_ok=True)
+(ROT / "en" / "index.html").write_text(out, encoding="utf-8", newline="\n")
+print(f"{MAPPE + '/' if MAPPE else ''}en/index.html skrevet ({len(T)} oversettelser)")

@@ -18,6 +18,13 @@ export default {
     if (url.pathname.startsWith("/login/") || url.pathname.startsWith("/kunde/")) return handleKunde(request, env, url);
     // Visit push for page loads; never allowed to break serving the page.
     try { const visit = pageVisit(request, env, url); if (visit) ctx.waitUntil(visit); } catch {}
-    return env.ASSETS.fetch(request);
+    const res = await env.ASSETS.fetch(request);
+    // /ny/ er arbeidskopien av neste versjon: skal ikke indekseres.
+    if (url.pathname === "/ny" || url.pathname.startsWith("/ny/")) {
+      const r = new Response(res.body, res);
+      r.headers.set("X-Robots-Tag", "noindex, nofollow");
+      return r;
+    }
+    return res;
   },
 };
