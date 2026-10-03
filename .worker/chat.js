@@ -536,8 +536,8 @@ export class ChatHub {
         this.sql.exec(`UPDATE visitors SET page=?, last_seen=? WHERE vid=?`, m.page.slice(0, 200), Date.now(), a.vid);
         this.toOwners({ t: "presence", v: this.visitor(a.vid) });
       } else if (m.t === "menneske") {
-        // The page saw a person: an interaction (k:"i"), or 12 s on the page (k:"t", only if nothing looked robotic).
-        if (!a.ok && (m.k === "i" || (!a.sus && Date.now() - a.t0 >= 12000))) {
+        // The page saw a person: an interaction (k:"i"), or 3 s on the page (k:"t", only if nothing looked robotic).
+        if (!a.ok && (m.k === "i" || (!a.sus && Date.now() - a.t0 >= 3000))) {
           a.ok = true;
           if (a.pend) {
             const n = this.confirmVisit(a.pend, a.vid);
@@ -636,7 +636,7 @@ export class ChatHub {
     const a = ws.deserializeAttachment() || {};
     try { ws.close(1000); } catch {}
     if (a.role === "visitor") {
-      const robot = !a.ok && a.t0 && (a.sus || Date.now() - a.t0 < 10000) && !this.online(a.vid, ws)
+      const robot = !a.ok && a.t0 && (a.sus || Date.now() - a.t0 < 3000) && !this.online(a.vid, ws)
         && !this.sql.exec(`SELECT 1 FROM messages WHERE vid=? LIMIT 1`, a.vid).toArray().length && !this.sql.exec(`SELECT 1 FROM nr WHERE vid=?`, a.vid).toArray().length;
       if (robot) {
         // Never moved, scrolled or tapped, and gone again within 10 s (or looked robotic): not a visitor after all.
