@@ -51,9 +51,9 @@
   /* Slagordet: det eneste som står på videoen. Første linje skrives fram bokstav for bokstav og prikkene tikker inn;
      så slår en rød flate ut fra venstre og «krev kaviar.» reiser seg inni den. Spilles én gang og blir stående.
      «sitroner» blir sitrongul. */
-  .motto{margin:auto 0;padding:clamp(24px,5vh,60px) 0;color:#fff;font-family:var(--serif);line-height:1;transform:translate3d(var(--px,0),var(--py,0),0);transition:transform .9s cubic-bezier(.2,.8,.2,1),opacity .7s ease,filter .7s ease}
-  .m1{display:block;font-style:italic;font-weight:400;font-size:clamp(30px,5.4vw,84px);letter-spacing:-.02em;text-shadow:0 2px 28px rgba(0,32,91,.55),0 1px 3px rgba(0,32,91,.45);transition:opacity .8s ease}
-  .m2{position:relative;display:inline-block;margin-top:.16em;padding:.02em .2em .1em;font-weight:700;font-size:clamp(50px,10.5vw,168px);letter-spacing:-.035em;line-height:1}
+  .motto{margin:0;padding:clamp(24px,5vh,60px) 0;color:#fff;font-family:var(--serif);line-height:1;transform:translate3d(var(--px,0),var(--py,0),0);transition:transform .9s cubic-bezier(.2,.8,.2,1),opacity .7s ease,filter .7s ease}
+  .m1{display:block;font-style:italic;font-weight:400;font-size:clamp(30px,4.5vw,72px);letter-spacing:-.02em;text-shadow:0 2px 28px rgba(0,32,91,.55),0 1px 3px rgba(0,32,91,.45);transition:opacity .8s ease}
+  .m2{position:relative;display:inline-block;margin-top:.16em;padding:.02em .2em .1em;font-weight:700;font-size:clamp(50px,8.4vw,138px);letter-spacing:-.035em;line-height:1}
   .m2::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:.07em;background:var(--r);box-shadow:0 .08em .5em rgba(0,32,91,.35);transform:scaleX(0);transform-origin:0 50%}
   .motto.a2 .m2::before{transform:none;transition:transform .7s cubic-bezier(.7,0,.15,1)}
   .motto .o{display:inline-block;white-space:nowrap}
@@ -64,10 +64,22 @@
   .m2 .o{overflow:hidden;vertical-align:bottom;padding-bottom:.08em;margin-bottom:-.08em}
   .motto.a2 .m2 .b{opacity:1;transform:none;transition:opacity .25s ease,transform .75s cubic-bezier(.2,1.25,.3,1);transition-delay:calc(280ms + var(--i)*45ms)}
   .motto .o{position:relative}
-  .m1 .o.sit .b:not(.pr){transition:opacity .5s ease,transform .7s cubic-bezier(.2,1.3,.3,1),filter .5s ease,color .6s ease,text-shadow .6s ease}
-  .motto.a1 .m1 .o.sit .b:not(.pr){color:#FFDE59;text-shadow:0 2px 26px rgba(0,32,91,.7),0 1px 3px rgba(0,32,91,.6);transition-delay:calc(var(--i)*32ms),calc(var(--i)*32ms),calc(var(--i)*32ms),calc(var(--n)*32ms + 150ms + var(--k)*70ms),calc(var(--n)*32ms + 150ms + var(--k)*70ms)}
+  .motto.a1 .m1 .o.sit .b:not(.pr){animation:gul 2.2s ease both;animation-delay:calc(var(--n)*32ms + 150ms + var(--k)*80ms)}
+  @keyframes gul{0%,100%{color:#fff}30%,62%{color:#FFDE59}}
+  /* Scenen: slagordet til venstre, brevet til høyre. Brevet kommer inn etter slagordet, linje for linje. */
+  .scene{margin:auto 0;width:100%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:clamp(24px,4vw,64px)}
+  .brev-inn{flex:0 1 clamp(340px,29vw,430px);opacity:0;transform:translateY(26px);filter:blur(10px)}
+  .motto.a2~.brev-inn{opacity:1;transform:none;filter:none;transition:opacity .9s ease,transform 1.1s cubic-bezier(.2,.9,.2,1),filter .9s ease;transition-delay:1.5s}
+  @media (min-width:1100px){.scene{flex-wrap:nowrap}.motto{flex:none}}
+  .brev{padding:clamp(24px,2.4vw,38px) clamp(24px,2.6vw,42px) clamp(26px,2.6vw,40px);border-radius:26px;font:400 clamp(17px,1.35vw,21px)/1.45 var(--serif);letter-spacing:-.005em}
+  .brev p{margin:0 0 .7em;opacity:0;transform:translateY(8px)}
+  .motto.a2~.brev-inn .brev p{opacity:1;transform:none;transition:opacity .7s ease,transform .8s cubic-bezier(.2,.9,.2,1);transition-delay:calc(2.1s + var(--l)*.32s)}
+  .brev .dato{text-align:right;font:600 12px/1.5 "SF Mono",Menlo,monospace;letter-spacing:.12em;opacity:0;margin-bottom:1.6em}
+  .motto.a2~.brev-inn .brev .dato{opacity:.7}
+  .brev .hils{margin-bottom:1.1em}
+  .brev .sig{margin:1.3em 0 0;font-style:italic;font-size:1.25em}
   .m2 .o{z-index:2}
-  @media (prefers-reduced-motion:reduce){.flyt{animation:none}.gl{transform:none!important}.motto,.motto .b{transition:none!important}.motto .b{opacity:1;transform:none;filter:none}.m2::before{transform:none}}
+  @media (prefers-reduced-motion:reduce){.flyt{animation:none}.gl{transform:none!important}.motto,.motto .b,.brev-inn,.brev p{transition:none!important;animation:none!important}.brev-inn,.brev p{opacity:1;transform:none;filter:none}.brev .dato{opacity:.7}.motto .b{opacity:1;transform:none;filter:none}.m2::before{transform:none}}
   /* Budskapet, ingressen og knappen står nå øverst på den blå siden under videoen. */
   .intro{padding-top:clamp(56px,10vh,120px)}
   /* V2: serif i overskriftene. */
@@ -435,7 +447,19 @@
   <div class="flyt"><div class="topp gl"><a class="lang en" href="/ny/" hreflang="nb" aria-label="Language: English. Switch to Norwegian"><span class="lang-k" aria-hidden="true"></span><span class="lf no" aria-hidden="true"><svg viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span class="lf gb" aria-hidden="true"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg></span></a>
   <div class="st"><div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Heart rate today"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg></span></button><span class="st-l"><span class="hp-on">Live from Apple Watch</span><span class="hp-av">Not live right now</span></span></div><div class="st-i tl-a" hidden data-l="here now"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">here now</span><span class="tl-deg" aria-hidden="true">+1 · that's you</span></div></div><div class="st-i tl-b" hidden data-l="unique visitors" data-ny="+1 · you are no. {n}" data-er="You are no. {n}" data-var="You were no. {n}"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unique visitors</span><span class="tl-deg" aria-hidden="true">+1 · that's you</span></div></div><span class="tl-sr"></span></div>
   </div></div>
+  <div class="scene">
   <p class="motto" aria-label="When life gives you lemons... demand caviar."><span class="m1" data-ord="lemons" aria-hidden="true">When life gives you lemons...</span><span class="m2" data-ord="caviar" aria-hidden="true">demand caviar.</span></p>
+  <div class="brev-inn"><div class="flyt"><article class="brev gl">
+    <p class="dato" style="--l:0">05.10.2026</p>
+    <p class="hils" style="--l:1">Dear friend,</p>
+    <p style="--l:2">I don't quite know what to do with myself.</p>
+    <p style="--l:3">It is so incredible.</p>
+    <p style="--l:4">SI, they call it now.</p>
+    <p style="--l:5">Superintelligence.</p>
+    <p style="--l:6">I agree.</p>
+    <p class="sig" style="--l:7">-Tidemann</p>
+  </article></div></div>
+  </div>
   </div>
 </header>
 <main>
