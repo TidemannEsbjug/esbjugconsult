@@ -27,15 +27,6 @@
   p.b{margin:28px 0 0;max-width:38em;font-size:clamp(18px,1.6vw,22px);line-height:1.45;font-weight:500}
   a.t{display:inline-block;margin-top:32px;background:var(--ink);color:var(--y);font-weight:700;font-size:clamp(18px,1.8vw,23px);padding:13px 22px 14px;border-radius:999px;text-decoration:none;letter-spacing:-.01em;transition:transform .2s}
   a.t:hover{transform:translateY(-2px)}
-  /* Levende gradient inni knappen: rødt, grønt og gult flyter rolig rundt og puster sakte inn og ut. Ikke knyttet til pulsen. */
-  a.t{position:relative;isolation:isolate;overflow:hidden}
-  a.t::before,a.t::after{content:"";position:absolute;z-index:-1;pointer-events:none;width:220%;height:420%;left:-60%;top:-160%;opacity:0;filter:blur(10px)}
-  a.t::before{background:radial-gradient(closest-side,rgba(235,20,50,1),rgba(235,20,50,.55) 45%,transparent);animation:tFlyt1 41s ease-in-out infinite alternate,tAnd 16s ease-in-out infinite}
-  a.t::after{background:radial-gradient(closest-side,rgba(20,235,120,.95),rgba(20,235,120,.5) 45%,transparent);animation:tFlyt2 53s ease-in-out infinite alternate,tAnd 16s ease-in-out infinite}
-  @keyframes tFlyt1{0%{transform:translate(-22%,6%) scale(1)}50%{transform:translate(6%,-8%) scale(1.25)}100%{transform:translate(26%,4%) scale(.9)}}
-  @keyframes tFlyt2{0%{transform:translate(24%,-6%) scale(1.1)}50%{transform:translate(-8%,8%) scale(.9)}100%{transform:translate(-26%,-4%) scale(1.2)}}
-  /* Samme pust og fase for rødt og grønt, så de alltid kommer og går sammen. */ @keyframes tAnd{0%,100%{opacity:0}50%{opacity:.38}}
-  @media (prefers-reduced-motion:reduce){a.t::before,a.t::after{animation:none;opacity:.2}}
   a.t:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
   .m{margin-top:clamp(40px,8vh,80px);max-width:34em;text-transform:none;letter-spacing:.02em;font-weight:500;line-height:1.6}
   .bar{margin:10px 0 0;height:6px;background:rgba(13,13,18,.12);border-radius:3px;overflow:hidden}
