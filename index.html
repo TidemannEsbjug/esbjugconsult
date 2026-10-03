@@ -19,11 +19,19 @@
   body{font-family:-apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;min-height:100svh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
   main{position:relative;padding:0 var(--g);max-width:1180px;width:100%;margin:0 auto}
   /* Hero: video i full bredde og høyde bak toppen av siden. */
-  .hero{position:relative;min-height:100svh;display:flex;overflow:hidden;background:#e4e6ea}
+  .hero{position:relative;min-height:100svh;display:flex;overflow:hidden;background:#9db4c8}
   .hero-v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
-  .hero::after{content:"";position:absolute;inset:0;pointer-events:none;background:rgba(255,255,255,.12)}
-  .hero-i{position:relative;z-index:1;width:100%;max-width:1180px;margin:0 auto;padding:var(--g);padding-top:calc(var(--g) + 46px)}
-  @media (prefers-reduced-motion:reduce){.hero-v{display:none}.hero{background:#e4e6ea url(/media/hero.jpg) center/cover}}
+  .hero-i{position:relative;z-index:1;width:100%;max-width:1180px;margin:0 auto;padding:var(--g)}
+  /* Teksten står på en lys glassplate oppå videoen: uskarp bakgrunn, fint korn og en lys kant som fanger lyset. */
+  .hero-k{position:relative;isolation:isolate;border-radius:28px;padding:clamp(24px,4vw,56px);background:linear-gradient(135deg,rgba(255,255,255,.7),rgba(255,255,255,.48));-webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5);border:1px solid rgba(255,255,255,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(255,255,255,.25),0 24px 60px rgba(13,13,18,.18)}
+  .hero-k::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;opacity:.22;mix-blend-mode:soft-light;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.2 -.1'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .hero-k::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;background:linear-gradient(115deg,rgba(255,255,255,.5),rgba(255,255,255,0) 28%,rgba(255,255,255,0) 72%,rgba(255,255,255,.22))}
+  .hero .lang{position:relative;top:auto;left:auto;margin-left:auto}
+  .hero .st+.k{margin-top:0}
+  .hero .st:has(.st-i:not([hidden])){margin-bottom:clamp(28px,5vh,48px)}
+  @media (max-width:520px){.hero .k{flex-wrap:nowrap;gap:0 1em;font-size:11px;letter-spacing:.06em;white-space:nowrap}}
+  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.hero-k{background:rgba(255,255,255,.82)}}
+  @media (prefers-reduced-motion:reduce){.hero-v{display:none}.hero{background:#9db4c8 url(/media/hero.jpg) center/cover}}
   .mono{font:600 13px/1.5 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase}
   .k{opacity:.72;display:flex;align-items:center;gap:10px 1.5em;flex-wrap:wrap}
   .k .kl{margin-left:auto;color:inherit;text-decoration:none;border:2px solid var(--ink);border-radius:999px;padding:5px 14px;line-height:1.3;letter-spacing:.1em}
@@ -379,12 +387,14 @@
 <header class="hero">
   <video class="hero-v" poster="media/hero.jpg" autoplay muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1" disablepictureinpicture><source src="media/hero-720.mp4" media="(max-width:760px)" type="video/mp4"><source src="media/hero.mp4" type="video/mp4"></video>
   <div class="hero-i">
+  <div class="hero-k">
   <div class="st"><div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Puls i dag"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg></span></button><span class="st-l"><span class="hp-on">Live fra Apple Watch</span><span class="hp-av">Ikke live akkurat nå</span></span></div><div class="st-i tl-a" hidden data-l="her nå"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">her nå</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><div class="st-i tl-b" hidden data-l="unike besøkende" data-ny="+1 · du er nr. {n}" data-er="Du er nr. {n}" data-var="Du var nr. {n}"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unike besøkende</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><span class="tl-sr"></span></div>
   <div class="mono k"><span>&gt; Tidemann Esbjug</span><span>03.10.2026</span><a class="lang" href="/en/" hreflang="en" aria-label="Språk: norsk. Bytt til engelsk"><span class="lang-k" aria-hidden="true"></span><span class="lf no" aria-hidden="true"><svg viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span class="lf gb" aria-hidden="true"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg></span></a><!-- Skjult inntil videre: <a class="kl" href="/login/">Kunde-login &rarr;</a> --></div>
   <!--EN-MERKNAD-->
   <h1 aria-label="Hovedbudskapet jeg prøver å rope fra taket på bygninger i disse dager er at kode og design har gått gjennom en revolusjon som ikke må oversees."><span aria-hidden="true">Hovedbudskapet jeg prøver å rope fra taket på bygninger i disse dager er at <span class="kd"><i>kode</i></span> og <span class="ds" data-t="design">design</span> har gått gjennom en revolusjon som ikke må oversees.</span></h1>
   <p class="b">Å kjøpe nettsider, apper eller digital markedsføring i dag for samme pris som før er absurd. Det er også masse muligheter som tidligere var for dyre til å begi seg ut på.</p>
   <a class="t" href="mailto:tidemann@esbjugconsult.com">Snakk med meg om alt dette.</a>
+  </div>
   </div>
 </header>
 <main>
