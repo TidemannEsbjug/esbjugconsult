@@ -254,6 +254,8 @@ T_NY = [
     ('aria-label="Når livet gir deg sitroner... krev kaviar."', 'aria-label="When life gives you lemons... demand caviar."'),
     ('>Når livet gir deg sitroner...<', '>When life gives you lemons...<'),
     ('>krev kaviar.<', '>demand caviar.<'),
+    ('data-ord="sitroner"', 'data-ord="lemons"'),
+    ('data-ord="kaviar"', 'data-ord="caviar"'),
     ('alt="Laks som hopper, tegnet i rødt og blått"', 'alt="A leaping salmon, drawn in red and blue"'),
     ('alt="To mobiltelefoner side om side, i blått og hvitt"', 'alt="Two phones side by side, in blue and white"'),
     ('alt="Hengelås i blått og hvitt"', 'alt="A padlock in blue and white"'),
