@@ -66,21 +66,22 @@
   .motto .o{position:relative}
   .motto.a1 .m1 .o.sit .b:not(.pr){animation:gul 2.2s ease both;animation-delay:calc(var(--n)*32ms + 150ms + var(--k)*80ms)}
   @keyframes gul{0%,100%{color:#fff}30%,62%{color:#FFDE59}}
-  /* Scenen: slagordet spilles, toner ut, og brevet tar plassen der slagordet sto. Brevet kommer inn linje for linje. */
+  /* Scenen: slagordet spilles, toner ut, og brevet tar plassen der slagordet sto. Brevet skrives ut tegn for tegn med en markør. */
   .scene{margin:auto 0;width:100%;display:grid;align-items:center;justify-items:start}
   .scene>*{grid-area:1/1}
   .motto.ut{opacity:0;filter:blur(12px);transform:translateY(-14px);pointer-events:none}
   .brev-inn{width:min(620px,100%);opacity:0;transform:translateY(26px);filter:blur(10px);pointer-events:none}
   .motto.ut~.brev-inn{opacity:1;transform:none;filter:none;pointer-events:auto;transition:opacity .9s ease,transform 1.1s cubic-bezier(.2,.9,.2,1),filter .9s ease;transition-delay:.45s}
   .brev{padding:clamp(24px,2.4vw,38px) clamp(24px,2.6vw,42px) clamp(26px,2.6vw,40px);border-radius:26px;font:400 clamp(18px,1.5vw,23px)/1.45 var(--serif);letter-spacing:-.005em}
-  .brev p{margin:0 0 .7em;opacity:0;transform:translateY(8px)}
-  .motto.ut~.brev-inn .brev p{opacity:1;transform:none;transition:opacity .7s ease,transform .8s cubic-bezier(.2,.9,.2,1);transition-delay:calc(.95s + var(--l)*.32s)}
-  .brev .dato{text-align:right;font:600 12px/1.5 "SF Mono",Menlo,monospace;letter-spacing:.12em;opacity:0;margin-bottom:1.6em}
-  .motto.ut~.brev-inn .brev .dato{opacity:.7}
+  .brev p{margin:0 0 .7em}
+  .brev .t{visibility:hidden}
+  .brev .t.s{visibility:visible}
+  .brev .t.na{box-shadow:.12em 0 0 -.02em var(--ink)}
+  .brev .dato{text-align:right;font:600 12px/1.5 "SF Mono",Menlo,monospace;letter-spacing:.12em;opacity:.7;margin-bottom:1.6em}
   .brev .hils{margin-bottom:1.1em}
   .brev .sig{margin:1.3em 0 0;font-style:italic;font-size:1.25em}
   .m2 .o{z-index:2}
-  @media (prefers-reduced-motion:reduce){.flyt{animation:none}.gl{transform:none!important}.motto,.motto .b,.brev-inn,.brev p{transition:none!important;animation:none!important}.brev-inn,.brev p{opacity:1;transform:none;filter:none}.motto{visibility:hidden}.brev .dato{opacity:.7}.motto .b{opacity:1;transform:none;filter:none}.m2::before{transform:none}}
+  @media (prefers-reduced-motion:reduce){.flyt{animation:none}.gl{transform:none!important}.motto,.motto .b,.brev-inn{transition:none!important;animation:none!important}.brev-inn{opacity:1;transform:none;filter:none}.motto{visibility:hidden}.brev .t{visibility:visible}.motto .b{opacity:1;transform:none;filter:none}.m2::before{transform:none}}
   /* Budskapet, ingressen og knappen står nå øverst på den blå siden under videoen. */
   .intro{padding-top:clamp(56px,10vh,120px)}
   /* V2: serif i overskriftene. */
@@ -984,9 +985,14 @@ const n1=del(m1);del(m2);m.style.setProperty('--n',n1);
 const ordet=(el)=>[...el.querySelectorAll('.o')].find(o=>o.textContent.replace(/\.+$/,'')===el.dataset.ord);
 const sit=ordet(m1);
 if(sit){sit.classList.add('sit');[...sit.querySelectorAll('.b:not(.pr)')].forEach((b,k)=>b.style.setProperty('--k',k));}
+// Brevet: hvert tegn ligger usynlig på plass (boksen har full størrelse fra start) og vises ett og ett.
+const tegn=[];document.querySelectorAll('.brev p').forEach(p=>{const t=p.textContent;p.textContent='';
+  [...t].forEach(c=>{const e=document.createElement('span');e.className='t';e.textContent=c;p.append(e);tegn.push(e)});if(tegn.length)tegn[tegn.length-1].slutt=1});
+const skriv=(i=0)=>{if(i)tegn[i-1].classList.remove('na');if(i>=tegn.length)return;const e=tegn[i];e.classList.add('s','na');
+  const c=e.textContent;setTimeout(()=>skriv(i+1),e.slutt?520:/[,.]/.test(c)?260:28+Math.random()*38)};
 if(still){m.classList.add('a1','a2','ut');return}
 const t1=n1*32+250+3*260+500;
-setTimeout(()=>m.classList.add('a1'),350);setTimeout(()=>m.classList.add('a2'),350+t1);setTimeout(()=>m.classList.add('ut'),350+t1+3600);
+setTimeout(()=>m.classList.add('a1'),350);setTimeout(()=>m.classList.add('a2'),350+t1);setTimeout(()=>m.classList.add('ut'),350+t1+3600);setTimeout(skriv,350+t1+3600+1300);
 const hero=document.querySelector('.hero');
 hero.addEventListener('pointermove',e=>{if(e.pointerType==='touch')return;const r=hero.getBoundingClientRect();
   m.style.setProperty('--px',((e.clientX-r.left)/r.width-.5)*-14+'px');m.style.setProperty('--py',((e.clientY-r.top)/r.height-.5)*-10+'px')});
