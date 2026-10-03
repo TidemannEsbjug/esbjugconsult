@@ -351,14 +351,18 @@ export class ChatHub {
       const consent = url.searchParams.get("c") === "1";
       const eier = url.searchParams.get("e") === "1";   // one of the owner's own browsers (?eier): never counted
       const vk = pageLoad && !eier && !BOT.test(ua) ? await this.visitKey({ vid, consent, ip, ua }) : null;
-      const nr = vk ? vk.own : null;
-      const pend = vk && !nr ? { day: vk.day, k: vk.k, net: vk.net, ipnet: pokeNet(ip), consent } : null;
+      let nr = vk ? vk.own : null;
+      let pend = vk && !nr ? { day: vk.day, k: vk.k, net: vk.net, ipnet: pokeNet(ip), consent } : null;
+      // A new visitor who doesn't look robotic is counted at once, so they see the number go up as they arrive. The count
+      // is taken back if they leave without passing the person check (prov). Robotic-looking ones wait for an interaction.
+      let prov = null;
+      if (pend && !sus) { const n = this.confirmVisit(pend, vid); if (n) { nr = n; prov = { day: pend.day, k: pend.k, n }; } pend = null; }
       const pair = new WebSocketPair();
       this.ctx.acceptWebSocket(pair[1], ["v", `v:${vid}`, ...(ip ? [`ip:${ip}`] : [])]);
-      pair[1].serializeAttachment({ role: "visitor", vid, rate: [], win: 0, n: 0, nr, pend, sus, t0: now, ok: !!nr || eier, eier });
+      pair[1].serializeAttachment({ role: "visitor", vid, rate: [], win: 0, n: 0, nr, pend, prov, sus, t0: now, ok: (!!nr && !prov) || eier, eier });
       const ex = this.sql.exec(`SELECT extras FROM visitors WHERE vid=?`, vid).toArray()[0];
       const count = { live: this.liveCount(), total: this.uniqTotal() };
-      pair[1].send(JSON.stringify({ t: "history", msgs: this.history(vid), owner: this.ownerOnline(), extras: !!ex?.extras, status: this.status(), hr: this.liveHr(), count: { ...count, nr, pend: !!pend, meg: !eier && (!sus || !!nr) } }));
+      pair[1].send(JSON.stringify({ t: "history", msgs: this.history(vid), owner: this.ownerOnline(), extras: !!ex?.extras, status: this.status(), hr: this.liveHr(), count: { live: this.liveCount(), total: this.uniqTotal(), nr, ny: !!prov, pend: !!pend || !!prov, meg: !eier && (!sus || !!nr) } }));
       this.send(this.ctx.getWebSockets("v").filter((w) => w !== pair[1]), { t: "count", ...count });
       this.toOwners({ t: "presence", v: this.visitor(vid) });
       if (newVisit && !eier && this.setting("notifyVisits") === "1") this.ctx.waitUntil(this.pushVisit({ key: vid, vid, first: false, city: geo.city, country: geo.country, ua }));
@@ -539,6 +543,7 @@ export class ChatHub {
         // The page saw a person: an interaction (k:"i"), or 3 s on the page (k:"t", only if nothing looked robotic).
         if (!a.ok && (m.k === "i" || (!a.sus && Date.now() - a.t0 >= 3000))) {
           a.ok = true;
+          a.prov = null;
           if (a.pend) {
             const n = this.confirmVisit(a.pend, a.vid);
             a.pend = null;
@@ -636,6 +641,12 @@ export class ChatHub {
     const a = ws.deserializeAttachment() || {};
     try { ws.close(1000); } catch {}
     if (a.role === "visitor") {
+      if (!a.ok && a.prov && !this.online(a.vid, ws)) {
+        // Counted on arrival but never passed the person check: take the count back (the number too, if it was the latest).
+        this.sql.exec(`DELETE FROM uniq WHERE day=? AND k=?`, a.prov.day, a.prov.k);
+        this.sql.exec(`DELETE FROM nr WHERE vid=?`, a.vid);
+        if (this.uniqTotal() === a.prov.n) this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('uniqTotal', ?)`, String(a.prov.n - 1));
+      }
       const robot = !a.ok && a.t0 && (a.sus || Date.now() - a.t0 < 3000) && !this.online(a.vid, ws)
         && !this.sql.exec(`SELECT 1 FROM messages WHERE vid=? LIMIT 1`, a.vid).toArray().length && !this.sql.exec(`SELECT 1 FROM nr WHERE vid=?`, a.vid).toArray().length;
       if (robot) {

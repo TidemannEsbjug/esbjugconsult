@@ -674,9 +674,9 @@ const teller=(()=>{const a=document.querySelector('.tl-a'),u=document.querySelec
   // c = {live, total, nr, meg}. Første gang ruller «her nå» opp med deg (meg: du teller med); kjente får «Du er/var nr. N».
   const api=c=>{a.hidden=u.hidden=false;cur=[c.live,c.total];label();
     if(!first){set(nL,c.live,true);set(nU,c.total,true);return}
-    first=false;const meg=!!c.meg;set(nL,meg?Math.max(0,c.live-1):c.live,false);set(nU,c.total,false);
+    first=false;const meg=!!c.meg;set(nL,meg?Math.max(0,c.live-1):c.live,false);set(nU,c.ny?Math.max(0,c.total-1):c.total,false);
     const go=()=>setTimeout(()=>{set(nL,cur[0],true);set(nU,cur[1],true);
-      if(c.nr)show(u,u.dataset[cur[1]>c.nr?'var':'er'].replace('{n}',fmt(c.nr)));else if(meg&&!nrVist)show(a)},900);
+      if(c.nr)show(u,u.dataset[c.ny?'ny':cur[1]>c.nr?'var':'er'].replace('{n}',fmt(c.nr)));else if(meg&&!nrVist)show(a)},900);
     if(document.visibilityState==='visible')go();else document.addEventListener('visibilitychange',go,{once:true})};
   // Siden har sett et menneske, og serveren ga deg neste nummer: tallet ruller opp med «+1 · du er nr. N».
   api.nr=(n,total)=>{nrVist=true;cur[1]=total;label();set(nU,Math.max(0,total-1),false);a.classList.remove('deg');
