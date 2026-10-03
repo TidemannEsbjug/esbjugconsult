@@ -114,7 +114,10 @@ export async function handleChat(request, env, url) {
   }
 
   if (path.startsWith("/chat/admin/")) {
-    const auth = request.headers.get("Authorization") || "";
+    // The apps send the token as a Bearer header. The Mac panel (/panel/) is a web page, and a browser cannot set headers
+    // on a WebSocket, so it sends the token as the second subprotocol: "esbjug, <token>".
+    const proto = (request.headers.get("Sec-WebSocket-Protocol") || "").split(",").map((x) => x.trim());
+    const auth = request.headers.get("Authorization") || (proto[0] === "esbjug" && proto[1] ? `Bearer ${proto[1]}` : "");
     if (!env.ADMIN_TOKEN || auth !== `Bearer ${env.ADMIN_TOKEN}`) return new Response("Unauthorized", { status: 401 });
     if (path === "/chat/admin/upload" && request.method === "POST") return upload(request, env, url, hub, true);
     const headers = new Headers(request.headers);
@@ -433,7 +436,8 @@ export class ChatHub {
       this.touchOwner();
       await this.ensureAlarm();
       this.toVisitors({ t: "owner", online: true });
-      return new Response(null, { status: 101, webSocket: pair[0] });
+      const sub = (request.headers.get("Sec-WebSocket-Protocol") || "").startsWith("esbjug") ? { "Sec-WebSocket-Protocol": "esbjug" } : {};
+      return new Response(null, { status: 101, webSocket: pair[0], headers: sub });
     }
     if (url.pathname === "/chat/admin/device" && request.method === "POST") {
       const { token, env, topic } = await request.json();

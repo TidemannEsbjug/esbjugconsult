@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Esbjug Chat</title>
+<meta name="theme-color" content="#0d0d12">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23FFDE59'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%230d0d12'/%3E%3C/svg%3E">
+<style>
+  :root{--y:#FFDE59;--ink:#0d0d12;--l:#1b1b22;--t:#f3f1ea}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--ink);color:var(--t);font-family:-apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif}
+  #inn{height:100%;display:grid;place-items:center}
+  #inn form{display:flex;flex-direction:column;gap:12px;width:min(360px,90vw)}
+  #inn h1{margin:0;color:var(--y);font-size:26px}
+  input,textarea,button{font:inherit}
+  #inn input{padding:12px 14px;border-radius:12px;border:1.5px solid #33333d;background:var(--l);color:var(--t)}
+  .kn{border:0;border-radius:999px;background:var(--y);color:var(--ink);font-weight:700;padding:12px 18px;cursor:pointer}
+  #app{height:100%;display:grid;grid-template-columns:300px 1fr}
+  #app[hidden],#inn[hidden]{display:none}
+  aside{border-right:1px solid #26262e;display:flex;flex-direction:column;min-height:0}
+  .topp{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid #26262e}
+  .topp b{color:var(--y)}
+  .topp select{background:var(--l);color:var(--t);border:1px solid #33333d;border-radius:8px;padding:5px 8px}
+  #liste{overflow-y:auto;flex:1}
+  .v{display:block;width:100%;text-align:left;border:0;background:none;color:inherit;padding:12px 16px;border-bottom:1px solid #1d1d25;cursor:pointer}
+  .v:hover,.v.valgt{background:var(--l)}
+  .v .n{display:flex;align-items:center;gap:8px;font-weight:600}
+  .v .n i{width:8px;height:8px;border-radius:50%;background:#444;flex:none}
+  .v.on .n i{background:#3ddc84}
+  .v .u{margin-left:auto;background:var(--y);color:var(--ink);border-radius:999px;font-size:12px;font-weight:700;padding:1px 7px}
+  .v .s{font-size:13px;opacity:.6;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  main{display:flex;flex-direction:column;min-height:0;min-width:0}
+  #hode{padding:14px 18px;border-bottom:1px solid #26262e;font-size:14px;min-height:50px}
+  #hode b{font-size:16px}
+  #hode span{opacity:.6;margin-left:8px}
+  #mld{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:8px}
+  #mld p{margin:0;max-width:70%;padding:9px 13px;border-radius:16px;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere}
+  #mld p.de{align-self:flex-start;background:#26262e}
+  #mld p.jeg{align-self:flex-end;background:var(--y);color:var(--ink)}
+  #mld p a{color:inherit}
+  #mld img,#mld video{max-width:100%;border-radius:10px;display:block}
+  #tom{margin:auto;opacity:.5}
+  #skriv{display:flex;gap:10px;padding:14px 18px;border-top:1px solid #26262e}
+  #skriv textarea{flex:1;resize:none;height:46px;padding:11px 14px;border-radius:14px;border:1.5px solid #33333d;background:var(--l);color:var(--t)}
+  #skriv textarea:focus{outline:none;border-color:var(--y)}
+  #linje{font-size:12px;opacity:.55;padding:0 18px 10px}
+  @media (max-width:640px){#app{grid-template-columns:1fr}aside{display:none}#app.liste aside{display:flex}#app.liste main{display:none}}
+</style>
+</head>
+<body>
+<div id="inn" hidden><form><h1>Esbjug Chat</h1><input type="password" placeholder="Adminnøkkel" autocomplete="current-password" required><button class="kn">Logg inn</button></form></div>
+<div id="app" class="liste" hidden>
+  <aside><div class="topp"><b>Besøkende</b><select id="status" aria-label="Status"><option value="available">Tilgjengelig</option><option value="meeting">I møte</option><option value="sleeping">Sover</option></select></div><div id="liste"></div></aside>
+  <main><div id="hode"></div><div id="mld"><span id="tom">Velg en besøkende</span></div><div id="linje"></div><form id="skriv"><textarea placeholder="Skriv en melding … (Enter sender)" disabled></textarea><button class="kn" disabled>Send</button></form></main>
+</div>
+<script>
+// Enkelt panel for Mac: samme eier-socket som iPhone-appen. Nøkkelen lagres bare i denne nettleseren.
+const $=s=>document.querySelector(s),inn=$('#inn'),app=$('#app'),liste=$('#liste'),mld=$('#mld'),hode=$('#hode'),ta=$('#skriv textarea'),sendB=$('#skriv button'),linje=$('#linje');
+let token=localStorage.getItem('esbjug_admin')||'',ws,vis=new Map(),valgt=null,vent=1000,sett=new Set();
+const sted=v=>[v.city,v.country].filter(Boolean).join(', ')||'Ukjent sted';
+const enhet=v=>{const u=v.ua||'';return /iPhone/.test(u)?'iPhone':/iPad/.test(u)?'iPad':/Android/.test(u)?'Android':/Mac OS X/.test(u)?'Mac':/Windows/.test(u)?'Windows':''};
+const kl=t=>new Date(t).toLocaleTimeString('nb-NO',{hour:'2-digit',minute:'2-digit'});
+const varsle=(tittel,tekst,vid)=>{if(document.hasFocus()&&valgt===vid)return;if(Notification.permission==='granted'){const n=new Notification(tittel,{body:tekst,tag:vid});n.onclick=()=>{focus();velg(vid)}}};
+const tegn=()=>{const a=[...vis.values()].sort((x,y)=>(y.online-x.online)||((y.last?.ts||y.lastSeen)-(x.last?.ts||x.lastSeen)));liste.textContent='';
+  for(const v of a){const b=document.createElement('button');b.className='v'+(v.online?' on':'')+(v.vid===valgt?' valgt':'');b.onclick=()=>velg(v.vid);
+    const n=document.createElement('div');n.className='n';n.append(document.createElement('i'),sted(v));if(v.unread){const u=document.createElement('span');u.className='u';u.textContent=v.unread;n.append(u)}
+    const s=document.createElement('div');s.className='s';s.textContent=v.last?(v.last.owner?'Du: ':'')+v.last.text:[enhet(v),v.page].filter(Boolean).join(' · ');b.append(n,s);liste.append(b)}
+  document.title=(a.reduce((t,v)=>t+(v.unread||0),0)||'')+' Esbjug Chat'.trimStart()};
+const boble=m=>{if(sett.has(m.id))return;sett.add(m.id);const p=document.createElement('p');p.className=m.owner?'jeg':'de';
+  if(m.kind==='file'){const src='/chat/file/'+m.file;if((m.mime||'').startsWith('image/')){const i=new Image();i.src=src;p.append(i)}else if((m.mime||'').startsWith('audio/')){const x=document.createElement('audio');x.controls=true;x.src=src;p.append(x)}
+    else if((m.mime||'').startsWith('video/')){const x=document.createElement('video');x.controls=true;x.src=src;p.append(x)}else{const l=document.createElement('a');l.href=src;l.target='_blank';l.textContent=m.name||'Fil';p.append(l)}}
+  else p.textContent=m.text;p.title=kl(m.ts);mld.append(p);mld.scrollTop=mld.scrollHeight};
+const velg=vid=>{valgt=vid;const v=vis.get(vid);app.classList.remove('liste');mld.textContent='';sett.clear();ta.disabled=sendB.disabled=false;
+  hode.textContent='';if(v){const b=document.createElement('b');b.textContent=sted(v);const s=document.createElement('span');s.textContent=[enhet(v),v.online?'på siden nå':'sist '+kl(v.lastSeen),v.page].filter(Boolean).join(' · ');hode.append(b,s)}
+  ws.send(JSON.stringify({t:'history',vid}));ws.send(JSON.stringify({t:'read',vid}));tegn();ta.focus()};
+const koble=()=>{linje.textContent='Kobler til …';ws=new WebSocket('wss://'+location.host+'/chat/admin/ws',['esbjug',token]);
+  ws.onopen=()=>{vent=1000;linje.textContent='';inn.hidden=true;app.hidden=false;localStorage.setItem('esbjug_admin',token);if(Notification.permission==='default')Notification.requestPermission();if(valgt)ws.send(JSON.stringify({t:'history',vid:valgt}))};
+  ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch{return}
+    if(m.t==='state'){vis=new Map(m.visitors.map(v=>[v.vid,v]));$('#status').value=m.status;tegn()}
+    else if(m.t==='presence'&&m.v){const ny=!vis.has(m.v.vid);vis.set(m.v.vid,m.v);tegn();if(ny&&m.v.online)varsle('Ny besøkende',[sted(m.v),enhet(m.v)].filter(Boolean).join(' · '),m.v.vid)}
+    else if(m.t==='msg'){if(m.v)vis.set(m.vid,m.v);if(m.vid===valgt){boble(m.m);if(!m.m.owner&&document.hasFocus())ws.send(JSON.stringify({t:'read',vid:valgt}))}tegn();if(!m.m.owner)varsle(m.v?sted(m.v):'Melding',m.m.kind==='file'?'Fil':m.m.text,m.vid)}
+    else if(m.t==='history'&&m.vid===valgt)m.msgs.forEach(boble)
+    else if(m.t==='deleted'){vis.delete(m.vid);if(valgt===m.vid){valgt=null;mld.textContent='';hode.textContent='';ta.disabled=sendB.disabled=true}tegn()}
+    else if(m.t==='status')$('#status').value=m.v};
+  ws.onclose=()=>{if(app.hidden){inn.hidden=false;localStorage.removeItem('esbjug_admin');return}linje.textContent='Frakoblet, prøver igjen …';setTimeout(koble,vent);vent=Math.min(vent*2,20000)}};
+setInterval(()=>{if(ws&&ws.readyState===1)ws.send(JSON.stringify({t:'ping'}))},25000);
+$('#inn form').onsubmit=e=>{e.preventDefault();token=$('#inn input').value.trim();koble()};
+$('#skriv').onsubmit=e=>{e.preventDefault();const t=ta.value.trim();if(!t||!valgt||ws.readyState!==1)return;ws.send(JSON.stringify({t:'msg',vid:valgt,text:t}));ta.value=''};
+ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('#skriv').requestSubmit()}});
+$('#status').onchange=e=>ws.send(JSON.stringify({t:'setstatus',v:e.target.value}));
+hode.onclick=()=>{if(innerWidth<=640)app.classList.add('liste')};
+if(token)koble();else inn.hidden=false;
+</script>
+</body>
+</html>
