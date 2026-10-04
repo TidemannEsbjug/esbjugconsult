@@ -94,7 +94,7 @@
   .brev .hils{margin-bottom:1.1em}
   .brev .sig{margin:1.3em 0 0;font-style:italic;font-size:1.25em}
   .m2 .o{z-index:2}
-  @media (prefers-reduced-motion:reduce){.flyt{animation:none}.gl{transform:none!important}.motto,.motto .b,.brev-inn{transition:none!important;animation:none!important}.brev-inn{opacity:1;transform:none;filter:none}.motto{visibility:hidden}.brev .t{visibility:visible}.motto .b{opacity:1;transform:none;filter:none}.m2::before{transform:none}}
+  @media (prefers-reduced-motion:reduce){.flyt{animation:none}.gl{transform:none!important}.motto,.motto .b,.brev-inn{transition:none!important;animation:none!important}.brev-inn{opacity:1;transform:none;filter:none}.motto.ut{visibility:hidden}.brev .t{visibility:visible}.motto .b{opacity:1;transform:none;filter:none}.m2::before{transform:none}}
   /* Budskapet, ingressen og knappen står nå øverst på den blå siden under videoen. */
   .intro{padding-top:clamp(56px,10vh,120px)}
   /* V2: serif i overskriftene. */
@@ -465,7 +465,8 @@
   </div></div>
   <div class="scene">
   <p class="motto" aria-label="Når livet gir deg sitroner... krev kaviar."><span class="m1" data-ord="sitroner" aria-hidden="true">Når livet gir deg sitroner...</span><span class="m2" data-ord="kaviar" aria-hidden="true">krev kaviar.</span></p>
-  <div class="brev-inn"><div class="flyt"><article class="brev gl">
+  <!-- Brevet er lagt på hyllen: slagordet blir stående. Fjern «hidden» under for å sette det inn igjen (skriptet følger etter av seg selv). -->
+  <div class="brev-inn" hidden><div class="flyt"><article class="brev gl">
     <p class="dato" style="--l:0">05.10.2026</p>
     <p class="hils" style="--l:1">Kjære venn,</p>
     <p style="--l:2">Jeg vet ikke helt hvor jeg skal gjøre av meg.</p>
@@ -1009,9 +1010,12 @@ const tegn=[];document.querySelectorAll('.brev p').forEach(p=>{const t=p.textCon
   [...t].forEach(c=>{const e=document.createElement('span');e.className='t';e.textContent=c;p.append(e);tegn.push(e)});if(tegn.length)tegn[tegn.length-1].slutt=1});
 const skriv=(i=0)=>{if(i)tegn[i-1].classList.remove('na');if(i>=tegn.length)return;const e=tegn[i];e.classList.add('s','na');
   const c=e.textContent;setTimeout(()=>skriv(i+1),e.slutt?520:/[,.]/.test(c)?260:28+Math.random()*38)};
-if(still){m.classList.add('a1','a2','ut');vis();return}
+// Med brevet på hyllen (hidden) blir slagordet stående; ellers toner det ut og brevet skrives.
+const medBrev=!!document.querySelector('.brev-inn:not([hidden])');
+if(still){m.classList.add('a1','a2');if(medBrev)m.classList.add('ut');vis();return}
 const t1=n1*32+250+3*260+500;
-setTimeout(()=>m.classList.add('a1'),350);setTimeout(()=>{m.classList.add('a2');setTimeout(kom,430)},350+t1);setTimeout(()=>m.classList.add('ut'),350+t1+3600);setTimeout(skriv,350+t1+3600+1300);
+setTimeout(()=>m.classList.add('a1'),350);setTimeout(()=>{m.classList.add('a2');setTimeout(kom,430)},350+t1);
+if(medBrev){setTimeout(()=>m.classList.add('ut'),350+t1+3600);setTimeout(skriv,350+t1+3600+1300)}
 const hero=document.querySelector('.hero');
 hero.addEventListener('pointermove',e=>{if(e.pointerType==='touch')return;const r=hero.getBoundingClientRect();
   m.style.setProperty('--px',((e.clientX-r.left)/r.width-.5)*-14+'px');m.style.setProperty('--py',((e.clientY-r.top)/r.height-.5)*-10+'px')});
