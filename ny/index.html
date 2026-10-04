@@ -66,6 +66,10 @@
   .motto .o{position:relative}
   .motto.a1 .m1 .o.sit .b:not(.pr){animation:gul 2.2s ease both;animation-delay:calc(var(--n)*32ms + 150ms + var(--k)*80ms)}
   @keyframes gul{0%,100%{color:#fff}30%,62%{color:#FFDE59}}
+  /* Toppmodulen og chatten er skjult til «krev kaviar.» kommer, og glir inn samtidig med den. */
+  .hero-i>.flyt,#chat{transition:opacity .9s ease,translate 1s cubic-bezier(.2,.9,.2,1),filter .9s ease}
+  .forspill .hero-i>.flyt,.forspill #chat{opacity:0;filter:blur(8px);pointer-events:none;translate:0 -14px}
+  .forspill #chat{translate:0 14px}
   /* Scenen: slagordet spilles, toner ut, og brevet tar plassen der slagordet sto. Brevet skrives ut tegn for tegn med en markør. */
   .scene{margin:auto 0;width:100%;display:grid;align-items:center;justify-items:start}
   .scene>*{grid-area:1/1}
@@ -443,6 +447,7 @@
 </style>
 </head>
 <body>
+<script>document.body.classList.add('forspill');setTimeout(()=>document.body.classList.remove('forspill'),8000)</script>
 <header class="hero">
   <video class="hero-v" poster="/media/hero.jpg" autoplay muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1" disablepictureinpicture><source src="/media/hero-720.mp4" media="(max-width:760px)" type="video/mp4"><source src="/media/hero.mp4" type="video/mp4"></video>
   <div class="hero-i">
@@ -972,7 +977,7 @@ const run=()=>{code();setTimeout(()=>flare(true),600);setTimeout(()=>flare(false
 setTimeout(()=>{run();setInterval(run,11000)},4000);
 })();
 // Slagordet på videoen: deles i bokstaver og spilles i sløyfe. Glassboksene vipper mot pekeren.
-(()=>{const m=document.querySelector('.motto');if(!m)return;
+(()=>{const m=document.querySelector('.motto'),vis=()=>document.body.classList.remove('forspill');if(!m){vis();return}
 const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const del=(el)=>{const t=el.textContent;el.textContent='';let i=0;const dots=(t.match(/\.+$/)||[''])[0],kropp=dots.length>1?t.slice(0,-dots.length):t;
   kropp.split(' ').forEach((ord,k,a)=>{const o=document.createElement('span');o.className='o';
@@ -990,9 +995,9 @@ const tegn=[];document.querySelectorAll('.brev p').forEach(p=>{const t=p.textCon
   [...t].forEach(c=>{const e=document.createElement('span');e.className='t';e.textContent=c;p.append(e);tegn.push(e)});if(tegn.length)tegn[tegn.length-1].slutt=1});
 const skriv=(i=0)=>{if(i)tegn[i-1].classList.remove('na');if(i>=tegn.length)return;const e=tegn[i];e.classList.add('s','na');
   const c=e.textContent;setTimeout(()=>skriv(i+1),e.slutt?520:/[,.]/.test(c)?260:28+Math.random()*38)};
-if(still){m.classList.add('a1','a2','ut');return}
+if(still){m.classList.add('a1','a2','ut');vis();return}
 const t1=n1*32+250+3*260+500;
-setTimeout(()=>m.classList.add('a1'),350);setTimeout(()=>m.classList.add('a2'),350+t1);setTimeout(()=>m.classList.add('ut'),350+t1+3600);setTimeout(skriv,350+t1+3600+1300);
+setTimeout(()=>m.classList.add('a1'),350);setTimeout(()=>{m.classList.add('a2');vis()},350+t1);setTimeout(()=>m.classList.add('ut'),350+t1+3600);setTimeout(skriv,350+t1+3600+1300);
 const hero=document.querySelector('.hero');
 hero.addEventListener('pointermove',e=>{if(e.pointerType==='touch')return;const r=hero.getBoundingClientRect();
   m.style.setProperty('--px',((e.clientX-r.left)/r.width-.5)*-14+'px');m.style.setProperty('--py',((e.clientY-r.top)/r.height-.5)*-10+'px')});
