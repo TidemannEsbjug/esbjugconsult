@@ -5,4 +5,4 @@ Dette repoet er OFFENTLIG. Prosjektoversikt, regler for samarbeid mellom maskine
 - `git pull` før du begynner og før deploy. Deploy: `npx wrangler deploy` her.
 - Etter hver endring i `index.html`: `python3 bygg-en.py`.
 - `kunde/` skal aldri i git. Deploy fra en maskin uten `kunde/` fjerner kundeområdet fra nettet.
-- `ny/` er arbeidskopien av V2 (esbjugconsult.com/ny/), ikke indeksert (robots-meta + X-Robots-Tag i `.worker/index.js`). Nytt design gjøres i `ny/index.html`, så `python3 bygg-en.py ny`. Forsiden (`index.html`) er V1 til V2 er klar.
+- Forsiden (`index.html`) er V2 (blå, rød og hvit, videohero) fra 7.10.2026. `/ny` sendes videre til `/` i `.worker/index.js`. V1 (gul) finnes i git-historikken.

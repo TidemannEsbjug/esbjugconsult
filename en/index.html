@@ -5,19 +5,107 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Esbjug Consult</title>
 <meta name="description" content="Code and design have gone through a revolution that must not be overlooked.">
-<meta name="theme-color" content="#FFDE59">
+<meta name="theme-color" content="#cfe4f6">
 <link rel="alternate" hreflang="nb" href="https://esbjugconsult.com/">
 <link rel="alternate" hreflang="en" href="https://esbjugconsult.com/en/">
 <script>document.documentElement.classList.add("js");if(/[?&]speil=1/.test(location.search))document.documentElement.classList.add("speil","vis")</script>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23FFDE59'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%230d0d12'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2300205B'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%23BA0C2F' stroke='%23fff' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preload" href="/media/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-  :root{--y:#FFDE59;--ink:#0d0d12;--g:clamp(16px,6vw,96px)}
+  @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces.woff2) format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+  @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces-italic.woff2) format("woff2");font-weight:100 900;font-style:italic;font-display:swap}
+  :root{--y:#fff;--ink:#00205B;--bg:#cfe4f6;--r:#BA0C2F;--serif:"Fraunces",Georgia,"Times New Roman",serif;--g:clamp(16px,6vw,96px)}
   *{box-sizing:border-box}
   html{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
   img,video{-webkit-user-drag:none}
-  html,body{margin:0;background:var(--y);color:var(--ink)}
+  html,body{margin:0;background:var(--bg);color:var(--ink)}
   body{font-family:-apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;min-height:100svh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
-  main{position:relative;padding:var(--g);padding-top:calc(var(--g) + 46px);padding-bottom:0;max-width:1180px;width:100%;margin:0 auto}
+  main{position:relative;padding:0 var(--g);max-width:1180px;width:100%;margin:0 auto}
+  /* Under hero: hvit bakgrunn og svart tekst. Hero, chatten og de blå bildene beholder fargene sine. */
+  html,body{background:#fff}
+  main{--ink:#000;color:var(--ink)}
+  /* Hero: bare videoen, toppmodulen og slagordet. Resten av siden begynner under. */
+  .hero{position:relative;min-height:100svh;display:flex;overflow:hidden;background:#9db4c8}
+  .hero-v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+  /* Svakt blått slør til venstre, der teksten står, så hvit tekst holder kontrasten også mot hvite skyer. */
+  .hero::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(0,32,91,.42),rgba(0,32,91,.16) 45%,rgba(0,32,91,0) 75%)}
+  .hero-i{position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:flex-start;padding:clamp(16px,2.6vw,36px) var(--g) var(--g)}
+  /* Glassbokser: lyst, uskarpt glass med korn. De flyter sakte, vipper mot pekeren og får et lysskjær der pekeren er. */
+  .flyt{animation:flyt 7s ease-in-out infinite}
+  @keyframes flyt{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  .gl{position:relative;isolation:isolate;border-radius:22px;background:linear-gradient(135deg,rgba(255,255,255,.72),rgba(255,255,255,.5));-webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5);border:1px solid rgba(255,255,255,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(255,255,255,.25),0 14px 40px rgba(0,32,91,.18);
+    transform:perspective(900px) translate3d(var(--tx,0),var(--ty,0),0) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) scale(var(--sc,1));transition:transform .7s cubic-bezier(.2,1.5,.35,1),box-shadow .4s ease;will-change:transform}
+  .gl.paa{transition:transform .14s ease-out,box-shadow .4s ease;box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.3),0 26px 60px rgba(0,32,91,.28)}
+  .gl::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;opacity:.22;mix-blend-mode:soft-light;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.2 -.1'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .gl::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .35s ease;background:radial-gradient(220px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.85),rgba(255,255,255,0) 65%)}
+  .gl.paa::after{opacity:1}
+  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.gl{background:rgba(255,255,255,.86)}}
+  /* Toppmodulen: språkvalg, puls, her nå og unike besøkende i én boks. */
+  .topp{display:inline-flex;align-items:center;flex-wrap:wrap;gap:12px clamp(14px,1.8vw,24px);padding:12px 20px 12px 14px}
+  .topp .lang{position:relative;top:auto;left:auto;flex:none}
+  .topp .st{align-items:center;row-gap:10px}
+  .topp .st:has(.st-i:not([hidden])){padding-left:clamp(14px,1.8vw,24px);border-left:1px solid rgba(0,32,91,.18)}
+  .topp .st-i,.topp .st-c{gap:5px}
+  .topp .st-v{font-size:clamp(20px,2.1vw,27px);gap:8px}
+  .topp .st-l{font-size:9.5px;min-height:11px}
+  .topp .st-i:not([hidden])~.st-i{margin-left:clamp(12px,1.6vw,20px);padding-left:clamp(12px,1.6vw,20px)}
+  @media (max-width:560px){.topp .st:has(.st-i:not([hidden])){padding-left:0;border-left:0}}
+  /* «+1 · det er deg» henger rett under glassboksen med pila opp mot tallet, i stedet for oppå boksen. --ned = avstanden ned til boksens kant. */
+  .topp .tl-deg{bottom:auto;top:calc(100% + var(--ned,24px) + 9px)}
+  .topp .st-i.deg .st-l{opacity:1}
+  /* Slagordet: det eneste som står på videoen. Første linje skrives fram bokstav for bokstav og prikkene tikker inn;
+     så slår en rød flate ut fra venstre og «krev kaviar.» reiser seg inni den. Spilles én gang og blir stående.
+     «sitroner» blir sitrongul. */
+  .motto{margin:0;padding:clamp(24px,5vh,60px) 0;color:#fff;font-family:var(--serif);line-height:1;transform:translate3d(var(--px,0),var(--py,0),0);transition:transform .9s cubic-bezier(.2,.8,.2,1),opacity .7s ease,filter .7s ease}
+  .m1{display:block;font-style:italic;font-weight:400;font-size:clamp(30px,5.4vw,84px);letter-spacing:-.02em;text-shadow:0 2px 28px rgba(0,32,91,.55),0 1px 3px rgba(0,32,91,.45);transition:opacity .8s ease}
+  .m2{position:relative;display:inline-block;margin-top:.16em;padding:.02em .2em .1em;font-weight:700;font-size:clamp(50px,10.5vw,168px);letter-spacing:-.035em;line-height:1}
+  .m2::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:.07em;background:var(--r);box-shadow:0 .08em .5em rgba(0,32,91,.35);transform:scaleX(0);transform-origin:0 50%}
+  .motto.a2 .m2::before{transform:none;transition:transform .7s cubic-bezier(.7,0,.15,1)}
+  .motto .o{display:inline-block;white-space:nowrap}
+  .motto .b{display:inline-block;opacity:0;transform:translateY(.55em) rotate(6deg);filter:blur(10px)}
+  .motto.a1 .m1 .b{opacity:1;transform:none;filter:none;transition:opacity .5s ease,transform .7s cubic-bezier(.2,1.3,.3,1),filter .5s ease;transition-delay:calc(var(--i)*32ms)}
+  .motto.a1 .m1 .b.pr{transition-delay:calc(var(--n)*32ms + 250ms + var(--j)*260ms)}
+  .m2 .b{transform:translateY(.9em);filter:none}
+  .m2 .o{overflow:hidden;vertical-align:bottom;padding-bottom:.08em;margin-bottom:-.08em}
+  .motto.a2 .m2 .b{opacity:1;transform:none;transition:opacity .25s ease,transform .75s cubic-bezier(.2,1.25,.3,1);transition-delay:calc(280ms + var(--i)*45ms)}
+  .motto .o{position:relative}
+  .motto.a1 .m1 .o.sit .b:not(.pr){animation:gul 2.2s ease both;animation-delay:calc(var(--n)*32ms + 150ms + var(--k)*80ms)}
+  @keyframes gul{0%,100%{color:#fff}30%,62%{color:#FFDE59}}
+  /* Toppmodulen og chatten er skjult til ordet «kaviar» kommer. Da bygges toppmodulen ut fra venstre og chatknappen
+     fra høyre, med samme kurve som den røde flaten, og innholdet glir inn etter. */
+  .forspill .hero-i>.flyt,.forspill #chat{opacity:0;pointer-events:none}
+  .kom .hero-i>.flyt>.topp{animation:byggV 1.1s cubic-bezier(.7,0,.15,1) both}
+  .kom .hero-i>.flyt>.topp>*{animation:innV .8s cubic-bezier(.2,.9,.2,1) both;animation-delay:.35s}
+  .kom .hero-i>.flyt>.topp>*+*{animation-delay:.5s}
+  .kom #chat .ch-b{animation:byggH .9s cubic-bezier(.7,0,.15,1) .1s both}
+  @keyframes byggV{0%{clip-path:inset(0 100% 0 0 round 22px);opacity:0}12%{opacity:1}100%{clip-path:inset(-60px -60px -60px -60px round 22px);opacity:1}}
+  @keyframes byggH{0%{clip-path:inset(0 0 0 100% round 999px);opacity:0}12%{opacity:1}100%{clip-path:inset(-40px -40px -40px -40px round 999px);opacity:1}}
+  @keyframes innV{0%{opacity:0;translate:-26px 0;filter:blur(6px)}100%{opacity:1;translate:0 0;filter:none}}
+  /* Scenen: slagordet spilles, toner ut, og brevet tar plassen der slagordet sto. Brevet skrives ut tegn for tegn med en markør. */
+  .scene{margin:auto 0;width:100%;display:grid;align-items:center;justify-items:start}
+  .scene>*{grid-area:1/1}
+  .motto.ut{opacity:0;filter:blur(12px);transform:translateY(-14px);pointer-events:none}
+  .brev-inn{width:min(620px,100%);opacity:0;transform:translateY(26px);filter:blur(10px);pointer-events:none}
+  .motto.ut~.brev-inn{opacity:1;transform:none;filter:none;pointer-events:auto;transition:opacity .9s ease,transform 1.1s cubic-bezier(.2,.9,.2,1),filter .9s ease;transition-delay:.45s}
+  .brev{padding:clamp(24px,2.4vw,38px) clamp(24px,2.6vw,42px) clamp(26px,2.6vw,40px);border-radius:26px;font:400 clamp(18px,1.5vw,23px)/1.45 var(--serif);letter-spacing:-.005em}
+  .brev p{margin:0 0 .7em}
+  .brev .t{visibility:hidden}
+  .brev .t.s{visibility:visible}
+  .brev .t.na{box-shadow:.12em 0 0 -.02em var(--ink)}
+  .brev .dato{text-align:right;font:600 12px/1.5 "SF Mono",Menlo,monospace;letter-spacing:.12em;opacity:.7;margin-bottom:1.6em}
+  .brev .hils{margin-bottom:1.1em}
+  .brev .sig{margin:1.3em 0 0;font-style:italic;font-size:1.25em}
+  .m2 .o{z-index:2}
+  @media (prefers-reduced-motion:reduce){.flyt{animation:none}.gl{transform:none!important}.motto,.motto .b,.brev-inn{transition:none!important;animation:none!important}.brev-inn{opacity:1;transform:none;filter:none}.motto.ut{visibility:hidden}.brev .t{visibility:visible}.motto .b{opacity:1;transform:none;filter:none}.m2::before{transform:none}}
+  /* Budskapet, ingressen og knappen står nå øverst på den blå siden under videoen. */
+  .intro{padding-top:clamp(56px,10vh,120px)}
+  /* V2: serif i overskriftene. */
+  h1,h2,.p h3,.s em,.n b{font-family:var(--serif);font-weight:600;letter-spacing:-.022em}
+  h1{line-height:1.08}
+  h2{font-weight:500;letter-spacing:-.03em}
+  .s em{font-weight:500;font-style:italic}
+  .s em.i{font-family:inherit;font-style:italic}
+  @media (prefers-reduced-motion:reduce){.hero-v{display:none}.hero{background:#9db4c8 url(/media/hero.jpg) center/cover}}
   .mono{font:600 13px/1.5 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase}
   .k{opacity:.72;display:flex;align-items:center;gap:10px 1.5em;flex-wrap:wrap}
   .k .kl{margin-left:auto;color:inherit;text-decoration:none;border:2px solid var(--ink);border-radius:999px;padding:5px 14px;line-height:1.3;letter-spacing:.1em}
@@ -25,25 +113,23 @@
   .k .kl:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
   h1{margin:14px 0 0;font-weight:850;font-size:clamp(28px,4.4vw,56px);line-height:1.06;letter-spacing:-.035em}
   p.b{margin:28px 0 0;max-width:38em;font-size:clamp(18px,1.6vw,22px);line-height:1.45;font-weight:500}
-  a.t{display:inline-block;margin-top:32px;background:var(--ink);color:var(--y);font-weight:700;font-size:clamp(18px,1.8vw,23px);padding:13px 22px 14px;border-radius:999px;text-decoration:none;letter-spacing:-.01em;transition:transform .2s}
+  a.t{display:inline-block;margin-top:32px;background:var(--r);color:#fff;font-weight:700;font-size:clamp(18px,1.8vw,23px);padding:13px 22px 14px;border-radius:999px;text-decoration:none;letter-spacing:-.01em;transition:transform .2s}
   a.t:hover{transform:translateY(-2px)}
   a.t:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
   .m{margin-top:clamp(40px,8vh,80px);max-width:34em;text-transform:none;letter-spacing:.02em;font-weight:500;line-height:1.6}
-  .bar{margin:10px 0 0;height:6px;background:rgba(13,13,18,.12);border-radius:3px;overflow:hidden}
-  .bar i{display:block;height:100%;width:calc(var(--p)*1%);background:var(--ink)}
   /* «kode»: blir en terminalbit som dekodes. «design»: fargerikt lys som gjør ordet om til glass. */
   .kd{display:inline-block;position:relative;white-space:nowrap;padding:.06em .12em;margin:-.06em -.12em;border-radius:.1em}
   /* «kode» styrer layouten med en usynlig kopi; den animerte teksten ligger absolutt oppå, så høyden og grunnlinjen aldri endres under animasjonen. */
   .kd::before{content:"kode";visibility:hidden}
   .kd i{font-style:normal;position:absolute;left:.12em;top:0;bottom:0;display:flex;align-items:center;line-height:inherit;transform-origin:0 50%}
-  .kd.c{background:var(--ink)}
+  .kd.c{background:var(--r)}
   .kd.c i{font-family:"SF Mono",ui-monospace,Menlo,monospace;font-weight:800;letter-spacing:-.04em;color:var(--y)}
   .ds{position:relative;display:inline-block;transition:color .5s}
   .ds::before,.ds::after{content:attr(data-t);position:absolute;left:0;top:0;pointer-events:none}
   .ds::before{color:transparent;background:linear-gradient(100deg,transparent 30%,#ff3d8b 38%,#ffb400 44%,#fff 50%,#2fd1ff 56%,#7a5cff 62%,transparent 70%) -60% 0/260% 100% no-repeat;-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 .1em rgba(255,61,139,.55)) drop-shadow(0 0 .22em rgba(47,209,255,.4));opacity:0}
   .ds.f::before{opacity:1;animation:fl 1s cubic-bezier(.4,0,.6,1) forwards}
   @keyframes fl{to{background-position:160% 0}}
-  .ds::after{color:transparent;background:linear-gradient(165deg,#fff 0%,rgba(255,255,255,.35) 30%,rgba(255,255,255,.08) 48%,rgba(255,255,255,.7) 60%,rgba(255,255,255,.18) 78%,rgba(255,255,255,.55) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-stroke:1.5px rgba(13,13,18,.42);filter:drop-shadow(0 .06em .1em rgba(13,13,18,.35));opacity:0;transition:opacity .6s}
+  .ds::after{color:transparent;background:linear-gradient(165deg,#fff 0%,rgba(255,255,255,.35) 30%,rgba(255,255,255,.08) 48%,rgba(255,255,255,.7) 60%,rgba(255,255,255,.18) 78%,rgba(255,255,255,.55) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-stroke:1.5px rgba(0,32,91,.42);filter:drop-shadow(0 .06em .1em rgba(0,32,91,.35));opacity:0;transition:opacity .6s}
   .ds.g{color:transparent}
   .ds.g::after{opacity:1}
   h2{margin:clamp(88px,16vh,160px) 0 0;font-weight:850;font-size:clamp(44px,8vw,112px);line-height:.95;letter-spacing:-.045em}
@@ -59,7 +145,7 @@
   dt{font:600 11px/1.4 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;opacity:.6}
   dd{margin:4px 0 0;font-size:16px;line-height:1.35;font-weight:500}
   .x{display:inline-block;width:7em;height:.9em;vertical-align:-.1em;background:var(--ink)}
-  .p video,.p img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;margin-top:22px;border-radius:14px;background:#0F1115}
+  .p video,.p img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;margin-top:22px;border-radius:14px;background:#00205B}
   .p a{color:inherit;text-underline-offset:3px}
   .n{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;margin-top:22px;border-radius:14px;overflow:hidden}
   .n div{background:var(--ink);color:var(--y);padding:18px 18px 20px}
@@ -73,26 +159,26 @@
   .p img.wide{aspect-ratio:4/1}
   /* Chat: boble nede til høyre, panel i svart og gult. */
   .ch{position:fixed;right:18px;bottom:18px;z-index:5;font-family:inherit}
-  .ch-b{display:flex;align-items:center;gap:8px;border:0;cursor:pointer;background:var(--ink);color:var(--y);font-weight:700;font-size:16px;line-height:1;font-family:inherit;padding:13px 18px 13px 15px;border-radius:999px;box-shadow:0 8px 24px rgba(13,13,18,.25);position:relative}
+  .ch-b{display:flex;align-items:center;gap:8px;border:0;cursor:pointer;background:var(--ink);color:var(--y);font-weight:700;font-size:16px;line-height:1;font-family:inherit;padding:13px 18px 13px 15px;border-radius:999px;box-shadow:0 8px 24px rgba(0,32,91,.25);position:relative}
   .ch-b svg{width:20px;height:20px}
   .ch-n{position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;border-radius:10px;background:#ff3d57;color:#fff;font-weight:700;font-size:12px;line-height:20px;font-family:inherit;text-align:center;font-style:normal}
-  .ch-p{position:fixed;right:18px;bottom:18px;width:min(380px,calc(100vw - 36px));height:min(540px,calc(100svh - 36px));background:var(--ink);color:#f3f1ea;border-radius:18px;box-shadow:0 18px 50px rgba(13,13,18,.35);display:flex;flex-direction:column;overflow:hidden}
+  .ch-p{position:fixed;right:18px;bottom:18px;width:min(380px,calc(100vw - 36px));height:min(540px,calc(100svh - 36px));background:var(--ink);color:#f2f6fb;border-radius:18px;box-shadow:0 18px 50px rgba(0,32,91,.35);display:flex;flex-direction:column;overflow:hidden}
   .ch-p[hidden],.ch-b[hidden]{display:none}
-  .ch-h{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 14px 18px;border-bottom:1px solid rgba(255,222,89,.15)}
+  .ch-h{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 14px 18px;border-bottom:1px solid rgba(255,255,255,.15)}
   .ch-h b{display:block;color:var(--y);font-size:16px}
   .ch-s{display:flex;align-items:center;gap:6px;margin-top:3px;font-size:12px;opacity:.75}
   .ch-s i{width:7px;height:7px;border-radius:50%;background:#8a8a8a}
   .ch-s.on i{background:#3ddc84}
   .ch-a{display:flex;align-items:center;gap:6px}
-  .ch-del{border:0;background:none;color:#f3f1ea;opacity:.55;font-size:12px;font-family:inherit;cursor:pointer;padding:4px 6px;text-decoration:underline;text-underline-offset:3px}
+  .ch-del{border:0;background:none;color:#f2f6fb;opacity:.55;font-size:12px;font-family:inherit;cursor:pointer;padding:4px 6px;text-decoration:underline;text-underline-offset:3px}
   .ch-del:hover{opacity:.9}
   .ch-x{border:0;background:none;color:var(--y);font-size:26px;line-height:1;cursor:pointer;padding:0 4px}
   .ch-m{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px}
   .ch-m p{margin:0;max-width:82%;padding:9px 12px;border-radius:14px;font-size:15px;line-height:1.35;white-space:pre-wrap;overflow-wrap:anywhere}
   .ch-m .me{align-self:flex-end;background:var(--y);color:var(--ink);border-bottom-right-radius:4px}
-  .ch-m .him{align-self:flex-start;background:#26262e;border-bottom-left-radius:4px}
-  .ch-f{display:flex;gap:8px;padding:12px;border-top:1px solid rgba(255,222,89,.15)}
-  .ch-f textarea{flex:1;resize:none;border:0;border-radius:12px;background:#1d1d24;color:#f3f1ea;font-size:15px;line-height:1.35;font-family:inherit;padding:10px 12px;max-height:120px;-webkit-user-select:text;user-select:text;outline:none}
+  .ch-m .him{align-self:flex-start;background:#12357a;border-bottom-left-radius:4px}
+  .ch-f{display:flex;gap:8px;padding:12px;border-top:1px solid rgba(255,255,255,.15)}
+  .ch-f textarea{flex:1;resize:none;border:0;border-radius:12px;background:#0c2c6e;color:#f2f6fb;font-size:15px;line-height:1.35;font-family:inherit;padding:10px 12px;max-height:120px;-webkit-user-select:text;user-select:text;outline:none}
   .ch-f textarea:focus{box-shadow:0 0 0 2px var(--y)}
   .ch-f button{border:0;border-radius:12px;background:var(--y);color:var(--ink);width:44px;cursor:pointer;display:grid;place-items:center}
   .ch-f button svg{width:18px;height:18px}
@@ -104,21 +190,21 @@
   @keyframes hhl{0%{opacity:0;transform:translateY(70%) scale(.3) rotate(-14deg)}20%{opacity:1;transform:translateY(-10%) scale(1.1) rotate(5deg)}30%{transform:none}45%{transform:translateY(-4%) rotate(-3deg)}58%{transform:none}80%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-50%) scale(.7) rotate(8deg)}}
   @media (prefers-reduced-motion:reduce){.hh span{animation:hhbg 2.8s ease forwards}}
   /* Samtykke til informasjonskapsler: nede til venstre, like store knapper for ja og nei. */
-  .ck{position:fixed;left:18px;bottom:18px;z-index:6;width:min(400px,calc(100vw - 36px));background:var(--ink);color:#f3f1ea;border-radius:16px;padding:16px 16px 14px;box-shadow:0 14px 40px rgba(13,13,18,.3);font-size:14px;line-height:1.45}
+  .ck{position:fixed;left:18px;bottom:18px;z-index:6;width:min(400px,calc(100vw - 36px));background:var(--ink);color:#f2f6fb;border-radius:16px;padding:16px 16px 14px;box-shadow:0 14px 40px rgba(0,32,91,.3);font-size:14px;line-height:1.45}
   .ck[hidden]{display:none}
   .ck p{margin:0}
   .ck b{display:block;color:var(--y);margin-bottom:4px;font-size:15px}
   .ck div{display:flex;gap:8px;margin-top:12px}
   .ck button{flex:1;border:0;border-radius:999px;padding:10px 12px;font-weight:700;font-size:14px;line-height:1;font-family:inherit;cursor:pointer}
   .ck-ja{background:var(--y);color:var(--ink)}
-  .ck-nei{background:#26262e;color:#f3f1ea}
+  .ck-nei{background:#12357a;color:#f2f6fb}
   .ck-endre{color:inherit}
   @media (max-width:520px){.ck{bottom:84px}}
   /* Kontroll fra Tidemann: «fokus» flytter chatten til midten, gjør den større og skjuler resten av siden. */
   .ch-p{transition:right .55s cubic-bezier(.2,.8,.2,1),bottom .55s cubic-bezier(.2,.8,.2,1),transform .55s cubic-bezier(.2,.8,.2,1),width .55s cubic-bezier(.2,.8,.2,1),height .55s cubic-bezier(.2,.8,.2,1),border-radius .55s}
-  main,canvas{transition:opacity .45s ease,filter .45s ease}
-  .focus main,.focus canvas{opacity:0;filter:blur(8px);pointer-events:none}
-  .focus .ch-p{right:50%;bottom:50%;transform:translate(50%,50%);width:min(760px,calc(100vw - 32px));height:min(80svh,800px);border-radius:24px;box-shadow:0 30px 80px rgba(13,13,18,.35)}
+  main,.hero,canvas{transition:opacity .45s ease,filter .45s ease}
+  .focus main,.focus .hero,.focus canvas{opacity:0;filter:blur(8px);pointer-events:none}
+  .focus .ch-p{right:50%;bottom:50%;transform:translate(50%,50%);width:min(760px,calc(100vw - 32px));height:min(80svh,800px);border-radius:24px;box-shadow:0 30px 80px rgba(0,32,91,.35)}
   .focus .ch-h{padding:22px 24px 18px 26px}
   .focus .ch-h b{font-size:20px}
   .focus .ch-m{padding:24px 26px;gap:10px}
@@ -142,18 +228,18 @@
   .ch-m p.file audio{display:block;width:250px;max-width:100%;height:40px}
   .ch-m p.file video{display:block;width:auto;height:auto;max-width:min(260px,100%);max-height:400px;border-radius:12px}
   .ch-m p.file img{display:block;max-width:240px;max-height:260px;border-radius:12px;cursor:zoom-in}
-  .ch-m p.file a{display:block;padding:9px 12px;border-radius:14px;background:#26262e;color:#f3f1ea;text-decoration:none}
+  .ch-m p.file a{display:block;padding:9px 12px;border-radius:14px;background:#12357a;color:#f2f6fb;text-decoration:none}
   .ch-m .me.file a{background:var(--y);color:var(--ink)}
   .ch-m p.up{opacity:.6}
   .ch-m p.err{background:#5a1e27;color:#fff}
   .ch-more{display:flex;gap:6px}
   .ch-more[hidden]{display:none}
-  .ch-more button{border:0;border-radius:12px;background:#26262e;color:var(--y);width:44px;cursor:pointer;display:grid;place-items:center}
+  .ch-more button{border:0;border-radius:12px;background:#12357a;color:var(--y);width:44px;cursor:pointer;display:grid;place-items:center}
   .ch-more svg{width:19px;height:19px}
   .ch-mic.rec{background:#ff3d57;color:#fff;animation:recp 1.2s ease-in-out infinite}
   @keyframes recp{50%{box-shadow:0 0 0 6px rgba(255,61,87,.25)}}
   /* Lydsamtale: kort øverst i chatten når Tidemann ringer. */
-  .ch-call{margin:12px 12px 0;padding:14px;border-radius:16px;background:#1b1b22;border:1px solid rgba(255,222,89,.25)}
+  .ch-call{margin:12px 12px 0;padding:14px;border-radius:16px;background:#0a2a6b;border:1px solid rgba(255,255,255,.25)}
   .ch-call[hidden]{display:none}
   .cc-i{display:flex;align-items:center;gap:12px}
   .cc-i b{display:block;color:var(--y);font-size:16px}
@@ -164,20 +250,20 @@
   .cc-b{display:flex;gap:8px;margin-top:12px}
   .cc-b button{flex:1;border:0;border-radius:999px;padding:11px;font-weight:700;font-size:14px;line-height:1;font-family:inherit;cursor:pointer}
   .cc-b button[hidden]{display:none}
-  .cc-ans{background:#3ddc84;color:#0d0d12}
+  .cc-ans{background:#3ddc84;color:#00205B}
   .cc-dec,.cc-end{background:#ff3d57;color:#fff}
-  .cc-mute{background:#2c2c35;color:#f3f1ea}
+  .cc-mute{background:#183d85;color:#f2f6fb}
   .cc-mute.on{background:var(--y);color:var(--ink)}
   /* Speilet i appen: ingen chat, ingen banner. */
   .speil #chat,.speil #cookies{display:none!important}
   /* Samtalelinje: chatten minimert under en samtale, så man kan navigere fritt. */
-  .ch-pill{display:flex;align-items:center;gap:6px;padding:6px;border-radius:999px;background:var(--ink);box-shadow:0 8px 24px rgba(13,13,18,.3)}
+  .ch-pill{display:flex;align-items:center;gap:6px;padding:6px;border-radius:999px;background:var(--ink);box-shadow:0 8px 24px rgba(0,32,91,.3)}
   .ch-pill[hidden]{display:none}
   .ch-pill button{border:0;cursor:pointer;font-family:inherit}
   .cp-open{display:flex;align-items:center;gap:8px;background:none;color:var(--y);font-weight:700;font-size:14px;padding:6px 8px 6px 10px;font-variant-numeric:tabular-nums}
   .cp-open i{width:9px;height:9px;border-radius:50%;background:#3ddc84;animation:ring 1.6s ease-in-out infinite}
   .cp-mute,.cp-end{width:38px;height:38px;border-radius:50%;display:grid;place-items:center}
-  .cp-mute{background:#2c2c35;color:#f3f1ea}
+  .cp-mute{background:#183d85;color:#f2f6fb}
   .cp-mute.on{background:var(--y);color:var(--ink)}
   .cp-end{background:#ff3d57;color:#fff}
   .ch-pill svg{width:18px;height:18px}
@@ -186,7 +272,7 @@
   .ch-b.på::after{animation:pulsG 2.6s ease-out infinite}
   @keyframes pulsG{0%{box-shadow:0 0 0 0 rgba(61,220,132,.6)}70%{box-shadow:0 0 0 14px rgba(61,220,132,0)}100%{box-shadow:0 0 0 0 rgba(61,220,132,0)}}
   .ch-b.på::before{content:"";position:absolute;top:9px;left:30px;width:8px;height:8px;border-radius:50%;background:#3ddc84;box-shadow:0 0 0 2px var(--ink)}
-  .ch-b.møte{box-shadow:0 0 0 3px #ff8a00,0 8px 24px rgba(13,13,18,.25)}
+  .ch-b.møte{box-shadow:0 0 0 3px #ff8a00,0 8px 24px rgba(0,32,91,.25)}
   .ch-b.møte::after{animation:pulsO 2.2s ease-in-out infinite}
   @keyframes pulsO{50%{box-shadow:0 0 0 7px rgba(255,138,0,.28)}}
   /* Natt: knappen og chatvinduet blir nattblå, z-ene stiger opp over knappen. */
@@ -214,17 +300,17 @@
   .ch-s.møte>i{background:#ff8a00}
   @media (prefers-reduced-motion:reduce){.ch-b::after,.zz i,.ch-s.på.on>i{animation:none}.sover .zz i{opacity:1}.zz i:nth-child(2){transform:translate(7px,-12px)}.zz i:nth-child(3){transform:translate(14px,-24px)}}
   /* «Sende mail istedet?»: liten knapp til venstre over skrivefeltet når chatten er åpnet fra «Talk to me about all of this.» */
-  .ch-mail{align-self:flex-start;margin:0 12px 8px;padding:8px 14px;border-radius:999px;background:#26262e;color:var(--y);font-size:14px;font-weight:600;text-decoration:none}
+  .ch-mail{align-self:flex-start;margin:0 12px 8px;padding:8px 14px;border-radius:999px;background:#12357a;color:var(--y);font-size:14px;font-weight:600;text-decoration:none}
   .ch-mail[hidden]{display:none}
-  .ch-mail:hover{background:#33333d}
+  .ch-mail:hover{background:#1f4690}
   .natt .ch-mail{background:#222b4a;color:#cfdcff}
   /* Spørsmål i chatten til den som har sagt nei til informasjonskapsler: like store knapper, vises én gang per fane. */
-  .ch-ck{margin:0 12px 8px;padding:10px 12px;border-radius:14px;background:#26262e;font-size:13px;line-height:1.4}
+  .ch-ck{margin:0 12px 8px;padding:10px 12px;border-radius:14px;background:#12357a;font-size:13px;line-height:1.4}
   .ch-ck[hidden]{display:none}
   .ch-ck p{margin:0 0 8px}
   .ch-ck div{display:flex;gap:8px}
-  .ch-ck button{flex:1;border:1.5px solid rgba(255,222,89,.55);background:none;color:var(--y);border-radius:999px;padding:7px 10px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer}
-  .ch-ck button:hover{background:rgba(255,222,89,.1)}
+  .ch-ck button{flex:1;border:1.5px solid rgba(255,255,255,.55);background:none;color:var(--y);border-radius:999px;padding:7px 10px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer}
+  .ch-ck button:hover{background:rgba(255,255,255,.1)}
   .ch-ck button:focus-visible{outline:2px solid var(--y);outline-offset:2px}
   .natt .ch-ck{background:#222b4a;color:#cfdcff}
   .natt .ch-ck button{color:#cfdcff;border-color:rgba(207,220,255,.5)}
@@ -234,7 +320,7 @@
   .tanke .tk-t{font:600 12px/1.5 "SF Mono",Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;opacity:.7;margin-bottom:.9em}
   .tanke a{color:inherit;text-underline-offset:3px;overflow-wrap:anywhere;font-size:14px}
   .ck{padding-right:44px;line-height:1.35}
-  .ck .ck-x{flex:none;border-radius:0;font-weight:400;position:absolute;top:8px;right:10px;border:0;background:none;color:#f3f1ea;opacity:.6;font-size:24px;line-height:1;cursor:pointer;padding:4px 6px;font-size:26px}
+  .ck .ck-x{flex:none;border-radius:0;font-weight:400;position:absolute;top:8px;right:10px;border:0;background:none;color:#f2f6fb;opacity:.6;font-size:24px;line-height:1;cursor:pointer;padding:4px 6px;font-size:26px}
   .ck-x:hover{opacity:1}
   .ck .ck-mer{flex:none;display:inline;border-radius:0;border:0;background:none;padding:0;color:var(--y);font:inherit;font-weight:600;line-height:1;vertical-align:baseline;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
   .ck-full{margin-top:8px!important;font-size:13px;opacity:.8}
@@ -246,9 +332,9 @@
   .st+.k{margin-top:clamp(56px,10vh,104px)}
   .st-i{position:relative;display:flex;flex-direction:column;gap:8px;padding-left:0;border-left:0}
   .st-i[hidden]{display:none}
-  .st-i:not([hidden])~.st-i{margin-left:clamp(20px,2.6vw,36px);padding-left:clamp(20px,2.6vw,36px);border-left:1px solid rgba(13,13,18,.18)}
+  .st-i:not([hidden])~.st-i{margin-left:clamp(20px,2.6vw,36px);padding-left:clamp(20px,2.6vw,36px);border-left:1px solid rgba(0,32,91,.18)}
   .st-v{display:flex;align-items:center;gap:12px;font:850 clamp(32px,3.4vw,46px)/1 -apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;letter-spacing:-.04em;font-variant-numeric:tabular-nums;white-space:nowrap}
-  .st-l{display:flex;align-items:center;gap:8px;min-height:18px;font:600 11px/1 "SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(13,13,18,.62)}
+  .st-l{display:flex;align-items:center;gap:8px;min-height:18px;font:600 11px/1 "SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(0,32,91,.62)}
   .st-c{position:relative;display:flex;flex-direction:column;gap:8px}
   .tl-dot{width:.24em;height:.24em;flex:none;border-radius:50%;background:#16a34a;animation:tlDot 2.4s ease-out infinite}
   @keyframes tlDot{0%{box-shadow:0 0 0 0 rgba(22,163,74,.5)}70%,100%{box-shadow:0 0 0 .26em rgba(22,163,74,0)}}
@@ -264,7 +350,7 @@
   .st-l{transition:opacity .25s}
   .st-i.deg .st-l{opacity:0}
   @media (max-width:560px){.st{display:grid;grid-template-columns:auto 1fr;column-gap:0}.st .hp{grid-column:1/-1}
-    .st-i:not([hidden])~.st-i{margin-left:0;padding-left:0;border-left:0}.st-i:not([hidden])~.st-i.tl-b{margin-left:20px;padding-left:20px;border-left:1px solid rgba(13,13,18,.18)}
+    .st-i:not([hidden])~.st-i{margin-left:0;padding-left:0;border-left:0}.st-i:not([hidden])~.st-i.tl-b{margin-left:20px;padding-left:20px;border-left:1px solid rgba(0,32,91,.18)}
     .st .tl-a{min-width:124px}.tl-deg{font-size:11px;letter-spacing:0;padding:5px 9px}}
   @media (prefers-reduced-motion:reduce){.od .r{transition:none}.tl-dot{animation:none}}
   /* Språkbryter: norsk og britisk flagg i én pille. Den svarte kula ligger bak språket du leser og glir over når du bytter;
@@ -298,7 +384,7 @@
   .hp:not(.live) .hp-av{display:inline}
   .hp .g{width:120px;height:30px;flex:none;display:block;overflow:visible}
   .hp-o{display:inline-flex;align-items:center;border:0;background:none;color:inherit;font:inherit;letter-spacing:inherit;padding:6px 10px;margin:-6px -10px;border-radius:14px;cursor:pointer;transition:background .2s}
-  .hp-o:hover,.hp-o[aria-expanded="true"]{background:rgba(13,13,18,.07)}
+  .hp-o:hover,.hp-o[aria-expanded="true"]{background:rgba(0,32,91,.07)}
   .hp-o:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
   .hp .g path{fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
   .hp .g .gd{fill:currentColor}
@@ -313,11 +399,11 @@
   .hpp-live{display:flex;align-items:center;gap:10px}
   .hpp-live i{width:9px;height:9px;flex:none;border-radius:50%;background:#ff3d57}
   .hpp.live .hpp-live i{animation:hppDot 1.6s ease-out infinite}
-  .hpp:not(.live) .hpp-live i{background:rgba(255,222,89,.3)}
+  .hpp:not(.live) .hpp-live i{background:rgba(255,255,255,.3)}
   @keyframes hppDot{0%{box-shadow:0 0 0 0 rgba(255,61,87,.6)}80%,100%{box-shadow:0 0 0 10px rgba(255,61,87,0)}}
   .hpp-s{opacity:.7;font-size:11px}
-  .hpp-x{width:48px;height:48px;flex:none;border:1.5px solid rgba(255,222,89,.28);border-radius:50%;background:none;color:var(--y);font:300 30px/1 -apple-system,Arial,sans-serif;cursor:pointer;display:grid;place-items:center;transition:background .2s,transform .3s}
-  .hpp-x:hover{background:rgba(255,222,89,.12);transform:rotate(90deg)}
+  .hpp-x{width:48px;height:48px;flex:none;border:1.5px solid rgba(255,255,255,.28);border-radius:50%;background:none;color:var(--y);font:300 30px/1 -apple-system,Arial,sans-serif;cursor:pointer;display:grid;place-items:center;transition:background .2s,transform .3s}
+  .hpp-x:hover{background:rgba(255,255,255,.12);transform:rotate(90deg)}
   .hpp-x:focus-visible{outline:2px solid var(--y);outline-offset:3px}
   .hpp-hero{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:10px 40px;flex:none}
   .hpp-ekg{display:block;width:100%;height:clamp(44px,9vh,104px);min-height:0;margin:0;flex:none;opacity:.8;pointer-events:none;touch-action:auto}
@@ -325,8 +411,8 @@
   .hpp-h .hj{width:clamp(36px,min(6vw,7vh),76px);height:clamp(36px,min(6vw,7vh),76px);flex:none;color:#ff3d57;filter:drop-shadow(0 0 26px rgba(255,61,87,.5));transition:color .3s}
   .hpp-h .hj.slag{animation:hppSlag .34s cubic-bezier(.2,.8,.2,1)}
   @keyframes hppSlag{0%{transform:scale(1)}30%{transform:scale(1.22)}60%{transform:scale(.96)}100%{transform:scale(1)}}
-  .hpp:not(.live) .hpp-h .hj{color:rgba(255,222,89,.35);filter:none}
-  .hpp-n{font-size:clamp(64px,min(18vw,17vh),220px);font-weight:850;letter-spacing:-.055em;line-height:.82;font-variant-numeric:tabular-nums;text-shadow:0 0 70px rgba(255,222,89,.2)}
+  .hpp:not(.live) .hpp-h .hj{color:rgba(255,255,255,.35);filter:none}
+  .hpp-n{font-size:clamp(64px,min(18vw,17vh),220px);font-weight:850;letter-spacing:-.055em;line-height:.82;font-variant-numeric:tabular-nums;text-shadow:0 0 70px rgba(255,255,255,.2)}
   .hpp-u{font:600 clamp(13px,1.4vw,16px)/1 "SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;opacity:.6;align-self:flex-end;margin-bottom:.9em}
   .hpp-off{font-size:clamp(26px,min(5vw,6vh),52px);font-weight:850;letter-spacing:-.02em}
   .hpp.live .hpp-off,.hpp:not(.live) .hpp-n,.hpp:not(.live) .hpp-u,.hpp:not(.live) .hpp-b{display:none}
@@ -336,7 +422,7 @@
   .hpp-cn.tikk{animation:hppTikk .3s ease-out}
   @keyframes hppTikk{0%{color:#fff3b0}100%{color:var(--y)}}
   .hpp-cl{opacity:.7}
-  .hpp-tabs{display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(255,222,89,.08);align-self:flex-start;flex:none}
+  .hpp-tabs{display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(255,255,255,.08);align-self:flex-start;flex:none}
   .hpp-tabs button{border:0;background:none;color:var(--y);opacity:.7;font:600 12px/1 "SF Mono",Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;padding:10px 14px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s,opacity .2s}
   .hpp-tabs button:hover{opacity:1}
   .hpp-tabs button[aria-selected="true"]{background:var(--y);color:var(--ink);opacity:1}
@@ -344,39 +430,63 @@
   .hpp-c{position:relative;flex:1 1 auto;min-height:80px;outline:none;touch-action:none;cursor:crosshair;border-radius:8px}
   .hpp-c:focus-visible{box-shadow:0 0 0 2px var(--y)}
   .hpp-c svg{position:absolute;inset:0;display:block;width:100%;height:100%;overflow:visible;pointer-events:none}
-  .hpp-c .ln{fill:none;stroke:var(--y);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;filter:drop-shadow(0 0 6px rgba(255,222,89,.35))}
+  .hpp-c .ln{fill:none;stroke:var(--y);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;filter:drop-shadow(0 0 6px rgba(255,255,255,.35))}
   .hpp-c .ar{fill:url(#hppGrad);stroke:none}
-  .hpp-c .gr{stroke:rgba(255,222,89,.12);stroke-width:1}
-  .hpp-c text{fill:rgba(255,222,89,.55);font:500 10px "SF Mono",Menlo,monospace}
-  .hpp-c .xh{stroke:rgba(255,222,89,.55);stroke-width:1}
+  .hpp-c .gr{stroke:rgba(255,255,255,.12);stroke-width:1}
+  .hpp-c text{fill:rgba(255,255,255,.55);font:500 10px "SF Mono",Menlo,monospace}
+  .hpp-c .xh{stroke:rgba(255,255,255,.55);stroke-width:1}
   .hpp-c .dt{fill:var(--y);stroke:var(--ink);stroke-width:2}
-  .hpp-c .tom{fill:rgba(255,222,89,.45);font-size:12px}
+  .hpp-c .tom{fill:rgba(255,255,255,.45);font-size:12px}
   .hpp-t{position:absolute;transform:translate(-50%,calc(-100% - 12px));background:var(--y);color:var(--ink);border-radius:8px;padding:6px 9px;font:600 11px/1.25 "SF Mono",Menlo,monospace;white-space:nowrap;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.35)}
   .hpp-t b{font:850 16px/1 -apple-system,"SF Pro Display",Arial,sans-serif}
-  .hpp-k{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding-top:clamp(8px,1.6vh,16px);border-top:1px solid rgba(255,222,89,.12);flex:none}
+  .hpp-k{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding-top:clamp(8px,1.6vh,16px);border-top:1px solid rgba(255,255,255,.12);flex:none}
   .hpp-k span{display:block;font:600 10px/1.4 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;opacity:.55}
   .hpp-k b{font-size:clamp(17px,min(2.6vw,3.2vh),30px);font-weight:850;letter-spacing:-.02em;font-variant-numeric:tabular-nums;white-space:nowrap}
   @media (max-width:520px){.hpp-k{grid-template-columns:repeat(2,1fr);row-gap:8px}}
   @media (max-height:640px){.hpp-ekg{display:none}}
   @media (max-height:500px){.hpp-k{display:none}}
-  .hpp-b{display:block;flex:none;margin:0;width:100%;border:0;border-radius:999px;background:var(--y);color:var(--ink);font:800 clamp(16px,1.8vw,19px)/1.2 -apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;padding:18px 22px;cursor:pointer;transition:transform .15s,box-shadow .2s;box-shadow:0 0 0 0 rgba(255,222,89,.4)}
-  .hpp-b:hover{transform:translateY(-1px);box-shadow:0 10px 40px rgba(255,222,89,.25)}
+  .hpp-b{display:block;flex:none;margin:0;width:100%;border:0;border-radius:999px;background:var(--y);color:var(--ink);font:800 clamp(16px,1.8vw,19px)/1.2 -apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;padding:18px 22px;cursor:pointer;transition:transform .15s,box-shadow .2s;box-shadow:0 0 0 0 rgba(255,255,255,.4)}
+  .hpp-b:hover{transform:translateY(-1px);box-shadow:0 10px 40px rgba(255,255,255,.25)}
   .hpp-b:active{transform:scale(.98)}
   .hpp-b:focus-visible{outline:2px solid var(--y);outline-offset:3px}
   .hpp-m:focus{outline:none}
-  .hpp-m{flex:none;margin:0;text-align:center;font-weight:800;font-size:clamp(16px,1.8vw,19px);line-height:1.2;padding:17px 22px;border:1.5px solid rgba(255,222,89,.4);border-radius:999px}
+  .hpp-m{flex:none;margin:0;text-align:center;font-weight:800;font-size:clamp(16px,1.8vw,19px);line-height:1.2;padding:17px 22px;border:1.5px solid rgba(255,255,255,.4);border-radius:999px}
   @media (prefers-reduced-motion:reduce){.hp.live .hj,.hpp-h .hj.slag,.hpp.live .hpp-live i,.hpp-cn.tikk{animation:none}.hpp{animation:none}}
   canvas{display:block;width:100%;height:38vh;min-height:220px;margin-top:auto;touch-action:pan-y}
 </style>
 </head>
 <body>
-<main>
+<script>document.body.classList.add('forspill');setTimeout(()=>document.body.classList.remove('forspill'),8000)</script>
+<header class="hero">
+  <video class="hero-v" poster="/media/hero.jpg" autoplay muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1" disablepictureinpicture><source src="/media/hero-720.mp4" media="(max-width:760px)" type="video/mp4"><source src="/media/hero.mp4" type="video/mp4"></video>
+  <div class="hero-i">
+  <div class="flyt"><div class="topp gl"><a class="lang en" href="/" hreflang="nb" aria-label="Language: English. Switch to Norwegian"><span class="lang-k" aria-hidden="true"></span><span class="lf no" aria-hidden="true"><svg viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span class="lf gb" aria-hidden="true"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg></span></a>
   <div class="st"><div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Heart rate today"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg></span></button><span class="st-l"><span class="hp-on">Live from Apple Watch</span><span class="hp-av">Not live right now</span></span></div><div class="st-i tl-a" hidden data-l="here now"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">here now</span><span class="tl-deg" aria-hidden="true">+1 · that's you</span></div></div><div class="st-i tl-b" hidden data-l="unique visitors" data-ny="+1 · you are no. {n}" data-er="You are no. {n}" data-var="You were no. {n}"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unique visitors</span><span class="tl-deg" aria-hidden="true">+1 · that's you</span></div></div><span class="tl-sr"></span></div>
-  <div class="mono k"><span>&gt; Tidemann Esbjug</span><span>03.10.2026</span><a class="lang en" href="/" hreflang="nb" aria-label="Language: English. Switch to Norwegian"><span class="lang-k" aria-hidden="true"></span><span class="lf no" aria-hidden="true"><svg viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span class="lf gb" aria-hidden="true"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg></span></a><!-- Skjult inntil videre: <a class="kl" href="/login/">Customer login &rarr;</a> --></div>
+  </div></div>
+  <div class="scene">
+  <p class="motto" aria-label="When life gives you lemons... demand caviar."><span class="m1" data-ord="lemons" aria-hidden="true">When life gives you lemons...</span><span class="m2" data-ord="caviar" aria-hidden="true">demand caviar.</span></p>
+  <!-- Brevet er lagt på hyllen: slagordet blir stående. Fjern «hidden» under for å sette det inn igjen (skriptet følger etter av seg selv). -->
+  <div class="brev-inn" hidden><div class="flyt"><article class="brev gl">
+    <p class="dato" style="--l:0">05.10.2026</p>
+    <p class="hils" style="--l:1">Dear friend,</p>
+    <p style="--l:2">I don't quite know what to do with myself.</p>
+    <p style="--l:3">It is so incredible.</p>
+    <p style="--l:4">SI, they call it now.</p>
+    <p style="--l:5">Superintelligence.</p>
+    <p style="--l:6">I agree.</p>
+    <p class="sig" style="--l:7">-Tidemann</p>
+  </article></div></div>
+  </div>
+  </div>
+</header>
+<main>
+  <div class="intro">
+  <div class="mono k"><span>&gt; Tidemann Esbjug</span><span>07.10.2026</span><!-- Skjult inntil videre: <a class="kl" href="/login/">Customer login &rarr;</a> --></div>
   <p class="en-note mono">Auto translated with Claude from Norwegian - excuse any strangeness :)</p>
   <h1 aria-label="The main message I keep shouting from the rooftops these days is that code and design have gone through a revolution that must not be overlooked."><span aria-hidden="true">The main message I keep shouting from the rooftops these days is that <span class="kd"><i>code</i></span> and <span class="ds" data-t="design">design</span> have gone through a revolution that must not be overlooked.</span></h1>
   <p class="b">Buying websites, apps or digital marketing today at the same price as before is absurd. There are also lots of opportunities that used to be too expensive to take on.</p>
   <a class="t" href="mailto:tidemann@esbjugconsult.com">Talk to me about all of this.</a>
+  </div>
   <div class="rv" id="jobber">
   <h2>Working on now</h2>
 
@@ -389,7 +499,7 @@
       <div><dt>Size</dt><dd>Simple consulting on a small scale</dd></div>
       <div><dt>I do</dt><dd>Marketing strategy and restructuring</dd></div>
     </dl>
-    <img class="wide" src="/media/laks.jpg" alt="A leaping salmon, drawn in yellow and black" loading="lazy" width="1600" height="400">
+    <img class="wide" src="/media/ny-laks.jpg" alt="A leaping salmon, drawn in red and blue" loading="lazy" width="1600" height="400">
     <div class="s">
       <p>Together we have already made exciting progress, largely thanks to analysis from Claude Code.</p>
       <p>By loading in Google Ads numbers from their existing agency, we found large savings caused by inefficient targeting and administration fees that were too high. It was a case where management had placed complete trust in the agency, and I don't think I'll find savings like these as easily in most companies.</p>
@@ -444,7 +554,7 @@
       <div><dt>Size</dt><dd>204,000 lines of code</dd></div>
       <div><dt>I do</dt><dd>Everything</dd></div>
     </dl>
-    <img class="wide" src="/media/app.jpg" alt="Two phones side by side, in yellow and black" loading="lazy" width="1600" height="400">
+    <img class="wide" src="/media/ny-app.jpg" alt="Two phones side by side, in blue and white" loading="lazy" width="1600" height="400">
     <div class="n">
       <div><b>180,000</b><span>lines of Swift in the app itself</span></div>
       <div><b>24,000</b><span>lines of server code</span></div>
@@ -468,7 +578,7 @@
 
   <section class="p">
     <h3>Operational IT security for a hacked family</h3>
-    <img class="wide" src="/media/sikkerhet.jpg" alt="A padlock in yellow and black" loading="lazy" width="1600" height="400">
+    <img class="wide" src="/media/ny-sikkerhet.jpg" alt="A padlock in blue and white" loading="lazy" width="1600" height="400">
     <div class="s">
       <p>An acquaintance came to me with a case where a friend of his had had some of his accounts hacked, had received unsettling messages, and was very worried about surveillance and further hacking.</p>
       <p>I checked many systems and networks for threats, with a lot of help from a system I built with Claude Code, using tools like LuLu and KnockKnock to produce reports run through Claude Code, plus a tool of my own called ACHILLES.</p>
@@ -497,11 +607,8 @@
     </aside>
   </section>
 
-  <!-- Prosenten står to steder under: i --p og i teksten -->
-  <div class="mono m" style="--p:1.5">
-    This website was built in four days, for <b>1.5&nbsp;%</b> of Claude Code Max 20 Weekly Credits.
+  <div class="mono m">
     <a href="#" class="ck-endre">Cookies</a>
-    <div class="bar" aria-hidden="true"><i></i></div>
   </div>
   </div>
 </main>
@@ -541,7 +648,7 @@
 (()=>{const q=new URLSearchParams(location.search);if(!q.has('eier'))return;document.cookie='esbjug_eier=1; Max-Age=31536000; Path=/; SameSite=Lax; Secure';
   q.delete('eier');history.replaceState(null,'',location.pathname+(q.toString()?'?'+q:'')+location.hash);
   const t=document.createElement('div');t.textContent='Denne nettleseren er merket som din. Den teller ikke som besøkende.';
-  t.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:2000;background:#0d0d12;color:#FFDE59;padding:10px 16px;border-radius:999px;font:600 14px -apple-system,Arial,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.25)';
+  t.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:2000;background:#00205B;color:#fff;padding:10px 16px;border-radius:999px;font:600 14px -apple-system,Arial,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.25)';
   addEventListener('DOMContentLoaded',()=>{document.body.append(t);setTimeout(()=>t.remove(),5000)})})();
 // Vis «Jobber med nå» ved første scroll, hjul, sveip, tast eller trykk på pilen.
 (()=>{const r=document.documentElement,show=()=>r.classList.add('vis');
@@ -592,7 +699,7 @@ const drawBig=()=>{if(pp.hidden)return;pp.classList.toggle('live',!!hrBpm);if(hr
   const m1=rng==='dag'?p[p.length-1][0]:Math.floor((Date.now()+skew-c.start)/60000),m0=rng==='dag'?Math.min(p[0][0],m1-10):0;
   let y0=Math.floor((lo-2)/st)*st,y1=Math.ceil((hi+2)/st)*st;if(y1-y0<2*st)y1=y0+2*st;
   const X=m=>L+(m-m0)/Math.max(1,m1-m0)*(W-L-R),Y=b=>T+(1-(b-y0)/(y1-y0))*(H-T-B);big={X,Y};ppS.setAttribute('viewBox','0 0 '+W+' '+H);
-  const g=svgEl('linearGradient',{id:'hppGrad',x1:0,y1:0,x2:0,y2:1},svgEl('defs',{},ppS));svgEl('stop',{offset:0,'stop-color':'#FFDE59','stop-opacity':.28},g);svgEl('stop',{offset:1,'stop-color':'#FFDE59','stop-opacity':0},g);
+  const g=svgEl('linearGradient',{id:'hppGrad',x1:0,y1:0,x2:0,y2:1},svgEl('defs',{},ppS));svgEl('stop',{offset:0,'stop-color':'#fff','stop-opacity':.28},g);svgEl('stop',{offset:1,'stop-color':'#fff','stop-opacity':0},g);
   for(let v=y0;v<=y1;v+=st){svgEl('line',{class:'gr',x1:L,x2:W-R,y1:Y(v),y2:Y(v)},ppS);svgEl('text',{x:L-6,y:Y(v)+3.5,'text-anchor':'end'},ppS).textContent=v}
   const span=m1-m0,xs=rng==='dag'?([5,10,15,30,60,120,180,240,360].find(x=>span/x<=5)||720):rng==='uke'?1440:1440*5;
   for(let m=Math.ceil(m0/xs)*xs;m<=m1;m+=xs){const x=X(m),t=c.start+m*60000;svgEl('text',{x,y:H-6,'text-anchor':x<L+18?'start':x>W-R-18?'end':'middle'},ppS).textContent=rng==='dag'?hhmm.format(t):rng==='uke'?wd.format(t):dm.format(t)}
@@ -619,7 +726,7 @@ const pqrst=t=>{const G=(c,w,a)=>a*Math.exp(-(((t-c)/w)**2));return G(.06,.025,.
 const onR=()=>{hj.classList.remove('slag');void hj.offsetWidth;hj.classList.add('slag');cnt++;if(cntDone){cn.textContent=fmt(cnt);cn.classList.remove('tikk');void cn.offsetWidth;cn.classList.add('tikk')}};
 const frame=ts=>{raf=requestAnimationFrame(frame);const dt=Math.min(.05,(ts-(lastF||ts))/1000);lastF=ts;if(!buf)return;
   if(hrBpm){const iv=60/hrBpm,sp=ew/4.5;acc+=dt*sp;while(acc>=1){acc--;const p0=ph;ph+=1/sp;if(ph>=iv)ph-=iv;if(p0<.175&&ph>=.175)onR();buf[ei]=pqrst(ph);ei=(ei+1)%ew;for(let k=1;k<=18;k++)buf[(ei+k)%ew]=NaN}}
-  ex.clearRect(0,0,ew,eh);if(!hrBpm)return;const base=eh*.62,amp=eh*.46;ex.lineWidth=2;ex.lineJoin='round';ex.strokeStyle='#FFDE59';ex.shadowColor='rgba(255,222,89,.7)';ex.shadowBlur=10;ex.beginPath();let on=false;
+  ex.clearRect(0,0,ew,eh);if(!hrBpm)return;const base=eh*.62,amp=eh*.46;ex.lineWidth=2;ex.lineJoin='round';ex.strokeStyle='#fff';ex.shadowColor='rgba(255,255,255,.7)';ex.shadowBlur=10;ex.beginPath();let on=false;
   for(let x=0;x<ew;x++){const v=buf[x];if(Number.isNaN(v)){on=false;continue}const y=base-v*amp;if(on)ex.lineTo(x,y);else{ex.moveTo(x,y);on=true}}ex.stroke();
   const hx=(ei-1+ew)%ew,hv=buf[hx];if(!Number.isNaN(hv)){ex.shadowBlur=18;ex.fillStyle='#fff6c4';ex.beginPath();ex.arc(hx,base-hv*amp,3,0,7);ex.fill()}};
 // Perioder: 7 og 30 dager hentes når fanen velges (serveren regner snitt per 10 min / per time).
@@ -661,17 +768,22 @@ const teller=(()=>{const a=document.querySelector('.tl-a'),u=document.querySelec
     let i=0;const rs=el.querySelectorAll('.r');for(const ch of s)if(/\d/.test(ch)){const r=rs[i++];if(!anim||still.matches)r.style.transition='none';r.style.transform='translateY(calc(var(--dh) * '+(-ch)+'))';if(!anim||still.matches){void r.offsetWidth;r.style.transition=''}}
     el.dataset.s=s};
   const label=()=>{sr.textContent=cur[0]+' '+a.dataset.l+', '+cur[1]+' '+u.dataset.l};
-  const show=(it,txt)=>{if(txt)it.querySelector('.tl-deg').textContent=txt;it.classList.add('deg');setTimeout(()=>it.classList.remove('deg'),4500)};
+  const boks=a.closest('.topp');
+  const show=(it,txt)=>{if(txt)it.querySelector('.tl-deg').textContent=txt;if(boks)it.style.setProperty('--ned',boks.getBoundingClientRect().bottom-it.getBoundingClientRect().bottom+'px');
+    it.classList.add('deg');setTimeout(()=>it.classList.remove('deg'),4500)};
+  // Telleren venter til toppmodulen er bygget ut (body mister «forspill» når «kaviar» kommer, så tar innbyggingen ca. 1,3 s).
+  const naarVist=f=>{const b=document.body;if(!b.classList.contains('forspill'))return f(0);
+    new MutationObserver((_,o)=>{if(!b.classList.contains('forspill')){o.disconnect();f(1)}}).observe(b,{attributes:true,attributeFilter:['class']})};
   // c = {live, total, nr, meg}. Første gang ruller «her nå» opp med deg (meg: du teller med); kjente får «Du er/var nr. N».
   const api=c=>{a.hidden=u.hidden=false;cur=[c.live,c.total];label();
     if(!first){set(nL,c.live,true);set(nU,c.total,true);return}
     first=false;const meg=!!c.meg;set(nL,meg?Math.max(0,c.live-1):c.live,false);set(nU,c.ny?Math.max(0,c.total-1):c.total,false);
-    const go=()=>setTimeout(()=>{set(nL,cur[0],true);set(nU,cur[1],true);
-      if(c.nr)show(u,u.dataset[c.ny?'ny':cur[1]>c.nr?'var':'er'].replace('{n}',fmt(c.nr)));else if(meg&&!nrVist)show(a)},900);
+    const go=()=>naarVist(nett=>setTimeout(()=>{set(nL,cur[0],true);set(nU,cur[1],true);
+      if(c.nr)show(u,u.dataset[c.ny?'ny':cur[1]>c.nr?'var':'er'].replace('{n}',fmt(c.nr)));else if(meg&&!nrVist)show(a)},nett?1500:900));
     if(document.visibilityState==='visible')go();else document.addEventListener('visibilitychange',go,{once:true})};
   // Siden har sett et menneske, og serveren ga deg neste nummer: tallet ruller opp med «+1 · du er nr. N».
   api.nr=(n,total)=>{nrVist=true;cur[1]=total;label();set(nU,Math.max(0,total-1),false);a.classList.remove('deg');
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{set(nU,total,true);show(u,u.dataset.ny.replace('{n}',fmt(n)))}))};
+    naarVist(nett=>setTimeout(()=>requestAnimationFrame(()=>requestAnimationFrame(()=>{set(nU,total,true);show(u,u.dataset.ny.replace('{n}',fmt(n)))})),nett?1500:0))};
   return api})();
 // Språkbryteren: kula glir over før siden byttes (med Cmd/Ctrl-klikk åpnes den andre siden som vanlig).
 document.querySelectorAll('.lang').forEach(a=>a.addEventListener('click',e=>{if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.button)return;e.preventDefault();
@@ -876,6 +988,49 @@ const flare=g=>{d.classList.remove('f');void d.offsetWidth;d.classList.add('f');
 const run=()=>{code();setTimeout(()=>flare(true),600);setTimeout(()=>flare(false),2600)};
 setTimeout(()=>{run();setInterval(run,11000)},4000);
 })();
+// Slagordet på videoen: deles i bokstaver og spilles i sløyfe. Glassboksene vipper mot pekeren.
+(()=>{const m=document.querySelector('.motto'),vis=()=>document.body.classList.remove('forspill'),kom=()=>{document.body.classList.add('kom');vis()};if(!m){vis();return}
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const del=(el)=>{const t=el.textContent;el.textContent='';let i=0;const dots=(t.match(/\.+$/)||[''])[0],kropp=dots.length>1?t.slice(0,-dots.length):t;
+  kropp.split(' ').forEach((ord,k,a)=>{const o=document.createElement('span');o.className='o';
+    [...ord].forEach(c=>{const b=document.createElement('span');b.className='b';b.textContent=c;b.style.setProperty('--i',i++);o.append(b)});
+    el.append(o);if(k<a.length-1)el.append(' ')});
+  if(dots.length>1){const o=el.lastElementChild;[...dots].forEach((c,j)=>{const b=document.createElement('span');b.className='b pr';b.textContent=c;b.style.setProperty('--n',i);b.style.setProperty('--j',j);o.append(b)})}
+  return i};
+const m1=m.querySelector('.m1'),m2=m.querySelector('.m2');
+const n1=del(m1);del(m2);m.style.setProperty('--n',n1);
+const ordet=(el)=>[...el.querySelectorAll('.o')].find(o=>o.textContent.replace(/\.+$/,'')===el.dataset.ord);
+const sit=ordet(m1);
+if(sit){sit.classList.add('sit');[...sit.querySelectorAll('.b:not(.pr)')].forEach((b,k)=>b.style.setProperty('--k',k));}
+// Brevet: hvert tegn ligger usynlig på plass (boksen har full størrelse fra start) og vises ett og ett.
+const tegn=[];document.querySelectorAll('.brev p').forEach(p=>{const t=p.textContent;p.textContent='';
+  [...t].forEach(c=>{const e=document.createElement('span');e.className='t';e.textContent=c;p.append(e);tegn.push(e)});if(tegn.length)tegn[tegn.length-1].slutt=1});
+const skriv=(i=0)=>{if(i)tegn[i-1].classList.remove('na');if(i>=tegn.length)return;const e=tegn[i];e.classList.add('s','na');
+  const c=e.textContent;setTimeout(()=>skriv(i+1),e.slutt?520:/[,.]/.test(c)?260:28+Math.random()*38)};
+// Med brevet på hyllen (hidden) blir slagordet stående; ellers toner det ut og brevet skrives.
+const medBrev=!!document.querySelector('.brev-inn:not([hidden])');
+if(still){m.classList.add('a1','a2');if(medBrev)m.classList.add('ut');vis();return}
+const t1=n1*32+250+3*260+500;
+setTimeout(()=>m.classList.add('a1'),350);setTimeout(()=>{m.classList.add('a2');setTimeout(kom,430)},350+t1);
+if(medBrev){setTimeout(()=>m.classList.add('ut'),350+t1+3600);setTimeout(skriv,350+t1+3600+1300)}
+const hero=document.querySelector('.hero');
+hero.addEventListener('pointermove',e=>{if(e.pointerType==='touch')return;const r=hero.getBoundingClientRect();
+  m.style.setProperty('--px',((e.clientX-r.left)/r.width-.5)*-14+'px');m.style.setProperty('--py',((e.clientY-r.top)/r.height-.5)*-10+'px')});
+hero.addEventListener('pointerleave',()=>{m.style.setProperty('--px','0px');m.style.setProperty('--py','0px')});
+})();
+(()=>{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+document.querySelectorAll('.gl').forEach(g=>{
+  const sett=(e)=>{const r=g.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height,k=Math.min(1,260/r.width);
+    g.style.setProperty('--mx',x*100+'%');g.style.setProperty('--my',y*100+'%');
+    g.style.setProperty('--ry',(x-.5)*14*k+'deg');g.style.setProperty('--rx',(.5-y)*12+'deg');
+    g.style.setProperty('--tx',(x-.5)*10+'px');g.style.setProperty('--ty',(y-.5)*8-3+'px')};
+  const av=()=>{g.classList.remove('paa');['--rx','--ry','--tx','--ty','--sc'].forEach(v=>g.style.removeProperty(v))};
+  g.addEventListener('pointerenter',e=>{if(e.pointerType==='touch')return;g.classList.add('paa');g.style.setProperty('--sc','1.03');sett(e)});
+  g.addEventListener('pointermove',e=>{if(e.pointerType!=='touch')sett(e)});
+  g.addEventListener('pointerleave',av);
+  g.addEventListener('pointerdown',()=>g.style.setProperty('--sc','.97'));
+  g.addEventListener('pointerup',e=>g.style.setProperty('--sc',e.pointerType==='touch'?'1':'1.03'));
+  g.addEventListener('pointercancel',av)})})();
 // Halvtoneprikker i blekk som bølger og sveller rundt pekeren. Én fragment-shader, ingen bibliotek.
 (()=>{
 const c=document.getElementById('c'),gl=c.getContext('webgl',{antialias:false});
@@ -889,7 +1044,7 @@ void main(){
   float f=smoothstep(.95,.05,u.y+w);
   vec2 d=q-M.xy;f+=M.z*exp(-dot(d,d)/(2.*pow(90.*D,2.)));
   float r=clamp(f,0.,1.)*s*.72,a=smoothstep(r+D,r-D,length(p-q));
-  gl_FragColor=vec4(mix(vec3(1.,.871,.349),vec3(.051,.051,.071),a),1.);
+  gl_FragColor=vec4(mix(vec3(.812,.894,.965),vec3(0.,.125,.357),a),1.);
 }`;
 const sh=(t,src)=>{const o=gl.createShader(t);gl.shaderSource(o,src);gl.compileShader(o);return o};
 const pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,vs));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,fs));gl.linkProgram(pr);gl.useProgram(pr);

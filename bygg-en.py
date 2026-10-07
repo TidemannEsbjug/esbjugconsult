@@ -4,7 +4,7 @@
 Hver norsk tekst byttes mot sin engelske oversettelse. Finnes ikke en norsk tekst lenger (fordi den er
 endret på den norske siden), stopper skriptet og sier hvilken, så oversettelsen kan oppdateres.
 Kjør etter endringer i index.html:  python3 bygg-en.py  (og publiser med npx wrangler deploy).
-Arbeidskopien i ny/ (V2, ikke indeksert):  python3 bygg-en.py ny  lager ny/en/index.html fra ny/index.html.
+Med en mappe som argument (python3 bygg-en.py <mappe>) lages <mappe>/en/index.html fra <mappe>/index.html.
 """
 import pathlib, re, sys
 
@@ -150,8 +150,6 @@ T = [
      'That makes being prepared for cyber attacks something worth thinking about.'),
 
     # --- bunnen ---
-    ('Denne nettsiden ble bygget på fire dager, for <b>1,5&nbsp;%</b> av Claude Code Max 20 Weekly Credits.',
-     'This website was built in four days, for <b>1.5&nbsp;%</b> of Claude Code Max 20 Weekly Credits.'),
     ('>Informasjonskapsler</a>', '>Cookies</a>'),
 
     # --- samtykkebanneret ---
@@ -249,7 +247,7 @@ T = [
     ("ki.textContent='kode'", "ki.textContent='code'"),
 ]
 
-# Arbeidskopien ny/ (V2) har egne tekster. V1-tekstene den har byttet ut hoppes over der.
+# V2 (forsiden fra 7.10.2026) har egne tekster. V1-tekstene den har byttet ut hoppes over.
 T_NY = [
     ('aria-label="Når livet gir deg sitroner... krev kaviar."', 'aria-label="When life gives you lemons... demand caviar."'),
     ('>Når livet gir deg sitroner...<', '>When life gives you lemons...<'),
@@ -271,8 +269,7 @@ BARE_V1 = {
     'alt="To mobiltelefoner side om side, i gult og svart"',
     'alt="Hengelås i gult og svart"',
 }
-if MAPPE:
-    T = [t for t in T if t[0] not in BARE_V1] + T_NY
+T = [t for t in T if t[0] not in BARE_V1] + T_NY
 
 out = no
 missing = []
