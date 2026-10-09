@@ -150,6 +150,8 @@ T = [
      'That makes being prepared for cyber attacks something worth thinking about.'),
 
     # --- bunnen ---
+    ('Denne nettsiden ble bygget på fire dager, for <b>1,5&nbsp;%</b> av Claude Code Max 20 Weekly Credits.',
+     'This website was built in four days, for <b>1.5&nbsp;%</b> of Claude Code Max 20 Weekly Credits.'),
     ('>Informasjonskapsler</a>', '>Cookies</a>'),
 
     # --- samtykkebanneret ---
@@ -244,7 +246,7 @@ T = [
     ("ki.textContent='kode'", "ki.textContent='code'"),
 ]
 
-# V2 (forsiden fra 7.10.2026) har egne tekster. V1-tekstene den har byttet ut hoppes over.
+# V2 i ny/ (forsiden 7.–9.10.2026) har egne tekster. V1-tekstene den har byttet ut hoppes over der.
 T_NY = [
     ('aria-label="Når livet gir deg sitroner... krev kaviar."', 'aria-label="When life gives you lemons... demand caviar."'),
     ('>Når livet gir deg sitroner...<', '>When life gives you lemons...<'),
@@ -262,11 +264,13 @@ T_NY = [
     ('alt="Hengelås i blått og hvitt"', 'alt="A padlock in blue and white"'),
 ]
 BARE_V1 = {
+    'Denne nettsiden ble bygget på fire dager, for <b>1,5&nbsp;%</b> av Claude Code Max 20 Weekly Credits.',
     'alt="Laks som hopper, tegnet i gult og svart"',
     'alt="To mobiltelefoner side om side, i gult og svart"',
     'alt="Hengelås i gult og svart"',
 }
-T = [t for t in T if t[0] not in BARE_V1] + T_NY
+if MAPPE:
+    T = [t for t in T if t[0] not in BARE_V1] + T_NY
 
 out = no
 missing = []
