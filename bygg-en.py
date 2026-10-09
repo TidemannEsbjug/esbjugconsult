@@ -180,7 +180,6 @@ T = [
     ('aria-selected="false">30 dager<', 'aria-selected="false">30 days<'),
     ('aria-label="Lukk"', 'aria-label="Close"'),
     ('data-l="her nå"', 'data-l="here now"'),
-    ('data-l="i Norge"', 'data-l="in Norway"'),
     ('data-l="unike besøkende" data-ny="+1 · du er nr. {n}" data-er="Du er nr. {n}" data-var="Du var nr. {n}"', 'data-l="unique visitors" data-ny="+1 · you are no. {n}" data-er="You are no. {n}" data-var="You were no. {n}"'),
     ('<span class="st-l" aria-hidden="true">her nå</span>', '<span class="st-l" aria-hidden="true">here now</span>'),
     ('<span class="st-l" aria-hidden="true">unike besøkende</span>', '<span class="st-l" aria-hidden="true">unique visitors</span>'),
