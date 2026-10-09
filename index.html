@@ -350,7 +350,7 @@
   .st-l{transition:opacity .25s}
   .st-i.deg .st-l{opacity:0}
   @media (max-width:560px){.st{display:grid;grid-template-columns:auto 1fr;column-gap:0}.st .hp{grid-column:1/-1}
-    .st-i:not([hidden])~.st-i{margin-left:0;padding-left:0;border-left:0}.st-i:not([hidden])~.st-i.tl-b{margin-left:20px;padding-left:20px;border-left:1px solid rgba(0,32,91,.18)}
+    .st-i:not([hidden])~.st-i{margin-left:0;padding-left:0;border-left:0}.st-i:not([hidden])~.st-i:is(.tl-b,.tl-d){margin-left:20px;padding-left:20px;border-left:1px solid rgba(0,32,91,.18)}
     .st .tl-a{min-width:124px}.tl-deg{font-size:11px;letter-spacing:0;padding:5px 9px}}
   @media (prefers-reduced-motion:reduce){.od .r{transition:none}.tl-dot{animation:none}}
   /* Språkbryter: norsk og britisk flagg i én pille. Den svarte kula ligger bak språket du leser og glir over når du bytter;
@@ -455,7 +455,7 @@
   <video class="hero-v" poster="/media/hero.jpg" autoplay muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1" disablepictureinpicture><source src="/media/hero-720.mp4" media="(max-width:760px)" type="video/mp4"><source src="/media/hero.mp4" type="video/mp4"></video>
   <div class="hero-i">
   <div class="flyt"><div class="topp gl"><a class="lang" href="/en/" hreflang="en" aria-label="Språk: norsk. Bytt til engelsk"><span class="lang-k" aria-hidden="true"></span><span class="lf no" aria-hidden="true"><svg viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span class="lf gb" aria-hidden="true"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg></span></a>
-  <div class="st"><div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Puls i dag"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg></span></button><span class="st-l"><span class="hp-on">Live fra Apple Watch</span><span class="hp-av">Ikke live akkurat nå</span></span></div><div class="st-i tl-a" hidden data-l="her nå"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">her nå</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><div class="st-i tl-b" hidden data-l="unike besøkende" data-ny="+1 · du er nr. {n}" data-er="Du er nr. {n}" data-var="Du var nr. {n}"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unike besøkende</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><span class="tl-sr"></span></div>
+  <div class="st"><div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Puls i dag"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg></span></button><span class="st-l"><span class="hp-on">Live fra Apple Watch</span><span class="hp-av">Ikke live akkurat nå</span></span></div><div class="st-i tl-a" hidden data-l="her nå"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">her nå</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><div class="st-i tl-d" data-l="i Norge"><div class="st-c"><span class="st-v"><b class="dt-d"></b></span><span class="st-l dt-k"></span></div></div><div class="st-i tl-b" hidden data-av data-l="unike besøkende" data-ny="+1 · du er nr. {n}" data-er="Du er nr. {n}" data-var="Du var nr. {n}"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unike besøkende</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><span class="tl-sr"></span></div>
   </div></div>
   <div class="scene">
   <p class="motto" aria-label="Når livet gir deg sitroner... krev kaviar."><span class="m1" data-ord="sitroner" aria-hidden="true">Når livet gir deg sitroner...</span><span class="m2" data-ord="kaviar" aria-hidden="true">krev kaviar.</span></p>
@@ -754,7 +754,7 @@ const teller=(()=>{const a=document.querySelector('.tl-a'),u=document.querySelec
       for(let i=0;i<10;i++){const x=document.createElement('span');x.textContent=i;r.append(x)}d.append(r);el.append(d)}else el.append(ch)}anim=false}
     let i=0;const rs=el.querySelectorAll('.r');for(const ch of s)if(/\d/.test(ch)){const r=rs[i++];if(!anim||still.matches)r.style.transition='none';r.style.transform='translateY(calc(var(--dh) * '+(-ch)+'))';if(!anim||still.matches){void r.offsetWidth;r.style.transition=''}}
     el.dataset.s=s};
-  const label=()=>{sr.textContent=cur[0]+' '+a.dataset.l+', '+cur[1]+' '+u.dataset.l};
+  const av=u.hasAttribute('data-av');const label=()=>{sr.textContent=cur[0]+' '+a.dataset.l+(av?'':', '+cur[1]+' '+u.dataset.l)};
   const boks=a.closest('.topp');
   const show=(it,txt)=>{if(txt)it.querySelector('.tl-deg').textContent=txt;if(boks)it.style.setProperty('--ned',boks.getBoundingClientRect().bottom-it.getBoundingClientRect().bottom+'px');
     it.classList.add('deg');setTimeout(()=>it.classList.remove('deg'),4500)};
@@ -762,16 +762,22 @@ const teller=(()=>{const a=document.querySelector('.tl-a'),u=document.querySelec
   const naarVist=f=>{const b=document.body;if(!b.classList.contains('forspill'))return f(0);
     new MutationObserver((_,o)=>{if(!b.classList.contains('forspill')){o.disconnect();f(1)}}).observe(b,{attributes:true,attributeFilter:['class']})};
   // c = {live, total, nr, meg}. Første gang ruller «her nå» opp med deg (meg: du teller med); kjente får «Du er/var nr. N».
-  const api=c=>{a.hidden=u.hidden=false;cur=[c.live,c.total];label();
+  const api=c=>{a.hidden=false;u.hidden=av;cur=[c.live,c.total];label();
     if(!first){set(nL,c.live,true);set(nU,c.total,true);return}
     first=false;const meg=!!c.meg;set(nL,meg?Math.max(0,c.live-1):c.live,false);set(nU,c.ny?Math.max(0,c.total-1):c.total,false);
     const go=()=>naarVist(nett=>setTimeout(()=>{set(nL,cur[0],true);set(nU,cur[1],true);
-      if(c.nr)show(u,u.dataset[c.ny?'ny':cur[1]>c.nr?'var':'er'].replace('{n}',fmt(c.nr)));else if(meg&&!nrVist)show(a)},nett?1500:900));
+      if(c.nr&&!av)show(u,u.dataset[c.ny?'ny':cur[1]>c.nr?'var':'er'].replace('{n}',fmt(c.nr)));else if(meg&&!nrVist)show(a)},nett?1500:900));
     if(document.visibilityState==='visible')go();else document.addEventListener('visibilitychange',go,{once:true})};
   // Siden har sett et menneske, og serveren ga deg neste nummer: tallet ruller opp med «+1 · du er nr. N».
   api.nr=(n,total)=>{nrVist=true;cur[1]=total;label();set(nU,Math.max(0,total-1),false);a.classList.remove('deg');
     naarVist(nett=>setTimeout(()=>requestAnimationFrame(()=>requestAnimationFrame(()=>{set(nU,total,true);show(u,u.dataset.ny.replace('{n}',fmt(n)))})),nett?1500:0))};
   return api})();
+// Dato og klokkeslett i Norge (Europe/Oslo), uansett hvor den besøkende er. Står der unike besøkende sto; den telleren
+// ligger fortsatt i koden (.tl-b med data-av) og slås på igjen ved å fjerne data-av.
+(()=>{const d=document.querySelector('.dt-d'),k=document.querySelector('.dt-k'),l=k.closest('.tl-d').dataset.l;
+  const fd=new Intl.DateTimeFormat('nb-NO',{timeZone:'Europe/Oslo',day:'2-digit',month:'2-digit'}),fk=new Intl.DateTimeFormat('nb-NO',{timeZone:'Europe/Oslo',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
+  const sett=()=>{const n=new Date();d.textContent=fd.format(n).replace(/\.$/,'');k.textContent=fk.format(n).replace('.',':')+' '+l};
+  sett();setInterval(sett,5000)})();
 // Språkbryteren: kula glir over før siden byttes (med Cmd/Ctrl-klikk åpnes den andre siden som vanlig).
 document.querySelectorAll('.lang').forEach(a=>a.addEventListener('click',e=>{if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.button)return;e.preventDefault();
   a.classList.add('gaar');setTimeout(()=>{location.href=a.href},matchMedia('(prefers-reduced-motion: reduce)').matches?0:300)}));
