@@ -89,6 +89,13 @@
   .navn{position:relative;justify-self:center;margin:0;padding:0 0 clamp(40px,8vh,90px);text-align:center;color:#fff;font:400 clamp(38px,6.4vw,104px)/1 var(--serif);letter-spacing:-.02em;text-shadow:0 2px 30px rgba(0,32,91,.45),0 1px 3px rgba(0,32,91,.35);opacity:0;filter:blur(10px);transform:translateY(12px);pointer-events:none}
   .navn::before{content:"";position:absolute;inset:-70% -18% -40%;z-index:-1;pointer-events:none;background:radial-gradient(closest-side,rgba(0,32,91,.3),rgba(0,32,91,0))}
   .motto.ut~.navn{opacity:1;filter:none;transform:none;transition:opacity 1.4s ease,filter 1.4s ease,transform 1.8s cubic-bezier(.2,.9,.2,1);transition-delay:.6s}
+  /* Navnet lever: bokstavene vokser fram fra helt tynne (vekt 100), så går et sakte lysskjær gjennom navnet hvert 9. sekund.
+     Der skjæret er, blir bokstaven litt tykkere og varmt hvit. Fraunces er variabel, så vekten glir uten hopp. */
+  .navn .l{font-weight:100}
+  .motto.ut~.navn .l{animation:navnInn 1.8s cubic-bezier(.2,.8,.2,1) calc(.5s + var(--i)*75ms) both,navnLys 9s cubic-bezier(.45,0,.55,1) calc(4.2s + var(--i)*.3s) infinite}
+  @keyframes navnInn{from{font-weight:100}to{font-weight:400}}
+  @keyframes navnLys{0%,24%,100%{font-weight:400;color:#fff;text-shadow:0 2px 30px rgba(0,32,91,.45),0 1px 3px rgba(0,32,91,.35)}
+    10%{font-weight:540;color:#FFF3D1;text-shadow:0 0 22px rgba(255,236,180,.55),0 2px 30px rgba(0,32,91,.4),0 1px 3px rgba(0,32,91,.3)}}
   .hero::after{transition:opacity 1.6s ease}
   .hero:has(.motto.ut~.navn)::after{opacity:0}
   .brev-inn{width:min(620px,100%);opacity:0;transform:translateY(26px);filter:blur(10px);pointer-events:none}
@@ -102,7 +109,7 @@
   .brev .hils{margin-bottom:1.1em}
   .brev .sig{margin:1.3em 0 0;font-style:italic;font-size:1.25em}
   .m2 .o{z-index:2}
-  @media (prefers-reduced-motion:reduce){.flyt{animation:none}.gl{transform:none!important}.motto,.motto .b,.brev-inn{transition:none!important;animation:none!important}.brev-inn{opacity:1;transform:none;filter:none}.motto.ut{visibility:hidden}.brev .t{visibility:visible}.motto .b{opacity:1;transform:none;filter:none}.m2::before{transform:none}}
+  @media (prefers-reduced-motion:reduce){.navn .l{animation:none!important;font-weight:400}.flyt{animation:none}.gl{transform:none!important}.motto,.motto .b,.brev-inn{transition:none!important;animation:none!important}.brev-inn{opacity:1;transform:none;filter:none}.motto.ut{visibility:hidden}.brev .t{visibility:visible}.motto .b{opacity:1;transform:none;filter:none}.m2::before{transform:none}}
   /* Budskapet, ingressen og knappen står nå øverst på den blå siden under videoen. */
   .intro{padding-top:clamp(56px,10vh,120px)}
   /* V2: serif i overskriftene. */
@@ -468,7 +475,7 @@
   </div></div>
   <div class="scene">
   <p class="motto" aria-label="When life gives you lemons... demand caviar."><span class="m1" data-ord="lemons" aria-hidden="true">When life gives you lemons...</span><span class="m2" data-ord="caviar" aria-hidden="true">demand caviar.</span></p>
-  <p class="navn">Esbjug Consult</p>
+  <p class="navn" role="img" aria-label="Esbjug Consult">Esbjug Consult</p>
   <!-- Brevet er lagt på hyllen: slagordet blir stående. Fjern «hidden» under for å sette det inn igjen (skriptet følger etter av seg selv). -->
   <div class="brev-inn" hidden><div class="flyt"><article class="brev gl">
     <p class="dato" style="--l:0">05.10.2026</p>
@@ -1010,6 +1017,9 @@ const tegn=[];document.querySelectorAll('.brev p').forEach(p=>{const t=p.textCon
   [...t].forEach(c=>{const e=document.createElement('span');e.className='t';e.textContent=c;p.append(e);tegn.push(e)});if(tegn.length)tegn[tegn.length-1].slutt=1});
 const skriv=(i=0)=>{if(i)tegn[i-1].classList.remove('na');if(i>=tegn.length)return;const e=tegn[i];e.classList.add('s','na');
   const c=e.textContent;setTimeout(()=>skriv(i+1),e.slutt?520:/[,.]/.test(c)?260:28+Math.random()*38)};
+// «Esbjug Consult» deles i bokstaver, så hver bokstav kan få sin egen vekt og sitt eget lys.
+(()=>{const n=document.querySelector('.navn');if(!n)return;const t=n.textContent;n.textContent='';let i=0;
+  for(const c of t){if(c===' '){n.append(' ');continue}const l=document.createElement('span');l.className='l';l.textContent=c;l.style.setProperty('--i',i++);n.append(l)}})();
 // Slagordet spilles og toner ut; så står «Esbjug Consult» igjen (eller brevet skrives, hvis det er tatt ned fra hyllen).
 const medBrev=!!document.querySelector('.brev-inn:not([hidden])'),ut=medBrev||!!document.querySelector('.navn');
 if(still){m.classList.add('a1','a2');if(ut)m.classList.add('ut');vis();return}
