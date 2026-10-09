@@ -89,22 +89,25 @@
   .navn{position:relative;justify-self:center;margin:0;padding:0 0 clamp(40px,8vh,90px);text-align:center;color:#fff;font:400 clamp(38px,6.4vw,104px)/1 var(--serif);letter-spacing:-.02em;opacity:0;filter:blur(10px) drop-shadow(0 2px 16px rgba(0,32,91,0)) drop-shadow(0 1px 2px rgba(0,32,91,0));transform:translateY(12px);pointer-events:none}
   .navn::before{content:"";position:absolute;inset:-70% -18% -40%;z-index:-1;pointer-events:none;background:radial-gradient(closest-side,rgba(0,32,91,.3),rgba(0,32,91,0))}
   .motto.ut~.navn{opacity:1;filter:blur(0) drop-shadow(0 2px 16px rgba(0,32,91,.4)) drop-shadow(0 1px 2px rgba(0,32,91,.3));transform:none;transition:opacity 1.4s ease,filter 1.4s ease,transform 1.8s cubic-bezier(.2,.9,.2,1);transition-delay:.6s}
-  /* Navnet lever: lyse farger (sitrongult, turkis og litt rødlig) flyter hele tiden inni bokstavene over hvitt.
-     Hver fargeflekk har sin egen bane og sitt eget tempo (13, 17 og 23 s), så mønsteret aldri gjentar seg likt.
-     Skyggen ligger som drop-shadow på hele navnet, fordi text-shadow ville lagt seg oppå fargene. Bokstavene vokser fram fra vekt 100. */
+  /* Navnet er hvitt. Fører du musa over, kommer lyse farger (sitrongult, turkis, litt rødlig) fram rundt pekeren og flyter inni bokstavene.
+     Fargene ligger i en kopi av teksten oppå (.navn-farge) som bare vises i en myk sirkel der pekeren er (mask). Hver fargeflekk har
+     sin egen bane og sitt eget tempo (13, 17 og 23 s). Skyggen ligger som drop-shadow på hele navnet. Bokstavene vokser fram fra vekt 100. */
   @property --ax{syntax:"<percentage>";inherits:false;initial-value:15%}
   @property --ay{syntax:"<percentage>";inherits:false;initial-value:30%}
   @property --bx{syntax:"<percentage>";inherits:false;initial-value:55%}
   @property --by{syntax:"<percentage>";inherits:false;initial-value:75%}
   @property --cx{syntax:"<percentage>";inherits:false;initial-value:85%}
   @property --cy{syntax:"<percentage>";inherits:false;initial-value:25%}
-  .navn-f{font-weight:100;color:transparent;-webkit-background-clip:text;background-clip:text;
-    background:radial-gradient(34% 120% at var(--ax) var(--ay),rgba(255,231,140,.95),rgba(255,231,140,0) 72%),
-      radial-gradient(30% 120% at var(--bx) var(--by),rgba(140,226,214,.95),rgba(140,226,214,0) 72%),
-      radial-gradient(26% 110% at var(--cx) var(--cy),rgba(255,176,164,.9),rgba(255,176,164,0) 72%),#fff;
+  .navn-f{position:relative;display:inline-block;font-weight:100;color:#fff}
+  .motto.ut~.navn .navn-f{animation:navnInn 2.2s cubic-bezier(.2,.8,.2,1) .5s both}
+  .navn-farge{position:absolute;inset:0;color:transparent;
+    background:radial-gradient(34% 120% at var(--ax) var(--ay),#FFE78C,rgba(255,231,140,0) 72%),
+      radial-gradient(30% 120% at var(--bx) var(--by),#8CE2D6,rgba(140,226,214,0) 72%),
+      radial-gradient(26% 110% at var(--cx) var(--cy),#FFB0A4,rgba(255,176,164,0) 72%),#fff;
     -webkit-background-clip:text;background-clip:text;
-    animation:fa 13s ease-in-out infinite alternate,fb 17s ease-in-out infinite alternate,fc 23s ease-in-out infinite alternate}
-  .motto.ut~.navn .navn-f{animation:navnInn 2.2s cubic-bezier(.2,.8,.2,1) .5s both,fa 13s ease-in-out infinite alternate,fb 17s ease-in-out infinite alternate,fc 23s ease-in-out infinite alternate}
+    -webkit-mask-image:radial-gradient(circle 190px at var(--mx,50%) var(--my,50%),#000 25%,transparent 100%);mask-image:radial-gradient(circle 190px at var(--mx,50%) var(--my,50%),#000 25%,transparent 100%);
+    opacity:0;transition:opacity .6s ease;animation:fa 13s ease-in-out infinite alternate,fb 17s ease-in-out infinite alternate,fc 23s ease-in-out infinite alternate}
+  .navn.farge .navn-farge{opacity:1;transition-duration:.35s}
   @keyframes navnInn{from{font-weight:100}to{font-weight:400}}
   @keyframes fa{0%{--ax:5%;--ay:20%}35%{--ax:40%;--ay:85%}70%{--ax:75%;--ay:35%}100%{--ax:100%;--ay:70%}}
   @keyframes fb{0%{--bx:70%;--by:90%}30%{--bx:30%;--by:20%}65%{--bx:0%;--by:65%}100%{--bx:50%;--by:40%}}
@@ -122,7 +125,7 @@
   .brev .hils{margin-bottom:1.1em}
   .brev .sig{margin:1.3em 0 0;font-style:italic;font-size:1.25em}
   .m2 .o{z-index:2}
-  @media (prefers-reduced-motion:reduce){.navn-f{animation:none!important;font-weight:400}.flyt{animation:none}.gl{transform:none!important}.motto,.motto .b,.brev-inn{transition:none!important;animation:none!important}.brev-inn{opacity:1;transform:none;filter:none}.motto.ut{visibility:hidden}.brev .t{visibility:visible}.motto .b{opacity:1;transform:none;filter:none}.m2::before{transform:none}}
+  @media (prefers-reduced-motion:reduce){.navn-f,.navn-farge{animation:none!important}.navn-f{font-weight:400}.flyt{animation:none}.gl{transform:none!important}.motto,.motto .b,.brev-inn{transition:none!important;animation:none!important}.brev-inn{opacity:1;transform:none;filter:none}.motto.ut{visibility:hidden}.brev .t{visibility:visible}.motto .b{opacity:1;transform:none;filter:none}.m2::before{transform:none}}
   /* Budskapet, ingressen og knappen står nå øverst på den blå siden under videoen. */
   .intro{padding-top:clamp(56px,10vh,120px)}
   /* V2: serif i overskriftene. */
@@ -131,7 +134,7 @@
   h2{font-weight:500;letter-spacing:-.03em}
   .s em{font-weight:500;font-style:italic}
   .s em.i{font-family:inherit;font-style:italic}
-  @media (prefers-reduced-motion:reduce){.hero-v{display:none}.hero{background:#9db4c8 url(/media/hero.jpg?v=2) center/cover}}
+  @media (prefers-reduced-motion:reduce){.hero-v{display:none}.hero{background:#9db4c8 url(/media/hero.jpg?v=3) center/cover}}
   .mono{font:600 13px/1.5 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase}
   .k{opacity:.72;display:flex;align-items:center;gap:10px 1.5em;flex-wrap:wrap}
   .k .kl{margin-left:auto;color:inherit;text-decoration:none;border:2px solid var(--ink);border-radius:999px;padding:5px 14px;line-height:1.3;letter-spacing:.1em}
@@ -481,14 +484,14 @@
 <body>
 <script>document.body.classList.add('forspill');setTimeout(()=>document.body.classList.remove('forspill'),8000)</script>
 <header class="hero">
-  <video class="hero-v" poster="/media/hero.jpg?v=2" autoplay muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1" disablepictureinpicture><source src="/media/hero-720.mp4?v=2" media="(max-width:760px)" type="video/mp4"><source src="/media/hero.mp4?v=2" type="video/mp4"></video>
+  <video class="hero-v" poster="/media/hero.jpg?v=3" autoplay muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1" disablepictureinpicture><source src="/media/hero-720.mp4?v=3" media="(max-width:760px)" type="video/mp4"><source src="/media/hero.mp4?v=3" type="video/mp4"></video>
   <div class="hero-i">
   <div class="flyt"><div class="topp gl"><a class="lang en" href="/" hreflang="nb" aria-label="Language: English. Switch to Norwegian"><span class="lang-k" aria-hidden="true"></span><span class="lf no" aria-hidden="true"><svg viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span class="lf gb" aria-hidden="true"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg></span></a>
   <div class="st"><div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Heart rate today"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg></span></button><span class="st-l"><span class="hp-on">Live from Apple Watch</span><span class="hp-av">Not live right now</span></span></div><div class="st-i tl-a" hidden data-av data-l="here now"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">here now</span><span class="tl-deg" aria-hidden="true">+1 · that's you</span></div></div><div class="st-i tl-b" hidden data-av data-l="unique visitors" data-ny="+1 · you are no. {n}" data-er="You are no. {n}" data-var="You were no. {n}"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unique visitors</span><span class="tl-deg" aria-hidden="true">+1 · that's you</span></div></div><span class="tl-sr"></span></div>
   </div></div>
   <div class="scene">
   <p class="motto" aria-label="When life gives you lemons... demand caviar."><span class="m1" data-ord="lemons" aria-hidden="true">When life gives you lemons...</span><span class="m2" data-ord="caviar" aria-hidden="true">demand caviar.</span></p>
-  <p class="navn" role="img" aria-label="Esbjug Consult"><span class="navn-f">Esbjug Consult</span></p>
+  <p class="navn" role="img" aria-label="Esbjug Consult"><span class="navn-f">Esbjug Consult<span class="navn-farge" aria-hidden="true">Esbjug Consult</span></span></p>
   <!-- Brevet er lagt på hyllen: slagordet blir stående. Fjern «hidden» under for å sette det inn igjen (skriptet følger etter av seg selv). -->
   <div class="brev-inn" hidden><div class="flyt"><article class="brev gl">
     <p class="dato" style="--l:0">05.10.2026</p>
@@ -1040,6 +1043,12 @@ const hero=document.querySelector('.hero');
 hero.addEventListener('pointermove',e=>{if(e.pointerType==='touch')return;const r=hero.getBoundingClientRect();
   m.style.setProperty('--px',((e.clientX-r.left)/r.width-.5)*-14+'px');m.style.setProperty('--py',((e.clientY-r.top)/r.height-.5)*-10+'px')});
 hero.addEventListener('pointerleave',()=>{m.style.setProperty('--px','0px');m.style.setProperty('--py','0px')});
+// Farger i navnet der pekeren er: sirkelen følger pekeren, og fargene kommer fram når pekeren er over eller nær navnet (etter at slagordet har tonet ut).
+const navn=document.querySelector('.navn'),farge=navn&&navn.querySelector('.navn-farge');
+if(farge){hero.addEventListener('pointermove',e=>{const r=farge.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+    farge.style.setProperty('--mx',x+'px');farge.style.setProperty('--my',y+'px');
+    navn.classList.toggle('farge',m.classList.contains('ut')&&x>-70&&x<r.width+70&&y>-70&&y<r.height+70)});
+  hero.addEventListener('pointerleave',()=>navn.classList.remove('farge'))}
 })();
 (()=>{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
 document.querySelectorAll('.gl').forEach(g=>{
