@@ -57,7 +57,8 @@ T = [
 
     ('Alarm-app for familier, iPhone og Android', 'Alarm app for families, iPhone and Android'),
     ('55 000 linjer Swift, 10 språk', '55,000 lines of Swift, 10 languages'),
-    ('Idé, design, kode, reklamefilm', 'Idea, design, code, promo film'),
+    ('Idé, design, kode, reklamefilm, <a href="https://athenaalarm.app/">nettside&nbsp;↗</a>',
+     'Idea, design, code, promo film, <a href="https://athenaalarm.app/">website&nbsp;↗</a>'),
     ('aria-label="Reklamefilm for Athena"', 'aria-label="Promo film for Athena"'),
     ('Målet mitt med Athena er <b>å redde et liv</b>.', 'My goal with Athena is <b>to save a life</b>.'),
     ('<i>Det er det hele.</i>', '<i>That\'s all there is to it.</i>'),
@@ -257,12 +258,10 @@ T_NY = [
     ('>Jeg er enig.<', '>I agree.<'),
     ('data-ord="sitroner"', 'data-ord="lemons"'),
     ('data-ord="kaviar"', 'data-ord="caviar"'),
-    ('alt="Laks som hopper, tegnet i rødt og blått"', 'alt="A leaping salmon, drawn in red and blue"'),
     ('alt="To mobiltelefoner side om side, i blått og hvitt"', 'alt="Two phones side by side, in blue and white"'),
     ('alt="Hengelås i blått og hvitt"', 'alt="A padlock in blue and white"'),
 ]
 BARE_V1 = {
-    'alt="Laks som hopper, tegnet i gult og svart"',
     'alt="To mobiltelefoner side om side, i gult og svart"',
     'alt="Hengelås i gult og svart"',
 }
