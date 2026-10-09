@@ -415,7 +415,7 @@
   .hpp-n{font-size:clamp(64px,min(18vw,17vh),220px);font-weight:850;letter-spacing:-.055em;line-height:.82;font-variant-numeric:tabular-nums;text-shadow:0 0 70px rgba(255,255,255,.2)}
   .hpp-u{font:600 clamp(13px,1.4vw,16px)/1 "SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;opacity:.6;align-self:flex-end;margin-bottom:.9em}
   .hpp-off{font-size:clamp(26px,min(5vw,6vh),52px);font-weight:850;letter-spacing:-.02em}
-  .hpp.live .hpp-off,.hpp:not(.live) .hpp-n,.hpp:not(.live) .hpp-u,.hpp:not(.live) .hpp-b{display:none}
+  .hpp.live .hpp-off,.hpp:not(.live) .hpp-n,.hpp:not(.live) .hpp-u{display:none}
   .hpp-cnt{margin:0;display:flex;flex-direction:column;align-items:flex-end;text-align:right;gap:4px;font-size:clamp(14px,min(1.8vw,2.2vh),20px);font-weight:600}
   @media (max-width:640px){.hpp-cnt{flex-direction:row;align-items:baseline;flex-wrap:wrap;text-align:left;gap:.45em}}
   .hpp-cn{font-size:clamp(26px,min(5vw,6vh),58px);font-weight:850;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums;display:inline-block}
@@ -445,12 +445,6 @@
   @media (max-width:520px){.hpp-k{grid-template-columns:repeat(2,1fr);row-gap:8px}}
   @media (max-height:640px){.hpp-ekg{display:none}}
   @media (max-height:500px){.hpp-k{display:none}}
-  .hpp-b{display:block;flex:none;margin:0;width:100%;border:0;border-radius:999px;background:var(--y);color:var(--ink);font:800 clamp(16px,1.8vw,19px)/1.2 -apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;padding:18px 22px;cursor:pointer;transition:transform .15s,box-shadow .2s;box-shadow:0 0 0 0 rgba(255,255,255,.4)}
-  .hpp-b:hover{transform:translateY(-1px);box-shadow:0 10px 40px rgba(255,255,255,.25)}
-  .hpp-b:active{transform:scale(.98)}
-  .hpp-b:focus-visible{outline:2px solid var(--y);outline-offset:3px}
-  .hpp-m:focus{outline:none}
-  .hpp-m{flex:none;margin:0;text-align:center;font-weight:800;font-size:clamp(16px,1.8vw,19px);line-height:1.2;padding:17px 22px;border:1.5px solid rgba(255,255,255,.4);border-radius:999px}
   @media (prefers-reduced-motion:reduce){.hp.live .hj,.hpp-h .hj.slag,.hpp.live .hpp-live i,.hpp-cn.tikk{animation:none}.hpp{animation:none}}
   canvas{display:block;width:100%;height:44vh;min-height:240px;margin-top:auto;touch-action:pan-y}
 </style>
@@ -626,8 +620,6 @@
     <div class="hpp-tabs" role="tablist"><button type="button" role="tab" data-r="dag" aria-selected="true">Today</button><button type="button" role="tab" data-r="uke" aria-selected="false">7 days</button><button type="button" role="tab" data-r="mnd" aria-selected="false">30 days</button></div>
     <div class="hpp-c" tabindex="0" role="slider" aria-valuemin="0" aria-label="Graph of the heart rate. Use the arrow keys to step through each point."><svg aria-hidden="true"></svg><div class="hpp-t" hidden></div></div>
     <div class="hpp-k"><div><span>Lowest</span><b class="k-lo">&ndash;</b></div><div><span>Average</span><b class="k-av">&ndash;</b></div><div><span>Highest</span><b class="k-hi">&ndash;</b></div><div><span>Time measured</span><b class="k-fr">&ndash;</b></div></div>
-    <button class="hpp-b" type="button">Get my heart rate up</button>
-    <p class="hpp-m" role="status" tabindex="-1" hidden></p>
   </div>
 </section>
 <div class="ch" id="chat">
@@ -661,9 +653,9 @@ const hrTop=(()=>{
 // Live fra Tidemanns Apple Watch (bare mens han deler den) og dagens graf, ett snitt per minutt i Oslo-døgnet.
 // Hjertet slår i pulsens takt; uten måling på 20 s står det stille. Pek eller dra på grafen for klokkeslett og puls.
 const hp=document.querySelector('.hp'),hpO=hp.querySelector('.hp-o'),hpL=hpO.getAttribute('aria-label'),hpN=hp.querySelector('.hb-n'),hpG=hp.querySelector('.g');
-const pp=document.querySelector('.hpp'),ppN=pp.querySelector('.hpp-n'),ppC=pp.querySelector('.hpp-c'),ppS=ppC.querySelector('svg'),ppT=pp.querySelector('.hpp-t'),ppB=pp.querySelector('.hpp-b'),ppM=pp.querySelector('.hpp-m'),ppX=pp.querySelector('.hpp-x');
+const pp=document.querySelector('.hpp'),ppN=pp.querySelector('.hpp-n'),ppC=pp.querySelector('.hpp-c'),ppS=ppC.querySelector('svg'),ppT=pp.querySelector('.hpp-t'),ppX=pp.querySelector('.hpp-x');
 const GW=120,GH=30,NS='http://www.w3.org/2000/svg',hhmm=new Intl.DateTimeFormat('nb-NO',{timeZone:'Europe/Oslo',hour:'2-digit',minute:'2-digit'}),oDay=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Oslo'});
-let hrBpm=null,hrTimer=null,day=null,skew=0,viaWs=0,loading=0,lastLoad=0,sock=()=>false,big=null,ppI=null,ppTT=0,pokeT=0,busy=0,rng='dag';
+let hrBpm=null,hrTimer=null,day=null,skew=0,viaWs=0,loading=0,lastLoad=0,sock=()=>false,big=null,ppI=null,ppTT=0,rng='dag';
 const rdata={};
 const nowM=()=>Math.floor((Date.now()+skew-day.start)/60000);
 // Nytt døgn etter Oslo-datoen, ikke etter 1440 minutter: døgnet har 23 eller 25 timer når klokka stilles.
@@ -745,12 +737,7 @@ ppC.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse'){ppI=null;dra
 ppC.addEventListener('pointerup',e=>{if(e.pointerType!=='mouse')ppTT=setTimeout(()=>{ppI=null;drawBig()},1500)});
 ppC.addEventListener('keydown',e=>{if(!big)return;const n=cur().pts.length,i=ppI??n,to={ArrowLeft:i-1,ArrowDown:i-1,ArrowRight:i+1,ArrowUp:i+1,Home:0,End:n-1}[e.key];if(to==null)return;e.preventDefault();ppI=to;drawBig()});
 ppC.addEventListener('blur',()=>{ppI=null;drawBig()});
-// «Get my heart rate up»: serveren sender et varsel til Tidemanns telefon og klokke (bare mens pulsen er live, med egne grenser).
 // Fokus følger med: fra knappen til beskjeden og tilbake, så tastatur og skjermleser ikke havner på <body>.
-const pokeMsg=(t,ms)=>{const f=document.activeElement===ppB;ppM.textContent=t;ppM.hidden=false;ppB.hidden=true;if(f)ppM.focus({preventScroll:true});
-  clearTimeout(pokeT);pokeT=setTimeout(()=>{const g=document.activeElement===ppM;ppM.hidden=true;ppB.hidden=false;if(g)ppB.focus({preventScroll:true})},ms)};
-ppB.addEventListener('click',()=>{if(busy)return;busy=1;fetch('/chat/poke',{method:'POST',headers:{'content-type':'application/json'},body:'{}'}).then(r=>r.json())
-  .then(j=>{if(!j.ok)throw 0;pokeMsg('Message sent, expect a racing heart',600000)}).catch(()=>pokeMsg('Try again in a bit',6000)).finally(()=>{busy=0})});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&(!day||Date.now()-lastLoad>60000))loadHr()});
 // Med åpen chatsocket kommer pulsen derfra; ellers spør siden selv hvert 8. s (bare når fanen vises).
 setInterval(()=>{if(document.visibilityState==='visible'&&!sock()&&Date.now()-viaWs>15000)fetch('/chat/status').then(r=>r.json()).then(j=>{if(j.hr)setHr(j.hr)}).catch(()=>{})},8000);
