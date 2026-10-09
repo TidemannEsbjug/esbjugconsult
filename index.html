@@ -350,7 +350,7 @@
   .st-l{transition:opacity .25s}
   .st-i.deg .st-l{opacity:0}
   @media (max-width:560px){.st{display:grid;grid-template-columns:auto 1fr;column-gap:0}.st .hp{grid-column:1/-1}
-    .st-i:not([hidden])~.st-i{margin-left:0;padding-left:0;border-left:0}.st-i:not([hidden])~.st-i:is(.tl-b,.tl-d,.tl-k){margin-left:20px;padding-left:20px;border-left:1px solid rgba(0,32,91,.18)}
+    .st-i:not([hidden])~.st-i{margin-left:0;padding-left:0;border-left:0}.st-i:not([hidden])~.st-i.tl-b{margin-left:20px;padding-left:20px;border-left:1px solid rgba(0,32,91,.18)}
     .st .tl-a{min-width:124px}.tl-deg{font-size:11px;letter-spacing:0;padding:5px 9px}}
   @media (prefers-reduced-motion:reduce){.od .r{transition:none}.tl-dot{animation:none}}
   /* Språkbryter: norsk og britisk flagg i én pille. Den svarte kula ligger bak språket du leser og glir over når du bytter;
@@ -402,6 +402,9 @@
   .hpp:not(.live) .hpp-live i{background:rgba(255,255,255,.3)}
   @keyframes hppDot{0%{box-shadow:0 0 0 0 rgba(255,61,87,.6)}80%,100%{box-shadow:0 0 0 10px rgba(255,61,87,0)}}
   .hpp-s{opacity:.7;font-size:11px}
+  .hpp-tl{display:flex;flex-direction:column;gap:12px;min-width:0}
+  .hpp-dt{display:flex;font:700 15px/1 "SF Mono",Menlo,monospace;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+  .hpp-dt b+b{margin-left:14px;padding-left:14px;border-left:1px solid rgba(255,255,255,.3)}
   .hpp-x{width:48px;height:48px;flex:none;border:1.5px solid rgba(255,255,255,.28);border-radius:50%;background:none;color:var(--y);font:300 30px/1 -apple-system,Arial,sans-serif;cursor:pointer;display:grid;place-items:center;transition:background .2s,transform .3s}
   .hpp-x:hover{background:rgba(255,255,255,.12);transform:rotate(90deg)}
   .hpp-x:focus-visible{outline:2px solid var(--y);outline-offset:3px}
@@ -455,7 +458,7 @@
   <video class="hero-v" poster="/media/hero.jpg" autoplay muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1" disablepictureinpicture><source src="/media/hero-720.mp4" media="(max-width:760px)" type="video/mp4"><source src="/media/hero.mp4" type="video/mp4"></video>
   <div class="hero-i">
   <div class="flyt"><div class="topp gl"><a class="lang" href="/en/" hreflang="en" aria-label="Språk: norsk. Bytt til engelsk"><span class="lang-k" aria-hidden="true"></span><span class="lf no" aria-hidden="true"><svg viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span class="lf gb" aria-hidden="true"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg></span></a>
-  <div class="st"><div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Puls i dag"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg></span></button><span class="st-l"><span class="hp-on">Live fra Apple Watch</span><span class="hp-av">Ikke live akkurat nå</span></span></div><div class="st-i tl-a" hidden data-av data-l="her nå"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">her nå</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><div class="st-i tl-d"><span class="st-v"><b class="dt-d"></b></span></div><div class="st-i tl-k"><span class="st-v"><b class="dt-k"></b></span></div><div class="st-i tl-b" hidden data-av data-l="unike besøkende" data-ny="+1 · du er nr. {n}" data-er="Du er nr. {n}" data-var="Du var nr. {n}"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unike besøkende</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><span class="tl-sr"></span></div>
+  <div class="st"><div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Puls i dag"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg></span></button><span class="st-l"><span class="hp-on">Live fra Apple Watch</span><span class="hp-av">Ikke live akkurat nå</span></span></div><div class="st-i tl-a" hidden data-av data-l="her nå"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">her nå</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><div class="st-i tl-b" hidden data-av data-l="unike besøkende" data-ny="+1 · du er nr. {n}" data-er="Du er nr. {n}" data-var="Du var nr. {n}"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unike besøkende</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><span class="tl-sr"></span></div>
   </div></div>
   <div class="scene">
   <p class="motto" aria-label="Når livet gir deg sitroner... krev kaviar."><span class="m1" data-ord="sitroner" aria-hidden="true">Når livet gir deg sitroner...</span><span class="m2" data-ord="kaviar" aria-hidden="true">krev kaviar.</span></p>
@@ -614,7 +617,7 @@
 </section>
 <section class="hpp" role="dialog" aria-modal="true" aria-label="Puls i dag" hidden data-dag="hjerteslag i dag" data-uke="hjerteslag siste 7 dager" data-mnd="hjerteslag siste 30 dager" data-t="t" data-min="min">
   <div class="hpp-in">
-    <div class="hpp-top mono"><span class="hpp-live"><i></i><span class="hpp-s">Strømmes live fra Apple Watch</span></span><button class="hpp-x" type="button" aria-label="Lukk">&times;</button></div>
+    <div class="hpp-top mono"><div class="hpp-tl"><span class="hpp-live"><i></i><span class="hpp-s">Strømmes live fra Apple Watch</span></span><span class="hpp-dt"><b class="dt-d"></b><b class="dt-k"></b></span></div><button class="hpp-x" type="button" aria-label="Lukk">&times;</button></div>
     <div class="hpp-hero"><div class="hpp-h"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hpp-n">00</b><span class="hpp-u">bpm</span><span class="hpp-off">Ikke live akkurat nå</span></div><p class="hpp-cnt"><b class="hpp-cn">0</b><span class="hpp-cl">hjerteslag i dag</span></p></div>
     <canvas class="hpp-ekg" aria-hidden="true"></canvas>
     <div class="hpp-tabs" role="tablist"><button type="button" role="tab" data-r="dag" aria-selected="true">I dag</button><button type="button" role="tab" data-r="uke" aria-selected="false">7 dager</button><button type="button" role="tab" data-r="mnd" aria-selected="false">30 dager</button></div>
@@ -772,7 +775,7 @@ const teller=(()=>{const a=document.querySelector('.tl-a'),u=document.querySelec
   api.nr=(n,total)=>{nrVist=true;cur[1]=total;label();set(nU,Math.max(0,total-1),false);a.classList.remove('deg');
     naarVist(nett=>setTimeout(()=>requestAnimationFrame(()=>requestAnimationFrame(()=>{set(nU,total,true);show(u,u.dataset.ny.replace('{n}',fmt(n)))})),nett?1500:0))};
   return api})();
-// Dato og klokkeslett i Norge (Europe/Oslo), uansett hvor den besøkende er. Tellerne «her nå» og «unike besøkende»
+// Dato og klokkeslett i Norge (Europe/Oslo), uansett hvor den besøkende er; vises øverst i pulsoversikten. Tellerne «her nå» og «unike besøkende»
 // ligger fortsatt i koden (.tl-a og .tl-b med data-av) og slås på igjen ved å fjerne data-av.
 (()=>{const d=document.querySelector('.dt-d'),k=document.querySelector('.dt-k');
   const fd=new Intl.DateTimeFormat('nb-NO',{timeZone:'Europe/Oslo',day:'2-digit',month:'2-digit'}),fk=new Intl.DateTimeFormat('nb-NO',{timeZone:'Europe/Oslo',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'});
@@ -840,7 +843,7 @@ const hehe=()=>{const o=document.createElement('div');o.className='hh';o.setAttr
   [...'hehe'].forEach((c,i)=>{const sp=document.createElement('span');sp.textContent=c;sp.style.animationDelay=i*70+'ms';o.append(sp)});
   document.body.append(o);setTimeout(()=>o.remove(),3200)};
 const add=(m,live)=>{if(seen.has(m.id))return;seen.add(m.id);if(live&&m.owner&&/^\s*hehe[!.\s]*$/i.test(m.text))hehe();const p=document.createElement('p');p.className=m.owner?'him':'me';if(m.kind==='file')fileEl(p,m);else p.textContent=m.text;box.append(p);box.scrollTop=box.scrollHeight;
-  if(m.owner&&pan.hidden){unread++;badge.textContent=unread;badge.hidden=false;open(true)}};
+  if(live&&m.owner&&pan.hidden){unread++;badge.textContent=unread;badge.hidden=false;open(true)}};
 const focus=on=>document.documentElement.classList.toggle('focus',on);
 const control=(a,on)=>{if(a==='focus'){if(on)open(true);focus(on)}else if(a==='extras'){extras(on);if(on)open(true)}else if(a==='live'){live=on;if(on)lsend()}else if(a==='call'){if(on)ringing();else if(!pc)endCall('Tidemann la på')}};
 const kb=n=>n>1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' kB';
