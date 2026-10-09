@@ -24,13 +24,18 @@
   .k .kl:hover{background:var(--ink);color:var(--y)}
   .k .kl:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
   h1{margin:14px 0 0;font-weight:850;font-size:clamp(28px,4.4vw,56px);line-height:1.06;letter-spacing:-.035em}
-  /* Tidemann sier hovedbudskapet: bildet til venstre (gul bakgrunn i bildet = sidens gule), snakkebobla til høyre med halen mot munnen. */
-  .sier{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);align-items:center;gap:clamp(28px,4vw,56px);margin-top:clamp(18px,3vh,32px)}
-  .meg{display:block;width:100%;height:auto}
-  .boble{position:relative;border:3px solid var(--ink);border-radius:clamp(26px,3vw,40px);padding:clamp(20px,2.6vw,36px)}
+  /* Tidemann sier hovedbudskapet: bildet til venstre (gul bakgrunn i bildet = sidens gule), snakkebobla til høyre med halen mot munnen.
+     Bildet står rett på den svarte flaten under, så dressen går over i den i stedet for å kuttes i lufta. */
+  .sier{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);align-items:start;gap:clamp(28px,4vw,56px);margin-top:clamp(18px,3vh,32px)}
+  .meg{display:block;width:100%;height:auto;align-self:end}
+  .boble{position:relative;margin-top:clamp(0px,3vw,48px);border:3px solid var(--ink);border-radius:clamp(26px,3vw,40px);padding:clamp(20px,2.6vw,36px)}
   .boble h1{margin:0;font-size:clamp(24px,2.7vw,40px);line-height:1.1}
-  .hale{position:absolute;left:-37px;top:calc(50% - 20px);width:40px;height:40px;overflow:visible}
-  @media (max-width:760px){.sier{grid-template-columns:1fr;gap:44px}.boble{order:-1}.meg{max-width:360px;margin:0 auto}
+  .hale{position:absolute;left:-37px;top:calc(35% - 20px);width:40px;height:40px;overflow:visible}
+  .grunn{background:var(--ink);color:var(--y);border-radius:clamp(20px,2.4vw,32px);padding:clamp(24px,3.5vw,48px)}
+  .grunn p.b{margin:0}
+  .grunn a.t{background:var(--y);color:var(--ink)}
+  .grunn a.t:focus-visible{outline-color:var(--y)}
+  @media (max-width:760px){.sier{grid-template-columns:1fr;gap:44px}.boble{order:-1;margin-top:0}.meg{max-width:400px;margin:0 auto}
     .hale{left:calc(50% - 30px);top:auto;bottom:-37px;transform:rotate(-90deg)}}
   p.b{margin:28px 0 0;max-width:38em;font-size:clamp(18px,1.6vw,22px);line-height:1.45;font-weight:500}
   a.t{display:inline-block;margin-top:32px;background:var(--ink);color:var(--y);font-weight:700;font-size:clamp(18px,1.8vw,23px);padding:13px 22px 14px;border-radius:999px;text-decoration:none;letter-spacing:-.01em;transition:transform .2s}
@@ -380,13 +385,15 @@
   <div class="mono k"><span>&gt; Tidemann Esbjug</span><span>09.10.2026</span><a class="lang" href="/en/" hreflang="en" aria-label="Språk: norsk. Bytt til engelsk"><span class="lang-k" aria-hidden="true"></span><span class="lf no" aria-hidden="true"><svg viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span class="lf gb" aria-hidden="true"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg></span></a><!-- Skjult inntil videre: <a class="kl" href="/login/">Kunde-login &rarr;</a> --></div>
   <!--EN-MERKNAD-->
   <div class="sier">
-  <img class="meg" src="media/tidemann.jpg" width="540" height="408" alt="Tidemann Esbjug">
+  <img class="meg" src="media/tidemann.jpg" width="1000" height="904" alt="Tidemann Esbjug">
   <div class="boble"><svg class="hale" viewBox="0 0 40 40" aria-hidden="true"><path d="M40 6Q20 20 1 33Q22 30 40 28" fill="var(--y)" stroke="var(--ink)" stroke-width="3" stroke-linejoin="round"/></svg>
   <h1 aria-label="Hovedbudskapet jeg prøver å rope fra taket på bygninger i disse dager er at kode og design har gått gjennom en revolusjon som ikke må oversees."><span aria-hidden="true">Hovedbudskapet jeg prøver å rope fra taket på bygninger i disse dager er at <span class="kd"><i>kode</i></span> og <span class="ds" data-t="design">design</span> har gått gjennom en revolusjon som ikke må oversees.</span></h1>
   </div>
 </div>
+  <div class="grunn">
   <p class="b">Å kjøpe nettsider, apper eller digital markedsføring i dag for samme pris som før er absurd. Det er også masse muligheter som tidligere var for dyre til å begi seg ut på.</p>
   <a class="t" href="mailto:tidemann@esbjugconsult.com">Snakk med meg om alt dette.</a>
+  </div>
   <div class="rv" id="jobber">
   <h2>Jobber med nå</h2>
 
