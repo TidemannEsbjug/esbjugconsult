@@ -246,7 +246,7 @@
   @media (max-width:520px){.focus .ch-p{right:0;bottom:auto;transform:none;width:100vw;height:var(--vvh,100svh);border-radius:0}}
   /* Mobil: panelet dekker akkurat det synlige området (over tastaturet når det er oppe), satt fra visualViewport i skriptet.
      Ingen overgang på størrelsen, og siden bak låses mens chatten er åpen, så ingenting hopper når tastaturet kommer og går. */
-  @media (max-width:520px){.ch-p{top:var(--vvt,0px);bottom:auto;height:var(--vvh,100svh);transition:none}html.chat-aapen,html.chat-aapen body{overflow:hidden;overscroll-behavior:none}}
+  @media (max-width:520px){.ch-p{top:var(--vvt,0px);bottom:auto;height:var(--vvh,100svh);transition:none}html.chat-aapen{overflow:hidden;overscroll-behavior:none}html.chat-aapen body{position:fixed;left:0;right:0;top:var(--laas,0px);overflow:hidden}}
   /* Åpne/lukke-overgang: vokser ut fra hjørnet på PC, glir opp nedenfra på mobil. */
   .ch-p{transform-origin:100% 100%}
   .ch-p.in{animation:chIn .42s cubic-bezier(.2,.9,.25,1.05)}
@@ -832,8 +832,15 @@ if(document.documentElement.classList.contains('speil')){let ty=0;window.__rull=
   const step=()=>{const d=ty-scrollY;if(Math.abs(d)>.5)scrollTo(0,scrollY+d*.35);requestAnimationFrame(step)};step();return}
 const $=q=>document.querySelector('#chat '+q),btn=$('.ch-b'),pan=$('.ch-p'),box=$('.ch-m'),form=$('.ch-f'),ta=$('textarea'),st=$('.ch-s'),badge=$('.ch-n');
 // Mobil: panelet følger visualViewport (høyden over tastaturet og hvor langt nettleseren har skjøvet visningen).
-const vv=window.visualViewport,fit=()=>{if(!vv)return;pan.style.setProperty('--vvh',Math.round(vv.height)+'px');pan.style.setProperty('--vvt',Math.round(vv.offsetTop)+'px');if(!pan.hidden&&document.activeElement===ta)box.scrollTop=box.scrollHeight};
+// Mens panelet lukkes (lukker), står størrelsen fast, så det ikke klapper sammen når tastaturet går ned samtidig. Oppdateres én gang per bilde.
+const vv=window.visualViewport;let lukker=false,fitR=0;
+const fit=()=>{if(!vv||lukker||fitR)return;fitR=requestAnimationFrame(()=>{fitR=0;if(lukker)return;
+  pan.style.setProperty('--vvh',Math.round(vv.height)+'px');pan.style.setProperty('--vvt',Math.round(vv.offsetTop)+'px');if(!pan.hidden&&document.activeElement===ta)box.scrollTop=box.scrollHeight})};
 if(vv){vv.addEventListener('resize',fit);vv.addEventListener('scroll',fit);fit()}
+// Mobil: siden bak låses med position:fixed mens chatten er åpen (overflow:hidden alene stopper ikke Safari på iPhone i å rulle siden når tastaturet kommer).
+const mobil=matchMedia('(max-width:520px)');let laastY=null;
+const laas=on=>{const h=document.documentElement;if(on&&mobil.matches&&laastY===null){laastY=scrollY;h.style.setProperty('--laas',-laastY+'px');h.classList.add('chat-aapen')}
+  else if(!on&&laastY!==null){h.classList.remove('chat-aapen');h.style.removeProperty('--laas');scrollTo(0,laastY);laastY=null}else if(!on)h.classList.remove('chat-aapen')};
 // Send-knappen tar ikke fokus fra skrivefeltet, så tastaturet blir stående når du sender.
 form.querySelector('button[type=submit]').addEventListener('pointerdown',e=>e.preventDefault());
 // Ingen zoom med to fingre i chatten (touch-action i CSS; Safari på iPhone trenger i tillegg gesturestart).
@@ -859,10 +866,13 @@ const pill=$('.ch-pill'),pillT=$('.cp-t');
 // Chatten lukket: under en samtale vises samtalelinjen, ellers chatknappen.
 const dock=()=>{const inCall=typeof pc!=='undefined'&&pc;pill.hidden=!inCall;btn.hidden=!!inCall};
 const still=matchMedia('(prefers-reduced-motion: reduce)');
-const open=o=>{btn.setAttribute('aria-expanded',o);document.documentElement.classList.toggle('chat-aapen',!!o);setTimeout(()=>typeof lqueue==='function'&&lqueue(),450);
-  if(!o){if(pan.hidden)return;if(still.matches){pan.hidden=true;dock();return}
-    pan.classList.remove('in');pan.classList.add('out');pan.addEventListener('animationend',()=>{pan.classList.remove('out');pan.hidden=true;dock()},{once:true});return}
-  if(pan.hidden){pan.hidden=false;btn.hidden=true;pill.hidden=true;pan.classList.remove('out');pan.classList.add('in');pan.addEventListener('animationend',()=>pan.classList.remove('in'),{once:true})}
+const open=o=>{btn.setAttribute('aria-expanded',o);setTimeout(()=>typeof lqueue==='function'&&lqueue(),450);
+  // Lukking: størrelsen står fast mens panelet glir ut; tastaturet legges bort og siden låses opp først når panelet er borte.
+  if(!o){if(pan.hidden||lukker)return;lukker=true;
+    const ferdig=()=>{pan.classList.remove('out');pan.hidden=true;lukker=false;if(document.activeElement===ta)ta.blur();laas(false);dock();fit()};
+    if(still.matches)return ferdig();
+    pan.classList.remove('in');pan.classList.add('out');pan.addEventListener('animationend',ferdig,{once:true});return}
+  if(pan.hidden){laas(true);pan.hidden=false;btn.hidden=true;pill.hidden=true;pan.classList.remove('out');pan.classList.add('in');pan.addEventListener('animationend',()=>pan.classList.remove('in'),{once:true})}
   if(o){askCk();unread=0;badge.hidden=true;box.scrollTop=box.scrollHeight;setTimeout(()=>ta.focus({preventScroll:true}),50)}};
 btn.onclick=()=>{open(true);if(!ws)connect()};
 // «Snakk med meg om alt dette.» åpner chatten, med «Sende mail istedet?» som vei videre til e-post.
@@ -881,6 +891,8 @@ del.onclick=()=>{if(Date.now()-armed>3000){armed=Date.now();del.textContent='Try
   armed=0;del.textContent='Slett samtalen';if(ws&&ws.readyState===1)ws.send(JSON.stringify({t:'forget'}));else cleared()};
 const cleared=()=>{box.querySelectorAll('p:not(.hint)').forEach(p=>p.remove());seen.clear();vid=crypto.randomUUID();if(consent==='ja')setC('esbjug_id',vid);
   if(ws){ws.onclose=null;ws.close();ws=null;connect()}};$('.ch-x').onclick=()=>{focus(false);open(false);mailBtn.hidden=true};
+// Krysset tar ikke fokus fra skrivefeltet, så tastaturet ikke begynner å gå ned før panelet lukkes.
+$('.ch-x').addEventListener('pointerdown',e=>e.preventDefault());
 const hehe=()=>{const o=document.createElement('div');o.className='hh';o.setAttribute('aria-hidden','true');
   [...'hehe'].forEach((c,i)=>{const sp=document.createElement('span');sp.textContent=c;sp.style.animationDelay=i*70+'ms';o.append(sp)});
   document.body.append(o);setTimeout(()=>o.remove(),3200)};
