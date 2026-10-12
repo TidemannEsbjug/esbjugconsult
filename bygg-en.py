@@ -247,8 +247,9 @@ T = [
 
 # V2 (forsiden fra 7.10.2026) har egne tekster. V1-tekstene den har byttet ut hoppes over.
 T_NY = [
-    ('<span class="o">SuperIntelligens</span> <span class="o">er</span> <span class="o">her</span>',
-     '<span class="o">SuperIntelligence</span> <span class="o">is</span> <span class="o">here</span>'),
+    ('aria-label="SuperIntelligens er her"', 'aria-label="SuperIntelligence is here"'),
+    ('<b>S</b>uper<b>I</b>ntelligens</span> <span class="o e" aria-hidden="true">er her<',
+     '<b>S</b>uper<b>I</b>ntelligence</span> <span class="o e" aria-hidden="true">is here<'),
     ('alt="To mobiltelefoner side om side, i blått og hvitt"', 'alt="Two phones side by side, in blue and white"'),
     ('alt="Hengelås i blått og hvitt"', 'alt="A padlock in blue and white"'),
 ]
