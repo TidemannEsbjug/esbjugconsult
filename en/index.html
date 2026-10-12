@@ -24,11 +24,9 @@
   /* Under hero: hvit bakgrunn og svart tekst. Hero, chatten og de blå bildene beholder fargene sine. */
   html,body{background:#fff}
   main{--ink:#000;color:var(--ink)}
-  /* Hero: bare videoen, toppmodulen og slagordet. Resten av siden begynner under. */
+  /* Hero: bare videoen, toppmodulen og budskapet. Resten av siden begynner under. */
   .hero{position:relative;min-height:100svh;display:flex;overflow:hidden;background:#9db4c8}
   .hero-v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
-  /* Svakt blått slør til venstre, der teksten står, så hvit tekst holder kontrasten også mot hvite skyer. */
-  .hero::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(0,32,91,.42),rgba(0,32,91,.16) 45%,rgba(0,32,91,0) 75%)}
   .hero-i{position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:flex-start;padding:clamp(16px,2.6vw,36px) var(--g) var(--g)}
   /* Glassbokser: lyst, uskarpt glass med korn. De flyter sakte, vipper mot pekeren og får et lysskjær der pekeren er. */
   .flyt{animation:flyt 7s ease-in-out infinite}
@@ -53,25 +51,7 @@
   /* «+1 · det er deg» henger rett under glassboksen med pila opp mot tallet, i stedet for oppå boksen. --ned = avstanden ned til boksens kant. */
   .topp .tl-deg{bottom:auto;top:calc(100% + var(--ned,24px) + 9px)}
   .topp .st-i.deg .st-l{opacity:1}
-  /* Slagordet: det eneste som står på videoen. Første linje skrives fram bokstav for bokstav og prikkene tikker inn;
-     så slår en rød flate ut fra venstre og «krev kaviar.» reiser seg inni den. Spilles én gang og blir stående.
-     «sitroner» blir sitrongul. */
-  .motto{margin:0;padding:clamp(24px,5vh,60px) 0;color:#fff;font-family:var(--serif);line-height:1;transform:translate3d(var(--px,0),var(--py,0),0);transition:transform .9s cubic-bezier(.2,.8,.2,1),opacity .7s ease,filter .7s ease}
-  .m1{display:block;font-style:italic;font-weight:400;font-size:clamp(30px,5.4vw,84px);letter-spacing:-.02em;text-shadow:0 2px 28px rgba(0,32,91,.55),0 1px 3px rgba(0,32,91,.45);transition:opacity .8s ease}
-  .m2{position:relative;display:inline-block;margin-top:.16em;padding:.02em .2em .1em;font-weight:700;font-size:clamp(50px,10.5vw,168px);letter-spacing:-.035em;line-height:1}
-  .m2::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:.07em;background:var(--r);box-shadow:0 .08em .5em rgba(0,32,91,.35);transform:scaleX(0);transform-origin:0 50%}
-  .motto.a2 .m2::before{transform:none;transition:transform .7s cubic-bezier(.7,0,.15,1)}
-  .motto .o{display:inline-block;white-space:nowrap}
-  .motto .b{display:inline-block;opacity:0;transform:translateY(.55em) rotate(6deg);filter:blur(10px)}
-  .motto.a1 .m1 .b{opacity:1;transform:none;filter:none;transition:opacity .5s ease,transform .7s cubic-bezier(.2,1.3,.3,1),filter .5s ease;transition-delay:calc(var(--i)*32ms)}
-  .motto.a1 .m1 .b.pr{transition-delay:calc(var(--n)*32ms + 250ms + var(--j)*260ms)}
-  .m2 .b{transform:translateY(.9em);filter:none}
-  .m2 .o{overflow:hidden;vertical-align:bottom;padding-bottom:.08em;margin-bottom:-.08em}
-  .motto.a2 .m2 .b{opacity:1;transform:none;transition:opacity .25s ease,transform .75s cubic-bezier(.2,1.25,.3,1);transition-delay:calc(280ms + var(--i)*45ms)}
-  .motto .o{position:relative}
-  .motto.a1 .m1 .o.sit .b:not(.pr){animation:gul 2.2s ease both;animation-delay:calc(var(--n)*32ms + 150ms + var(--k)*80ms)}
-  @keyframes gul{0%,100%{color:#fff}30%,62%{color:#FFDE59}}
-  /* Toppmodulen og chatten er skjult til ordet «kaviar» kommer. Da bygges toppmodulen ut fra venstre og chatknappen
+  /* Toppmodulen og chatten er skjult til budskapet har kommet. Da bygges toppmodulen ut fra venstre og chatknappen
      fra høyre, med samme kurve som den røde flaten, og innholdet glir inn etter. */
   .forspill .hero-i>.flyt,.forspill #chat{opacity:0;pointer-events:none}
   .kom .hero-i>.flyt>.topp{animation:byggV 1.1s cubic-bezier(.7,0,.15,1) both}
@@ -81,51 +61,13 @@
   @keyframes byggV{0%{clip-path:inset(0 100% 0 0 round 22px);opacity:0}12%{opacity:1}100%{clip-path:inset(-60px -60px -60px -60px round 22px);opacity:1}}
   @keyframes byggH{0%{clip-path:inset(0 0 0 100% round 999px);opacity:0}12%{opacity:1}100%{clip-path:inset(-40px -40px -40px -40px round 999px);opacity:1}}
   @keyframes innV{0%{opacity:0;translate:-26px 0;filter:blur(6px)}100%{opacity:1;translate:0 0;filter:none}}
-  /* Scenen: slagordet spilles, toner ut, og brevet tar plassen der slagordet sto. Brevet skrives ut tegn for tegn med en markør. */
-  .scene{margin:auto 0;width:100%;display:grid;align-items:center;justify-items:start}
-  .scene>*{grid-area:1/1}
-  .motto.ut{opacity:0;filter:blur(12px);transform:translateY(-14px);pointer-events:none}
-  /* Når slagordet har tonet ut, blir «Esbjug Consult» stående alene midt på videoen. Sløret til venstre tones bort, så videoen får plassen. */
-  .navn{position:relative;justify-self:center;margin:0;padding:0 0 clamp(40px,8vh,90px);text-align:center;color:#fff;font:400 clamp(38px,6.4vw,104px)/1 var(--serif);letter-spacing:-.02em;opacity:0;filter:blur(10px) drop-shadow(0 2px 16px rgba(0,32,91,0)) drop-shadow(0 1px 2px rgba(0,32,91,0));transform:translateY(12px);pointer-events:none}
-  .navn::before{content:"";position:absolute;inset:-70% -18% -40%;z-index:-1;pointer-events:none;background:radial-gradient(closest-side,rgba(0,32,91,.3),rgba(0,32,91,0))}
-  .motto.ut~.navn{opacity:1;filter:blur(0) drop-shadow(0 2px 16px rgba(0,32,91,.4)) drop-shadow(0 1px 2px rgba(0,32,91,.3));transform:none;transition:opacity 1.4s ease,filter 1.4s ease,transform 1.8s cubic-bezier(.2,.9,.2,1);transition-delay:.6s}
-  /* Navnet er hvitt. Fører du musa over, kommer lyse farger (sitrongult, turkis, litt rødlig) fram rundt pekeren og flyter inni bokstavene.
-     Fargene ligger i en kopi av teksten oppå (.navn-farge) som bare vises i en myk sirkel der pekeren er (mask). Hver fargeflekk har
-     sin egen bane og sitt eget tempo (13, 17 og 23 s). Skyggen ligger som drop-shadow på hele navnet. Bokstavene vokser fram fra vekt 100. */
-  @property --ax{syntax:"<percentage>";inherits:false;initial-value:15%}
-  @property --ay{syntax:"<percentage>";inherits:false;initial-value:30%}
-  @property --bx{syntax:"<percentage>";inherits:false;initial-value:55%}
-  @property --by{syntax:"<percentage>";inherits:false;initial-value:75%}
-  @property --cx{syntax:"<percentage>";inherits:false;initial-value:85%}
-  @property --cy{syntax:"<percentage>";inherits:false;initial-value:25%}
-  .navn-f{position:relative;display:inline-block;font-weight:100;color:#fff}
-  .motto.ut~.navn .navn-f{animation:navnInn 2.2s cubic-bezier(.2,.8,.2,1) .5s both}
-  .navn-farge{position:absolute;inset:0;color:transparent;
-    background:radial-gradient(34% 120% at var(--ax) var(--ay),#FFE78C,rgba(255,231,140,0) 72%),
-      radial-gradient(30% 120% at var(--bx) var(--by),#8CE2D6,rgba(140,226,214,0) 72%),
-      radial-gradient(26% 110% at var(--cx) var(--cy),#FFB0A4,rgba(255,176,164,0) 72%),#fff;
-    -webkit-background-clip:text;background-clip:text;
-    -webkit-mask-image:radial-gradient(circle 190px at var(--mx,50%) var(--my,50%),#000 25%,transparent 100%);mask-image:radial-gradient(circle 190px at var(--mx,50%) var(--my,50%),#000 25%,transparent 100%);
-    opacity:0;transition:opacity .6s ease;animation:fa 13s ease-in-out infinite alternate,fb 17s ease-in-out infinite alternate,fc 23s ease-in-out infinite alternate}
-  .navn.farge .navn-farge{opacity:1;transition-duration:.35s}
-  @keyframes navnInn{from{font-weight:100}to{font-weight:400}}
-  @keyframes fa{0%{--ax:5%;--ay:20%}35%{--ax:40%;--ay:85%}70%{--ax:75%;--ay:35%}100%{--ax:100%;--ay:70%}}
-  @keyframes fb{0%{--bx:70%;--by:90%}30%{--bx:30%;--by:20%}65%{--bx:0%;--by:65%}100%{--bx:50%;--by:40%}}
-  @keyframes fc{0%{--cx:95%;--cy:15%}40%{--cx:55%;--cy:60%}75%{--cx:20%;--cy:10%}100%{--cx:65%;--cy:95%}}
-  .hero::after{transition:opacity 1.6s ease}
-  .hero:has(.motto.ut~.navn)::after{opacity:0}
-  .brev-inn{justify-self:center;width:min(620px,100%);opacity:0;transform:translateY(26px);filter:blur(10px);pointer-events:none}
-  .motto.ut~.brev-inn{opacity:1;transform:none;filter:none;pointer-events:auto;transition:opacity .9s ease,transform 1.1s cubic-bezier(.2,.9,.2,1),filter .9s ease;transition-delay:.45s}
-  .brev{padding:clamp(24px,2.4vw,38px) clamp(24px,2.6vw,42px) clamp(26px,2.6vw,40px);border-radius:26px;font:400 clamp(18px,1.5vw,23px)/1.45 var(--serif);letter-spacing:-.005em}
-  .brev p{margin:0 0 .7em}
-  .brev .t{visibility:hidden}
-  .brev .t.s{visibility:visible}
-  .brev .t.na{box-shadow:.12em 0 0 -.02em var(--ink)}
-  .brev .dato{text-align:right;font:600 12px/1.5 "SF Mono",Menlo,monospace;letter-spacing:.12em;opacity:.7;margin-bottom:1.6em}
-  .brev .hils{margin-bottom:1.1em}
-  .brev .sig{margin:1.3em 0 0;font-style:italic;font-size:1.25em}
-  .m2 .o{z-index:2}
-  @media (prefers-reduced-motion:reduce){.navn-f,.navn-farge{animation:none!important}.navn-f{font-weight:400}.flyt{animation:none}.gl{transform:none!important}.motto,.motto .b,.brev-inn{transition:none!important;animation:none!important}.brev-inn{opacity:1;transform:none;filter:none}.motto.ut{visibility:hidden}.brev .t{visibility:visible}.motto .b{opacity:1;transform:none;filter:none}.m2::before{transform:none}}
+  /* Budskapet: det eneste som står på videoen, midt på. Ordene reiser seg ett og ett og blir stående. */
+  .scene{margin:auto 0;width:100%;display:grid;place-items:center}
+  .si{position:relative;margin:0;padding:0 0 clamp(40px,8vh,90px);text-align:center;color:#fff;font:600 clamp(34px,9vw,150px)/1.02 var(--serif);letter-spacing:-.035em;text-wrap:balance;text-shadow:0 2px 28px rgba(0,32,91,.5),0 1px 3px rgba(0,32,91,.4)}
+  .si::before{content:"";position:absolute;inset:-50% -14% -20%;z-index:-1;pointer-events:none;background:radial-gradient(closest-side,rgba(0,32,91,.32),rgba(0,32,91,0))}
+  .si .o{display:inline-block;opacity:0;transform:translateY(.4em);filter:blur(12px)}
+  .si.inn .o{opacity:1;transform:none;filter:none;transition:opacity .8s ease,transform 1.1s cubic-bezier(.2,1.1,.3,1),filter .8s ease;transition-delay:calc(300ms + var(--i)*260ms)}
+  @media (prefers-reduced-motion:reduce){.flyt{animation:none}.gl{transform:none!important}.si .o{opacity:1;transform:none;filter:none;transition:none!important}}
   /* Budskapet, ingressen og knappen står nå øverst på den blå siden under videoen. */
   .intro{padding-top:clamp(56px,10vh,120px)}
   /* V2: serif i overskriftene. */
@@ -495,19 +437,7 @@
   <div class="st"><div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Heart rate today"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg></span></button><span class="st-l"><span class="hp-on">Live from Apple Watch</span><span class="hp-av">Not live right now</span></span></div><div class="st-i tl-a" hidden data-av data-l="here now"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">here now</span><span class="tl-deg" aria-hidden="true">+1 · that's you</span></div></div><div class="st-i tl-b" hidden data-av data-l="unique visitors" data-ny="+1 · you are no. {n}" data-er="You are no. {n}" data-var="You were no. {n}"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unique visitors</span><span class="tl-deg" aria-hidden="true">+1 · that's you</span></div></div><span class="tl-sr"></span></div>
   </div></div>
   <div class="scene">
-  <p class="motto" aria-label="When life gives you lemons... demand caviar."><span class="m1" data-ord="lemons" aria-hidden="true">When life gives you lemons...</span><span class="m2" data-ord="caviar" aria-hidden="true">demand caviar.</span></p>
-  <p class="navn" hidden role="img" aria-label="Esbjug Consult"><span class="navn-f">Esbjug Consult<span class="navn-farge" aria-hidden="true">Esbjug Consult</span></span></p>
-  <!-- Brevet tar plassen etter slagordet, midt på skjermen. «Esbjug Consult» over er lagt på hyllen (hidden); legg «hidden» på brevet og fjern den fra navnet for å bytte tilbake. -->
-  <div class="brev-inn"><div class="flyt"><article class="brev gl skriver">
-    <p class="dato" style="--l:0">09.10.2026</p>
-    <p class="hils" style="--l:1">Dear friend,</p>
-    <p style="--l:2">I don't quite know what to do with myself.</p>
-    <p style="--l:3">It is so incredible.</p>
-    <p style="--l:4">SI, they call it now.</p>
-    <p style="--l:5">Superintelligence.</p>
-    <p style="--l:6">I agree.</p>
-    <p class="sig" style="--l:7">-Tidemann</p>
-  </article></div></div>
+  <p class="si"><span class="o">SuperIntelligence</span> <span class="o">is</span> <span class="o">here</span></p>
   </div>
   </div>
 </header>
@@ -796,7 +726,7 @@ const teller=(()=>{const a=document.querySelector('.tl-a'),u=document.querySelec
   const boks=a.closest('.topp');
   const show=(it,txt)=>{if(txt)it.querySelector('.tl-deg').textContent=txt;if(boks)it.style.setProperty('--ned',boks.getBoundingClientRect().bottom-it.getBoundingClientRect().bottom+'px');
     it.classList.add('deg');setTimeout(()=>it.classList.remove('deg'),4500)};
-  // Telleren venter til toppmodulen er bygget ut (body mister «forspill» når «kaviar» kommer, så tar innbyggingen ca. 1,3 s).
+  // Telleren venter til toppmodulen er bygget ut (body mister «forspill» når budskapet har kommet, så tar innbyggingen ca. 1,3 s).
   const naarVist=f=>{const b=document.body;if(!b.classList.contains('forspill'))return f(0);
     new MutationObserver((_,o)=>{if(!b.classList.contains('forspill')){o.disconnect();f(1)}}).observe(b,{attributes:true,attributeFilter:['class']})};
   // c = {live, total, nr, meg}. Første gang ruller «her nå» opp med deg (meg: du teller med); kjente får «Du er/var nr. N».
@@ -1038,44 +968,12 @@ const flare=g=>{d.classList.remove('f');void d.offsetWidth;d.classList.add('f');
 const run=()=>{code();setTimeout(()=>flare(true),600);setTimeout(()=>flare(false),2600)};
 setTimeout(()=>{run();setInterval(run,11000)},4000);
 })();
-// Slagordet på videoen: deles i bokstaver og spilles i sløyfe. Glassboksene vipper mot pekeren.
-(()=>{const m=document.querySelector('.motto'),vis=()=>document.body.classList.remove('forspill'),kom=()=>{document.body.classList.add('kom');vis()};if(!m){vis();return}
-const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
-const del=(el)=>{const t=el.textContent;el.textContent='';let i=0;const dots=(t.match(/\.+$/)||[''])[0],kropp=dots.length>1?t.slice(0,-dots.length):t;
-  kropp.split(' ').forEach((ord,k,a)=>{const o=document.createElement('span');o.className='o';
-    [...ord].forEach(c=>{const b=document.createElement('span');b.className='b';b.textContent=c;b.style.setProperty('--i',i++);o.append(b)});
-    el.append(o);if(k<a.length-1)el.append(' ')});
-  if(dots.length>1){const o=el.lastElementChild;[...dots].forEach((c,j)=>{const b=document.createElement('span');b.className='b pr';b.textContent=c;b.style.setProperty('--n',i);b.style.setProperty('--j',j);o.append(b)})}
-  return i};
-const m1=m.querySelector('.m1'),m2=m.querySelector('.m2');
-const n1=del(m1);del(m2);m.style.setProperty('--n',n1);
-const ordet=(el)=>[...el.querySelectorAll('.o')].find(o=>o.textContent.replace(/\.+$/,'')===el.dataset.ord);
-const sit=ordet(m1);
-if(sit){sit.classList.add('sit');[...sit.querySelectorAll('.b:not(.pr)')].forEach((b,k)=>b.style.setProperty('--k',k));}
-// Brevet: hvert tegn ligger usynlig på plass (boksen har full størrelse fra start) og vises ett og ett.
-const tegn=[];document.querySelectorAll('.brev p').forEach(p=>{const t=p.textContent;p.textContent='';
-  [...t].forEach(c=>{const e=document.createElement('span');e.className='t';e.textContent=c;p.append(e);tegn.push(e)});if(tegn.length)tegn[tegn.length-1].slutt=1});
-// Brevet kan ikke vippes med musa før det er ferdig skrevet (.skriver).
-const brev=document.querySelector('.brev'),ferdig=()=>brev&&brev.classList.remove('skriver');
-const skriv=(i=0)=>{if(i)tegn[i-1].classList.remove('na');if(i>=tegn.length)return ferdig();const e=tegn[i];e.classList.add('s','na');
-  const c=e.textContent;setTimeout(()=>skriv(i+1),e.slutt?520:/[,.]/.test(c)?260:28+Math.random()*38)};
-// Slagordet spilles og toner ut; så står «Esbjug Consult» igjen (eller brevet skrives, hvis det er tatt ned fra hyllen).
-const medBrev=!!document.querySelector('.brev-inn:not([hidden])'),ut=medBrev||!!document.querySelector('.navn:not([hidden])');
-if(still){m.classList.add('a1','a2');if(ut)m.classList.add('ut');ferdig();vis();return}
-const t1=n1*32+250+3*260+500;
-setTimeout(()=>m.classList.add('a1'),350);setTimeout(()=>{m.classList.add('a2');setTimeout(kom,430)},350+t1);
-if(ut)setTimeout(()=>m.classList.add('ut'),350+t1+3600);if(medBrev)setTimeout(skriv,350+t1+3600+1300)
-const hero=document.querySelector('.hero');
-hero.addEventListener('pointermove',e=>{if(e.pointerType==='touch')return;const r=hero.getBoundingClientRect();
-  m.style.setProperty('--px',((e.clientX-r.left)/r.width-.5)*-14+'px');m.style.setProperty('--py',((e.clientY-r.top)/r.height-.5)*-10+'px')});
-hero.addEventListener('pointerleave',()=>{m.style.setProperty('--px','0px');m.style.setProperty('--py','0px')});
-// Farger i navnet der pekeren er: sirkelen følger pekeren, og fargene kommer fram når pekeren er over eller nær navnet (etter at slagordet har tonet ut).
-const navn=document.querySelector('.navn'),farge=navn&&navn.querySelector('.navn-farge');
-if(farge){hero.addEventListener('pointermove',e=>{if(e.pointerType==='touch'||navn.hidden)return;const r=farge.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
-    farge.style.setProperty('--mx',x+'px');farge.style.setProperty('--my',y+'px');
-    navn.classList.toggle('farge',m.classList.contains('ut')&&x>-70&&x<r.width+70&&y>-70&&y<r.height+70)});
-  hero.addEventListener('pointerleave',()=>navn.classList.remove('farge'))}
-})();
+// Budskapet på videoen: ordene reiser seg ett og ett, så bygges toppmodulen og chatten ut.
+(()=>{const s=document.querySelector('.si'),vis=()=>document.body.classList.remove('forspill');
+if(!s||matchMedia('(prefers-reduced-motion: reduce)').matches){vis();return}
+const ord=s.querySelectorAll('.o');ord.forEach((o,i)=>o.style.setProperty('--i',i));
+requestAnimationFrame(()=>requestAnimationFrame(()=>s.classList.add('inn')));
+setTimeout(()=>{document.body.classList.add('kom');vis()},300+ord.length*260+600)})();
 (()=>{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
 document.querySelectorAll('.gl').forEach(g=>{
   const sett=(e)=>{const r=g.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height,k=Math.min(1,260/r.width);

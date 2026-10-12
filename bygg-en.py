@@ -247,17 +247,8 @@ T = [
 
 # V2 (forsiden fra 7.10.2026) har egne tekster. V1-tekstene den har byttet ut hoppes over.
 T_NY = [
-    ('aria-label="Når livet gir deg sitroner... krev kaviar."', 'aria-label="When life gives you lemons... demand caviar."'),
-    ('>Når livet gir deg sitroner...<', '>When life gives you lemons...<'),
-    ('>krev kaviar.<', '>demand caviar.<'),
-    ('>Kjære venn,<', '>Dear friend,<'),
-    ('>Jeg vet ikke helt hvor jeg skal gjøre av meg.<', ">I don't quite know what to do with myself.<"),
-    ('>Det er så utrolig.<', '>It is so incredible.<'),
-    ('>SI, heter det nå.<', '>SI, they call it now.<'),
-    ('>Superintelligens.<', '>Superintelligence.<'),
-    ('>Jeg er enig.<', '>I agree.<'),
-    ('data-ord="sitroner"', 'data-ord="lemons"'),
-    ('data-ord="kaviar"', 'data-ord="caviar"'),
+    ('<span class="o">SuperIntelligens</span> <span class="o">er</span> <span class="o">her</span>',
+     '<span class="o">SuperIntelligence</span> <span class="o">is</span> <span class="o">here</span>'),
     ('alt="To mobiltelefoner side om side, i blått og hvitt"', 'alt="Two phones side by side, in blue and white"'),
     ('alt="Hengelås i blått og hvitt"', 'alt="A padlock in blue and white"'),
 ]
