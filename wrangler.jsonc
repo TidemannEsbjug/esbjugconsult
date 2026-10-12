@@ -4,6 +4,9 @@
   "name": "esbjug-consult",
   "compatibility_date": "2026-09-01",
   "main": ".worker/index.js",
+  // Before every deploy: copy the pages behind the login into kunde/ from the private repo
+  // cloned one folder up. The deploy stops if that repo is missing, so the area is never wiped.
+  "build": { "command": "node ../verktoy/kunde-sync.mjs" },
   // run_worker_first: www is redirected before any file is served.
   "assets": { "directory": ".", "binding": "ASSETS", "run_worker_first": true },
   // Only the real domain; no parallel *.workers.dev copy.
