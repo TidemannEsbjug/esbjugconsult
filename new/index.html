@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="nb">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Esbjug Consult – Nettsider med egen film</title>
-<meta name="description" content="Vi lager nettsider for bedrifter, med film og bilder laget for akkurat deres bransje. Fast pris, avtalt på forhånd.">
-<!-- Arbeidskopien av byråsiden. Skjult fra søkemotorer til den erstatter forsiden. -->
+<title>Esbjug Consult – Website agency</title>
+<meta name="description" content="We design, build and run modern websites for businesses. Fixed price, agreed before we start.">
+<!-- Working copy of the agency site. Hidden from search engines until it replaces the front page. -->
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#00205B">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2300205B'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%23BA0C2F' stroke='%23fff' stroke-width='3'/%3E%3C/svg%3E">
@@ -35,13 +35,12 @@
   .btn-n:hover{background:var(--navy2)}
   :focus-visible{outline:3px solid var(--red);outline-offset:3px}
 
-  /* Toppmeny: gjennomsiktig over filmen, hvit med skygge når man har rullet. */
+  /* Top menu: transparent over the video, white with a shadow once you scroll. */
   .nav{position:fixed;inset:0 0 auto;z-index:50;color:#fff;transition:background .3s,color .3s,box-shadow .3s}
   .nav .w{display:flex;align-items:center;gap:28px;height:76px}
   .nav.fast,.nav.apen{background:#fff;color:var(--navy);box-shadow:0 1px 0 var(--line),0 8px 30px rgba(0,32,91,.06)}
   .logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--serif);font-size:22px;font-weight:600;margin-right:auto}
   .logo i{width:22px;height:22px;border-radius:50%;background:var(--red);border:3px solid #fff;box-shadow:0 0 0 2px var(--navy)}
-  .nav.fast .logo i,.nav.apen .logo i{border-color:#fff}
   .nav ul{display:flex;gap:26px;list-style:none;margin:0;padding:0;font-size:15px;font-weight:500}
   .nav ul a{text-decoration:none;opacity:.9}
   .nav ul a:hover{opacity:1;text-decoration:underline;text-underline-offset:6px}
@@ -58,7 +57,7 @@
   .nav ul .kun-m{display:none}
   @media (max-width:900px){.nav.apen ul .kun-m{display:block}}
 
-  /* Hero: filmen fyller skjermen, mørkt blått over så teksten kan leses. */
+  /* Hero: the video fills the screen, with dark blue over it so the text stays readable. */
   .hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;color:#fff;background:var(--navy);overflow:hidden}
   .hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
   .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,20,60,.55) 0%,rgba(0,20,60,.15) 35%,rgba(0,20,60,.35) 60%,rgba(0,20,60,.85) 100%)}
@@ -70,7 +69,7 @@
   .hero p{font-size:clamp(17px,1.6vw,21px);max-width:36rem;opacity:.92}
   .hero .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
 
-  /* Kort fakta rett under filmen. */
+  /* Short facts right under the video. */
   .fakta{background:var(--navy);color:#fff}
   .fakta ul{list-style:none;margin:0 auto;padding:26px var(--g);max-width:var(--w);display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
   .fakta li{display:flex;align-items:center;gap:12px;font-size:15px;font-weight:500}
@@ -83,7 +82,7 @@
   .hode h2{font-size:clamp(32px,4.2vw,54px);margin:14px 0 16px;text-wrap:balance}
   .hode p{color:var(--mut);font-size:19px}
 
-  /* Tjenester */
+  /* Services */
   .kort{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
   .kort article{border:1px solid var(--line);border-radius:18px;padding:30px 28px;background:#fff;transition:border-color .2s,box-shadow .2s,transform .2s}
   .kort article:hover{border-color:#c9d3e3;box-shadow:0 18px 40px rgba(0,32,91,.08);transform:translateY(-2px)}
@@ -94,7 +93,7 @@
   @media (max-width:900px){.kort{grid-template-columns:1fr 1fr}}
   @media (max-width:600px){.kort{grid-template-columns:1fr}}
 
-  /* Eksempel: nettleservindu med filmen, og bildene til undersidene under. */
+  /* Example: a browser window with the site, and the images for the sub-pages below. */
   .eks{background:var(--soft)}
   .vindu{border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 30px 80px rgba(0,32,91,.18),0 0 0 1px rgba(0,32,91,.06)}
   .vindu-t{display:flex;align-items:center;gap:8px;padding:12px 16px;background:#eef2f7;border-bottom:1px solid var(--line)}
@@ -107,7 +106,6 @@
   .vindu-x b{display:block;font:700 clamp(20px,3.4vw,44px)/1.1 var(--sans);letter-spacing:-.02em}
   .vindu-x span{display:block;margin-top:10px;font-size:clamp(12px,1.3vw,16px);opacity:.85}
   .vindu-x u{display:inline-block;margin-top:16px;text-decoration:none;background:#fff;color:#06111c;font-weight:700;font-size:clamp(11px,1.1vw,14px);padding:8px 16px;border-radius:999px}
-  .merk{position:absolute;z-index:1;right:14px;bottom:14px;font-size:12px;font-weight:600;color:#fff;background:rgba(0,0,0,.45);padding:6px 11px;border-radius:999px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
   .bilder{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:20px}
   .bilder figure{margin:0;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 0 0 1px rgba(0,32,91,.06)}
   .bilder img{width:100%;aspect-ratio:16/10;object-fit:cover}
@@ -116,7 +114,7 @@
   .eks .note{margin-top:28px;color:var(--mut);font-size:15px;max-width:44rem}
   @media (max-width:700px){.bilder{grid-template-columns:1fr}.vindu-b{aspect-ratio:4/3}.vindu-t span{display:none}}
 
-  /* Slik jobber vi */
+  /* How we work */
   .steg{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;counter-reset:s;list-style:none;margin:0;padding:0}
   .steg li{counter-increment:s;border-top:2px solid var(--navy);padding-top:22px}
   .steg li::before{content:"0" counter(s);display:block;font:500 15px/1 var(--serif);color:var(--red);margin-bottom:16px}
@@ -125,7 +123,7 @@
   @media (max-width:900px){.steg{grid-template-columns:1fr 1fr;row-gap:44px}}
   @media (max-width:560px){.steg{grid-template-columns:1fr}}
 
-  /* Pakker */
+  /* Packages */
   .pk{background:var(--soft)}
   .pakker{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch}
   .pakker article{display:flex;flex-direction:column;background:#fff;border-radius:20px;padding:34px 30px;box-shadow:0 0 0 1px var(--line)}
@@ -145,7 +143,7 @@
   .pakker .anb .btn-n{background:#fff;color:var(--navy)}
   @media (max-width:960px){.pakker{grid-template-columns:1fr;max-width:34rem}}
 
-  /* Spørsmål */
+  /* FAQ */
   .faq{max-width:52rem}
   .faq details{border-bottom:1px solid var(--line)}
   .faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:24px 0;font:500 21px/1.3 var(--serif)}
@@ -154,7 +152,7 @@
   .faq details[open] summary::after{transform:rotate(45deg)}
   .faq details p{color:var(--mut);padding:0 0 26px;max-width:44rem}
 
-  /* Kontakt */
+  /* Contact */
   .kontakt{position:relative;background:var(--navy);color:#fff;overflow:hidden}
   .kontakt::before{content:"";position:absolute;width:640px;height:640px;right:-200px;top:-260px;border-radius:50%;background:radial-gradient(circle,rgba(186,12,47,.45),rgba(186,12,47,0) 65%)}
   .kontakt .w{position:relative;display:grid;grid-template-columns:1.3fr 1fr;gap:48px;align-items:center}
@@ -174,7 +172,7 @@
   footer a{text-decoration:none}
   footer a:hover{color:#fff}
 
-  /* Innhold glir inn når det kommer på skjermen. */
+  /* Content slides in as it comes on screen. */
   .js .inn{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
   .js .inn.vis{opacity:1;transform:none}
   @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.js .inn{opacity:1;transform:none;transition:none}.btn,.kort article{transition:none}}
@@ -187,211 +185,210 @@
   <div class="w">
     <a class="logo" href="/new/"><i aria-hidden="true"></i>Esbjug Consult</a>
     <ul id="lenker">
-      <li><a href="#tjenester">Tjenester</a></li>
-      <li><a href="#eksempel">Eksempel</a></li>
-      <li><a href="#slik">Slik jobber vi</a></li>
-      <li><a href="#pakker">Pakker</a></li>
-      <li><a href="#sporsmal">Spørsmål</a></li>
-      <li class="kun-m"><a href="#kontakt">Få et tilbud</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#work">Work</a></li>
+      <li><a href="#process">Process</a></li>
+      <li><a href="#packages">Packages</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li class="kun-m"><a href="#contact">Get a quote</a></li>
     </ul>
-    <a class="btn btn-r" href="#kontakt">Få et tilbud</a>
-    <button class="meny" type="button" aria-expanded="false" aria-controls="lenker" aria-label="Meny">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path class="m-a" d="M4 7h16M4 12h16M4 17h16"/></svg>
+    <a class="btn btn-r" href="#contact">Get a quote</a>
+    <button class="meny" type="button" aria-expanded="false" aria-controls="lenker" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>
   </div>
 </header>
 
 <main>
 <section class="hero">
-  <!-- Bakgrunnsfilmen. Bytt til den generelle filmen fra Midjourney/Kling/Grok Imagine når den er klar
-       (legg den i /new/media/ og endre de to src-ene og poster). -->
+  <!-- Background video. PLACEHOLDER: the Oslofjord drone clip. Replace with the agency video
+       (Midjourney still animated in Grok Imagine): put it in /new/media/ and change the two src values and the poster. -->
   <video autoplay muted loop playsinline preload="metadata" poster="/media/hero.jpg?v=3" aria-hidden="true" tabindex="-1" disablepictureinpicture>
     <source src="/media/hero-720.mp4?v=3" media="(max-width:760px)" type="video/mp4">
     <source src="/media/hero.mp4?v=3" type="video/mp4">
   </video>
   <div class="w">
-    <p class="eb">Nettsidebyrå</p>
-    <h1>Nettsider med <em>egen film</em> i bakgrunnen.</h1>
-    <p>Vi lager film og bilder for akkurat din bransje med KI, og bygger en rask, moderne nettside rundt dem. Fast pris, avtalt før vi starter.</p>
+    <p class="eb">Website agency</p>
+    <h1>Websites that <em>win you work.</em></h1>
+    <p>We design, build and run fast, modern websites for businesses. Fixed price, agreed before we start.</p>
     <div class="cta">
-      <a class="btn btn-r" href="#kontakt">Få et tilbud</a>
-      <a class="btn btn-g" href="#eksempel">Se et eksempel</a>
+      <a class="btn btn-r" href="#contact">Get a quote</a>
+      <a class="btn btn-g" href="#work">See our work</a>
     </div>
   </div>
 </section>
 
 <div class="fakta">
   <ul>
-    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="15" height="14" rx="2"/><path d="m17 10 5-3v10l-5-3"/></svg>Egen film, ikke stockbilder</li>
-    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></svg>Laget for mobil først</li>
-    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Rask og sikker drift</li>
-    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Fast pris på forhånd</li>
+    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>Custom design, no templates</li>
+    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></svg>Built for mobile first</li>
+    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Fast, secure hosting</li>
+    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Fixed price up front</li>
   </ul>
 </div>
 
-<section class="s" id="tjenester">
+<section class="s" id="services">
   <div class="w">
     <div class="hode inn">
-      <p class="eb">Tjenester</p>
-      <h2>Alt du trenger for en ny nettside, fra én leverandør.</h2>
-      <p>Du får design, film, bilder, tekst og drift samlet. Ingen fotograf, ingen opptaksdag og ingen mellommenn.</p>
+      <p class="eb">Services</p>
+      <h2>Everything a new website needs, from one team.</h2>
+      <p>Design, development, copy, images and hosting in one place. No middlemen, no loose ends.</p>
     </div>
     <div class="kort">
       <article class="inn">
         <div class="ik"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="16" rx="2"/><path d="M2 8h20M6 5.5h.01M9 5.5h.01"/></svg></div>
-        <h3>Ny nettside</h3>
-        <p>Design og koding fra bunnen av. Rask å laste, enkel å bruke og laget for mobil først.</p>
+        <h3>Web design</h3>
+        <p>A design made for your business, not a template. Clear, calm and easy to find your way around.</p>
       </article>
       <article class="inn">
-        <div class="ik"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="15" height="14" rx="2"/><path d="m17 10 5-3v10l-5-3"/></svg></div>
-        <h3>Film i bakgrunnen</h3>
-        <p>En kort, rolig film øverst på siden, laget med Midjourney, Kling og Grok Imagine for din bransje.</p>
+        <div class="ik"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></svg></div>
+        <h3>Development</h3>
+        <p>Hand-coded, quick to load and built for phones first. No heavy page builders.</p>
       </article>
       <article class="inn">
         <div class="ik"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg></div>
-        <h3>Bilder til hver side</h3>
-        <p>Egne bilder til tjenester, prosjekter og «jobb hos oss», i samme stil gjennom hele siden.</p>
+        <h3>Images and video</h3>
+        <p>Custom images and video for every page, made with Midjourney and Grok Imagine. No stock photos.</p>
       </article>
       <article class="inn">
         <div class="ik"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div>
-        <h3>Tekster</h3>
-        <p>Vi skriver om tekstene fra dagens side, eller lager nye, så de er korte og lette å lese.</p>
+        <h3>Copywriting</h3>
+        <p>We rewrite the text from your current site, or write it new, so it is short and easy to read.</p>
       </article>
       <article class="inn">
         <div class="ik"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div>
-        <h3>Synlig i Google</h3>
-        <p>Riktige titler, beskrivelser og struktur, så Google forstår hva dere gjør og hvor dere holder til.</p>
+        <h3>Found on Google</h3>
+        <p>The right titles, descriptions and structure, so Google understands what you do and where.</p>
       </article>
       <article class="inn">
         <div class="ik"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.4 8.3 8 9 4.6-.7 8-4 8-9V6z"/></svg></div>
-        <h3>Drift og endringer</h3>
-        <p>Vi legger siden ut på domenet deres og tar oss av drift og endringer etterpå, om dere ønsker det.</p>
+        <h3>Hosting and updates</h3>
+        <p>We put the site live on your domain and look after hosting and changes afterwards, if you want us to.</p>
       </article>
     </div>
   </div>
 </section>
 
-<section class="s eks" id="eksempel">
+<section class="s eks" id="work">
   <div class="w">
     <div class="hode inn">
-      <p class="eb">Eksempel</p>
-      <h2>Slik kan det se ut for et rørleggerfirma.</h2>
-      <p>Filmen og bildene under er laget med KI for denne bransjen. Ingen av dem er tatt med kamera.</p>
+      <p class="eb">Work</p>
+      <h2>A website for a plumbing company.</h2>
+      <p>Design, copy, images and video, all made for this one business.</p>
     </div>
     <div class="vindu inn">
-      <div class="vindu-t"><i></i><i></i><i></i><span>dittfirma.no</span></div>
+      <div class="vindu-t"><i></i><i></i><i></i><span>yourcompany.com</span></div>
       <div class="vindu-b">
-        <video class="lat" muted loop playsinline preload="none" poster="/vvskontakten/assets/hero.jpg" aria-label="Eksempel på bakgrunnsfilm: vann som renner fra en kran">
+        <video class="lat" muted loop playsinline preload="none" poster="/vvskontakten/assets/hero.jpg" aria-label="Example website: water running from a tap">
           <source src="/vvskontakten/assets/hero.mp4" type="video/mp4">
         </video>
         <div class="vindu-x" aria-hidden="true">
-          <b>Rørlegger du kan stole på.</b>
-          <span>Service, bad og nybygg. Vi svarer samme dag.</span>
-          <u>Bestill befaring</u>
+          <b>Plumbers you can count on.</b>
+          <span>Service, bathrooms and new builds. We reply the same day.</span>
+          <u>Book a visit</u>
         </div>
-        <span class="merk">Film laget med KI</span>
       </div>
     </div>
     <div class="bilder">
-      <figure class="inn"><img src="/vvskontakten/assets/mj-service.jpg" alt="Kobberrør med trykkmåler" loading="lazy" width="1456" height="816"><figcaption>Service<span>Bilde til tjenestesiden</span></figcaption></figure>
-      <figure class="inn"><img src="/vvskontakten/assets/mj-prosjekter.jpg" alt="Boligblokker under bygging med kraner i kveldslys" loading="lazy" width="1456" height="816"><figcaption>Prosjekter<span>Bilde til prosjektsiden</span></figcaption></figure>
-      <figure class="inn"><img src="/vvskontakten/assets/mj-jobb.jpg" alt="Rørtenger og verktøy på en arbeidsbenk" loading="lazy" width="1456" height="816"><figcaption>Jobb hos oss<span>Bilde til rekrutteringssiden</span></figcaption></figure>
+      <figure class="inn"><img src="/vvskontakten/assets/mj-service.jpg" alt="Copper pipes with a pressure gauge" loading="lazy" width="1456" height="816"><figcaption>Services<span>Image for the services page</span></figcaption></figure>
+      <figure class="inn"><img src="/vvskontakten/assets/mj-prosjekter.jpg" alt="Apartment blocks under construction with cranes at dusk" loading="lazy" width="1456" height="816"><figcaption>Projects<span>Image for the projects page</span></figcaption></figure>
+      <figure class="inn"><img src="/vvskontakten/assets/mj-jobb.jpg" alt="Pipe wrenches and tools on a workbench" loading="lazy" width="1456" height="816"><figcaption>Careers<span>Image for the careers page</span></figcaption></figure>
     </div>
-    <p class="note inn">Hver bransje får sin egen film og sine egne bilder. Vil dere heller bruke egne bilder og opptak, bygger vi siden rundt dem.</p>
+    <p class="note inn">Every site gets its own design and imagery. Have your own photos? We build around them.</p>
   </div>
 </section>
 
-<section class="s" id="slik">
+<section class="s" id="process">
   <div class="w">
     <div class="hode inn">
-      <p class="eb">Slik jobber vi</p>
-      <h2>Du ser siden før du bestemmer deg.</h2>
-      <p>Vi lager et utkast med film og bilder først. Liker du det, gjør vi det ferdig.</p>
+      <p class="eb">Process</p>
+      <h2>You see the site before you decide.</h2>
+      <p>We build a working draft first. If you like it, we finish it.</p>
     </div>
     <ol class="steg">
-      <li class="inn"><h3>Samtale</h3><p>Vi ser på siden dere har i dag og hva dere vil oppnå. Du får en fast pris.</p></li>
-      <li class="inn"><h3>Utkast</h3><p>Vi lager forsiden med film, bilder og tekst, og viser den til deg på en egen adresse.</p></li>
-      <li class="inn"><h3>Justering</h3><p>Vi endrer det du vil ha annerledes og bygger resten av sidene.</p></li>
-      <li class="inn"><h3>Lansering</h3><p>Siden legges ut på domenet deres. Vi følger med og hjelper med endringer etterpå.</p></li>
+      <li class="inn"><h3>Call</h3><p>We look at your current site and what you want from it. You get a fixed price.</p></li>
+      <li class="inn"><h3>Draft</h3><p>We build the front page with design, images and copy, and show it to you at its own address.</p></li>
+      <li class="inn"><h3>Refine</h3><p>We change what you want changed and build the rest of the pages.</p></li>
+      <li class="inn"><h3>Launch</h3><p>The site goes live on your domain. We keep an eye on it and help with changes afterwards.</p></li>
     </ol>
   </div>
 </section>
 
-<section class="s pk" id="pakker">
+<section class="s pk" id="packages">
   <div class="w">
     <div class="hode inn">
-      <p class="eb">Pakker</p>
-      <h2>Velg det som passer bedriften.</h2>
-      <p>Alle pakkene har fast pris. Du får prisen etter en kort samtale, før vi starter.</p>
+      <p class="eb">Packages</p>
+      <h2>Pick what fits your business.</h2>
+      <p>Every package has a fixed price. You get it after a short call, before we start.</p>
     </div>
     <div class="pakker">
       <article class="inn">
-        <h3>Start</h3>
-        <p class="for">For deg som trenger en god side raskt.</p>
+        <h3>Starter</h3>
+        <p class="for">A good site, quickly.</p>
         <ul>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Én side med alt det viktigste</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Film i bakgrunnen øverst</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Kontaktinfo og kart</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Lagt ut på domenet deres</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>One page with everything that matters</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Custom design and images</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Contact details and map</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Live on your domain</li>
         </ul>
-        <div class="pris"><b>Fast pris</b><a class="btn btn-n" href="#kontakt">Få tilbud</a></div>
+        <div class="pris"><b>Fixed price</b><a class="btn btn-n" href="#contact">Get a quote</a></div>
       </article>
       <article class="inn anb">
-        <span class="tag">Anbefalt</span>
-        <h3>Bedrift</h3>
-        <p class="for">En komplett side for etablerte bedrifter.</p>
+        <span class="tag">Recommended</span>
+        <h3>Business</h3>
+        <p class="for">A complete site for an established business.</p>
         <ul>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Flere sider: tjenester, prosjekter, om oss, jobb og kontakt</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Film i bakgrunnen og egne bilder til hver side</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Tekstene skrevet om</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Grunnoppsett for Google</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Drift og små endringer</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Several pages: services, projects, about, careers and contact</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Custom images for every page and a video at the top</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Copy rewritten</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Set up for Google</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Hosting and small changes</li>
         </ul>
-        <div class="pris"><b>Fast pris</b><a class="btn btn-n" href="#kontakt">Få tilbud</a></div>
+        <div class="pris"><b>Fixed price</b><a class="btn btn-n" href="#contact">Get a quote</a></div>
       </article>
       <article class="inn">
-        <h3>Skreddersydd</h3>
-        <p class="for">Når dere trenger mer enn en vanlig nettside.</p>
+        <h3>Custom</h3>
+        <p class="for">When you need more than a website.</p>
         <ul>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Nettbutikk eller timebestilling</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Kobling mot systemene dere bruker</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Flere språk</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Lengre film eller reklamefilm</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Online shop or booking</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Connected to the systems you use</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Several languages</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Longer video or a promo film</li>
         </ul>
-        <div class="pris"><b>Etter avtale</b><a class="btn btn-n" href="#kontakt">Ta kontakt</a></div>
+        <div class="pris"><b>By agreement</b><a class="btn btn-n" href="#contact">Get in touch</a></div>
       </article>
     </div>
   </div>
 </section>
 
-<section class="s" id="sporsmal">
+<section class="s" id="faq">
   <div class="w">
     <div class="hode inn">
-      <p class="eb">Spørsmål</p>
-      <h2>Det folk lurer på.</h2>
+      <p class="eb">FAQ</p>
+      <h2>What people ask.</h2>
     </div>
     <div class="faq inn">
-      <details><summary>Hva koster en ny nettside?</summary><p>Det kommer an på hvor mange sider dere trenger og hva de skal gjøre. Etter en kort samtale får du en fast pris. Den endrer seg ikke underveis.</p></details>
-      <details><summary>Er filmen ekte?</summary><p>Nei. Den er laget med KI-verktøy som Midjourney, Kling og Grok Imagine, ut fra bransjen og stilen dere ønsker. Det gjør at dere slipper fotograf og opptaksdag.</p></details>
-      <details><summary>Kan vi bruke egne bilder og opptak?</summary><p>Ja. Vi kan bygge siden rundt bildene dere har, eller blande egne bilder med det vi lager.</p></details>
-      <details><summary>Blir siden treg med film?</summary><p>Nei. Filmen er kort, uten lyd og pakket ned for nettet. Mobil får en mindre versjon, og siden vises med et stillbilde mens filmen lastes.</p></details>
-      <details><summary>Kan vi beholde domenet vårt?</summary><p>Ja. Den nye siden legges ut på domenet dere har i dag, og e-posten deres påvirkes ikke.</p></details>
-      <details><summary>Hva skjer etter lansering?</summary><p>Vi kan ta oss av drift og endringer for dere. Vil dere heller ha filene selv, får dere dem.</p></details>
+      <details><summary>What does a new website cost?</summary><p>It depends on how many pages you need and what they should do. After a short call you get a fixed price. It does not change along the way.</p></details>
+      <details><summary>Do you use templates?</summary><p>No. Every site is designed and coded for the business it belongs to.</p></details>
+      <details><summary>Where do the images come from?</summary><p>We make them for you with tools like Midjourney and Grok Imagine, in a style that fits your business. If you have your own photos, we can use those instead or mix the two.</p></details>
+      <details><summary>Will it work on phones?</summary><p>Yes. We design for phones first, then for larger screens.</p></details>
+      <details><summary>Can we keep our domain?</summary><p>Yes. The new site goes live on the domain you already have, and your email is not affected.</p></details>
+      <details><summary>What happens after launch?</summary><p>We can look after hosting and changes for you. If you would rather have the files yourself, you get them.</p></details>
     </div>
   </div>
 </section>
 
-<section class="s kontakt" id="kontakt">
+<section class="s kontakt" id="contact">
   <div class="w">
     <div class="inn">
-      <p class="eb" style="color:var(--sky)">Kontakt</p>
-      <h2 style="margin-top:14px">Klar for en ny nettside?</h2>
-      <p>Send oss adressen til siden dere har i dag, så tar vi kontakt og forteller hva vi kan gjøre.</p>
+      <p class="eb" style="color:var(--sky)">Contact</p>
+      <h2 style="margin-top:14px">Ready for a new website?</h2>
+      <p>Send us a link to your current site, and we will tell you what we would do with it.</p>
     </div>
     <div class="boks inn">
-      <span>E-post</span>
-      <a class="e" href="mailto:tidemann@esbjugconsult.com?subject=Ny%20nettside">tidemann@esbjugconsult.com</a>
-      <a class="btn btn-r" href="mailto:tidemann@esbjugconsult.com?subject=Ny%20nettside">Send e-post</a>
+      <span>Email</span>
+      <a class="e" href="mailto:tidemann@esbjugconsult.com?subject=New%20website">tidemann@esbjugconsult.com</a>
+      <a class="btn btn-r" href="mailto:tidemann@esbjugconsult.com?subject=New%20website">Send an email</a>
     </div>
   </div>
 </section>
@@ -400,10 +397,10 @@
 <footer>
   <div class="w">
     <a class="logo" href="/new/"><i aria-hidden="true"></i>Esbjug Consult</a>
-    <nav aria-label="Bunnmeny">
-      <a href="#tjenester">Tjenester</a>
-      <a href="#eksempel">Eksempel</a>
-      <a href="#pakker">Pakker</a>
+    <nav aria-label="Footer">
+      <a href="#services">Services</a>
+      <a href="#work">Work</a>
+      <a href="#packages">Packages</a>
       <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a>
     </nav>
     <span>© 2026 Esbjug Consult</span>
@@ -413,10 +410,10 @@
 <script>
 (function(){
   var nav = document.getElementById("nav"), knapp = nav.querySelector(".meny"), sti = knapp.querySelector("path");
-  // Menyen blir hvit når man har rullet forbi toppen av filmen.
+  // The menu turns white once you scroll past the top of the video.
   function rull(){ nav.classList.toggle("fast", scrollY > 40); }
   addEventListener("scroll", rull, { passive: true }); rull();
-  // Mobilmeny
+  // Mobile menu
   function lukk(){ nav.classList.remove("apen"); knapp.setAttribute("aria-expanded", "false"); sti.setAttribute("d", "M4 7h16M4 12h16M4 17h16"); }
   knapp.addEventListener("click", function(){
     var apen = nav.classList.toggle("apen");
@@ -427,7 +424,7 @@
   addEventListener("keydown", function(e){ if (e.key === "Escape") lukk(); });
 
   var rolig = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  // Med redusert bevegelse står filmen stille på stillbildet.
+  // With reduced motion, videos stay on their still image.
   if (rolig) document.querySelectorAll("video").forEach(function(v){ v.removeAttribute("autoplay"); v.pause(); });
 
   if (!("IntersectionObserver" in window)) { document.querySelectorAll(".inn").forEach(function(e){ e.classList.add("vis"); }); return; }
@@ -436,7 +433,7 @@
   }, { rootMargin: "0px 0px -8% 0px" });
   document.querySelectorAll(".inn").forEach(function(e){ io.observe(e); });
 
-  // Eksempelfilmen lastes først når den kommer på skjermen, og stopper når den er ute.
+  // The example video only loads once it is on screen, and pauses when it leaves.
   var lat = new IntersectionObserver(function(es){
     es.forEach(function(e){ if (rolig) return; if (e.isIntersecting) e.target.play().catch(function(){}); else e.target.pause(); });
   }, { threshold: .25 });
