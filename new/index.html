@@ -3,124 +3,97 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Esbjug Consult – Websites for trades</title>
-<meta name="description" content="Websites, apps and ads for trades companies. Plumbers, electricians, builders, painters and everyone who does real work.">
+<title>Esbjug Consult – Websites for the trades</title>
+<meta name="description" content="Websites, apps and ads for trades companies. Plumbers, electricians, carpenters, builders and everyone who does real work.">
 <!-- Working copy of the agency site. Hidden from search engines until it replaces the front page. -->
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#ffffff">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23fff'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%23BA0C2F' stroke='%2300205B' stroke-width='2'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#0b1630">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230b1630'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%23BA0C2F' stroke='%23fff' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preload" href="/media/fonts/barlow-condensed-800.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/media/fonts/inter-tight-latin.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+  @font-face{font-family:"Barlow Condensed";src:url(/media/fonts/barlow-condensed-800.woff2) format("woff2");font-weight:800;font-display:swap}
+  @font-face{font-family:"Barlow Condensed";src:url(/media/fonts/barlow-condensed-600.woff2) format("woff2");font-weight:600;font-display:swap}
   @font-face{font-family:"Inter Tight";src:url(/media/fonts/inter-tight-latin.woff2) format("woff2");font-weight:300 700;font-display:swap;
     unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-  @font-face{font-family:"Inter Tight";src:url(/media/fonts/inter-tight-latin-ext.woff2) format("woff2");font-weight:300 700;font-display:swap;
-    unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
-  :root{--ink:#0b1630;--mut:rgba(11,22,48,.4);--line:rgba(11,22,48,.12);--sky:#e8f2fb;--soft:#f3f7fb;--red:#BA0C2F;--glow:#ff3b5c;
-    --pad:clamp(20px,3.5vw,50px);--max:1440px;--sans:"Inter Tight",-apple-system,"Helvetica Neue",Arial,sans-serif}
+  :root{--ink:#0b1630;--steel:#1c2635;--mut:rgba(11,22,48,.55);--line:rgba(11,22,48,.14);--paper:#f3f3f1;--red:#BA0C2F;--red2:#d4203f;
+    --pad:clamp(20px,3.5vw,50px);--max:1440px;--sans:"Inter Tight",-apple-system,"Helvetica Neue",Arial,sans-serif;--cond:"Barlow Condensed","Arial Narrow",Impact,sans-serif}
   *{box-sizing:border-box}
-  html{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;scroll-behavior:smooth}
-  img,video{-webkit-user-drag:none;display:block;max-width:100%}
-  html,body{margin:0;background:#fff;color:var(--ink)}
-  body{font:500 clamp(15px,1.16vw,18px)/1.4 var(--sans);letter-spacing:-.01em;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  html{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+  img,video,canvas{-webkit-user-drag:none;display:block;max-width:100%}
+  html,body{margin:0;background:var(--paper);color:var(--ink)}
+  body{font:500 clamp(15px,1.16vw,18px)/1.45 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
   a{color:inherit;text-decoration:none}
-  h1,h2,h3,p{margin:0;font-weight:500}
+  h1,h2,h3,p{margin:0}
   .max{max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
-  /* Statement text: large and tight, the first part dark and the rest grey. */
-  .st{font-size:clamp(28px,2.9vw,48px);line-height:1.1;letter-spacing:-.02em;max-width:22em;text-wrap:balance}
-  .st .g{color:var(--mut)}
-  .xl{font-size:clamp(54px,8.1vw,140px);line-height:.98;letter-spacing:-.035em}
-  .lbl{font-size:13px;letter-spacing:.02em;color:var(--mut)}
-  .pill{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:10px;font-size:15px;background:rgba(11,22,48,.07);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);transition:background .2s,color .2s}
-  .pill:hover{background:rgba(11,22,48,.13)}
-  .pill.mork{background:var(--ink);color:#fff}
-  .pill.mork:hover{background:#1d2b4a}
-  :focus-visible{outline:2px solid var(--red);outline-offset:3px}
+  /* Display type: heavy, condensed capitals. */
+  .d{font-family:var(--cond);font-weight:800;text-transform:uppercase;letter-spacing:-.01em;line-height:.88}
+  .lbl{font-family:var(--cond);font-weight:600;font-size:15px;letter-spacing:.14em;text-transform:uppercase}
+  .knapp{display:inline-flex;align-items:center;gap:10px;padding:16px 26px;background:var(--red);color:#fff;font-family:var(--cond);font-weight:800;font-size:20px;letter-spacing:.06em;text-transform:uppercase;transition:background .2s,transform .2s}
+  .knapp:hover{background:var(--red2);transform:translateY(-1px)}
+  .knapp.lys{background:#fff;color:var(--ink)}
+  .knapp.lys:hover{background:#e9e9e6}
+  :focus-visible{outline:3px solid var(--red);outline-offset:3px}
 
-  /* Header: the logo mark on the left, Menu on the right. A white fade behind once you scroll. */
-  .sh{position:fixed;inset:0 0 auto;z-index:40;pointer-events:none}
-  .sh::before{content:"";position:absolute;inset:0 0 -40px;background:linear-gradient(#fff,rgba(255,255,255,0));opacity:0;transition:opacity .4s}
-  .sh.fast::before{opacity:.9}
-  .sh .max{position:relative;display:flex;align-items:center;justify-content:space-between;height:92px}
-  .sh a,.sh button{pointer-events:auto}
-  .merke{width:30px;height:30px;border-radius:50%;background:var(--red);border:3px solid #fff;box-shadow:0 0 0 2px var(--ink),0 0 18px rgba(255,59,92,.35);opacity:0;transform:scale(.6);transition:opacity .5s,transform .5s}
-  .sh.fast .merke,.sh.apen .merke{opacity:1;transform:none}
-  .meny-k{font:inherit;color:var(--ink);border:0;cursor:pointer}
+  /* Header over the film */
+  .sh{position:fixed;inset:0 0 auto;z-index:40;color:#fff;transition:background .3s,color .3s}
+  .sh.lys{background:rgba(243,243,241,.94);color:var(--ink);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  .sh .max{display:flex;align-items:center;justify-content:space-between;height:74px}
+  .logo{display:flex;align-items:center;gap:10px;font-family:var(--cond);font-weight:800;font-size:26px;letter-spacing:.04em;text-transform:uppercase}
+  .logo i{width:20px;height:20px;border-radius:50%;background:var(--red);border:3px solid #fff;box-shadow:0 0 0 2px currentColor}
+  .sh nav{display:flex;align-items:center;gap:26px}
+  .sh nav a.l{font-family:var(--cond);font-weight:600;font-size:17px;letter-spacing:.1em;text-transform:uppercase;opacity:.85}
+  .sh nav a.l:hover{opacity:1}
+  .sh .knapp{padding:10px 16px;font-size:16px}
+  @media (max-width:760px){.sh nav a.l{display:none}}
 
-  /* Full-screen menu */
-  .meny{position:fixed;inset:0;z-index:35;background:#fff;display:flex;flex-direction:column;justify-content:flex-end;padding:120px var(--pad) var(--pad);opacity:0;visibility:hidden;transition:opacity .45s,visibility 0s .45s}
-  .meny.apen{opacity:1;visibility:visible;transition:opacity .45s}
-  .meny nav{display:flex;flex-direction:column}
-  .meny nav a{font-size:clamp(44px,7vw,110px);line-height:1.02;letter-spacing:-.035em;color:var(--mut);transform:translateY(30px);opacity:0;transition:color .2s,transform .6s cubic-bezier(.2,.8,.2,1),opacity .6s}
-  .meny nav a:hover{color:var(--ink)}
-  .meny.apen nav a{transform:none;opacity:1}
-  .meny.apen nav a:nth-child(2){transition-delay:.05s}.meny.apen nav a:nth-child(3){transition-delay:.1s}.meny.apen nav a:nth-child(4){transition-delay:.15s}.meny.apen nav a:nth-child(5){transition-delay:.2s}
-  .meny .bunn{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:48px;padding-top:20px;border-top:1px solid var(--line);color:var(--mut);font-size:15px}
-  .meny .bunn a:hover{color:var(--ink)}
-
-  /* 1. Intro: a light sky, our circle as a white sun with a soft red halo, the name in spaced letters. */
-  .intro{position:relative;height:100svh;min-height:560px;display:grid;place-items:center;overflow:hidden;background:linear-gradient(180deg,#e4effa 0%,#f4f8fc 55%,#fff 100%)}
-  .orb{position:absolute;width:min(52vmin,480px);aspect-ratio:1;border-radius:50%;background:#fff;
-    box-shadow:0 0 0 1px rgba(186,12,47,.14),0 0 60px 10px rgba(255,59,92,.22),0 0 180px 60px rgba(255,140,160,.16);animation:pust 7s ease-in-out infinite}
-  .orb::before{content:"";position:absolute;inset:-5px;border-radius:50%;z-index:-1;filter:blur(14px);opacity:.75;
-    background:conic-gradient(#ff3b5c,#ffb199 22%,rgba(255,255,255,0) 42%,#ff8fa3 60%,#BA0C2F 78%,#ff3b5c);animation:rund 16s linear infinite}
-  .orb::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,#fff 64%,rgba(255,255,255,.7) 82%,rgba(255,255,255,0) 100%)}
-  @keyframes rund{to{transform:rotate(1turn)}}
-  @keyframes pust{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
-  .navn{position:relative;z-index:1;font-weight:300;font-size:clamp(40px,8.6vw,150px);letter-spacing:.38em;margin-right:-.38em;color:var(--ink);white-space:nowrap}
-  .navn span{display:inline-block;opacity:0;filter:blur(10px);transform:translateY(.12em);animation:bokstav 1.4s cubic-bezier(.2,.8,.2,1) forwards}
-  @keyframes bokstav{to{opacity:1;filter:none;transform:none}}
-  .intro .lbl{position:absolute;left:var(--pad);bottom:var(--pad);color:var(--ink);font-size:15px}
-  .ned{position:absolute;right:var(--pad);bottom:calc(var(--pad) - 6px);width:40px;height:40px;display:grid;place-items:center;border-radius:50%;border:1px solid var(--line);animation:hopp 2.6s ease-in-out infinite}
-  @keyframes hopp{0%,100%{transform:none}50%{transform:translateY(5px)}}
+  /* 1. The film: a canvas pinned to the screen while you scroll. Scroll position picks the frame. */
+  .film{position:relative;height:900vh;background:#0b1630}
+  .film-s{position:sticky;top:0;height:100svh;overflow:hidden;background:#0b1630}
+  .film canvas{position:absolute;inset:0;width:100%;height:100%}
+  .film-s::after{content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(0deg,rgba(6,12,26,.72) 0%,rgba(6,12,26,.15) 45%,rgba(6,12,26,0) 60%),linear-gradient(180deg,rgba(6,12,26,.45),rgba(6,12,26,0) 22%)}
+  .kap{position:absolute;left:var(--pad);right:var(--pad);bottom:clamp(70px,11vh,120px);z-index:2;color:#fff;opacity:0;transform:translateY(30px);transition:opacity .45s,transform .6s cubic-bezier(.2,.8,.2,1);pointer-events:none}
+  .kap.paa{opacity:1;transform:none;pointer-events:auto}
+  .kap .d{font-size:clamp(56px,10.5vw,190px);max-width:9.5em}
+  .kap .d em{font-style:normal;color:var(--red2)}
+  .kap p{margin-top:18px;max-width:30em;font-size:clamp(16px,1.35vw,21px);color:rgba(255,255,255,.88)}
+  .kap .knapp{margin-top:26px}
+  .film-bunn{position:absolute;left:var(--pad);right:var(--pad);bottom:28px;z-index:2;display:flex;align-items:center;gap:18px;color:#fff}
+  .film-bunn .lbl{min-width:4.5em}
+  .linje{flex:1;height:2px;background:rgba(255,255,255,.22)}
+  .linje i{display:block;height:100%;width:100%;background:var(--red2);transform-origin:0 50%;transform:scaleX(var(--p,0))}
+  .rull{display:flex;align-items:center;gap:8px}
+  .rull svg{animation:ned 1.8s ease-in-out infinite}
+  @keyframes ned{0%,100%{transform:none}50%{transform:translateY(4px)}}
+  .lastes{position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.6);z-index:1}
 
   /* 2. Statement */
-  .om{padding:clamp(80px,12vw,180px) 0 clamp(60px,8vw,110px)}
-  /* Words light up one by one as a statement comes into view. */
-  .js .ord{display:inline-block;opacity:0;transform:translateY(.35em);filter:blur(6px);transition:opacity .8s,transform .9s cubic-bezier(.2,.8,.2,1),filter .8s}
-  .js .vis .ord{opacity:1;transform:none;filter:none}
+  .om{padding:clamp(90px,12vw,170px) 0 clamp(60px,8vw,110px)}
+  .om .d{font-size:clamp(48px,7.4vw,128px);max-width:11em}
+  .om .d span{color:var(--mut)}
+  .om .lbl{color:var(--red);margin-bottom:22px;display:block}
 
-  /* 3. Gallery: the phone starts full screen, shrinks into the middle of a grid of trade photos, then gives way to a statement. */
-  .gal{position:relative;height:300vh}
-  .gal-s{position:sticky;top:0;height:100svh;padding:96px var(--pad) var(--pad);overflow:hidden}
-  .rute{display:grid;grid-template-columns:1fr 1.3fr 1fr;grid-template-rows:repeat(3,1fr);gap:14px;height:100%;max-width:var(--max);margin:0 auto}
-  .fl{position:relative;margin:0;border-radius:14px;overflow:hidden;background:var(--soft);opacity:var(--o,1);transform:scale(var(--s,1));will-change:transform,opacity}
-  .fl img{width:100%;height:100%;object-fit:cover}
-  .fl.a{grid-column:1;grid-row:1/3}.fl.b{grid-column:1;grid-row:3}.fl.c{grid-column:2;grid-row:1}
-  .fl.d{grid-column:2;grid-row:3}.fl.e{grid-column:3;grid-row:1}.fl.f{grid-column:3;grid-row:2/4}
-  .fl.midt{grid-column:2;grid-row:2;z-index:2}
-  .gal-t{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:0 var(--pad);pointer-events:none;z-index:3;opacity:var(--t,0)}
-  .gal-t .st{max-width:13em;padding:28px 34px;border-radius:20px;background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
-  @media (max-width:760px){
-    .gal{height:auto}
-    .gal-s{position:relative;height:auto;padding:0 var(--pad) 40px}
-    .rute{grid-template-columns:1fr 1fr;grid-template-rows:none;height:auto}
-    .fl{grid-column:auto!important;grid-row:auto!important;aspect-ratio:4/5;opacity:1;transform:none}
-    .fl.midt{grid-column:1/3!important;aspect-ratio:16/10;order:-1}
-    .gal-t{position:relative;inset:auto;opacity:1;padding:50px 0 0}
-    .gal-t .st{padding:0;background:none;text-align:left}
-  }
+  /* 3. Trades: big rows; the photo for the row under the pointer follows it. */
+  .fag{border-top:2px solid var(--ink)}
+  .fag a{position:relative;display:flex;align-items:baseline;justify-content:space-between;gap:20px;padding:clamp(14px,1.8vw,24px) 0;border-bottom:2px solid var(--ink)}
+  .fag .d{font-size:clamp(52px,9vw,160px);transition:color .2s,transform .35s cubic-bezier(.2,.8,.2,1)}
+  .fag .lbl{color:var(--mut)}
+  .fag a:hover .d{color:var(--red);transform:translateX(14px)}
+  .pek{position:fixed;left:0;top:0;width:min(30vw,420px);aspect-ratio:4/3;pointer-events:none;z-index:30;opacity:0;transform:translate(-50%,-50%) scale(.9);transition:opacity .25s,transform .3s;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.25)}
+  .pek.paa{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  .pek img{width:100%;height:100%;object-fit:cover}
+  @media (hover:none){.pek{display:none}}
 
-  /* 4. Trades intro */
-  .tj-i{padding:clamp(80px,10vw,150px) 0 clamp(50px,6vw,80px)}
-  .tj-i .max{display:flex;justify-content:space-between;align-items:flex-start;gap:40px;flex-wrap:wrap}
-
-  /* 5. Trade panels: each fills the screen and slides over the one before. */
-  .panel{position:sticky;top:0;height:100svh;min-height:560px;overflow:hidden;background:var(--bg,var(--sky))}
-  .panel>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:right center;transform:scale(var(--z,1));transform-origin:70% 50%;filter:brightness(var(--b,1))}
-  .panel::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.5),rgba(255,255,255,0) 58%);pointer-events:none}
-  .panel .max{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;justify-content:space-between;padding-top:110px;padding-bottom:var(--pad)}
-  .panel .nr{font-size:15px;color:var(--mut);margin-bottom:14px}
-  .panel .xl{max-width:7.5em}
-  .panel .bunn p{max-width:22em;font-size:clamp(16px,1.3vw,20px);margin-bottom:22px;color:rgba(11,22,48,.78)}
-  @media (max-width:760px){.panel>img{object-position:74% center}.panel::after{background:linear-gradient(0deg,rgba(255,255,255,.85),rgba(255,255,255,0) 50%),linear-gradient(180deg,rgba(255,255,255,.7),rgba(255,255,255,0) 35%)}}
-
-  /* 6. Work: one real project in a browser window. */
-  .arb{padding:clamp(90px,11vw,160px) 0}
+  /* 4. Work */
+  .arb{padding:clamp(90px,11vw,160px) 0;background:var(--ink);color:#fff}
   .arb .topp{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap;margin-bottom:clamp(30px,4vw,50px)}
-  .vindu{border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 40px 90px rgba(11,22,48,.16),0 0 0 1px rgba(11,22,48,.06);transform:scale(var(--k,.94));transition:transform .1s linear}
-  .vindu-t{display:flex;align-items:center;gap:8px;padding:12px 16px;background:#f1f4f8;border-bottom:1px solid var(--line)}
-  .vindu-t i{width:11px;height:11px;border-radius:50%;background:#d3dae5}
-  .vindu-t span{margin-left:14px;flex:1;max-width:360px;background:#fff;border-radius:7px;padding:4px 12px;font-size:12.5px;color:var(--mut)}
+  .arb .d{font-size:clamp(46px,6.6vw,112px)}
+  .arb .lbl{color:var(--red2)}
+  .vindu{overflow:hidden;background:#fff;box-shadow:0 40px 90px rgba(0,0,0,.35);transform:scale(var(--k,.94))}
+  .vindu-t{display:flex;align-items:center;gap:8px;padding:12px 16px;background:#e9edf2}
+  .vindu-t i{width:11px;height:11px;border-radius:50%;background:#c9d1dc}
+  .vindu-t span{margin-left:14px;flex:1;max-width:360px;background:#fff;border-radius:6px;padding:4px 12px;font-size:12.5px;color:#55617a}
   .vindu-b{position:relative;aspect-ratio:16/8;background:#0d2236}
   .vindu-b video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
   .vindu-b::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(6,17,28,.72),rgba(6,17,28,.08) 70%)}
@@ -128,54 +101,33 @@
   .vindu-x b{display:block;font:700 clamp(20px,3.4vw,44px)/1.1 var(--sans);letter-spacing:-.02em}
   .vindu-x span{display:block;margin-top:10px;font-size:clamp(12px,1.3vw,16px);opacity:.85}
   .vindu-x u{display:inline-block;margin-top:16px;text-decoration:none;background:#fff;color:#06111c;font-weight:700;font-size:clamp(11px,1.1vw,14px);padding:8px 16px;border-radius:999px}
-  .bilder{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
-  .bilder img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:14px}
-  @media (max-width:700px){.vindu-b{aspect-ratio:4/3}.vindu-t span{display:none}.bilder{grid-template-columns:1fr 1fr}.bilder img:last-child{display:none}}
+  @media (max-width:700px){.vindu-b{aspect-ratio:4/3}.vindu-t span{display:none}}
 
-  /* 7. Services and process as big numbered rows */
-  .rader{padding:clamp(80px,10vw,150px) 0}
-  .rader .st{margin-bottom:clamp(50px,7vw,100px)}
-  .rad{display:grid;grid-template-columns:120px 1fr 1fr;gap:20px;align-items:baseline;padding:clamp(22px,2.6vw,36px) 0;border-top:1px solid var(--line)}
-  .rad:last-child{border-bottom:1px solid var(--line)}
-  .rad .n{color:var(--mut);font-size:15px}
-  .rad h3{font-size:clamp(40px,5.6vw,96px);line-height:1;letter-spacing:-.035em;transition:color .3s}
-  .rad p{color:var(--mut);max-width:24em}
-  .rad:hover h3{color:var(--red)}
+  /* 5. Services and process: numbered rows */
+  .rader{padding:clamp(90px,11vw,160px) 0}
+  .rader .topp{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap;margin-bottom:clamp(40px,6vw,80px)}
+  .rader .topp .d{font-size:clamp(46px,6.6vw,112px)}
+  .rader .topp .lbl{color:var(--red)}
+  .rad{display:grid;grid-template-columns:90px 1fr 1fr;gap:20px;align-items:baseline;padding:clamp(20px,2.4vw,32px) 0;border-top:2px solid var(--ink)}
+  .rad:last-child{border-bottom:2px solid var(--ink)}
+  .rad .n{font-family:var(--cond);font-weight:800;font-size:22px;color:var(--red)}
+  .rad h3{font-family:var(--cond);font-weight:800;text-transform:uppercase;font-size:clamp(40px,5vw,84px);line-height:.9}
+  .rad p{color:var(--mut);max-width:26em}
   @media (max-width:760px){.rad{grid-template-columns:1fr;gap:8px}}
+  .rader.mork{background:var(--steel);color:#fff}
+  .rader.mork .rad{border-color:rgba(255,255,255,.25)}
+  .rader.mork .rad p{color:rgba(255,255,255,.65)}
 
-  /* 8. Full-bleed image with slow parallax */
-  .bred{position:relative;height:100svh;min-height:520px;overflow:hidden;background:var(--sky)}
-  .bred img{position:absolute;left:0;top:-8%;width:100%;height:116%;object-fit:cover;transform:translateY(var(--py,0))}
+  /* 6. Contact */
+  .sf{background:var(--red);color:#fff;padding:clamp(100px,13vw,190px) 0 var(--pad)}
+  .sf .d{font-size:clamp(60px,11vw,200px)}
+  .sf p{margin-top:24px;max-width:30em;font-size:clamp(17px,1.4vw,22px);color:rgba(255,255,255,.9)}
+  .sf .knapp{margin-top:34px}
+  .sf .rad2{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-top:clamp(80px,10vw,140px);padding-top:18px;border-top:2px solid rgba(255,255,255,.35);font-size:14px}
 
-  /* 9. Studio: light photos float at different speeds around a statement. */
-  .studio{position:relative;min-height:170vh;display:grid;place-items:center;overflow:hidden;padding:20vh var(--pad);background:linear-gradient(180deg,#fff,var(--sky) 50%,#fff)}
-  .studio .st{position:relative;z-index:2;text-align:center;max-width:15em}
-  .fly{position:absolute;margin:0;border-radius:14px;overflow:hidden;transform:translateY(var(--py,0));will-change:transform;box-shadow:0 30px 60px rgba(11,22,48,.12)}
-  .fly img{width:100%;height:100%;object-fit:cover}
-  .fly.f1{left:var(--pad);top:6%;width:min(30vw,420px);aspect-ratio:16/10}
-  .fly.f2{right:var(--pad);top:14%;width:min(22vw,320px);aspect-ratio:4/5}
-  .fly.f3{left:12%;bottom:8%;width:min(20vw,300px);aspect-ratio:3/2}
-  .fly.f4{right:9%;bottom:4%;width:min(28vw,400px);aspect-ratio:16/10}
-  @media (max-width:760px){.studio{min-height:auto;display:block;padding:80px var(--pad)}.studio .st{text-align:left;margin-bottom:40px}
-    .fly{position:relative;inset:auto!important;width:100%!important;margin-bottom:14px;transform:none}}
-
-  /* 10. Last image, then the navy footer. */
-  .slutt{position:relative;height:100svh;min-height:520px;overflow:hidden;background:var(--sky)}
-  .slutt img{width:100%;height:100%;object-fit:cover}
-  .sf{background:var(--ink);color:#fff;padding:clamp(100px,14vw,200px) 0 var(--pad)}
-  .sf .st .g{color:rgba(255,255,255,.45)}
-  .sf .pill{background:#fff;color:var(--ink);margin-top:30px}
-  .sf .pill:hover{background:#e6ecf3}
-  .sf .rad2{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-top:clamp(80px,10vw,150px);padding-top:18px;border-top:1px solid rgba(255,255,255,.14);font-size:14px;color:rgba(255,255,255,.55)}
-  .sf .rad2 a:hover{color:#fff}
-
-  @media (prefers-reduced-motion:reduce){
-    html{scroll-behavior:auto}
-    .orb,.orb::before,.ned{animation:none}
-    .navn span{animation:none;opacity:1;filter:none;transform:none}
-    .js .ord{opacity:1;transform:none;filter:none;transition:none}
-    .vindu{transform:none}
-  }
+  .js .inn{opacity:0;transform:translateY(30px);transition:opacity .8s,transform .9s cubic-bezier(.2,.8,.2,1)}
+  .js .inn.vis{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){.js .inn{opacity:1;transform:none;transition:none}.kap{transition:none}.rull svg{animation:none}}
 </style>
 <script>document.documentElement.classList.add("js")</script>
 </head>
@@ -183,96 +135,60 @@
 
 <header class="sh" id="sh">
   <div class="max">
-    <a href="#top" class="merke" aria-label="Esbjug Consult, to the top"></a>
-    <button class="pill meny-k" type="button" aria-expanded="false" aria-controls="meny">Menu</button>
+    <a class="logo" href="#top"><i aria-hidden="true"></i>Esbjug</a>
+    <nav aria-label="Main">
+      <a class="l" href="#trades">Trades</a>
+      <a class="l" href="#work">Work</a>
+      <a class="l" href="#services">Services</a>
+      <a class="knapp" href="#contact">Get a quote</a>
+    </nav>
   </div>
 </header>
 
-<div class="meny" id="meny" aria-hidden="true">
-  <nav aria-label="Main">
-    <a href="#trades">Trades</a>
-    <a href="#work">Work</a>
-    <a href="#services">Services</a>
-    <a href="#process">Process</a>
-    <a href="#contact">Contact</a>
-  </nav>
-  <div class="bunn"><a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a><span>Websites, apps and ads for trades</span></div>
-</div>
-
 <main>
-<section class="intro" id="top">
-  <div class="orb" aria-hidden="true"></div>
-  <h1 class="navn" aria-label="Esbjug Consult"><span>E</span><span>S</span><span>B</span><span>J</span><span>U</span><span>G</span></h1>
-  <p class="lbl">Websites for trades</p>
-  <a class="ned" href="#om" aria-label="Scroll down"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 1v12M1.5 7.5 7 13l5.5-5.5"/></svg></a>
-</section>
-
-<section class="om" id="om">
-  <div class="max">
-    <h2 class="st ordne">We are Esbjug Consult. <span class="g">We build websites, apps and ads for trades companies. Plumbers, electricians, builders, painters and everyone who does real work.</span></h2>
+<!-- The film: Midjourney stills animated in Grok Imagine, joined and cut into frames (new/film/). -->
+<section class="film" id="top" data-frames="0" data-src="/new/film/f_">
+  <div class="film-s">
+    <canvas aria-label="A day in the trades: a work van at sunrise, tools, plumbing, wiring, carpentry, a finished bathroom, a new job request on a phone"></canvas>
+    <div class="lastes lbl" aria-hidden="true">Loading</div>
+    <div class="kap" data-fra="0" data-til=".11"><h1 class="d">Websites for <em>the trades.</em></h1><p>For the plumbers, electricians, carpenters and builders who start before sunrise.</p></div>
+    <div class="kap" data-fra=".13" data-til=".24"><h2 class="d">You know <em>your tools.</em></h2></div>
+    <div class="kap" data-fra=".26" data-til=".36"><h2 class="d">Plumbers.</h2></div>
+    <div class="kap" data-fra=".38" data-til=".48"><h2 class="d">Electricians.</h2></div>
+    <div class="kap" data-fra=".50" data-til=".60"><h2 class="d">Carpenters. <em>Builders.</em></h2></div>
+    <div class="kap" data-fra=".62" data-til=".73"><h2 class="d">Good work <em>speaks for itself.</em></h2></div>
+    <div class="kap" data-fra=".75" data-til=".86"><h2 class="d">But your next customer <em>finds you on a phone.</em></h2></div>
+    <div class="kap" data-fra=".88" data-til="1.01"><h2 class="d">We build the site <em>that makes it ring.</em></h2><a class="knapp" href="#contact">Get a quote →</a></div>
+    <div class="film-bunn"><span class="lbl tell">01 / 08</span><span class="linje"><i></i></span><span class="lbl rull">Scroll <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 1v12M1.5 7.5 7 13l5.5-5.5"/></svg></span></div>
   </div>
 </section>
 
-<section class="gal" id="gal">
-  <div class="gal-s">
-    <div class="rute">
-      <figure class="fl a"><img src="/new/media/g-bath.jpg" alt="A freshly renovated white bathroom" loading="lazy"></figure>
-      <figure class="fl b"><img src="/new/media/g-tools.jpg" alt="Trade tools on a workbench" loading="lazy"></figure>
-      <figure class="fl c"><img src="/new/media/g-roof.jpg" alt="New roof tiles under a blue sky" loading="lazy"></figure>
-      <figure class="fl midt"><img src="/new/media/g-phone.jpg" alt="A phone showing a website for a plumbing company"></figure>
-      <figure class="fl d"><img src="/new/media/g-paint.jpg" alt="A paint roller in a bright room" loading="lazy"></figure>
-      <figure class="fl e"><img src="/new/media/g-tablet.jpg" alt="A tablet showing a website for a building company" loading="lazy"></figure>
-      <figure class="fl f"><img src="/new/media/g-kitchen.jpg" alt="A bright kitchen with modern lighting" loading="lazy"></figure>
-    </div>
-    <div class="gal-t"><h2 class="st">Your customers look for you on their phone. <span class="g">Be the one they call.</span></h2></div>
+<section class="om">
+  <div class="max inn">
+    <span class="lbl">Esbjug Consult</span>
+    <h2 class="d">We build websites, apps and ads <span>for trades companies. No fluff. More calls.</span></h2>
   </div>
 </section>
 
-<section class="tj-i" id="trades">
-  <div class="max">
-    <h2 class="st ordne">Built for the trades. <span class="g">A website that shows your work, makes it easy to get in touch and brings in the jobs you want.</span></h2>
-    <p class="lbl">Who we work with</p>
+<section class="max" id="trades" style="padding-bottom:clamp(90px,11vw,160px)">
+  <div class="fag">
+    <a href="#contact" data-bilde="/new/media/s-pipe.jpg"><span class="d">Plumbers</span><span class="lbl">01</span></a>
+    <a href="#contact" data-bilde="/new/media/s-wire.jpg"><span class="d">Electricians</span><span class="lbl">02</span></a>
+    <a href="#contact" data-bilde="/new/media/s-saw.jpg"><span class="d">Carpenters</span><span class="lbl">03</span></a>
+    <a href="#contact" data-bilde="/new/media/s-doors.jpg"><span class="d">Builders</span><span class="lbl">04</span></a>
+    <a href="#contact" data-bilde="/new/media/g-roof.jpg"><span class="d">Roofers</span><span class="lbl">05</span></a>
+    <a href="#contact" data-bilde="/new/media/g-paint.jpg"><span class="d">Painters</span><span class="lbl">06</span></a>
   </div>
 </section>
-
-<div>
-  <section class="panel" style="--bg:#d8e8f6">
-    <img src="/new/media/p-plumber.jpg" alt="" loading="lazy">
-    <div class="max">
-      <div><p class="nr">01</p><h2 class="xl">Plumbers</h2></div>
-      <div class="bunn"><p>Bathrooms, boilers and emergency call-outs. Show your best jobs and let people book you in one tap.</p><a class="pill mork" href="#contact">Start a project →</a></div>
-    </div>
-  </section>
-  <section class="panel" style="--bg:#f1e6d6">
-    <img src="/new/media/p-electric.jpg" alt="" loading="lazy">
-    <div class="max">
-      <div><p class="nr">02</p><h2 class="xl">Electricians</h2></div>
-      <div class="bunn"><p>From new sockets to full rewires. Quote requests go straight to your phone.</p><a class="pill mork" href="#contact">Start a project →</a></div>
-    </div>
-  </section>
-  <section class="panel" style="--bg:#dcefe6">
-    <img src="/new/media/p-builder.jpg" alt="" loading="lazy">
-    <div class="max">
-      <div><p class="nr">03</p><h2 class="xl">Builders</h2></div>
-      <div class="bunn"><p>Projects, references and a clear way to ask for a quote. A site that looks as solid as your work.</p><a class="pill mork" href="#contact">Start a project →</a></div>
-    </div>
-  </section>
-  <section class="panel" style="--bg:#e8e2f3">
-    <img src="/new/media/p-painter.jpg" alt="" loading="lazy">
-    <div class="max">
-      <div><p class="nr">04</p><h2 class="xl">Painters &amp; decorators</h2></div>
-      <div class="bunn"><p>Before and after photos that sell the job for you.</p><a class="pill mork" href="#contact">Start a project →</a></div>
-    </div>
-  </section>
-</div>
+<div class="pek" aria-hidden="true"><img alt=""></div>
 
 <section class="arb" id="work">
   <div class="max">
-    <div class="topp">
-      <h2 class="st ordne">A website for a plumbing company. <span class="g">Design, copy, photos and film, all made for one business.</span></h2>
+    <div class="topp inn">
+      <h2 class="d">A website for <br>a plumbing company.</h2>
       <p class="lbl">Work</p>
     </div>
-    <div class="vindu">
+    <div class="vindu inn">
       <div class="vindu-t"><i></i><i></i><i></i><span>yourcompany.com</span></div>
       <div class="vindu-b">
         <video class="lat" muted loop playsinline preload="none" poster="/vvskontakten/assets/hero.jpg" aria-label="Example website: water running from a tap">
@@ -285,55 +201,35 @@
         </div>
       </div>
     </div>
-    <div class="bilder">
-      <img src="/vvskontakten/assets/mj-service.jpg" alt="Copper pipes with a pressure gauge" loading="lazy">
-      <img src="/vvskontakten/assets/mj-prosjekter.jpg" alt="Apartment blocks under construction at dusk" loading="lazy">
-      <img src="/vvskontakten/assets/mj-jobb.jpg" alt="Pipe wrenches on a workbench" loading="lazy">
-    </div>
   </div>
 </section>
 
-<section class="rader" id="services" style="padding-top:0">
+<section class="rader" id="services">
   <div class="max">
-    <h2 class="st ordne">Everything you need online. <span class="g">One small team, from the first sketch to the first call from a new customer.</span></h2>
-    <div class="rad"><span class="n">01</span><h3>Websites</h3><p>Fast, custom websites that turn visitors into calls and quote requests.</p></div>
-    <div class="rad"><span class="n">02</span><h3>Ads</h3><p>Google, Facebook and Instagram ads in your area, on a budget you decide.</p></div>
-    <div class="rad"><span class="n">03</span><h3>Apps</h3><p>Booking, quotes or job tracking on iPhone and Android, when a website is not enough.</p></div>
-    <div class="rad"><span class="n">04</span><h3>Photos &amp; film</h3><p>Images and video made for your business with Midjourney, Grok Imagine and Kling. No stock.</p></div>
+    <div class="topp inn"><h2 class="d">What we do.</h2><p class="lbl">Services</p></div>
+    <div class="rad inn"><span class="n">01</span><h3>Websites</h3><p>Fast, custom websites that turn visitors into calls and quote requests.</p></div>
+    <div class="rad inn"><span class="n">02</span><h3>Ads</h3><p>Google, Facebook and Instagram ads in your area, on a budget you decide.</p></div>
+    <div class="rad inn"><span class="n">03</span><h3>Apps</h3><p>Booking, quotes or job tracking on iPhone and Android, when a website is not enough.</p></div>
+    <div class="rad inn"><span class="n">04</span><h3>Photos &amp; film</h3><p>Images and video made for your business with Midjourney, Grok Imagine and Kling. No stock.</p></div>
   </div>
 </section>
 
-<section class="bred" aria-hidden="true">
-  <img src="/new/media/b-van.jpg" alt="" loading="lazy">
-</section>
-
-<section class="rader" id="process">
+<section class="rader mork" id="process">
   <div class="max">
-    <h2 class="st ordne">Fixed price. <span class="g">You see a working draft before you decide.</span></h2>
-    <div class="rad"><span class="n">01</span><h3>Call</h3><p>We look at what you have today and what you want from it. You get a fixed price.</p></div>
-    <div class="rad"><span class="n">02</span><h3>Draft</h3><p>We build the front page with real design, photos and copy, at its own address.</p></div>
-    <div class="rad"><span class="n">03</span><h3>Refine</h3><p>We change what you want changed and build the rest.</p></div>
-    <div class="rad"><span class="n">04</span><h3>Launch</h3><p>It goes live on your domain. We stay close for changes afterwards.</p></div>
+    <div class="topp inn"><h2 class="d">Fixed price.<br>No surprises.</h2><p class="lbl" style="color:#fff">How it works</p></div>
+    <div class="rad inn"><span class="n">01</span><h3>Call</h3><p>We look at what you have today and what you want from it. You get a fixed price.</p></div>
+    <div class="rad inn"><span class="n">02</span><h3>Draft</h3><p>You see a working front page with real photos and copy before you decide.</p></div>
+    <div class="rad inn"><span class="n">03</span><h3>Build</h3><p>We change what you want changed and build the rest.</p></div>
+    <div class="rad inn"><span class="n">04</span><h3>Launch</h3><p>It goes live on your domain. We stay close for changes afterwards.</p></div>
   </div>
-</section>
-
-<section class="studio" id="studio">
-  <figure class="fly f1" data-fart="-.18"><img src="/new/media/view-800.jpg" alt="A desk by a window over the sea" loading="lazy"></figure>
-  <figure class="fly f2" data-fart=".12"><img src="/new/media/sketch-800.jpg" alt="A notebook with website sketches" loading="lazy"></figure>
-  <figure class="fly f3" data-fart=".22"><img src="/new/media/devices-800.jpg" alt="A laptop, tablet and phone showing the same website" loading="lazy"></figure>
-  <figure class="fly f4" data-fart="-.1"><img src="/new/media/meeting-800.jpg" alt="A meeting room with a view over the sea" loading="lazy"></figure>
-  <h2 class="st ordne">Designed and built in a small studio by the sea. <span class="g">You talk directly to the people doing the work.</span></h2>
-</section>
-
-<section class="slutt" aria-hidden="true">
-  <img src="/new/media/view.jpg" alt="" loading="lazy">
 </section>
 </main>
 
 <footer class="sf" id="contact">
   <div class="max">
-    <h2 class="st ordne">Let's talk. <span class="g">Tell us about your business, and we will show you what we would build.</span></h2>
-    <a class="pill" href="mailto:tidemann@esbjugconsult.com?subject=New%20website">Contact</a>
+    <h2 class="d inn">Let's talk.</h2>
+    <p class="inn">Send us a link to your current site, or tell us what you do. We will show you what we would build.</p>
+    <a class="knapp lys inn" href="mailto:tidemann@esbjugconsult.com?subject=New%20website">Get a quote →</a>
     <div class="rad2"><span>© 2026 Esbjug Consult</span><a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a></div>
   </div>
 </footer>
@@ -341,105 +237,88 @@
 <script>
 (function(){
   var rolig = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var smal = matchMedia("(max-width:760px)");
+  var sh = document.getElementById("sh");
+  var klem = function(v){ return Math.max(0, Math.min(1, v)); };
 
-  // An image that has not been made yet stays hidden instead of showing a broken icon.
-  document.querySelectorAll("img").forEach(function(i){
-    function skjul(){ i.style.visibility = "hidden"; }
-    if (i.complete && !i.naturalWidth && i.getAttribute("loading") !== "lazy") skjul(); else i.addEventListener("error", skjul);
-  });
-
-  // Intro letters arrive one by one.
-  document.querySelectorAll(".navn span").forEach(function(s, i){ s.style.animationDelay = (0.25 + i * 0.12) + "s"; });
-
-  // Header and menu
-  var sh = document.getElementById("sh"), meny = document.getElementById("meny"), knapp = sh.querySelector(".meny-k");
-  function setMeny(apen){
-    meny.classList.toggle("apen", apen); sh.classList.toggle("apen", apen);
-    meny.setAttribute("aria-hidden", String(!apen)); knapp.setAttribute("aria-expanded", String(apen));
-    knapp.textContent = apen ? "Close" : "Menu"; document.body.style.overflow = apen ? "hidden" : "";
+  // ---- The film ----
+  var film = document.querySelector(".film"), canvas = film.querySelector("canvas"), ctx = canvas.getContext("2d");
+  var N = parseInt(film.dataset.frames, 10) || 0, src = film.dataset.src;
+  var bilder = new Array(N), naa = 0, maal = 0, tegnet = -1;
+  var kap = film.querySelectorAll(".kap"), tell = film.querySelector(".tell"), linje = film.querySelector(".linje i"), lastes = film.querySelector(".lastes");
+  function navn(i){ return src + String(i + 1).padStart(4, "0") + ".webp"; }
+  // Frame 1 first, then every 8th, 4th, 2nd and finally all, so scrolling works early and gets smoother as more arrive.
+  function last(){
+    if (!N) return;
+    var rekke = [], sett = {};
+    [8, 4, 2, 1].forEach(function(steg){ for (var i = 0; i < N; i += steg) if (!sett[i]) { sett[i] = 1; rekke.push(i); } });
+    var aktive = 0, pos = 0;
+    function neste(){
+      while (aktive < 6 && pos < rekke.length) {
+        (function(i){
+          var im = new Image(); aktive++;
+          im.onload = function(){ bilder[i] = im; aktive--; if (i === 0) { lastes.remove(); tegn(true); } neste(); };
+          im.onerror = function(){ aktive--; neste(); };
+          im.src = navn(i);
+        })(rekke[pos++]);
+      }
+    }
+    neste();
   }
-  knapp.addEventListener("click", function(){ setMeny(!meny.classList.contains("apen")); });
-  meny.querySelectorAll("a").forEach(function(a){ a.addEventListener("click", function(){ setMeny(false); }); });
-  addEventListener("keydown", function(e){ if (e.key === "Escape") setMeny(false); });
+  function storrelse(){
+    var r = canvas.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2);
+    canvas.width = Math.round(r.width * d); canvas.height = Math.round(r.height * d); tegnet = -1; tegn(true);
+  }
+  function naermeste(i){ for (var k = 0; k < N; k++) { if (bilder[i - k]) return bilder[i - k]; if (bilder[i + k]) return bilder[i + k]; } return null; }
+  function tegn(tving){
+    var i = Math.round(naa); if (!tving && i === tegnet) return;
+    var im = bilder[i] || naermeste(i); if (!im) return;
+    tegnet = i;
+    var cw = canvas.width, ch = canvas.height, s = Math.max(cw / im.width, ch / im.height);
+    var w = im.width * s, h = im.height * s;
+    ctx.drawImage(im, (cw - w) / 2, (ch - h) / 2, w, h);
+  }
+  function filmFremdrift(){
+    var r = film.getBoundingClientRect(), h = innerHeight;
+    return klem(-r.top / (r.height - h));
+  }
+  function oppdaterFilm(){
+    var p = filmFremdrift();
+    maal = p * Math.max(0, N - 1);
+    linje.parentNode.style.setProperty("--p", p.toFixed(4));
+    var aktiv = 0;
+    kap.forEach(function(k, i){ var paa = p >= parseFloat(k.dataset.fra) && p < parseFloat(k.dataset.til); k.classList.toggle("paa", paa); if (p >= parseFloat(k.dataset.fra)) aktiv = i; });
+    tell.textContent = String(aktiv + 1).padStart(2, "0") + " / " + String(kap.length).padStart(2, "0");
+    sh.classList.toggle("lys", film.getBoundingClientRect().bottom < 74);
+  }
+  // Ease towards the target frame each animation frame, so the film glides instead of jumping.
+  function loop(){
+    if (Math.abs(maal - naa) > 0.01) { naa += (maal - naa) * (rolig ? 1 : 0.18); tegn(false); }
+    requestAnimationFrame(loop);
+  }
+  addEventListener("scroll", oppdaterFilm, { passive: true });
+  addEventListener("resize", storrelse);
+  storrelse(); oppdaterFilm(); last(); requestAnimationFrame(loop);
 
-  // Statements: wrap each word so they can light up one after another.
-  document.querySelectorAll(".ordne").forEach(function(el){
-    var n = 0;
-    (function del(node){
-      Array.prototype.slice.call(node.childNodes).forEach(function(c){
-        if (c.nodeType === 3) {
-          var f = document.createDocumentFragment();
-          c.textContent.split(/(\s+)/).forEach(function(w){
-            if (!w) return;
-            if (/^\s+$/.test(w)) { f.appendChild(document.createTextNode(w)); return; }
-            var s = document.createElement("span"); s.className = "ord"; s.textContent = w;
-            s.style.transitionDelay = (n++ * 0.035) + "s"; f.appendChild(s);
-          });
-          node.replaceChild(f, c);
-        } else if (c.nodeType === 1) del(c);
-      });
-    })(el);
+  // ---- Trades list: the photo follows the pointer ----
+  var pek = document.querySelector(".pek"), pekBilde = pek.querySelector("img");
+  document.querySelectorAll(".fag a").forEach(function(a){
+    a.addEventListener("mouseenter", function(){ pekBilde.src = a.dataset.bilde; pek.classList.add("paa"); });
+    a.addEventListener("mouseleave", function(){ pek.classList.remove("paa"); });
   });
+  addEventListener("mousemove", function(e){ pek.style.left = e.clientX + "px"; pek.style.top = e.clientY + "px"; }, { passive: true });
+
+  // ---- Reveal on scroll, example video and the work window ----
   if ("IntersectionObserver" in window) {
-    var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add("vis"); io.unobserve(e.target); } }); }, { rootMargin: "0px 0px -15% 0px" });
-    document.querySelectorAll(".ordne").forEach(function(el){ io.observe(el); });
-    // The example video only plays while it is on screen.
+    var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add("vis"); io.unobserve(e.target); } }); }, { rootMargin: "0px 0px -10% 0px" });
+    document.querySelectorAll(".inn").forEach(function(el){ io.observe(el); });
     var lat = new IntersectionObserver(function(es){ es.forEach(function(e){ if (rolig) return; if (e.isIntersecting) e.target.play().catch(function(){}); else e.target.pause(); }); }, { threshold: .25 });
     document.querySelectorAll("video.lat").forEach(function(v){ lat.observe(v); });
-  } else document.querySelectorAll(".ordne").forEach(function(el){ el.classList.add("vis"); });
-
-  var gal = document.getElementById("gal"), stage = gal.querySelector(".gal-s"), midt = gal.querySelector(".midt"), andre = gal.querySelectorAll(".fl:not(.midt)"), galT = gal.querySelector(".gal-t");
-  if (rolig) { galT.style.setProperty("--t", 1); return; }
-
-  var paneler = document.querySelectorAll(".panel"), vindu = document.querySelector(".vindu"), bred = document.querySelector(".bred img"), flys = document.querySelectorAll(".fly");
-  var klem = function(v){ return Math.max(0, Math.min(1, v)); };
-  var myk = function(t){ return 1 - Math.pow(1 - t, 3); };
-
-  function tegn(){
-    var h = innerHeight;
-    sh.classList.toggle("fast", scrollY > h * 0.6);
-
-    // Gallery: 0–45 % the phone shrinks from the whole stage into its tile and the others appear,
-    // 45–70 % the phone fades and the statement takes its place.
-    if (!smal.matches) {
-      var r = gal.getBoundingClientRect(), p = klem(-r.top / (r.height - h));
-      var a = myk(klem(p / 0.45));
-      var sr = stage.getBoundingClientRect(), w0 = midt.offsetWidth, h0 = midt.offsetHeight;
-      var cx = sr.width / 2 - (midt.offsetLeft + w0 / 2), cy = sr.height / 2 - (midt.offsetTop + h0 / 2);
-      var full = Math.max(sr.width / w0, sr.height / h0);
-      var s = full + (1 - full) * a;
-      midt.style.transform = "translate(" + (cx * (1 - a)).toFixed(1) + "px," + (cy * (1 - a)).toFixed(1) + "px) scale(" + s.toFixed(4) + ")";
-      midt.style.borderRadius = (14 * a).toFixed(1) + "px";
-      midt.style.opacity = (1 - klem((p - 0.45) / 0.2)).toFixed(3);
-      andre.forEach(function(el, i){ var q = klem((a - 0.3 - i * 0.05) / 0.5); el.style.setProperty("--o", q.toFixed(3)); el.style.setProperty("--s", (0.9 + 0.1 * q).toFixed(4)); });
-      galT.style.setProperty("--t", klem((p - 0.5) / 0.2).toFixed(3));
-    } else { midt.style.transform = ""; midt.style.opacity = ""; }
-
-    // Panels: the one being covered shrinks a little and dims.
-    paneler.forEach(function(pn, i){
-      var neste = paneler[i + 1]; if (!neste) return;
-      var q = klem(1 - neste.getBoundingClientRect().top / h);
-      pn.style.setProperty("--z", (1 - 0.06 * q).toFixed(4)); pn.style.setProperty("--b", (1 - 0.25 * q).toFixed(3));
-    });
-
-    // The work window grows to full size as it reaches the middle of the screen.
-    var vr = vindu.getBoundingClientRect();
+  } else document.querySelectorAll(".inn").forEach(function(el){ el.classList.add("vis"); });
+  var vindu = document.querySelector(".vindu");
+  addEventListener("scroll", function(){
+    var vr = vindu.getBoundingClientRect(), h = innerHeight;
     if (vr.bottom > 0 && vr.top < h) vindu.style.setProperty("--k", (0.94 + 0.06 * klem(1 - (vr.top - h * 0.15) / (h * 0.7))).toFixed(4));
-
-    // Slow parallax on the full-width image and the floating studio photos.
-    var br = bred.parentNode.getBoundingClientRect();
-    if (br.bottom > 0 && br.top < h) bred.style.setProperty("--py", ((br.top + br.height / 2 - h / 2) * -0.12).toFixed(1) + "px");
-    if (!smal.matches) flys.forEach(function(f){
-      var fr = f.parentNode.getBoundingClientRect();
-      if (fr.bottom > 0 && fr.top < h) f.style.setProperty("--py", ((fr.top + fr.height / 2 - h / 2) * parseFloat(f.dataset.fart)).toFixed(1) + "px");
-    });
-  }
-  var venter = false;
-  function planlegg(){ if (!venter) { venter = true; requestAnimationFrame(function(){ venter = false; tegn(); }); } }
-  addEventListener("scroll", planlegg, { passive: true });
-  addEventListener("resize", planlegg);
-  tegn();
+  }, { passive: true });
 })();
 </script>
 </body>
