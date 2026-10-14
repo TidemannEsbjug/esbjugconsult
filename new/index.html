@@ -200,6 +200,25 @@
   footer .logo{color:#fff;font-size:19px;margin:0}
   footer nav{display:flex;flex-wrap:wrap;gap:22px}
   footer a{text-decoration:none}
+  /* Clients: one large testimonial with a portrait, two smaller ones under it. */
+  .om-stor{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fff}
+  .om-stor img{width:100%;height:100%;aspect-ratio:4/5;object-fit:cover}
+  .om-tekst{padding:clamp(28px,4.5vw,60px);display:flex;flex-direction:column;justify-content:center}
+  .omtaler blockquote{margin:0;font:400 clamp(22px,2.3vw,30px)/1.38 var(--serif);color:var(--navy);text-wrap:pretty}
+  .omtaler blockquote::before{content:"\201C";display:block;height:.5em;margin-bottom:10px;font-size:2.6em;line-height:1;color:var(--red)}
+  .om-hvem{margin-top:26px;font-size:15px;line-height:1.45}
+  .om-hvem b{display:block;color:var(--navy);font-size:16px}
+  .om-hvem span{color:var(--mut)}
+  .om-fakta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;list-style:none;margin:20px 0 0;padding:0}
+  .om-fakta li{background:var(--soft);color:var(--navy);font-size:13px;font-weight:600;padding:7px 13px;border-radius:999px}
+  .om-fakta a{font-size:14px;font-weight:600;color:var(--navy);text-underline-offset:4px;margin-left:4px}
+  .om-to{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px}
+  .om-to article{border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
+  .om-to img{width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+  .om-to .om-tekst{padding:28px 30px 32px;justify-content:flex-start;flex:1}
+  .om-to blockquote{font-size:clamp(19px,1.75vw,23px)}
+  @media (max-width:860px){.om-stor,.om-to{grid-template-columns:1fr}.om-stor img{aspect-ratio:4/3;object-position:50% 40%}}
+
   footer a:hover{color:#fff}
 
   /* Content slides in as it comes on screen. */
@@ -647,6 +666,43 @@
     <p class="note inn">Every site gets its own design and imagery. Have your own photos? We build around them.</p>
   </div>
 </section>
+
+<section class="s omtaler" id="clients">
+  <div class="w">
+    <div class="hode inn">
+      <p class="eb">Clients</p>
+      <h2>What our clients say.</h2>
+      <p>Builders, electricians and craftsmen who let us handle their websites.</p>
+    </div>
+    <article class="om-stor inn">
+      <img src="/new/media/kunde-karlsen.jpg" srcset="/new/media/kunde-karlsen-400.jpg 400w, /new/media/kunde-karlsen.jpg 600w" sizes="(max-width:860px) 100vw, 480px" alt="Øyvind from Karlsen &amp; Nordseth in a hard hat on the scaffolding at Historisk Museum" loading="lazy" width="600" height="750">
+      <div class="om-tekst">
+        <blockquote>Esbjug Consult delivered the whole solution, from design and copy to photos, video and hosting. We rank number one on Google, and when we won the Bygg og Bevar award in 2021, the jury praised the website we made about our work on Historisk Museum.</blockquote>
+        <p class="om-hvem"><b>Øyvind</b><span>Karlsen &amp; Nordseth Entreprenør, antiquarian restoration</span></p>
+        <ul class="om-fakta"><li>#1 on Google</li><li>Bygg og Bevar award 2021</li><li><a href="https://www.karlsen-nordseth.no" target="_blank" rel="noopener">karlsen-nordseth.no</a></li></ul>
+      </div>
+    </article>
+    <div class="om-to">
+      <article class="inn">
+        <img src="/new/media/kunde-pluggen.jpg" srcset="/new/media/kunde-pluggen-600.jpg 600w, /new/media/kunde-pluggen.jpg 1200w" sizes="(max-width:860px) 100vw, 580px" alt="An electrician from Pluggen Elektro on a building site" loading="lazy" width="1200" height="800">
+        <div class="om-tekst">
+          <blockquote>Esbjug Consult delivered everything: the website, the copy, the photos and the video. Then they ran ads for our solar panels, and those ads converted very well.</blockquote>
+          <p class="om-hvem"><b>Pluggen Elektro</b><span>Electricians in Oslo and Viken</span></p>
+          <ul class="om-fakta"><li>Website and content</li><li>Solar ads</li><li><a href="https://www.pluggenelektro.no" target="_blank" rel="noopener">pluggenelektro.no</a></li></ul>
+        </div>
+      </article>
+      <article class="inn">
+        <img src="/new/media/kunde-grottum.jpg" srcset="/new/media/kunde-grottum-600.jpg 600w, /new/media/kunde-grottum.jpg 1200w" sizes="(max-width:860px) 100vw, 580px" alt="A carpentry workshop with a curved wooden piece held in clamps" loading="lazy" width="1200" height="800">
+        <div class="om-tekst">
+          <blockquote>Esbjug Consult built our website, with a video front page that shows our craft.</blockquote>
+          <p class="om-hvem"><b>Grøttumsbråtens Eftf.</b><span>Antiquarian restoration and carpentry</span></p>
+          <ul class="om-fakta"><li>Website</li><li><a href="https://www.grøttumsbråtens.no" target="_blank" rel="noopener">grøttumsbråtens.no</a></li></ul>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
 
 <section class="s" id="ads">
   <div class="w delt">
