@@ -94,16 +94,15 @@
   /* Short facts right under the hero. */
   /* Review ticker: one line running right to left; the list is there twice, so moving it half its width loops seamlessly.
      It stops while the pointer is over it. Same height as the fact strip it replaced: 26 + 24 + 26 = 76 px on desktop. */
-  .fakta{background:var(--navy);color:#fff;overflow:hidden;padding:26px 0;font-family:var(--bf,var(--sans))}
-  .fakta .rull{display:flex;width:max-content;animation:tikk 70s linear infinite}
-  .fakta:hover .rull{animation-play-state:paused}
+  .fakta{background:var(--navy);color:#fff;overflow:hidden;padding:26px 0;font-family:var(--bf,var(--sans));touch-action:pan-y;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+  .fakta .rull{display:flex;width:max-content;will-change:transform}
+  .fakta.venstre{cursor:w-resize}.fakta.hoyre{cursor:e-resize}
   .fakta ul{display:flex;flex:none;list-style:none;margin:0;padding:0}
   .fakta li{display:flex;align-items:center;gap:12px;height:24px;padding-right:64px;font-size:16px;white-space:nowrap}
   .fakta .stj{color:#FFC94D;font-size:15px;letter-spacing:2px}
   .fakta q{quotes:"\201C" "\201D"}
   .fakta b{font-weight:600;color:var(--sky)}
-  @keyframes tikk{to{transform:translateX(-50%)}}
-  @media (prefers-reduced-motion:reduce){.fakta{overflow-x:auto}.fakta .rull{animation:none}}
 
   section.s{padding:clamp(72px,10vw,130px) 0}
   .hode{max-width:44rem;margin-bottom:clamp(36px,5vw,60px)}
@@ -1271,6 +1270,45 @@ ta.addEventListener('input',()=>{ta.style.height='';ta.style.height=Math.min(ta.
 })();
 // Ingen markering eller kopiering av tekst (brukerens valg).
 ['copy','cut','selectstart','dragstart'].forEach(t=>document.addEventListener(t,e=>{if(!e.target.closest?.('textarea,input'))e.preventDefault()}));
+</script>
+<script>
+// Review line: it stands still. With the mouse near the left or right edge it runs that way, faster the closer to the edge;
+// in the middle and when the pointer leaves it slows to a stop. On touch screens it can be dragged sideways.
+// The list is there twice, so the position wraps around half the width without a jump.
+(function(){
+  var f = document.querySelector(".fakta"), r = f && f.querySelector(".rull"); if (!r) return;
+  var x = 0, fart = 0, maal = 0, halv = 0, gaar = false, sist = 0, dra = null;
+  function maal_(){ halv = r.scrollWidth / 2; }
+  function sett(){ if (halv) { x = ((x % halv) + halv) % halv; } r.style.transform = "translate3d(" + (-x).toFixed(1) + "px,0,0)"; }
+  function steg(t){
+    var dt = Math.min(0.05, (t - sist) / 1000 || 0); sist = t;
+    fart += (maal - fart) * Math.min(1, dt * 6);
+    if (!dra) { x += fart * dt; sett(); }
+    if (Math.abs(fart) < 1 && !maal && !dra) { fart = 0; gaar = false; return; }
+    requestAnimationFrame(steg);
+  }
+  function start(){ if (!gaar) { gaar = true; sist = performance.now(); requestAnimationFrame(steg); } }
+  f.addEventListener("pointermove", function(e){
+    if (e.pointerType !== "mouse") return;
+    var b = f.getBoundingClientRect(), rel = (e.clientX - b.left) / b.width, sone = 0.32;
+    // Left zone runs the line to the right (shows what came before), right zone to the left. Up to 700 px/s at the very edge.
+    maal = rel < sone ? -700 * Math.pow((sone - rel) / sone, 1.4) : rel > 1 - sone ? 700 * Math.pow((rel - 1 + sone) / sone, 1.4) : 0;
+    f.classList.toggle("venstre", rel < sone); f.classList.toggle("hoyre", rel > 1 - sone);
+    start();
+  });
+  f.addEventListener("pointerleave", function(){ maal = 0; f.classList.remove("venstre", "hoyre"); });
+  // Touch: drag sideways, with a little glide after letting go.
+  f.addEventListener("pointerdown", function(e){ if (e.pointerType === "mouse") return; dra = { x: e.clientX, x0: x, t: e.timeStamp, v: 0 }; maal = 0; fart = 0; });
+  f.addEventListener("pointermove", function(e){
+    if (!dra || e.pointerType === "mouse") return;
+    var nyX = dra.x0 - (e.clientX - dra.x); dra.v = (nyX - x) / Math.max(1, e.timeStamp - dra.t) * 1000; dra.t = e.timeStamp; x = nyX; sett();
+  });
+  function slipp(){ if (!dra) return; fart = Math.max(-1500, Math.min(1500, dra.v)); dra = null; maal = 0; start(); }
+  f.addEventListener("pointerup", slipp); f.addEventListener("pointercancel", slipp);
+  addEventListener("resize", function(){ maal_(); sett(); });
+  maal_(); sett();
+  if (document.fonts) document.fonts.ready.then(function(){ maal_(); sett(); });
+})();
 </script>
 </body>
 </html>
