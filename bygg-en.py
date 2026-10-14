@@ -166,7 +166,7 @@ T = [
 
     # --- chatten (markup) ---
     ('aria-label="Puls i dag"', 'aria-label="Heart rate today"'),
-    ('Strømmes live fra Apple Watch', 'Streamed live from Apple Watch'),
+    ('Strømmes live fra Apple Watch', 'Streaming live from Apple Watch'),
     ('Graf over pulsen. Bruk piltastene for å se hvert punkt.', 'Graph of the heart rate. Use the arrow keys to step through each point.'),
     ('Ikke live akkurat nå', 'Not live right now'),
     ('>Live fra Apple Watch<', '>Live from Apple Watch<'),

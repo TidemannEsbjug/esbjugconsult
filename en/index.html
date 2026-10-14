@@ -384,7 +384,7 @@
   .hpp-live{display:flex;align-items:center;gap:10px}
   .hpp-live i{width:9px;height:9px;flex:none;border-radius:50%;background:#ff3d57}
   .hpp.live .hpp-live i{animation:hppDot 1.6s ease-out infinite}
-  .hpp:not(.live) .hpp-live i{background:rgba(255,255,255,.3)}
+  .hpp:not(.live) .hpp-live{visibility:hidden}
   @keyframes hppDot{0%{box-shadow:0 0 0 0 rgba(255,61,87,.6)}80%,100%{box-shadow:0 0 0 10px rgba(255,61,87,0)}}
   .hpp-s{opacity:.7;font-size:11px}
   .hpp-tl{display:flex;flex-direction:column;gap:12px;min-width:0}
@@ -591,7 +591,7 @@
 </section>
 <section class="hpp" role="dialog" aria-modal="true" aria-label="Heart rate today" hidden data-dag="heartbeats today" data-uke="heartbeats in the last 7 days" data-mnd="heartbeats in the last 30 days" data-t="h" data-min="min">
   <div class="hpp-in">
-    <div class="hpp-top mono"><div class="hpp-tl"><span class="hpp-live"><i></i><span class="hpp-s">Streamed live from Apple Watch</span></span><span class="hpp-dt"><b class="dt-d"></b><b class="dt-k"></b></span></div><button class="hpp-x" type="button" aria-label="Close">&times;</button></div>
+    <div class="hpp-top mono"><div class="hpp-tl"><span class="hpp-live"><i></i><span class="hpp-s">Streaming live from Apple Watch</span></span><span class="hpp-dt"><b class="dt-d"></b><b class="dt-k"></b></span></div><button class="hpp-x" type="button" aria-label="Close">&times;</button></div>
     <div class="hpp-hero"><div class="hpp-h"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hpp-n">00</b><span class="hpp-u">bpm</span><span class="hpp-off">Not live right now</span></div><p class="hpp-cnt"><b class="hpp-cn">0</b><span class="hpp-cl">heartbeats today</span></p></div>
     <canvas class="hpp-ekg" aria-hidden="true"></canvas>
     <div class="hpp-tabs" role="tablist"><button type="button" role="tab" data-r="dag" aria-selected="true">Today</button><button type="button" role="tab" data-r="uke" aria-selected="false">7 days</button><button type="button" role="tab" data-r="mnd" aria-selected="false">30 days</button></div>
