@@ -92,11 +92,12 @@
   }
 
   /* Short facts right under the hero. */
-  /* Two reviews side by side in the navy strip under the hero (26 + 24 + 26 = 76 px on desktop); stacked on narrow screens. */
-  .fakta{background:var(--navy);color:#fff;padding:26px var(--g);font-family:var(--bf,var(--sans))}
+  /* Two reviews side by side in the navy strip under the hero, stars on top as reviews usually show them; stacked on narrow screens. */
+  .fakta{background:var(--navy);color:#fff;padding:32px var(--g);font-family:var(--bf,var(--sans))}
   .fakta ul{display:flex;justify-content:center;flex-wrap:wrap;gap:12px 72px;list-style:none;margin:0 auto;padding:0;max-width:var(--w)}
-  .fakta li{display:flex;align-items:center;gap:12px;height:24px;line-height:24px;font-size:16px}
-  @media (max-width:760px){.fakta ul{flex-direction:column;align-items:center;gap:14px}.fakta li{height:auto;line-height:1.5;flex-wrap:wrap;justify-content:center;column-gap:10px;row-gap:2px;text-align:center}}
+  .fakta li{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;font-size:16px;line-height:1.5}
+  .fakta .sitat b{margin-left:8px}
+  @media (max-width:760px){.fakta ul{flex-direction:column;align-items:center;gap:22px}.fakta .sitat b{display:block;margin:2px 0 0}}
   .fakta .stj{color:#FFC94D;font-size:15px;letter-spacing:2px}
   .fakta q{quotes:"\201C" "\201D"}
   .fakta b{font-weight:600;color:var(--sky)}
@@ -585,7 +586,7 @@
 
 <!-- Two real customer reviews, lightly edited, standing still in the navy strip under the hero. -->
 <div class="fakta" aria-label="Customer reviews">
-  <ul><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Impressive work, and we're number one on Google.</q><b>Øyvind <span role="img" aria-label="builder">🔨</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Great return on the ads, and a really nice website.</q><b>Kim Andre <span role="img" aria-label="electrician">⚡</span></b></li></ul>
+  <ul><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><span class="sitat"><q>Impressive work, and we're number one on Google.</q> <b>Øyvind <span role="img" aria-label="builder">🔨</span></b></span></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><span class="sitat"><q>Great return on the ads, and a really nice website.</q> <b>Kim Andre <span role="img" aria-label="electrician">⚡</span></b></span></li></ul>
 </div>
 
 <section class="s" id="studio">
