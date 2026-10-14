@@ -10,10 +10,18 @@
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2300205B'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%23BA0C2F' stroke='%23fff' stroke-width='3'/%3E%3C/svg%3E">
 <link rel="preload" href="/media/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/media/fonts/barlow-condensed-800.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="/new/media/view.jpg" imagesrcset="/new/media/view-800.jpg 800w, /new/media/view.jpg 1456w" imagesizes="100vw">
 <style>
   @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces.woff2) format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
   @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces-italic.woff2) format("woff2");font-weight:100 900;font-style:italic;font-display:swap}
+  @font-face{font-family:"Barlow Condensed";src:url(/media/fonts/barlow-condensed-800.woff2) format("woff2");font-weight:800;font-style:normal;font-display:swap}
+  @font-face{font-family:"Barlow Condensed";src:url(/media/fonts/barlow-condensed-800-italic.woff2) format("woff2");font-weight:800;font-style:italic;font-display:swap}
+  @font-face{font-family:"Barlow Condensed";src:url(/media/fonts/barlow-condensed-700.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+  @font-face{font-family:"Barlow";src:url(/media/fonts/barlow-400.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+  @font-face{font-family:"Barlow";src:url(/media/fonts/barlow-600.woff2) format("woff2");font-weight:600;font-style:normal;font-display:swap}
+  /* Hero, logo and menu: Barlow Condensed (headline and logo) and Barlow (the rest), chosen in the font test (16/16). */
+  :root{--hf:"Barlow Condensed","Arial Narrow",sans-serif;--hw:800;--lw:700;--hi:italic;--hlh:0;--hl:0;--ht:uppercase;--bf:"Barlow",-apple-system,"Helvetica Neue",Arial,sans-serif}
   :root{--navy:#00205B;--navy2:#0a2c6e;--red:#BA0C2F;--red2:#9c0a27;--sky:#cfe4f6;--ink:#0b1630;--mut:#55617a;--line:#e3e8f0;--soft:#f4f7fb;
     --serif:"Fraunces",Georgia,"Times New Roman",serif;--sans:-apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;--g:clamp(16px,5vw,64px);--w:1200px}
   *{box-sizing:border-box}
@@ -67,8 +75,9 @@
   .hero .w{position:relative;z-index:1;width:100%;padding-top:110px;padding-bottom:70px}
   .hero .eb{display:flex;align-items:center;gap:10px}
   .hero .eb::before{content:"";width:28px;height:2px;background:var(--red)}
-  .hero h1{font-size:clamp(42px,6.2vw,84px);max-width:11ch;margin:18px 0 22px;text-wrap:balance;font-family:var(--hf,var(--serif));font-weight:var(--hw,500);letter-spacing:var(--hlh,-.01em);text-transform:var(--ht,none)}
-  .hero h1 em{font-style:var(--hi,italic);color:var(--red)}
+  .hero h1{font-size:clamp(46px,7.4vw,108px);line-height:.95;max-width:none;margin:18px 0 22px;text-wrap:balance;font-family:var(--hf,var(--serif));font-weight:var(--hw,500);letter-spacing:var(--hlh,-.01em);text-transform:var(--ht,none)}
+  .hero h1 em{font-style:var(--hi,italic);color:var(--red);display:block;white-space:nowrap}
+  .hero h1 .l1{white-space:nowrap}
   .hero .eb,.hero p,.hero .btn{font-family:var(--bf,var(--sans))}
   .logo{font-family:var(--hf,var(--serif));font-weight:var(--lw,600);letter-spacing:var(--hl,normal);text-transform:var(--ht,none)}
   .nav ul,.nav .btn{font-family:var(--bf,var(--sans))}
@@ -520,6 +529,16 @@
   @media (prefers-reduced-motion:reduce){.hp.live .hj,.hpp-h .hj.slag,.hpp.live .hpp-live i,.hpp-cn.tikk{animation:none}.hpp{animation:none}}
 </style>
 <script>document.documentElement.classList.add("js")</script>
+<style>
+  /* Font 16 all the way: buttons, menu and the chat button in Barlow Condensed capitals to match the headline;
+     the chat panel, the cookie box and the rest of the chat in Barlow. */
+  .btn,.nav ul a,.ch-b,.ch-h b,.ck b,.ck button:not(.ck-x):not(.ck-mer),.ch-ck button,.ch-mail{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+  .btn{font-size:17px}
+  .nav ul a{font-size:16px}
+  .ch-b{font-size:17px}
+  .ch-h b{font-size:19px}
+  .ch,.ch-p,.ch-m p,.ch-f textarea,.ch-s,.ch-del,.ck,.ck-full,.ch-ck{font-family:"Barlow",-apple-system,"Helvetica Neue",Arial,sans-serif}
+</style>
 </head>
 <body>
 
@@ -548,7 +567,7 @@
   <img src="/new/media/sketch.jpg" srcset="/new/media/sketch-800.jpg 800w, /new/media/sketch.jpg 1344w" sizes="100vw" alt="" fetchpriority="high">
   <div class="w">
     <p class="eb">Website agency</p>
-    <h1>Websites that <em>win you work.</em></h1>
+    <h1><span class="l1">Websites that</span> <em>win you work.</em></h1>
     <p>We design, build and run fast, modern websites for businesses. Fixed price, agreed before we start.</p>
     <div class="cta">
       <a class="btn btn-r" href="#contact">Get a quote</a>
@@ -895,48 +914,6 @@
     es.forEach(function(e){ if (rolig) return; if (e.isIntersecting) e.target.play().catch(function(){}); else e.target.pause(); });
   }, { threshold: .25 });
   document.querySelectorAll("video.lat").forEach(function(v){ lat.observe(v); });
-})();
-// Trying out hero fonts: left and right arrow keys step through them. No buttons on the page; the browser tab shows
-// which one is up (e.g. "3/16 DM Serif Display"), and the choice is remembered in this browser. The fonts load from
-// Google Fonts only while testing; the one chosen gets self-hosted in /media/fonts/. Remove this block once one is chosen.
-(function(){
-  // [name, headline family, Google Fonts query, weight, italic em?, letter-spacing, uppercase?, body family, body query]
-  var F = [
-    ["Fraunces (now)", null, null, 500, 1, "-.01em", 0, null, null],
-    ["Playfair Display", "Playfair Display", "Playfair+Display:ital,wght@0,600;1,600", 600, 1, "-.01em", 0, "Inter", "Inter:wght@400;600"],
-    ["DM Serif Display", "DM Serif Display", "DM+Serif+Display:ital@0;1", 400, 1, "-.01em", 0, "DM Sans", "DM+Sans:wght@400;600"],
-    ["Instrument Serif", "Instrument Serif", "Instrument+Serif:ital@0;1", 400, 1, "-.02em", 0, "Inter", "Inter:wght@400;600"],
-    ["Cormorant Garamond", "Cormorant Garamond", "Cormorant+Garamond:ital,wght@0,600;1,600", 600, 1, "-.01em", 0, "Manrope", "Manrope:wght@400;600"],
-    ["Newsreader", "Newsreader", "Newsreader:ital,opsz,wght@0,6..72,500;1,6..72,500", 500, 1, "-.02em", 0, "Inter", "Inter:wght@400;600"],
-    ["Bricolage Grotesque", "Bricolage Grotesque", "Bricolage+Grotesque:wght@800", 800, 0, "-.035em", 0, "Bricolage Grotesque", "Bricolage+Grotesque:wght@400;600"],
-    ["Space Grotesk", "Space Grotesk", "Space+Grotesk:wght@700", 700, 0, "-.035em", 0, "Space Grotesk", "Space+Grotesk:wght@400;600"],
-    ["Inter Tight", "Inter Tight", "Inter+Tight:ital,wght@0,700;1,700", 700, 1, "-.04em", 0, "Inter Tight", "Inter+Tight:wght@400;600"],
-    ["Manrope", "Manrope", "Manrope:wght@800", 800, 0, "-.04em", 0, "Manrope", "Manrope:wght@400;600"],
-    ["Plus Jakarta Sans", "Plus Jakarta Sans", "Plus+Jakarta+Sans:ital,wght@0,800;1,800", 800, 1, "-.035em", 0, "Plus Jakarta Sans", "Plus+Jakarta+Sans:wght@400;600"],
-    ["Sora", "Sora", "Sora:wght@700", 700, 0, "-.035em", 0, "Inter", "Inter:wght@400;600"],
-    ["Syne", "Syne", "Syne:wght@800", 800, 0, "-.03em", 0, "Inter", "Inter:wght@400;600"],
-    ["Archivo", "Archivo", "Archivo:ital,wdth,wght@0,110,800;1,110,800", 800, 1, "-.03em", 0, "Archivo", "Archivo:wght@400;600"],
-    ["Montserrat", "Montserrat", "Montserrat:ital,wght@0,800;1,800", 800, 1, "-.03em", 0, "Montserrat", "Montserrat:wght@400;600"],
-    ["Barlow Condensed", "Barlow Condensed", "Barlow+Condensed:ital,wght@0,800;1,800", 800, 1, "0", 1, "Barlow", "Barlow:wght@400;600"]
-  ];
-  var hero = document.documentElement, tittel = document.title, i = 0, lastet = {};
-  try { i = Math.max(0, F.findIndex(function(f){ return f[0] === localStorage.getItem("herofont"); })); } catch (e) {}
-  function hent(q){ if (!q || lastet[q]) return; lastet[q] = 1; var l = document.createElement("link"); l.rel = "stylesheet"; l.href = "https://fonts.googleapis.com/css2?family=" + q + "&display=swap"; document.head.appendChild(l); }
-  function sett(navn, verdi){ if (verdi == null) hero.style.removeProperty(navn); else hero.style.setProperty(navn, verdi); }
-  function vis(merk){
-    var f = F[i]; hent(f[2]); hent(f[8]);
-    sett("--hf", f[1] && '"' + f[1] + '",var(--serif)'); sett("--hw", String(f[3])); sett("--lw", f[1] && String(Math.min(f[3], 700))); sett("--hi", f[4] ? "italic" : "normal");
-    sett("--hl", f[5] === "0" ? "0" : f[1] ? "-.02em" : null); hero.style.setProperty("--hlh", f[5]); sett("--ht", f[6] ? "uppercase" : "none"); sett("--bf", f[7] && '"' + f[7] + '",var(--sans)');
-    if (merk) { document.title = (i + 1) + "/" + F.length + " " + f[0] + " – " + tittel; try { localStorage.setItem("herofont", f[0]); } catch (e) {} }
-    // The neighbours are fetched ahead, so the next step is quick.
-    [1, -1].forEach(function(d){ var n = F[(i + d + F.length) % F.length]; hent(n[2]); hent(n[8]); });
-  }
-  vis(!!i);
-  addEventListener("keydown", function(e){
-    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-    if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest("textarea,input,.hpp")) return;
-    i = (i + (e.key === "ArrowRight" ? 1 : -1) + F.length) % F.length; vis(true);
-  });
 })();
 </script>
 <script>
