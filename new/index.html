@@ -92,12 +92,11 @@
   }
 
   /* Short facts right under the hero. */
-  /* Review ticker: one line running right to left; the list is there twice, so moving it half its width loops seamlessly.
-     It stops while the pointer is over it. Same height as the fact strip it replaced: 26 + 24 + 26 = 76 px on desktop. */
-  .fakta{background:var(--navy);color:#fff;overflow:hidden;padding:26px 0;font-family:var(--bf,var(--sans));touch-action:pan-y}
-  .fakta .rull{display:flex;width:max-content;will-change:transform}
-  .fakta ul{display:flex;flex:none;list-style:none;margin:0;padding:0}
-  .fakta li{display:flex;align-items:center;gap:12px;height:24px;padding-right:64px;font-size:16px;white-space:nowrap}
+  /* Two reviews side by side in the navy strip under the hero (26 + 24 + 26 = 76 px on desktop); stacked on narrow screens. */
+  .fakta{background:var(--navy);color:#fff;padding:26px var(--g);font-family:var(--bf,var(--sans))}
+  .fakta ul{display:flex;justify-content:center;flex-wrap:wrap;gap:12px 72px;list-style:none;margin:0 auto;padding:0;max-width:var(--w)}
+  .fakta li{display:flex;align-items:center;gap:12px;height:24px;line-height:24px;font-size:16px}
+  @media (max-width:760px){.fakta ul{flex-direction:column;align-items:center;gap:14px}.fakta li{height:auto;line-height:1.5;flex-wrap:wrap;justify-content:center;column-gap:10px;row-gap:2px;text-align:center}}
   .fakta .stj{color:#FFC94D;font-size:15px;letter-spacing:2px}
   .fakta q{quotes:"\201C" "\201D"}
   .fakta b{font-weight:600;color:var(--sky)}
@@ -584,13 +583,9 @@
   </div>
 </section>
 
-<!-- Review ticker: real customer reviews, lightly edited. Each list holds them twice so the line is wider than any screen;
-     the second list is a copy so the loop is seamless. -->
+<!-- Two real customer reviews, lightly edited, standing still in the navy strip under the hero. -->
 <div class="fakta" aria-label="Customer reviews">
-  <div class="rull">
-    <ul><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Quick turnaround and great quality.</q><b>Milaim <span role="img" aria-label="builder">🔨</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Impressive work, and we're number one on Google.</q><b>Øyvind <span role="img" aria-label="builder">🔨</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Great design and a smooth way of working.</q><b>Jakob <span role="img" aria-label="architect">📐</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Great return on the ads, and a really nice website.</q><b>Kim Andre <span role="img" aria-label="electrician">⚡</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Fast, and a website of really high quality.</q><b>Trygve <span role="img" aria-label="builder">🔨</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Amazing quality. Our custom solution came out just right.</q><b>Anne <span role="img" aria-label="artist">🎨</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Best in the game!</q><b>Georg <span role="img" aria-label="e-commerce">🛒</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Quick turnaround and great quality.</q><b>Milaim <span role="img" aria-label="builder">🔨</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Impressive work, and we're number one on Google.</q><b>Øyvind <span role="img" aria-label="builder">🔨</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Great design and a smooth way of working.</q><b>Jakob <span role="img" aria-label="architect">📐</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Great return on the ads, and a really nice website.</q><b>Kim Andre <span role="img" aria-label="electrician">⚡</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Fast, and a website of really high quality.</q><b>Trygve <span role="img" aria-label="builder">🔨</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Amazing quality. Our custom solution came out just right.</q><b>Anne <span role="img" aria-label="artist">🎨</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Best in the game!</q><b>Georg <span role="img" aria-label="e-commerce">🛒</span></b></li></ul>
-    <ul aria-hidden="true"><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Quick turnaround and great quality.</q><b>Milaim <span role="img" aria-label="builder">🔨</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Impressive work, and we're number one on Google.</q><b>Øyvind <span role="img" aria-label="builder">🔨</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Great design and a smooth way of working.</q><b>Jakob <span role="img" aria-label="architect">📐</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Great return on the ads, and a really nice website.</q><b>Kim Andre <span role="img" aria-label="electrician">⚡</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Fast, and a website of really high quality.</q><b>Trygve <span role="img" aria-label="builder">🔨</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Amazing quality. Our custom solution came out just right.</q><b>Anne <span role="img" aria-label="artist">🎨</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Best in the game!</q><b>Georg <span role="img" aria-label="e-commerce">🛒</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Quick turnaround and great quality.</q><b>Milaim <span role="img" aria-label="builder">🔨</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Impressive work, and we're number one on Google.</q><b>Øyvind <span role="img" aria-label="builder">🔨</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Great design and a smooth way of working.</q><b>Jakob <span role="img" aria-label="architect">📐</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Great return on the ads, and a really nice website.</q><b>Kim Andre <span role="img" aria-label="electrician">⚡</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Fast, and a website of really high quality.</q><b>Trygve <span role="img" aria-label="builder">🔨</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Amazing quality. Our custom solution came out just right.</q><b>Anne <span role="img" aria-label="artist">🎨</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Best in the game!</q><b>Georg <span role="img" aria-label="e-commerce">🛒</span></b></li></ul>
-  </div>
+  <ul><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Impressive work, and we're number one on Google.</q><b>Øyvind <span role="img" aria-label="builder">🔨</span></b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Great return on the ads, and a really nice website.</q><b>Kim Andre <span role="img" aria-label="electrician">⚡</span></b></li></ul>
 </div>
 
 <section class="s" id="studio">
@@ -1268,45 +1263,6 @@ ta.addEventListener('input',()=>{ta.style.height='';ta.style.height=Math.min(ta.
 })();
 // Ingen markering eller kopiering av tekst (brukerens valg).
 ['copy','cut','selectstart','dragstart'].forEach(t=>document.addEventListener(t,e=>{if(!e.target.closest?.('textarea,input'))e.preventDefault()}));
-</script>
-<script>
-// Review line: it drifts slowly to the left (20 px/s; still with reduced motion). With the mouse near the left or right
-// edge it runs that way, faster the closer to the edge; in the middle and when the pointer leaves it eases back to the drift. On touch screens it can be dragged sideways.
-// The list is there twice, so the position wraps around half the width without a jump.
-(function(){
-  var f = document.querySelector(".fakta"), r = f && f.querySelector(".rull"); if (!r) return;
-  var BASIS = matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 20;
-  var x = 0, fart = BASIS, maal = BASIS, halv = 0, gaar = false, sist = 0, dra = null;
-  function maal_(){ halv = r.scrollWidth / 2; }
-  function sett(){ if (halv) { x = ((x % halv) + halv) % halv; } r.style.transform = "translate3d(" + (-x).toFixed(1) + "px,0,0)"; }
-  function steg(t){
-    var dt = Math.min(0.05, (t - sist) / 1000 || 0); sist = t;
-    fart += (maal - fart) * Math.min(1, dt * 6);
-    if (!dra) { x += fart * dt; sett(); }
-    if (Math.abs(fart) < 1 && !maal && !dra) { fart = 0; gaar = false; return; }
-    requestAnimationFrame(steg);
-  }
-  function start(){ if (!gaar) { gaar = true; sist = performance.now(); requestAnimationFrame(steg); } }
-  f.addEventListener("pointermove", function(e){
-    if (e.pointerType !== "mouse") return;
-    var b = f.getBoundingClientRect(), rel = (e.clientX - b.left) / b.width, sone = 0.32;
-    // Left zone runs the line to the right (shows what came before), right zone to the left. Up to 700 px/s at the very edge.
-    maal = rel < sone ? -700 * Math.pow((sone - rel) / sone, 1.4) : rel > 1 - sone ? BASIS + 700 * Math.pow((rel - 1 + sone) / sone, 1.4) : BASIS;
-    start();
-  });
-  f.addEventListener("pointerleave", function(){ maal = BASIS; start(); });
-  // Touch: drag sideways, with a little glide after letting go.
-  f.addEventListener("pointerdown", function(e){ if (e.pointerType === "mouse") return; dra = { x: e.clientX, x0: x, t: e.timeStamp, v: 0 }; maal = BASIS; fart = 0; });
-  f.addEventListener("pointermove", function(e){
-    if (!dra || e.pointerType === "mouse") return;
-    var nyX = dra.x0 - (e.clientX - dra.x); dra.v = (nyX - x) / Math.max(1, e.timeStamp - dra.t) * 1000; dra.t = e.timeStamp; x = nyX; sett();
-  });
-  function slipp(){ if (!dra) return; fart = Math.max(-1500, Math.min(1500, dra.v)); dra = null; maal = BASIS; start(); }
-  f.addEventListener("pointerup", slipp); f.addEventListener("pointercancel", slipp);
-  addEventListener("resize", function(){ maal_(); sett(); });
-  maal_(); sett(); start();
-  if (document.fonts) document.fonts.ready.then(function(){ maal_(); sett(); });
-})();
 </script>
 </body>
 </html>
