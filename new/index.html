@@ -92,15 +92,16 @@
   }
 
   /* Short facts right under the hero. */
-  /* Two reviews side by side in the navy strip under the hero, stars on top as reviews usually show them; stacked on narrow screens. */
-  .fakta{background:var(--navy);color:#fff;padding:32px var(--g);font-family:var(--bf,var(--sans))}
-  .fakta ul{display:flex;justify-content:center;flex-wrap:wrap;gap:12px 72px;list-style:none;margin:0 auto;padding:0;max-width:var(--w)}
-  .fakta li{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;font-size:16px;line-height:1.5}
-  .fakta .sitat b{margin-left:8px}
-  @media (max-width:760px){.fakta ul{flex-direction:column;align-items:center;gap:22px}.fakta .sitat b{display:block;margin:2px 0 0}}
-  .fakta .stj{color:#FFC94D;font-size:15px;letter-spacing:2px}
-  .fakta q{quotes:"\201C" "\201D"}
-  .fakta b{font-weight:600;color:var(--sky)}
+  /* One review in the navy strip under the hero: stars on top, the quote, the name, then the facts as small tags. */
+  .fakta{background:var(--navy);color:#fff;padding:clamp(40px,5vw,60px) var(--g);font-family:var(--bf,var(--sans));text-align:center}
+  .fakta figure{margin:0 auto;max-width:52rem}
+  .fakta .stj{display:block;color:#FFC94D;font-size:22px;letter-spacing:4px}
+  .fakta blockquote{margin:14px 0 0;font-size:clamp(20px,2vw,27px);line-height:1.4;font-weight:500;text-wrap:balance}
+  .fakta blockquote::before{content:"“"}.fakta blockquote::after{content:"”"}
+  .fakta figcaption{margin-top:14px;font-size:16px;color:rgba(255,255,255,.75)}
+  .fakta figcaption b{font-weight:600;color:var(--sky);margin-right:6px}
+  .fakta ul{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;list-style:none;margin:20px 0 0;padding:0}
+  .fakta li{font-size:14px;font-weight:600;letter-spacing:.02em;padding:7px 14px;border-radius:999px;background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
 
   section.s{padding:clamp(72px,10vw,130px) 0}
   .hode{max-width:44rem;margin-bottom:clamp(36px,5vw,60px)}
@@ -584,9 +585,14 @@
   </div>
 </section>
 
-<!-- Two real customer reviews, lightly edited, standing still in the navy strip under the hero. -->
-<div class="fakta" aria-label="Customer reviews">
-  <ul><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><span class="sitat"><q>Impressive work, and we're number one on Google.</q> <b>Øyvind <span role="img" aria-label="builder">🔨</span></b></span></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><span class="sitat"><q>Great return on the ads, and a really nice website.</q> <b>Kim Andre <span role="img" aria-label="electrician">⚡</span></b></span></li></ul>
+<!-- One real review in the navy strip under the hero (Øyvind, Karlsen & Nordseth; his full quote is in the clients section). -->
+<div class="fakta" aria-label="Customer review">
+  <figure>
+    <span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span>
+    <blockquote>Impressive work. We're number one on Google, and when we won the Bygg og Bevar award, the jury praised our website.</blockquote>
+    <figcaption><b>Øyvind <span role="img" aria-label="builder">🔨</span></b> Karlsen &amp; Nordseth</figcaption>
+    <ul><li>#1 on Google</li><li>Bygg og Bevar award 2021</li><li>Project: $23,000</li></ul>
+  </figure>
 </div>
 
 <section class="s" id="studio">
