@@ -539,44 +539,6 @@
   .ch-h b{font-size:19px}
   .ch,.ch-p,.ch-m p,.ch-f textarea,.ch-s,.ch-del,.ck,.ck-full,.ch-ck{font-family:"Barlow",-apple-system,"Helvetica Neue",Arial,sans-serif}
 </style>
-<style>
-  /* The only thing that moves on load: the chat button arrives a moment after the page (arrow keys try 5 versions, see the
-     script at the bottom). It is hidden until the script gives <html> the class c-klar and a version (c-1 … c-5). */
-  html.js:not(.c-klar) #chat .ch-b{opacity:0;pointer-events:none}
-  @keyframes c1{0%{opacity:0;transform:translateX(170px);clip-path:inset(0 calc(100% - 44px) 0 0 round 999px)}
-    12%{opacity:1}55%{transform:none;clip-path:inset(0 calc(100% - 44px) 0 0 round 999px)}100%{transform:none;clip-path:inset(-24px -24px -24px -24px round 999px)}}
-  @keyframes c1i{0%{transform:rotate(-600deg)}55%{transform:none}}
-  @keyframes c2{0%{opacity:0;transform:translateY(150px)}40%{opacity:1;transform:translateY(-16px) scale(.95,1.07)}58%{transform:translateY(0) scale(1.1,.9)}
-    74%{transform:translateY(-6px) scale(.98,1.03)}88%{transform:translateY(0) scale(1.02,.98)}100%{transform:none}}
-  @keyframes c3{0%{opacity:0;transform:scale(0)}55%{opacity:1;transform:scale(1.12)}75%{transform:scale(.96)}100%{transform:none}}
-  @keyframes c3r{0%{box-shadow:0 8px 24px rgba(0,32,91,.25),0 0 0 0 rgba(186,12,47,.5)}100%{box-shadow:0 8px 24px rgba(0,32,91,.25),0 0 0 24px rgba(186,12,47,0)}}
-  @keyframes c3w{0%,100%{transform:none}18%{transform:rotate(-18deg)}36%{transform:rotate(14deg)}54%{transform:rotate(-10deg)}72%{transform:rotate(6deg)}}
-  @keyframes c4d{0%,60%,100%{transform:none;opacity:.45}30%{transform:translateY(-4px);opacity:1}}
-  @keyframes c5{from{opacity:0;transform:translateY(34px) scale(.92);filter:blur(10px)}}
-  @keyframes c5s{from{background-position:190% 0}to{background-position:-90% 0}}
-  @keyframes c5n{0%,100%{transform:none}40%{transform:rotate(-14deg) translateY(-1px)}70%{transform:rotate(5deg)}}
-  /* 1 Roll & unfurl */
-  .c-1 #chat .ch-b{animation:c1 1.5s cubic-bezier(.3,.7,.2,1) backwards}
-  .c-1 #chat .ch-b svg{animation:c1i 1.5s cubic-bezier(.3,.7,.2,1) backwards}
-  /* 2 Spring drop */
-  .c-2 #chat .ch-b{transform-origin:50% 100%;animation:c2 1.3s cubic-bezier(.25,.8,.3,1) backwards}
-  /* 3 Pop & wave */
-  .c-3 #chat .ch-b{animation:c3 .9s cubic-bezier(.2,.9,.3,1.2) backwards,c3r 1.2s ease-out .7s}
-  .c-3 #chat .ch-b svg{transform-origin:20% 90%;animation:c3w 1s ease-in-out .95s}
-  /* 4 Typing dots: a small bubble with dots, then it opens into the pill (.c-4b). */
-  .c-4 #chat .ch-b{clip-path:inset(0 calc(100% - 44px) 0 0 round 999px);animation:c3 .6s cubic-bezier(.2,.9,.3,1.2) backwards;transition:clip-path .8s cubic-bezier(.7,0,.2,1)}
-  .c-4 #chat .ch-b>:not(.c-prikker){opacity:0;transition:opacity .45s ease .3s}
-  .c-4b #chat .ch-b{clip-path:inset(-24px -24px -24px -24px round 999px)}
-  .c-4b #chat .ch-b>:not(.c-prikker){opacity:1}
-  .c-prikker{position:absolute;left:0;top:0;bottom:0;width:44px;display:flex;align-items:center;justify-content:center;gap:3px;transition:opacity .25s}
-  .c-prikker i{width:5px;height:5px;border-radius:50%;background:currentColor;animation:c4d 1s ease-in-out infinite}
-  .c-prikker i:nth-child(2){animation-delay:.15s}.c-prikker i:nth-child(3){animation-delay:.3s}
-  .c-4b .c-prikker{opacity:0}
-  /* 5 Glass sheen */
-  .c-5 #chat .ch-b{background-image:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.55) 50%,transparent 65%);background-size:250% 100%;background-repeat:no-repeat;background-position:-90% 0;
-    animation:c5 1.1s cubic-bezier(.2,.8,.2,1) backwards,c5s 1.1s cubic-bezier(.5,0,.3,1) .9s backwards}
-  .c-5 #chat .ch-b svg{animation:c5n .8s ease-in-out 1.7s}
-</style>
 </head>
 <body>
 
@@ -1290,39 +1252,6 @@ ta.addEventListener('input',()=>{ta.style.height='';ta.style.height=Math.min(ta.
 })();
 // Ingen markering eller kopiering av tekst (brukerens valg).
 ['copy','cut','selectstart','dragstart'].forEach(t=>document.addEventListener(t,e=>{if(!e.target.closest?.('textarea,input'))e.preventDefault()}));
-</script>
-<script>
-// The chat button arrives a little after the page has loaded. Trying out 5 entrances: left and right arrow keys step through
-// them and play each one again. No buttons on the page; the browser tab shows which one is up, and the choice is
-// remembered in this browser. Remove the testing part once one is chosen.
-(function(){
-  var C = ["Roll & unfurl", "Spring drop", "Pop & wave", "Typing dots", "Glass sheen"];
-  var rot = document.documentElement, knapp = document.querySelector("#chat .ch-b"), tittel = document.title, i = 0, tider = [];
-  if (!knapp) { rot.classList.add("c-klar"); return; }
-  var rolig = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  try { i = Math.max(0, C.indexOf(localStorage.getItem("chatanim"))); } catch (e) {}
-  function spill(forsinkelse, merk){
-    tider.forEach(clearTimeout); tider = [];
-    rot.className = rot.className.replace(/\s*\b(c-\d+b?|c-klar)\b/g, "");
-    var p = knapp.querySelector(".c-prikker"); if (p) p.remove();
-    if (merk) { document.title = (i + 1) + "/" + C.length + " " + C[i] + " – " + tittel; try { localStorage.setItem("chatanim", C[i]); } catch (e) {} }
-    tider.push(setTimeout(function(){
-      if (rolig) { rot.classList.add("c-klar"); return; }
-      if (i === 3) { var d = document.createElement("span"); d.className = "c-prikker"; d.setAttribute("aria-hidden", "true"); d.innerHTML = "<i></i><i></i><i></i>"; knapp.append(d); }
-      void rot.offsetWidth;
-      rot.classList.add("c-klar", "c-" + (i + 1));
-      if (i === 3) tider.push(setTimeout(function(){ rot.classList.add("c-4b"); }, 1700), setTimeout(function(){ var q = knapp.querySelector(".c-prikker"); if (q) q.remove(); }, 2600));
-    }, forsinkelse));
-  }
-  // First time: a little after the page has loaded.
-  function start(){ spill(700, !!i); }
-  if (document.readyState === "complete") start(); else addEventListener("load", start);
-  addEventListener("keydown", function(e){
-    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-    if (e.metaKey || e.ctrlKey || e.altKey || (e.target.closest && e.target.closest("textarea,input,.hpp"))) return;
-    i = (i + (e.key === "ArrowRight" ? 1 : -1) + C.length) % C.length; spill(350, true);
-  });
-})();
 </script>
 </body>
 </html>
