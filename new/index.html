@@ -1270,12 +1270,13 @@ ta.addEventListener('input',()=>{ta.style.height='';ta.style.height=Math.min(ta.
 ['copy','cut','selectstart','dragstart'].forEach(t=>document.addEventListener(t,e=>{if(!e.target.closest?.('textarea,input'))e.preventDefault()}));
 </script>
 <script>
-// Review line: it stands still. With the mouse near the left or right edge it runs that way, faster the closer to the edge;
-// in the middle and when the pointer leaves it slows to a stop. On touch screens it can be dragged sideways.
+// Review line: it drifts slowly to the left (20 px/s; still with reduced motion). With the mouse near the left or right
+// edge it runs that way, faster the closer to the edge; in the middle and when the pointer leaves it eases back to the drift. On touch screens it can be dragged sideways.
 // The list is there twice, so the position wraps around half the width without a jump.
 (function(){
   var f = document.querySelector(".fakta"), r = f && f.querySelector(".rull"); if (!r) return;
-  var x = 0, fart = 0, maal = 0, halv = 0, gaar = false, sist = 0, dra = null;
+  var BASIS = matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 20;
+  var x = 0, fart = BASIS, maal = BASIS, halv = 0, gaar = false, sist = 0, dra = null;
   function maal_(){ halv = r.scrollWidth / 2; }
   function sett(){ if (halv) { x = ((x % halv) + halv) % halv; } r.style.transform = "translate3d(" + (-x).toFixed(1) + "px,0,0)"; }
   function steg(t){
@@ -1290,20 +1291,20 @@ ta.addEventListener('input',()=>{ta.style.height='';ta.style.height=Math.min(ta.
     if (e.pointerType !== "mouse") return;
     var b = f.getBoundingClientRect(), rel = (e.clientX - b.left) / b.width, sone = 0.32;
     // Left zone runs the line to the right (shows what came before), right zone to the left. Up to 700 px/s at the very edge.
-    maal = rel < sone ? -700 * Math.pow((sone - rel) / sone, 1.4) : rel > 1 - sone ? 700 * Math.pow((rel - 1 + sone) / sone, 1.4) : 0;
+    maal = rel < sone ? -700 * Math.pow((sone - rel) / sone, 1.4) : rel > 1 - sone ? BASIS + 700 * Math.pow((rel - 1 + sone) / sone, 1.4) : BASIS;
     start();
   });
-  f.addEventListener("pointerleave", function(){ maal = 0; });
+  f.addEventListener("pointerleave", function(){ maal = BASIS; start(); });
   // Touch: drag sideways, with a little glide after letting go.
-  f.addEventListener("pointerdown", function(e){ if (e.pointerType === "mouse") return; dra = { x: e.clientX, x0: x, t: e.timeStamp, v: 0 }; maal = 0; fart = 0; });
+  f.addEventListener("pointerdown", function(e){ if (e.pointerType === "mouse") return; dra = { x: e.clientX, x0: x, t: e.timeStamp, v: 0 }; maal = BASIS; fart = 0; });
   f.addEventListener("pointermove", function(e){
     if (!dra || e.pointerType === "mouse") return;
     var nyX = dra.x0 - (e.clientX - dra.x); dra.v = (nyX - x) / Math.max(1, e.timeStamp - dra.t) * 1000; dra.t = e.timeStamp; x = nyX; sett();
   });
-  function slipp(){ if (!dra) return; fart = Math.max(-1500, Math.min(1500, dra.v)); dra = null; maal = 0; start(); }
+  function slipp(){ if (!dra) return; fart = Math.max(-1500, Math.min(1500, dra.v)); dra = null; maal = BASIS; start(); }
   f.addEventListener("pointerup", slipp); f.addEventListener("pointercancel", slipp);
   addEventListener("resize", function(){ maal_(); sett(); });
-  maal_(); sett();
+  maal_(); sett(); start();
   if (document.fonts) document.fonts.ready.then(function(){ maal_(); sett(); });
 })();
 </script>
