@@ -92,12 +92,18 @@
   }
 
   /* Short facts right under the hero. */
-  .fakta{background:var(--navy);color:#fff}
-  .fakta ul{list-style:none;margin:0 auto;padding:26px var(--g);max-width:var(--w);display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
-  .fakta li{display:flex;align-items:center;gap:12px;font-size:15px;font-weight:500}
-  .fakta svg{flex:none;width:22px;height:22px;color:var(--sky)}
-  @media (max-width:900px){.fakta ul{grid-template-columns:1fr 1fr}}
-  @media (max-width:480px){.fakta ul{grid-template-columns:1fr;gap:14px}}
+  /* Review ticker: one line running right to left; the list is there twice, so moving it half its width loops seamlessly.
+     It stops while the pointer is over it. Same height as the fact strip it replaced: 26 + 24 + 26 = 76 px on desktop. */
+  .fakta{background:var(--navy);color:#fff;overflow:hidden;padding:26px 0;font-family:var(--bf,var(--sans))}
+  .fakta .rull{display:flex;width:max-content;animation:tikk 70s linear infinite}
+  .fakta:hover .rull{animation-play-state:paused}
+  .fakta ul{display:flex;flex:none;list-style:none;margin:0;padding:0}
+  .fakta li{display:flex;align-items:center;gap:12px;height:24px;padding-right:64px;font-size:16px;white-space:nowrap}
+  .fakta .stj{color:#FFC94D;font-size:15px;letter-spacing:2px}
+  .fakta q{quotes:"\201C" "\201D"}
+  .fakta b{font-weight:600;color:var(--sky)}
+  @keyframes tikk{to{transform:translateX(-50%)}}
+  @media (prefers-reduced-motion:reduce){.fakta{overflow-x:auto}.fakta .rull{animation:none}}
 
   section.s{padding:clamp(72px,10vw,130px) 0}
   .hode{max-width:44rem;margin-bottom:clamp(36px,5vw,60px)}
@@ -576,13 +582,12 @@
   </div>
 </section>
 
-<div class="fakta">
-  <ul>
-    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>Custom design, no templates</li>
-    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></svg>Built for mobile first</li>
-    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Fast, secure hosting</li>
-    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Fixed price up front</li>
-  </ul>
+<!-- Review ticker. PLACEHOLDER reviews, made up for the draft: replace with real ones before this page goes live. -->
+<div class="fakta" aria-label="Customer reviews">
+  <div class="rull">
+    <ul><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Phone hasn't stopped ringing since the new site went live.</q><b>Martin, plumber</b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Fixed price, no surprises, and it looks better than our competitors' sites.</q><b>Sara, electrician</b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>We're on page one of Google for our area now.</q><b>Thomas, builder</b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>They wrote better about our work than we ever could.</q><b>Erik, carpenter</b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Quote requests come straight to my phone. Simple.</q><b>Jonas, roofer</b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Saw a draft before I paid a penny. Loved it.</q><b>Lena, painter</b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Booked out three weeks ahead since spring.</q><b>Anders, bathroom fitter</b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Easy to work with, quick to reply, no jargon.</q><b>Kristian, landscaper</b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>The ads paid for themselves in the first month.</q><b>Mats, heating engineer</b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Finally a website I'm proud to send customers to.</q><b>Hanne, tiler</b></li></ul>
+    <ul aria-hidden="true"><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Phone hasn't stopped ringing since the new site went live.</q><b>Martin, plumber</b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Fixed price, no surprises, and it looks better than our competitors' sites.</q><b>Sara, electrician</b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>We're on page one of Google for our area now.</q><b>Thomas, builder</b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>They wrote better about our work than we ever could.</q><b>Erik, carpenter</b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Quote requests come straight to my phone. Simple.</q><b>Jonas, roofer</b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Saw a draft before I paid a penny. Loved it.</q><b>Lena, painter</b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Booked out three weeks ahead since spring.</q><b>Anders, bathroom fitter</b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Easy to work with, quick to reply, no jargon.</q><b>Kristian, landscaper</b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>The ads paid for themselves in the first month.</q><b>Mats, heating engineer</b></li><li><span class="stj" role="img" aria-label="5 out of 5 stars">★★★★★</span><q>Finally a website I'm proud to send customers to.</q><b>Hanne, tiler</b></li></ul>
+  </div>
 </div>
 
 <section class="s" id="studio">
