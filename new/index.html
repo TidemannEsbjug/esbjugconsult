@@ -41,7 +41,6 @@
   .nav .w{display:flex;align-items:center;gap:28px;height:76px}
   .nav.fast,.nav.apen{background:#fff;box-shadow:0 1px 0 var(--line),0 8px 30px rgba(0,32,91,.06)}
   .logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--serif);font-size:22px;font-weight:600;margin-right:auto}
-  .logo i{width:22px;height:22px;border-radius:50%;background:var(--red);border:3px solid #fff;box-shadow:0 0 0 2px var(--navy)}
   .nav ul{display:flex;gap:26px;list-style:none;margin:0;padding:0;font-size:15px;font-weight:500}
   .nav ul a{text-decoration:none}
   .nav ul a:hover{text-decoration:underline;text-underline-offset:6px}
@@ -199,7 +198,6 @@
   footer{background:#001538;color:rgba(255,255,255,.7);font-size:14px}
   footer .w{display:flex;flex-wrap:wrap;gap:16px 32px;justify-content:space-between;align-items:center;padding-top:30px;padding-bottom:30px}
   footer .logo{color:#fff;font-size:19px;margin:0}
-  footer .logo i{width:18px;height:18px;border-width:2px}
   footer nav{display:flex;flex-wrap:wrap;gap:22px}
   footer a{text-decoration:none}
   footer a:hover{color:#fff}
@@ -219,14 +217,15 @@
   .hpp .mono{font:600 13px/1.5 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase}
   .nav,footer{transition:opacity .45s ease}
   .focus .nav,.focus footer{opacity:0;pointer-events:none}
-  /* The pulse sits in a small glass box above the hero text. */
-  .puls{display:inline-block;margin-bottom:26px;padding:10px 18px 10px 16px;border-radius:18px;color:var(--navy);
-    background:linear-gradient(135deg,rgba(255,255,255,.8),rgba(255,255,255,.55));-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);
-    border:1px solid rgba(255,255,255,.7);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 12px 34px rgba(0,32,91,.16)}
+  /* The pulse sits in the chat header: heart and number only. Tap it for the full-screen view. */
+  .puls{flex:none;color:#f2f6fb}
+  #chat .ch-a{flex-direction:column;align-items:flex-end;gap:0}
   .puls:has(.hp[hidden]){display:none}
-  .puls .st-i{gap:5px}
-  .puls .st-v{font-size:clamp(20px,2.1vw,27px);gap:8px}
-  .puls .st-l{font-size:9.5px;min-height:11px}
+  .puls .st-v{font-size:19px;gap:6px}
+  .puls .st-l,.puls .hp .g{display:none!important}
+  .puls .hp-o{padding:4px 6px;margin:0}
+  .puls .hp-o:hover,.puls .hp-o[aria-expanded="true"]{background:rgba(255,255,255,.12)}
+  .puls .hp-o:focus-visible{outline-color:#fff}
   /* Chat: boble nede til høyre, panel i svart og gult. */
   .ch{position:fixed;right:18px;bottom:18px;z-index:5;font-family:inherit}
   .ch-b{display:flex;align-items:center;gap:8px;border:0;cursor:pointer;background:var(--ink);color:var(--y);font-weight:700;font-size:16px;line-height:1;font-family:inherit;padding:13px 18px 13px 15px;border-radius:999px;box-shadow:0 8px 24px rgba(0,32,91,.25);position:relative}
@@ -504,7 +503,7 @@
 
 <header class="nav" id="nav">
   <div class="w">
-    <a class="logo" href="/new/"><i aria-hidden="true"></i>Esbjug Consult</a>
+    <a class="logo" href="/new/">Esbjug Consult</a>
     <ul id="lenker">
       <li><a href="#services">Services</a></li>
       <li><a href="#work">Work</a></li>
@@ -526,7 +525,6 @@
   <!-- Photo for now. A video built from the same scenes (Midjourney → Grok Imagine) may replace it later. -->
   <img src="/new/media/view.jpg" srcset="/new/media/view-800.jpg 800w, /new/media/view.jpg 1456w" sizes="100vw" alt="" fetchpriority="high">
   <div class="w">
-    <div class="puls"><div class="st"><div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Heart rate today"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg></span></button><span class="st-l"><span class="hp-on">Live from Apple Watch</span><span class="hp-av">Not live right now</span></span></div><div class="st-i tl-a" hidden data-av data-l="here now"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">here now</span><span class="tl-deg" aria-hidden="true">+1 · that's you</span></div></div><div class="st-i tl-b" hidden data-av data-l="unique visitors" data-ny="+1 · you are no. {n}" data-er="You are no. {n}" data-var="You were no. {n}"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unique visitors</span><span class="tl-deg" aria-hidden="true">+1 · that's you</span></div></div><span class="tl-sr"></span></div></div>
     <p class="eb">Website agency</p>
     <h1>Websites that <em>win you work.</em></h1>
     <p>We design, build and run fast, modern websites for businesses. Fixed price, agreed before we start.</p>
@@ -768,7 +766,7 @@
 
 <footer>
   <div class="w">
-    <a class="logo" href="/new/"><i aria-hidden="true"></i>Esbjug Consult</a>
+    <a class="logo" href="/new/">Esbjug Consult</a>
     <nav aria-label="Footer">
       <a href="#services">Services</a>
       <a href="#work">Work</a>
@@ -800,7 +798,7 @@
   <button class="ch-b" type="button" aria-label="Chat with Tidemann" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Chat<span class="zz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span><i class="ch-n" hidden></i></button>
   <div class="ch-pill" hidden><button type="button" class="cp-open" aria-label="Open the chat"><i></i><span class="cp-t">In a call with Tidemann</span></button><button type="button" class="cp-mute" aria-label="Mute"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><button type="button" class="cp-end" aria-label="Hang up"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 9c-3.3 0-6.3.9-8.6 2.5-.5.4-.6 1-.3 1.5l1.6 2.5c.3.5.9.7 1.4.5l2.8-1c.5-.2.8-.7.8-1.2V12c1.4-.4 3-.4 4.6 0v1.8c0 .5.3 1 .8 1.2l2.8 1c.5.2 1.1 0 1.4-.5l1.6-2.5c.3-.5.2-1.1-.3-1.5C18.3 9.9 15.3 9 12 9z"/></svg></button></div>
   <section class="ch-p" role="dialog" aria-label="Chat with Tidemann" hidden>
-    <div class="ch-h"><button class="ch-x" type="button" aria-label="Close chat">×</button><div class="ch-t"><b>Tidemann Esbjug</b><span class="ch-s"><i></i><span class="zz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span><span>Don't hesitate! Go, go, go!</span></span></div><div class="ch-a"><button class="ch-del" type="button">Delete conversation</button></div></div>
+    <div class="ch-h"><button class="ch-x" type="button" aria-label="Close chat">×</button><div class="ch-t"><b>Tidemann Esbjug</b><span class="ch-s"><i></i><span class="zz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span><span>Don't hesitate! Go, go, go!</span></span></div><div class="ch-a"><div class="puls"><div class="st"><div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Heart rate today"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg></span></button><span class="st-l"><span class="hp-on">Live from Apple Watch</span><span class="hp-av">Not live right now</span></span></div><div class="st-i tl-a" hidden data-av data-l="here now"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">here now</span><span class="tl-deg" aria-hidden="true">+1 · that's you</span></div></div><div class="st-i tl-b" hidden data-av data-l="unique visitors" data-ny="+1 · you are no. {n}" data-er="You are no. {n}" data-var="You were no. {n}"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unique visitors</span><span class="tl-deg" aria-hidden="true">+1 · that's you</span></div></div><span class="tl-sr"></span></div></div><button class="ch-del" type="button">Delete conversation</button></div></div>
     <div class="ch-call" hidden><div class="cc-i"><span class="cc-dot"></span><div><b class="cc-t">Tidemann is calling you</b><span class="cc-s">Voice call in the browser</span></div></div><div class="cc-b"><button type="button" class="cc-ans">Answer</button><button type="button" class="cc-dec">Decline</button><button type="button" class="cc-mute" hidden>Mute</button><button type="button" class="cc-min" hidden>Minimise</button><button type="button" class="cc-end" hidden>Hang up</button></div><audio class="cc-audio" autoplay playsinline></audio></div>
     <div class="ch-m" aria-live="polite"></div>
     <a class="ch-mail" href="mailto:tidemann@esbjugconsult.com" hidden>Send an email instead?</a>
