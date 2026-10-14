@@ -538,6 +538,78 @@
   .ch-h b{font-size:19px}
   .ch,.ch-p,.ch-m p,.ch-f textarea,.ch-s,.ch-del,.ck,.ck-full,.ch-ck{font-family:"Barlow",-apple-system,"Helvetica Neue",Arial,sans-serif}
 </style>
+<style>
+  /* Section two, in the hero's type: Barlow Condensed capitals for headings, Barlow for text. */
+  .s2{font-family:var(--bf,var(--sans))}
+  .s2 h2{font-family:var(--hf);font-weight:800;text-transform:uppercase;letter-spacing:0;line-height:.95;font-size:clamp(40px,5.4vw,78px);margin:12px 0 0;max-width:16ch;color:var(--navy)}
+  .s2 h2 em{font-style:italic;color:var(--red)}
+  .s2 h3{font-family:var(--hf);font-weight:800;text-transform:uppercase;font-size:clamp(24px,2.2vw,32px);line-height:1;margin:0;color:var(--navy)}
+  .s2 p{color:var(--mut);font-size:18px;line-height:1.55}
+  .s2-eb{font-family:var(--hf);font-weight:700;font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:var(--red)!important;margin:0;display:flex;align-items:center;gap:10px}
+  .s2-eb::before{content:"";width:28px;height:2px;background:var(--red)}
+  /* 1 */
+  .s2-1 h2{font-size:clamp(48px,7.6vw,118px);max-width:14ch}
+  .s2-1b{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;flex-wrap:wrap;margin-top:34px}
+  .s2-1b p{max-width:34rem;margin:0}
+  /* 2 */
+  .s2-2{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:48px}
+  .s2-2 article{border-top:3px solid var(--navy);padding-top:22px}
+  .s2-2 span{display:block;font-family:var(--hf);font-weight:800;font-size:18px;color:var(--red);margin-bottom:14px}
+  .s2-2 p{margin:10px 0 0;font-size:17px}
+  /* 3 */
+  .s2-3{background:var(--navy);margin:calc(-1 * clamp(72px,10vw,130px)) 0;padding:clamp(72px,10vw,130px) 0}
+  .s2-3 .s2-eb{color:#ff8fa3!important}.s2-3 .s2-eb::before{background:#ff8fa3}
+  .s2-3g{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin-top:34px}
+  .s2-3g b{display:block;font-family:var(--hf);font-weight:800;font-size:clamp(72px,9vw,140px);line-height:.9;color:#fff}
+  .s2-3g span{display:block;margin-top:12px;color:var(--sky);font-size:18px;max-width:18rem}
+  /* 4 */
+  .s2-4{display:grid;grid-template-columns:1fr 1.1fr;gap:clamp(32px,6vw,90px);align-items:center}
+  .s2-4 img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:22px;box-shadow:0 30px 70px rgba(0,32,91,.12)}
+  .s2-4 p{margin:16px 0 0}
+  /* 5 */
+  .s2-5{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:44px}
+  .s2-5>div{border-radius:22px;padding:34px 34px 38px}
+  .s2-5 .for{background:var(--soft)}.s2-5 .etter{background:var(--navy)}
+  .s2-5 .etter h3{color:#fff}
+  .s2-5 ul{list-style:none;margin:22px 0 0;padding:0;display:grid;gap:14px;font-size:18px}
+  .s2-5 li{display:flex;gap:12px;align-items:flex-start}
+  .s2-5 svg{flex:none;width:20px;height:20px;margin-top:4px}
+  .s2-5 .for li{color:var(--mut)}.s2-5 .for svg{color:#9aa4b5}
+  .s2-5 .etter li{color:#fff}.s2-5 .etter svg{color:#ff8fa3}
+  /* 6 */
+  .s2-6{list-style:none;margin:48px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:28px;position:relative}
+  .s2-6 li b{display:block;font-family:var(--hf);font-weight:800;font-size:clamp(80px,9vw,130px);line-height:.85;color:var(--sky);-webkit-text-stroke:2px var(--navy);margin-bottom:14px}
+  .s2-6 p{margin:10px 0 0;font-size:17px}
+  /* 7 */
+  .s2-7 ul{list-style:none;margin:30px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px 40px}
+  .s2-7 li{font-family:var(--hf);font-weight:800;text-transform:uppercase;font-size:clamp(38px,5.4vw,80px);line-height:1;color:var(--navy)}
+  .s2-7 li:nth-child(even){color:var(--red);font-style:italic}
+  .s2-7 p{margin:30px 0 0}
+  .s2-7 a{color:var(--navy);font-weight:600;text-underline-offset:4px}
+  /* 8 */
+  .s2-8{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,6vw,90px);align-items:center}
+  .s2-8 p{margin:18px 0 0;max-width:30rem}
+  .s2-8 ol{list-style:none;margin:0;padding:0;counter-reset:n;display:grid;gap:16px}
+  .s2-8 li{counter-increment:n;display:grid;grid-template-columns:56px 1fr;gap:4px 16px;padding:22px 24px;border-radius:18px;background:var(--soft)}
+  .s2-8 li::before{content:"0" counter(n);grid-row:span 2;font-family:var(--hf);font-weight:800;font-size:32px;color:var(--red);line-height:1}
+  .s2-8 li b{font-family:var(--hf);font-weight:800;text-transform:uppercase;font-size:24px;color:var(--navy)}
+  .s2-8 li span{color:var(--mut);font-size:17px}
+  /* 9 */
+  .s2-9{display:grid;grid-template-columns:1.4fr 1fr;grid-template-rows:1fr 1fr;gap:16px;margin-top:44px;height:min(70vh,620px)}
+  .s2-9 figure{position:relative;margin:0;border-radius:20px;overflow:hidden}
+  .s2-9 .stor{grid-row:span 2}
+  .s2-9 img{width:100%;height:100%;object-fit:cover}
+  .s2-9 figcaption{position:absolute;left:18px;bottom:16px;font-family:var(--hf);font-weight:800;text-transform:uppercase;font-size:22px;color:#fff;background:var(--navy);padding:6px 14px;border-radius:999px}
+  /* 10 */
+  .s2-10{max-width:900px}
+  .s2-10 blockquote{margin:24px 0 0;font-family:var(--hf);font-weight:700;font-size:clamp(28px,3.4vw,46px);line-height:1.15;color:var(--navy);border-left:4px solid var(--red);padding-left:28px}
+  .s2-10 .sign{margin:26px 0 0 32px;display:flex;flex-direction:column}
+  .s2-10 .sign b{font-family:var(--hf);font-weight:800;text-transform:uppercase;font-size:22px;color:var(--navy)}
+  @media (max-width:860px){
+    .s2-2,.s2-3g,.s2-5,.s2-6,.s2-4,.s2-8{grid-template-columns:1fr}
+    .s2-9{grid-template-columns:1fr;grid-template-rows:none;height:auto}.s2-9 .stor{grid-row:auto}.s2-9 figure{aspect-ratio:4/3}
+  }
+</style>
 </head>
 <body>
 
@@ -576,15 +648,94 @@
 </section>
 
 
-<section class="s" id="studio">
-  <div class="w delt">
-    <div class="inn">
-      <p class="eb">Studio</p>
-      <h2>A small studio. Your full attention.</h2>
+<!-- Section two: 10 versions to try (arrow keys, see the script at the bottom). Remove the others once one is chosen. -->
+<section class="s s2" id="studio">
+  <div class="s2v" data-navn="Big statement">
+  <div class="w s2-1">
+    <p class="s2-eb">Esbjug Consult</p>
+    <h2>We build websites for businesses <em>that build things.</em></h2>
+    <div class="s2-1b"><p>Builders, electricians, restorers and the people who keep their customers happy. You do the job; we make sure the right customers find you.</p><a class="btn btn-r" href="#work">See our work →</a></div>
+  </div>
+  </div>
+  <div class="s2v" data-navn="Three pillars" hidden>
+  <div class="w">
+    <p class="s2-eb">What we do</p>
+    <h2>Websites. Ads. <em>SEO.</em></h2>
+    <div class="s2-2">
+      <article><span>01</span><h3>Websites</h3><p>Fast, custom sites that show your work and make it easy to call you.</p></article>
+      <article><span>02</span><h3>Google Ads</h3><p>Ads in your area, on a budget you decide, sending people straight to your site.</p></article>
+      <article><span>03</span><h3>SEO</h3><p>The groundwork that gets you found on Google, and keeps you there.</p></article>
+    </div>
+  </div>
+  </div>
+  <div class="s2v" data-navn="Proof in numbers" hidden>
+  <div class="s2-3"><div class="w">
+    <p class="s2-eb">Results</p>
+    <div class="s2-3g">
+      <div><b>#1</b><span>on Google for Karlsen &amp; Nordseth</span></div>
+      <div><b>2021</b><span>Bygg og Bevar award, with the website praised by the jury</span></div>
+      <div><b>1</b><span>person to talk to, from the first call to launch day</span></div>
+    </div>
+  </div></div>
+  </div>
+  <div class="s2v" data-navn="Studio, restyled" hidden>
+  <div class="w s2-4">
+    <div>
+      <p class="s2-eb">Studio</p>
+      <h2>A small studio. <em>Your full attention.</em></h2>
       <p>You talk directly to the people who design and build your site. No account managers, no handovers, no waiting in line.</p>
       <p>We take on a few projects at a time, so each one gets done properly.</p>
     </div>
-    <figure class="bilde inn"><img src="/new/media/sketch.jpg" srcset="/new/media/sketch-800.jpg 800w, /new/media/sketch.jpg 1344w" sizes="(max-width:860px) 100vw, 640px" alt="A notebook with hand-drawn website sketches next to a keyboard and mouse" loading="lazy" width="1344" height="896"></figure>
+    <img src="/new/media/meeting.jpg" alt="A meeting room with a laptop, printed ads and wireframe sketches, and a view over the sea" loading="lazy">
+  </div>
+  </div>
+  <div class="s2v" data-navn="Before / after" hidden>
+  <div class="w">
+    <p class="s2-eb">The difference</p>
+    <h2>Your website, <em>before and after.</em></h2>
+    <div class="s2-5">
+      <div class="for"><h3>Without us</h3><ul><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>Hard to find on Google</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>Looks dated on a phone</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>Visitors leave without calling</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>Nobody to ask when something breaks</li></ul></div>
+      <div class="etter"><h3>With us</h3><ul><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Found when people search in your area</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Fast and sharp on every screen</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>One tap to call or ask for a quote</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>One person who answers</li></ul></div>
+    </div>
+  </div>
+  </div>
+  <div class="s2v" data-navn="Three steps" hidden>
+  <div class="w">
+    <p class="s2-eb">How it works</p>
+    <h2>From first call <em>to live site.</em></h2>
+    <ol class="s2-6"><li><b>01</b><h3>Call</h3><p>We look at what you have and agree on a fixed price.</p></li><li><b>02</b><h3>Draft</h3><p>You see a working front page before you decide.</p></li><li><b>03</b><h3>Live</h3><p>It goes live on your domain, and we stay close afterwards.</p></li></ol>
+  </div>
+  </div>
+  <div class="s2v" data-navn="Who we've built for" hidden>
+  <div class="w s2-7">
+    <p class="s2-eb">Clients</p>
+    <ul><li>Karlsen &amp; Nordseth</li><li>Pluggen Elektro</li><li>Grøttumsbråtens</li><li>Athena</li></ul>
+    <p>Builders, electricians, restorers and app makers. <a href="#clients">Read what they say →</a></p>
+  </div>
+  </div>
+  <div class="s2v" data-navn="The problem" hidden>
+  <div class="w s2-8">
+    <div><p class="s2-eb">The problem</p><h2>Good work, <em>invisible online?</em></h2><p>Most of your next customers will look you up before they call. If they can't find you, or your site lets them down, they call someone else.</p></div>
+    <ol><li><b>Not found</b><span>We set up your site and Google so people in your area find you first.</span></li><li><b>Not trusted</b><span>We show your best work, your reviews and who you are.</span></li><li><b>Not called</b><span>We make it one tap to call or ask for a quote, on every phone.</span></li></ol>
+  </div>
+  </div>
+  <div class="s2v" data-navn="Photo mosaic" hidden>
+  <div class="w">
+    <p class="s2-eb">What you get</p>
+    <h2>Built for how <em>customers find you.</em></h2>
+    <div class="s2-9">
+      <figure class="stor"><img src="/new/media/devices.jpg" alt="A laptop, a tablet and a phone showing the same website" loading="lazy"><figcaption>Every screen</figcaption></figure>
+      <figure><img src="/new/media/phone.jpg" alt="A phone on a desk showing a business website" loading="lazy"><figcaption>One tap to call</figcaption></figure>
+      <figure><img src="/new/media/results.jpg" alt="A monitor showing ad campaign results" loading="lazy"><figcaption>Ads that pay</figcaption></figure>
+    </div>
+  </div>
+  </div>
+  <div class="s2v" data-navn="A note from the founder" hidden>
+  <div class="w s2-10">
+    <p class="s2-eb">A note from the founder</p>
+    <blockquote>When you work with us, you talk to me: the person who designs and builds your site. No account managers and no handovers. I take on a few projects at a time, so each one gets done properly.</blockquote>
+    <p class="sign"><b>Tidemann Esbjug</b><span>Founder, Esbjug Consult</span></p>
+  </div>
   </div>
 </section>
 
@@ -1251,6 +1402,25 @@ ta.addEventListener('input',()=>{ta.style.height='';ta.style.height=Math.min(ta.
 })();
 // Ingen markering eller kopiering av tekst (brukerens valg).
 ['copy','cut','selectstart','dragstart'].forEach(t=>document.addEventListener(t,e=>{if(!e.target.closest?.('textarea,input'))e.preventDefault()}));
+</script>
+<script>
+// Trying out section two: left and right arrow keys step through 10 versions. No buttons on the page; the browser tab
+// shows which one is up, and the choice is remembered in this browser. Remove the other versions once one is chosen.
+(function(){
+  var V = document.querySelectorAll(".s2v"), tittel = document.title, i = 0;
+  var navn = Array.prototype.map.call(V, function(v){ return v.dataset.navn; });
+  try { i = Math.max(0, navn.indexOf(localStorage.getItem("s2"))); } catch (e) {}
+  function vis(merk){
+    V.forEach(function(v, k){ v.hidden = k !== i; });
+    if (merk) { document.title = "2: " + (i + 1) + "/" + V.length + " " + navn[i] + " – " + tittel; try { localStorage.setItem("s2", navn[i]); } catch (e) {} }
+  }
+  vis(!!i);
+  addEventListener("keydown", function(e){
+    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+    if (e.metaKey || e.ctrlKey || e.altKey || (e.target.closest && e.target.closest("textarea,input,.hpp"))) return;
+    i = (i + (e.key === "ArrowRight" ? 1 : -1) + V.length) % V.length; vis(true);
+  });
+})();
 </script>
 </body>
 </html>
