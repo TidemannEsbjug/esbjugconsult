@@ -837,6 +837,26 @@
   }, { threshold: .25 });
   document.querySelectorAll("video.lat").forEach(function(v){ lat.observe(v); });
 })();
+// Trying out hero photos: left and right arrow keys step through them. No buttons on the page; the browser tab shows
+// which one is up (e.g. "3/12 desk"), and the choice is remembered in this browser. Remove this block once one is chosen.
+(function(){
+  var bilder = [["view",1456],["office",1456],["desk",1456],["workstation",1456],["booth",1456],["meeting",1456],["laptop",1344],["devices",1344],["sketch",1344],["phone",1344],["ads",1344],["results",1344]];
+  var img = document.querySelector(".hero>img"), tittel = document.title, i = 0;
+  try { i = Math.max(0, bilder.findIndex(function(b){ return b[0] === localStorage.getItem("hero"); })); } catch (e) {}
+  function vis(merk){
+    var b = bilder[i], u = "/new/media/" + b[0];
+    img.srcset = u + "-800.jpg 800w, " + u + ".jpg " + b[1] + "w"; img.src = u + ".jpg";
+    if (merk) { document.title = (i + 1) + "/" + bilder.length + " " + b[0] + " – " + tittel; try { localStorage.setItem("hero", b[0]); } catch (e) {} }
+    // The neighbours are fetched ahead, so the next step is instant.
+    [1, -1].forEach(function(d){ new Image().src = "/new/media/" + bilder[(i + d + bilder.length) % bilder.length][0] + ".jpg"; });
+  }
+  if (i) vis(true);
+  addEventListener("keydown", function(e){
+    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+    if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest("textarea,input,.hpp")) return;
+    i = (i + (e.key === "ArrowRight" ? 1 : -1) + bilder.length) % bilder.length; vis(true);
+  });
+})();
 </script>
 <script>
 // Pulse, visitor count and chat: copied from the front page (en/index.html). Change it there first, then copy over.
