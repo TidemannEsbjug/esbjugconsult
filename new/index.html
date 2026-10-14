@@ -96,7 +96,6 @@
      It stops while the pointer is over it. Same height as the fact strip it replaced: 26 + 24 + 26 = 76 px on desktop. */
   .fakta{background:var(--navy);color:#fff;overflow:hidden;padding:26px 0;font-family:var(--bf,var(--sans));touch-action:pan-y}
   .fakta .rull{display:flex;width:max-content;will-change:transform}
-  .fakta.venstre{cursor:w-resize}.fakta.hoyre{cursor:e-resize}
   .fakta ul{display:flex;flex:none;list-style:none;margin:0;padding:0}
   .fakta li{display:flex;align-items:center;gap:12px;height:24px;padding-right:64px;font-size:16px;white-space:nowrap}
   .fakta .stj{color:#FFC94D;font-size:15px;letter-spacing:2px}
@@ -1292,10 +1291,9 @@ ta.addEventListener('input',()=>{ta.style.height='';ta.style.height=Math.min(ta.
     var b = f.getBoundingClientRect(), rel = (e.clientX - b.left) / b.width, sone = 0.32;
     // Left zone runs the line to the right (shows what came before), right zone to the left. Up to 700 px/s at the very edge.
     maal = rel < sone ? -700 * Math.pow((sone - rel) / sone, 1.4) : rel > 1 - sone ? 700 * Math.pow((rel - 1 + sone) / sone, 1.4) : 0;
-    f.classList.toggle("venstre", rel < sone); f.classList.toggle("hoyre", rel > 1 - sone);
     start();
   });
-  f.addEventListener("pointerleave", function(){ maal = 0; f.classList.remove("venstre", "hoyre"); });
+  f.addEventListener("pointerleave", function(){ maal = 0; });
   // Touch: drag sideways, with a little glide after letting go.
   f.addEventListener("pointerdown", function(e){ if (e.pointerType === "mouse") return; dra = { x: e.clientX, x0: x, t: e.timeStamp, v: 0 }; maal = 0; fart = 0; });
   f.addEventListener("pointermove", function(e){
