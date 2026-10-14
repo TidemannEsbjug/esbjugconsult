@@ -1253,5 +1253,52 @@ ta.addEventListener('input',()=>{ta.style.height='';ta.style.height=Math.min(ta.
 // Ingen markering eller kopiering av tekst (brukerens valg).
 ['copy','cut','selectstart','dragstart'].forEach(t=>document.addEventListener(t,e=>{if(!e.target.closest?.('textarea,input'))e.preventDefault()}));
 </script>
+<script>
+// Trying out hero copy: left and right arrow keys step through 16 versions (eyebrow, two headline lines, the line under).
+// No buttons on the page; the browser tab shows which one is up, and the choice is remembered in this browser.
+// The headline shrinks if a line would not fit, so it always stays on two lines. Remove this block once one is chosen.
+(function(){
+  var K = [
+    ["Website agency", "Websites that", "win you work.", "We design, build and run fast, modern websites for businesses. Fixed price, agreed before we start."],
+    ["Websites, ads & SEO", "More calls.", "Less guesswork.", "We build the website, run the ads and get you found on Google, so the phone rings with the right jobs."],
+    ["Website agency", "Built to", "bring in jobs.", "Websites, Google Ads and SEO for businesses that would rather be on site than online. Fixed price, no fuss."],
+    ["Websites that work", "Your work is solid.", "Your website should be too.", "A fast, modern website that shows what you do, gets found on Google and turns visitors into calls."],
+    ["Website agency", "Get found.", "Get called.", "Websites, ads and SEO that put you at the top in your area and make it easy to call you."],
+    ["Websites, ads & SEO", "Look as good online", "as you do on site.", "We build websites for businesses that do real work, and make sure the right customers find them."],
+    ["Website agency", "Stop losing jobs", "to worse websites.", "Customers pick the business that looks best online. We build the site, the ads and the SEO that make that you."],
+    ["Websites for real businesses", "No fluff.", "Just more customers.", "A website that loads fast, ranks on Google and makes it easy to get in touch. Ads when you want more."],
+    ["Websites, ads & SEO", "First on Google.", "First to get the call.", "We build your website and get it found, so customers in your area call you before anyone else."],
+    ["Website agency", "Built properly.", "Like your work.", "Fast, sturdy websites with no shortcuts, plus the ads and SEO that keep new customers coming in."],
+    ["Website agency", "Your next customer", "is searching right now.", "Be the one they find. We build the website, run the ads and handle the SEO."],
+    ["Websites, ads & SEO", "You do the job.", "We bring the next one.", "Website, Google Ads and SEO in one place, so you can stay on the tools while we bring in the work."],
+    ["Website agency", "Good work", "deserves to be found.", "Websites, ads and SEO for businesses whose work speaks for itself, once people get to see it."],
+    ["Website agency", "From search", "to signed job.", "A website people find, trust and call from. Ads and SEO to keep it busy. Fixed price, agreed up front."],
+    ["Websites, ads & SEO", "The busiest firms", "look the part online.", "We give your business a website that matches the quality of your work, and the traffic to go with it."],
+    ["Website agency", "Fewer quiet weeks.", "More booked ones.", "A website that turns searches into calls, and ads and SEO that keep them coming all year."]
+  ];
+  var hero = document.querySelector(".hero"), eb = hero.querySelector(".eb"), h1 = hero.querySelector("h1"), l1 = h1.querySelector(".l1"), l2 = h1.querySelector("em"),
+      under = hero.querySelector(".w>p:not(.eb)"), tittel = document.title, i = 0;
+  try { i = Math.max(0, K.findIndex(function(k){ return k[1] + " " + k[2] === localStorage.getItem("herocopy"); })); } catch (e) {}
+  // Shrink the headline only as much as needed for the longest line to fit the width.
+  function tilpass(){
+    h1.style.fontSize = "";
+    var plass = h1.parentNode.clientWidth - parseFloat(getComputedStyle(h1.parentNode).paddingLeft) * 2, bredest = Math.max(l1.scrollWidth, l2.scrollWidth);
+    if (bredest > plass) h1.style.fontSize = (parseFloat(getComputedStyle(h1).fontSize) * plass / bredest * 0.98).toFixed(1) + "px";
+  }
+  function vis(merk){
+    var k = K[i]; eb.textContent = k[0]; l1.textContent = k[1]; l2.textContent = k[2]; under.textContent = k[3];
+    tilpass();
+    if (merk) { document.title = (i + 1) + "/" + K.length + " " + k[1] + " " + k[2] + " – " + tittel; try { localStorage.setItem("herocopy", k[1] + " " + k[2]); } catch (e) {} }
+  }
+  vis(!!i);
+  addEventListener("resize", tilpass);
+  if (document.fonts) document.fonts.ready.then(tilpass);
+  addEventListener("keydown", function(e){
+    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+    if (e.metaKey || e.ctrlKey || e.altKey || (e.target.closest && e.target.closest("textarea,input,.hpp"))) return;
+    i = (i + (e.key === "ArrowRight" ? 1 : -1) + K.length) % K.length; vis(true);
+  });
+})();
+</script>
 </body>
 </html>
