@@ -235,6 +235,11 @@
   .om-to img{width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
   .om-to .om-tekst{padding:28px 30px 32px;justify-content:flex-start;flex:1}
   .om-to blockquote{font-size:clamp(19px,1.75vw,23px)}
+  /* Athena: an app, so its promo film is shown whole (16:9) beside the quote. */
+  .om-app{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);align-items:center;margin-top:20px;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fff}
+  .om-app video{width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;background:#e9eef3}
+  .om-app blockquote{font-size:clamp(19px,1.75vw,23px)}
+  @media (max-width:860px){.om-app{grid-template-columns:1fr}}
   @media (max-width:860px){.om-stor,.om-to{grid-template-columns:1fr}.om-stor img{aspect-ratio:4/3;object-position:50% 40%}}
 
   footer a:hover{color:#fff}
@@ -728,6 +733,14 @@
         </div>
       </article>
     </div>
+    <article class="om-app inn">
+      <video class="lat" src="/media/athena.mp4" poster="/media/athena.jpg" muted loop playsinline preload="none" aria-label="Promo film for the Athena app"></video>
+      <div class="om-tekst">
+        <blockquote>Beautiful design and build of our app. Website and content, all done by Esbjug Consult. We are looking forward to releasing the app.</blockquote>
+        <p class="om-hvem"><b>Athena Team</b><span>Alarm app for families, iPhone and Android</span></p>
+        <ul class="om-fakta"><li>App design and build</li><li>Website and content</li><li><a href="https://athenaalarm.app/" target="_blank" rel="noopener">athenaalarm.app</a></li></ul>
+      </div>
+    </article>
   </div>
 </section>
 
