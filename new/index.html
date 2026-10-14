@@ -67,9 +67,11 @@
   .hero .w{position:relative;z-index:1;width:100%;padding-top:110px;padding-bottom:70px}
   .hero .eb{display:flex;align-items:center;gap:10px}
   .hero .eb::before{content:"";width:28px;height:2px;background:var(--red)}
-  .hero h1{font-size:clamp(42px,6.2vw,84px);max-width:11ch;margin:18px 0 22px;text-wrap:balance;font-family:var(--hf,var(--serif));font-weight:var(--hw,500);letter-spacing:var(--hl,-.01em);text-transform:var(--ht,none)}
+  .hero h1{font-size:clamp(42px,6.2vw,84px);max-width:11ch;margin:18px 0 22px;text-wrap:balance;font-family:var(--hf,var(--serif));font-weight:var(--hw,500);letter-spacing:var(--hlh,-.01em);text-transform:var(--ht,none)}
   .hero h1 em{font-style:var(--hi,italic);color:var(--red)}
   .hero .eb,.hero p,.hero .btn{font-family:var(--bf,var(--sans))}
+  .logo{font-family:var(--hf,var(--serif));font-weight:var(--lw,600);letter-spacing:var(--hl,normal);text-transform:var(--ht,none)}
+  .nav ul,.nav .btn{font-family:var(--bf,var(--sans))}
   .hero p{font-size:clamp(17px,1.5vw,20px);max-width:30rem;color:#1d2b4a}
   .hero .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
   @media (max-width:760px){
@@ -917,14 +919,14 @@
     ["Montserrat", "Montserrat", "Montserrat:ital,wght@0,800;1,800", 800, 1, "-.03em", 0, "Montserrat", "Montserrat:wght@400;600"],
     ["Barlow Condensed", "Barlow Condensed", "Barlow+Condensed:ital,wght@0,800;1,800", 800, 1, "0", 1, "Barlow", "Barlow:wght@400;600"]
   ];
-  var hero = document.querySelector(".hero"), tittel = document.title, i = 0, lastet = {};
+  var hero = document.documentElement, tittel = document.title, i = 0, lastet = {};
   try { i = Math.max(0, F.findIndex(function(f){ return f[0] === localStorage.getItem("herofont"); })); } catch (e) {}
   function hent(q){ if (!q || lastet[q]) return; lastet[q] = 1; var l = document.createElement("link"); l.rel = "stylesheet"; l.href = "https://fonts.googleapis.com/css2?family=" + q + "&display=swap"; document.head.appendChild(l); }
   function sett(navn, verdi){ if (verdi == null) hero.style.removeProperty(navn); else hero.style.setProperty(navn, verdi); }
   function vis(merk){
     var f = F[i]; hent(f[2]); hent(f[8]);
-    sett("--hf", f[1] && '"' + f[1] + '",var(--serif)'); sett("--hw", String(f[3])); sett("--hi", f[4] ? "italic" : "normal");
-    sett("--hl", f[5]); sett("--ht", f[6] ? "uppercase" : "none"); sett("--bf", f[7] && '"' + f[7] + '",var(--sans)');
+    sett("--hf", f[1] && '"' + f[1] + '",var(--serif)'); sett("--hw", String(f[3])); sett("--lw", f[1] && String(Math.min(f[3], 700))); sett("--hi", f[4] ? "italic" : "normal");
+    sett("--hl", f[5] === "0" ? "0" : f[1] ? "-.02em" : null); hero.style.setProperty("--hlh", f[5]); sett("--ht", f[6] ? "uppercase" : "none"); sett("--bf", f[7] && '"' + f[7] + '",var(--sans)');
     if (merk) { document.title = (i + 1) + "/" + F.length + " " + f[0] + " – " + tittel; try { localStorage.setItem("herofont", f[0]); } catch (e) {} }
     // The neighbours are fetched ahead, so the next step is quick.
     [1, -1].forEach(function(d){ var n = F[(i + d + F.length) % F.length]; hent(n[2]); hent(n[8]); });
