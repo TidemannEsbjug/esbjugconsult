@@ -15,10 +15,34 @@
   // Live chat: one Durable Object holds every socket and the conversations (SQLite storage).
   "durable_objects": { "bindings": [{ "name": "CHAT", "class_name": "ChatHub" }] },
   // Files in the chat (audio, images, documents), served with range support from /chat/file/<key>.
-  "r2_buckets": [{ "binding": "FILES", "bucket_name": "esbjug-chat-files" }],
+  // AllSet previews (generated HTML and any generated images), served from /allset/preview/<id>.
+  "r2_buckets": [
+    { "binding": "FILES", "bucket_name": "esbjug-chat-files" },
+    { "binding": "PREVIEWS", "bucket_name": "esbjug-allset-previews" }
+  ],
   "migrations": [{ "tag": "chat-v1", "new_sqlite_classes": ["ChatHub"] }],
+  // AllSet leads, rate limits, fallback jobs and Stripe events. Schema in migrations/ (setup: ALLSET.md).
+  // database_id is a placeholder: replace it with the id from `npx wrangler d1 create esbjug-allset` before deploying.
+  "d1_databases": [
+    { "binding": "DB", "database_name": "esbjug-allset", "database_id": "00000000-0000-0000-0000-000000000000", "migrations_dir": "migrations" }
+  ],
+  // AllSet preview jobs: the activate endpoint produces, this Worker's queue() handler consumes one at a time.
+  "queues": {
+    "producers": [{ "binding": "PREVIEW_QUEUE", "queue": "esbjug-allset-previews" }],
+    "consumers": [{ "queue": "esbjug-allset-previews", "max_batch_size": 1, "max_batch_timeout": 5, "max_retries": 3 }]
+  },
   // Push to the owner's iPhone app. Secrets (wrangler secret put): ADMIN_TOKEN, APNS_KEY, APNS_KEY_ID.
-  "vars": { "APNS_TEAM_ID": "N5BKVM258S", "APNS_TOPIC": "deviatehigh.EsbjugChat" },
+  // AllSet secrets: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, optional TURNSTILE_SECRET. Empty AllSet vars = feature off
+  // (PREVIEW_FEE_PRICE_ID empty keeps the preview checkout closed; IMAGE_PROVIDER empty = no generated images).
+  "vars": {
+    "APNS_TEAM_ID": "N5BKVM258S",
+    "APNS_TOPIC": "deviatehigh.EsbjugChat",
+    "PREVIEW_FEE_PRICE_ID": "",
+    "TURNSTILE_SITE_KEY": "",
+    "IMAGE_PROVIDER": "",
+    "ALLSET_IP_LIMIT_PER_HOUR": "3",
+    "ALLSET_DAILY_CAP": "100"
+  },
   "routes": [
     { "pattern": "esbjugconsult.com/*", "zone_name": "esbjugconsult.com" },
     { "pattern": "www.esbjugconsult.com/*", "zone_name": "esbjugconsult.com" }

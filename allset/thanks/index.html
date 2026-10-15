@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Your AllSet preview</title>
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#00205B">
+<style>
+  @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces.woff2) format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+  :root{--ink:#00205B;--r:#BA0C2F;--serif:"Fraunces",Georgia,serif;--g:clamp(16px,6vw,96px)}
+  *{box-sizing:border-box}html,body{margin:0;min-height:100%}
+  body{font-family:-apple-system,"Helvetica Neue",Arial,sans-serif;background:var(--ink);color:#fff;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .w{max-width:880px;margin:0 auto;padding:clamp(40px,8vw,96px) var(--g)}
+  .logo{font:600 1.5rem/1 var(--serif);color:#fff;text-decoration:none}.logo b{color:var(--r);font-weight:inherit;font-style:italic}
+  h1{font:600 clamp(2.2rem,5.6vw,4rem)/1.05 var(--serif);letter-spacing:-.03em;margin:48px 0 0;max-width:16ch}
+  p{font-size:clamp(1.05rem,1.6vw,1.25rem);max-width:36em}
+  .btn{display:inline-block;background:var(--r);color:#fff;text-decoration:none;font-family:inherit;font-weight:700;font-size:1.15rem;line-height:1;padding:15px 24px;border-radius:999px;border:0;cursor:pointer;margin:10px 12px 0 0}
+  .soon{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--r);color:#fff;padding:3px 10px;border-radius:999px}
+  .box{margin-top:36px;padding-top:24px;border-top:1px solid rgba(255,255,255,.25)}
+</style>
+</head>
+<body>
+<div class="w">
+  <a class="logo" href="/allset/">All<b>Set</b></a>
+  <h1 id="h">Thanks. Your preview is on its way.</h1>
+  <p id="msg">We're reading your site and building your preview. This usually takes a minute; you can keep this page open.</p>
+  <p id="open" hidden><a class="btn" id="link" href="#" target="_blank" rel="noopener">Open your preview</a></p>
+  <div class="box" id="next" hidden>
+    <p><strong>Keep this site?</strong> We move it for real and point your domain to it. <span class="soon" id="soon">Price coming soon</span></p>
+    <button class="btn" id="pay" type="button" hidden>Continue with this preview</button>
+  </div>
+</div>
+<script>
+(function(){
+  var q=new URLSearchParams(location.search),id=q.get('id'),$=function(i){return document.getElementById(i)},tries=0;
+  if(q.get('paid')){$('h').textContent='Thank you, payment received.';$('msg').textContent="We'll be in touch shortly about the next steps.";}
+  if(!/^[0-9a-f-]{36}$/.test(id||''))return;
+  function show(d){
+    if(d.preview){$('link').href=d.preview;$('open').hidden=false;$('next').hidden=!!q.get('paid');
+      if(!q.get('paid'))$('msg').textContent='Your preview is ready. It is private: only people with this link can see it.';
+      if(d.checkout&&!d.preview_paid){$('pay').hidden=false;$('soon').hidden=true}return true}
+    // A failed attempt is retried automatically, so keep polling.
+    if(d.status==='failed')$('msg').textContent="We're having trouble reading your site. We'll keep trying, and look at it by hand if needed.";
+    return false}
+  function poll(){fetch('/api/allset/lead/'+id,{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(d){
+    if(d&&show(d))return;if(++tries<60)setTimeout(poll,5000)}).catch(function(){if(++tries<60)setTimeout(poll,5000)})}
+  poll();
+  $('pay').onclick=function(){var b=this;b.disabled=true;
+    fetch('/api/allset/checkout/preview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:id})})
+      .then(function(r){return r.json()}).then(function(d){if(d.url)location.href=d.url;else{b.hidden=true;$('soon').hidden=false}})
+      .catch(function(){b.disabled=false})};
+})();
+</script>
+</body>
+</html>
