@@ -11,6 +11,7 @@
 //   POST /chat/admin/test-push                    send a test push to every registered phone
 //   POST /chat/admin/test-call                    ring the owner's phone (VoIP) and watch as if a visitor called
 //   POST /chat/admin/callcmd      {cmd, id, vid, on}  answer/decline/end/mute from the watch, passed to the phone app's socket
+//   POST /chat/admin/ctl          {vid, action, on}   turn «Ring» (ring) or «Mer chat» (extras) on/off for a visitor (the watch)
 //   GET  /chat/admin/devices                      registered push devices (app, env, added, token end)
 //   POST /chat/admin/reset-teller                 start the unique-visitor counter over
 //   POST /chat/admin/upload?vid=&name=            owner sends a file (raw body, Content-Type)
@@ -289,6 +290,7 @@ export class ChatHub {
       try { this.sql.exec(`ALTER TABLE messages ADD COLUMN ${col}`); } catch {}
     }
     try { this.sql.exec(`ALTER TABLE visitors ADD COLUMN extras INTEGER DEFAULT 0`); } catch {}
+    try { this.sql.exec(`ALTER TABLE visitors ADD COLUMN ring INTEGER DEFAULT 0`); } catch {}   // «Ring Tidemann» shown, owner's choice
     try { this.sql.exec(`ALTER TABLE devices ADD COLUMN topic TEXT`); } catch {}   // iPhone app or watch app bundle id
     // Visit recordings: one row per page visit, events in chunks (arrays of snapshots, JSON).
     this.sql.exec(`CREATE TABLE IF NOT EXISTS sessions (
@@ -357,9 +359,9 @@ export class ChatHub {
       const pair = new WebSocketPair();
       this.ctx.acceptWebSocket(pair[1], ["v", `v:${vid}`, ...(ip ? [`ip:${ip}`] : [])]);
       pair[1].serializeAttachment({ role: "visitor", vid, rate: [], win: 0, n: 0, nr, pend, prov, sus, t0: now, ok: (!!nr && !prov) || eier, eier });
-      const ex = this.sql.exec(`SELECT extras FROM visitors WHERE vid=?`, vid).toArray()[0];
+      const ex = this.sql.exec(`SELECT extras, ring FROM visitors WHERE vid=?`, vid).toArray()[0];
       const count = { live: this.liveCount(), total: this.uniqTotal() };
-      pair[1].send(JSON.stringify({ t: "history", msgs: this.history(vid), owner: this.ownerOnline(), extras: !!ex?.extras, status: this.status(), call: this.canCall(), hr: this.liveHr(), count:{ live: this.liveCount(), total: this.uniqTotal(), nr, ny: !!prov, pend: !!pend || !!prov, meg: !eier && (!sus || !!nr) } }));
+      pair[1].send(JSON.stringify({ t: "history", msgs: this.history(vid), owner: this.ownerOnline(), extras: !!ex?.extras, ring: !!ex?.ring, status: this.status(), call: this.canCall(), hr: this.liveHr(), count:{ live: this.liveCount(), total: this.uniqTotal(), nr, ny: !!prov, pend: !!pend || !!prov, meg: !eier && (!sus || !!nr) } }));
       this.send(this.ctx.getWebSockets("v").filter((w) => w !== pair[1]), { t: "count", ...count });
       this.toOwners({ t: "presence", v: this.visitor(vid) });
       if (newVisit && !eier && this.setting("notifyVisits") === "1") this.ctx.waitUntil(this.pushVisit({ key: vid, vid, first: false, city: geo.city, country: geo.country, ua }));
@@ -472,6 +474,12 @@ export class ChatHub {
       if (!["answer", "decline", "end", "mute"].includes(cmd)) return new Response("Bad request", { status: 400 });
       this.toOwners({ t: "callcmd", cmd, id: typeof id === "string" ? id : null, vid: typeof vid === "string" ? vid : null, on: !!on });
       return Response.json({ ok: this.ownerOnline() });
+    }
+    if (url.pathname === "/chat/admin/ctl" && request.method === "POST") {
+      const { vid, action, on } = await request.json();
+      if (typeof vid !== "string" || !["ring", "extras"].includes(action)) return new Response("Bad request", { status: 400 });
+      this.toggle(vid, action, !!on);
+      return Response.json({ ok: true });
     }
     if (url.pathname === "/chat/admin/sessions") {
       const vid = url.searchParams.get("vid");
@@ -590,7 +598,7 @@ export class ChatHub {
         const now = Date.now();
         a.calls = (a.calls || []).filter((t) => now - t < 600e3);
         this.callLog = (this.callLog || []).filter((t) => now - t < 600e3);
-        const why = this.status() !== "available" || !this.canCall() ? "off" : cur ? "busy"
+        const why = this.status() !== "available" || !this.canCall() || !this.sql.exec(`SELECT ring FROM visitors WHERE vid=?`, a.vid).toArray()[0]?.ring ? "off" : cur ? "busy"
           : a.calls.length >= 3 || this.callLog.length >= 12 ? "rate" : "";
         if (why) { ws.send(JSON.stringify({ t: "calling", ok: false, reason: why })); return; }
         a.calls.push(now);
@@ -651,8 +659,8 @@ export class ChatHub {
         ws.send(JSON.stringify({ t: "history", vid: m.vid, msgs: this.history(m.vid) }));
       } else if (m.t === "ctl" && typeof m.vid === "string" && /^[a-z]{1,20}$/.test(m.action || "")) {
         // Control buttons in the owner app change the visitor's page (e.g. "focus").
+        if (m.action === "extras" || m.action === "ring") { this.toggle(m.vid, m.action, !!m.on); return; }
         const ctl = { t: "ctl", action: m.action, on: !!m.on };
-        if (m.action === "extras") this.sql.exec(`UPDATE visitors SET extras=? WHERE vid=?`, m.on ? 1 : 0, m.vid);
         if (m.action === "call") {
           if (m.on) this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, `call:${m.vid}`, String(Date.now()));
           else this.sql.exec(`DELETE FROM kv WHERE k=?`, `call:${m.vid}`);
@@ -761,7 +769,7 @@ export class ChatHub {
     return {
       vid: r.vid, online: this.online(vid, closing), firstSeen: r.first_seen, lastSeen: r.last_seen,
       city: r.city, region: r.region, country: r.country, lat: r.lat, lon: r.lon, tz: r.tz,
-      ua: r.ua, page: r.page, lang: r.lang, unread: r.unread, extras: !!r.extras,
+      ua: r.ua, page: r.page, lang: r.lang, unread: r.unread, extras: !!r.extras, ring: !!r.ring,
       last: last ? { owner: !!last.from_owner, text: last.text, ts: last.ts } : null,
     };
   }
@@ -908,7 +916,16 @@ export class ChatHub {
 
   // ---------- visitors ringing the owner ----------
 
-  // Visitors get «Ring» when the phone app has a VoIP token (it rings with the app closed), and the status is available.
+  // «Mer chat» (extras) and «Ring» (ring) are switched on per visitor by the owner, stored so they survive a reload.
+  toggle(vid, action, on) {
+    this.sql.exec(`UPDATE visitors SET ${action === "ring" ? "ring" : "extras"}=? WHERE vid=?`, on ? 1 : 0, vid);
+    const ctl = { t: "ctl", action, on };
+    this.toVisitor(vid, ctl);
+    this.toOwners({ ...ctl, vid });
+  }
+
+  // Visitors get «Ring» when the owner has turned it on for them, the phone app has a VoIP token (it rings with the
+  // app closed), and the status is available.
   canCall() {
     return !!this.env.APNS_KEY && this.sql.exec(`SELECT 1 FROM devices WHERE topic=? LIMIT 1`, `${this.env.APNS_TOPIC}.voip`).toArray().length > 0;
   }
