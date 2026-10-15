@@ -154,6 +154,11 @@
   .ch-a{display:flex;align-items:center;gap:6px}
   .ch-del{border:0;background:none;color:#f2f6fb;opacity:.55;font-size:12px;font-family:inherit;cursor:pointer;padding:4px 6px;text-decoration:underline;text-underline-offset:3px}
   .ch-del:hover{opacity:.9}
+  /* «Ring»: du ringer Tidemann. Vises bare når han er tilgjengelig; da ringer telefonen og klokka hans. */
+  .ch-ring{display:flex;align-items:center;gap:6px;border:0;border-radius:999px;background:#3ddc84;color:#00205B;font-weight:700;font-size:13px;line-height:1;font-family:inherit;cursor:pointer;padding:8px 11px;white-space:nowrap}
+  .ch-ring[hidden]{display:none}
+  .ch-ring svg{width:15px;height:15px;flex:none}
+  .ch-ring:hover{background:#5fe69c}
   .ch-x{border:0;background:none;color:var(--y);font-size:26px;line-height:1;cursor:pointer;padding:0 4px}
   .ch-m{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:16px;display:flex;flex-direction:column;gap:8px}
   .ch-m p{margin:0;max-width:82%;padding:9px 12px;border-radius:14px;font-size:15px;line-height:1.35;white-space:pre-wrap;overflow-wrap:anywhere}
@@ -603,7 +608,7 @@
   <button class="ch-b" type="button" aria-label="Chat with Tidemann" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Chat<span class="zz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span><i class="ch-n" hidden></i></button>
   <div class="ch-pill" hidden><button type="button" class="cp-open" aria-label="Open the chat"><i></i><span class="cp-t">In a call with Tidemann</span></button><button type="button" class="cp-mute" aria-label="Mute"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><button type="button" class="cp-end" aria-label="Hang up"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 9c-3.3 0-6.3.9-8.6 2.5-.5.4-.6 1-.3 1.5l1.6 2.5c.3.5.9.7 1.4.5l2.8-1c.5-.2.8-.7.8-1.2V12c1.4-.4 3-.4 4.6 0v1.8c0 .5.3 1 .8 1.2l2.8 1c.5.2 1.1 0 1.4-.5l1.6-2.5c.3-.5.2-1.1-.3-1.5C18.3 9.9 15.3 9 12 9z"/></svg></button></div>
   <section class="ch-p" role="dialog" aria-label="Chat with Tidemann" hidden>
-    <div class="ch-h"><button class="ch-x" type="button" aria-label="Close chat">×</button><div class="ch-t"><b>Tidemann Esbjug</b><span class="ch-s"><i></i><span class="zz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span><span>Don't hesitate! Go, go, go!</span></span></div><div class="ch-a"><button class="ch-del" type="button">Delete conversation</button></div></div>
+    <div class="ch-h"><button class="ch-x" type="button" aria-label="Close chat">×</button><div class="ch-t"><b>Tidemann Esbjug</b><span class="ch-s"><i></i><span class="zz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span><span>Don't hesitate! Go, go, go!</span></span></div><div class="ch-a"><button class="ch-ring" type="button" aria-label="Call Tidemann" title="Call Tidemann" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></button><button class="ch-del" type="button">Delete conversation</button></div></div>
     <div class="ch-call" hidden><div class="cc-i"><span class="cc-dot"></span><div><b class="cc-t">Tidemann is calling you</b><span class="cc-s">Voice call in the browser</span></div></div><div class="cc-b"><button type="button" class="cc-ans">Answer</button><button type="button" class="cc-dec">Decline</button><button type="button" class="cc-mute" hidden>Mute</button><button type="button" class="cc-min" hidden>Minimise</button><button type="button" class="cc-end" hidden>Hang up</button></div><audio class="cc-audio" autoplay playsinline></audio></div>
     <div class="ch-m" aria-live="polite"></div>
     <a class="ch-mail" href="mailto:tidemann@esbjugconsult.com" hidden>Send an email instead?</a>
@@ -838,7 +843,7 @@ const hehe=()=>{const o=document.createElement('div');o.className='hh';o.setAttr
 const add=(m,live)=>{if(seen.has(m.id))return;seen.add(m.id);if(live&&m.owner&&/^\s*hehe[!.\s]*$/i.test(m.text))hehe();const p=document.createElement('p');p.className=m.owner?'him':'me';if(m.kind==='file')fileEl(p,m);else p.textContent=m.text;box.append(p);box.scrollTop=box.scrollHeight;
   if(live&&m.owner&&pan.hidden){unread++;badge.textContent=unread;badge.hidden=false;open(true)}};
 const focus=on=>document.documentElement.classList.toggle('focus',on);
-const control=(a,on)=>{if(a==='focus'){if(on)open(true);focus(on)}else if(a==='extras'){extras(on);if(on)open(true)}else if(a==='live'){live=on;if(on)lsend()}else if(a==='call'){if(on)ringing();else if(!pc)endCall('Tidemann hung up')}};
+const control=(a,on)=>{if(a==='focus'){if(on)open(true);focus(on)}else if(a==='extras'){extras(on);if(on)open(true)}else if(a==='live'){live=on;if(on)lsend()}else if(a==='call'){if(on){if(cs==='ut')koble();else if(!cs)ringing()}else if(cs&&!pc)endCall(cs==='ut'?'Tidemann can\'t take the call right now':'Tidemann hung up',cs==='ut'?'Feel free to send a message':'')}};
 const kb=n=>n>1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' kB';
 const bottom=()=>{box.scrollTop=box.scrollHeight};
 const fileEl=(p,m)=>{p.classList.add('file');const src='/chat/file/'+m.file;setTimeout(()=>{p.querySelectorAll('img,video,audio').forEach(e=>{e.addEventListener('load',bottom);e.addEventListener('loadedmetadata',bottom)})})
@@ -868,29 +873,52 @@ mic.onclick=async()=>{
     rec.start();t0=Date.now();mic.classList.add('rec');
     const show=()=>{const s=Math.floor((Date.now()-t0)/1000);ta.placeholder='Recording '+Math.floor(s/60)+':'+String(s%60).padStart(2,'0')+' · tap the microphone to send'};show();tick=setInterval(show,500)}
   catch{ta.placeholder='Could not access the microphone.'}};
-// Lydsamtale (WebRTC). Tidemann ringer fra appen; lyden går direkte mellom nettleseren og telefonen hans.
+// Lydsamtale (WebRTC). Tidemann ringer fra appen, eller du ringer ham med «Ring» øverst i chatten (da ringer telefonen
+// og klokka hans). Lyden går direkte mellom nettleseren og telefonen hans.
 const ICE=[{urls:['stun:stun.cloudflare.com:3478','stun:stun.l.google.com:19302']}];
 const getIce=()=>fetch('/chat/ice?vid='+encodeURIComponent(vid)).then(r=>r.json()).then(j=>j.iceServers&&j.iceServers.length?j.iceServers:ICE).catch(()=>ICE);
-const cc=$('.ch-call'),ccT=$('.cc-t'),ccS=$('.cc-s'),ccA=$('.cc-audio'),bAns=$('.cc-ans'),bDec=$('.cc-dec'),bMute=$('.cc-mute'),bEnd=$('.cc-end');
-let pc=null,local=null,clock=null,t1=0;
+const cc=$('.ch-call'),ccT=$('.cc-t'),ccS=$('.cc-s'),ccA=$('.cc-audio'),bAns=$('.cc-ans'),bDec=$('.cc-dec'),bMute=$('.cc-mute'),bEnd=$('.cc-end'),bRing=$('.ch-ring');
+// cs er hvor samtalen står: '' ingen, 'inn' Tidemann ringer deg, 'ut' du ringer ham, 'kobler' kobler til, 'på' i samtale.
+let pc=null,local=null,clock=null,t1=0,cs='',kanRinge=false,callT=null;
 const rtc=d=>{if(ws&&ws.readyState===1)ws.send(JSON.stringify({t:'rtc',data:d}))};
 const bMin=$('.cc-min');
 const btns=(...show)=>[bAns,bDec,bMute,bMin,bEnd].forEach(b=>b.hidden=!show.includes(b));
-const ringing=()=>{open(true);cc.hidden=false;cc.classList.add('ring');ccT.textContent='Tidemann is calling you';ccS.textContent='Voice call in the browser';btns(bAns,bDec)};
-const endCall=msg=>{if(pc){pc.close();pc=null}if(!pill.hidden){pill.hidden=true;btn.hidden=false}if(local){local.getTracks().forEach(t=>t.stop());local=null}clearInterval(clock);cc.classList.remove('ring');
-  if(cc.hidden)return;ccT.textContent=msg||'The call has ended';ccS.textContent='';btns();setTimeout(()=>{if(!pc)cc.hidden=true},2500)};
-bAns.onclick=async()=>{cc.classList.remove('ring');ccT.textContent='Connecting …';ccS.textContent='';btns(bEnd);
-  try{local=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}})}
-  catch{rtc({type:'decline',reason:'mic'});endCall('Could not access the microphone');return}
-  pc=new RTCPeerConnection({iceServers:await getIce()});local.getTracks().forEach(t=>pc.addTrack(t,local));
+// «Ring» vises når Tidemann er tilgjengelig, appen hans kan ta imot (serveren sier fra) og ingen samtale pågår.
+const ringBtn=()=>{bRing.hidden=!(kanRinge&&stat==='available'&&!cs&&ws&&ws.readyState===1)};
+const ringing=()=>{cs='inn';ringBtn();open(true);cc.hidden=false;cc.classList.add('ring');ccT.textContent='Tidemann is calling you';ccS.textContent='Voice call in the browser';btns(bAns,bDec)};
+const endCall=(msg,sub)=>{cs='';clearTimeout(callT);ringBtn();if(pc){pc.close();pc=null}if(!pill.hidden){pill.hidden=true;btn.hidden=false}if(local){local.getTracks().forEach(t=>t.stop());local=null}clearInterval(clock);cc.classList.remove('ring');
+  if(bMute.classList.contains('on'))bMute.click();$('.cp-mute').classList.remove('on');
+  if(cc.hidden)return;ccT.textContent=msg||'The call has ended';ccS.textContent=sub||'';btns();setTimeout(()=>{if(!cs)cc.hidden=true},sub?5000:2500)};
+const getMic=()=>navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+// Mikrofonen er klar og begge har sagt ja: «ready» til appen, som sender tilbudet.
+const koble=async()=>{cs='kobler';cc.classList.remove('ring');ccT.textContent='Connecting …';ccS.textContent='';btns(bEnd);
+  clearTimeout(callT);callT=setTimeout(()=>{if(cs==='kobler'){rtc({type:'bye'});endCall('Could not connect the call')}},40000);
+  const ice=await getIce();if(cs!=='kobler'||!local)return;
+  pc=new RTCPeerConnection({iceServers:ice});local.getTracks().forEach(t=>pc.addTrack(t,local));
   pc.onicecandidate=e=>{if(e.candidate)rtc({cand:e.candidate})};
   pc.ontrack=e=>{ccA.srcObject=e.streams[0];ccA.play().catch(()=>{})};
   pc.onconnectionstatechange=()=>{const st=pc&&pc.connectionState;
-    if(st==='connected'){ccT.textContent='In a call with Tidemann';btns(bMute,bMin,bEnd);t1=Date.now();clearInterval(clock);
+    if(st==='connected'){cs='på';clearTimeout(callT);ccT.textContent='In a call with Tidemann';btns(bMute,bMin,bEnd);t1=Date.now();clearInterval(clock);
       clock=setInterval(()=>{const x=Math.floor((Date.now()-t1)/1000),tt=Math.floor(x/60)+':'+String(x%60).padStart(2,'0');ccS.textContent=tt;pillT.textContent='In a call · '+tt},500)}
     else if(st==='failed')endCall('Could not connect the call')};
   rtc({type:'ready'})};
+bAns.onclick=async()=>{cs='kobler';cc.classList.remove('ring');ccT.textContent='Connecting …';ccS.textContent='';btns(bEnd);
+  try{local=await getMic()}
+  catch{rtc({type:'decline',reason:'mic'});endCall('Could not access the microphone');return}
+  if(cs!=='kobler'){local.getTracks().forEach(t=>t.stop());local=null;return}
+  koble()};
 bDec.onclick=()=>{rtc({type:'decline'});endCall('You declined the call')};
+// Du ringer Tidemann: først mikrofonen (nettleseren spør mens du trykker), så ringer telefonen og klokka hans.
+bRing.onclick=async()=>{if(cs||!ws||ws.readyState!==1)return;cs='ut';ringBtn();open(true);cc.hidden=false;cc.classList.remove('ring');ccT.textContent='Connecting …';ccS.textContent='';btns(bEnd);
+  try{local=await getMic()}catch{endCall('Could not access the microphone');return}
+  if(cs!=='ut'){local.getTracks().forEach(t=>t.stop());local=null;return}
+  if(!ws||ws.readyState!==1)return endCall('Could not connect the call');
+  ws.send(JSON.stringify({t:'call'}))};
+// Serverens svar på «Ring»: telefonen hans ringer, eller han kan ikke nå. Svarer han, kommer ctl «call» (se control).
+const calling=(ok,why)=>{if(cs!=='ut')return;
+  if(!ok)return endCall(why==='busy'?'Tidemann is on another call':'Tidemann can\'t take the call right now','Feel free to send a message');
+  cc.classList.add('ring');ccT.textContent='Calling Tidemann …';ccS.textContent='Voice call in the browser';
+  clearTimeout(callT);callT=setTimeout(()=>{if(cs==='ut'){rtc({type:'bye'});endCall('Tidemann didn\'t answer','Feel free to send a message')}},50000)};
 bMin.onclick=()=>open(false);
 $('.cp-open').onclick=()=>open(true);
 $('.cp-end').onclick=()=>{rtc({type:'bye'});endCall()};
@@ -900,7 +928,8 @@ bMute.onclick=()=>{const on=!bMute.classList.contains('on');bMute.classList.togg
 const onRtc=async d=>{try{
   if(d.sdp&&pc){await pc.setRemoteDescription(d.sdp);await pc.setLocalDescription(await pc.createAnswer());rtc({sdp:pc.localDescription})}
   else if(d.cand&&pc)await pc.addIceCandidate(d.cand);
-  else if(d.type==='bye')endCall('Tidemann hung up')}catch(e){console.warn(e)}};
+  else if(d.type==='decline'&&cs)endCall(d.reason==='busy'?'Tidemann is on another call':d.reason==='noanswer'?'Tidemann didn\'t answer':'Tidemann can\'t take the call right now','Feel free to send a message');
+  else if(d.type==='bye'&&cs)endCall('Tidemann hung up')}catch(e){console.warn(e)}};
 // Live-visning og opptak. Samme målinger: rulling, skjermstørrelse, peker/klikk og om chatten er åpen, maks ti ganger i sekundet.
 // Live går til Tidemann bare mens han ser på (ctl «live»). Opptak lagres bare med samtykke («Godta»), aldri det du skriver.
 let live=false,lt=0,lx=-1,ly=-1,lclick=null,ltimer=null;
@@ -927,7 +956,7 @@ const STAT={available:['Available','på'],meeting:['In a meeting','møte'],sleep
 const render=()=>{const [label,cls]=STAT[stat]||STAT.available;
   btn.classList.remove('på','møte','sover');btn.classList.add(cls);document.getElementById('chat').classList.toggle('natt',stat==='sleeping');btn.setAttribute('aria-label','Chat with Tidemann ('+label.toLowerCase()+')');
   st.className='ch-s '+cls+(ownerOn&&stat==='available'?' on':'');
-  st.lastChild.textContent=stat==='sleeping'?'Asleep, up at 04:00 - I\'ll reply when I\'m awake':stat==='meeting'?'In a meeting, might be able to reply':ownerOn?'Tidemann is here now':'Don\'t hesitate! Go, go, go!'};
+  st.lastChild.textContent=stat==='sleeping'?'Asleep, up at 04:00 - I\'ll reply when I\'m awake':stat==='meeting'?'In a meeting, might be able to reply':ownerOn?'Tidemann is here now':'Don\'t hesitate! Go, go, go!';ringBtn()};
 const owner=on=>{ownerOn=on;render()};
 const setStat=v=>{stat=v;render()};
 fetch('/chat/status').then(r=>r.json()).then(j=>{ownerOn=!!j.owner;setStat(j.status);if(j.hr)hrTop(j.hr)}).catch(()=>{});
@@ -943,10 +972,10 @@ const vakt=()=>{let sendt=false,syn=0,lx=null,ly=null,dist=0;const evs=['wheel',
 // ny=1 bare på sidens første socket: da er det en ny sidevisning (varsel til Tidemann), ikke en gjenoppkobling.
 let nyside=1;
 const connect=()=>{ws=new WebSocket('wss://'+location.host+'/chat/ws?vid='+encodeURIComponent(vid)+(nyside?'&ny=1':'')+(consent==='ja'?'&c=1':'')+(navigator.webdriver?'&w=1':'')+(getC('esbjug_eier')==='1'?'&e=1':''));nyside=0;
-  ws.onopen=()=>{wait=1000;ws.send(JSON.stringify({t:'page',page:location.pathname+location.hash}))};
+  ws.onopen=()=>{wait=1000;ws.send(JSON.stringify({t:'page',page:location.pathname+location.hash}));ringBtn()};
   ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch{return}
-    if(m.t==='history'){if(m.hr)hrTop(m.hr);if(m.count){teller(m.count);if(m.count.pend)vakt()}m.msgs.forEach(x=>add(x,false));ownerOn=!!m.owner;if(m.status)stat=m.status;render();extras(!!m.extras)}else if(m.t==='status')setStat(m.v);else if(m.t==='hr')hrTop(m.bpm,true);else if(m.t==='count')teller({live:m.live,total:m.total});else if(m.t==='nr')teller.nr(m.nr,m.total);else if(m.t==='cleared')cleared();else if(m.t==='ctl')control(m.action,m.on);else if(m.t==='rtc')onRtc(m.data);else if(m.t==='msg')add(m.m,true);else if(m.t==='owner')owner(m.online)};
-  ws.onclose=()=>{setTimeout(connect,wait);wait=Math.min(wait*2,30000)}};
+    if(m.t==='history'){if(m.hr)hrTop(m.hr);if(m.count){teller(m.count);if(m.count.pend)vakt()}m.msgs.forEach(x=>add(x,false));ownerOn=!!m.owner;kanRinge=!!m.call;if(m.status)stat=m.status;render();extras(!!m.extras)}else if(m.t==='calling')calling(m.ok,m.reason);else if(m.t==='status')setStat(m.v);else if(m.t==='hr')hrTop(m.bpm,true);else if(m.t==='count')teller({live:m.live,total:m.total});else if(m.t==='nr')teller.nr(m.nr,m.total);else if(m.t==='cleared')cleared();else if(m.t==='ctl')control(m.action,m.on);else if(m.t==='rtc')onRtc(m.data);else if(m.t==='msg')add(m.m,true);else if(m.t==='owner')owner(m.online)};
+  ws.onclose=()=>{ringBtn();if(cs==='ut')endCall('Could not connect the call');setTimeout(connect,wait);wait=Math.min(wait*2,30000)}};
 hrTop.sock(()=>!!ws&&ws.readyState===1);
 connect();
 const send=()=>{const text=ta.value.trim();if(!text||!ws||ws.readyState!==1)return;ws.send(JSON.stringify({t:'msg',text}));ta.value='';ta.style.height=''};

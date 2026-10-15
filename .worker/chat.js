@@ -6,8 +6,11 @@
 //
 //   GET  /chat/ws?vid=<id>        visitor socket (the page opens it on load, for presence)
 //   GET  /chat/admin/ws           owner socket    (Authorization: Bearer ADMIN_TOKEN)
-//   POST /chat/admin/device       {token, env}    register the phone for push
+//   POST /chat/admin/device       {token, env, topic?}  register the phone for push (topic <app>.voip: VoIP for calls,
+//                                                 <app>.watchkitapp: the watch app)
 //   POST /chat/admin/test-push                    send a test push to every registered phone
+//   POST /chat/admin/test-call                    ring the owner's phone (VoIP) and watch as if a visitor called
+//   POST /chat/admin/callcmd      {cmd, id, vid, on}  answer/decline/end/mute from the watch, passed to the phone app's socket
 //   GET  /chat/admin/devices                      registered push devices (app, env, added, token end)
 //   POST /chat/admin/reset-teller                 start the unique-visitor counter over
 //   POST /chat/admin/upload?vid=&name=            owner sends a file (raw body, Content-Type)
@@ -356,7 +359,7 @@ export class ChatHub {
       pair[1].serializeAttachment({ role: "visitor", vid, rate: [], win: 0, n: 0, nr, pend, prov, sus, t0: now, ok: (!!nr && !prov) || eier, eier });
       const ex = this.sql.exec(`SELECT extras FROM visitors WHERE vid=?`, vid).toArray()[0];
       const count = { live: this.liveCount(), total: this.uniqTotal() };
-      pair[1].send(JSON.stringify({ t: "history", msgs: this.history(vid), owner: this.ownerOnline(), extras: !!ex?.extras, status: this.status(), hr: this.liveHr(), count: { live: this.liveCount(), total: this.uniqTotal(), nr, ny: !!prov, pend: !!pend || !!prov, meg: !eier && (!sus || !!nr) } }));
+      pair[1].send(JSON.stringify({ t: "history", msgs: this.history(vid), owner: this.ownerOnline(), extras: !!ex?.extras, status: this.status(), call: this.canCall(), hr: this.liveHr(), count:{ live: this.liveCount(), total: this.uniqTotal(), nr, ny: !!prov, pend: !!pend || !!prov, meg: !eier && (!sus || !!nr) } }));
       this.send(this.ctx.getWebSockets("v").filter((w) => w !== pair[1]), { t: "count", ...count });
       this.toOwners({ t: "presence", v: this.visitor(vid) });
       if (newVisit && !eier && this.setting("notifyVisits") === "1") this.ctx.waitUntil(this.pushVisit({ key: vid, vid, first: false, city: geo.city, country: geo.country, ua }));
@@ -420,7 +423,7 @@ export class ChatHub {
       this.ctx.acceptWebSocket(pair[1], ["o"]);
       pair[1].serializeAttachment({ role: "owner" });
       this.rememberOwnerNet(request.headers.get("CF-Connecting-IP") || "");
-      pair[1].send(JSON.stringify({ t: "state", visitors: this.allVisitors(), status: this.status(), notifyVisits: this.setting("notifyVisits") === "1" }));
+      pair[1].send(JSON.stringify({ t: "state", visitors: this.allVisitors(), status: this.status(), notifyVisits: this.setting("notifyVisits") === "1", incall: this.incall() }));
       this.touchOwner();
       await this.ensureAlarm();
       this.toVisitors({ t: "owner", online: true });
@@ -431,7 +434,8 @@ export class ChatHub {
       const { token, env, topic } = await request.json();
       if (!/^[0-9a-f]{64,200}$/i.test(token || "")) return new Response("Bad token", { status: 400 });
       // The watch app registers itself too, so notifications reach phone and watch at the same time.
-      const t = topic === `${this.env.APNS_TOPIC}.watchkitapp` ? topic : this.env.APNS_TOPIC;
+      // The phone also registers a VoIP token (PushKit), so a visitor's call can ring it with the app closed.
+      const t = [`${this.env.APNS_TOPIC}.watchkitapp`, `${this.env.APNS_TOPIC}.voip`].includes(topic) ? topic : this.env.APNS_TOPIC;
       this.sql.exec(`INSERT OR REPLACE INTO devices (token, env, added, topic) VALUES (?, ?, ?, ?)`,
         token, env === "production" ? "production" : "sandbox", Date.now(), t);
       return Response.json({ ok: true });
@@ -452,6 +456,22 @@ export class ChatHub {
     if (url.pathname === "/chat/admin/test-push" && request.method === "POST") {
       const results = await this.push("Esbjug Consult", "Push virker", null);
       return Response.json({ results });
+    }
+    // The ringing without a visitor: VoIP push to the phone and the notification to the watch. Answering goes nowhere
+    // (it fails after 30 s); decline it. APNs' answer per device shows whether the VoIP token works.
+    if (url.pathname === "/chat/admin/test-call" && request.method === "POST") {
+      const id = crypto.randomUUID();
+      const v = { vid: "test-" + id.slice(0, 8), city: "Test", country: "NO" };
+      this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('incall', ?)`, JSON.stringify({ id, vid: v.vid, ts: Date.now() }));
+      return Response.json({ results: await this.pushCall(id, v) });
+    }
+    // Svar/Avslå/Legg på/Lyd av from the watch, also sent this way in case WatchConnectivity is slow to reach the phone.
+    // The phone app's socket is open while a visitor rings (the VoIP push opens it). The phone ignores a repeat.
+    if (url.pathname === "/chat/admin/callcmd" && request.method === "POST") {
+      const { cmd, id, vid, on } = await request.json();
+      if (!["answer", "decline", "end", "mute"].includes(cmd)) return new Response("Bad request", { status: 400 });
+      this.toOwners({ t: "callcmd", cmd, id: typeof id === "string" ? id : null, vid: typeof vid === "string" ? vid : null, on: !!on });
+      return Response.json({ ok: this.ownerOnline() });
     }
     if (url.pathname === "/chat/admin/sessions") {
       const vid = url.searchParams.get("vid");
@@ -562,9 +582,33 @@ export class ChatHub {
         await this.wipe(a.vid);
         this.toVisitor(a.vid, { t: "cleared" });
         this.toOwners({ t: "deleted", vid: a.vid });
+      } else if (m.t === "call") {
+        // «Ring»: the visitor rings the owner. His phone rings (VoIP push → CallKit), the watch gets Svar/Avslå. When he
+        // answers, the app sends ctl «call» on, and the call goes on as when he rings out. Only while he is available.
+        const cur = this.incall();
+        if (cur && cur.vid === a.vid) { ws.send(JSON.stringify({ t: "calling", ok: true })); return; }
+        const now = Date.now();
+        a.calls = (a.calls || []).filter((t) => now - t < 600e3);
+        this.callLog = (this.callLog || []).filter((t) => now - t < 600e3);
+        const why = this.status() !== "available" || !this.canCall() ? "off" : cur ? "busy"
+          : a.calls.length >= 3 || this.callLog.length >= 12 ? "rate" : "";
+        if (why) { ws.send(JSON.stringify({ t: "calling", ok: false, reason: why })); return; }
+        a.calls.push(now);
+        this.callLog.push(now);
+        ws.serializeAttachment(a);
+        const id = crypto.randomUUID();
+        this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('incall', ?)`, JSON.stringify({ id, vid: a.vid, ts: now }));
+        // The visitor gets TURN for the call (see /chat/ice) from now on.
+        this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, `call:${a.vid}`, String(now));
+        ws.send(JSON.stringify({ t: "calling", ok: true }));
+        const v = this.visitor(a.vid);
+        this.toOwners({ t: "incall", id, vid: a.vid, v });
+        this.ctx.waitUntil(this.pushCall(id, v || { vid: a.vid }));
       } else if (m.t === "rtc" && m.data && JSON.stringify(m.data).length < 20000) {
         // Voice call signalling (offer/answer/ICE) from the visitor's browser to the owner app.
         this.toOwners({ t: "rtc", vid: a.vid, data: m.data });
+        // Gave up before he answered: his phone and watch stop ringing.
+        if (m.data.type === "bye" || m.data.type === "decline") this.endRing(a.vid, "gone");
       } else if (m.t === "rec") {
         this.record(a.vid, m);
       } else if (m.t === "live" && m.d && typeof m.d === "object") {
@@ -612,6 +656,8 @@ export class ChatHub {
         if (m.action === "call") {
           if (m.on) this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, `call:${m.vid}`, String(Date.now()));
           else this.sql.exec(`DELETE FROM kv WHERE k=?`, `call:${m.vid}`);
+          // A visitor who rang: answered (on) or declined (off). The owner's other devices stop ringing.
+          this.endRing(m.vid, m.on ? "answered" : "declined");
         }
         this.toVisitor(m.vid, ctl);
         this.toOwners({ ...ctl, vid: m.vid });
@@ -659,6 +705,8 @@ export class ChatHub {
         this.toOwners({ t: "presence", v: this.visitor(a.vid, ws) });
       }
       this.send(this.ctx.getWebSockets("v").filter((w) => w !== ws), { t: "count", live: this.liveCount(ws), total: this.uniqTotal() });
+      // Left while ringing the owner: stop the ringing.
+      if (!this.online(a.vid, ws)) this.endRing(a.vid, "gone");
     } else if (a.role === "owner") {
       this.touchOwner();
       if (!this.ownerOnline(ws)) this.toVisitors({ t: "owner", online: false });
@@ -858,6 +906,30 @@ export class ChatHub {
     this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('ownerActive', ?)`, String(Date.now()));
   }
 
+  // ---------- visitors ringing the owner ----------
+
+  // Visitors get «Ring» when the phone app has a VoIP token (it rings with the app closed), and the status is available.
+  canCall() {
+    return !!this.env.APNS_KEY && this.sql.exec(`SELECT 1 FROM devices WHERE topic=? LIMIT 1`, `${this.env.APNS_TOPIC}.voip`).toArray().length > 0;
+  }
+
+  // The visitor ringing right now {id, vid, ts}, until answered, declined, given up, or 60 s (the app gives up after 45).
+  incall() {
+    let c = null;
+    try { c = JSON.parse(this.setting("incall") || "null"); } catch {}
+    return c && Date.now() - c.ts < 60e3 ? c : null;
+  }
+
+  // The ringing is over (answered, declined, or the visitor gave up or left): every owner device hears it, so the
+  // others stop ringing. Unless answered, the visitor's TURN access goes too.
+  endRing(vid, why) {
+    const c = this.incall();
+    if (!c || c.vid !== vid) return;
+    this.sql.exec(`DELETE FROM kv WHERE k='incall'`);
+    if (why !== "answered") this.sql.exec(`DELETE FROM kv WHERE k=?`, `call:${vid}`);
+    this.toOwners({ t: "ringend", id: c.id, vid, why });
+  }
+
   // ---------- automatic night status ----------
   // Every quarter hour (Oslo time): from 21:00 to 04:00 the status becomes «sleeping» unless the owner is using
   // the app or used it in the last 30 minutes; at 04:00 it goes back to «available».
@@ -960,34 +1032,56 @@ export class ChatHub {
       this.pushLast.set(vid, now);
       this.pushLog.push(now);
     }
-    const devices = this.sql.exec(`SELECT token, env, topic FROM devices`).toArray();
+    // Not the VoIP token: that one is for calls only (pushCall).
+    const devices = this.sql.exec(`SELECT token, env, topic FROM devices WHERE topic IS NULL OR topic <> ?`, `${this.env.APNS_TOPIC}.voip`).toArray();
     if (!devices.length) return [{ error: "no devices" }];
     const jwt = await this.apnsJwt();
-    const payload = JSON.stringify({
+    const payload = {
       aps: { alert: { title, body: body.length > 180 ? body.slice(0, 177) + "…" : body }, sound: opt.sound || "klirr.caf", "thread-id": opt.thread || vid || "esbjug", ...(vid ? { category: opt.category || "MSG" } : {}), "mutable-content": 0 },
       vid,
-    });
+    };
     const results = [];
-    for (const d of devices) {
-      const host = d.env === "production" ? "api.push.apple.com" : "api.sandbox.push.apple.com";
-      try {
-        const r = await fetch(`https://${host}/3/device/${d.token}`, {
-          method: "POST",
-          headers: {
-            authorization: `bearer ${jwt}`, "apns-topic": d.topic || this.env.APNS_TOPIC,
-            "apns-push-type": "alert", "apns-priority": "10", "content-type": "application/json",
-          },
-          body: payload,
-        });
-        const text = await r.text();
-        results.push({ status: r.status, body: text.slice(0, 200), topic: d.topic || this.env.APNS_TOPIC, tail: d.token.slice(-6) });
-        if (r.status === 410 || /BadDeviceToken|Unregistered|DeviceTokenNotForTopic/.test(text)) {
-          this.sql.exec(`DELETE FROM devices WHERE token=?`, d.token);
-        }
-      } catch (e) {
-        results.push({ error: String(e) });
-      }
-    }
+    for (const d of devices) results.push(await this.apns(d, jwt, { "apns-push-type": "alert", "apns-priority": "10" }, payload));
     return results;
+  }
+
+  // A visitor rings: a VoIP push to the phone (PushKit, which shows the call with CallKit at once, also with the app
+  // closed) and a notification with Svar/Avslå to the watch. APNs keeps neither: a ring from a minute ago is no use.
+  async pushCall(id, v) {
+    if (!this.env.APNS_KEY || !this.env.APNS_KEY_ID) return [{ error: "APNs not configured" }];
+    const app = this.env.APNS_TOPIC;
+    const devices = this.sql.exec(`SELECT token, env, topic FROM devices WHERE topic IN (?, ?)`, `${app}.voip`, `${app}.watchkitapp`).toArray();
+    if (!devices.length) return [{ error: "no devices" }];
+    const jwt = await this.apnsJwt();
+    let land = "";
+    try { const n = new Intl.DisplayNames(["nb"], { type: "region" }).of(v.country); if (n && n !== v.country) land = n; } catch {}
+    const where = [v.city, land].filter(Boolean).join(", ") || "Besøkende";
+    const until = String(Math.floor(Date.now() / 1000) + 45);
+    return Promise.all(devices.map((d) => d.topic === `${app}.voip`
+      ? this.apns(d, jwt, { "apns-push-type": "voip", "apns-priority": "10", "apns-expiration": "0" },
+        { id, vid: v.vid, city: v.city || "", country: v.country || "" })
+      : this.apns(d, jwt, { "apns-push-type": "alert", "apns-priority": "10", "apns-expiration": until, "apns-collapse-id": `ring-${id}` },
+        { aps: { alert: { title: `${where} ringer deg`, body: "Lydsamtale fra chatten på esbjugconsult.com" }, sound: "default", category: "CALL", "thread-id": "ring" },
+          id, vid: v.vid, place: where, country: v.country || "" })));
+  }
+
+  // One push to one device. Tokens APNs no longer knows are removed.
+  async apns(d, jwt, headers, payload) {
+    const host = d.env === "production" ? "api.push.apple.com" : "api.sandbox.push.apple.com";
+    const topic = d.topic || this.env.APNS_TOPIC;
+    try {
+      const r = await fetch(`https://${host}/3/device/${d.token}`, {
+        method: "POST",
+        headers: { authorization: `bearer ${jwt}`, "apns-topic": topic, "content-type": "application/json", ...headers },
+        body: JSON.stringify(payload),
+      });
+      const text = await r.text();
+      if (r.status === 410 || /BadDeviceToken|Unregistered|DeviceTokenNotForTopic/.test(text)) {
+        this.sql.exec(`DELETE FROM devices WHERE token=?`, d.token);
+      }
+      return { status: r.status, body: text.slice(0, 200), topic, tail: d.token.slice(-6) };
+    } catch (e) {
+      return { error: String(e) };
+    }
   }
 }
