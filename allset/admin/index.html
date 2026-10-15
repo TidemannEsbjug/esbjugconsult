@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AllSet admin</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<style>
+  :root{--ink:#00205B;--r:#BA0C2F}
+  *{box-sizing:border-box}body{margin:0;font:15px/1.45 -apple-system,"Helvetica Neue",Arial,sans-serif;color:#111;background:#f4f7fb}
+  header{background:var(--ink);color:#fff;padding:16px 24px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+  header h1{font-size:1.2rem;margin:0 auto 0 0}
+  main{padding:24px;overflow-x:auto}
+  table{border-collapse:collapse;background:#fff;width:100%;min-width:980px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid #e3ebf3;vertical-align:top}
+  th{background:#e8eef6;font-weight:600}
+  .st{display:inline-block;padding:2px 9px;border-radius:999px;background:#e8eef6;font-weight:600;font-size:.85rem}
+  .st.preview_ready{background:#d9f2e3}.st.failed{background:#fde2e6}.st.paid,.st.preview_paid{background:#ffe9a8}
+  button{font:inherit;font-weight:600;border:0;border-radius:8px;padding:7px 12px;background:var(--r);color:#fff;cursor:pointer}
+  button.q{background:#fff;color:var(--ink)}
+  input{font:inherit;padding:6px 8px;border:1px solid #c9d8e8;border-radius:8px;width:100px}
+  .link{display:block;margin-top:6px;word-break:break-all;max-width:320px;font-size:.85rem}
+  .err{color:var(--r);font-size:.85rem}
+  #inn{max-width:360px;margin:15vh auto;display:grid;gap:10px}#inn input{width:100%}
+</style>
+</head>
+<body>
+<form id="inn" hidden><label>Admin token (same as the chat panel)<input type="password" autocomplete="current-password" required></label><button>Sign in</button></form>
+<div id="app" hidden>
+  <header><h1>AllSet leads</h1><span id="info"></span><button class="q" id="jobs" type="button">Process fallback jobs</button><button class="q" id="out" type="button">Sign out</button></header>
+  <main><table><thead><tr><th>Created</th><th>Name / email</th><th>Site</th><th>Status</th><th>Preview</th><th>Full site checkout</th></tr></thead><tbody id="rows"></tbody></table></main>
+</div>
+<script>
+// The token is the chat's ADMIN_TOKEN, stored under the same key as /panel/. Every API call sends it as a Bearer header.
+var token=localStorage.getItem('esbjug_admin')||'',$=function(s){return document.querySelector(s)};
+function api(path,opt){opt=opt||{};opt.headers=Object.assign({Authorization:'Bearer '+token,'Content-Type':'application/json'},opt.headers||{});
+  return fetch(path,opt).then(function(r){if(r.status===401){signOut();throw new Error('unauthorized')}return r.json().then(function(d){if(!r.ok)throw new Error(d.message||d.error||r.status);return d})})}
+function signOut(){localStorage.removeItem('esbjug_admin');token='';$('#app').hidden=true;$('#inn').hidden=false}
+function el(tag,text,cls){var e=document.createElement(tag);if(text!=null)e.textContent=text;if(cls)e.className=cls;return e}
+function linkTo(href,text){var a=el('a',text,'link');a.href=href;a.target='_blank';a.rel='noopener noreferrer';return a}
+function money(c){return '$'+(c/100).toLocaleString('en-US',{minimumFractionDigits:0})}
+function load(){api('/api/allset/admin/leads').then(function(d){
+  localStorage.setItem('esbjug_admin',token);$('#inn').hidden=true;$('#app').hidden=false;
+  $('#info').textContent=d.leads.length+' leads · '+d.pending_jobs+' fallback jobs waiting · queue '+(d.queue?'on':'off')+' · Stripe '+(d.stripe?'on':'off');
+  var tb=$('#rows');tb.textContent='';
+  d.leads.forEach(function(l){var tr=el('tr');
+    tr.appendChild(el('td',new Date(l.created_at).toLocaleString()));
+    var who=el('td');who.appendChild(el('div',l.name));who.appendChild(linkTo('mailto:'+l.email,l.email));tr.appendChild(who);
+    var site=el('td');site.appendChild(linkTo(l.site_url,l.site_title||l.site_url));tr.appendChild(site);
+    var st=el('td');st.appendChild(el('span',l.status,'st '+l.status));if(l.error)st.appendChild(el('div',l.error,'err'));tr.appendChild(st);
+    var pv=el('td');if(['preview_ready','preview_paid','paid'].indexOf(l.status)>=0)pv.appendChild(linkTo('/allset/preview/'+l.id,'Open preview'));tr.appendChild(pv);
+    tr.appendChild(checkoutCell(l));tb.appendChild(tr)})
+}).catch(function(e){if(e.message!=='unauthorized')alert(e.message)})}
+function checkoutCell(l){var td=el('td');
+  if(l.paid_at){td.appendChild(el('strong','Paid '+(l.full_amount_cents?money(l.full_amount_cents):'')));return td}
+  var amt=el('input');amt.type='number';amt.min='2500';amt.step='50';amt.value=l.full_amount_cents?l.full_amount_cents/100:2500;
+  var b=el('button','Send $2,500 upsell checkout link');b.type='button';
+  var out=el('div');
+  function show(url,exp){out.textContent='';out.appendChild(linkTo(url,url));
+    if(exp)out.appendChild(el('div',(exp<Date.now()?'Expired ':'Expires ')+new Date(exp).toLocaleString()+' (Stripe Checkout links last 24 h)','err'))}
+  if(l.full_checkout_url)show(l.full_checkout_url,l.full_checkout_expires_at);
+  b.onclick=function(){var usd=Number(amt.value);if(!(usd>=2500)){alert('Minimum is $2,500.');return}b.disabled=true;
+    api('/api/allset/checkout/full',{method:'POST',body:JSON.stringify({id:l.id,amount_usd:usd})})
+      .then(function(d){show(d.url,d.expires_at);if(navigator.clipboard)navigator.clipboard.writeText(d.url).catch(function(){})})
+      .catch(function(e){alert(e.message)}).then(function(){b.disabled=false})};
+  td.appendChild(amt);td.appendChild(document.createTextNode(' USD '));td.appendChild(b);td.appendChild(out);return td}
+$('#inn').onsubmit=function(e){e.preventDefault();token=$('#inn input').value.trim();load()};
+$('#out').onclick=signOut;
+$('#jobs').onclick=function(){var b=this;b.disabled=true;api('/api/allset/admin/process-jobs',{method:'POST',body:'{}'})
+  .then(function(d){alert(d.processed.length?d.processed.map(function(p){return p.lead+': '+(p.ok?'ok':p.error)}).join('\n'):'No fallback jobs waiting.');load()})
+  .catch(function(e){alert(e.message)}).then(function(){b.disabled=false})};
+if(token)load();else $('#inn').hidden=false;
+</script>
+</body>
+</html>
