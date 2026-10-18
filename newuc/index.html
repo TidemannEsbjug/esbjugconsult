@@ -702,7 +702,7 @@ const ckc=$('.ch-ck');let ckNei=false;try{ckNei=sessionStorage.getItem('esbjug_c
 const askCk=()=>{ckc.hidden=consent==='ja'||!cb.hidden||ckNei};
 ckc.querySelector('.ch-ck-ja').onclick=()=>{decide(true);ckc.hidden=true;ta.focus({preventScroll:true})};
 ckc.querySelector('.ch-ck-nei').onclick=()=>{ckNei=true;ckc.hidden=true;try{sessionStorage.setItem('esbjug_ck_chat','nei')}catch{};ta.focus({preventScroll:true})};
-document.querySelector('a.t').addEventListener('click',e=>{e.preventDefault();mailBtn.hidden=false;open(true);if(!ws)connect()});
+document.querySelector('a.t')?.addEventListener('click',e=>{e.preventDefault();mailBtn.hidden=false;open(true);if(!ws)connect()});
 // «Slett samtalen»: to trykk, så slettes alt hos Tidemann og på serveren, og du får en ny, tom samtale.
 const del=$('.ch-del');let armed=0;
 del.onclick=()=>{if(Date.now()-armed>3000){armed=Date.now();del.textContent='Trykk igjen for å slette';setTimeout(()=>{if(Date.now()-armed>=3000)del.textContent='Slett samtalen'},3100);return}
