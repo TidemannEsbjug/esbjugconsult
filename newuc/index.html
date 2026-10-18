@@ -867,7 +867,7 @@ document.querySelectorAll('[data-since]').forEach(e=>{
 });
 // «kode» og «design» i overskriften får hver sin lille animasjon, i fast rytme.
 (()=>{
-if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+if(matchMedia('(prefers-reduced-motion: reduce)').matches||!document.querySelector('.kd'))return;
 const k=document.querySelector('.kd'),ki=k.firstChild,d=document.querySelector('.ds'),G='{}<>/=;$#_01[]*';
 const fix=()=>{k.style.width='';k.style.width=k.getBoundingClientRect().width+'px'};
 document.fonts.ready.then(fix);addEventListener('resize',fix);
