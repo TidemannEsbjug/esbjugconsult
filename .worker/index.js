@@ -21,6 +21,11 @@ export default {
       url.pathname = url.pathname.startsWith("/ny/en") ? "/en/" : "/";
       return Response.redirect(url.toString(), 301);
     }
+    // Forsiden er engelsk fra 18.10.2026 (heroen fra /new + «Under Construction»), så den gamle /en/ sendes dit.
+    if (url.pathname === "/en" || url.pathname.startsWith("/en/")) {
+      url.pathname = "/";
+      return Response.redirect(url.toString(), 302);
+    }
     // Visit push for page loads; never allowed to break serving the page.
     try { const visit = pageVisit(request, env, url); if (visit) ctx.waitUntil(visit); } catch {}
     return env.ASSETS.fetch(request);
