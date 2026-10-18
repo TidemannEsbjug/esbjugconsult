@@ -444,6 +444,8 @@
   .scene{place-items:center start}
   .si{white-space:normal;text-align:left;filter:none}
   .si::before{content:none}
+  .forspill .hero-credit{opacity:0}
+  .kom .hero-credit{animation:innV .8s cubic-bezier(.2,.9,.2,1) .6s both}
   .hero-credit{position:absolute;left:var(--g);bottom:var(--g);z-index:2;margin:0;color:#fff;font:600 13px/1.2 -apple-system,Arial,sans-serif;letter-spacing:.02em;text-shadow:0 1px 6px rgba(0,32,91,.6)}
 </style>
 </head>
@@ -881,7 +883,7 @@ setTimeout(()=>{run();setInterval(run,11000)},4000);
 })();
 // Budskapet på videoen: deles i bokstaver som reiser seg én og én (<b> i teksten blir fargede bokstaver). Så tennes S og I,
 // og toppmodulen og chatten bygges ut. Bokstavene nær pekeren løfter seg litt.
-(()=>{const s=document.querySelector('.si'),vis=()=>document.body.classList.remove('forspill');if(!s){vis();return}
+(()=>{const s=document.querySelector('.si'),vis=()=>document.body.classList.remove('forspill');if(!s){setTimeout(()=>{document.body.classList.add('kom');vis()},600);return}
 let n=0;const bs=[];
 s.querySelectorAll('.o').forEach(o=>{const deler=[...o.childNodes];o.textContent='';
   deler.forEach(d=>[...d.textContent].forEach(c=>{if(c===' ')return o.append(' ');
