@@ -1,258 +1,142 @@
 <!doctype html>
-<html lang="en">
+<html lang="nb">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Esbjug Consult – Website agency</title>
-<meta name="description" content="We design, build and run modern websites for businesses. Fixed price, agreed before we start.">
-<meta name="theme-color" content="#ffffff">
+<title>Esbjug Consult</title>
+<meta name="description" content="Kode og design har gått gjennom en revolusjon som ikke må oversees.">
+<meta name="theme-color" content="#cfe4f6">
+<link rel="alternate" hreflang="nb" href="https://esbjugconsult.com/">
+<link rel="alternate" hreflang="en" href="https://esbjugconsult.com/en/">
+<script>document.documentElement.classList.add("js");if(/[?&]speil=1/.test(location.search))document.documentElement.classList.add("speil","vis")</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2300205B'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%23BA0C2F' stroke='%23fff' stroke-width='3'/%3E%3C/svg%3E">
 <link rel="preload" href="/media/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/media/fonts/barlow-condensed-800.woff2" as="font" type="font/woff2" crossorigin>
 <style>
   @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces.woff2) format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
   @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces-italic.woff2) format("woff2");font-weight:100 900;font-style:italic;font-display:swap}
-  @font-face{font-family:"Barlow Condensed";src:url(/media/fonts/barlow-condensed-800.woff2) format("woff2");font-weight:800;font-style:normal;font-display:swap}
-  @font-face{font-family:"Barlow Condensed";src:url(/media/fonts/barlow-condensed-800-italic.woff2) format("woff2");font-weight:800;font-style:italic;font-display:swap}
-  @font-face{font-family:"Barlow Condensed";src:url(/media/fonts/barlow-condensed-700.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
-  @font-face{font-family:"Barlow";src:url(/media/fonts/barlow-400.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
-  @font-face{font-family:"Barlow";src:url(/media/fonts/barlow-600.woff2) format("woff2");font-weight:600;font-style:normal;font-display:swap}
-  /* Hero, logo and menu: Barlow Condensed (headline and logo) and Barlow (the rest), chosen in the font test (16/16). */
-  :root{--hf:"Barlow Condensed","Arial Narrow",sans-serif;--hw:800;--lw:700;--hi:italic;--hlh:0;--hl:0;--ht:uppercase;--bf:"Barlow",-apple-system,"Helvetica Neue",Arial,sans-serif}
-  :root{--navy:#00205B;--navy2:#0a2c6e;--red:#BA0C2F;--red2:#9c0a27;--sky:#cfe4f6;--ink:#0b1630;--mut:#55617a;--line:#e3e8f0;--soft:#f4f7fb;
-    --serif:"Fraunces",Georgia,"Times New Roman",serif;--sans:-apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;--g:clamp(16px,5vw,64px);--w:1200px}
+  :root{--y:#fff;--ink:#00205B;--bg:#cfe4f6;--r:#BA0C2F;--serif:"Fraunces",Georgia,"Times New Roman",serif;--g:clamp(16px,6vw,96px)}
   *{box-sizing:border-box}
-  html{scroll-behavior:smooth;scroll-padding-top:80px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-  img,video{-webkit-user-drag:none;display:block;max-width:100%}
-  html,body{margin:0;background:#fff;color:var(--ink)}
-  body{font:17px/1.6 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
-  a{color:inherit}
-  h1,h2,h3{font-family:var(--serif);font-weight:500;letter-spacing:-.01em;line-height:1.12;margin:0}
-  p{margin:0}
-  .w{max-width:var(--w);margin:0 auto;padding:0 var(--g)}
-  .eb{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--red)}
-  .btn{display:inline-flex;align-items:center;gap:10px;padding:15px 26px;border-radius:999px;font-weight:600;font-size:16px;text-decoration:none;transition:background .2s,color .2s,transform .2s;white-space:nowrap}
-  .btn:hover{transform:translateY(-1px)}
-  .btn-r{background:var(--red);color:#fff}
-  .btn-r:hover{background:var(--red2)}
-  .btn-o{color:var(--navy);border:1.5px solid rgba(0,32,91,.28);background:rgba(255,255,255,.6)}
-  .btn-o:hover{background:#fff}
-  .btn-n{background:var(--navy);color:#fff}
-  .btn-n:hover{background:var(--navy2)}
-  :focus-visible{outline:3px solid var(--red);outline-offset:3px}
-
-  /* Top menu: navy over the light hero photo, white with a shadow once you scroll. */
-  .nav{position:fixed;inset:0 0 auto;z-index:50;color:var(--navy);transition:background .3s,box-shadow .3s}
-  .nav .w{display:flex;align-items:center;gap:28px;height:76px}
-  .nav.fast,.nav.apen{background:#fff;box-shadow:0 1px 0 var(--line),0 8px 30px rgba(0,32,91,.06)}
-  .logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--serif);font-size:22px;font-weight:600;margin-right:auto}
-  .nav ul{display:flex;gap:26px;list-style:none;margin:0;padding:0;font-size:15px;font-weight:500}
-  .nav ul a{text-decoration:none}
-  .nav ul a:hover{text-decoration:underline;text-underline-offset:6px}
-  .nav .btn{padding:11px 20px;font-size:15px}
-  .meny{display:none;background:none;border:0;color:inherit;padding:8px;margin-right:-8px;cursor:pointer}
-  .meny svg{width:26px;height:26px}
-  @media (max-width:900px){
-    .nav ul,.nav .btn{display:none}
-    .meny{display:block}
-    .nav.apen ul{display:flex;flex-direction:column;gap:0;position:absolute;top:76px;left:0;right:0;background:#fff;padding:8px var(--g) 24px;box-shadow:0 20px 30px rgba(0,32,91,.1)}
-    .nav.apen ul a{display:block;padding:14px 0;border-bottom:1px solid var(--line);font-size:18px}
-    .nav.apen ul li:last-child a{border:0;margin-top:12px;text-align:center;background:var(--red);color:#fff;border-radius:999px;text-decoration:none}
-  }
-  .nav ul .kun-m{display:none}
-  @media (max-width:900px){.nav.apen ul .kun-m{display:block}}
-
-  /* Hero: the office photo fills the screen. A white fade on the left (bottom on phones) keeps the navy text readable,
-     and a light fade along the top keeps the menu readable. */
-  .hero{position:relative;min-height:100svh;display:flex;align-items:center;color:var(--navy);background:#e6eff6;overflow:hidden}
-  .hero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:65% 50%}
-  .hero::after{content:"";position:absolute;inset:0;
-    background:linear-gradient(180deg,rgba(255,255,255,.75),rgba(255,255,255,0) 140px),
-               linear-gradient(90deg,rgba(255,255,255,.95) 0%,rgba(255,255,255,.86) 30%,rgba(255,255,255,.35) 54%,rgba(255,255,255,0) 70%)}
-  .hero .w{position:relative;z-index:1;width:100%;padding-top:110px;padding-bottom:70px}
-  .hero .eb{display:flex;align-items:center;gap:10px}
-  .hero .eb::before{content:"";width:28px;height:2px;background:var(--red)}
-  .hero h1{font-size:clamp(46px,7.4vw,108px);line-height:.95;max-width:none;margin:18px 0 22px;text-wrap:balance;font-family:var(--hf,var(--serif));font-weight:var(--hw,500);letter-spacing:var(--hlh,-.01em);text-transform:var(--ht,none)}
-  .hero h1 em{font-style:var(--hi,italic);color:var(--red);display:block;white-space:nowrap}
-  .hero h1 .l1{white-space:nowrap}
-  .hero .eb,.hero p,.hero .btn{font-family:var(--bf,var(--sans))}
-  .logo{font-family:var(--hf,var(--serif));font-weight:var(--lw,600);letter-spacing:var(--hl,normal);text-transform:var(--ht,none)}
-  .nav ul,.nav .btn{font-family:var(--bf,var(--sans))}
-  .hero p{font-size:clamp(17px,1.5vw,20px);max-width:30rem;color:#1d2b4a}
-  .hero .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
-  @media (max-width:760px){
-    .hero{align-items:flex-end}
-    .hero>img{object-position:72% 50%}
-    .hero::after{background:linear-gradient(180deg,rgba(255,255,255,.8),rgba(255,255,255,0) 110px),
-                 linear-gradient(0deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.9) 42%,rgba(255,255,255,.4) 62%,rgba(255,255,255,0) 78%)}
-    .hero .w{padding-bottom:44px}
-  }
-
-  /* Short facts right under the hero. */
-
-  section.s{padding:clamp(72px,10vw,130px) 0}
-  .hode{max-width:44rem;margin-bottom:clamp(36px,5vw,60px)}
-  .hode h2,.delt h2{font-size:clamp(32px,4.2vw,54px);margin:14px 0 16px;text-wrap:balance}
-  .hode p{color:var(--mut);font-size:19px}
-
-  /* Text beside a photo. .snu puts the photo on the left. */
-  .delt{display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(32px,6vw,90px);align-items:center}
-  .delt.snu{grid-template-columns:1.15fr 1fr}
-  .delt.snu .bilde{order:-1}
-  .delt p{color:var(--mut);font-size:18px}
-  .delt p+p{margin-top:14px}
-  .bilde{margin:0;border-radius:22px;overflow:hidden;background:var(--soft);box-shadow:0 30px 70px rgba(0,32,91,.12)}
-  .bilde img{width:100%;height:100%;aspect-ratio:4/3;object-fit:cover}
-  .liste{list-style:none;margin:24px 0 0;padding:0;display:grid;gap:12px;font-size:17px}
-  .liste li{display:flex;gap:12px;align-items:flex-start}
-  .liste svg{flex:none;width:20px;height:20px;margin-top:4px;color:var(--red)}
-  @media (max-width:860px){.delt,.delt.snu{grid-template-columns:1fr}.delt.snu .bilde{order:0}}
-
-  /* Services */
-  .tj{background:var(--soft)}
-  .kort{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-  .kort article{border:1px solid var(--line);border-radius:18px;padding:30px 28px;background:#fff;transition:border-color .2s,box-shadow .2s,transform .2s}
-  .kort article:hover{border-color:#c9d3e3;box-shadow:0 18px 40px rgba(0,32,91,.08);transform:translateY(-2px)}
-  .kort .ik{width:48px;height:48px;border-radius:12px;background:var(--soft);color:var(--navy);display:grid;place-items:center;margin-bottom:22px}
-  .kort .ik svg{width:24px;height:24px}
-  .kort h3{font-size:23px;margin-bottom:10px}
-  .kort p{color:var(--mut);font-size:16px}
-  @media (max-width:900px){.kort{grid-template-columns:1fr 1fr}}
-  @media (max-width:600px){.kort{grid-template-columns:1fr}}
-  /* Three close-ups under the service cards. */
-  .stripe{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:20px}
-  .stripe img{width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:18px}
-  @media (max-width:700px){.stripe{grid-template-columns:1fr 1fr}.stripe img:last-child{display:none}}
-
-  /* Example: a browser window with the site, and the images for the sub-pages below. */
-  .eks{background:var(--soft)}
-  .vindu{border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 30px 80px rgba(0,32,91,.18),0 0 0 1px rgba(0,32,91,.06)}
-  .vindu-t{display:flex;align-items:center;gap:8px;padding:12px 16px;background:#eef2f7;border-bottom:1px solid var(--line)}
-  .vindu-t i{width:11px;height:11px;border-radius:50%;background:#d3dae5}
-  .vindu-t span{margin-left:14px;flex:1;max-width:360px;background:#fff;border-radius:7px;padding:4px 12px;font-size:12.5px;color:var(--mut)}
-  .vindu-b{position:relative;aspect-ratio:16/8;background:#0d2236}
-  .vindu-b video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-  .vindu-b::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(6,17,28,.75),rgba(6,17,28,.1) 70%)}
-  .vindu-x{position:absolute;z-index:1;left:clamp(20px,5%,60px);top:50%;transform:translateY(-50%);color:#fff;max-width:min(26rem,70%)}
-  .vindu-x b{display:block;font:700 clamp(20px,3.4vw,44px)/1.1 var(--sans);letter-spacing:-.02em}
-  .vindu-x span{display:block;margin-top:10px;font-size:clamp(12px,1.3vw,16px);opacity:.85}
-  .vindu-x u{display:inline-block;margin-top:16px;text-decoration:none;background:#fff;color:#06111c;font-weight:700;font-size:clamp(11px,1.1vw,14px);padding:8px 16px;border-radius:999px}
-  .bilder{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:20px}
-  .bilder figure{margin:0;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 0 0 1px rgba(0,32,91,.06)}
-  .bilder img{width:100%;aspect-ratio:16/10;object-fit:cover}
-  .bilder figcaption{padding:14px 18px;font-size:15px;font-weight:600}
-  .bilder figcaption span{display:block;font-weight:400;color:var(--mut);font-size:14px}
-  .eks .note{margin-top:28px;color:var(--mut);font-size:15px;max-width:44rem}
-  @media (max-width:700px){.bilder{grid-template-columns:1fr}.vindu-b{aspect-ratio:4/3}.vindu-t span{display:none}}
-
-  /* Process: a wide photo, then the steps. */
-  .bred{margin:0 0 clamp(36px,5vw,56px);border-radius:22px;overflow:hidden;background:var(--soft)}
-  .bred img{width:100%;aspect-ratio:21/9;object-fit:cover}
-  @media (max-width:700px){.bred img{aspect-ratio:4/3}}
-  .steg{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;counter-reset:s;list-style:none;margin:0;padding:0}
-  .steg li{counter-increment:s;border-top:2px solid var(--navy);padding-top:22px}
-  .steg li::before{content:"0" counter(s);display:block;font:500 15px/1 var(--serif);color:var(--red);margin-bottom:16px}
-  .steg h3{font-size:23px;margin-bottom:10px}
-  .steg p{color:var(--mut);font-size:16px}
-  @media (max-width:900px){.steg{grid-template-columns:1fr 1fr;row-gap:44px}}
-  @media (max-width:560px){.steg{grid-template-columns:1fr}}
-
-  /* Packages */
-  .pk{background:var(--soft)}
-  .pakker{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch}
-  .pakker article{display:flex;flex-direction:column;background:#fff;border-radius:20px;padding:34px 30px;box-shadow:0 0 0 1px var(--line)}
-  .pakker article.anb{background:var(--navy);color:#fff;box-shadow:0 30px 60px rgba(0,32,91,.25)}
-  .pakker .tag{align-self:flex-start;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:var(--red);color:#fff;padding:5px 10px;border-radius:999px;margin-bottom:18px}
-  .pakker h3{font-size:30px}
-  .pakker .for{color:var(--mut);margin:8px 0 22px;font-size:16px}
-  .pakker .anb .for{color:rgba(255,255,255,.75)}
-  .pakker ul{list-style:none;margin:0 0 30px;padding:0;display:grid;gap:11px;font-size:16px}
-  .pakker li{display:flex;gap:11px;align-items:flex-start}
-  .pakker li svg{flex:none;width:20px;height:20px;margin-top:3px;color:var(--red)}
-  .pakker .anb li svg{color:var(--sky)}
-  .pakker .pris{margin-top:auto;padding-top:22px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-  .pakker .anb .pris{border-color:rgba(255,255,255,.18)}
-  .pakker .pris b{font:500 19px/1.2 var(--serif)}
-  .pakker .btn{padding:12px 20px;font-size:15px}
-  .pakker .anb .btn-n{background:#fff;color:var(--navy)}
-  @media (max-width:960px){.pakker{grid-template-columns:1fr;max-width:34rem}}
-
-  /* FAQ */
-  .faq{max-width:52rem}
-  .faq details{border-bottom:1px solid var(--line)}
-  .faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:24px 0;font:500 21px/1.3 var(--serif)}
-  .faq summary::-webkit-details-marker{display:none}
-  .faq summary::after{content:"+";flex:none;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font:400 22px/1 var(--sans);color:var(--navy);transition:transform .25s}
-  .faq details[open] summary::after{transform:rotate(45deg)}
-  .faq details p{color:var(--mut);padding:0 0 26px;max-width:44rem}
-
-  /* Contact */
-  .kontakt{position:relative;background:var(--navy);color:#fff;overflow:hidden}
-  .kontakt::before{content:"";position:absolute;width:640px;height:640px;left:-260px;bottom:-320px;border-radius:50%;background:radial-gradient(circle,rgba(186,12,47,.4),rgba(186,12,47,0) 65%)}
-  .kontakt .delt{position:relative}
-  .kontakt h2{font-size:clamp(34px,4.6vw,60px)}
-  .kontakt .delt p{color:rgba(255,255,255,.82);font-size:19px;max-width:30rem}
-  .kontakt .bilde{box-shadow:0 30px 70px rgba(0,0,0,.3)}
-  .boks{margin-top:30px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:26px 28px;max-width:30rem}
-  .boks span{display:block;font-size:13px;letter-spacing:.12em;text-transform:uppercase;opacity:.7}
-  .boks a.e{display:block;font:500 clamp(19px,2vw,24px)/1.3 var(--serif);text-decoration:none;margin:8px 0 22px;word-break:break-word}
-  .boks a.e:hover{text-decoration:underline;text-underline-offset:5px}
-
-  footer{background:#001538;color:rgba(255,255,255,.7);font-size:14px}
-  footer .w{display:flex;flex-wrap:wrap;gap:16px 32px;justify-content:space-between;align-items:center;padding-top:30px;padding-bottom:30px}
-  footer .logo{color:#fff;font-size:19px;margin:0}
-  footer nav{display:flex;flex-wrap:wrap;gap:22px}
-  footer a{text-decoration:none}
-  /* Clients: one large testimonial with a portrait, two smaller ones under it. */
-  .om-stor{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fff}
-  .om-stor img{width:100%;height:100%;aspect-ratio:4/5;object-fit:cover}
-  .om-tekst{padding:clamp(28px,4.5vw,60px);display:flex;flex-direction:column;justify-content:center}
-  .omtaler blockquote{margin:0;font:400 clamp(22px,2.3vw,30px)/1.38 var(--serif);color:var(--navy);text-wrap:pretty}
-  .omtaler blockquote::before{content:"\201C";display:block;height:.5em;margin-bottom:10px;font-size:2.6em;line-height:1;color:var(--red)}
-  .om-hvem{margin-top:26px;font-size:15px;line-height:1.45}
-  .om-hvem b{display:block;color:var(--navy);font-size:16px}
-  .om-hvem span{color:var(--mut)}
-  .om-fakta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;list-style:none;margin:20px 0 0;padding:0}
-  .om-fakta li{background:var(--soft);color:var(--navy);font-size:13px;font-weight:600;padding:7px 13px;border-radius:999px}
-  .om-fakta a{font-size:14px;font-weight:600;color:var(--navy);text-underline-offset:4px;margin-left:4px}
-  .om-to{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px}
-  .om-to article{border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
-  .om-to img{width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
-  .om-to .om-tekst{padding:28px 30px 32px;justify-content:flex-start;flex:1}
-  .om-to blockquote{font-size:clamp(19px,1.75vw,23px)}
-  /* Athena: an app, so its promo film is shown whole (16:9) beside the quote. */
-  .om-app{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);align-items:center;margin-top:20px;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fff}
-  .om-app video{width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;background:#e9eef3}
-  .om-app blockquote{font-size:clamp(19px,1.75vw,23px)}
-  @media (max-width:860px){.om-app{grid-template-columns:1fr}}
-  @media (max-width:860px){.om-stor,.om-to{grid-template-columns:1fr}.om-stor img{aspect-ratio:4/3;object-position:50% 40%}}
-
-  footer a:hover{color:#fff}
-
-  /* Content slides in as it comes on screen. */
-  .js .inn{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
-  .js .inn.vis{opacity:1;transform:none}
-  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.js .inn{opacity:1;transform:none;transition:none}.btn,.kort article{transition:none}}
-
-  /* Pulse, chat and cookie banner: the same code as the front page (en/index.html), copied in. Colours are set here. */
-  .ch,.ck,.hpp,.puls,.hh{--y:#fff;--ink:#00205B}
-  .ch{z-index:60!important}
-  button.btn{font-family:inherit;cursor:pointer}
-  .boks .btn{margin:0 8px 8px 0}
-  .boks .btn-o{background:#fff;border-color:#fff}
-  .ck{z-index:61!important}
-  .hpp .mono{font:600 13px/1.5 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase}
-  .nav,footer{transition:opacity .45s ease}
-  .focus .nav,.focus footer{opacity:0;pointer-events:none}
-  /* The pulse sits in the chat header: heart and number only. Tap it for the full-screen view. */
-  .puls{flex:none;color:#f2f6fb}
-  #chat .ch-a{flex-direction:column;align-items:flex-end;gap:0}
-  .puls:has(.hp[hidden]){display:none}
-  .puls .st-v{font-size:19px;gap:6px}
-  .puls .st-l,.puls .hp .g{display:none!important}
-  .puls .hp-o{padding:4px 6px;margin:0}
-  .puls .hp-o:hover,.puls .hp-o[aria-expanded="true"]{background:rgba(255,255,255,.12)}
-  .puls .hp-o:focus-visible{outline-color:#fff}
+  html{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+  img,video{-webkit-user-drag:none}
+  html,body{margin:0;background:var(--bg);color:var(--ink)}
+  body{font-family:-apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;min-height:100svh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+  main{position:relative;padding:0 var(--g);max-width:1180px;width:100%;margin:0 auto}
+  /* Under hero: hvit bakgrunn og svart tekst. Hero, chatten og de blå bildene beholder fargene sine. */
+  html,body{background:#fff}
+  main{--ink:#000;color:var(--ink)}
+  /* Hero: bare videoen, toppmodulen og budskapet. Resten av siden begynner under. */
+  .hero{position:relative;min-height:100svh;display:flex;overflow:hidden;background:#9db4c8}
+  .hero-v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+  .hero-i{position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:flex-start;padding:clamp(16px,2.6vw,36px) var(--g) var(--g)}
+  /* Glassbokser: lyst, uskarpt glass med korn. De flyter sakte, vipper mot pekeren og får et lysskjær der pekeren er. */
+  .flyt{animation:flyt 7s ease-in-out infinite}
+  @keyframes flyt{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  .gl{position:relative;isolation:isolate;border-radius:22px;background:linear-gradient(135deg,rgba(255,255,255,.72),rgba(255,255,255,.5));-webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5);border:1px solid rgba(255,255,255,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(255,255,255,.25),0 14px 40px rgba(0,32,91,.18);
+    transform:perspective(900px) translate3d(var(--tx,0),var(--ty,0),0) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) scale(var(--sc,1));transition:transform .7s cubic-bezier(.2,1.5,.35,1),box-shadow .4s ease;will-change:transform}
+  .gl.paa{transition:transform .14s ease-out,box-shadow .4s ease;box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.3),0 26px 60px rgba(0,32,91,.28)}
+  .gl::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;opacity:.22;mix-blend-mode:soft-light;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.2 -.1'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .gl::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .35s ease;background:radial-gradient(220px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.85),rgba(255,255,255,0) 65%)}
+  .gl.paa::after{opacity:1}
+  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.gl{background:rgba(255,255,255,.86)}}
+  /* Toppmodulen: språkvalg, puls, her nå og unike besøkende i én boks. */
+  .topp{display:inline-flex;align-items:center;flex-wrap:wrap;gap:12px clamp(14px,1.8vw,24px);padding:12px 20px 12px 14px}
+  .topp .lang{position:relative;top:auto;left:auto;flex:none}
+  .topp .st{align-items:center;row-gap:10px}
+  .topp .st:has(.st-i:not([hidden])){padding-left:clamp(14px,1.8vw,24px);border-left:1px solid rgba(0,32,91,.18)}
+  .topp .st-i,.topp .st-c{gap:5px}
+  .topp .st-v{font-size:clamp(20px,2.1vw,27px);gap:8px}
+  .topp .st-l{font-size:9.5px;min-height:11px}
+  .topp .st-i:not([hidden])~.st-i{margin-left:clamp(12px,1.6vw,20px);padding-left:clamp(12px,1.6vw,20px)}
+  @media (max-width:560px){.topp .st:has(.st-i:not([hidden])){padding-left:0;border-left:0}}
+  /* «+1 · det er deg» henger rett under glassboksen med pila opp mot tallet, i stedet for oppå boksen. --ned = avstanden ned til boksens kant. */
+  .topp .tl-deg{bottom:auto;top:calc(100% + var(--ned,24px) + 9px)}
+  .topp .st-i.deg .st-l{opacity:1}
+  /* Toppmodulen og chatten er skjult til budskapet har kommet. Da bygges toppmodulen ut fra venstre og chatknappen
+     fra høyre, med samme kurve som den røde flaten, og innholdet glir inn etter. */
+  .forspill .hero-i>.flyt,.forspill #chat{opacity:0;pointer-events:none}
+  .kom .hero-i>.flyt>.topp{animation:byggV 1.1s cubic-bezier(.7,0,.15,1) both}
+  .kom .hero-i>.flyt>.topp>*{animation:innV .8s cubic-bezier(.2,.9,.2,1) both;animation-delay:.35s}
+  .kom .hero-i>.flyt>.topp>*+*{animation-delay:.5s}
+  .kom #chat .ch-b{animation:byggH .9s cubic-bezier(.7,0,.15,1) .1s both}
+  @keyframes byggV{0%{clip-path:inset(0 100% 0 0 round 22px);opacity:0}12%{opacity:1}100%{clip-path:inset(-60px -60px -60px -60px round 22px);opacity:1}}
+  @keyframes byggH{0%{clip-path:inset(0 0 0 100% round 999px);opacity:0}12%{opacity:1}100%{clip-path:inset(-40px -40px -40px -40px round 999px);opacity:1}}
+  @keyframes innV{0%{opacity:0;translate:-26px 0;filter:blur(6px)}100%{opacity:1;translate:0 0;filter:none}}
+  /* Budskapet: det eneste som står på videoen, midt på og på én linje. Bokstavene reiser seg én og én; så tennes S og I
+     med sitrongult, korall og rosa som flyter inni dem. En bølge går gjennom linjen hvert 9. sekund, og bokstavene nær pekeren løfter seg. */
+  .scene{margin:auto 0;width:100%;display:grid;place-items:center}
+  .si{position:relative;margin:0;padding:0 0 clamp(40px,8vh,90px);white-space:nowrap;color:#fff;font:640 clamp(22px,7.4vw,150px)/1 var(--serif);letter-spacing:-.04em;filter:drop-shadow(0 2px 22px rgba(0,32,91,.45)) drop-shadow(0 1px 2px rgba(0,32,91,.35))}
+  .si::before{content:"";position:absolute;inset:-60% -10% -10%;z-index:-1;pointer-events:none;background:radial-gradient(closest-side,rgba(0,32,91,.28),rgba(0,32,91,0))}
+  .si .e{font-style:italic;font-weight:300;letter-spacing:-.02em}
+  .si .b{display:inline-block;opacity:0;transform:translateY(.5em) rotate(5deg);filter:blur(10px);translate:0 calc(var(--l,0)*-.14em);scale:calc(1 + var(--l,0)*.05);transition:translate .3s ease,scale .3s ease}
+  .si.inn .b{opacity:1;transform:none;filter:none;transition:opacity .5s ease,transform .9s cubic-bezier(.2,1.3,.3,1),filter .5s ease,translate .3s ease,scale .3s ease;transition-delay:calc(250ms + var(--i)*38ms),calc(250ms + var(--i)*38ms),calc(250ms + var(--i)*38ms),0s,0s}
+  .si i{display:inline-block;font-style:inherit;animation:bolge 9s ease-in-out calc(2.4s + var(--i)*45ms) infinite}
+  @keyframes bolge{0%,8%,100%{translate:0 0}4%{translate:0 -.1em}}
+  .si .sf{font-weight:780}
+  .si .sf i{color:#fff;background:linear-gradient(115deg,#FFD23F,#FF6A3D,#FF2E7E,#FFD23F) 0 0/300% 100%;-webkit-background-clip:text;background-clip:text;transition:color 1.2s ease,filter 1.2s ease;animation:bolge 9s ease-in-out calc(2.4s + var(--i)*45ms) infinite,sfFlyt 6s linear infinite}
+  .si .b+.sf i{animation-delay:calc(2.4s + var(--i)*45ms),-3s}
+  .si.tent .sf i{color:transparent;filter:drop-shadow(0 0 .14em rgba(255,90,80,.6))}
+  @keyframes sfFlyt{to{background-position:300% 0}}
+  @media (prefers-reduced-motion:reduce){.flyt{animation:none}.gl{transform:none!important}.si .b{opacity:1;transform:none;filter:none;transition:none!important}.si i,.si .sf i{animation:none;transition:none}}
+  /* Budskapet, ingressen og knappen står nå øverst på den blå siden under videoen. */
+  .intro{padding-top:clamp(56px,10vh,120px)}
+  /* V2: serif i overskriftene. */
+  h1,h2,.p h3,.s em,.n b{font-family:var(--serif);font-weight:600;letter-spacing:-.022em}
+  h1{line-height:1.08}
+  h2{font-weight:500;letter-spacing:-.03em}
+  .s em{font-weight:500;font-style:italic}
+  .s em.i{font-family:inherit;font-style:italic}
+  @media (prefers-reduced-motion:reduce){.hero-v{display:none}.hero{background:#9db4c8 url(/media/hero.jpg?v=3) center/cover}}
+  .mono{font:600 13px/1.5 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase}
+  .k{opacity:.72;display:flex;align-items:center;gap:10px 1.5em;flex-wrap:wrap}
+  .k .kl{margin-left:auto;color:inherit;text-decoration:none;border:2px solid var(--ink);border-radius:999px;padding:5px 14px;line-height:1.3;letter-spacing:.1em}
+  .k .kl:hover{background:var(--ink);color:var(--y)}
+  .k .kl:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+  h1{margin:14px 0 0;font-weight:850;font-size:clamp(28px,4.4vw,56px);line-height:1.06;letter-spacing:-.035em}
+  p.b{margin:28px 0 0;max-width:38em;font-size:clamp(18px,1.6vw,22px);line-height:1.45;font-weight:500}
+  a.t{display:inline-block;margin-top:32px;background:var(--r);color:#fff;font-weight:700;font-size:clamp(18px,1.8vw,23px);padding:13px 22px 14px;border-radius:999px;text-decoration:none;letter-spacing:-.01em;transition:transform .2s}
+  a.t:hover{transform:translateY(-2px)}
+  a.t:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
+  .m{margin-top:clamp(40px,8vh,80px);max-width:34em;text-transform:none;letter-spacing:.02em;font-weight:500;line-height:1.6}
+  /* «kode»: blir en terminalbit som dekodes. «design»: fargerikt lys som gjør ordet om til glass. */
+  .kd{display:inline-block;position:relative;white-space:nowrap;padding:.06em .12em;margin:-.06em -.12em;border-radius:.1em}
+  /* «kode» styrer layouten med en usynlig kopi; den animerte teksten ligger absolutt oppå, så høyden og grunnlinjen aldri endres under animasjonen. */
+  .kd::before{content:"kode";visibility:hidden}
+  .kd i{font-style:normal;position:absolute;left:.12em;top:0;bottom:0;display:flex;align-items:center;line-height:inherit;transform-origin:0 50%}
+  .kd.c{background:var(--r)}
+  .kd.c i{font-family:"SF Mono",ui-monospace,Menlo,monospace;font-weight:800;letter-spacing:-.04em;color:var(--y)}
+  .ds{position:relative;display:inline-block;transition:color .5s}
+  .ds::before,.ds::after{content:attr(data-t);position:absolute;left:0;top:0;pointer-events:none}
+  .ds::before{color:transparent;background:linear-gradient(100deg,transparent 30%,#ff3d8b 38%,#ffb400 44%,#fff 50%,#2fd1ff 56%,#7a5cff 62%,transparent 70%) -60% 0/260% 100% no-repeat;-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 .1em rgba(255,61,139,.55)) drop-shadow(0 0 .22em rgba(47,209,255,.4));opacity:0}
+  .ds.f::before{opacity:1;animation:fl 1s cubic-bezier(.4,0,.6,1) forwards}
+  @keyframes fl{to{background-position:160% 0}}
+  .ds::after{color:transparent;background:linear-gradient(165deg,#fff 0%,rgba(255,255,255,.35) 30%,rgba(255,255,255,.08) 48%,rgba(255,255,255,.7) 60%,rgba(255,255,255,.18) 78%,rgba(255,255,255,.55) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-stroke:1.5px rgba(0,32,91,.42);filter:drop-shadow(0 .06em .1em rgba(0,32,91,.35));opacity:0;transition:opacity .6s}
+  .ds.g{color:transparent}
+  .ds.g::after{opacity:1}
+  h2{margin:clamp(88px,16vh,160px) 0 0;font-weight:850;font-size:clamp(44px,8vw,112px);line-height:.95;letter-spacing:-.045em}
+  h4{margin:clamp(40px,7vh,72px) 0 0}
+  h4+.p{margin-top:14px}
+  .s{margin-top:22px}
+  .s em{display:block;font-size:clamp(20px,2vw,26px);font-weight:600;line-height:1.3;letter-spacing:-.01em}
+  .s em.i{display:inline;font-size:inherit;font-weight:inherit;letter-spacing:0}
+  .s p{margin:0 0 .9em;font-size:17px;line-height:1.55;font-weight:400}
+  .p{margin-top:28px;padding-top:22px;border-top:2px solid var(--ink)}
+  .p h3{margin:0;font-weight:850;font-size:clamp(30px,4vw,48px);letter-spacing:-.035em;line-height:1}
+  dl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px 24px;margin:18px 0 0}
+  dt{font:600 11px/1.4 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;opacity:.6}
+  dd{margin:4px 0 0;font-size:16px;line-height:1.35;font-weight:500}
+  .x{display:inline-block;width:7em;height:.9em;vertical-align:-.1em;background:var(--ink)}
+  .p video,.p img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;margin-top:22px;border-radius:14px;background:#00205B}
+  .p a{color:inherit;text-underline-offset:3px}
+  .n{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;margin-top:22px;border-radius:14px;overflow:hidden}
+  .n div{background:var(--ink);color:var(--y);padding:18px 18px 20px}
+  .n b{display:block;font-size:clamp(28px,3.4vw,44px);font-weight:850;letter-spacing:-.03em;line-height:1}
+  .n span{display:block;margin-top:8px;font-size:14px;line-height:1.35;opacity:.8}
+  @media (max-width:640px){.n{grid-template-columns:1fr 1fr}dl{grid-template-columns:1fr 1fr}}
+  /* «Jobber med nå» og alt under er skjult til man scroller. */
+  .js .rv{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+  .js.vis .rv{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){.js .rv{transition:none;transform:none}}
+  .p img.wide{aspect-ratio:4/1}
   /* Chat: boble nede til høyre, panel i svart og gult. */
   .ch{position:fixed;right:18px;bottom:18px;z-index:5;font-family:inherit}
   .ch-b{display:flex;align-items:center;gap:8px;border:0;cursor:pointer;background:var(--ink);color:var(--y);font-weight:700;font-size:16px;line-height:1;font-family:inherit;padding:13px 18px 13px 15px;border-radius:999px;box-shadow:0 8px 24px rgba(0,32,91,.25);position:relative}
@@ -405,7 +289,7 @@
   @keyframes pulsDot{0%{box-shadow:0 0 0 0 rgba(61,220,132,.6)}80%{box-shadow:0 0 0 7px rgba(61,220,132,0)}}
   .ch-s.møte>i{background:#ff8a00}
   @media (prefers-reduced-motion:reduce){.ch-b::after,.zz i,.ch-s.på.on>i{animation:none}.sover .zz i{opacity:1}.zz i:nth-child(2){transform:translate(7px,-12px)}.zz i:nth-child(3){transform:translate(14px,-24px)}}
-  /* «Sende mail istedet?»: liten knapp til venstre over skrivefeltet når chatten er åpnet fra «Talk to me about all of this.» */
+  /* «Sende mail istedet?»: liten knapp til venstre over skrivefeltet når chatten er åpnet fra «Snakk med meg om alt dette.» */
   .ch-mail{align-self:flex-start;margin:0 12px 8px;padding:8px 14px;border-radius:999px;background:#12357a;color:var(--y);font-size:14px;font-weight:600;text-decoration:none}
   .ch-mail[hidden]{display:none}
   .ch-mail:hover{background:#1f4690}
@@ -420,6 +304,11 @@
   .ch-ck button:focus-visible{outline:2px solid var(--y);outline-offset:2px}
   .natt .ch-ck{background:#222b4a;color:#cfdcff}
   .natt .ch-ck button{color:#cfdcff;border-color:rgba(207,220,255,.5)}
+  /* Et tillegg skrevet senere: tynn strek til venstre og litt mindre skrift, adskilt uten å ligne et kommentarfelt. */
+  .tanke{margin:26px 0 0;padding:2px 0 2px 18px;border-left:2px solid var(--ink);max-width:46em}
+  .tanke p{margin:0 0 .7em;font-size:16px;line-height:1.5}
+  .tanke .tk-t{font:600 12px/1.5 "SF Mono",Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;opacity:.7;margin-bottom:.9em}
+  .tanke a{color:inherit;text-underline-offset:3px;overflow-wrap:anywhere;font-size:14px}
   .ck{padding-right:44px;line-height:1.35}
   .ck .ck-x{flex:none;border-radius:0;font-weight:400;position:absolute;top:8px;right:10px;border:0;background:none;color:#f2f6fb;opacity:.6;font-size:24px;line-height:1;cursor:pointer;padding:4px 6px;font-size:26px}
   .ck-x:hover{opacity:1}
@@ -454,6 +343,28 @@
     .st-i:not([hidden])~.st-i{margin-left:0;padding-left:0;border-left:0}.st-i:not([hidden])~.st-i.tl-b{margin-left:20px;padding-left:20px;border-left:1px solid rgba(0,32,91,.18)}
     .st .tl-a{min-width:124px}.tl-deg{font-size:11px;letter-spacing:0;padding:5px 9px}}
   @media (prefers-reduced-motion:reduce){.od .r{transition:none}.tl-dot{animation:none}}
+  /* Språkbryter: norsk og britisk flagg i én pille. Den svarte kula ligger bak språket du leser og glir over når du bytter;
+     nettlesere med view transitions toner deretter mellom de to sidene mens bryteren står stille. */
+  .lang{position:absolute;top:max(12px,calc(var(--g) - 20px));left:var(--g);display:inline-flex;align-items:center;gap:2px;padding:1.5px;border:1.5px solid var(--ink);border-radius:999px;color:inherit;text-decoration:none;vertical-align:middle;line-height:0;view-transition-name:lang;-webkit-tap-highlight-color:transparent}
+  .lang-k{position:absolute;top:1.5px;left:1.5px;width:32px;height:21px;border-radius:999px;background:var(--ink);transition:transform .38s cubic-bezier(.34,1.45,.55,1)}
+  .lang .lf{position:relative;width:32px;height:21px;display:grid;place-items:center}
+  .lang .lf svg{width:20px;height:13px;border-radius:2px;display:block;box-shadow:0 0 0 1px rgba(255,255,255,.3);transition:filter .3s,opacity .3s,transform .3s}
+  .lang .lf.gb svg,.lang.en .lf.no svg,.lang.gaar .lf.no svg{filter:grayscale(1);opacity:.5}
+  .lang.en .lf.gb svg,.lang.gaar .lf.gb svg,.lang.en.gaar .lf.no svg{filter:none;opacity:1}
+  .lang.en.gaar .lf.gb svg{filter:grayscale(1);opacity:.5}
+  .lang.en .lang-k,.lang.gaar .lang-k{transform:translateX(34px)}
+  .lang.en.gaar .lang-k{transform:none}
+  .lang.lang:hover .lf.lf svg{filter:none;opacity:1}
+  .lang:hover .lf svg{transform:scale(1.06)}
+  .lang:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+  @view-transition{navigation:auto}
+  ::view-transition-group(lang){animation-duration:0s}
+  ::view-transition-old(root){animation:lgUt .26s ease both}
+  ::view-transition-new(root){animation:lgInn .42s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes lgUt{to{opacity:0;filter:blur(3px)}}
+  @keyframes lgInn{from{opacity:0;filter:blur(3px);transform:translateY(6px)}}
+  @media (prefers-reduced-motion:reduce){.lang-k,.lang .lf svg{transition:none}::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
+  .en-note{margin:12px 0 0;font-size:12px;opacity:.7;text-transform:none;letter-spacing:.02em}
   /* Puls fra Apple Watch øverst ved datoen. Hjertet slår i pulsens takt mens den strømmes; grafen er dagen så langt (snitt per minutt). */
   .hp .hj{width:.62em;height:.62em;flex:none;color:#e0233c}
   .hp.live .hj{animation:beat var(--beat,1s) ease-in-out infinite}
@@ -528,209 +439,197 @@
   @media (max-height:640px){.hpp-ekg{display:none}}
   @media (max-height:500px){.hpp-k{display:none}}
   @media (prefers-reduced-motion:reduce){.hp.live .hj,.hpp-h .hj.slag,.hpp.live .hpp-live i,.hpp-cn.tikk{animation:none}.hpp{animation:none}}
-</style>
-<script>document.documentElement.classList.add("js")</script>
-<style>
-  /* Font 16 all the way: buttons, menu and the chat button in Barlow Condensed capitals to match the headline;
-     the chat panel, the cookie box and the rest of the chat in Barlow. */
-  .btn,.nav ul a,.ch-b,.ch-h b,.ck b,.ck button:not(.ck-x):not(.ck-mer),.ch-ck button,.ch-mail{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
-  .btn{font-size:17px}
-  .nav ul a{font-size:16px}
-  .ch-b{font-size:17px}
-  .ch-h b{font-size:19px}
-  .ch,.ch-p,.ch-m p,.ch-f textarea,.ch-s,.ch-del,.ck,.ck-full,.ch-ck{font-family:"Barlow",-apple-system,"Helvetica Neue",Arial,sans-serif}
-</style>
-<style>
-  /* Section two, in the hero's type: Barlow Condensed capitals for headings, Barlow for text. */
-  .s2{font-family:var(--bf,var(--sans))}
-  .s2 h2{font-family:var(--hf);font-weight:800;text-transform:uppercase;letter-spacing:0;line-height:.95;font-size:clamp(40px,5.4vw,78px);margin:12px 0 0;max-width:16ch;color:var(--navy)}
-  .s2 h2 em{font-style:italic;color:var(--red)}
-  .s2 h3{font-family:var(--hf);font-weight:800;text-transform:uppercase;font-size:clamp(24px,2.2vw,32px);line-height:1;margin:0;color:var(--navy)}
-  .s2 p{color:var(--mut);font-size:18px;line-height:1.55}
-  .s2-eb{font-family:var(--hf);font-weight:700;font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:var(--red)!important;margin:0;display:flex;align-items:center;gap:10px}
-  .s2-eb::before{content:"";width:28px;height:2px;background:var(--red)}
-  /* 1 */
-  .s2-1 h2{font-size:clamp(48px,7.6vw,118px);max-width:14ch}
-  .s2-1b{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;flex-wrap:wrap;margin-top:34px}
-  .s2-1b p{max-width:34rem;margin:0}
-  /* 2 */
-  .s2-2{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:48px}
-  .s2-2 article{border-top:3px solid var(--navy);padding-top:22px}
-  .s2-2 span{display:block;font-family:var(--hf);font-weight:800;font-size:18px;color:var(--red);margin-bottom:14px}
-  .s2-2 p{margin:10px 0 0;font-size:17px}
-  /* 3 */
-  .s2-3{background:var(--navy);margin:calc(-1 * clamp(72px,10vw,130px)) 0;padding:clamp(72px,10vw,130px) 0}
-  .s2-3 .s2-eb{color:#ff8fa3!important}.s2-3 .s2-eb::before{background:#ff8fa3}
-  .s2-3g{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin-top:34px}
-  .s2-3g b{display:block;font-family:var(--hf);font-weight:800;font-size:clamp(72px,9vw,140px);line-height:.9;color:#fff}
-  .s2-3g span{display:block;margin-top:12px;color:var(--sky);font-size:18px;max-width:18rem}
-  /* 4 */
-  .s2-4{display:grid;grid-template-columns:1fr 1.1fr;gap:clamp(32px,6vw,90px);align-items:center}
-  .s2-4 img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:22px;box-shadow:0 30px 70px rgba(0,32,91,.12)}
-  .s2-4 p{margin:16px 0 0}
-  /* 5 */
-  .s2-5{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:44px}
-  .s2-5>div{border-radius:22px;padding:34px 34px 38px}
-  .s2-5 .for{background:var(--soft)}.s2-5 .etter{background:var(--navy)}
-  .s2-5 .etter h3{color:#fff}
-  .s2-5 ul{list-style:none;margin:22px 0 0;padding:0;display:grid;gap:14px;font-size:18px}
-  .s2-5 li{display:flex;gap:12px;align-items:flex-start}
-  .s2-5 svg{flex:none;width:20px;height:20px;margin-top:4px}
-  .s2-5 .for li{color:var(--mut)}.s2-5 .for svg{color:#9aa4b5}
-  .s2-5 .etter li{color:#fff}.s2-5 .etter svg{color:#ff8fa3}
-  /* 6 */
-  .s2-6{list-style:none;margin:48px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:28px;position:relative}
-  .s2-6 li b{display:block;font-family:var(--hf);font-weight:800;font-size:clamp(80px,9vw,130px);line-height:.85;color:var(--sky);-webkit-text-stroke:2px var(--navy);margin-bottom:14px}
-  .s2-6 p{margin:10px 0 0;font-size:17px}
-  /* 7 */
-  .s2-7 ul{list-style:none;margin:30px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px 40px}
-  .s2-7 li{font-family:var(--hf);font-weight:800;text-transform:uppercase;font-size:clamp(38px,5.4vw,80px);line-height:1;color:var(--navy)}
-  .s2-7 li:nth-child(even){color:var(--red);font-style:italic}
-  .s2-7 p{margin:30px 0 0}
-  .s2-7 a{color:var(--navy);font-weight:600;text-underline-offset:4px}
-  /* 8 */
-  .s2-8{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,6vw,90px);align-items:center}
-  .s2-8 p{margin:18px 0 0;max-width:30rem}
-  .s2-8 ol{list-style:none;margin:0;padding:0;counter-reset:n;display:grid;gap:16px}
-  .s2-8 li{counter-increment:n;display:grid;grid-template-columns:56px 1fr;gap:4px 16px;padding:22px 24px;border-radius:18px;background:var(--soft)}
-  .s2-8 li::before{content:"0" counter(n);grid-row:span 2;font-family:var(--hf);font-weight:800;font-size:32px;color:var(--red);line-height:1}
-  .s2-8 li b{font-family:var(--hf);font-weight:800;text-transform:uppercase;font-size:24px;color:var(--navy)}
-  .s2-8 li span{color:var(--mut);font-size:17px}
-  /* 9 */
-  .s2-9{display:grid;grid-template-columns:1.4fr 1fr;grid-template-rows:1fr 1fr;gap:16px;margin-top:44px;height:min(70vh,620px)}
-  .s2-9 figure{position:relative;margin:0;border-radius:20px;overflow:hidden}
-  .s2-9 .stor{grid-row:span 2}
-  .s2-9 img{width:100%;height:100%;object-fit:cover}
-  .s2-9 figcaption{position:absolute;left:18px;bottom:16px;font-family:var(--hf);font-weight:800;text-transform:uppercase;font-size:22px;color:#fff;background:var(--navy);padding:6px 14px;border-radius:999px}
-  /* 10 */
-  .s2-10{max-width:900px}
-  .s2-10 blockquote{margin:24px 0 0;font-family:var(--hf);font-weight:700;font-size:clamp(28px,3.4vw,46px);line-height:1.15;color:var(--navy);border-left:4px solid var(--red);padding-left:28px}
-  .s2-10 .sign{margin:26px 0 0 32px;display:flex;flex-direction:column}
-  .s2-10 .sign b{font-family:var(--hf);font-weight:800;text-transform:uppercase;font-size:22px;color:var(--navy)}
-  @media (max-width:860px){
-    .s2-2,.s2-3g,.s2-5,.s2-6,.s2-4,.s2-8{grid-template-columns:1fr}
-    .s2-9{grid-template-columns:1fr;grid-template-rows:none;height:auto}.s2-9 .stor{grid-row:auto}.s2-9 figure{aspect-ratio:4/3}
-  }
-  /* Forsiden: heroen fra /new, så dronevideoen over hele skjermen med «Under Construction». */
-  html{scroll-padding-top:0}
-  .uc{position:relative;width:100%;height:100vh;height:100svh;overflow:hidden;display:grid;place-items:center;background:#9db4c8}
-  .uc video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
-  .uc h2{position:relative;margin:0 16px;padding:.35em .7em;border:3px solid var(--red);color:#fff;text-align:center;font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:800;text-transform:uppercase;font-size:clamp(32px,5vw,76px);line-height:1;letter-spacing:.04em;text-shadow:0 2px 30px rgba(0,32,91,.35)}
-  .uc-k{position:absolute;left:var(--g);bottom:var(--g);margin:0;color:#fff;font:600 13px/1.2 "Barlow",-apple-system,Arial,sans-serif;letter-spacing:.02em;text-shadow:0 1px 6px rgba(0,32,91,.6)}
-  @media (prefers-reduced-motion:reduce){.uc video{display:none}.uc{background:#9db4c8 url(/media/hero.jpg?v=3) center/cover}}
+  canvas{display:block;width:100%;height:44vh;min-height:240px;margin-top:auto;touch-action:pan-y}
 </style>
 </head>
 <body>
-
-<header class="nav" id="nav">
-  <div class="w">
-    <a class="logo" href="/">Esbjug Consult</a>
-    <ul id="lenker">
-      <li><a href="#uc">Services</a></li>
-      <li><a href="#uc">Work</a></li>
-      <li><a href="#uc">Ads</a></li>
-      <li><a href="#uc">Process</a></li>
-      <li><a href="#uc">Packages</a></li>
-      <li><a href="#uc">FAQ</a></li>
-      <li class="kun-m"><a href="#uc">Under Construction</a></li>
-    </ul>
-    <a class="btn btn-r" href="#uc">Under Construction</a>
-    <button class="meny" type="button" aria-expanded="false" aria-controls="lenker" aria-label="Menu">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-    </button>
+<script>document.body.classList.add('forspill');setTimeout(()=>document.body.classList.remove('forspill'),8000)</script>
+<header class="hero">
+  <video class="hero-v" poster="/media/hero.jpg?v=3" autoplay muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1" disablepictureinpicture><source src="/media/hero-720.mp4?v=3" media="(max-width:760px)" type="video/mp4"><source src="/media/hero.mp4?v=3" type="video/mp4"></video>
+  <div class="hero-i">
+  <div class="flyt"><div class="topp gl"><a class="lang" href="/en/" hreflang="en" aria-label="Språk: norsk. Bytt til engelsk"><span class="lang-k" aria-hidden="true"></span><span class="lf no" aria-hidden="true"><svg viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span class="lf gb" aria-hidden="true"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg></span></a>
+  <div class="st"><div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Puls i dag"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg></span></button><span class="st-l"><span class="hp-on">Live fra Apple Watch</span><span class="hp-av">Ikke live akkurat nå</span></span></div><div class="st-i tl-a" hidden data-av data-l="her nå"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">her nå</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><div class="st-i tl-b" hidden data-av data-l="unike besøkende" data-ny="+1 · du er nr. {n}" data-er="Du er nr. {n}" data-var="Du var nr. {n}"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unike besøkende</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><span class="tl-sr"></span></div>
+  </div></div>
+  <div class="scene">
+  <p class="si" aria-label="SuperIntelligens er her"><span class="o" aria-hidden="true"><b>S</b>uper<b>I</b>ntelligens</span> <span class="o e" aria-hidden="true">er her</span></p>
+  </div>
   </div>
 </header>
-
 <main>
-<section class="hero">
-  <!-- The notebook photo widened to 16:9 in the Midjourney editor and upscaled 2x (Subtle), so it fills wide screens sharply. -->
-  <img src="/new/media/hero-wide-1600.jpg" srcset="/new/media/hero-wide-800.jpg 800w, /new/media/hero-wide-1600.jpg 1600w, /new/media/hero-wide.jpg 2560w" sizes="100vw" alt="" fetchpriority="high">
-  <div class="w">
-    <p class="eb">Website agency</p>
-    <h1><span class="l1">Built to</span> <em>bring in jobs.</em></h1>
-    <p>Websites, Google Ads and SEO for businesses that would rather be on site than online. Fixed price, no fuss.</p>
-    <div class="cta">
-      <a class="btn btn-r" href="#uc">Under Construction</a>
-      <a class="btn btn-o" href="#uc">Under Construction</a>
-    </div>
+  <div class="intro">
+  <div class="mono k"><span>&gt; Tidemann Esbjug</span><span>07.10.2026</span><!-- Skjult inntil videre: <a class="kl" href="/login/">Kunde-login &rarr;</a> --></div>
+  <!--EN-MERKNAD-->
+  <h1 aria-label="Hovedbudskapet jeg prøver å rope fra taket på bygninger i disse dager er at kode og design har gått gjennom en revolusjon som ikke må oversees."><span aria-hidden="true">Hovedbudskapet jeg prøver å rope fra taket på bygninger i disse dager er at <span class="kd"><i>kode</i></span> og <span class="ds" data-t="design">design</span> har gått gjennom en revolusjon som ikke må oversees.</span></h1>
+  <p class="b">Å kjøpe nettsider, apper eller digital markedsføring i dag for samme pris som før er absurd. Det er også masse muligheter som tidligere var for dyre til å begi seg ut på.</p>
+  <a class="t" href="mailto:tidemann@esbjugconsult.com">Snakk med meg om alt dette.</a>
   </div>
-</section>
+  <div class="rv" id="jobber">
+  <h2>Jobber med nå</h2>
 
-<section class="uc" id="uc">
-  <video autoplay muted loop playsinline preload="metadata" poster="/media/hero.jpg?v=3" aria-hidden="true" tabindex="-1" disablepictureinpicture><source src="/media/hero-720.mp4?v=3" media="(max-width:760px)" type="video/mp4"><source src="/media/hero.mp4?v=3" type="video/mp4"></video>
-  <h2>Under Construction</h2>
-  <p class="uc-k">Drone Video by Esbjug Consult</p>
-</section>
+  <h4 class="mono k">&gt; Konsultasjon</h4>
+  <section class="p">
+    <h3>Kunde i laksenæringen</h3>
+    <dl>
+      <div><dt>Hva</dt><dd><span class="x" role="img" aria-label="Skjult"></span></dd></div>
+      <div><dt>Pågått</dt><dd data-since="2026-05">Siden mai 2026</dd></div>
+      <div><dt>Størrelse</dt><dd>Enkel konsultasjon i liten skala</dd></div>
+      <div><dt>Jeg gjør</dt><dd>Markedsføringsstrategi og restrukturering</dd></div>
+    </dl>
+    <img class="wide" src="/media/laks.jpg" alt="Laks som hopper, tegnet i gult og svart" loading="lazy" width="1600" height="400">
+    <div class="s">
+      <p>Sammen har vi allerede gjort spennende fremskritt, i stor grad ved hjelp av analyse fra Claude Code.</p>
+      <p>Ved å laste inn Google Ads-tall fra deres eksisterende byrå, fant vi store besparelser som følge av ineffektivitet i targeting og for høye administrasjonsgebyr. Det var en case hvor ledelsen hadde gitt fullstendig tillit til byrået, og jeg tror ikke jeg vil finne denne type besparelser like enkelt i de fleste bedrifter.</p>
+      <p>Vi flyttet Google Ads in-house og kuttet kostnaden betraktelig, uten kvalitetstap. Mitt vederlag utgjorde 25% av den årlige besparelsen som følge av høy effektivitet fra AI-bruk. Vinn-vinn!</p>
+    </div>
+  </section>
+
+  <h4 class="mono k">&gt; Egne prosjekter</h4>
+  <section class="p">
+    <h3>Athena</h3>
+    <dl>
+      <div><dt>Hva</dt><dd>Alarm-app for familier, iPhone og Android</dd></div>
+      <div><dt>Pågått</dt><dd data-since="2026-05">Siden mai 2026</dd></div>
+      <div><dt>Størrelse</dt><dd>55 000 linjer Swift, 10 språk</dd></div>
+      <div><dt>Jeg gjør</dt><dd>Idé, design, kode, reklamefilm, <a href="https://athenaalarm.app/">nettside&nbsp;↗</a></dd></div>
+    </dl>
+    <video src="/media/athena.mp4" poster="/media/athena.jpg" autoplay muted loop playsinline controls preload="metadata" aria-label="Reklamefilm for Athena"></video>
+    <div class="s">
+      <p>Målet mitt med Athena er <b>å redde et liv</b>.</p>
+      <p><i>Det er det hele.</i></p>
+      <p>Ideen kom fra broren til min brors kone, som fortalte meg umiddelbart hvilken app jeg burde bygge etter jeg sa at jeg bygget apper.</p>
+      <p>Han hadde blitt ringt av en gammel dame som hadde falt og ligget på baderomsgulvet i flere dager, etternavnet hans starter med A, og han var øverst.</p>
+      <p>Han sa «du bør bygge en alarm som gjør at det å sjekke inn blir en naturlig del av hverdagen» - og jeg var enig.</p>
+      <p>Selv om ikke alle eldre bruker en alarm, er det mange nok som gjør det til at det kan hjelpe. Det finnes versjoner av appen fra før, men det kan forbedres på mange måter.</p>
+      <p>Han eier noe uvisst halve, en idé er en idé, men jeg har priset det kun til server-kostnad, så vi kommer til å tjene om lag 1 krone og 80 øre hver i måneden per familie som bruker dette. Jeg ville gjerne gjort appen gratis, men jeg vil ha mulighet til å nå så mange som mulig uten å måtte subsidiere server-kostnad.</p>
+      <p>Jeg har lange visjoner for å gjøre den større og gi den mange føtter for branding, men versjon 1 med uttrykket over er snart klar.</p>
+    </div>
+  </section>
+
+  <section class="p">
+    <h3>Resonance Piano Tuner</h3>
+    <dl>
+      <div><dt>Hva</dt><dd>Stemme-app for piano, iPhone, iPad, Mac og Android</dd></div>
+      <div><dt>Pågått</dt><dd data-since="2026-09">Siden september 2026</dd></div>
+      <div><dt>Størrelse</dt><dd>46 000 linjer Swift</dd></div>
+      <div><dt>Jeg gjør</dt><dd>Idé, design, kode, <a href="https://tidemannesbjug.github.io/piano/">nettside&nbsp;↗</a></dd></div>
+    </dl>
+    <a href="https://tidemannesbjug.github.io/piano/"><img src="/media/piano.jpg" alt="Forsiden til Resonance Piano Tuner: «Tune your own piano.»" loading="lazy" width="1280" height="720"></a>
+    <div class="s">
+      <p>Jeg fikk for meg at jeg skulle stemme flygelet til moren min, hvor jeg var nysgjerrig rundt hvordan det fungerte.</p>
+      <p>Jeg spurte Claude om det tekniske rundt det, hvor intuisjonen min var at «hvis et menneske kan høre det, bør jo en mikrofon kunne høre det samme».</p>
+      <p>Jeg ville teste Fable 5.1 som nettopp hadde kommet ut, og ga den en tung oppgave å lage denne appen, som ble veldig bra.</p>
+      <p>Grok build 4.7 kom ut like etter, som scoret best av alle i musikk-teori, og den fant noen justeringer.</p>
+    </div>
+  </section>
+
+  <section class="p">
+    <h3>Stor app – hemmelig</h3>
+    <dl>
+      <div><dt>Hva</dt><dd><span class="x" role="img" aria-label="Skjult"></span><br>iPhone og Android</dd></div>
+      <div><dt>Pågått</dt><dd data-since="2026-04">Siden april 2026</dd></div>
+      <div><dt>Størrelse</dt><dd>204 000 linjer kode</dd></div>
+      <div><dt>Jeg gjør</dt><dd>Alt</dd></div>
+    </dl>
+    <img class="wide" src="/media/ny-app.jpg" alt="To mobiltelefoner side om side, i blått og hvitt" loading="lazy" width="1600" height="400">
+    <div class="n">
+      <div><b>180 000</b><span>linjer Swift i selve appen</span></div>
+      <div><b>24 000</b><span>linjer serverkode</span></div>
+      <div><b>116</b><span>skyfunksjoner: kode som kjører på servere, ikke på telefonen</span></div>
+      <div><b>31</b><span>går av seg selv på timeplan eller når data endres</span></div>
+      <div><b>178</b><span>mediefiler i appen: 124 bilder og 54 videoer</span></div>
+      <div><b>14</b><span>språk, 2 800 tekster hver</span></div>
+    </div>
+    <div class="s">
+      <p>Dette er hovedprosjektet mitt, og jeg har lagt inn mer arbeid enn jeg har gjort tidligere.</p>
+      <p>Jeg har en «produkt først»-filosofi hvor jeg stiller meg selv et spørsmål langs veien</p>
+      <p><em>«Hvis vi kunne fryse tiden, i en million år, hvordan ville vi bygget dette med nåværende teknologi?»</em></p>
+      <p>Eksempler er at jeg har egne versjoner basert på hardware, hvor apper ofte sier «det blir for mye arbeid å ta med de gamle telefonene», men jeg tror denne appen vil gjøre godt, og jeg vil nå så mange som mulig, så jeg har bygget om nøkkelfunksjoner for å fungere på tvers av hardware, fra iPhone 8 til 18 Pro Max, hvor jeg ikke degraderer brukeropplevelsen for de med moderne telefoner - som gjør dette til mye arbeid på tvers av iPhone og Android.</p>
+      <p>Jeg ser ikke etter investorer, men jeg er ute etter konsulent-arbeid for å gi meg runway, og er blitt veldig kyndig i iPhone, variasjon i modeller og så og si alle funksjoner tenkelig.</p>
+      <p>Målet er å bygge den beste appen i verdenshistorien til det jeg gjør, og jeg tror jeg gjør det.</p>
+      <p><em class="i">Dette er ikke en "Uber" eller "Instagram" stor app, ikke noe revolusjonerende., men den er stor å jobbe med.</em></p>
+    </div>
+  </section>
+
+  <h2>Nylig utførte prosjekter</h2>
+
+  <section class="p">
+    <h3>Operasjonell IT-sikkerhet for hacket familie</h3>
+    <img class="wide" src="/media/ny-sikkerhet.jpg" alt="Hengelås i blått og hvitt" loading="lazy" width="1600" height="400">
+    <div class="s">
+      <p>En bekjent kom til meg med en case hvor en venn av ham hadde fått noen av kontoene sine hacket, uhyggelige beskjeder, og var veldig bekymret for overvåkning og videre hacking.</p>
+      <p>Jeg sjekket mange systemer og nettverk etter trusler, med stor hjelp av et system jeg bygget med Claude Code, med verktøy som LuLu og KnockKnock for å lage rapporter kjørt gjennom Claude Code, i tillegg til et eget verktøy jeg bygget ved navn ACHILLES.</p>
+      <p>Når sikkerheten først faller føles alt som en trussel, og del av jobben var å lytte, utdanne kunden rundt angrepsmuligheter, og å bygge ut nye systemer helt fra bunn.</p>
+      <p>Vi satt opp nye enheter sammen og opprettet nye kontoer med sikre metoder.</p>
+      <p>Proton, Starlink, Sikringsmodus, dedikerte Revolut-kort, flere telefon-nummer, flere e-post-addresser, fysisk passordhåndtering.</p>
+      <p>Vi gikk gjennom operasjonell sikkerhet i innstillinger og tilganger på iPhone.</p>
+      <p>Det var en gradvis prossess, hvor vi steg etter steg opprettet brukere for å returnere til en vanlig og sikker hverdag.</p>
+      <p>Det var viktig at kunden kunne fortsette å bruke systemene kunden var vandt med, og vi gjorde derfor ikke oppsett av f.eks Tails og Monero.</p>
+      <p>Jeg har likevel gjort klar en Tails-usb til kunden, litt for å symbolsk ha gjort det jeg evner.</p>
+      <!-- Venter på sitat fra kunden:
+      <p>Kunden sier:</p>
+      <p><i>« Venter på sitat »</i></p>
+      -->
+      <p>På grunn av oppdragets natur holder jeg kundens identitet skjult.</p>
+      <p><b>Interessert i denne type arbeid?</b></p>
+      <p>Jeg liker godt caser som dette, fordi det tillater meg å roe menneskers hverdag, som er meningsfullt.</p>
+      <p>Det gjør meg også til en delvis aktivist når det gjelder rett til digitalt privatliv.</p>
+    </div>
+    <aside class="tanke">
+      <p class="tk-t">En tanke om dette, morgen 1. oktober.</p>
+      <p>Denne artikkelen er fra 29. september.</p>
+      <p><a href="https://www.anthropic.com/research/glm-5-3-and-the-spread-of-advanced-cyber-capabilities" target="_blank" rel="noopener">https://www.anthropic.com/research/glm-5-3-and-the-spread-of-advanced-cyber-capabilities</a></p>
+      <p>…og viser hvordan vi nærmer oss et punkt hvor cyber-angrep med AI kan bli langt vanligere.</p>
+      <p>Dette gjør det å være forberedt når det kommer til cyber-angrep noe å tenke på.</p>
+    </aside>
+  </section>
+
+  <div class="mono m">
+    <a href="#" class="ck-endre">Informasjonskapsler</a>
+  </div>
+  </div>
 </main>
-
-<section class="ck" id="cookies" role="dialog" aria-label="Cookies" hidden>
-  <button type="button" class="ck-x" aria-label="Close without accepting">×</button>
-  <p><b>Cookies</b>I use cookies for the chat and to see how the site is used, so it can get better. <button type="button" class="ck-mer" aria-expanded="false">Read more</button></p>
-  <p class="ck-full" hidden>The chat uses one cookie to recognise you between visits, and shows me roughly where you are (city, based on your IP address) and where on the page you are while you're here. The visit is recorded (scrolling and clicks, never what you type) so I can make the site better. Recordings are deleted after 30 days. When you're on the site, I can see that someone is here, roughly where (city) and on what device. No ads, and no tracking outside this site.</p>
-  <div><button type="button" class="ck-ja">Accept</button><button type="button" class="ck-nei">Only necessary</button></div>
+<section class="ck" id="cookies" role="dialog" aria-label="Informasjonskapsler" hidden>
+  <button type="button" class="ck-x" aria-label="Lukk uten å godta">×</button>
+  <p><b>Informasjonskapsler</b>Jeg bruker informasjonskapsler til chatten og til å se hvordan siden brukes, så den kan bli bedre. <button type="button" class="ck-mer" aria-expanded="false">Les mer</button></p>
+  <p class="ck-full" hidden>Chatten bruker én informasjonskapsel for å kjenne deg igjen mellom besøk, og viser meg omtrentlig hvor du er (by, ut fra IP-adressen) og hvor på siden du er mens du er her. Besøket tas opp (rulling og klikk, aldri det du skriver), så jeg kan gjøre siden bedre. Opptak slettes etter 30 dager. Når du er på siden, ser jeg at noen er her, omtrent hvor (by) og hvilken enhet. Ingen reklame, og ingen sporing utenfor denne siden.</p>
+  <div><button type="button" class="ck-ja">Godta</button><button type="button" class="ck-nei">Bare nødvendige</button></div>
 </section>
-<section class="hpp" role="dialog" aria-modal="true" aria-label="Heart rate today" hidden data-dag="heartbeats today" data-uke="heartbeats in the last 7 days" data-mnd="heartbeats in the last 30 days" data-t="h" data-min="min">
+<section class="hpp" role="dialog" aria-modal="true" aria-label="Puls i dag" hidden data-dag="hjerteslag i dag" data-uke="hjerteslag siste 7 dager" data-mnd="hjerteslag siste 30 dager" data-t="t" data-min="min">
   <div class="hpp-in">
-    <div class="hpp-top mono"><div class="hpp-tl"><span class="hpp-live"><i></i><span class="hpp-s">Streaming live from Apple Watch</span></span><span class="hpp-dt"><b class="dt-d"></b><b class="dt-k"></b></span></div><button class="hpp-x" type="button" aria-label="Close">&times;</button></div>
-    <div class="hpp-hero"><div class="hpp-h"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hpp-n">00</b><span class="hpp-u">bpm</span><span class="hpp-off">Not live right now</span></div><p class="hpp-cnt"><b class="hpp-cn">0</b><span class="hpp-cl">heartbeats today</span></p></div>
+    <div class="hpp-top mono"><div class="hpp-tl"><span class="hpp-live"><i></i><span class="hpp-s">Strømmes live fra Apple Watch</span></span><span class="hpp-dt"><b class="dt-d"></b><b class="dt-k"></b></span></div><button class="hpp-x" type="button" aria-label="Lukk">&times;</button></div>
+    <div class="hpp-hero"><div class="hpp-h"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hpp-n">00</b><span class="hpp-u">bpm</span><span class="hpp-off">Ikke live akkurat nå</span></div><p class="hpp-cnt"><b class="hpp-cn">0</b><span class="hpp-cl">hjerteslag i dag</span></p></div>
     <canvas class="hpp-ekg" aria-hidden="true"></canvas>
-    <div class="hpp-tabs" role="tablist"><button type="button" role="tab" data-r="dag" aria-selected="true">Today</button><button type="button" role="tab" data-r="uke" aria-selected="false">7 days</button><button type="button" role="tab" data-r="mnd" aria-selected="false">30 days</button></div>
-    <div class="hpp-c" tabindex="0" role="slider" aria-valuemin="0" aria-label="Graph of the heart rate. Use the arrow keys to step through each point."><svg aria-hidden="true"></svg><div class="hpp-t" hidden></div></div>
-    <div class="hpp-k"><div><span>Lowest</span><b class="k-lo">&ndash;</b></div><div><span>Average</span><b class="k-av">&ndash;</b></div><div><span>Highest</span><b class="k-hi">&ndash;</b></div><div><span>Time measured</span><b class="k-fr">&ndash;</b></div></div>
+    <div class="hpp-tabs" role="tablist"><button type="button" role="tab" data-r="dag" aria-selected="true">I dag</button><button type="button" role="tab" data-r="uke" aria-selected="false">7 dager</button><button type="button" role="tab" data-r="mnd" aria-selected="false">30 dager</button></div>
+    <div class="hpp-c" tabindex="0" role="slider" aria-valuemin="0" aria-label="Graf over pulsen. Bruk piltastene for å se hvert punkt."><svg aria-hidden="true"></svg><div class="hpp-t" hidden></div></div>
+    <div class="hpp-k"><div><span>Lavest</span><b class="k-lo">&ndash;</b></div><div><span>Snitt</span><b class="k-av">&ndash;</b></div><div><span>Høyest</span><b class="k-hi">&ndash;</b></div><div><span>Målt tid</span><b class="k-fr">&ndash;</b></div></div>
   </div>
 </section>
 <div class="ch" id="chat">
-  <button class="ch-b" type="button" aria-label="Chat with Tidemann" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Chat<span class="zz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span><i class="ch-n" hidden></i></button>
-  <div class="ch-pill" hidden><button type="button" class="cp-open" aria-label="Open the chat"><i></i><span class="cp-t">In a call with Tidemann</span></button><button type="button" class="cp-mute" aria-label="Mute"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><button type="button" class="cp-end" aria-label="Hang up"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 9c-3.3 0-6.3.9-8.6 2.5-.5.4-.6 1-.3 1.5l1.6 2.5c.3.5.9.7 1.4.5l2.8-1c.5-.2.8-.7.8-1.2V12c1.4-.4 3-.4 4.6 0v1.8c0 .5.3 1 .8 1.2l2.8 1c.5.2 1.1 0 1.4-.5l1.6-2.5c.3-.5.2-1.1-.3-1.5C18.3 9.9 15.3 9 12 9z"/></svg></button></div>
-  <section class="ch-p" role="dialog" aria-label="Chat with Tidemann" hidden>
-    <div class="ch-h"><button class="ch-x" type="button" aria-label="Close chat">×</button><div class="ch-t"><b>Tidemann Esbjug</b><span class="ch-s"><i></i><span class="zz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span><span>Don't hesitate! Go, go, go!</span></span></div><div class="ch-a"><button class="ch-ring" type="button" aria-label="Call Tidemann" title="Call Tidemann" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></button><div class="puls"><div class="st"><div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Heart rate today"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg></span></button><span class="st-l"><span class="hp-on">Live from Apple Watch</span><span class="hp-av">Not live right now</span></span></div><div class="st-i tl-a" hidden data-av data-l="here now"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">here now</span><span class="tl-deg" aria-hidden="true">+1 · that's you</span></div></div><div class="st-i tl-b" hidden data-av data-l="unique visitors" data-ny="+1 · you are no. {n}" data-er="You are no. {n}" data-var="You were no. {n}"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unique visitors</span><span class="tl-deg" aria-hidden="true">+1 · that's you</span></div></div><span class="tl-sr"></span></div></div><button class="ch-del" type="button">Delete conversation</button></div></div>
-    <div class="ch-call" hidden><div class="cc-i"><span class="cc-dot"></span><div><b class="cc-t">Tidemann is calling you</b><span class="cc-s">Voice call in the browser</span></div></div><div class="cc-b"><button type="button" class="cc-ans">Answer</button><button type="button" class="cc-dec">Decline</button><button type="button" class="cc-mute" hidden>Mute</button><button type="button" class="cc-min" hidden>Minimise</button><button type="button" class="cc-end" hidden>Hang up</button></div><audio class="cc-audio" autoplay playsinline></audio></div>
+  <button class="ch-b" type="button" aria-label="Chat med Tidemann" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Chat<span class="zz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span><i class="ch-n" hidden></i></button>
+  <div class="ch-pill" hidden><button type="button" class="cp-open" aria-label="Åpne chatten"><i></i><span class="cp-t">I samtale med Tidemann</span></button><button type="button" class="cp-mute" aria-label="Lyd av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><button type="button" class="cp-end" aria-label="Legg på"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 9c-3.3 0-6.3.9-8.6 2.5-.5.4-.6 1-.3 1.5l1.6 2.5c.3.5.9.7 1.4.5l2.8-1c.5-.2.8-.7.8-1.2V12c1.4-.4 3-.4 4.6 0v1.8c0 .5.3 1 .8 1.2l2.8 1c.5.2 1.1 0 1.4-.5l1.6-2.5c.3-.5.2-1.1-.3-1.5C18.3 9.9 15.3 9 12 9z"/></svg></button></div>
+  <section class="ch-p" role="dialog" aria-label="Chat med Tidemann" hidden>
+    <div class="ch-h"><button class="ch-x" type="button" aria-label="Lukk chat">×</button><div class="ch-t"><b>Tidemann Esbjug</b><span class="ch-s"><i></i><span class="zz" aria-hidden="true"><i>z</i><i>z</i><i>z</i></span><span>Ikke nøl! Go, go, go!</span></span></div><div class="ch-a"><button class="ch-ring" type="button" aria-label="Ring Tidemann" title="Ring Tidemann" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>Ring</button><button class="ch-del" type="button">Slett samtalen</button></div></div>
+    <div class="ch-call" hidden><div class="cc-i"><span class="cc-dot"></span><div><b class="cc-t">Tidemann ringer deg</b><span class="cc-s">Lydsamtale i nettleseren</span></div></div><div class="cc-b"><button type="button" class="cc-ans">Svar</button><button type="button" class="cc-dec">Avslå</button><button type="button" class="cc-mute" hidden>Lyd av</button><button type="button" class="cc-min" hidden>Minimer</button><button type="button" class="cc-end" hidden>Legg på</button></div><audio class="cc-audio" autoplay playsinline></audio></div>
     <div class="ch-m" aria-live="polite"></div>
-    <a class="ch-mail" href="mailto:tidemann@esbjugconsult.com" hidden>Send an email instead?</a>
-    <div class="ch-ck" hidden><p>Want the chat to remember you next time? Then I use cookies for the chat and to see how the site is used.</p><div><button type="button" class="ch-ck-ja">Yes, accept</button><button type="button" class="ch-ck-nei">No thanks</button></div></div>
-    <form class="ch-f"><span class="ch-more" hidden><button type="button" class="ch-att" aria-label="Attach file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5l-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l8.6-8.6a3.7 3.7 0 0 1 5.2 5.2l-8.6 8.6a1.8 1.8 0 0 1-2.6-2.6l7.9-7.9"/></svg></button><button type="button" class="ch-mic" aria-label="Record a voice message"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><input type="file" class="ch-file" hidden></span><textarea rows="1" maxlength="2000" placeholder="Write a message …" aria-label="Message"></textarea><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
+    <a class="ch-mail" href="mailto:tidemann@esbjugconsult.com" hidden>Sende mail istedet?</a>
+    <div class="ch-ck" hidden><p>Vil du at chatten skal huske deg til neste gang? Da bruker jeg informasjonskapsler til chatten og til å se hvordan siden brukes.</p><div><button type="button" class="ch-ck-ja">Ja, godta</button><button type="button" class="ch-ck-nei">Nei takk</button></div></div>
+    <form class="ch-f"><span class="ch-more" hidden><button type="button" class="ch-att" aria-label="Legg ved fil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5l-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l8.6-8.6a3.7 3.7 0 0 1 5.2 5.2l-8.6 8.6a1.8 1.8 0 0 1-2.6-2.6l7.9-7.9"/></svg></button><button type="button" class="ch-mic" aria-label="Spill inn lydmelding"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><input type="file" class="ch-file" hidden></span><textarea rows="1" maxlength="2000" placeholder="Skriv en melding …" aria-label="Melding"></textarea><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
   </section>
 </div>
-
+<canvas id="c" aria-hidden="true"></canvas>
 <script>
-(function(){
-  var nav = document.getElementById("nav"), knapp = nav.querySelector(".meny"), sti = knapp.querySelector("path");
-  // The menu gets a white background once you scroll past the top of the hero.
-  function rull(){ nav.classList.toggle("fast", scrollY > 40); }
-  addEventListener("scroll", rull, { passive: true }); rull();
-  // Mobile menu
-  function lukk(){ nav.classList.remove("apen"); knapp.setAttribute("aria-expanded", "false"); sti.setAttribute("d", "M4 7h16M4 12h16M4 17h16"); }
-  knapp.addEventListener("click", function(){
-    var apen = nav.classList.toggle("apen");
-    knapp.setAttribute("aria-expanded", String(apen));
-    sti.setAttribute("d", apen ? "M6 6l12 12M18 6 6 18" : "M4 7h16M4 12h16M4 17h16");
-  });
-  nav.querySelectorAll("ul a").forEach(function(a){ a.addEventListener("click", lukk); });
-  addEventListener("keydown", function(e){ if (e.key === "Escape") lukk(); });
-
-  var rolig = matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  if (!("IntersectionObserver" in window)) { document.querySelectorAll(".inn").forEach(function(e){ e.classList.add("vis"); }); return; }
-  var io = new IntersectionObserver(function(es){
-    es.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add("vis"); io.unobserve(e.target); } });
-  }, { rootMargin: "0px 0px -8% 0px" });
-  document.querySelectorAll(".inn").forEach(function(e){ io.observe(e); });
-
-  // The example video only loads once it is on screen, and pauses when it leaves.
-  var lat = new IntersectionObserver(function(es){
-    es.forEach(function(e){ if (rolig) return; if (e.isIntersecting) e.target.play().catch(function(){}); else e.target.pause(); });
-  }, { threshold: .25 });
-  document.querySelectorAll("video.lat").forEach(function(v){ lat.observe(v); });
-})();
-</script>
-<script>
-// Pulse, visitor count and chat: copied from the front page (en/index.html). Change it there first, then copy over.
 // Tidemanns egne enheter: åpne siden én gang med ?eier, så teller ikke denne nettleseren som besøkende og gir ikke varsel.
 (()=>{const q=new URLSearchParams(location.search);if(!q.has('eier'))return;document.cookie='esbjug_eier=1; Max-Age=31536000; Path=/; SameSite=Lax; Secure';
   q.delete('eier');history.replaceState(null,'',location.pathname+(q.toString()?'?'+q:'')+location.hash);
   const t=document.createElement('div');t.textContent='Denne nettleseren er merket som din. Den teller ikke som besøkende.';
   t.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:2000;background:#00205B;color:#fff;padding:10px 16px;border-radius:999px;font:600 14px -apple-system,Arial,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.25)';
   addEventListener('DOMContentLoaded',()=>{document.body.append(t);setTimeout(()=>t.remove(),5000)})})();
+// Vis «Jobber med nå» ved første scroll, hjul, sveip, tast eller trykk på pilen.
+(()=>{const r=document.documentElement,show=()=>r.classList.add('vis');
+if(scrollY>2||location.hash||r.classList.contains('speil'))show();
+addEventListener('scroll',()=>{if(scrollY>2)show()},{passive:true});
+['wheel','touchmove'].forEach(t=>addEventListener(t,show,{passive:true,once:true}));
+addEventListener('keydown',e=>{if(['ArrowDown','PageDown','End',' '].includes(e.key))show()});})();
 // Puls øverst, egen blokk: kjører også i speilet i appen. Chatten under gir den nye målinger med hrTop(bpm) og sier fra når socketen er åpen.
 const hrTop=(()=>{
 // Live fra Tidemanns Apple Watch (bare mens han deler den) og dagens graf, ett snitt per minutt i Oslo-døgnet.
@@ -861,6 +760,10 @@ const teller=(()=>{const a=document.querySelector('.tl-a'),u=document.querySelec
   const fd=new Intl.DateTimeFormat('nb-NO',{timeZone:'Europe/Oslo',day:'2-digit',month:'2-digit'}),fk=new Intl.DateTimeFormat('nb-NO',{timeZone:'Europe/Oslo',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'});
   const sett=()=>{const n=new Date();d.textContent=fd.format(n).replace(/\.$/,'');k.textContent=fk.format(n).replace(/\./g,':')};
   const tikk=()=>{sett();setTimeout(tikk,1000-Date.now()%1000)};tikk()})();
+// Språkbryteren: kula glir over før siden byttes (med Cmd/Ctrl-klikk åpnes den andre siden som vanlig).
+document.querySelectorAll('.lang').forEach(a=>a.addEventListener('click',e=>{if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.button)return;e.preventDefault();
+  a.classList.add('gaar');setTimeout(()=>{location.href=a.href},matchMedia('(prefers-reduced-motion: reduce)').matches?0:300)}));
+addEventListener('pageshow',e=>{if(e.persisted)document.querySelectorAll('.lang.gaar').forEach(a=>a.classList.remove('gaar'))});
 // Vist fra forhåndslasting (Google, Chrome): nettleseren sendte ingen ny forespørsel ved klikket, så siden melder besøket selv.
 (()=>{if(document.documentElement.classList.contains('speil'))return;const besok=()=>{const n=performance.getEntriesByType('navigation')[0];
   if(n&&(n.deliveryType==='navigational-prefetch'||n.activationStart>0))fetch('/chat/besok',{method:'POST'}).catch(()=>{})};
@@ -900,7 +803,7 @@ document.querySelectorAll('.ck-endre').forEach(a=>a.onclick=e=>{e.preventDefault
 // × lukker uten samtykke og uten å lagre noe: ingenting samles inn, og banneret kommer igjen neste besøk.
 let lukket=false;try{lukket=sessionStorage.getItem('esbjug_ck_lukket')==='1'}catch{}
 cb.querySelector('.ck-x').onclick=()=>{cb.hidden=true;try{sessionStorage.setItem('esbjug_ck_lukket','1')}catch{};if(!pan.hidden)askCk()};
-cb.querySelector('.ck-mer').onclick=e=>{const f=cb.querySelector('.ck-full'),o=f.hidden;f.hidden=!o;e.target.setAttribute('aria-expanded',o);e.target.textContent=o?'Show less':'Read more'};
+cb.querySelector('.ck-mer').onclick=e=>{const f=cb.querySelector('.ck-full'),o=f.hidden;f.hidden=!o;e.target.setAttribute('aria-expanded',o);e.target.textContent=o?'Vis mindre':'Les mer'};
 if(!consent&&!lukket)cb.hidden=false;
 let ws,wait=1000,seen=new Set(),unread=0,lastTyping=0;
 const pill=$('.ch-pill'),pillT=$('.cp-t');
@@ -916,7 +819,7 @@ const open=o=>{btn.setAttribute('aria-expanded',o);setTimeout(()=>typeof lqueue=
   if(pan.hidden){laas(true);pan.hidden=false;btn.hidden=true;pill.hidden=true;pan.classList.remove('out');pan.classList.add('in');pan.addEventListener('animationend',()=>pan.classList.remove('in'),{once:true})}
   if(o){askCk();unread=0;badge.hidden=true;box.scrollTop=box.scrollHeight;setTimeout(()=>ta.focus({preventScroll:true}),50)}};
 btn.onclick=()=>{open(true);if(!ws)connect()};
-// «Talk to me about all of this.» åpner chatten, med «Sende mail istedet?» som vei videre til e-post.
+// «Snakk med meg om alt dette.» åpner chatten, med «Sende mail istedet?» som vei videre til e-post.
 // Knappen vises bare når chatten er åpnet derfra, ikke fra chatknappen.
 const mailBtn=$('.ch-mail');
 // Har du sagt nei til informasjonskapsler (eller lukket banneret), spør chatten én gang per fane om den kan huske deg.
@@ -925,11 +828,11 @@ const ckc=$('.ch-ck');let ckNei=false;try{ckNei=sessionStorage.getItem('esbjug_c
 const askCk=()=>{ckc.hidden=consent==='ja'||!cb.hidden||ckNei};
 ckc.querySelector('.ch-ck-ja').onclick=()=>{decide(true);ckc.hidden=true;ta.focus({preventScroll:true})};
 ckc.querySelector('.ch-ck-nei').onclick=()=>{ckNei=true;ckc.hidden=true;try{sessionStorage.setItem('esbjug_ck_chat','nei')}catch{};ta.focus({preventScroll:true})};
-document.querySelectorAll('.aapne-chat').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();mailBtn.hidden=false;open(true);if(!ws)connect()}));
+document.querySelector('a.t').addEventListener('click',e=>{e.preventDefault();mailBtn.hidden=false;open(true);if(!ws)connect()});
 // «Slett samtalen»: to trykk, så slettes alt hos Tidemann og på serveren, og du får en ny, tom samtale.
 const del=$('.ch-del');let armed=0;
-del.onclick=()=>{if(Date.now()-armed>3000){armed=Date.now();del.textContent='Tap again to delete';setTimeout(()=>{if(Date.now()-armed>=3000)del.textContent='Delete conversation'},3100);return}
-  armed=0;del.textContent='Delete conversation';if(ws&&ws.readyState===1)ws.send(JSON.stringify({t:'forget'}));else cleared()};
+del.onclick=()=>{if(Date.now()-armed>3000){armed=Date.now();del.textContent='Trykk igjen for å slette';setTimeout(()=>{if(Date.now()-armed>=3000)del.textContent='Slett samtalen'},3100);return}
+  armed=0;del.textContent='Slett samtalen';if(ws&&ws.readyState===1)ws.send(JSON.stringify({t:'forget'}));else cleared()};
 const cleared=()=>{box.querySelectorAll('p:not(.hint)').forEach(p=>p.remove());seen.clear();vid=crypto.randomUUID();if(consent==='ja')setC('esbjug_id',vid);
   if(ws){ws.onclose=null;ws.close();ws=null;connect()}};$('.ch-x').onclick=()=>{focus(false);open(false);mailBtn.hidden=true};
 // Krysset tar ikke fokus fra skrivefeltet, så tastaturet ikke begynner å gå ned før panelet lukkes.
@@ -940,7 +843,7 @@ const hehe=()=>{const o=document.createElement('div');o.className='hh';o.setAttr
 const add=(m,live)=>{if(seen.has(m.id))return;seen.add(m.id);if(live&&m.owner&&/^\s*hehe[!.\s]*$/i.test(m.text))hehe();const p=document.createElement('p');p.className=m.owner?'him':'me';if(m.kind==='file')fileEl(p,m);else p.textContent=m.text;box.append(p);box.scrollTop=box.scrollHeight;
   if(live&&m.owner&&pan.hidden){unread++;badge.textContent=unread;badge.hidden=false;open(true)}};
 const focus=on=>document.documentElement.classList.toggle('focus',on);
-const control=(a,on)=>{if(a==='focus'){if(on)open(true);focus(on)}else if(a==='extras'){extras(on);if(on)open(true)}else if(a==='ring'){lov=on;ringBtn()}else if(a==='live'){live=on;if(on)lsend()}else if(a==='call'){if(on){if(cs==='ut')koble();else if(!cs)ringing()}else if(cs&&!pc)endCall(cs==='ut'?'Tidemann can\'t take the call right now':'Tidemann hung up',cs==='ut'?'Feel free to send a message':'')}};
+const control=(a,on)=>{if(a==='focus'){if(on)open(true);focus(on)}else if(a==='extras'){extras(on);if(on)open(true)}else if(a==='ring'){lov=on;ringBtn()}else if(a==='live'){live=on;if(on)lsend()}else if(a==='call'){if(on){if(cs==='ut')koble();else if(!cs)ringing()}else if(cs&&!pc)endCall(cs==='ut'?'Tidemann kan ikke ta telefonen nå':'Tidemann la på',cs==='ut'?'Skriv gjerne en melding':'')}};
 const kb=n=>n>1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' kB';
 const bottom=()=>{box.scrollTop=box.scrollHeight};
 const fileEl=(p,m)=>{p.classList.add('file');const src='/chat/file/'+m.file;setTimeout(()=>{p.querySelectorAll('img,video,audio').forEach(e=>{e.addEventListener('load',bottom);e.addEventListener('loadedmetadata',bottom)})})
@@ -952,9 +855,9 @@ const open_=u=>window.open(u,'_blank','noopener');
 // «Mer chat» (slås på av Tidemann): vedlegg og lydopptak.
 const more=$('.ch-more'),fin=$('.ch-file'),mic=$('.ch-mic');
 const extras=on=>{more.hidden=!on};
-const up=async(blob,name)=>{const tmp=document.createElement('p');tmp.className='me up';tmp.textContent='Sending '+name+' …';box.append(tmp);box.scrollTop=box.scrollHeight;
+const up=async(blob,name)=>{const tmp=document.createElement('p');tmp.className='me up';tmp.textContent='Sender '+name+' …';box.append(tmp);box.scrollTop=box.scrollHeight;
   try{const r=await fetch('/chat/upload?vid='+encodeURIComponent(vid)+'&name='+encodeURIComponent(name),{method:'POST',headers:{'Content-Type':blob.type||'application/octet-stream'},body:blob});
-    if(!r.ok)throw new Error(r.status===413?'The file is too large (max 25 MB).':'Could not send the file.');tmp.remove()}
+    if(!r.ok)throw new Error(r.status===413?'Filen er for stor (maks 25 MB).':'Kunne ikke sende filen.');tmp.remove()}
   catch(e){tmp.textContent=e.message;tmp.classList.add('err')}};
 $('.ch-att').onclick=()=>fin.click();
 fin.onchange=()=>{[...fin.files].forEach(f=>up(f,f.name));fin.value=''};
@@ -965,11 +868,11 @@ mic.onclick=async()=>{
     const type=['audio/mp4','audio/webm;codecs=opus','audio/webm'].find(t=>MediaRecorder.isTypeSupported(t))||'';
     rec=new MediaRecorder(st,type?{mimeType:type}:{});chunks=[];
     rec.ondataavailable=e=>chunks.push(e.data);
-    rec.onstop=()=>{st.getTracks().forEach(x=>x.stop());clearInterval(tick);mic.classList.remove('rec');ta.placeholder='Write a message …';
-      const b=new Blob(chunks,{type:rec.mimeType.split(';')[0]});rec=null;if(b.size>800)up(b,'Voice message.'+(b.type.includes('mp4')?'m4a':'webm'))};
+    rec.onstop=()=>{st.getTracks().forEach(x=>x.stop());clearInterval(tick);mic.classList.remove('rec');ta.placeholder='Skriv en melding …';
+      const b=new Blob(chunks,{type:rec.mimeType.split(';')[0]});rec=null;if(b.size>800)up(b,'Lydmelding.'+(b.type.includes('mp4')?'m4a':'webm'))};
     rec.start();t0=Date.now();mic.classList.add('rec');
-    const show=()=>{const s=Math.floor((Date.now()-t0)/1000);ta.placeholder='Recording '+Math.floor(s/60)+':'+String(s%60).padStart(2,'0')+' · tap the microphone to send'};show();tick=setInterval(show,500)}
-  catch{ta.placeholder='Could not access the microphone.'}};
+    const show=()=>{const s=Math.floor((Date.now()-t0)/1000);ta.placeholder='Tar opp '+Math.floor(s/60)+':'+String(s%60).padStart(2,'0')+' · trykk på mikrofonen for å sende'};show();tick=setInterval(show,500)}
+  catch{ta.placeholder='Fikk ikke tilgang til mikrofonen.'}};
 // Lydsamtale (WebRTC). Tidemann ringer fra appen, eller du ringer ham med «Ring» øverst i chatten (da ringer telefonen
 // og klokka hans). Lyden går direkte mellom nettleseren og telefonen hans.
 const ICE=[{urls:['stun:stun.cloudflare.com:3478','stun:stun.l.google.com:19302']}];
@@ -982,51 +885,51 @@ const bMin=$('.cc-min');
 const btns=(...show)=>[bAns,bDec,bMute,bMin,bEnd].forEach(b=>b.hidden=!show.includes(b));
 // «Ring» vises bare når Tidemann har slått det på for deg i appen (ctl «ring»), han er tilgjengelig, appen hans kan ta imot (serveren sier fra) og ingen samtale pågår.
 const ringBtn=()=>{bRing.hidden=!(lov&&kanRinge&&stat==='available'&&!cs&&ws&&ws.readyState===1)};
-const ringing=()=>{cs='inn';ringBtn();open(true);cc.hidden=false;cc.classList.add('ring');ccT.textContent='Tidemann is calling you';ccS.textContent='Voice call in the browser';btns(bAns,bDec)};
+const ringing=()=>{cs='inn';ringBtn();open(true);cc.hidden=false;cc.classList.add('ring');ccT.textContent='Tidemann ringer deg';ccS.textContent='Lydsamtale i nettleseren';btns(bAns,bDec)};
 const endCall=(msg,sub)=>{cs='';clearTimeout(callT);ringBtn();if(pc){pc.close();pc=null}if(!pill.hidden){pill.hidden=true;btn.hidden=false}if(local){local.getTracks().forEach(t=>t.stop());local=null}clearInterval(clock);cc.classList.remove('ring');
   if(bMute.classList.contains('on'))bMute.click();$('.cp-mute').classList.remove('on');
-  if(cc.hidden)return;ccT.textContent=msg||'The call has ended';ccS.textContent=sub||'';btns();setTimeout(()=>{if(!cs)cc.hidden=true},sub?5000:2500)};
+  if(cc.hidden)return;ccT.textContent=msg||'Samtalen er avsluttet';ccS.textContent=sub||'';btns();setTimeout(()=>{if(!cs)cc.hidden=true},sub?5000:2500)};
 const getMic=()=>navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
 // Mikrofonen er klar og begge har sagt ja: «ready» til appen, som sender tilbudet.
-const koble=async()=>{cs='kobler';cc.classList.remove('ring');ccT.textContent='Connecting …';ccS.textContent='';btns(bEnd);
-  clearTimeout(callT);callT=setTimeout(()=>{if(cs==='kobler'){rtc({type:'bye'});endCall('Could not connect the call')}},40000);
+const koble=async()=>{cs='kobler';cc.classList.remove('ring');ccT.textContent='Kobler til …';ccS.textContent='';btns(bEnd);
+  clearTimeout(callT);callT=setTimeout(()=>{if(cs==='kobler'){rtc({type:'bye'});endCall('Fikk ikke koblet til samtalen')}},40000);
   const ice=await getIce();if(cs!=='kobler'||!local)return;
   pc=new RTCPeerConnection({iceServers:ice});local.getTracks().forEach(t=>pc.addTrack(t,local));
   pc.onicecandidate=e=>{if(e.candidate)rtc({cand:e.candidate})};
   pc.ontrack=e=>{ccA.srcObject=e.streams[0];ccA.play().catch(()=>{})};
   pc.onconnectionstatechange=()=>{const st=pc&&pc.connectionState;
-    if(st==='connected'){cs='på';clearTimeout(callT);ccT.textContent='In a call with Tidemann';btns(bMute,bMin,bEnd);t1=Date.now();clearInterval(clock);
-      clock=setInterval(()=>{const x=Math.floor((Date.now()-t1)/1000),tt=Math.floor(x/60)+':'+String(x%60).padStart(2,'0');ccS.textContent=tt;pillT.textContent='In a call · '+tt},500)}
-    else if(st==='failed')endCall('Could not connect the call')};
+    if(st==='connected'){cs='på';clearTimeout(callT);ccT.textContent='I samtale med Tidemann';btns(bMute,bMin,bEnd);t1=Date.now();clearInterval(clock);
+      clock=setInterval(()=>{const x=Math.floor((Date.now()-t1)/1000),tt=Math.floor(x/60)+':'+String(x%60).padStart(2,'0');ccS.textContent=tt;pillT.textContent='I samtale · '+tt},500)}
+    else if(st==='failed')endCall('Fikk ikke koblet til samtalen')};
   rtc({type:'ready'})};
-bAns.onclick=async()=>{cs='kobler';cc.classList.remove('ring');ccT.textContent='Connecting …';ccS.textContent='';btns(bEnd);
+bAns.onclick=async()=>{cs='kobler';cc.classList.remove('ring');ccT.textContent='Kobler til …';ccS.textContent='';btns(bEnd);
   try{local=await getMic()}
-  catch{rtc({type:'decline',reason:'mic'});endCall('Could not access the microphone');return}
+  catch{rtc({type:'decline',reason:'mic'});endCall('Fikk ikke tilgang til mikrofonen');return}
   if(cs!=='kobler'){local.getTracks().forEach(t=>t.stop());local=null;return}
   koble()};
-bDec.onclick=()=>{rtc({type:'decline'});endCall('You declined the call')};
+bDec.onclick=()=>{rtc({type:'decline'});endCall('Du avslo samtalen')};
 // Du ringer Tidemann: først mikrofonen (nettleseren spør mens du trykker), så ringer telefonen og klokka hans.
-bRing.onclick=async()=>{if(cs||!ws||ws.readyState!==1)return;cs='ut';ringBtn();open(true);cc.hidden=false;cc.classList.remove('ring');ccT.textContent='Connecting …';ccS.textContent='';btns(bEnd);
-  try{local=await getMic()}catch{endCall('Could not access the microphone');return}
+bRing.onclick=async()=>{if(cs||!ws||ws.readyState!==1)return;cs='ut';ringBtn();open(true);cc.hidden=false;cc.classList.remove('ring');ccT.textContent='Kobler til …';ccS.textContent='';btns(bEnd);
+  try{local=await getMic()}catch{endCall('Fikk ikke tilgang til mikrofonen');return}
   if(cs!=='ut'){local.getTracks().forEach(t=>t.stop());local=null;return}
-  if(!ws||ws.readyState!==1)return endCall('Could not connect the call');
+  if(!ws||ws.readyState!==1)return endCall('Fikk ikke koblet til samtalen');
   ws.send(JSON.stringify({t:'call'}))};
 // Serverens svar på «Ring»: telefonen hans ringer, eller han kan ikke nå. Svarer han, kommer ctl «call» (se control).
 const calling=(ok,why)=>{if(cs!=='ut')return;
-  if(!ok)return endCall(why==='busy'?'Tidemann is on another call':'Tidemann can\'t take the call right now','Feel free to send a message');
-  cc.classList.add('ring');ccT.textContent='Calling Tidemann …';ccS.textContent='Voice call in the browser';
-  clearTimeout(callT);callT=setTimeout(()=>{if(cs==='ut'){rtc({type:'bye'});endCall('Tidemann didn\'t answer','Feel free to send a message')}},50000)};
+  if(!ok)return endCall(why==='busy'?'Tidemann er i en annen samtale':'Tidemann kan ikke ta telefonen nå','Skriv gjerne en melding');
+  cc.classList.add('ring');ccT.textContent='Ringer Tidemann …';ccS.textContent='Lydsamtale i nettleseren';
+  clearTimeout(callT);callT=setTimeout(()=>{if(cs==='ut'){rtc({type:'bye'});endCall('Tidemann svarte ikke','Skriv gjerne en melding')}},50000)};
 bMin.onclick=()=>open(false);
 $('.cp-open').onclick=()=>open(true);
 $('.cp-end').onclick=()=>{rtc({type:'bye'});endCall()};
 $('.cp-mute').onclick=()=>{bMute.click();$('.cp-mute').classList.toggle('on',bMute.classList.contains('on'))};
 bEnd.onclick=()=>{rtc({type:'bye'});endCall()};
-bMute.onclick=()=>{const on=!bMute.classList.contains('on');bMute.classList.toggle('on',on);bMute.textContent=on?'Unmute':'Mute';local&&local.getAudioTracks().forEach(t=>t.enabled=!on)};
+bMute.onclick=()=>{const on=!bMute.classList.contains('on');bMute.classList.toggle('on',on);bMute.textContent=on?'Lyd på':'Lyd av';local&&local.getAudioTracks().forEach(t=>t.enabled=!on)};
 const onRtc=async d=>{try{
   if(d.sdp&&pc){await pc.setRemoteDescription(d.sdp);await pc.setLocalDescription(await pc.createAnswer());rtc({sdp:pc.localDescription})}
   else if(d.cand&&pc)await pc.addIceCandidate(d.cand);
-  else if(d.type==='decline'&&cs)endCall(d.reason==='busy'?'Tidemann is on another call':d.reason==='noanswer'?'Tidemann didn\'t answer':'Tidemann can\'t take the call right now','Feel free to send a message');
-  else if(d.type==='bye'&&cs)endCall('Tidemann hung up')}catch(e){console.warn(e)}};
+  else if(d.type==='decline'&&cs)endCall(d.reason==='busy'?'Tidemann er i en annen samtale':d.reason==='noanswer'?'Tidemann svarte ikke':'Tidemann kan ikke ta telefonen nå','Skriv gjerne en melding');
+  else if(d.type==='bye'&&cs)endCall('Tidemann la på')}catch(e){console.warn(e)}};
 // Live-visning og opptak. Samme målinger: rulling, skjermstørrelse, peker/klikk og om chatten er åpen, maks ti ganger i sekundet.
 // Live går til Tidemann bare mens han ser på (ctl «live»). Opptak lagres bare med samtykke («Godta»), aldri det du skriver.
 let live=false,lt=0,lx=-1,ly=-1,lclick=null,ltimer=null;
@@ -1048,12 +951,12 @@ addEventListener('pointerdown',e=>{lx=Math.round(e.clientX);ly=Math.round(e.clie
 setTimeout(lqueue,300);
 // Tidemanns status (settes i appen) + om appen er åpen. Vises i chatten og ved siden av chatknappen.
 let ownerOn=false,stat='available';
-const STAT={available:['Available','på'],meeting:['In a meeting','møte'],sleeping:['Asleep','sover']};
+const STAT={available:['Tilgjengelig','på'],meeting:['I møte','møte'],sleeping:['Sover','sover']};
 // Statusen vises som animasjon på chatknappen (grønne ringer, oransje ring, z-er), med tekst bare når Tidemann er i møte.
 const render=()=>{const [label,cls]=STAT[stat]||STAT.available;
-  btn.classList.remove('på','møte','sover');btn.classList.add(cls);document.getElementById('chat').classList.toggle('natt',stat==='sleeping');btn.setAttribute('aria-label','Chat with Tidemann ('+label.toLowerCase()+')');
+  btn.classList.remove('på','møte','sover');btn.classList.add(cls);document.getElementById('chat').classList.toggle('natt',stat==='sleeping');btn.setAttribute('aria-label','Chat med Tidemann ('+label.toLowerCase()+')');
   st.className='ch-s '+cls+(ownerOn&&stat==='available'?' on':'');
-  st.lastChild.textContent=stat==='sleeping'?'Asleep, up at 04:00 - I\'ll reply when I\'m awake':stat==='meeting'?'In a meeting, might be able to reply':ownerOn?'Tidemann is here now':'Don\'t hesitate! Go, go, go!';ringBtn()};
+  st.lastChild.textContent=stat==='sleeping'?'Sover, opp klokken 04:00 - svarer når jeg er våken':stat==='meeting'?'I møte, kan kanskje svare':ownerOn?'Tidemann er her nå':'Ikke nøl! Go, go, go!';ringBtn()};
 const owner=on=>{ownerOn=on;render()};
 const setStat=v=>{stat=v;render()};
 fetch('/chat/status').then(r=>r.json()).then(j=>{ownerOn=!!j.owner;setStat(j.status);if(j.hr)hrTop(j.hr)}).catch(()=>{});
@@ -1072,7 +975,7 @@ const connect=()=>{ws=new WebSocket('wss://'+location.host+'/chat/ws?vid='+encod
   ws.onopen=()=>{wait=1000;ws.send(JSON.stringify({t:'page',page:location.pathname+location.hash}));ringBtn()};
   ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch{return}
     if(m.t==='history'){if(m.hr)hrTop(m.hr);if(m.count){teller(m.count);if(m.count.pend)vakt()}m.msgs.forEach(x=>add(x,false));ownerOn=!!m.owner;kanRinge=!!m.call;lov=!!m.ring;if(m.status)stat=m.status;render();extras(!!m.extras)}else if(m.t==='calling')calling(m.ok,m.reason);else if(m.t==='status')setStat(m.v);else if(m.t==='hr')hrTop(m.bpm,true);else if(m.t==='count')teller({live:m.live,total:m.total});else if(m.t==='nr')teller.nr(m.nr,m.total);else if(m.t==='cleared')cleared();else if(m.t==='ctl')control(m.action,m.on);else if(m.t==='rtc')onRtc(m.data);else if(m.t==='msg')add(m.m,true);else if(m.t==='owner')owner(m.online)};
-  ws.onclose=()=>{ringBtn();if(cs==='ut')endCall('Could not connect the call');setTimeout(connect,wait);wait=Math.min(wait*2,30000)}};
+  ws.onclose=()=>{ringBtn();if(cs==='ut')endCall('Fikk ikke koblet til samtalen');setTimeout(connect,wait);wait=Math.min(wait*2,30000)}};
 hrTop.sock(()=>!!ws&&ws.readyState===1);
 connect();
 const send=()=>{const text=ta.value.trim();if(!text||!ws||ws.readyState!==1)return;ws.send(JSON.stringify({t:'msg',text}));ta.value='';ta.style.height=''};
@@ -1083,24 +986,107 @@ ta.addEventListener('input',()=>{ta.style.height='';ta.style.height=Math.min(ta.
 })();
 // Ingen markering eller kopiering av tekst (brukerens valg).
 ['copy','cut','selectstart','dragstart'].forEach(t=>document.addEventListener(t,e=>{if(!e.target.closest?.('textarea,input'))e.preventDefault()}));
-</script>
-<script>
-// Trying out section two: left and right arrow keys step through 10 versions. No buttons on the page; the browser tab
-// shows which one is up, and the choice is remembered in this browser. Remove the other versions once one is chosen.
-(function(){
-  var V = document.querySelectorAll(".s2v"), tittel = document.title, i = 0;
-  var navn = Array.prototype.map.call(V, function(v){ return v.dataset.navn; });
-  try { i = Math.max(0, navn.indexOf(localStorage.getItem("s2"))); } catch (e) {}
-  function vis(merk){
-    V.forEach(function(v, k){ v.hidden = k !== i; });
-    if (merk) { document.title = "2: " + (i + 1) + "/" + V.length + " " + navn[i] + " – " + tittel; try { localStorage.setItem("s2", navn[i]); } catch (e) {} }
-  }
-  vis(!!i);
-  addEventListener("keydown", function(e){
-    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-    if (e.metaKey || e.ctrlKey || e.altKey || (e.target.closest && e.target.closest("textarea,input,.hpp"))) return;
-    i = (i + (e.key === "ArrowRight" ? 1 : -1) + V.length) % V.length; vis(true);
-  });
+// «Siden mai 2026» får varigheten regnet ut ved hver visning, så den aldri blir utdatert.
+document.querySelectorAll('[data-since]').forEach(e=>{
+  const d=(Date.now()-new Date(e.dataset.since+'-01'))/864e5,m=Math.floor(d/30.44);
+  e.textContent+=' · '+(m>0?m+' mnd':Math.max(1,Math.floor(d/7))+' uker');
+});
+// «kode» og «design» i overskriften får hver sin lille animasjon, i fast rytme.
+(()=>{
+if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+const k=document.querySelector('.kd'),ki=k.firstChild,d=document.querySelector('.ds'),G='{}<>/=;$#_01[]*';
+const fix=()=>{k.style.width='';k.style.width=k.getBoundingClientRect().width+'px'};
+document.fonts.ready.then(fix);addEventListener('resize',fix);
+const code=()=>{k.classList.add('c');ki.style.transform='';
+  const r=(k.clientWidth-2*parseFloat(getComputedStyle(k).paddingLeft))/ki.getBoundingClientRect().width;
+  if(r<1)ki.style.transform='scaleX('+r+')';let i=0;const t=setInterval(()=>{i++;
+  ki.textContent=[...'kode'].map((c,j)=>j<i/2.5?c:G[Math.random()*G.length|0]).join('');
+  if(i>=10){clearInterval(t);ki.textContent='kode';setTimeout(()=>{k.classList.remove('c');ki.style.transform=''},700)}},40)};
+const flare=g=>{d.classList.remove('f');void d.offsetWidth;d.classList.add('f');setTimeout(()=>d.classList.toggle('g',g),500)};
+const run=()=>{code();setTimeout(()=>flare(true),600);setTimeout(()=>flare(false),2600)};
+setTimeout(()=>{run();setInterval(run,11000)},4000);
+})();
+// Budskapet på videoen: deles i bokstaver som reiser seg én og én (<b> i teksten blir fargede bokstaver). Så tennes S og I,
+// og toppmodulen og chatten bygges ut. Bokstavene nær pekeren løfter seg litt.
+(()=>{const s=document.querySelector('.si'),vis=()=>document.body.classList.remove('forspill');if(!s){vis();return}
+let n=0;const bs=[];
+s.querySelectorAll('.o').forEach(o=>{const deler=[...o.childNodes];o.textContent='';
+  deler.forEach(d=>[...d.textContent].forEach(c=>{if(c===' ')return o.append(' ');
+    const b=document.createElement('span'),t=document.createElement('i');b.className=d.nodeType===1?'b sf':'b';b.style.setProperty('--i',n++);
+    t.textContent=c;b.append(t);o.append(b);bs.push(b)}))});
+if(matchMedia('(prefers-reduced-motion: reduce)').matches){s.classList.add('inn','tent');vis();return}
+s.getBoundingClientRect();setTimeout(()=>s.classList.add('inn'),30);
+const ferdig=250+n*38+700;
+setTimeout(()=>s.classList.add('tent'),ferdig);setTimeout(()=>{document.body.classList.add('kom');vis()},ferdig+300);
+const hero=document.querySelector('.hero');let x=0,y=0,venter=0;
+const loft=()=>{venter=0;bs.forEach(b=>{const r=b.getBoundingClientRect(),d=Math.hypot(x-(r.left+r.width/2),(y-(r.top+r.height/2))*1.6);
+  b.style.setProperty('--l',Math.max(0,1-d/170).toFixed(3))})};
+hero.addEventListener('pointermove',e=>{if(e.pointerType==='touch')return;x=e.clientX;y=e.clientY;if(!venter)venter=requestAnimationFrame(loft)});
+hero.addEventListener('pointerleave',()=>bs.forEach(b=>b.style.setProperty('--l',0)))})();
+(()=>{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+document.querySelectorAll('.gl').forEach(g=>{
+  const sett=(e)=>{const r=g.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height,k=Math.min(1,260/r.width);
+    g.style.setProperty('--mx',x*100+'%');g.style.setProperty('--my',y*100+'%');
+    g.style.setProperty('--ry',(x-.5)*14*k+'deg');g.style.setProperty('--rx',(.5-y)*12+'deg');
+    g.style.setProperty('--tx',(x-.5)*10+'px');g.style.setProperty('--ty',(y-.5)*8-3+'px')};
+  const av=()=>{g.classList.remove('paa');['--rx','--ry','--tx','--ty','--sc'].forEach(v=>g.style.removeProperty(v))};
+  // .skriver: brevet skrives ennå, så boksen står stille. Står pekeren allerede over når det blir ferdig, vipper den ved neste bevegelse.
+  const paa=e=>{if(e.pointerType==='touch'||g.classList.contains('skriver'))return;if(!g.classList.contains('paa')){g.classList.add('paa');g.style.setProperty('--sc','1.03')}sett(e)};
+  g.addEventListener('pointerenter',paa);
+  g.addEventListener('pointermove',paa);
+  g.addEventListener('pointerleave',av);
+  // Bare mus og penn: berøring gir ingen effekt, så scrolling over boksene på mobil ikke lugger.
+  g.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch'&&!g.classList.contains('skriver'))g.style.setProperty('--sc','.97')});
+  g.addEventListener('pointerup',e=>{if(e.pointerType!=='touch'&&!g.classList.contains('skriver'))g.style.setProperty('--sc','1.03')});
+  g.addEventListener('pointercancel',e=>{if(e.pointerType!=='touch')av()})})})();
+// Bunnen: en rolig, flytende vind i blått og litt rødt som toner ut i hvitt oppover, så den ikke har noen kant.
+// Strømmene glir sakte bortover og bøyer seg litt rundt pekeren. Én fragment-shader, ingen bibliotek.
+(()=>{
+const c=document.getElementById('c'),gl=c.getContext('webgl',{antialias:false,alpha:false});
+if(!gl){c.remove();return}
+const vs='attribute vec2 a;void main(){gl_Position=vec4(a,0,1);}';
+const fs=`precision mediump float;
+uniform vec2 R;uniform float T;uniform vec3 M;
+float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+  return mix(mix(h(i),h(i+vec2(1.,0.)),f.x),mix(h(i+vec2(0.,1.)),h(i+vec2(1.,1.)),f.x),f.y);}
+float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<5;i++){v+=a*n(p);p=p*2.03+vec2(1.7,9.2);a*=.5;}return v;}
+void main(){
+  vec2 u=gl_FragCoord.xy/R;float k=R.x/R.y,t=T*.05;
+  vec2 p=vec2(u.x*k*.42,u.y*3.4);
+  vec2 dm=(u-M.xy/R)*vec2(k,1.);float pm=M.z*exp(-dot(dm,dm)*7.);
+  vec2 q=vec2(fbm(p+vec2(-t*2.,0.)),fbm(p+vec2(5.2,1.3)-vec2(t*1.3,0.)));
+  vec2 r=vec2(fbm(p+2.2*q+vec2(1.7-t,9.2)),fbm(p+2.2*q+vec2(8.3,2.8)-vec2(t*.7,0.)));
+  float f=fbm(p+2.4*r+pm*1.2);
+  float fade=smoothstep(.92,.04,u.y+(f-.5)*.35)*smoothstep(1.,.7,u.y);
+  vec3 navy=vec3(0.,.125,.357),red=vec3(.729,.047,.184),sky=vec3(.85,.91,.97);
+  vec3 col=mix(sky,navy,smoothstep(.36,.95,f*.72+fade*.46));
+  col=mix(col,red,smoothstep(.58,.86,r.y)*.42*fade);
+  float l=abs(fract(f*5.+r.x*1.5)-.5);
+  col=mix(col,vec3(1.),smoothstep(.16,0.,l)*.13*fade);
+  gl_FragColor=vec4(mix(vec3(1.),col,fade),1.);
+}`;
+const sh=(t,src)=>{const o=gl.createShader(t);gl.shaderSource(o,src);gl.compileShader(o);return o};
+const pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,vs));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,fs));gl.linkProgram(pr);
+if(!gl.getProgramParameter(pr,gl.LINK_STATUS)){c.remove();return}
+gl.useProgram(pr);
+gl.bindBuffer(gl.ARRAY_BUFFER,gl.createBuffer());gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
+const U=n=>gl.getUniformLocation(pr,n),uR=U('R'),uT=U('T'),uM=U('M');
+// Bildet er mykt, så det tegnes i lavere oppløsning og skaleres opp: billig også på eldre telefoner.
+let S=1,mx=-1e4,my=-1e4,mz=0,tz=0;
+const size=()=>{S=Math.min(devicePixelRatio||1,2)*.6;c.width=Math.max(1,c.clientWidth*S|0);c.height=Math.max(1,c.clientHeight*S|0);gl.viewport(0,0,c.width,c.height)};
+addEventListener('resize',size);size();
+addEventListener('pointermove',e=>{const b=c.getBoundingClientRect();mx=(e.clientX-b.left)*S;my=(b.bottom-e.clientY)*S;tz=1});
+addEventListener('pointerleave',()=>tz=0);
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches,t0=performance.now();
+// Tegner bare mens bunnen er synlig; én løkke om gangen.
+let vis=true,raf=0;
+const draw=t=>{mz+=(tz-mz)*.05;tz*=.985;
+  gl.uniform2f(uR,c.width,c.height);gl.uniform1f(uT,(t-t0)/1e3);gl.uniform3f(uM,mx,my,mz*.8);
+  gl.drawArrays(gl.TRIANGLES,0,3);raf=!still&&vis?requestAnimationFrame(draw):0};
+new IntersectionObserver(e=>{vis=e[0].isIntersecting;if(vis&&!raf)raf=requestAnimationFrame(draw)}).observe(c);
+raf=requestAnimationFrame(draw);
 })();
 </script>
 </body>
