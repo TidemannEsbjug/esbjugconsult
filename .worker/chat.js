@@ -15,6 +15,8 @@
 //   GET  /chat/admin/devices                      registered push devices (app, env, added, token end)
 //   POST /chat/admin/reset-teller                 start the unique-visitor counter over
 //   POST /chat/admin/upload?vid=&name=            owner sends a file (raw body, Content-Type)
+//   GET  /chat/admin/gifs?q=&offset=              Giphy search (trending when q is empty); the key (GIPHY_KEY) stays on the server
+//   POST /chat/admin/gif          {vid, id}           send a Giphy GIF: the mp4 is copied to R2 and sent as a file with gif: true
 //   POST /chat/upload?vid=&name=                  visitor sends a file (only after the owner turned on «Mer chat»)
 //   GET  /chat/file/<key>                         a file from R2, with Range support (Safari needs it for audio)
 //   GET  /chat/ice                                STUN + short-lived Cloudflare TURN credentials for calls
@@ -115,6 +117,8 @@ export async function handleChat(request, env, url) {
     const auth = request.headers.get("Authorization") || (proto[0] === "esbjug" && proto[1] ? `Bearer ${proto[1]}` : "");
     if (!env.ADMIN_TOKEN || auth !== `Bearer ${env.ADMIN_TOKEN}`) return new Response("Unauthorized", { status: 401 });
     if (path === "/chat/admin/upload" && request.method === "POST") return upload(request, env, url, hub, true);
+    if (path === "/chat/admin/gifs") return gifSearch(env, url);
+    if (path === "/chat/admin/gif" && request.method === "POST") return gifSend(request, env, hub);
     const headers = new Headers(request.headers);
     headers.set("x-role", "owner");
     return hub.fetch(new Request(request.url, { method: request.method, headers, body: request.body }));
@@ -163,6 +167,58 @@ async function upload(request, env, url, hub, fromOwner) {
     customMetadata: { vid, name, owner: fromOwner ? "1" : "0" },
   });
   const r = await internal("/internal/file", { vid, fromOwner, key, mime, name, size: obj.size });
+  return new Response(await r.text(), { status: r.status, headers: { "content-type": "application/json" } });
+}
+
+// GIFs from Giphy. Search returns small animated previews for the app's picker; sending copies the GIF's mp4
+// into R2 like any other file, so the visitor's page never talks to Giphy and old messages keep working.
+async function giphy(env, path, params = {}) {
+  const q = new URLSearchParams({ api_key: env.GIPHY_KEY, ...params });
+  const r = await fetch(`https://api.giphy.com/v1/gifs${path}?${q}`);
+  if (!r.ok) throw new Error(`Giphy ${r.status}`);
+  return r.json();
+}
+
+async function gifSearch(env, url) {
+  if (!env.GIPHY_KEY) return new Response("GIPHY_KEY mangler", { status: 503 });
+  const q = (url.searchParams.get("q") || "").trim().slice(0, 50);
+  const offset = String(Math.max(0, Math.min(4999, Number(url.searchParams.get("offset")) || 0)));
+  try {
+    const j = await giphy(env, q ? "/search" : "/trending", { ...(q ? { q } : {}), limit: "30", offset, rating: "r", bundle: "messaging_non_clips" });
+    const gifs = (j.data || []).map((g) => {
+      const im = g.images || {}, p = im.fixed_width_small || im.fixed_width || im.original || {};
+      return { id: g.id, title: g.title || "", w: Number(p.width) || 100, h: Number(p.height) || 100, preview: p.url || "" };
+    }).filter((g) => g.preview);
+    return Response.json({ gifs, next: Number(offset) + (j.pagination?.count || 0), total: j.pagination?.total_count || 0 });
+  } catch (e) {
+    return new Response(String(e.message || e), { status: 502 });
+  }
+}
+
+async function gifSend(request, env, hub) {
+  if (!env.GIPHY_KEY) return new Response("GIPHY_KEY mangler", { status: 503 });
+  const { vid, id } = await request.json().catch(() => ({}));
+  if (typeof vid !== "string" || !/^[a-zA-Z0-9-]{8,64}$/.test(vid) || typeof id !== "string" || !/^[a-zA-Z0-9]{4,40}$/.test(id)) {
+    return new Response("Bad request", { status: 400 });
+  }
+  let g;
+  try { g = (await giphy(env, `/${id}`)).data; } catch (e) { return new Response(String(e.message || e), { status: 502 }); }
+  const im = g?.images || {};
+  // The full GIF as mp4 when it is reasonably small, otherwise Giphy's smaller cut.
+  const pick = [im.original, im.downsized_small, im.fixed_height].find((x) => x?.mp4 && (!x.mp4_size || Number(x.mp4_size) < 8e6));
+  if (!pick) return new Response("Ingen mp4 for denne GIF-en", { status: 502 });
+  const media = await fetch(pick.mp4);
+  if (!media.ok) return new Response(`Giphy media ${media.status}`, { status: 502 });
+  const body = await media.arrayBuffer();
+  const name = `GIF ${(g.title || "").replace(/\s+GIF.*$/i, "").replace(/[\u0000-\u001f\/\\]/g, "").trim().slice(0, 80) || id}.mp4`;
+  const key = `${vid}/${crypto.randomUUID()}`;
+  await env.FILES.put(key, body, {
+    httpMetadata: { contentType: "video/mp4", contentDisposition: `inline; filename*=UTF-8''${encodeURIComponent(name)}` },
+    customMetadata: { vid, name, owner: "1", giphy: id },
+  });
+  const r = await hub.fetch(new Request("https://hub/internal/file", {
+    method: "POST", headers: { "x-role": "internal" },
+    body: JSON.stringify({ vid, fromOwner: true, key, mime: "video/mp4", name, size: body.byteLength, gif: true }) }));
   return new Response(await r.text(), { status: r.status, headers: { "content-type": "application/json" } });
 }
 
@@ -286,7 +342,7 @@ export class ChatHub {
       id INTEGER PRIMARY KEY AUTOINCREMENT, vid TEXT, from_owner INTEGER, text TEXT, ts INTEGER)`);
     this.sql.exec(`CREATE INDEX IF NOT EXISTS messages_vid ON messages (vid, id)`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS devices (token TEXT PRIMARY KEY, env TEXT, added INTEGER)`);
-    for (const col of ["kind TEXT", "file TEXT", "mime TEXT", "name TEXT", "size INTEGER"]) {
+    for (const col of ["kind TEXT", "file TEXT", "mime TEXT", "name TEXT", "size INTEGER", "gif INTEGER"]) {
       try { this.sql.exec(`ALTER TABLE messages ADD COLUMN ${col}`); } catch {}
     }
     try { this.sql.exec(`ALTER TABLE visitors ADD COLUMN extras INTEGER DEFAULT 0`); } catch {}
@@ -402,7 +458,7 @@ export class ChatHub {
         return n >= 30 ? new Response("Too many files today", { status: 429 }) : new Response("ok");
       }
       if (url.pathname === "/internal/file") {
-        const msg = this.store(b.vid, !!b.fromOwner, b.name, { kind: "file", file: b.key, mime: b.mime, name: b.name, size: b.size });
+        const msg = this.store(b.vid, !!b.fromOwner, b.name, { kind: "file", file: b.key, mime: b.mime, name: b.name, size: b.size, gif: b.gif ? 1 : null });
         if (!b.fromOwner) this.sql.exec(`UPDATE visitors SET unread = unread + 1, last_seen=? WHERE vid=?`, Date.now(), b.vid);
         else this.sql.exec(`UPDATE visitors SET unread = 0 WHERE vid=?`, b.vid);
         this.toVisitor(b.vid, { t: "msg", m: msg });
@@ -726,14 +782,15 @@ export class ChatHub {
   store(vid, fromOwner, text, f = null) {
     const ts = Date.now();
     const row = this.sql.exec(
-      `INSERT INTO messages (vid, from_owner, text, ts, kind, file, mime, name, size) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
-      vid, fromOwner ? 1 : 0, text, ts, f?.kind ?? null, f?.file ?? null, f?.mime ?? null, f?.name ?? null, f?.size ?? null).one();
+      `INSERT INTO messages (vid, from_owner, text, ts, kind, file, mime, name, size, gif) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
+      vid, fromOwner ? 1 : 0, text, ts, f?.kind ?? null, f?.file ?? null, f?.mime ?? null, f?.name ?? null, f?.size ?? null, f?.gif ?? null).one();
     return this.row({ id: row.id, from_owner: fromOwner ? 1 : 0, text, ts, ...f });
   }
 
   row(r) {
     const m = { id: r.id, owner: !!r.from_owner, text: r.text, ts: r.ts };
     if (r.kind === "file") Object.assign(m, { kind: "file", file: r.file, mime: r.mime, name: r.name, size: r.size });
+    if (r.kind === "file" && r.gif) m.gif = true;   // a Giphy GIF as mp4: the page and the app play it looped, muted, without controls
     return m;
   }
 
@@ -764,8 +821,8 @@ export class ChatHub {
   visitor(vid, closing) {
     const r = this.sql.exec(`SELECT * FROM visitors WHERE vid=?`, vid).toArray()[0];
     if (!r) return null;
-    const last = this.sql.exec(`SELECT from_owner, text, ts, kind, mime FROM messages WHERE vid=? ORDER BY id DESC LIMIT 1`, vid).toArray()[0];
-    if (last?.kind === "file") last.text = last.mime?.startsWith("audio/") ? "🎤 Lydmelding" : last.mime?.startsWith("image/") ? "🖼️ Bilde" : last.mime?.startsWith("video/") ? "🎬 Video" : `📎 ${last.text}`;
+    const last = this.sql.exec(`SELECT from_owner, text, ts, kind, mime, gif FROM messages WHERE vid=? ORDER BY id DESC LIMIT 1`, vid).toArray()[0];
+    if (last?.kind === "file") last.text = last.gif ? "🎞️ GIF" : last.mime?.startsWith("audio/") ? "🎤 Lydmelding" : last.mime?.startsWith("image/") ? "🖼️ Bilde" : last.mime?.startsWith("video/") ? "🎬 Video" : `📎 ${last.text}`;
     return {
       vid: r.vid, online: this.online(vid, closing), firstSeen: r.first_seen, lastSeen: r.last_seen,
       city: r.city, region: r.region, country: r.country, lat: r.lat, lon: r.lon, tz: r.tz,
