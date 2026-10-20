@@ -618,7 +618,7 @@
   </section>
 </div>
 <canvas id="c" aria-hidden="true"></canvas>
-<script src="/chat-moro.js?v=3"></script>
+<script src="/chat-moro.js?v=4"></script>
 <script>
 // Tidemanns egne enheter: åpne siden én gang med ?eier, så teller ikke denne nettleseren som besøkende og gir ikke varsel.
 (()=>{const q=new URLSearchParams(location.search);if(!q.has('eier'))return;document.cookie='esbjug_eier=1; Max-Age=31536000; Path=/; SameSite=Lax; Secure';
@@ -981,7 +981,7 @@ const connect=()=>{ws=new WebSocket('wss://'+location.host+'/chat/ws?vid='+encod
   ws.onclose=()=>{ringBtn();if(cs==='ut')endCall('Could not connect the call');setTimeout(connect,wait);wait=Math.min(wait*2,30000)}};
 hrTop.sock(()=>!!ws&&ws.readyState===1);
 connect();
-window.chatMoro?.init({vid,send:o=>{if(ws&&ws.readyState===1)ws.send(JSON.stringify(o))}});
+window.chatMoro?.init({get vid(){return vid},send:o=>{if(ws&&ws.readyState===1)ws.send(JSON.stringify(o))}});
 const send=()=>{const text=ta.value.trim();if(!text||!ws||ws.readyState!==1)return;ws.send(JSON.stringify({t:'msg',text}));ta.value='';ta.style.height=''};
 form.onsubmit=e=>{e.preventDefault();send()};
 ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});

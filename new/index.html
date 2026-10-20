@@ -1072,7 +1072,7 @@
   document.querySelectorAll("video.lat").forEach(function(v){ lat.observe(v); });
 })();
 </script>
-<script src="/chat-moro.js?v=3"></script>
+<script src="/chat-moro.js?v=4"></script>
 <script>
 // Pulse, visitor count and chat: copied from the front page (en/index.html). Change it there first, then copy over.
 // Tidemanns egne enheter: åpne siden én gang med ?eier, så teller ikke denne nettleseren som besøkende og gir ikke varsel.
@@ -1426,7 +1426,7 @@ const connect=()=>{ws=new WebSocket('wss://'+location.host+'/chat/ws?vid='+encod
   ws.onclose=()=>{ringBtn();if(cs==='ut')endCall('Could not connect the call');setTimeout(connect,wait);wait=Math.min(wait*2,30000)}};
 hrTop.sock(()=>!!ws&&ws.readyState===1);
 connect();
-window.chatMoro?.init({vid,send:o=>{if(ws&&ws.readyState===1)ws.send(JSON.stringify(o))}});
+window.chatMoro?.init({get vid(){return vid},send:o=>{if(ws&&ws.readyState===1)ws.send(JSON.stringify(o))}});
 const send=()=>{const text=ta.value.trim();if(!text||!ws||ws.readyState!==1)return;ws.send(JSON.stringify({t:'msg',text}));ta.value='';ta.style.height=''};
 form.onsubmit=e=>{e.preventDefault();send()};
 ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});
