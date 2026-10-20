@@ -123,9 +123,9 @@ const sendGif = async id => {
   const tmp = note(T.sending);
   try {
     const r = await fetch('/chat/gif', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ vid: api.vid, id }) });
-    if (!r.ok) throw new Error(r.status === 429 ? T.many : T.fail);
+    if (!r.ok) throw new Error(r.status === 429 ? T.many : T.fail + ' (' + r.status + ')');
     tmp.remove();
-  } catch (e) { tmp.textContent = e.message || T.fail; tmp.classList.remove('up'); tmp.classList.add('err'); }
+  } catch (e) { tmp.textContent = e.message && e.message !== 'Failed to fetch' && e.message !== 'Load failed' ? e.message : T.fail + ' (nett)'; tmp.classList.remove('up'); tmp.classList.add('err'); }
 };
 const gifButton = () => {
   const form = document.querySelector('#chat .ch-f'), ta = form?.querySelector('textarea');

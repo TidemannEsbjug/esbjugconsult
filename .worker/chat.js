@@ -124,7 +124,9 @@ export async function handleChat(request, env, url) {
 
   if (path === "/chat/gif" && request.method === "POST") {
     if (!/^https:\/\/(www\.)?esbjugconsult\.com$/.test(request.headers.get("Origin") || "")) return new Response("Forbidden", { status: 403 });
-    return gifSend(request, env, hub, false);
+    const r = await gifSend(request, env, hub, false);
+    if (!r.ok) console.log("chat/gif feilet", r.status, await r.clone().text());
+    return r;
   }
 
   if (path === "/chat/upload" && request.method === "POST") {
