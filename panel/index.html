@@ -40,6 +40,14 @@
   #mld p.de{align-self:flex-start;background:#26262e}
   #mld p.jeg{align-self:flex-end;background:var(--y);color:var(--ink)}
   #mld p a{color:inherit}
+  /* Reaksjoner: merket under boblen, raden med emojier når du klikker en melding. */
+  #mld p{position:relative}#mld p.rx{margin-bottom:12px}
+  #mld .r{position:absolute;bottom:-12px;right:8px;padding:2px 5px;border-radius:999px;background:#fff;color:#000;font-size:13px;line-height:1.1;box-shadow:0 1px 5px rgba(0,0,0,.3);pointer-events:none}
+  #mld p.jeg .r{right:auto;left:8px}
+  #mld .rb{position:absolute;bottom:calc(100% + 6px);left:0;z-index:2;display:flex;gap:2px;padding:4px;border-radius:999px;background:#fff;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+  #mld p.jeg .rb{left:auto;right:0}
+  #mld .rb button{border:0;background:none;font-size:20px;width:34px;height:34px;border-radius:50%;cursor:pointer;padding:0}
+  #mld .rb button.på{background:#ddd}
   #mld img,#mld video{max-width:100%;border-radius:10px;display:block}
   #tom{margin:auto;opacity:.5}
   #skriv{display:flex;gap:10px;padding:14px 18px;border-top:1px solid #26262e}
@@ -71,7 +79,12 @@ const tegn=()=>{const a=[...vis.values()].sort((x,y)=>(y.online-x.online)||((y.l
 const boble=m=>{if(sett.has(m.id))return;sett.add(m.id);const p=document.createElement('p');p.className=m.owner?'jeg':'de';
   if(m.kind==='file'){const src='/chat/file/'+m.file;if((m.mime||'').startsWith('image/')){const i=new Image();i.src=src;p.append(i)}else if((m.mime||'').startsWith('audio/')){const x=document.createElement('audio');x.controls=true;x.src=src;p.append(x)}
     else if(m.gif){const x=document.createElement('video');x.muted=true;x.loop=true;x.autoplay=true;x.playsInline=true;x.src=src;p.append(x)}else if((m.mime||'').startsWith('video/')){const x=document.createElement('video');x.controls=true;x.src=src;p.append(x)}else{const l=document.createElement('a');l.href=src;l.target='_blank';l.textContent=m.name||'Fil';p.append(l)}}
-  else p.textContent=m.text;p.title=kl(m.ts);mld.append(p);mld.scrollTop=mld.scrollHeight};
+  else p.textContent=m.text;p.title=kl(m.ts);p.dataset.id=m.id;reak(p,m);p.onclick=e=>{if(!e.target.closest('a,audio,video,.rb'))rbar(p)};mld.append(p);mld.scrollTop=mld.scrollHeight};
+// Reaksjoner: én emoji fra deg (ro) og én fra den besøkende (rv) per melding. Samme emoji igjen tar den bort.
+const EMO=['❤️','👍','😂','😮','😢','🙏'];
+const reak=(p,m)=>{p.querySelector('.r')?.remove();p.dataset.ro=m.ro||'';const e=[...new Set([m.rv,m.ro].filter(Boolean))];p.classList.toggle('rx',!!e.length);if(e.length){const b=document.createElement('span');b.className='r';b.textContent=e.join('');p.append(b)}};
+const rbar=p=>{const had=p.querySelector('.rb');mld.querySelectorAll('.rb').forEach(x=>x.remove());if(had)return;const b=document.createElement('span');b.className='rb';
+  for(const e of EMO){const k=document.createElement('button');k.textContent=e;if(p.dataset.ro===e)k.className='på';k.onclick=ev=>{ev.stopPropagation();ws.send(JSON.stringify({t:'react',vid:valgt,id:+p.dataset.id,e:p.dataset.ro===e?'':e}));b.remove()};b.append(k)}p.append(b)};
 const velg=vid=>{valgt=vid;const v=vis.get(vid);app.classList.remove('liste');mld.textContent='';sett.clear();ta.disabled=sendB.disabled=false;
   hode.textContent='';if(v){const b=document.createElement('b');b.textContent=sted(v);const s=document.createElement('span');s.textContent=[enhet(v),v.online?'på siden nå':'sist '+kl(v.lastSeen),v.page].filter(Boolean).join(' · ');hode.append(b,s)}
   ws.send(JSON.stringify({t:'history',vid}));ws.send(JSON.stringify({t:'read',vid}));tegn();ta.focus()};
@@ -83,7 +96,8 @@ const koble=()=>{linje.textContent='Kobler til …';ws=new WebSocket('wss://'+lo
     else if(m.t==='msg'){if(m.v)vis.set(m.vid,m.v);if(m.vid===valgt){boble(m.m);if(!m.m.owner&&document.hasFocus())ws.send(JSON.stringify({t:'read',vid:valgt}))}tegn();if(!m.m.owner)varsle(m.v?sted(m.v):'Melding',m.m.kind==='file'?'Fil':m.m.text,m.vid)}
     else if(m.t==='history'&&m.vid===valgt)m.msgs.forEach(boble)
     else if(m.t==='deleted'){vis.delete(m.vid);if(valgt===m.vid){valgt=null;mld.textContent='';hode.textContent='';ta.disabled=sendB.disabled=true}tegn()}
-    else if(m.t==='status')$('#status').value=m.v};
+    else if(m.t==='status')$('#status').value=m.v
+    else if(m.t==='react'&&m.vid===valgt){const p=mld.querySelector('p[data-id="'+m.id+'"]');if(p)reak(p,m)}};
   ws.onclose=()=>{if(app.hidden){inn.hidden=false;localStorage.removeItem('esbjug_admin');return}linje.textContent='Frakoblet, prøver igjen …';setTimeout(koble,vent);vent=Math.min(vent*2,20000)}};
 setInterval(()=>{if(ws&&ws.readyState===1)ws.send(JSON.stringify({t:'ping'}))},25000);
 $('#inn form').onsubmit=e=>{e.preventDefault();token=$('#inn input').value.trim();koble()};
