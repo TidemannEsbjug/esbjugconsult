@@ -487,8 +487,9 @@ export class ChatHub {
         return n >= 30 ? new Response("Too many files today", { status: 429 }) : new Response("ok");
       }
       if (url.pathname === "/internal/can-gif") {
-        // A visitor who is on the page right now: at most 4 GIFs a minute and 40 a day.
-        if (!this.online(b.vid)) return new Response("Not online", { status: 403 });
+        // A known visitor (seen in the last 6 hours; the socket may be reconnecting): at most 4 GIFs a minute and 40 a day.
+        const seen = this.sql.exec(`SELECT last_seen FROM visitors WHERE vid=?`, b.vid).toArray()[0];
+        if (!this.online(b.vid) && !(seen && Date.now() - seen.last_seen < 6 * 3600e3)) return new Response("Unknown visitor", { status: 403 });
         const n = (since) => this.sql.exec(`SELECT COUNT(*) AS n FROM messages WHERE vid=? AND from_owner=0 AND gif=1 AND ts>?`, b.vid, Date.now() - since).one().n;
         return n(60e3) >= 4 || n(864e5) >= 40 ? new Response("Too many GIFs", { status: 429 }) : new Response("ok");
       }
