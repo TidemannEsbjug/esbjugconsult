@@ -194,6 +194,49 @@ const frame = now => {
 };
 const fx = text => { if (!text) return; for (const [re, m] of FX) if (re.test(text)) { start(m); return; } };
 
+// ---------- speilet i Esbjug Chat-appen ----------
+// Appen viser siden den besøkende er på (?speil=1) og sender inn chatten slik den er hos dem: åpen eller lukket, fokus og
+// samtalen. Nye meldinger gir de samme effektene som hos den besøkende (regn, konfetti, hehe, risting), så du ser alt de ser.
+let sSett = null;
+const sMelding = m => {
+  const p = document.createElement('p');
+  p.className = m.owner ? 'him' : 'me'; p.dataset.id = m.id;
+  if (m.kind === 'file' && m.file) {
+    p.classList.add('file');
+    const src = 'https://esbjugconsult.com/chat/file/' + m.file;
+    if (m.gif) { const v = document.createElement('video'); v.className = 'gif'; v.muted = v.loop = v.autoplay = v.playsInline = true; v.src = src; p.append(v); }
+    else if ((m.mime || '').startsWith('image/')) { const i = document.createElement('img'); i.src = src; p.append(i); }
+    else { const a = document.createElement('a'); a.textContent = (m.mime || '').startsWith('audio/') ? (en ? '🎤 Voice message' : '🎤 Lydmelding') : '📎 ' + (m.name || 'Fil'); p.append(a); }
+  } else p.textContent = m.text;
+  badge(p, m);
+  return p;
+};
+const hehe = () => {
+  const o = document.createElement('div'); o.className = 'hh'; o.setAttribute('aria-hidden', 'true');
+  [...'hehe'].forEach((c, i) => { const sp = document.createElement('span'); sp.textContent = c; sp.style.animationDelay = i * 70 + 'ms'; o.append(sp); });
+  document.body.append(o); setTimeout(() => o.remove(), 3200);
+};
+window.__speil = s => {
+  if (!document.documentElement.classList.contains('speil')) return;
+  const root = document.documentElement, chat = document.getElementById('chat');
+  if (!chat) return;
+  root.classList.add('speil-chat');
+  const pan = chat.querySelector('.ch-p'), btn = chat.querySelector('.ch-b'), box = chat.querySelector('.ch-m');
+  pan.hidden = !s.chat; btn.hidden = !!s.chat;
+  root.classList.toggle('focus', !!s.f);
+  const msgs = s.msgs || [];
+  const nye = sSett ? msgs.filter(m => !sSett.has(m.id)) : [];
+  box.textContent = '';
+  for (const m of msgs) box.append(sMelding(m));
+  box.scrollTop = box.scrollHeight;
+  sSett = new Set(msgs.map(m => m.id));
+  for (const m of nye) {
+    if (m.kind === 'file') continue;
+    if (m.owner && /^\s*hehe[!.\s]*$/i.test(m.text)) hehe(); else fx(m.text);
+  }
+};
+css.textContent += `html.speil.speil-chat #chat{display:block!important}html.speil-chat .ch-p{transition:none}`;
+
 // ---------- koblingen til sidens chat ----------
 window.chatMoro = {
   init(a) { api = a; gifButton(); },
