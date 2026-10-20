@@ -1072,6 +1072,7 @@
   document.querySelectorAll("video.lat").forEach(function(v){ lat.observe(v); });
 })();
 </script>
+<script src="/chat-moro.js?v=1"></script>
 <script>
 // Pulse, visitor count and chat: copied from the front page (en/index.html). Change it there first, then copy over.
 // Tidemanns egne enheter: åpne siden én gang med ?eier, så teller ikke denne nettleseren som besøkende og gir ikke varsel.
@@ -1286,7 +1287,7 @@ $('.ch-x').addEventListener('pointerdown',e=>e.preventDefault());
 const hehe=()=>{const o=document.createElement('div');o.className='hh';o.setAttribute('aria-hidden','true');
   [...'hehe'].forEach((c,i)=>{const sp=document.createElement('span');sp.textContent=c;sp.style.animationDelay=i*70+'ms';o.append(sp)});
   document.body.append(o);setTimeout(()=>o.remove(),3200)};
-const add=(m,live)=>{if(seen.has(m.id))return;seen.add(m.id);if(live&&m.owner&&/^\s*hehe[!.\s]*$/i.test(m.text))hehe();const p=document.createElement('p');p.className=m.owner?'him':'me';if(m.kind==='file')fileEl(p,m);else p.textContent=m.text;box.append(p);box.scrollTop=box.scrollHeight;
+const add=(m,live)=>{if(seen.has(m.id))return;seen.add(m.id);if(live&&m.owner&&/^\s*hehe[!.\s]*$/i.test(m.text))hehe();const p=document.createElement('p');p.className=m.owner?'him':'me';if(m.kind==='file')fileEl(p,m);else p.textContent=m.text;p.dataset.id=m.id;box.append(p);window.chatMoro?.msg(p,m,live);box.scrollTop=box.scrollHeight;
   if(live&&m.owner&&pan.hidden){unread++;badge.textContent=unread;badge.hidden=false;open(true)}};
 const focus=on=>document.documentElement.classList.toggle('focus',on);
 const control=(a,on)=>{if(a==='focus'){if(on)open(true);focus(on)}else if(a==='extras'){extras(on);if(on)open(true)}else if(a==='ring'){lov=on;ringBtn()}else if(a==='live'){live=on;if(on)lsend()}else if(a==='call'){if(on){if(cs==='ut')koble();else if(!cs)ringing()}else if(cs&&!pc)endCall(cs==='ut'?'Tidemann can\'t take the call right now':'Tidemann hung up',cs==='ut'?'Feel free to send a message':'')}};
@@ -1421,10 +1422,11 @@ let nyside=1;
 const connect=()=>{ws=new WebSocket('wss://'+location.host+'/chat/ws?vid='+encodeURIComponent(vid)+(nyside?'&ny=1':'')+(consent==='ja'?'&c=1':'')+(navigator.webdriver?'&w=1':'')+(getC('esbjug_eier')==='1'?'&e=1':''));nyside=0;
   ws.onopen=()=>{wait=1000;ws.send(JSON.stringify({t:'page',page:location.pathname+location.hash}));ringBtn()};
   ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch{return}
-    if(m.t==='history'){if(m.hr)hrTop(m.hr);if(m.count){teller(m.count);if(m.count.pend)vakt()}m.msgs.forEach(x=>add(x,false));ownerOn=!!m.owner;kanRinge=!!m.call;lov=!!m.ring;if(m.status)stat=m.status;render();extras(!!m.extras)}else if(m.t==='calling')calling(m.ok,m.reason);else if(m.t==='status')setStat(m.v);else if(m.t==='hr')hrTop(m.bpm,true);else if(m.t==='count')teller({live:m.live,total:m.total});else if(m.t==='nr')teller.nr(m.nr,m.total);else if(m.t==='cleared')cleared();else if(m.t==='ctl')control(m.action,m.on);else if(m.t==='rtc')onRtc(m.data);else if(m.t==='msg')add(m.m,true);else if(m.t==='owner')owner(m.online)};
+    if(m.t==='history'){if(m.hr)hrTop(m.hr);if(m.count){teller(m.count);if(m.count.pend)vakt()}m.msgs.forEach(x=>add(x,false));ownerOn=!!m.owner;kanRinge=!!m.call;lov=!!m.ring;if(m.status)stat=m.status;render();extras(!!m.extras)}else if(m.t==='calling')calling(m.ok,m.reason);else if(m.t==='status')setStat(m.v);else if(m.t==='hr')hrTop(m.bpm,true);else if(m.t==='count')teller({live:m.live,total:m.total});else if(m.t==='nr')teller.nr(m.nr,m.total);else if(m.t==='cleared')cleared();else if(m.t==='ctl')control(m.action,m.on);else if(m.t==='rtc')onRtc(m.data);else if(m.t==='msg')add(m.m,true);else if(m.t==='owner')owner(m.online);else window.chatMoro?.ws(m)};
   ws.onclose=()=>{ringBtn();if(cs==='ut')endCall('Could not connect the call');setTimeout(connect,wait);wait=Math.min(wait*2,30000)}};
 hrTop.sock(()=>!!ws&&ws.readyState===1);
 connect();
+window.chatMoro?.init({vid,send:o=>{if(ws&&ws.readyState===1)ws.send(JSON.stringify(o))}});
 const send=()=>{const text=ta.value.trim();if(!text||!ws||ws.readyState!==1)return;ws.send(JSON.stringify({t:'msg',text}));ta.value='';ta.style.height=''};
 form.onsubmit=e=>{e.preventDefault();send()};
 ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});
