@@ -1,0 +1,778 @@
+<!doctype html>
+<html lang="nb">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Klart — GDPR-trygg AI-bruk, bygget for norske regler</title>
+    <meta
+      name="description"
+      content="Klart er et norskutviklet program for Mac og Windows som renser en hel mappe med Word-, Excel-, PowerPoint-, PDF- og e-postfiler for norske personopplysninger — lokalt på maskinen, uten nett og uten konto."
+    />
+    <meta name="theme-color" content="#eef3fb" />
+    <meta
+      property="og:title"
+      content="Klart — GDPR-trygg AI-bruk, bygget for norske regler"
+    />
+    <meta
+      property="og:description"
+      content="Norskutviklet program for Mac og Windows. Leser Word, Excel, PowerPoint, PDF, e-post og tekst, finner fødselsnummer, D-nummer og andre norske personopplysninger, og skriver en renset kopi. Ingenting forlater maskinen."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="nb_NO" />
+    <!-- Ikke indekser før nedlastingene er på plass. Fjern når Klart lanseres. -->
+    <meta name="robots" content="noindex" />
+    <!-- Fontene ligger på siden selv. Henter vi dem fra Google, får Google
+         IP-adressen til hver besøkende — ikke noe en GDPR-side skal gjøre. -->
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Filtype-ikoner: dokumentark bak, appflis foran. -->
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <defs>
+        <g id="page">
+          <rect
+            x="16"
+            y="2"
+            width="26"
+            height="32"
+            rx="3.5"
+            fill="#fff"
+            stroke="#dcdfda"
+            stroke-width="1.3"
+          />
+          <g fill="#e4e7e2">
+            <rect x="26" y="9" width="12" height="2.4" rx="1.2" />
+            <rect x="26" y="15" width="12" height="2.4" rx="1.2" />
+          </g>
+        </g>
+
+        <symbol id="i-word" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#185abd" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">W</text>
+        </symbol>
+
+        <symbol id="i-excel" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#107c41" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">X</text>
+        </symbol>
+
+        <symbol id="i-ppt" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#c43e1c" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">P</text>
+        </symbol>
+
+        <symbol id="i-pdf" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#c8322b" />
+          <text x="17.5" y="31" text-anchor="middle" font-size="11">PDF</text>
+        </symbol>
+
+        <symbol id="i-mail" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#0f6cbd" />
+          <rect
+            x="8.5"
+            y="20"
+            width="18"
+            height="13.5"
+            rx="1.8"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2.1"
+          />
+          <path
+            d="M9.2 21.2l8.3 6.4 8.3-6.4"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2.1"
+          />
+        </symbol>
+
+        <symbol id="i-text" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#5b6569" />
+          <g fill="#fff">
+            <rect x="9" y="19.5" width="17" height="2.4" rx="1.2" />
+            <rect x="9" y="25.3" width="17" height="2.4" rx="1.2" />
+            <rect x="9" y="31.1" width="10" height="2.4" rx="1.2" />
+          </g>
+        </symbol>
+      </defs>
+    </svg>
+
+    <!-- ================= Toppbar ================= -->
+    <header class="topbar">
+      <a class="wordmark" href="#top">
+        <b>Klart</b>
+        <span>v0.1.0</span>
+      </a>
+      <nav class="topnav">
+        <a href="#slik">Slik virker det</a>
+        <a href="#norsk">Norske felt</a>
+        <a href="#spesifikasjon">Spesifikasjon</a>
+        <a href="#ansvar">Ansvar</a>
+      </nav>
+      <a class="btn sm" href="#last-ned">Last ned</a>
+    </header>
+
+    <main id="top">
+      <!-- ================= Hero ================= -->
+      <section class="hero" id="programmet">
+        <p class="tag rise">
+          Laget i Norge <em>·</em> Mac og Windows <em>·</em> kjører uten nett
+        </p>
+        <h1 class="rise" style="--d: 60ms">
+          GDPR-trygg AI-bruk,
+          <span>bygget for norske regler.</span>
+        </h1>
+        <p class="lead rise" style="--d: 120ms">
+          Klart åpner hele mappen og finner fødselsnummer, D-nummer, org.nr og
+          andre norske personopplysninger i hver enkelt fil — så skriver det en
+          renset kopi ved siden av originalene. Ingen filer forlater maskinen.
+        </p>
+        <div class="get rise" style="--d: 180ms">
+          <a class="btn" href="#last-ned">
+            Last ned <span class="os">MAC</span>
+          </a>
+          <a class="btn ghost" href="#last-ned">
+            Last ned <span class="os">WINDOWS</span>
+          </a>
+        </div>
+        <p class="fineprint rise" style="--d: 230ms">
+          Ingen konto · ingen skytjeneste · ingenting lastes ned ved oppstart
+        </p>
+
+        <!-- Filtypene tidlig. Dette er det folk lurer på først. -->
+        <div class="formats rise" style="--d: 290ms">
+          <p>Leser filene du allerede jobber i</p>
+          <ul>
+            <li>
+              <svg class="ficon"><use href="#i-word" /></svg>
+              <span class="fname">Word</span>
+              <span class="fext">.docx</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-excel" /></svg>
+              <span class="fname">Excel</span>
+              <span class="fext">.xlsx · .xls · .csv</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-ppt" /></svg>
+              <span class="fname">PowerPoint</span>
+              <span class="fext">.pptx</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-pdf" /></svg>
+              <span class="fname">PDF</span>
+              <span class="fext">.pdf</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-mail" /></svg>
+              <span class="fname">E-post</span>
+              <span class="fext">.eml</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-text" /></svg>
+              <span class="fname">Tekst</span>
+              <span class="fext">.txt · .md</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Programvindu -->
+        <figure class="window rise">
+          <div class="titlebar">
+            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="name">Klart — kundesaker</span>
+            <span class="os-tag">gjennomgang</span>
+          </div>
+
+          <div class="appbar">
+            <div class="brand">
+              <b>Klart</b>
+              <span>før dokumentene går til AI</span>
+            </div>
+            <p class="pulse">
+              <i aria-hidden="true"></i> Alt kjører på denne maskinen
+            </p>
+          </div>
+
+          <div class="workspace">
+            <div class="pane">
+              <h3>Filer</h3>
+              <ul class="files">
+                <li class="on">
+                  <span class="fn"
+                    ><svg><use href="#i-pdf" /></svg
+                    ><span>02-vedtak-statsforvalter.pdf</span></span
+                  >
+                  <span class="meta">11 treff</span>
+                </li>
+                <li>
+                  <span class="fn"
+                    ><svg><use href="#i-word" /></svg
+                    ><span>01-arbeidsavtale-acme.docx</span></span
+                  >
+                  <span class="meta">7 treff</span>
+                </li>
+                <li>
+                  <span class="fn"
+                    ><svg><use href="#i-mail" /></svg
+                    ><span>03-epost-trad.eml</span></span
+                  >
+                  <span class="meta">5 treff</span>
+                </li>
+                <li>
+                  <span class="fn"
+                    ><svg><use href="#i-excel" /></svg
+                    ><span>08-kundeliste.xlsx</span></span
+                  >
+                  <span class="meta">3 treff</span>
+                </li>
+                <li>
+                  <span class="fn"
+                    ><svg><use href="#i-ppt" /></svg
+                    ><span>09-statusmote.pptx</span></span
+                  >
+                  <span class="meta">1 treff</span>
+                </li>
+                <li>
+                  <span class="fn"
+                    ><svg><use href="#i-text" /></svg
+                    ><span>07-saksnotat.txt</span></span
+                  >
+                  <span class="meta">0 treff</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="pane">
+              <div class="sheet-wrap">
+                <article class="sheet">
+                  <div class="docket">
+                    <span>02-vedtak-statsforvalter.pdf</span>
+                    <span>blir på denne maskinen</span>
+                  </div>
+                  <p class="head">Vedtak om vergemål</p>
+                  <p>
+                    Vergehaver: <mark>Kari Nordmann</mark>, fnr
+                    <mark class="flag">110779 41012</mark>, bosatt
+                    <mark>Glenneveien 272, 0550 Oslo</mark>.
+                  </p>
+                  <p>
+                    Verge: <mark>Lars Hansen</mark>, Advokatfirmaet Nordlys AS.
+                    Kontakt <mark class="mute">lars.hansen@advokat.no</mark>.
+                  </p>
+                  <p>
+                    Vergehaver er diagnostisert med
+                    <mark class="flag">depresjon</mark>. Utbetaling skjer til
+                    konto <mark class="flag">1503 42 17886</mark>.
+                  </p>
+                </article>
+              </div>
+            </div>
+
+            <div class="pane hits">
+              <h3>Dette byttes ut</h3>
+              <div class="hit-tools">
+                <span class="chipbtn">Bytt ut alle</span>
+                <span class="chipbtn">Behold alle</span>
+              </div>
+
+              <div class="hit-group">
+                <h4>Fødselsnummer <span>1</span></h4>
+                <div class="hit on">
+                  <span class="val">110779 41012</span>
+                  <span class="sub"
+                    ><b>[FØDSELSNUMMER_1]</b><span>modulus 11</span></span
+                  >
+                </div>
+              </div>
+
+              <div class="hit-group">
+                <h4>Helse / art. 9 <span>1</span></h4>
+                <div class="hit">
+                  <span class="val">depresjon</span>
+                  <span class="sub"><b>[HELSE_1]</b><span>byttes ut</span></span>
+                </div>
+              </div>
+
+              <div class="hit-group">
+                <h4>Person <span>2</span></h4>
+                <div class="hit">
+                  <span class="val">Kari Nordmann</span>
+                  <span class="sub"><b>[PERSON_1]</b><span>4 filer</span></span>
+                </div>
+                <div class="hit">
+                  <span class="val">Lars Hansen</span>
+                  <span class="sub"><b>[PERSON_2]</b><span>2 filer</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="statusline">
+            <span><b>6</b> filer · <b>23</b> av 27 byttes ut</span>
+            <span class="actions">
+              <span class="chipbtn">Tilbake</span>
+              <span class="btn sm">Lag renset kopi</span>
+            </span>
+          </div>
+          <figcaption hidden>
+            Gjennomgangen i Klart: filliste, dokument med markerte funn, og
+            lista over hva som byttes ut.
+          </figcaption>
+        </figure>
+      </section>
+
+      <!-- ================= Nøkkeltall ================= -->
+      <div class="readout">
+        <div>
+          <b class="zero">0</b>
+          <span>nettverkskall</span>
+        </div>
+        <div>
+          <b>9</b>
+          <span>filtyper leses</span>
+        </div>
+        <div>
+          <b>14</b>
+          <span>typer opplysninger</span>
+        </div>
+        <div>
+          <b>2</b>
+          <span>plattformer</span>
+        </div>
+      </div>
+
+      <!-- ================= Problemet ================= -->
+      <section>
+        <p class="slug"><i>01</i> Problemet</p>
+        <div class="intro rise">
+          <h2 class="title">
+            De får ikke legge mappene sine inn i et AI-verktøy.
+          </h2>
+          <p class="sub">
+            Saksbehandlere, HR, advokater, verger, økonomi. Folk som vil bruke
+            AI, og som allerede vet hvor grensen går. Én fil er et problem å
+            håndtere for hånd. En hel mappe er hverdagen.
+          </p>
+        </div>
+
+        <div class="cards rise">
+          <article>
+            <p class="idx">01</p>
+            <h3>Data om andre</h3>
+            <p>
+              Personopplysningsloven og virksomhetens egen internkontroll sier
+              det samme: opplysninger om andre skal ikke inn i et eksternt
+              AI-verktøy.
+            </p>
+          </article>
+          <article>
+            <p class="idx">02</p>
+            <h3>Arbeidet ligger i mapper</h3>
+            <p>
+              Word, Excel, PowerPoint, PDF og e-post, om hverandre, i
+              undermapper. Å rense ett og ett dokument for hånd skalerer ikke.
+            </p>
+          </article>
+          <article>
+            <p class="idx">03</p>
+            <h3>Norske identifikatorer</h3>
+            <p>
+              Det som må ut er fødselsnummer, D-nummer, org.nr og saksnummer fra
+              NAV og Statsforvalteren. Ikke et amerikansk SSN.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <!-- ================= Slik virker det ================= -->
+      <section id="slik">
+        <p class="slug"><i>02</i> Slik virker det</p>
+        <div class="intro rise">
+          <h2 class="title">Fire steg. Du bestemmer i steg tre.</h2>
+          <p class="sub">
+            Regelmotoren går alltid. Den innebygde språkmodellen tar et andre
+            pass for det reglene ikke fanger — navn i løpende tekst, adresser og
+            helseopplysninger.
+          </p>
+        </div>
+
+        <div class="steps">
+          <article class="step rise">
+            <div>
+              <p class="no">01</p>
+              <h3>Velg mappen</h3>
+              <p>
+                Pek på en mappe. Klart lister opp alt den kan lese, inkludert
+                undermapper, og viser det før den starter.
+              </p>
+            </div>
+            <div class="frag">
+              <div class="well">
+                <strong>Velg mappen du vil rense</strong>
+                <span>Word, Excel, PowerPoint, PDF, e-post og tekst</span>
+                <span class="btn sm">Velg mappe</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="step rise">
+            <div>
+              <p class="no">02</p>
+              <h3>Regler, så modell</h3>
+              <p>
+                Først norske sjekksummer og mønstre. Deretter den lokale
+                språkmodellen, som er treg med vilje. Den hopper ikke over
+                filer.
+              </p>
+            </div>
+            <div class="frag">
+              <p class="scanhead">
+                <span>4 / 6 filer ferdige</span>
+                <b>lokal modell leser</b>
+              </p>
+              <div class="meter"><i></i></div>
+              <ul class="scanrows">
+                <li>
+                  <span>01-arbeidsavtale-acme.docx</span>
+                  <span class="done">Ferdig · 7 treff</span>
+                </li>
+                <li>
+                  <span>02-vedtak-statsforvalter.pdf</span>
+                  <span class="done">Ferdig · 11 treff</span>
+                </li>
+                <li>
+                  <span>08-kundeliste.xlsx</span>
+                  <span class="now">Lokal modell — tar tid</span>
+                </li>
+                <li class="wait">
+                  <span>09-statusmote.pptx</span>
+                  <span>I kø</span>
+                </li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="step rise">
+            <div>
+              <p class="no">03</p>
+              <h3>Se over funnene</h3>
+              <p>
+                Hvert treff står med sin egen verdi, sitt merke og hvilken fil
+                det kom fra. Du krysser av hva som faktisk skal byttes ut. Samme
+                person får samme merke i hele mappen.
+              </p>
+            </div>
+            <div class="frag">
+              <div class="hit on">
+                <span class="val">Kari Nordmann</span>
+                <span class="sub"
+                  ><b>[PERSON_1]</b><span>byttes ut · 4 filer</span></span
+                >
+              </div>
+              <div class="hit">
+                <span class="val">110779 41012</span>
+                <span class="sub"
+                  ><b>[FØDSELSNUMMER_1]</b><span>byttes ut</span></span
+                >
+              </div>
+              <div class="hit off">
+                <span class="val">Advokatfirmaet Nordlys AS</span>
+                <span class="sub"><b>[PERSON_3]</b><span>beholdes</span></span>
+              </div>
+            </div>
+          </article>
+
+          <article class="step rise">
+            <div>
+              <p class="no">04</p>
+              <h3>Bruk kopien</h3>
+              <p>
+                Klart skriver en ny mappe ved siden av den gamle, i samme
+                format, med samme struktur. Rapporten sier hvor mye som ble
+                byttet ut — ikke hva det sto.
+              </p>
+            </div>
+            <div class="frag">
+              <div class="outbox">
+                <p class="path">~/Dokumenter/kundesaker-klar/</p>
+                <p class="note">
+                  6 filer skrevet · rapport.txt lagt ved · originalmappen er
+                  uendret
+                </p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ================= Før / etter ================= -->
+      <section>
+        <p class="slug"><i>03</i> Inn og ut</p>
+        <div class="intro rise">
+          <h2 class="title">Samme dokument. Uten det som ikke skal ut.</h2>
+          <p class="sub">
+            Merkene er stabile. Heter det Kari i både vedtaket og e-posten, blir
+            det [PERSON_1] i begge. AI-verktøyet forstår fortsatt saken, uten å
+            se hvem den handler om.
+          </p>
+        </div>
+
+        <div class="window rise">
+          <div class="titlebar">
+            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="name">02-vedtak-statsforvalter</span>
+            <span class="os-tag">før / etter</span>
+          </div>
+          <div class="diff">
+            <article class="leaf">
+              <div class="docket">
+                <span>Slik det står i mappen</span>
+                <span>kan ikke deles</span>
+              </div>
+              <p>Vedtak om vergemål · sak 2024/18442-SF</p>
+              <p>
+                Vergehaver: <mark>Kari Nordmann</mark>, fnr
+                <mark class="flag">110779 41012</mark>. Bosatt
+                <mark>Glenneveien 272, 0550 Oslo</mark>.
+              </p>
+              <p>
+                Diagnostisert med <mark class="flag">depresjon</mark>. Kontakt
+                <mark class="mute">lars.hansen@advokat.no</mark>.
+              </p>
+            </article>
+            <div class="perf" aria-hidden="true"></div>
+            <article class="leaf">
+              <div class="docket">
+                <span>Slik AI kan få det</span>
+                <span>laget på maskinen</span>
+              </div>
+              <p>Vedtak om vergemål · <code>[SAKSNR_1]</code></p>
+              <p>
+                Vergehaver: <code>[PERSON_1]</code>, fnr
+                <code>[FØDSELSNUMMER_1]</code>. Bosatt <code>[ADRESSE_1]</code>.
+              </p>
+              <p>
+                Diagnostisert med <code>[HELSE_1]</code>. Kontakt
+                <code>[E-POST_1]</code>.
+              </p>
+            </article>
+          </div>
+          <div class="diff-foot">
+            <span>Struktur, formatering og filtype beholdes</span>
+            <span>Originalen skrives aldri over</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= Norske felt ================= -->
+      <section id="norsk">
+        <p class="slug"><i>04</i> Norske felt</p>
+        <div class="intro rise">
+          <h2 class="title">
+            Ikke et oversatt filter.
+            <span class="mut">Skrevet for norske dokumenter.</span>
+          </h2>
+          <p class="sub">
+            Fødselsnummer og org.nr valideres med modulus 11, kontonummer og
+            norske IBAN med sin egen sjekksum. Et ellevesifret tall blir ikke
+            merket som fødselsnummer før kontrollsifrene stemmer.
+          </p>
+        </div>
+
+        <figure class="plate rise">
+          <img src="assets/vinter-hytte.jpg" alt="" />
+        </figure>
+
+        <div class="register rise">
+          <div class="reg flag">
+            <span class="tok">[FØDSELSNUMMER_n]</span>
+            <b>Fødselsnummer og D-nummer</b>
+            <span>Validert med modulus 11, ikke bare telt sifre.</span>
+          </div>
+          <div class="reg flag">
+            <span class="tok">[HELSE_n]</span>
+            <b>Helse og særlige kategorier</b>
+            <span>Diagnoser, sykmelding, rus og barnevern — art. 9.</span>
+          </div>
+          <div class="reg flag">
+            <span class="tok">[KONTONR_n]</span>
+            <b>Konto og IBAN</b>
+            <span>Norsk kontosjekksum og NO-IBAN.</span>
+          </div>
+          <div class="reg">
+            <span class="tok">[PERSON_n]</span>
+            <b>Personnavn</b>
+            <span>Norsk navneliste, og modellen for resten.</span>
+          </div>
+          <div class="reg">
+            <span class="tok">[ADRESSE_n]</span>
+            <b>Adresser og postnummer</b>
+            <span>Veien, gata, plassen — med husnummer og sted.</span>
+          </div>
+          <div class="reg">
+            <span class="tok">[SAKSNR_n]</span>
+            <b>Saksnummer</b>
+            <span>Journalnr, NAV-sak, SF-sak og kommunale referanser.</span>
+          </div>
+        </div>
+
+        <p class="also rise">
+          <b>Også:</b> organisasjonsnummer, e-post, telefon, fødselsdatoer,
+          samt API-nøkler og passord som ligger igjen i notater.
+        </p>
+      </section>
+
+      <!-- ================= Spesifikasjon ================= -->
+      <section id="spesifikasjon">
+        <p class="slug"><i>05</i> Spesifikasjon</p>
+        <div class="spec-grid">
+          <div>
+            <h2 class="title rise">Et program, ikke en tjeneste.</h2>
+            <p class="sub rise" style="margin-top: 22px">
+              Ingen konto, ingen abonnementsnøkkel, ingen server å stole på.
+              Motoren og språkmodellen ligger i installasjonsfilen, så programmet
+              laster ikke ned noe når du åpner det første gang.
+            </p>
+          </div>
+
+          <div class="spec rise">
+            <dl>
+              <dt>Plattform</dt>
+              <dd>Mac og Windows. Samme kodebase, samme oppførsel.</dd>
+
+              <dt>Nettverk</dt>
+              <dd><em>Ingen utgående trafikk.</em> Fungerer offline.</dd>
+
+              <dt>Motor</dt>
+              <dd>
+                Regelmotor med norske sjekksummer, og en innebygd lokal
+                språkmodell som andre pass.
+              </dd>
+
+              <dt>Leser</dt>
+              <dd>
+                <div class="exts">
+                  <span>.docx</span><span>.xlsx</span><span>.xls</span
+                  ><span>.csv</span><span>.pptx</span><span>.pdf</span
+                  ><span>.eml</span><span>.txt</span><span>.md</span>
+                </div>
+              </dd>
+
+              <dt>Skriver</dt>
+              <dd>
+                Samme format tilbake for Word, Excel og PowerPoint. PDF skrives
+                som ren tekst.
+              </dd>
+
+              <dt>Utdata</dt>
+              <dd>
+                Ny mappe <code>mappenavn-klar/</code> ved siden av originalen,
+                med rapport over antall per type.
+              </dd>
+
+              <dt>Originaler</dt>
+              <dd>
+                <em>Røres aldri.</em> Programmet skriver bare til den nye mappen.
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= Ansvar ================= -->
+      <section id="ansvar" class="ansvar">
+        <p class="slug"><i>06</i> Ansvar</p>
+        <h2 class="title rise">Et verktøy, ikke en garanti.</h2>
+        <div class="legal rise">
+          <p>
+            <b>Klart er et teknisk hjelpemiddel.</b> Det er ikke juridisk
+            rådgivning, og ikke en attest på at et dokument er lovlig å dele.
+          </p>
+          <p>
+            <b>Ingen automatisk rensing fanger alt.</b> Indirekte identifikasjon
+            kan stå igjen, og en lokal modell kan ta feil. Derfor er
+            gjennomgangen en del av flyten, ikke et valg du kan hoppe over.
+          </p>
+          <p>
+            <b>Du er behandlingsansvarlig.</b> Klart garanterer ikke fullstendig
+            anonymisering etter GDPR eller personopplysningsloven, og erstatter
+            ikke personvernombud, DPIA eller internkontroll.
+          </p>
+          <p>
+            <b>All behandling skjer på din maskin.</b> Vi ser ikke dokumentene
+            dine. Det fritar deg ikke for ansvaret for det du senere velger å
+            sende videre.
+          </p>
+        </div>
+      </section>
+
+      <!-- ================= Nedlasting ================= -->
+      <section id="last-ned" class="download">
+        <h2 class="title rise">Legg det på maskinen, og prøv på en mappe.</h2>
+        <p class="sub rise">
+          Klart bygges til Mac og Windows fra samme kodebase. Installer, pek på
+          en mappe, og se hva som ligger der før noe går videre.
+        </p>
+        <div class="get rise">
+          <a class="btn" href="#last-ned">Last ned <span class="os">MAC</span></a>
+          <a class="btn ghost" href="#last-ned"
+            >Last ned <span class="os">WINDOWS</span></a
+          >
+        </div>
+        <p class="fineprint rise">
+          Ingen konto · ingen registrering · ingen data sendes ved installasjon
+        </p>
+      </section>
+    </main>
+
+    <!-- ================= Bunn ================= -->
+    <footer>
+      <div class="colofon">
+        <p class="wordmark"><b>Klart</b> <span>v0.1.0</span></p>
+        <p class="byline">
+          Verktøyet er bygget av norsk AI-konsulent
+          <b>Johan Tidemann Esbjug</b> for å åpne mulighetene for AI-bruk hos
+          det norske markedet.
+        </p>
+      </div>
+      <div class="footmeta">
+        <span>Laget i Norge · for norske regler</span>
+        <span>Ikke juridisk rådgivning</span>
+        <span>Mac og Windows</span>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        var reveal = document.querySelectorAll(".rise");
+        if (!("IntersectionObserver" in window)) {
+          reveal.forEach(function (el) {
+            el.classList.add("in");
+          });
+          return;
+        }
+        var io = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add("in");
+              io.unobserve(entry.target);
+            });
+          },
+          { rootMargin: "0px 0px -10% 0px", threshold: 0.05 }
+        );
+        reveal.forEach(function (el) {
+          io.observe(el);
+        });
+      })();
+    </script>
+  </body>
+</html>

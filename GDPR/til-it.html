@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="nb">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Klart — til IT-avdelingen</title>
+    <meta
+      name="description"
+      content="Fem kommandoer som avgjør om Klart kan snakke med nett. Med fasit, og med det hver enkelt sjekk faktisk beviser."
+    />
+    <meta name="robots" content="noindex" />
+    <!--
+      Én fil. Ingen skript, ingen skrifter, ingen bilder utenfra. En side om
+      et program som ikke går på nett bør ikke selv hente noe.
+    -->
+    <style>
+      :root {
+        --ink: #15202e;
+        --ink-2: #4d5b6c;
+        --ink-3: #8492a4;
+        --ground: #eef3fb;
+        --card: #fff;
+        --rule: #dbe4f1;
+        --signal: #2456e6;
+        --ok: #0e7a5a;
+        --flag: #c02744;
+        --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--ground);
+        color: var(--ink);
+        font: 16.5px/1.62 var(--sans);
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap { max-width: 760px; margin: 0 auto; padding: clamp(28px, 6vw, 76px) clamp(20px, 5vw, 40px) 96px; }
+      header { border-bottom: 1px solid var(--rule); padding-bottom: 28px; margin-bottom: 40px; }
+      .kicker {
+        font: 500 12px/1 var(--mono);
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: var(--signal);
+        margin: 0 0 14px;
+      }
+      h1 { font-size: clamp(28px, 5vw, 40px); line-height: 1.14; letter-spacing: -0.02em; margin: 0 0 16px; }
+      .lead { font-size: 18.5px; color: var(--ink-2); margin: 0; max-width: 60ch; }
+      h2 {
+        font-size: 20px;
+        letter-spacing: -0.01em;
+        margin: 0 0 6px;
+        display: flex;
+        gap: 12px;
+        align-items: baseline;
+      }
+      h2 .n {
+        font: 500 13px/1.5 var(--mono);
+        color: var(--signal);
+        background: #e2ebfd;
+        border-radius: 6px;
+        padding: 2px 8px;
+        flex: none;
+      }
+      section {
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-radius: 12px;
+        padding: 24px 26px;
+        margin-bottom: 18px;
+      }
+      section > p { color: var(--ink-2); margin: 0 0 16px; }
+      section > p:last-child { margin-bottom: 0; }
+      pre {
+        background: #16233a;
+        color: #e8eef8;
+        border-radius: 8px;
+        padding: 14px 16px;
+        overflow-x: auto;
+        font: 13.5px/1.62 var(--mono);
+        margin: 0 0 14px;
+      }
+      pre .c { color: #93a4bd; }
+      code:not(pre code) {
+        font: 0.9em var(--mono);
+        background: #eef3fb;
+        border: 1px solid var(--rule);
+        border-radius: 5px;
+        padding: 1px 5px;
+      }
+      .fasit {
+        border-left: 3px solid var(--ok);
+        padding: 2px 0 2px 15px;
+        margin: 0 0 14px;
+        color: var(--ink);
+      }
+      .fasit b { color: var(--ok); }
+      .advarsel {
+        border-left: 3px solid var(--flag);
+        padding: 2px 0 2px 15px;
+        margin: 0 0 14px;
+      }
+      .advarsel b { color: var(--flag); }
+      .beviser {
+        font-size: 14.5px;
+        color: var(--ink-3);
+        border-top: 1px dashed var(--rule);
+        margin: 16px 0 0;
+        padding-top: 13px;
+      }
+      .beviser b { color: var(--ink-2); font-weight: 600; }
+      .slutt {
+        background: #16233a;
+        color: #fff;
+        border-radius: 12px;
+        padding: 30px 32px;
+        margin-top: 34px;
+      }
+      .slutt p { margin: 0 0 12px; color: #ccd8ea; }
+      .slutt strong { color: #fff; font-size: 19px; display: block; margin-bottom: 10px; line-height: 1.4; }
+      .slutt p:last-child { margin-bottom: 0; }
+      table { border-collapse: collapse; width: 100%; font-size: 15px; }
+      td, th { text-align: left; padding: 7px 10px 7px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+      th { font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-3); font-weight: 600; }
+      td:first-child { font-family: var(--mono); font-size: 13.5px; white-space: nowrap; padding-right: 22px; }
+      footer { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--rule); color: var(--ink-3); font-size: 14.5px; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <p class="kicker">Klart · til IT-avdelingen</p>
+        <h1>Fem kommandoer, og hva hver av dem faktisk beviser</h1>
+        <p class="lead">
+          Klart renser dokumenter lokalt. Motoren og språkmodellen ligger i
+          installasjonsfilen, og ingenting lastes ned. Du skal slippe å tro på
+          det. Under står kommandoene som avgjør saken — med fasit, og med en
+          ærlig merknad om hva hver enkelt sjekk holder for.
+        </p>
+      </header>
+
+      <section>
+        <h2><span class="n">1</span> Er dette vår fil?</h2>
+        <p>
+          Vi publiserer SHA-256 for hver utgivelse, samme sted som nedlastingen.
+          Får du et annet tall, er filen ikke vår.
+        </p>
+        <pre><span class="c"># macOS</span>
+shasum -a 256 Klart.dmg
+
+<span class="c"># Windows</span>
+Get-FileHash .\Klart.msi</pre>
+        <p class="beviser">
+          <b>Beviser:</b> at filen er den vi ga ut. Ikke noe mer — en sjekksum
+          sier ingenting om hva programmet gjør.
+        </p>
+      </section>
+
+      <section>
+        <h2><span class="n">2</span> Er den signert av oss, og urørt?</h2>
+        <pre>codesign -dv --verbose=4 /Applications/Klart.app
+spctl -a -vv /Applications/Klart.app</pre>
+        <div class="fasit">
+          <b>Fasit:</b> vår Team ID, og <code>accepted</code> fra spctl.
+        </div>
+        <p>
+          Sjekk gjerne motoren inni pakken også — den er en egen kjørbar fil:
+        </p>
+        <pre>codesign -dv --verbose=2 \
+  /Applications/Klart.app/Contents/Resources/bundled/engine/llama-server</pre>
+        <p>
+          Motoren er llama.cpp, bygget av Ollama-prosjektet. Ollama selv — den
+          som er en HTTP-server med et registerklientledd — er ikke med i
+          pakken; det er bare llama.cpp-serveren og modellfilen. Ved signering
+          skrives hele pakken om med vår Team ID, motoren inkludert, så dette
+          skal vise samme ID som appen. Gjør den ikke det, er pakken ikke
+          signert ferdig — si fra, så er det vår feil, ikke deres.
+        </p>
+        <p class="beviser">
+          <b>Beviser:</b> at koden er vår og ikke endret etterpå. Dette er
+          testen mot en ombygd kopi. En «hacket versjon» med en socket i seg er
+          et annet program — ingen sperre inne i vår binær overlever at noen
+          bytter ut koden. Det er signaturen som fanger det, og at dere bare
+          installerer det vi har signert.
+        </p>
+      </section>
+
+      <section>
+        <h2><span class="n">3</span> Har den lov til å bruke nett?</h2>
+        <pre>codesign -d --entitlements - --xml /Applications/Klart.app | plutil -p -</pre>
+        <div class="fasit">
+          <b>Fasit:</b> verken
+          <code>com.apple.security.network.client</code> eller
+          <code>com.apple.security.network.server</code> skal stå der.
+        </div>
+        <div class="advarsel">
+          <b>Men les dette:</b> disse to rettighetene håndheves bare når
+          <code>com.apple.security.app-sandbox</code> er slått på. Er den ikke
+          det, er fraværet av dem bare metadata — en app med Hardened Runtime og
+          null rettigheter kan fint åpne en forbindelse ut. Vi sier det heller
+          enn å la dere oppdage det selv.
+        </div>
+        <p>
+          Står <code>app-sandbox</code> der: da nekter kjernen utgående TCP, også
+          til maskinen selv, og punkt 3 er en ekte sperre. Står den ikke der: se
+          punkt 4 og 5, og sett deres egen regel.
+        </p>
+        <p class="beviser">
+          <b>Beviser:</b> med app-sandbox — at nett er avskrudd i kjernen. Uten
+          app-sandbox — ingenting alene.
+        </p>
+      </section>
+
+      <section>
+        <h2><span class="n">4</span> Snakker den likevel?</h2>
+        <p>
+          Kjør en rensing på en mappe, og se etter mens den står på. Motoren er
+          en egen prosess, så sjekk begge.
+        </p>
+        <pre><span class="c"># finn prosessene</span>
+pgrep -x Klart; pgrep -x llama-server
+
+<span class="c"># nett-socketer for hver av dem — merk -a, den binder filtrene sammen</span>
+lsof -nP -a -i -p &lt;pid&gt;</pre>
+        <div class="fasit">
+          <b>Fasit: ingen rader.</b> Hverken appen eller motoren har en eneste
+          TCP- eller UDP-socket. Motoren lytter på en filsocket i brukerens egen
+          midlertidige mappe — <code>no.klart.app-motor.sock</code> — og en
+          AF_UNIX-socket kan ikke adressere noe utenfor maskinen.
+        </div>
+        <div class="advarsel">
+          <b>Pass på flagget <code>-a</code>.</b> Uten det tolker lsof
+          <code>-i</code> og <code>-p</code> som «eller», og du får hele
+          maskinens trafikk i listen — nettleseren, Dropbox, alt. Det ser
+          dramatisk ut og har ingenting med Klart å gjøre. Med
+          <code>-a</code> får du null rader.
+        </div>
+        <p>LuLu eller Little Snitch ved siden av gir samme svar, hvis dere heller vil se det slik.</p>
+        <p class="beviser">
+          <b>Beviser:</b> at programmet slik det kjører hos dere ikke har en vei
+          ut. Dette er den sjekken vi selv stoler mest på.
+        </p>
+      </section>
+
+      <section>
+        <h2><span class="n">5</span> Hva er den laget av?</h2>
+        <p>
+          Presist sagt: det finnes ingen HTTP-klient som kan nå en vert. Appen
+          snakker med modellen over en filsocket, med noen titalls linjer
+          HTTP/1.1 skrevet for hånd — og en AF_UNIX-socket har ingen vert å
+          koble til. Ingen TLS-stakk, ingen navneoppslag, ingen TCP, verken i
+          våre avhengigheter eller i standardbiblioteket.
+        </p>
+        <p>
+          Nettleservinduet er WebKit og kunne i prinsippet hentet hva som helst.
+          Det er CSP-en i tabellen under som stenger den døra, og punkt 4 som
+          viser at den er stengt.
+        </p>
+        <pre><span class="c"># i kildekoden, mot den grafen som faktisk bygges</span>
+cd src-tauri &amp;&amp; cargo tree -e normal | grep -E 'reqwest|hyper|rustls|native-tls|openssl'</pre>
+        <div class="fasit"><b>Fasit:</b> ingen treff.</div>
+        <table>
+          <tr>
+            <th>Fil</th>
+            <th>Hva dere ser etter</th>
+          </tr>
+          <tr>
+            <td>src-tauri/Cargo.toml</td>
+            <td>ingen <code>reqwest</code>, ingen TLS-stakk, <code>tokio</code> uten <code>net</code></td>
+          </tr>
+          <tr>
+            <td>src-tauri/src/engine.rs</td>
+            <td>motoren nås over en Unix-socket. Ingen adresse, ingen port</td>
+          </tr>
+          <tr>
+            <td>capabilities/default.json</td>
+            <td>vinduet er nektet <code>open_url</code>. Ingen http-tillegg, ingen oppdateringstjeneste</td>
+          </tr>
+          <tr>
+            <td>tauri.conf.json</td>
+            <td>CSP der <code>connect-src</code> bare slipper gjennom appens interne IPC-kanal</td>
+          </tr>
+          <tr>
+            <td>scripts/sjekk-nett.sh</td>
+            <td>sjekken over, kjørt før hvert bygg. Kommer noe av dette tilbake, stopper bygget</td>
+          </tr>
+        </table>
+        <p class="beviser" style="margin-top: 18px">
+          <b>Beviser:</b> at det ikke finnes kode i programmet som kan snakke
+          HTTP. Er kilden åpen for dere, kan dere bygge den selv og sammenligne.
+        </p>
+      </section>
+
+      <section>
+        <h2><span class="n">+</span> Om oppdateringer og telemetri</h2>
+        <p>
+          Det er ingen av delene. Ingen «se etter ny versjon», ingen bruksstatistikk,
+          ingen feilrapportering. En oppdatering er en ny installasjonsfil dere
+          henter selv, når dere vil.
+        </p>
+      </section>
+
+      <div class="slutt">
+        <strong>Stol ikke på oss. Steng utgående trafikk for Klart i brannmuren eller via MDM.</strong>
+        <p>Programmet virker like godt. Det er hele poenget med å bygge det slik.</p>
+        <p>
+          <b>Ta med begge to.</b> Motoren er en egen kjørbar fil, ikke en tråd
+          inne i appen, og en regel som bare nevner Klart slipper den forbi:
+        </p>
+        <pre style="background: #0d1626; margin-top: 4px">/Applications/Klart.app/Contents/MacOS/Klart
+/Applications/Klart.app/Contents/Resources/bundled/engine/llama-server</pre>
+        <p>
+          Motoren er llama.cpp. Den er bygget som en HTTP-server — det er slik
+          llama.cpp er laget — og vi kjører den derfor på en filsocket i stedet
+          for en port, med en tilfeldig nøkkel appen lager ved hver oppstart, så
+          ingen annen prosess på maskinen kan bruke den. Men den kjørbare filen
+          inneholder HTTP-kode, og det skal dere få vite fra oss framfor å finne
+          det selv. Regelen over gjør spørsmålet uinteressant.
+        </p>
+        <p>
+          Når regelen er deres, trenger dere ikke ta vårt ord for noe av det
+          over. På Windows kan installasjonsfilen sette regelen selv — men vi
+          anbefaler at dere pusher deres egen, av samme grunn.
+        </p>
+      </div>
+
+      <footer>
+        Klart · lokal rensing av norske personopplysninger. Spørsmål om noe av
+        dette hører hjemme hos oss, ikke hos brukeren — ta kontakt, så går vi
+        gjennom det.
+      </footer>
+    </div>
+  </body>
+</html>
