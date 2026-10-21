@@ -339,14 +339,15 @@ const lyd = {
   },
   puls() { this.tone('sine', 70, 45, 0.09, 0.35); },
   god() { this.tone('sine', 90, 50, 0.12, 0.4); this.stoy(0.015, 0.4, 'highpass', 2000); },
-  perfekt(k) { const f = 523 * 2 ** (Math.min(k, 12) / 12); this.tone('triangle', f, f, 0.07, 0.3); this.tone('triangle', f * 1.5, f * 1.5, 0.07, 0.3, 0.07); },
-  bom() { this.tone('sawtooth', 160, 60, 0.3, 0.25); this.tone('square', 110, 110, 0.25, 0.08, 0.05); },
+  // Tonene følger sangen (e-moll): perfekt klatrer opp skalaen fra E5, med kvinten i skalaen over.
+  perfekt(k) { const f = emoll(Math.min(k, 12)), q = emoll(Math.min(k, 12) + 4); this.tone('triangle', f, f, 0.07, 0.3); this.tone('triangle', q, q, 0.07, 0.3, 0.07); },
+  bom() { musikk.dukk(); this.tone('sawtooth', 160, 60, 0.3, 0.25); this.tone('square', 110, 110, 0.25, 0.08, 0.05); },
   spotter() { this.tone('sine', 880, 880, 0.06, 0.2); this.tone('sine', 1175, 1175, 0.06, 0.2, 0.08); },
   klonk() { this.tone('square', 220, 200, 0.18, 0.3); this.tone('square', 331, 310, 0.18, 0.3); this.stoy(0.04, 0.3, 'lowpass', 1500); },
   ding() { this.tone('sine', 1320, 1320, 0.4, 0.25); },
   jubel(d) { this.stoy(d, 0.15, 'bandpass', 1000, 0.7, 0, d / 2); },
   stempel() { this.stoy(0.06, 0.5, 'lowpass', 800); },
-  slutt() { [392, 330, 262].forEach((f, i) => this.tone('triangle', f, f, 0.18, 0.25, i * 0.18)); },
+  slutt() { [494, 392, 330].forEach((f, i) => this.tone('triangle', f, f, 0.18, 0.25, i * 0.18)); },
   startAnstreng(fp) {
     if (!AC || anstreng) return;
     const o = AC.createOscillator(), lp = AC.createBiquadFilter(), g = AC.createGain();
@@ -357,10 +358,34 @@ const lyd = {
   anstrengNiva(p, fp) { if (anstreng && AC) { anstreng.o.frequency.setTargetAtTime(90 + 50 * p, AC.currentTime, 0.03); anstreng.g.gain.setTargetAtTime(fp ? 0.05 : 0.03, AC.currentTime, 0.05); } },
   stoppAnstreng() { if (anstreng && AC) { const a = anstreng; a.g.gain.setTargetAtTime(0, AC.currentTime, 0.03); a.o.stop(AC.currentTime + 0.2); } anstreng = null; },
 };
+const EMOLL = [0, 2, 3, 5, 7, 8, 10];
+const emoll = k => 659.25 * 2 ** ((EMOLL[k % 7] + 12 * Math.floor(k / 7)) / 12);
+
+// Musikken: «Tidemann, løft Norge opp» (e-moll, ~99 bpm) i loop bak spillet. Egen gain rett til høyttaleren, ikke gjennom
+// kompressoren, så den ikke presser lydeffektene ned. Den starter med første runde, dukker kort under bom, går ned på
+// resultatkortet, stopper ved pause og skjult fane, og følger lydknappen.
+const MUSIKK_NIVA = 0.3;
+const musikk = {
+  el: null, g: null, base: 1, dukkT: 0,
+  lag() {
+    if (this.el || !AC) return;
+    try {
+      this.el = new Audio('sang.mp3'); this.el.loop = true; this.el.preload = 'auto';
+      const src = AC.createMediaElementSource(this.el); this.g = AC.createGain(); this.g.gain.value = 0;
+      src.connect(this.g); this.g.connect(AC.destination);
+    } catch { this.el = null; }
+  },
+  sett(k, tid = 0.4) { if (this.g) this.g.gain.setTargetAtTime(lydPaa ? MUSIKK_NIVA * k : 0, AC.currentTime, tid / 3); },
+  start() { this.lag(); if (!this.el) return; this.sett(this.base, 0.8); if (this.el.paused) this.el.play().catch(() => {}); },
+  stopp() { if (this.el && !this.el.paused) this.el.pause(); },
+  niva(k) { this.base = k; this.sett(k); },
+  dukk() { if (!this.g) return; this.sett(this.base * 0.4, 0.04); clearTimeout(this.dukkT); this.dukkT = setTimeout(() => this.sett(this.base, 0.9), 450); },
+};
 function vibrer(m) { if (lydPaa && navigator.vibrate) try { navigator.vibrate(m); } catch {} }
 function settLyd(paa) {
   lydPaa = paa; lager.set('lyd', paa ? '1' : '0'); $('lydK').setAttribute('aria-pressed', paa);
   if (master) master.gain.setTargetAtTime(paa ? 0.6 : 0, AC.currentTime, 0.02);
+  musikk.sett(musikk.base, 0.06);
 }
 $('lydK').setAttribute('aria-pressed', lydPaa);
 
@@ -396,7 +421,7 @@ function iFastpunkt(t) { if (!P.fp) return false; const tau = t - P.t0, a = P.fp
 function senter(t) { return P.glid ? P.c0 + CONFIG.GLIDENDE.amp * Math.sin(2 * Math.PI * (t - P.t0) / CONFIG.GLIDENDE.periode) : P.c0; }
 
 function startRunde() {
-  lagLyd();
+  lagLyd(); musikk.niva(1); musikk.start();
   Object.assign(S, { n: START_NIVA, repsNiva: 0, poeng: 0, lys: 0, okRad: 0, combo: 0, besteCombo: 0, reps: 0, perfekte: 0,
     forsok: 0, tyngste: 0, modus: false, modusT: -9, modusSlutt: -9, forrigeFp: false, forsteFp: true, nivaa4Fp: true, bomNr: 0,
     tilBoble: 6 + Math.floor(Math.random() * 4), stempelVist: false, kortVist: false, nyPr: false, pumpA: 0, pumpT: -9, knappPop: false,
@@ -545,7 +570,7 @@ function startModus() { S.modus = true; S.modusT = spillTid; boble('Nå går det
 function sluttModus() { S.modus = false; S.modusSlutt = spillTid; }
 
 function sluttRunde() {
-  S.sluttN = S.n;
+  S.sluttN = S.n; musikk.niva(0.5);
   const runder = (parseInt(lager.get('runder'), 10) || 0) + 1; lager.set('runder', runder);
   const pr = parseInt(lager.get('pr'), 10) || 0;
   S.forrigePr = pr; S.forrigePrBy = lager.get('prBy');
@@ -585,13 +610,13 @@ function visKort() {
 // ---------- Pause ----------
 function pause() {
   if (pauset || !spillbar()) return;
-  pauset = true; nedtelling = null; lyd.stoppAnstreng();
+  pauset = true; nedtelling = null; lyd.stoppAnstreng(); musikk.stopp();
   $('pauseT').textContent = 'Trykk for å fortsette'; $('pauseT').className = ''; $('pauselag').hidden = false;
   $('pauseK').setAttribute('aria-label', 'Fortsett'); melde('Pause. Trykk for å fortsette.');
 }
 function startNedtelling() { nedtelling = { slutt: performance.now() / 1000 + 0.9 }; }
 function fortsett() {
-  pauset = false; nedtelling = null; $('pauselag').hidden = true; $('pauseK').setAttribute('aria-label', 'Pause');
+  pauset = false; nedtelling = null; musikk.start(); $('pauselag').hidden = true; $('pauseK').setAttribute('aria-label', 'Pause');
   if (S.tilstand === 'PRESS' || S.tilstand === 'SENK') { P.aktiv = false; gaTil('SENK', stangY); }
 }
 
@@ -1406,7 +1431,8 @@ addEventListener('keydown', e => {
   else if (e.code === 'KeyP' || e.code === 'Escape') { if (pauset) { if (!nedtelling) startNedtelling(); } else pause(); }
 });
 document.addEventListener('visibilitychange', () => {
-  if (!document.hidden) return;
+  if (!document.hidden) { if (!pauset && musikk.el && musikk.el.currentTime > 0) musikk.start(); return; }
+  musikk.stopp();
   if (pauset) { nedtelling = null; $('pauseT').textContent = 'Trykk for å fortsette'; $('pauseT').className = ''; } else pause();
 });
 // Museklikk skal ikke gi knappene fokus, ellers treffer mellomrom knappen i stedet for å løfte. Tab virker som før.
