@@ -21,6 +21,12 @@ export default {
       url.pathname = url.pathname.startsWith("/ny/en") ? "/en/" : "/";
       return Response.redirect(url.toString(), 301);
     }
+    // Klart ligger i /GDPR/. Stiene skiller store og små bokstaver, så /gdpr, /Gdpr osv. sendes dit.
+    const gdpr = url.pathname.match(/^\/gdpr(\/.*)?$/i);
+    if (gdpr && !url.pathname.startsWith("/GDPR")) {
+      url.pathname = "/GDPR" + (gdpr[1] || "/");
+      return Response.redirect(url.toString(), 301);
+    }
     // Visit push for page loads; never allowed to break serving the page.
     try { const visit = pageVisit(request, env, url); if (visit) ctx.waitUntil(visit); } catch {}
     return env.ASSETS.fetch(request);
