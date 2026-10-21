@@ -1,0 +1,1447 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Tidemann Løfter AI-Norge</title>
+<meta name="description" content="Et styrkeløft for norsk digitalisering. Trykk i det grønne og løft AI-Norge til Nordkapp.">
+<meta name="theme-color" content="#00205B">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Tidemann Løfter AI-Norge">
+<meta property="og:description" content="Et styrkeløft for norsk digitalisering. Trykk i det grønne og løft AI-Norge til Nordkapp.">
+<meta property="og:url" content="https://esbjugconsult.com/benkpress/">
+<meta property="og:image" content="https://esbjugconsult.com/benkpress/hode.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2300205B'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%23BA0C2F' stroke='%23fff' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preload" href="hode.png" as="image">
+<style>
+  @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces.woff2) format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+  @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces-italic.woff2) format("woff2");font-weight:100 900;font-style:italic;font-display:swap}
+  @font-face{font-family:"Barlow Condensed";src:url(/media/fonts/barlow-condensed-700.woff2) format("woff2");font-weight:700;font-display:swap}
+  @font-face{font-family:"Barlow Condensed";src:url(/media/fonts/barlow-condensed-800.woff2) format("woff2");font-weight:800;font-display:swap}
+  @font-face{font-family:"Barlow";src:url(/media/fonts/barlow-400.woff2) format("woff2");font-weight:400;font-display:swap}
+  @font-face{font-family:"Barlow";src:url(/media/fonts/barlow-600.woff2) format("woff2");font-weight:600;font-display:swap}
+  :root{--b:#00205B;--r:#BA0C2F;--k:1;--sx:0px;--sy:0px;--sw:390px;--sh:844px}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:#00205B;color:#fff;overflow:hidden;overscroll-behavior:none;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+  body{font-family:"Barlow",-apple-system,"Helvetica Neue",Arial,sans-serif}
+  #c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none}
+  /* Alt i DOM ligger i scenens boks (390×844 skalert), så tekst og knapper følger lerretet. */
+  .scene{position:fixed;left:var(--sx);top:var(--sy);width:var(--sw);height:var(--sh);pointer-events:none}
+  .knapp{position:absolute;top:calc(8px*var(--k));width:max(32px,calc(44px*var(--k)));height:max(32px,calc(44px*var(--k)));padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;display:grid;place-items:center;cursor:pointer;pointer-events:auto;touch-action:manipulation;z-index:5}
+  .knapp svg{width:22px;height:22px;display:block}
+  #lydK{left:calc(8px*var(--k))} #pauseK{right:calc(8px*var(--k))}
+  .knapp::before{content:"";position:absolute;inset:-7px;border-radius:50%}
+  #lydK[aria-pressed="false"] .paa,#lydK[aria-pressed="true"] .av{display:none}
+  :focus{outline:none}
+  :focus-visible{outline:3px solid #fff;outline-offset:0;box-shadow:0 0 0 5px #BA0C2F}
+  .lag{position:absolute;inset:0;text-align:center}
+  .lag[hidden],#pauselag[hidden],#stempel[hidden],.kort[hidden]{display:none}
+  #start{transition:opacity .2s}
+  #start.ut{opacity:0}
+  #start h1{position:absolute;left:0;right:0;top:calc(52px*var(--k));margin:0;padding:0 calc(20px*var(--k));font:italic 600 calc(34px*var(--k))/1.04 "Fraunces",Georgia,serif;text-shadow:0 2px 12px rgba(0,10,40,.6)}
+  #start .under{position:absolute;left:0;right:0;top:calc(124px*var(--k));margin:0;font:400 calc(16px*var(--k))/1.3 "Barlow",sans-serif;opacity:.92;text-shadow:0 1px 6px rgba(0,10,40,.7)}
+  #start .cta{position:absolute;left:calc(40px*var(--k));right:calc(40px*var(--k));top:calc(612px*var(--k));padding:calc(14px*var(--k)) calc(12px*var(--k));border-radius:calc(18px*var(--k));background:rgba(0,32,91,.82);box-shadow:0 10px 30px rgba(0,10,40,.35);display:flex;flex-direction:column;gap:calc(6px*var(--k))}
+  #start .cta b{font:800 calc(28px*var(--k))/1 "Barlow Condensed",sans-serif;letter-spacing:.03em;animation:puls 1.2s ease-in-out infinite}
+  #start .cta span{font:600 max(13px,calc(14px*var(--k)))/1.3 "Barlow",sans-serif}
+  #start .cta #rekord{font-weight:400;font-size:max(12px,calc(13px*var(--k)));opacity:.85}
+  #start .cta [hidden]{display:none}
+  #start .hjelp{position:absolute;left:0;right:0;bottom:calc(10px*var(--k));margin:0;font:600 calc(12px*var(--k))/1.2 "Barlow",sans-serif;opacity:.8;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+  @media (pointer:coarse){#start .hjelp{display:none}}
+  @keyframes puls{50%{transform:scale(1.06)}}
+  #pauselag{background:rgba(0,32,91,.7);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(14px*var(--k));padding:0 calc(24px*var(--k))}
+  #pauselag p{margin:0;font:italic 500 calc(26px*var(--k))/1.2 "Fraunces",Georgia,serif}
+  #pauselag b{font:800 calc(20px*var(--k))/1 "Barlow Condensed",sans-serif;letter-spacing:.04em}
+  #pauselag b.tall{font-size:calc(72px*var(--k))}
+  #stempel{position:absolute;left:0;right:0;top:calc(250px*var(--k));display:flex;flex-direction:column;align-items:center;gap:calc(10px*var(--k))}
+  #stempel b{display:block;padding:calc(4px*var(--k)) calc(16px*var(--k));border:calc(5px*var(--k)) solid #BA0C2F;border-radius:calc(10px*var(--k));background:#fff;color:#BA0C2F;font:800 calc(64px*var(--k))/1 "Barlow Condensed",sans-serif;letter-spacing:.02em;transform:rotate(-8deg);animation:stemp .2s cubic-bezier(.3,1.4,.5,1) both;box-shadow:0 8px 24px rgba(0,10,40,.4)}
+  #stempel span{max-width:80%;font:600 calc(14px*var(--k))/1.3 "Barlow",sans-serif;text-shadow:0 1px 6px rgba(0,10,40,.8);animation:inn .3s .15s both}
+  @keyframes stemp{from{transform:rotate(-8deg) scale(2);opacity:0}to{transform:rotate(-8deg) scale(1);opacity:1}}
+  @keyframes inn{from{opacity:0}}
+  /* Resultatkortet ligger utenfor den skalerte scenen, så teksten aldri blir mindre enn lesbar (--kk ≥ 0,86). */
+  .kort{--kk:clamp(.86,var(--k),1.15);position:fixed;left:max(12px,calc(50% - 228px));right:max(12px,calc(50% - 228px));bottom:12px;z-index:6;padding:calc(18px*var(--kk)) calc(18px*var(--kk)) calc(14px*var(--kk));border-radius:18px;background:#fff;color:#00205B;text-align:center;pointer-events:none;box-shadow:0 -10px 40px rgba(0,10,40,.35);transform:translateY(calc(100% + 24px));transition:transform .35s cubic-bezier(.2,.9,.3,1)}
+  .kort.vis{transform:none}
+  .kort.klar{pointer-events:auto}
+  .kort p{margin:0}
+  .kort .k1{font:italic 500 calc(26px*var(--kk))/1.15 "Fraunces",Georgia,serif}
+  .kort .k1 b{display:block;font:800 calc(40px*var(--kk))/1.05 "Barlow Condensed",sans-serif;font-style:normal;color:#BA0C2F}
+  .kort .k2{margin-top:6px;font:400 calc(15px*var(--kk))/1.35 "Barlow",sans-serif}
+  .kort .k3{margin-top:calc(10px*var(--kk));font:800 calc(22px*var(--kk))/1.1 "Barlow Condensed",sans-serif;color:#BA0C2F;letter-spacing:.02em}
+  .kort .k4{margin-top:6px;font:400 calc(13px*var(--kk))/1.35 "Barlow",sans-serif;color:#55617a}
+  .kort .k5{margin-top:8px;font:600 calc(14px*var(--kk))/1.3 "Barlow",sans-serif}
+  .kort .k5.ny{display:inline-block;padding:4px 10px;border-radius:999px;background:#FFD24A;color:#00205B;box-shadow:0 0 18px rgba(255,210,74,.8)}
+  .kort .knapper{display:flex;flex-direction:column;gap:8px;margin-top:calc(14px*var(--kk))}
+  .kort button{height:calc(56px*var(--kk));min-height:46px;border-radius:999px;cursor:pointer;touch-action:manipulation;font:800 calc(22px*var(--kk))/1 "Barlow Condensed",sans-serif;letter-spacing:.04em}
+  .kort .en-til{border:0;background:#BA0C2F;color:#fff}
+  .kort .del{height:calc(46px*var(--kk));min-height:44px;border:2px solid #00205B;background:#fff;color:#00205B;font-size:calc(18px*var(--kk))}
+  .kort a{display:inline-block;margin-top:calc(12px*var(--kk));color:#BA0C2F;font:600 calc(14px*var(--kk))/1.3 "Barlow",sans-serif;text-underline-offset:3px}
+  .kort .fot{margin-top:6px;font:400 calc(11px*var(--kk))/1.3 "Barlow",sans-serif;color:#55617a}
+  #snu{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:#00205B;text-align:center;padding:16px}
+  #snu[hidden]{display:none}
+  #snu b{font:800 28px/1 "Barlow Condensed",sans-serif;letter-spacing:.04em}
+  #snu span{font:400 15px/1.3 "Barlow",sans-serif;opacity:.85}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  @media (prefers-reduced-motion:reduce){#start .cta b{animation:none}#stempel b{animation:inn .3s both;transform:rotate(-8deg)}.kort{transition:opacity .3s;transform:none;opacity:0}.kort.vis{opacity:1}}
+</style>
+</head>
+<body>
+<canvas id="c" tabindex="-1" role="img" aria-label="Tidemann ligger på benken og presser stanga AI-Norge"></canvas>
+<div class="scene" id="scene">
+  <button class="knapp" id="lydK" type="button" aria-pressed="true" aria-label="Lyd">
+    <svg class="paa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+    <svg class="av" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M17 9l5 6M22 9l-5 6"/></svg>
+  </button>
+  <button class="knapp" id="pauseK" type="button" aria-label="Pause">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+  </button>
+  <div class="lag" id="start">
+    <h1>Tidemann Løfter<br><span style="white-space:nowrap">AI-Norge</span></h1>
+    <p class="under">Et styrkeløft for norsk digitalisering</p>
+    <div class="cta"><b id="ctaT">TRYKK FOR Å LØFTE</b><span>Trykk når kraften er i det grønne.</span><span id="rekord" hidden></span></div>
+    <p class="hjelp">MELLOMROM, ↑ eller klikk · M lyd · P pause</p>
+  </div>
+  <div class="lag" id="pauselag" hidden><p>Pause. Selv konsulenter trenger kaffe.</p><b id="pauseT">Trykk for å fortsette</b></div>
+  <div id="stempel" hidden><b>UNDERKJENT</b><span>Spotteren tok over. Den er tross alt en KI.</span></div>
+</div>
+<section class="kort" id="kort" hidden aria-label="Resultat">
+  <p class="k1">Du løftet <b><span id="kKg">0</span> kg</b>AI-Norge</p>
+  <p class="k2" id="kBy"></p>
+  <p class="k3" id="kTittel"></p>
+  <p class="k4" id="kStat"></p>
+  <p class="k5" id="kPr"></p>
+  <div class="knapper">
+    <button class="en-til" id="enTil" type="button">ÉN TIL</button>
+    <button class="del" id="delK" type="button">Del</button>
+  </div>
+  <a href="/">Trenger bedriften din et løft? esbjugconsult.com</a>
+  <p class="fot">Tidemanns ekte PR holdes hemmelig.</p>
+</section>
+<div id="snu" hidden><b>Snu telefonen</b><span>Tidemann løfter best på høykant.</span></div>
+<div class="sr" id="live" aria-live="polite"></div>
+<script>
+'use strict';
+// «Tidemann Løfter AI-Norge»: trykk når kraften i stativstolpene står i det grønne.
+// Alt er tegnet på ett lerret i et 390×844-system; DOM brukes bare til start, pause, stempel og resultatkort.
+// ?debug=1 viser vinduene i ms og snittavviket, ?niva=8 starter på nivå 8.
+
+const CONFIG = {
+  VERDEN_B: 390, VERDEN_H: 844, MAKS_CSS_B: 480, DPR_MAKS: 2,
+  LATENS_MS: { touch: 35, pen: 35, mouse: 20, key: 20 },
+  T_PASS: n => n <= 12 ? Math.max(0.55, 1.30 * 0.92 ** (n - 1)) : Math.max(0.42, 0.55 * 0.96 ** (n - 12)),
+  T_OPPLAERING: 1.60,
+  F_GOD: n => n <= 12 ? Math.max(0.15, 0.30 * 0.94 ** (n - 1)) : Math.max(0.12, 0.152 * 0.96 ** (n - 12)),
+  F_PERF: (n, T, vRel = 1 / T) => Math.max(0.30 * CONFIG.F_GOD(n), Math.min(0.045 * vRel, 0.7 * CONFIG.F_GOD(n))),
+  SONE_SENTER: [0.40, 0.85], SONE_MAKS_HOPP: 0.35, SONE_KANT: [0.18, 0.97],
+  SENK_S: n => Math.max(0.28, 0.40 - 0.012 * (n - 1)),
+  AV_STATIV_S: 0.25, LAAS_S: 0.18, LAAS_PERFEKT_S: 0.12, HOLD_S: 0.10,
+  GRIND_PX: 28,
+  BOM_SYNK_S: 0.35, SPOTTER_S: 0.80, LASTING_S: 0.90, MILEPAEL_S: 2.2,
+  REPS_PER_NIVAA: n => (n <= 3 ? 3 : 5),
+  FASTPUNKT: { fra: 4, sjanse: 0.35, sjanseOvertid: 0.50, varighet: 0.22, foran_s: [0.22, 0.35], minP: 0.05 },
+  GLIDENDE: { fra: 7, amp: 0.05, periode: 1.2 },
+  SKJELV: { fra: 10, px: 2, skjermPx: 1 },
+  LYS_TILBAKE_ETTER: 8,
+  COMBO_TERSKLER: [3, 6, 10, 15],
+  SLUTT_SPERRE_S: 0.8,
+  HITSTOP_MS: { perfekt: 60, skive: 80 },
+  RIST: { perfekt: [5, 150], god: [3, 100], bom: [12, 300], skive: [6, 250], stempel: [10, 300] },
+  PARTIKLER_MAKS: 150, SVETTE_MAKS: 40,
+  ZOOM: n => Math.max(0.80, 1 - 0.018 * (n - 1)), ZOOM_S: 0.35,
+  KG: n => [0, 20, 40, 60, 80, 100, 120, 150, 180, 220, 260, 300, 350][n] ?? 350 + 50 * (n - 12),
+  STANG: { krok: 236, ut: 224, bryst: 548 },
+  // Ankerpunkter i hode.png (dressbildet), som andeler av bildet.
+  ANSIKT: { oyne: [[0.325, 0.447], [0.667, 0.432]], oyeR: 0.05, panne: { x: [0.28, 0.72], y: [0.13, 0.30] },
+            isseGlans: [0.50, 0.08, 0.36, 0.10], vene: [0.68, 0.21], hake: 0.93, kinn: 0.68, kjeve: 0.6 },
+  // Tidemann vokser med godkjente løft: 1 + VEKST_MAKS · (1 − e^(−reps/VEKST_REPS)), pluss en kort pump per treff.
+  VEKST_MAKS: 0.45, VEKST_REPS: 28, PUMP: { perfekt: 0.08, god: 0.04, s: 0.25 }, KNAPP_REPS: 22,
+};
+
+// Skivene: indeks = nivået der skiveparet legges på.
+const SKIVER = [null, { kg: 0, navn: 'Idéen' },
+  { kg: 10, navn: 'Møtereferatet ingen skrev' }, { kg: 10, navn: 'Passordet på en gul lapp' },
+  { kg: 10, navn: 'Møtet som kunne vært en e-post' }, { kg: 10, navn: 'Pilotprosjekt nr. 14' },
+  { kg: 10, navn: 'Faksen som fortsatt står på' }, { kg: 15, navn: 'Regnearket_v17_FINAL_ny(2)' },
+  { kg: 15, navn: 'Skjema 7B i tre eksemplarer' }, { kg: 20, navn: 'Personvernerklæring, 47 sider' },
+  { kg: 20, navn: '«Vi har alltid gjort det sånn» (støpejern, 1987)' }, { kg: 20, navn: 'Styret vil se det an' },
+  { kg: 25, navn: 'AI-NORGE', flagg: true }];
+const OVERTID_NAVN = ['AI-Norge 2.0', 'Svalbard', 'Alle e-postene du ikke har svart på', 'En ny forskrift', 'Månen'];
+const skiveFor = n => n <= 12 ? SKIVER[n] : { kg: 25, flagg: true,
+  navn: n - 13 < OVERTID_NAVN.length ? OVERTID_NAVN[n - 13] : `AI-Norge ${n - 13 - OVERTID_NAVN.length + 3}.0` };
+
+const NORGE = [[7.05,57.98],[5.95,58.45],[5.55,58.85],[5.20,59.40],[4.85,60.40],[4.80,61.05],[5.10,62.20],
+ [6.10,62.50],[7.70,63.10],[9.55,63.75],[11.00,64.90],[12.15,65.50],[12.50,66.05],[14.30,67.30],
+ [12.90,67.90],[16.10,69.30],[18.30,69.85],[21.50,70.30],[23.60,70.70],[25.78,71.17],[27.90,71.10],
+ [31.10,70.37],[30.80,69.78],[28.93,69.05],[28.00,70.07],[25.85,69.40],[24.00,68.70],[22.40,68.70],
+ [21.00,69.20],[20.55,69.06],[18.10,68.45],[16.10,67.10],[15.00,66.10],[14.00,65.10],[13.90,64.40],
+ [12.15,63.30],[12.25,62.30],[12.80,61.20],[12.45,60.20],[11.70,59.50],[11.25,59.08],[10.95,59.20],
+ [10.75,59.90],[10.40,59.25],[10.00,59.00],[8.80,58.45],[8.00,58.10]];
+const BYER = [['Lindesnes',7.05,57.98],['Kristiansand',8.00,58.15],['Stavanger',5.73,58.97],['Oslo',10.75,59.91],
+ ['Bergen',5.32,60.39],['Lillehammer',10.47,61.12],['Ålesund',6.15,62.47],['Trondheim',10.40,63.43],
+ ['Bodø',14.40,67.28],['Lofoten',14.57,68.23],['Tromsø',18.96,69.65],['Nordkapp',25.78,71.17]];
+const byFor = n => BYER[Math.min(n, 12) - 1][0];
+
+const T = {
+  perfekt: ['PERFEKT!', 'Rent løft!', 'Lett som en prompt', 'Tre hvite lys!'],
+  god: ['Godkjent', 'Den teller', 'Gikk det? Det gikk.'],
+  bom: { tidlig: 'For tidlig!', seint: 'For seint – kvalt!', star: 'Stanga står!' },
+  combo: { 2: 'Varm i trøya', 3: 'Flytsone', 4: 'Full dugnad', 5: 'TIDEMANN-MODUS' },
+  dommer: ['Mannen i fleece: «Den så jeg.»', 'Tanta fra Bergen: «Nei, vennen.»', 'Robotdommeren: «Avvik registrert.»'],
+  spotter: [['Spotter-boten 3000 hjelper til. Den vil gjerne nevnes i sluttrapporten.'], ['Alt deg, sjef!', '(Det var 80 % meg.)'],
+    ['Jeg spotter deg. Jeg har lest alt om benkpress.'], ['Det er bare et fastpunkt. Det har alle digitaliseringsprosjekter.'],
+    ['Du kan ikke bli liggende med AI-Norge på brystet. Det har vi prøvd i ti år.']],
+  tidemann: ['Dette står ikke i tilbudet!', 'Jeg er konsulent, ikke kraftløfter.', 'Fakturerer dette som trening.',
+    'Kjenner det i promptene.', 'Hvem la på faksen?!', 'Det. Er. Bare. Regneark!', 'Én til!', 'Pust …', 'Hnngh!'],
+  nytt: { 4: 'Nytt: Møtet drar ut. Fyllet kan stoppe opp – vent på det grønne.', 7: 'Nytt: Regnearket regner på nytt. Sonen flytter seg.',
+    10: 'Nytt: Støpejern fra 1987. Alt rister.', 13: 'Overtid – nå løfter du for moro skyld' },
+  by: { Lindesnes: 'AI-Norge ble liggende på brystet ved Lindesnes. Det gjør det ofte.',
+    Kristiansand: 'Du kom til Kristiansand. Møtereferatet er fortsatt ikke skrevet.',
+    Stavanger: 'Stavanger nådd. Passordet står fortsatt på lappen.',
+    Oslo: 'AI-Norge kom til Oslo. Møtet ble forlenget. Du sitter fortsatt i det.',
+    Bergen: 'Bergen nådd. Det regner der, men det er ikke din feil.',
+    Lillehammer: 'Lillehammer! Faksen står fortsatt på, men nå vet du hvor den er.',
+    Ålesund: 'Ålesund nådd. Regnearket krasjet. Ingen vet hvem som eide det.',
+    Trondheim: 'AI-Norge kom til Trondheim. Nord-Norge venter fortsatt på svar på e-posten.',
+    Bodø: 'Bodø! Personvernerklæringen er lest. Av deg. Alene.',
+    Lofoten: 'Lofoten. «Vi har alltid gjort det sånn.» Og det gjør vi fortsatt.',
+    Tromsø: 'Tromsø nådd. Styret vil fortsatt se det an.',
+    nesten: 'Nordkapp i sikte. Den siste skiva er alltid den tyngste.',
+    Nordkapp: 'HELE AI-NORGE ER LØFTET. Fra Lindesnes til Nordkapp. Nå kan du ta en kaffe.',
+    overtid: 'Du har løftet mer enn Norge. Ta deg en hvil.' },
+  titler: [[40000, 'Landsløfter av AI-Norge'], [20000, 'Senior KI-løfter'], [10000, 'Digital dugnadsånd'],
+    [5000, 'KI-konsulent (junior)'], [2000, 'Pilotprosjektleder'], [500, 'Prompt-praktikant'], [0, 'Regneark-entusiast']],
+};
+
+// ---------- Hjelpere ----------
+const Q = new URLSearchParams(location.search);
+const DEBUG = Q.has('debug');
+const START_NIVA = Math.max(1, Math.min(40, parseInt(Q.get('niva'), 10) || 1));
+const RM = matchMedia('(prefers-reduced-motion: reduce)');
+let redusert = RM.matches;
+RM.addEventListener?.('change', e => { redusert = e.matches; });
+const GROV = matchMedia('(pointer:coarse)').matches;
+const klamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, k) => a + (b - a) * k;
+const tilf = (a, b) => a + Math.random() * (b - a);
+const velg = a => a[Math.floor(Math.random() * a.length)];
+const E = {
+  ut: k => 1 - (1 - klamp(k, 0, 1)) ** 3,
+  inn: k => klamp(k, 0, 1) ** 2,
+  innUt: k => { k = klamp(k, 0, 1); return k < .5 ? 4 * k * k * k : 1 - (-2 * k + 2) ** 3 / 2; },
+  utTilbake: (k, c1 = 1.70158) => { k = klamp(k, 0, 1); return 1 + (c1 + 1) * (k - 1) ** 3 + c1 * (k - 1) ** 2; },
+};
+const smooth = k => { k = klamp(k, 0, 1); return k * k * (3 - 2 * k); };
+const NF = new Intl.NumberFormat('nb-NO');
+const fmt = v => NF.format(Math.round(v)).replace(/\s/g, ' ');
+const lager = {
+  get(k) { try { return localStorage.getItem('benkpress.' + k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem('benkpress.' + k, String(v)); } catch {} },
+};
+const $ = id => document.getElementById(id);
+
+// ---------- Lerret og skalering ----------
+const cv = $('c'), cx = cv.getContext('2d'), sceneEl = $('scene');
+let VW = 0, VH = 0, DPR = 1, SK = 1, SX = 0, SY = 0;
+function tilpass() {
+  VW = innerWidth; VH = innerHeight;
+  DPR = Math.min(CONFIG.DPR_MAKS, devicePixelRatio || 1);
+  cv.width = Math.round(VW * DPR); cv.height = Math.round(VH * DPR);
+  SK = Math.min(VW / CONFIG.VERDEN_B, VH / CONFIG.VERDEN_H, CONFIG.MAKS_CSS_B / CONFIG.VERDEN_B);
+  SX = (VW - CONFIG.VERDEN_B * SK) / 2; SY = (VH - CONFIG.VERDEN_H * SK) / 2;
+  const s = document.documentElement.style;
+  s.setProperty('--k', SK); s.setProperty('--sx', SX + 'px'); s.setProperty('--sy', SY + 'px');
+  s.setProperty('--sw', CONFIG.VERDEN_B * SK + 'px'); s.setProperty('--sh', CONFIG.VERDEN_H * SK + 'px');
+}
+function sjekkRetning() {
+  const ligg = GROV && innerWidth > innerHeight && innerHeight < 500;
+  const el = document.getElementById('snu'); if (el) el.hidden = !ligg;
+  if (ligg && typeof pause === 'function') pause();
+}
+addEventListener('resize', () => { tilpass(); sjekkRetning(); });
+tilpass();
+
+// ---------- Hodet: utklippskant og rødme på egne lerret ----------
+const hode = new Image();
+let hodeKlar = false, kantC = null, ansiktC = null, ansiktX = null, sistRodme = -1, sistGlans = -1;
+const KANT_PAD = 26;
+hode.onload = () => {
+  const w = hode.naturalWidth, h = hode.naturalHeight;
+  const sil = document.createElement('canvas'); sil.width = w + 2 * KANT_PAD; sil.height = h + 2 * KANT_PAD;
+  const s = sil.getContext('2d');
+  for (let i = 0; i < 28; i++) { const a = i / 28 * Math.PI * 2; s.drawImage(hode, KANT_PAD + Math.cos(a) * 6, KANT_PAD + Math.sin(a) * 6); }
+  s.globalCompositeOperation = 'source-in'; s.fillStyle = '#fff'; s.fillRect(0, 0, sil.width, sil.height);
+  kantC = document.createElement('canvas'); kantC.width = sil.width; kantC.height = sil.height;
+  const k = kantC.getContext('2d');
+  k.shadowColor = 'rgba(0,0,0,.35)'; k.shadowBlur = 18; k.shadowOffsetY = 9;
+  k.drawImage(sil, 0, 0);
+  ansiktC = document.createElement('canvas'); ansiktC.width = w; ansiktC.height = h; ansiktX = ansiktC.getContext('2d');
+  // Hudfargen over øynene brukes til øyelokkene når han myser og blunker.
+  ansiktX.drawImage(hode, 0, 0);
+  const A = CONFIG.ANSIKT, px = [];
+  for (const [ox, oy] of A.oyne) {
+    const d = ansiktX.getImageData(Math.round(ox * w) - 4, Math.round((oy - 0.075) * h) - 2, 8, 4).data;
+    for (let i = 0; i < d.length; i += 4) px.push([d[i], d[i + 1], d[i + 2]]);
+  }
+  hudBase = [0, 1, 2].map(j => px.reduce((s, p) => s + p[j], 0) / px.length);
+  hodeKlar = true; tegnAnsikt(0, 0.25);
+};
+hode.src = 'hode.png';
+let hudBase = [226, 168, 146], hudFarge = 'rgb(226,168,146)';
+function tegnAnsikt(b, glans) {
+  const a = ansiktX, w = ansiktC.width, h = ansiktC.height;
+  a.globalCompositeOperation = 'source-over'; a.clearRect(0, 0, w, h); a.drawImage(hode, 0, 0);
+  a.globalCompositeOperation = 'source-atop';
+  let rgb = hudBase;
+  if (b > 0.01) {
+    const lilla = klamp((b - 0.85) / 0.15, 0, 1), r = [lerp(224, 122, lilla), lerp(48, 42, lilla), lerp(58, 140, lilla)];
+    a.fillStyle = `rgb(${r.map(Math.round).join(',')})`;
+    a.globalAlpha = b * 0.55; a.fillRect(0, 0, w, h); a.globalAlpha = 1;
+    rgb = hudBase.map((v, i) => lerp(v, r[i], b * 0.55));
+  }
+  hudFarge = `rgb(${rgb.map(Math.round).join(',')})`;
+  const [gx, gy, gw, gh] = CONFIG.ANSIKT.isseGlans;
+  const g = a.createRadialGradient(gx * w, gy * h, 0, gx * w, gy * h, gw * w / 2);
+  g.addColorStop(0, `rgba(255,255,255,${glans})`); g.addColorStop(1, 'rgba(255,255,255,0)');
+  a.save(); a.translate(gx * w, gy * h); a.scale(1, gh / gw); a.translate(-gx * w, -gy * h);
+  a.fillStyle = g; a.beginPath(); a.arc(gx * w, gy * h, gw * w / 2, 0, Math.PI * 2); a.fill(); a.restore();
+  a.globalCompositeOperation = 'source-over';
+  sistRodme = b; sistGlans = glans;
+}
+
+// ---------- Lyd (WebAudio, syntetisert) ----------
+let AC = null, master = null, stoyBuf = null, lydPaa = lager.get('lyd') !== '0', anstreng = null;
+function lagLyd() {
+  if (AC) { if (AC.state !== 'running' && AC.state !== 'closed') AC.resume().catch(() => {}); return; }
+  const C = window.AudioContext || window.webkitAudioContext; if (!C) return;
+  try {
+    AC = new C();
+    const comp = AC.createDynamicsCompressor(); master = AC.createGain(); master.gain.value = lydPaa ? 0.6 : 0;
+    master.connect(comp); comp.connect(AC.destination);
+    stoyBuf = AC.createBuffer(1, AC.sampleRate, AC.sampleRate);
+    const d = stoyBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  } catch { AC = null; }
+}
+const lyd = {
+  tone(type, f0, f1, dur, gain, delay = 0) {
+    if (!AC) return; const t = AC.currentTime + delay;
+    const o = AC.createOscillator(), g = AC.createGain(); o.type = type;
+    o.frequency.setValueAtTime(f0, t); if (f1 !== f0) o.frequency.exponentialRampToValueAtTime(Math.max(1, f1), t + dur);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(gain, t + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(master); o.start(t); o.stop(t + dur + 0.03);
+  },
+  stoy(dur, gain, ftype, f, q = 1, delay = 0, attack = 0.002) {
+    if (!AC) return; const t = AC.currentTime + delay;
+    const s = AC.createBufferSource(); s.buffer = stoyBuf; s.loop = true;
+    const fl = AC.createBiquadFilter(); fl.type = ftype; fl.frequency.value = f; fl.Q.value = q;
+    const g = AC.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(gain, t + attack);
+    g.gain.linearRampToValueAtTime(0.0001, t + dur);
+    s.connect(fl); fl.connect(g); g.connect(master); s.start(t); s.stop(t + dur + 0.05);
+  },
+  puls() { this.tone('sine', 70, 45, 0.09, 0.35); },
+  god() { this.tone('sine', 90, 50, 0.12, 0.4); this.stoy(0.015, 0.4, 'highpass', 2000); },
+  perfekt(k) { const f = 523 * 2 ** (Math.min(k, 12) / 12); this.tone('triangle', f, f, 0.07, 0.3); this.tone('triangle', f * 1.5, f * 1.5, 0.07, 0.3, 0.07); },
+  bom() { this.tone('sawtooth', 160, 60, 0.3, 0.25); this.tone('square', 110, 110, 0.25, 0.08, 0.05); },
+  spotter() { this.tone('sine', 880, 880, 0.06, 0.2); this.tone('sine', 1175, 1175, 0.06, 0.2, 0.08); },
+  klonk() { this.tone('square', 220, 200, 0.18, 0.3); this.tone('square', 331, 310, 0.18, 0.3); this.stoy(0.04, 0.3, 'lowpass', 1500); },
+  ding() { this.tone('sine', 1320, 1320, 0.4, 0.25); },
+  jubel(d) { this.stoy(d, 0.15, 'bandpass', 1000, 0.7, 0, d / 2); },
+  stempel() { this.stoy(0.06, 0.5, 'lowpass', 800); },
+  slutt() { [392, 330, 262].forEach((f, i) => this.tone('triangle', f, f, 0.18, 0.25, i * 0.18)); },
+  startAnstreng(fp) {
+    if (!AC || anstreng) return;
+    const o = AC.createOscillator(), lp = AC.createBiquadFilter(), g = AC.createGain();
+    o.type = 'sawtooth'; o.frequency.value = 90; lp.type = 'lowpass'; lp.frequency.value = 600; g.gain.value = 0;
+    g.gain.setTargetAtTime(fp ? 0.05 : 0.03, AC.currentTime, 0.05);
+    o.connect(lp); lp.connect(g); g.connect(master); o.start(); anstreng = { o, g };
+  },
+  anstrengNiva(p, fp) { if (anstreng && AC) { anstreng.o.frequency.setTargetAtTime(90 + 50 * p, AC.currentTime, 0.03); anstreng.g.gain.setTargetAtTime(fp ? 0.05 : 0.03, AC.currentTime, 0.05); } },
+  stoppAnstreng() { if (anstreng && AC) { const a = anstreng; a.g.gain.setTargetAtTime(0, AC.currentTime, 0.03); a.o.stop(AC.currentTime + 0.2); } anstreng = null; },
+};
+function vibrer(m) { if (lydPaa && navigator.vibrate) try { navigator.vibrate(m); } catch {} }
+function settLyd(paa) {
+  lydPaa = paa; lager.set('lyd', paa ? '1' : '0'); $('lydK').setAttribute('aria-pressed', paa);
+  if (master) master.gain.setTargetAtTime(paa ? 0.6 : 0, AC.currentTime, 0.02);
+}
+$('lydK').setAttribute('aria-pressed', lydPaa);
+
+// ---------- Klokke ----------
+// Spillklokka står stille under pause og hitstop. Trykk regnes fra event.timeStamp mot samme klokke.
+let ramme = 1 / 60, offset = performance.now() / 1000, spillTid = 0, sistReal = offset, pauset = false, nedtelling = null, hitstopTil = 0;
+function hitstop(ms) { if (!redusert) hitstopTil = Math.max(hitstopTil, performance.now() / 1000 + ms / 1000); }
+
+// ---------- Spilltilstand ----------
+const S = { tilstand: 'KLAR', tInn: 0, fra: 236, n: 1, repsNiva: 0, poeng: 0, lys: 0, okRad: 0, combo: 0, besteCombo: 0,
+  reps: 0, perfekte: 0, forsok: 0, tyngste: 0, modus: false, modusT: -9, modusSlutt: -9, forrigeFp: false,
+  forsteFp: true, nivaa4Fp: true, bomNr: 0, spotterPool: [], tilBoble: 7, perfektLaas: false, lastingD: 0.9,
+  opplaering: true, idleVist: false, stempelVist: false, kortVist: false, kortLaas: 0, sluttN: 1, nyPr: false,
+  pumpA: 0, pumpT: -9, knappPop: false };
+const P = { t0: 0, T: 1.3, fgod: 0.3, fperf: 0.1, c0: 0.6, glid: false, fp: null, tFull: 1.3, aktiv: false,
+  sluttT: -9, blinkT: -9, bomT: -9, bomP: 0, c0Forrige: 0.6, visHjelp: false, fpBoble: null };
+let stangY = CONFIG.STANG.krok, skiver = [], spotY = null, spotArmer = false;
+let zoomFra = 1, zoomTil = 1, zoomT0 = -9;
+const avvik = [];
+
+function gaTil(t, fra) { S.tilstand = t; S.tInn = spillTid; S.fra = fra ?? stangY; }
+function zoomNaa() { const k = (spillTid - zoomT0) / CONFIG.ZOOM_S; return k >= 1 ? zoomTil : lerp(zoomFra, zoomTil, E.ut(k)); }
+function settZoom(z, straks) { zoomFra = straks ? z : zoomNaa(); zoomTil = z; zoomT0 = straks ? -9 : spillTid; }
+const kgNaa = () => CONFIG.KG(S.n);
+const spillbar = () => !['KLAR', 'SLUTT'].includes(S.tilstand);
+
+function fyll(t) {
+  let tau = Math.max(0, t - P.t0);
+  if (P.fp) { const a = P.fp.s * P.T; if (tau > a) tau = tau < a + P.fp.D ? a : tau - P.fp.D; }
+  return tau / P.T;
+}
+function iFastpunkt(t) { if (!P.fp) return false; const tau = t - P.t0, a = P.fp.s * P.T; return tau > a && tau < a + P.fp.D; }
+function senter(t) { return P.glid ? P.c0 + CONFIG.GLIDENDE.amp * Math.sin(2 * Math.PI * (t - P.t0) / CONFIG.GLIDENDE.periode) : P.c0; }
+
+function startRunde() {
+  lagLyd();
+  Object.assign(S, { n: START_NIVA, repsNiva: 0, poeng: 0, lys: 0, okRad: 0, combo: 0, besteCombo: 0, reps: 0, perfekte: 0,
+    forsok: 0, tyngste: 0, modus: false, modusT: -9, modusSlutt: -9, forrigeFp: false, forsteFp: true, nivaa4Fp: true, bomNr: 0,
+    tilBoble: 6 + Math.floor(Math.random() * 4), stempelVist: false, kortVist: false, nyPr: false, pumpA: 0, pumpT: -9, knappPop: false,
+    opplaering: (parseInt(lager.get('runder'), 10) || 0) < 3 });
+  S.spotterPool = [1, 2, 3, 4];
+  skiver = []; for (let i = 2; i <= S.n; i++) skiver.push({ ...skiveFor(i), inn: -9 });
+  settZoom(CONFIG.ZOOM(S.n), true);
+  P.c0Forrige = 0.6; P.aktiv = false; P.sluttT = -9; P.bomT = -9; P.plan = null;
+  bobler.length = 0; aktivBoble = null; banner = null; linje = null; popups.length = 0; konfetti.length = 0;
+  $('start').classList.add('ut'); setTimeout(() => { if (S.tilstand !== 'KLAR') $('start').hidden = true; }, 200);
+  $('kort').classList.remove('vis'); $('kort').hidden = true; $('stempel').hidden = true;
+  cv.focus({ preventScroll: true });
+  if ((parseInt(lager.get('runder'), 10) || 0) === 0) boble('Dag 1. AI-Norge er en tom stang. Mistenkelig lett.', 'tidemann', 0.1);
+  melde(`Runden starter. Nivå ${S.n}: ${byFor(S.n)}, ${kgNaa()} kg.`);
+  gaTil('AV_STATIV', CONFIG.STANG.krok);
+}
+
+function planleggRep() {
+  const C = CONFIG, n = S.n;
+  // Opplæringen varer til første godkjente rep (maks tre forsøk).
+  const T0 = (S.opplaering && S.reps === 0 && S.forsok < 3) ? C.T_OPPLAERING : C.T_PASS(n);
+  const fgod = C.F_GOD(n), glid = n >= C.GLIDENDE.fra, amp = glid ? C.GLIDENDE.amp : 0;
+  const fperf = C.F_PERF(n, T0, 1 / T0 + amp * 2 * Math.PI / C.GLIDENDE.periode);
+  const lo = Math.max(C.SONE_SENTER[0], C.SONE_KANT[0] + fgod / 2 + amp, P.c0Forrige - C.SONE_MAKS_HOPP);
+  const hi = Math.min(C.SONE_SENTER[1], C.SONE_KANT[1] - fgod / 2 - amp, P.c0Forrige + C.SONE_MAKS_HOPP);
+  const c0 = lo < hi ? tilf(lo, hi) : (lo + hi) / 2;
+  let fp = null;
+  if (n >= C.FASTPUNKT.fra && !S.forrigeFp && Math.random() < (n >= 13 ? C.FASTPUNKT.sjanseOvertid : C.FASTPUNKT.sjanse)) {
+    const sp = c0 - fgod / 2 - amp - tilf(...C.FASTPUNKT.foran_s) / T0;
+    if (sp >= C.FASTPUNKT.minP) fp = { s: sp, D: C.FASTPUNKT.varighet };
+  }
+  P.plan = { T: T0, fgod, fperf, c0, glid, fp };
+}
+function startPress() {
+  const n = S.n;
+  if (!P.plan) planleggRep();
+  const { T: T0, fgod, fperf, c0, glid, fp } = P.plan; P.plan = null;
+  S.forrigeFp = !!fp;
+  Object.assign(P, { t0: spillTid, T: T0, fgod, fperf, c0, glid, fp, tFull: T0 + (fp ? fp.D : 0), c0Forrige: c0, aktiv: true,
+    visHjelp: S.opplaering && S.reps < 2 && S.forsok < 4, fpBoble: null, frysT: -9 });
+  if (fp) {
+    let txt = null;
+    if (n === 4 && S.nivaa4Fp) { txt = 'Bare et lite spørsmål helt på tampen …'; S.nivaa4Fp = false; S.forsteFp = false; }
+    else if (S.forsteFp) { txt = 'Kom igjen, kom igjen …'; S.forsteFp = false; }
+    if (txt) boble(txt, 'tidemann', fp.s * T0);
+  }
+  lyd.puls(); lyd.startAnstreng(false);
+  gaTil('PRESS', CONFIG.STANG.bryst);
+}
+
+function trykk(ts, type) {
+  const real = performance.now() / 1000;
+  let t = ts / 1000;
+  if (!(ts > 0) || Math.abs(t - real) > 1) t = real;
+  lagLyd();
+  if (pauset) { if (!nedtelling) startNedtelling(); return; }
+  if (S.tilstand === 'KLAR') { startRunde(); return; }
+  if (S.tilstand === 'SLUTT') { if (S.kortVist && real >= S.kortLaas) startRunde(); return; }
+  if (S.tilstand === 'PRESS') vurder(t - offset - (CONFIG.LATENS_MS[type] ?? 20) / 1000 - Math.max(0, ramme - 1 / 60));
+}
+
+function vurder(tp) {
+  tp = klamp(tp, P.t0, Math.max(spillTid, performance.now() / 1000 - offset));
+  P.frysT = tp;
+  const p = fyll(tp), c = senter(tp), d = Math.abs(p - c);
+  if (DEBUG && !P.fp && !P.glid && d <= P.fgod) { avvik.push((p - c) * P.T * 1000); if (avvik.length > 10) avvik.shift(); }
+  if (d <= P.fperf / 2) treff(true);
+  else if (d <= P.fgod / 2) treff(false, p < c ? 'litt tidlig' : 'litt seint');
+  else bom(p < c ? 'tidlig' : 'seint', p);
+}
+
+function treff(perfekt, retning) {
+  lyd.stoppAnstreng(); P.aktiv = false; P.sluttT = spillTid; P.blinkT = spillTid;
+  S.reps++; S.repsNiva++; S.okRad++; S.forsok++;
+  const kg = kgNaa(); S.tyngste = Math.max(S.tyngste, kg);
+  if (perfekt) { S.combo++; S.perfekte++; S.besteCombo = Math.max(S.besteCombo, S.combo); }
+  else { if (S.combo > 0) popup('Comboen gikk i møte', 'liten'); S.combo = 0; if (S.modus) sluttModus(); }
+  const mult = 1 + CONFIG.COMBO_TERSKLER.filter(x => S.combo >= x).length;
+  const pts = kg * (perfekt ? 2 : 1) * mult; S.poeng += pts;
+  if (S.okRad >= CONFIG.LYS_TILBAKE_ETTER && S.lys > 0) {
+    S.lys--; S.okRad = 0; lysBlink = { i: S.lys, t: spillTid }; settLinje('Juryen ombestemte seg!', '#FFD24A'); lyd.ding(); melde('Lys tilbake.');
+  }
+  if (perfekt && CONFIG.COMBO_TERSKLER.includes(S.combo)) { comboPop = spillTid; if (S.combo === 15) startModus(); }
+  popup(perfekt ? velg(T.perfekt) : velg(T.god), perfekt ? 'perfekt' : 'god');
+  if (!perfekt && retning) popups[popups.length - 1].under = retning;
+  popup('+' + fmt(pts), 'poeng');
+  rist(...(perfekt ? CONFIG.RIST.perfekt : CONFIG.RIST.god));
+  gnister(perfekt ? 18 : 8);
+  if (perfekt) { lyd.perfekt(S.combo); vibrer(10); hodePop = spillTid; hitstop(CONFIG.HITSTOP_MS.perfekt); }
+  else lyd.god();
+  if (--S.tilBoble <= 0) { boble(velg(T.tidemann), 'tidemann'); S.tilBoble = 6 + Math.floor(Math.random() * 4); }
+  S.pumpA = perfekt ? CONFIG.PUMP.perfekt : CONFIG.PUMP.god; S.pumpT = spillTid;
+  mimikk(perfekt ? 'perfekt' : 'god');
+  if (!S.knappPop && S.reps >= CONFIG.KNAPP_REPS) {
+    // Dressen gir etter: knappen spretter av.
+    S.knappPop = true; popup('POP! Knappen røk.', 'liten');
+    partikler.push({ x: 195, y: 652, vx: tilf(-160, 160), vy: -460, liv: 0, maks: 1.4, farge: '#3b414d', r: 5 });
+    lyd.tone('square', 900, 420, 0.09, 0.15); boble('Dressen var ikke laget for dette.', 'tidemann', 0.35);
+  }
+  S.perfektLaas = perfekt;
+  gaTil('LAAS');
+}
+
+function bom(type, p) {
+  lyd.stoppAnstreng(); P.aktiv = false; P.sluttT = spillTid; P.bomT = spillTid; P.bomP = Math.min(1, p); S.forsok++;
+  S.lys++; S.okRad = 0;
+  if (S.combo > 0) popup('Comboen gikk i møte', 'liten');
+  S.combo = 0; if (S.modus) sluttModus();
+  popup(T.bom[type], 'bom'); settLinje(T.dommer[Math.min(2, S.lys - 1)], '#ff8f9f');
+  lyd.bom(); vibrer(40); rist(...CONFIG.RIST.bom); vignettT = performance.now() / 1000; svetteStot(3); hodeKlem = spillTid; bomFade = spillTid; mimikk('bom');
+  if (S.lys >= 3) { sluttRunde(); return; }
+  melde(`Rødt lys. ${S.lys === 1 ? 'To' : 'Ett'} igjen.`);
+  let rep;
+  if (S.bomNr === 0) rep = T.spotter[0];
+  else { if (!S.spotterPool.length) S.spotterPool = [1, 2, 3, 4]; rep = T.spotter[S.spotterPool.splice(Math.floor(Math.random() * S.spotterPool.length), 1)[0]]; }
+  S.bomNr++;
+  boble(rep[0], 'spotter', CONFIG.BOM_SYNK_S + 0.15, rep[1]);
+  S.spotterLyd = true;
+  gaTil('BOM');
+}
+
+function startLasting() {
+  const gammel = S.n; S.n++; S.repsNiva = 0; mimikk('skive');
+  const n = S.n, sk = skiveFor(n);
+  skiver.push({ ...sk, inn: spillTid });
+  hitstop(CONFIG.HITSTOP_MS.skive); lyd.klonk(); rist(...CONFIG.RIST.skive); settZoom(CONFIG.ZOOM(n));
+  const milep = gammel === 12;
+  S.lastingD = milep ? CONFIG.MILEPAEL_S : CONFIG.LASTING_S;
+  const l1 = n <= 12 ? `LØFTET TIL ${byFor(n).toUpperCase()}!` : `OVERTID · NIVÅ ${n}`;
+  const l2 = `Ny skive: ${sk.navn} · +${sk.kg * 2} kg`;
+  if (milep) {
+    milepaelT = spillTid; lyd.jubel(2); lagKonfetti(redusert ? 30 : 120);
+    banner = { l1, l2, l3: T.nytt[13], t0: spillTid + CONFIG.MILEPAEL_S - 0.2 };
+    melde('AI-Norge er løftet! Overtid.');
+  } else {
+    lyd.jubel(1.2);
+    banner = { l1, l2, l3: T.nytt[n], t0: spillTid };
+    melde(`Nivå ${n}: ${n <= 12 ? byFor(n) + ', ' : ''}${kgNaa()} kg. ${fmt(S.poeng)} kg løftet.`);
+  }
+  if (n === 12) boble('Nord-Norge er tyngst!', 'tidemann', 0.2);
+  gaTil('LASTING');
+}
+
+function startModus() { S.modus = true; S.modusT = spillTid; boble('Nå går det unna.', 'tidemann'); }
+function sluttModus() { S.modus = false; S.modusSlutt = spillTid; }
+
+function sluttRunde() {
+  S.sluttN = S.n;
+  const runder = (parseInt(lager.get('runder'), 10) || 0) + 1; lager.set('runder', runder);
+  const pr = parseInt(lager.get('pr'), 10) || 0;
+  S.forrigePr = pr; S.forrigePrBy = lager.get('prBy');
+  if (S.poeng > pr) { S.nyPr = true; lager.set('pr', Math.round(S.poeng)); lager.set('prBy', byFor(S.n)); }
+  const bn = parseInt(lager.get('bestNiva'), 10) || 0; if (S.n > bn) lager.set('bestNiva', S.n);
+  boble('Jeg tar den. Vi kaller det et pilotprosjekt.', 'spotter', CONFIG.BOM_SYNK_S + 0.15);
+  S.spotterLyd = true;
+  vibrer([60, 40, 120]);
+  gaTil('SLUTT');
+}
+
+function visStempel() {
+  S.stempelVist = true; $('stempel').hidden = false; lyd.stempel(); rist(...CONFIG.RIST.stempel);
+}
+function visKort() {
+  S.kortVist = true; S.kortLaas = performance.now() / 1000 + CONFIG.SLUTT_SPERRE_S + 0.35;
+  lyd.slutt();
+  const n = S.sluttN, by = byFor(n);
+  $('kKg').textContent = fmt(S.poeng);
+  $('kBy').textContent = n < 12 ? T.by[by] : n === 12 ? T.by.nesten : n === 13 ? T.by.Nordkapp : `… helt til Nordkapp og videre. ${T.by.overtid}`;
+  $('kTittel').textContent = T.titler.find(([g]) => S.poeng >= g)[1];
+  const pct = S.forsok ? Math.round(S.perfekte / S.forsok * 100) : 0;
+  $('kStat').textContent = `${S.reps} ${S.reps === 1 ? 'rep' : 'reps'} · beste combo ${S.besteCombo} · tyngste løft ${S.tyngste} kg · ${pct} % perfekt`;
+  const pr = $('kPr');
+  if (S.nyPr) { pr.textContent = 'Ny PR! Skriv det i årsrapporten.'; pr.className = 'k5 ny'; }
+  else if (!S.forrigePr) { pr.textContent = 'Ingen rekord ennå. Neste runde teller.'; pr.className = 'k5'; }
+  else if (S.poeng === S.forrigePr) { pr.textContent = `Tangerte PR-en: ${fmt(S.forrigePr)} kg`; pr.className = 'k5'; }
+  else { pr.textContent = `PR: ${fmt(S.forrigePr)} kg (du mangler ${fmt(S.forrigePr - S.poeng)})`; pr.className = 'k5'; }
+  const k = $('kort'); k.hidden = false; k.classList.remove('klar'); requestAnimationFrame(() => requestAnimationFrame(() => k.classList.add('vis')));
+  // Kortet tar ikke imot trykk før sperra er ute, så et panikktrykk ikke hopper over resultatet.
+  setTimeout(() => { if (S.kortVist) { k.classList.add('klar'); $('enTil').focus({ preventScroll: true }); } }, (CONFIG.SLUTT_SPERRE_S + 0.35) * 1000);
+  // Stempelet flyttes opp hvis kortet ville dekket det (små skjermer).
+  requestAnimationFrame(() => { const st = $('stempel'), o = st.getBoundingClientRect().bottom - (innerHeight - k.offsetHeight - 12) + 8; st.style.transform = o > 0 ? `translateY(${-o}px)` : ''; });
+  melde(`Underkjent. Du løftet ${fmt(S.poeng)} kg AI-Norge til ${by}.${S.nyPr ? ' Ny PR.' : ''}`);
+}
+
+// ---------- Pause ----------
+function pause() {
+  if (pauset || !spillbar()) return;
+  pauset = true; nedtelling = null; lyd.stoppAnstreng();
+  $('pauseT').textContent = 'Trykk for å fortsette'; $('pauseT').className = ''; $('pauselag').hidden = false;
+  $('pauseK').setAttribute('aria-label', 'Fortsett'); melde('Pause. Trykk for å fortsette.');
+}
+function startNedtelling() { nedtelling = { slutt: performance.now() / 1000 + 0.9 }; }
+function fortsett() {
+  pauset = false; nedtelling = null; $('pauselag').hidden = true; $('pauseK').setAttribute('aria-label', 'Pause');
+  if (S.tilstand === 'PRESS' || S.tilstand === 'SENK') { P.aktiv = false; gaTil('SENK', stangY); }
+}
+
+// ---------- Effekter ----------
+let ristA = 0, ristD = 1, ristT0 = -9, vignettT = -9, hodePop = -9, hodeKlem = -9, bomFade = -9, comboPop = -9, milepaelT = -9;
+let lysBlink = null, linje = null, banner = null;
+const partikler = [], svette = [], damp = [], popups = [], konfetti = [];
+function rist(px, ms) { if (redusert) return; const r = performance.now() / 1000; ristA = px; ristD = ms / 1000; ristT0 = r; }
+function ristOffset(real) {
+  let x = 0, y = 0;
+  const k = (real - ristT0) / ristD;
+  if (k < 1) { const a = ristA * (1 - k) ** 2; x += tilf(-a, a); y += tilf(-a, a); }
+  if (!redusert && S.tilstand === 'PRESS' && S.n >= CONFIG.SKJELV.fra && !pauset) { x += tilf(-1, 1); y += tilf(-1, 1); }
+  return [x, y];
+}
+function settLinje(tekst, farge) { linje = { tekst, farge, t: spillTid }; }
+function popup(tekst, type) { popups.push({ tekst, type, t0: spillTid, x: 195 + (type === 'poeng' ? tilf(-20, 20) : 0) }); if (popups.length > 12) popups.shift(); }
+function gnister(n) {
+  for (let i = 0; i < n && partikler.length < CONFIG.PARTIKLER_MAKS; i++) {
+    const s = i % 2 ? 1 : -1, a = tilf(-Math.PI * 0.95, -Math.PI * 0.05);
+    partikler.push({ x: 195 + s * 94, y: stangY, vx: Math.cos(a) * tilf(80, 260), vy: Math.sin(a) * tilf(120, 320), liv: 0, maks: tilf(0.4, 0.8), farge: i % 3 ? '#fff' : '#BA0C2F', r: tilf(1.5, 3) });
+  }
+}
+function svetteStot(n) { for (let i = 0; i < n; i++) nySvette(); }
+function nySvette() {
+  if (svette.length >= CONFIG.SVETTE_MAKS) return;
+  const A = CONFIG.ANSIKT.panne;
+  svette.push({ fx: tilf(...A.x), fy: tilf(...A.y), dy: 0, mal: tilf(30, 60), liv: 0 });
+}
+function lagKonfetti(n) {
+  const farger = ['#BA0C2F', '#fff', '#00205B', '#FFD24A'];
+  for (let i = 0; i < n; i++) konfetti.push({ x: tilf(0, 390), y: tilf(-120, -10), vx: tilf(-40, 40), vy: tilf(60, 180), r: tilf(0, 6), vr: tilf(-8, 8), w: tilf(5, 9), h: tilf(3, 6), farge: farger[i % 4], liv: 0 });
+}
+
+// Fjærer for bobblehodet og stangbøyen.
+const fjar = (k, c, x = 0) => ({ x, v: 0, mal: x, k, c });
+const fSX = fjar(60, 8, 1), fSY = fjar(60, 8, 1), fA = fjar(60, 8, 0), fStang = fjar(120, 10, 0);
+function fjarSteg(f, dt) { const a = f.k * (f.mal - f.x) - f.c * f.v; f.v += a * dt; f.x += f.v * dt; }
+const jit = { x: 0, y: 0, r: 0, mx: 0, my: 0, mr: 0, neste: 0 };
+// Mimikk: bulende øyne og fallende kjeve er fjærer, så de spretter; puff, mys og gelé glir.
+const mim = { puff: 0, squint: 0, wob: 0, wobFase: 0, blunkTil: 0, nesteBlunk: 3, blunkOye: -1, bul: 1, jaw: 1, kickT: -9 };
+const fBul = fjar(90, 5.5, 1), fJaw = fjar(80, 5.5, 1);
+function mimikk(type) {
+  mim.squint = 0;
+  if (redusert) return;
+  // Øynene og kjeven spretter ut og holder seg et halvt sekund før de glir tilbake.
+  const [bul, jaw, wob] = { perfekt: [1.7, 1.06, 1], god: [1.35, 1, 0.5], bom: [2.3, 1.35, 0.8], skive: [2.0, 1.15, 0.3] }[type];
+  mim.bul = bul; mim.jaw = jaw; mim.kickT = spillTid; fBul.x = Math.max(fBul.x, bul); fJaw.x = Math.max(fJaw.x, jaw); mim.wob = Math.max(mim.wob, wob);
+}
+// Vekst: kroppen blir større jo flere godkjente løft, og pumpes opp et øyeblikk ved hvert treff.
+let VK = 1;
+function vekst() {
+  const C = CONFIG, pump = (S.pumpA || 0) * Math.exp(-Math.max(0, spillTid - S.pumpT) / C.PUMP.s);
+  return 1 + C.VEKST_MAKS * (1 - Math.exp(-S.reps / C.VEKST_REPS)) + pump;
+}
+let svetteAkk = 0, dampAkk = 0, fps = 60, fpsAkk = 0, fpsN = 0, fpsT = 0;
+
+function belastning() {
+  const fpAktiv = S.tilstand === 'PRESS' && iFastpunkt(spillTid);
+  const p = S.tilstand === 'PRESS' ? Math.min(1, fyll(spillTid)) : 0;
+  const bf = klamp(1 - (spillTid - bomFade), 0, 1);
+  return klamp(0.03 * S.n + (S.tilstand === 'PRESS' ? 0.25 * (0.5 + 0.5 * p) : 0) + 0.30 * bf + (fpAktiv ? 0.15 : 0), 0, 1) * (S.tilstand === 'KLAR' ? 0 : 1);
+}
+
+// ---------- Oppdatering per bilde ----------
+function oppdater(dt) {
+  const C = CONFIG, t = spillTid - S.tInn, ST = C.STANG;
+  switch (S.tilstand) {
+    case 'KLAR':
+      stangY = ST.krok;
+      if (!S.idleVist && t > 4) { S.idleVist = true; boble('Stanga blir ikke lettere av å vente.', 'tidemann'); }
+      break;
+    case 'AV_STATIV':
+      stangY = lerp(ST.krok, ST.ut, E.ut(t / C.AV_STATIV_S));
+      if (t >= C.AV_STATIV_S) gaTil('SENK', ST.ut);
+      break;
+    case 'SENK': {
+      const D = C.SENK_S(S.n);
+      if (!P.plan) planleggRep();
+      stangY = lerp(S.fra, ST.bryst, E.innUt(t / D));
+      if (t >= D) { stangY = ST.bryst; fStang.x = 0.4; startPress(); }
+      break;
+    }
+    case 'PRESS': {
+      const p = Math.min(1, fyll(spillTid));
+      stangY = ST.bryst - C.GRIND_PX * p + (redusert ? 0 : tilf(-1, 1));
+      lyd.anstrengNiva(p, iFastpunkt(spillTid));
+      if (spillTid > P.t0 + P.tFull + 0.12) { P.frysT = P.t0 + P.tFull; bom('star', 1); }
+      break;
+    }
+    case 'LAAS': {
+      const D = S.perfektLaas ? C.LAAS_PERFEKT_S : C.LAAS_S, k = t / D;
+      stangY = lerp(S.fra, ST.ut, S.perfektLaas && !redusert ? E.utTilbake(k, 1.04) : E.ut(k));
+      if (k >= 1) { stangY = ST.ut; fStang.x = -0.6; if (!redusert) fA.v += (Math.random() < 0.5 ? -1 : 1) * 4 * Math.PI / 180 * 12; gaTil('HOLD', ST.ut); }
+      break;
+    }
+    case 'HOLD':
+      stangY = ST.ut;
+      if (t >= C.HOLD_S) { if (S.repsNiva >= C.REPS_PER_NIVAA(S.n)) startLasting(); else gaTil('SENK', ST.ut); }
+      break;
+    case 'LASTING':
+      stangY = ST.ut;
+      if (t >= S.lastingD) gaTil('SENK', ST.ut);
+      break;
+    case 'BOM': {
+      const a = C.BOM_SYNK_S;
+      if (S.spotterLyd && t >= a) { S.spotterLyd = false; lyd.spotter(); }
+      if (t < a) { stangY = lerp(S.fra, ST.bryst, E.inn(t / a)); spotY = null; }
+      else {
+        const u = t - a;
+        if (u < 0.25) { stangY = ST.bryst; spotY = lerp(-60, ST.bryst - 40, E.utTilbake(u / 0.25)); spotArmer = u > 0.18; }
+        else if (u < 0.65) { stangY = lerp(ST.bryst, ST.ut, E.innUt((u - 0.25) / 0.4)); spotY = stangY - 40; spotArmer = true; }
+        else if (u < C.SPOTTER_S) { stangY = ST.ut; spotY = lerp(ST.ut - 40, -80, E.inn((u - 0.65) / 0.15)); spotArmer = false; }
+        else { spotY = null; gaTil('SENK', ST.ut); }
+      }
+      break;
+    }
+    case 'SLUTT': {
+      const a = C.BOM_SYNK_S;
+      if (S.spotterLyd && t >= a) { S.spotterLyd = false; lyd.spotter(); }
+      if (t < a) stangY = lerp(S.fra, ST.bryst, E.inn(t / a));
+      else {
+        const u = t - a;
+        if (u < 0.25) { stangY = ST.bryst; spotY = lerp(-60, ST.bryst - 40, E.utTilbake(u / 0.25)); spotArmer = u > 0.18; }
+        else if (u < 0.8) { stangY = lerp(ST.bryst, ST.krok, E.innUt((u - 0.25) / 0.55)); spotY = stangY - 40; spotArmer = true; }
+        else if (u < 1.1) { stangY = ST.krok; spotY = lerp(ST.krok - 40, -80, E.inn((u - 0.8) / 0.3)); spotArmer = false; }
+        else spotY = null;
+      }
+      if (!S.stempelVist && t >= 1.75) visStempel();
+      if (!S.kortVist && t >= 2.35) visKort();
+      break;
+    }
+  }
+}
+
+function oppdaterEffekter(dt) {
+  const n = S.n, press = S.tilstand === 'PRESS';
+  // Fjærer: hodet presses ned under PRESS og strekkes ved lockout.
+  fSX.mal = press && !redusert ? 1.05 : 1; fSY.mal = redusert ? 1 : press ? 0.94 : (S.tilstand === 'LAAS' ? 1.04 : 1); fA.mal = 0;
+  for (const f of [fSX, fSY, fA, fStang]) { let r = dt; while (r > 0) { const s = Math.min(r, 1 / 120); fjarSteg(f, s); r -= s; } }
+  // Skjelving i ansiktet: nytt mål 20 ganger i sekundet.
+  if (spillTid >= jit.neste) {
+    jit.neste = spillTid + 0.05;
+    let a = 0.5 + 0.35 * n, r = 0.5 + 0.15 * n;
+    if (!press) { a *= 0.3; r *= 0.3; }
+    if (S.tilstand === 'KLAR') { a = 0; r = 0; }
+    if (redusert) { a = Math.min(a, 1); r = Math.min(r, 0.5); }
+    jit.mx = tilf(-a, a); jit.my = tilf(-a, a); jit.mr = tilf(-r, r) * Math.PI / 180;
+  }
+  const kj = Math.min(1, dt * 30); jit.x += (jit.mx - jit.x) * kj; jit.y += (jit.my - jit.y) * kj; jit.r += (jit.mr - jit.r) * kj;
+  // Mimikk: kinnene blåses opp og øynene mys under PRESS, knipes igjen ved fastpunkt; blunk når han hviler.
+  const p = press ? Math.min(1, fyll(spillTid)) : 0, fpA = press && iFastpunkt(spillTid);
+  const puffMal = redusert ? 0 : press ? 0.03 + 0.09 * p + (fpA ? 0.05 : 0) : 0;
+  mim.puff += (puffMal - mim.puff) * Math.min(1, dt * 10);
+  let sq = press ? 0.15 + 0.45 * p : 0;
+  if (fpA) sq = 1;
+  if (S.tilstand === 'SLUTT') sq = 0.55;
+  if (S.modus) sq = 0;
+  mim.squint += (sq - mim.squint) * Math.min(1, dt * 14);
+  if (spillTid > mim.nesteBlunk && !press) {
+    mim.blunkTil = spillTid + 0.14;
+    mim.blunkOye = S.tilstand === 'KLAR' && Math.random() < 0.3 ? (Math.random() < 0.5 ? 0 : 1) : -1;
+    mim.nesteBlunk = spillTid + tilf(2.2, 4.5);
+  }
+  mim.wob *= Math.exp(-dt * 4); mim.wobFase += dt * 18;
+  const hold = Math.exp(-Math.max(0, spillTid - mim.kickT) / 0.45);
+  fBul.mal = 1 + (mim.bul - 1) * hold;
+  fJaw.mal = Math.max(S.tilstand === 'LAAS' ? 1.06 : S.tilstand === 'SLUTT' ? 1.1 : 1, 1 + (mim.jaw - 1) * hold);
+  for (const f of [fBul, fJaw]) { let r = dt; while (r > 0) { const s = Math.min(r, 1 / 120); fjarSteg(f, s); r -= s; } }
+  // Rødme og svetteglans tegnes på nytt bare når de endrer seg merkbart.
+  if (hodeKlar) {
+    const b = belastning(), gl = S.tilstand === 'KLAR' ? 0.25 : Math.min(0.7, 0.25 + 0.04 * n);
+    if (Math.abs(b - sistRodme) > 0.02 || Math.abs(gl - sistGlans) > 0.02) tegnAnsikt(b, gl);
+    if (b > 0.8) { dampAkk += dt * 3; while (dampAkk >= 1) { dampAkk--; damp.push({ x: 195 + tilf(-30, 30), y: 312, liv: 0, r: tilf(5, 9) }); } }
+  }
+  if (press) { svetteAkk += dt * 0.3 * n; while (svetteAkk >= 1) { svetteAkk--; nySvette(); } }
+  for (let i = svette.length - 1; i >= 0; i--) { const s = svette[i]; s.liv += dt; s.dy = s.mal * E.inn(s.liv / 0.8); if (s.liv > 0.8) svette.splice(i, 1); }
+  for (let i = damp.length - 1; i >= 0; i--) { const d = damp[i]; d.liv += dt; d.y -= 40 * dt; if (d.liv > 1) damp.splice(i, 1); }
+  for (let i = partikler.length - 1; i >= 0; i--) { const p = partikler[i]; p.liv += dt; p.vy += 600 * dt; p.x += p.vx * dt; p.y += p.vy * dt; if (p.liv > p.maks) partikler.splice(i, 1); }
+  for (let i = konfetti.length - 1; i >= 0; i--) { const k = konfetti[i]; k.liv += dt; k.x += (k.vx + Math.sin(k.liv * 3 + k.r) * 30) * dt; k.y += k.vy * dt; k.r += k.vr * dt; if (k.y > 900 || k.liv > CONFIG.MILEPAEL_S) konfetti.splice(i, 1); }
+  for (let i = popups.length - 1; i >= 0; i--) if (spillTid - popups[i].t0 > 0.9) popups.splice(i, 1);
+  oppdaterBobler();
+}
+
+// ---------- Snakkebobler ----------
+const bobler = []; let aktivBoble = null;
+function boble(tekst, kilde = 'tidemann', delay = 0, liten = null) { bobler.push({ tekst, kilde, liten, klar: spillTid + delay }); if (bobler.length > 4) bobler.shift(); }
+function bannerAktiv() { return banner && spillTid >= banner.t0 && spillTid - banner.t0 < 1.6; }
+function oppdaterBobler() {
+  if (aktivBoble && (spillTid > aktivBoble.slutt || bannerAktiv() || (spillTid >= milepaelT && spillTid - milepaelT < CONFIG.MILEPAEL_S))) aktivBoble = null;
+  while (bobler.length && spillTid - bobler[0].klar > 3) bobler.shift();
+  if (!aktivBoble && bobler.length && spillTid >= bobler[0].klar && !bannerAktiv() && spillTid - milepaelT > CONFIG.MILEPAEL_S) {
+    const b = bobler.shift(); b.start = spillTid; b.slutt = spillTid + 1.2 + b.tekst.length * 0.03; aktivBoble = b;
+  }
+}
+
+// ---------- Tegning ----------
+const X = x => 195 + x;
+function rr(x, y, w, h, r) {
+  const c = cx; r = Math.min(r, w / 2, h / 2);
+  c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r);
+  c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath();
+}
+function poly(pts, r) {
+  const c = cx, n = pts.length; c.beginPath();
+  for (let i = 0; i < n; i++) {
+    const p0 = pts[(i + n - 1) % n], p1 = pts[i], p2 = pts[(i + 1) % n];
+    if (i === 0) c.moveTo((p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2);
+    c.arcTo(p1[0], p1[1], (p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2, r);
+  }
+  c.closePath();
+}
+function tekst(s, x, y, font, fyll, strek, lw, align = 'center', maxW) {
+  const c = cx; c.font = font; c.textAlign = align; c.textBaseline = 'middle';
+  if (strek) { c.lineJoin = 'round'; c.strokeStyle = strek; c.lineWidth = lw; maxW ? c.strokeText(s, x, y, maxW) : c.strokeText(s, x, y); }
+  c.fillStyle = fyll; maxW ? c.fillText(s, x, y, maxW) : c.fillText(s, x, y);
+}
+function bryt(s, maks) {
+  const ord = s.split(' '), linjer = []; let l = '';
+  for (const o of ord) { const p = l ? l + ' ' + o : o; if (cx.measureText(p).width > maks && l) { linjer.push(l); l = o; } else l = p; }
+  if (l) linjer.push(l); return linjer;
+}
+
+let skj = { x: 0, y: 0 };
+function tegn(real) {
+  const c = cx;
+  const [rx, ry] = ristOffset(real);
+  c.setTransform(DPR * SK, 0, 0, DPR * SK, DPR * (SX + rx * SK), DPR * (SY + ry * SK));
+  skj = (!redusert && S.n >= CONFIG.SKJELV.fra && spillbar() && !pauset) ? { x: tilf(-2, 2), y: tilf(-2, 2) } : { x: 0, y: 0 };
+  const Z = zoomNaa();
+  c.save(); c.translate(195, 420); c.scale(Z, Z); c.translate(-195, -420);
+  VK = vekst();
+  tegnVegg(real); tegnStevne(); tegnPlattform(); tegnBenk(); tegnStativ(); tegnBein(); tegnHals(); tegnKropp();
+  tegnArmer(); tegnHode(real); tegnStang(); tegnNever(); tegnSkiver(); tegnMaaler(real);
+  tegnSpotter(real); tegnPartikler(); tegnFlagg(real);
+  c.restore();
+  if (S.tilstand !== 'KLAR') tegnHud(real);
+  tegnKonfetti(); tegnPopups(); tegnMilepael(); tegnBoble(Z); tegnBanner();
+  tegnVignett(real);
+  if (DEBUG) tegnDebug(Z);
+}
+
+function tegnVegg(real) {
+  const c = cx;
+  c.fillStyle = '#00205B'; c.fillRect(-1500, -1500, 3390, 3844);
+  // Svakt norsk flaggkors bak alt.
+  c.globalAlpha = 0.06; c.fillStyle = '#fff'; c.fillRect(110, -1500, 80, 3844); c.fillRect(-1500, 380, 3390, 80);
+  c.fillStyle = '#BA0C2F'; c.fillRect(130, -1500, 40, 3844); c.fillRect(-1500, 400, 3390, 40); c.globalAlpha = 1;
+  const g = c.createRadialGradient(0, 120, 0, 0, 120, 420);
+  g.addColorStop(0, 'rgba(255,255,255,.12)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+  c.fillStyle = g; c.fillRect(-1500, -1500, 3390, 3844);
+  if (S.modus && !redusert) {
+    c.fillStyle = 'rgba(255,255,255,.08)';
+    for (let i = 0; i < 14; i++) { const x = (i * 37 + 11) % 420 - 15, y = ((real * 900 + i * 173) % 1100) - 200; c.fillRect(x, y, 2, 90 + (i % 3) * 30); }
+  }
+}
+function tegnStevne() {
+  rr(X(-150), 150, 300, 26, 4); cx.fillStyle = '#BA0C2F'; cx.fill();
+  tekst('NM I DIGITAL OMSTILLING · BENKPRESS, ÅPEN KLASSE', 195, 163.5, '800 13px "Barlow Condensed"', '#fff');
+}
+function tegnPlattform() {
+  const c = cx, k = 45 / 204, y0 = 640, y1 = 1500, h0 = 150, h1 = 150 + k * (y1 - y0);
+  c.beginPath(); c.moveTo(X(-h0), y0); c.lineTo(X(h0), y0); c.lineTo(X(h1), y1); c.lineTo(X(-h1), y1); c.closePath();
+  c.fillStyle = '#E8D3A8'; c.fill();
+  c.strokeStyle = '#D9C08F'; c.lineWidth = 2;
+  for (let x = -h0 + 18; x < h0; x += 18) { c.beginPath(); c.moveTo(X(x), y0); c.lineTo(X(x * h1 / h0), y1); c.stroke(); }
+  c.strokeStyle = '#111'; c.lineWidth = 10;
+  c.beginPath(); c.moveTo(X(-h0 + 5), y0); c.lineTo(X(-h1 + 5), y1); c.moveTo(X(h0 - 5), y0); c.lineTo(X(h1 - 5), y1); c.stroke();
+}
+function tegnBenk() {
+  const c = cx;
+  c.fillStyle = '#7D8794'; c.fillRect(X(-74), 760, 12, 50); c.fillRect(X(62), 760, 12, 50);
+  poly([[X(-60), 300], [X(60), 300], [X(80), 770], [X(-80), 770]], 14);
+  c.fillStyle = '#BA0C2F'; c.fill(); c.strokeStyle = '#0A1A3F'; c.lineWidth = 2; c.stroke();
+  poly([[X(-54), 306], [X(54), 306], [X(74), 764], [X(-74), 764]], 10);
+  c.setLineDash([5, 5]); c.strokeStyle = 'rgba(255,255,255,.55)'; c.lineWidth = 1.2; c.stroke(); c.setLineDash([]);
+}
+function tegnStativ() {
+  const c = cx;
+  for (const s of [-1, 1]) {
+    const x = X(s * 118);
+    c.fillStyle = '#7D8794'; rr(x - 26, 640, 52, 14, 4); c.fill();
+    const g = c.createLinearGradient(x - 11, 0, x + 11, 0);
+    g.addColorStop(0, '#C9D1DC'); g.addColorStop(0.5, '#9AA4B5'); g.addColorStop(1, '#7D8794');
+    rr(x - 11, 214, 22, 436, 4); c.fillStyle = g; c.fill(); c.strokeStyle = '#0A1A3F'; c.lineWidth = 2; c.stroke();
+    // J-krok som peker innover.
+    c.beginPath(); c.moveTo(x - s * 11, 230); c.lineTo(x - s * 21, 230); c.lineTo(x - s * 21, 244); c.lineTo(x - s * 11, 244);
+    c.fillStyle = '#9AA4B5'; c.fill(); c.stroke();
+  }
+}
+const HUD_HUD = '#E9B9A0', HUD_SKYGGE = '#D49A80', KONTUR = '#0A1A3F';
+function lem(ax, ay, bx, by, w, farge = HUD_HUD) {
+  const c = cx; c.lineCap = 'round';
+  c.strokeStyle = KONTUR; c.lineWidth = w + 6; c.beginPath(); c.moveTo(ax, ay); c.lineTo(bx, by); c.stroke();
+  c.strokeStyle = farge; c.lineWidth = w; c.beginPath(); c.moveTo(ax, ay); c.lineTo(bx, by); c.stroke();
+}
+function tegnBein() {
+  const c = cx;
+  for (const s of [-1, 1]) {
+    lem(X(s * 38), 738, X(s * 95), 770, 32);
+    lem(X(s * 95), 770, X(s * 114), 794, 24);
+    rr(X(s * 120) - 22, 787, 44, 26, 10); c.fillStyle = '#BA0C2F'; c.fill(); c.strokeStyle = KONTUR; c.lineWidth = 3; c.stroke();
+    c.fillStyle = '#fff'; c.fillRect(X(s * 120) - 20, 805, 40, 5);
+  }
+}
+const DRESS = '#17191f', DRESS_LYS = '#2a2e38';
+// Dressen fra portrettet: mørk jakke, hvit skjorte og smalt slips. Jakka blir bredere med VK og sprekker etter hvert.
+function tegnKropp() {
+  const c = cx, v = VK;
+  poly([[X(-66), 684], [X(66), 684], [X(74), 744], [X(-74), 744]], 8);
+  c.fillStyle = '#00205B'; c.fill(); c.strokeStyle = KONTUR; c.lineWidth = 3; c.stroke();
+  c.fillStyle = '#BA0C2F'; c.fillRect(X(-3), 690, 6, 50);
+  const sk = 94 * v, ar = 84 * v, mid = 66 * Math.min(v, 1.2);
+  poly([[X(-sk), 502], [X(sk), 502], [X(ar), 566], [X(mid), 694], [X(-mid), 694], [X(-ar), 566]], 24);
+  c.fillStyle = DRESS; c.fill(); c.strokeStyle = KONTUR; c.lineWidth = 3; c.stroke();
+  // Skjorta i V-en og slagene.
+  c.beginPath(); c.moveTo(X(-30), 500); c.lineTo(X(30), 500); c.lineTo(X(0), 624); c.closePath(); c.fillStyle = '#fff'; c.fill();
+  c.fillStyle = DRESS_LYS;
+  for (const s of [-1, 1]) { c.beginPath(); c.moveTo(X(s * 30), 500); c.lineTo(X(s * 48 * v), 508); c.lineTo(X(s * 22), 588); c.lineTo(X(0), 626); c.closePath(); c.fill(); }
+  c.fillStyle = '#fff'; c.strokeStyle = '#c9d1dc'; c.lineWidth = 1;
+  for (const s of [-1, 1]) { c.beginPath(); c.moveTo(X(s * 3), 506); c.lineTo(X(s * 28), 497); c.lineTo(X(s * 15), 527); c.closePath(); c.fill(); c.stroke(); }
+  c.fillStyle = '#0b0b10';
+  c.beginPath(); c.moveTo(X(-6), 507); c.lineTo(X(6), 507); c.lineTo(X(4), 520); c.lineTo(X(-4), 520); c.closePath(); c.fill();
+  c.beginPath(); c.moveTo(X(-4), 520); c.lineTo(X(4), 520); c.lineTo(X(8), 606); c.lineTo(X(0), 618); c.lineTo(X(-8), 606); c.closePath(); c.fill();
+  // Rødt lommetørkle og knappen (som spretter av når han har vokst nok).
+  c.fillStyle = '#BA0C2F'; c.beginPath(); c.moveTo(X(-64 * v), 552); c.lineTo(X(-44 * v), 552); c.lineTo(X(-47 * v), 541); c.lineTo(X(-53 * v), 547); c.lineTo(X(-59 * v), 540); c.closePath(); c.fill();
+  c.strokeStyle = '#3b414d'; c.lineWidth = 2; c.beginPath(); c.moveTo(X(-68 * v), 553); c.lineTo(X(-40 * v), 553); c.stroke();
+  if (!S.knappPop) { c.fillStyle = '#3b414d'; c.beginPath(); c.arc(X(0), 652, 4, 0, Math.PI * 2); c.fill(); }
+  else { c.fillStyle = '#fff'; c.beginPath(); c.moveTo(X(-10), 636); c.lineTo(X(10), 636); c.lineTo(X(0), 690); c.closePath(); c.fill(); }
+  // Sømmene revner ved skuldrene.
+  if (v > 1.18) {
+    c.strokeStyle = '#fff'; c.lineWidth = 1.6; c.lineJoin = 'round';
+    const n = Math.min(4, Math.floor((v - 1.18) / 0.06) + 2);
+    for (const s of [-1, 1]) { c.beginPath(); for (let i = 0; i <= n; i++) c.lineTo(X(s * (60 + i * 6) * v), 510 + i * 9 + (i % 2) * 4); c.stroke(); }
+  }
+}
+function albue(s) {
+  const t = smooth((CONFIG.STANG.bryst - stangY) / (CONFIG.STANG.bryst - CONFIG.STANG.ut));
+  return [X(s * lerp(150, 86, t) * (1 + (VK - 1) * 0.6)), lerp(596, 372, t)];
+}
+function tegnArmer() {
+  const c = cx, b = belastning(), v = VK, aw = v ** 1.15;
+  const deler = [-1, 1].map(s => { const S0 = [X(s * 80 * v), 522], H = [X(s * 94), stangY], El = albue(s); return { s, S0, H, El }; });
+  c.lineCap = 'round';
+  for (const d of deler) {
+    c.strokeStyle = KONTUR; c.lineWidth = 36 * aw; c.beginPath(); c.moveTo(...d.S0); c.lineTo(...d.El); c.stroke();
+    c.lineWidth = 30 * aw; c.beginPath(); c.moveTo(...d.El); c.lineTo(...d.H); c.stroke();
+  }
+  for (const d of deler) {
+    c.strokeStyle = DRESS; c.lineWidth = 30 * aw; c.beginPath(); c.moveTo(...d.S0); c.lineTo(...d.El); c.stroke();
+    c.lineWidth = 24 * aw; c.beginPath(); c.moveTo(...d.El); c.lineTo(...d.H); c.stroke();
+    // Lys kant langs ermet, så armene synes mot den mørke veggen.
+    c.strokeStyle = 'rgba(255,255,255,.16)'; c.lineWidth = 3;
+    for (const [a, b2, w] of [[d.S0, d.El, 30], [d.El, d.H, 24]]) { const an = Math.atan2(b2[1] - a[1], b2[0] - a[0]), o = w * aw / 2 - 4, ox = -Math.sin(an) * o * d.s, oy = Math.cos(an) * o * d.s; c.beginPath(); c.moveTo(a[0] + ox, a[1] + oy); c.lineTo(b2[0] + ox, b2[1] + oy); c.stroke(); }
+    // Bicepsen vokser mer enn resten og strammer i dressermet.
+    const mx = (d.S0[0] + d.El[0]) / 2, my = (d.S0[1] + d.El[1]) / 2, ang = Math.atan2(d.El[1] - d.S0[1], d.El[0] - d.S0[0]);
+    const nx = -Math.sin(ang), ny = Math.cos(ang), ut = (nx * d.s > 0 ? 1 : -1) * 9 * v;
+    const bv = 1 + (v - 1) * 2.2;
+    c.fillStyle = DRESS; c.strokeStyle = KONTUR; c.lineWidth = 3;
+    c.beginPath(); c.ellipse(mx + nx * ut, my + ny * ut, (18 + 4 * b) * bv, (13 + 3 * b) * bv, ang, 0, Math.PI * 2); c.fill(); c.stroke();
+    c.strokeStyle = DRESS_LYS; c.lineWidth = 2;
+    for (let i = -1; i <= 1; i++) { c.beginPath(); c.ellipse(mx + nx * ut * 1.2, my + ny * ut * 1.2 + i * 5, 9 * bv, 4 * bv, ang, 0.4, 2.4); c.stroke(); }
+    // Hvit mansjett og rødt svettebånd ved hånda.
+    const band = (k0, k1, w, farge) => {
+      c.lineCap = 'butt'; c.strokeStyle = KONTUR; c.lineWidth = w + 4; c.beginPath();
+      c.moveTo(lerp(d.El[0], d.H[0], k0), lerp(d.El[1], d.H[1], k0)); c.lineTo(lerp(d.El[0], d.H[0], k1), lerp(d.El[1], d.H[1], k1)); c.stroke();
+      c.strokeStyle = farge; c.lineWidth = w; c.stroke(); c.lineCap = 'round';
+    };
+    band(0.70, 0.80, 27 * aw, '#BA0C2F');
+    band(0.80, 0.90, 25 * aw, '#fff');
+  }
+}
+function tegnHals() {
+  rr(X(-37 * VK), 462, 74 * VK, 62, 20); cx.fillStyle = HUD_HUD; cx.fill();
+  cx.fillStyle = HUD_SKYGGE; cx.fillRect(X(-30 * VK), 470, 60 * VK, 10);
+}
+// ---------- Ansiktsforvrengning ----------
+// Fotoet tegnes i vannrette striper: kinnene blåses opp (bredere striper), kjeven faller (nedre del strekkes),
+// og ansiktet dirrer som gelé etter treff. Øynene kan bule ut, myse og blunke.
+const VARP_N = 34;
+const varpY = v => v < CONFIG.ANSIKT.kjeve ? v : CONFIG.ANSIKT.kjeve + (v - CONFIG.ANSIKT.kjeve) * fJaw.x;
+const varpKx = v => 1 + mim.puff * Math.exp(-(((v - CONFIG.ANSIKT.kinn) / 0.15) ** 2)) + mim.wob * 0.05 * Math.sin(v * 9 + mim.wobFase);
+const varpXo = v => mim.wob * 4 * Math.sin(v * 7 - mim.wobFase * 1.3);
+function tegnVarp(src, pad, f) {
+  const c = cx, sw = src.width, sh = src.height, fh = sh - 2 * pad, H = fh * f;
+  for (let i = 0; i < VARP_N; i++) {
+    const sy0 = i * sh / VARP_N, sy1 = (i + 1) * sh / VARP_N;
+    const v0 = (sy0 - pad) / fh, v1 = (sy1 - pad) / fh, vm = (v0 + v1) / 2;
+    const dw = sw * f * varpKx(vm), dy0 = (varpY(v0) - 0.5) * H, dy1 = (varpY(v1) - 0.5) * H;
+    c.drawImage(src, 0, sy0, sw, sy1 - sy0, -dw / 2 + varpXo(vm), dy0, dw, dy1 - dy0 + 0.75);
+  }
+}
+let oyeC = null, oyeX = null;
+function tegnOyne(W, H, f) {
+  const c = cx, A = CONFIG.ANSIKT, R = A.oyeR * W, bul = fBul.x, blunk = spillTid < mim.blunkTil;
+  A.oyne.forEach(([ox, oy], i) => {
+    const ex = (ox - 0.5) * W * varpKx(oy) + varpXo(oy), ey = (varpY(oy) - 0.5) * H;
+    let s = mim.squint;
+    if (blunk && (mim.blunkOye < 0 || mim.blunkOye === i)) s = 1;
+    // Bulende øyne: et mykt utsnitt rundt øyet tegnes forstørret oppå.
+    if (bul > 1.03 && s < 0.6) {
+      if (!oyeC) { oyeC = document.createElement('canvas'); oyeC.width = oyeC.height = 128; oyeX = oyeC.getContext('2d'); }
+      const o = oyeX, rS = R * 1.7 / f, rD = R * 1.7 * bul;
+      o.globalCompositeOperation = 'source-over'; o.clearRect(0, 0, 128, 128);
+      o.drawImage(ansiktC, ox * ansiktC.width - rS, oy * ansiktC.height - rS, 2 * rS, 2 * rS, 0, 0, 128, 128);
+      o.globalCompositeOperation = 'destination-in';
+      const g = o.createRadialGradient(64, 64, 34, 64, 64, 64); g.addColorStop(0, '#000'); g.addColorStop(1, 'rgba(0,0,0,0)');
+      o.fillStyle = g; o.fillRect(0, 0, 128, 128);
+      c.drawImage(oyeC, ex - rD, ey - rD, 2 * rD, 2 * rD);
+    }
+    // Øyelokk i hudfarge som senkes over øyet; helt igjen gir rynker ved ytterkanten.
+    if (s > 0.03) {
+      const ew = R * 2.4, eh = R * 1.35, ly = ey - eh / 2 + eh * s;
+      c.save(); c.beginPath(); c.ellipse(ex, ey, ew / 2, eh / 2, 0, 0, Math.PI * 2); c.clip();
+      c.fillStyle = hudFarge; c.fillRect(ex - ew / 2 - 1, ey - eh / 2 - 1, ew + 2, eh * s + 1); c.restore();
+      c.strokeStyle = 'rgba(70,35,25,.8)'; c.lineWidth = 1.6; c.lineCap = 'round';
+      c.beginPath(); c.moveTo(ex - ew / 2, ly - 1); c.quadraticCurveTo(ex, ly + 2.5 * s, ex + ew / 2, ly - 1); c.stroke();
+      if (s > 0.9) {
+        const side = i === 0 ? -1 : 1;
+        for (const d of [-1, 0, 1]) { c.beginPath(); c.moveTo(ex + side * (ew / 2 + 1), ey + d * 2); c.lineTo(ex + side * (ew / 2 + 7), ey + d * 5); c.stroke(); }
+      }
+    }
+  });
+}
+function tegnHode(real) {
+  if (!hodeKlar) return;
+  const c = cx, W = 168 * (1 + (VK - 1) * 0.3), H = W * hode.naturalHeight / hode.naturalWidth, A = CONFIG.ANSIKT;
+  let sx = fSX.x, sy = fSY.x, ang = fA.x + jit.r;
+  if (S.tilstand === 'SLUTT' && !redusert) ang += Math.sin(real * 5) * 0.06;
+  if (S.tilstand === 'KLAR') { const p = 1 + 0.01 * Math.sin(2 * Math.PI * 0.5 * real); sx *= p; sy *= p; }
+  const pk = (spillTid - hodePop) / 0.2; if (pk < 1 && !redusert) { const m = lerp(1.12, 1, E.ut(pk)); sx *= m; sy *= m; }
+  const kk = (spillTid - hodeKlem) / 0.25; if (kk < 1 && !redusert) { const m = 1 - E.inn(kk); sx *= 1 + 0.08 * m; sy *= 1 - 0.12 * m; }
+  let slutt = 0;
+  if (S.tilstand === 'SLUTT') { slutt = E.ut((spillTid - S.tInn - 0.35) / 0.5); ang += 15 * Math.PI / 180 * slutt; sx *= 1 - 0.08 * slutt; sy *= 1 - 0.08 * slutt; }
+  const hx = 195 + jit.x, hy = 400 + jit.y;
+  c.save(); c.translate(hx, hy); c.rotate(ang); c.scale(sx, sy);
+  const f = W / hode.naturalWidth;
+  tegnVarp(kantC, KANT_PAD, f);
+  tegnVarp(ansiktC, 0, f);
+  if (!S.modus) tegnOyne(W, H, f);
+  const fx = v => (v - 0.5) * W, fy = v => (varpY(v) - 0.5) * H;
+  // Pannevene fra nivå 7, pulserer med fyllet.
+  if (S.n >= 7 && spillbar()) {
+    const p = S.tilstand === 'PRESS' ? Math.min(1, fyll(spillTid)) : 0.3, [vx, vy] = A.vene;
+    c.strokeStyle = '#3A5BD9'; c.lineWidth = 2 + p * 1.5; c.lineCap = 'round'; c.lineJoin = 'round'; c.globalAlpha = 0.55 + 0.45 * p;
+    c.beginPath(); c.moveTo(fx(vx) - 8, fy(vy) + 10); c.lineTo(fx(vx) - 2, fy(vy) + 4); c.lineTo(fx(vx) - 7, fy(vy) - 2); c.lineTo(fx(vx), fy(vy) - 9); c.stroke();
+    c.globalAlpha = 1;
+  }
+  // Svette som renner nedover ansiktet.
+  for (const s of svette) {
+    const a = 1 - s.liv / 0.8; c.globalAlpha = Math.max(0, a);
+    const x = fx(s.fx), y = fy(s.fy) + s.dy;
+    c.fillStyle = '#dff2ff'; c.strokeStyle = 'rgba(0,32,91,.55)'; c.lineWidth = 0.8;
+    c.beginPath(); c.moveTo(x, y - 4); c.quadraticCurveTo(x + 2.5, y, x, y + 2.5); c.quadraticCurveTo(x - 2.5, y, x, y - 4); c.fill(); c.stroke();
+  }
+  c.globalAlpha = 1;
+  // Anstrengelsesstreker ved fastpunkt.
+  if (S.tilstand === 'PRESS' && iFastpunkt(spillTid)) {
+    c.strokeStyle = '#fff'; c.lineWidth = 3; c.lineCap = 'round';
+    for (const s of [-1, 1]) for (let i = 0; i < 3; i++) {
+      c.beginPath(); c.arc(s * (W / 2 + 6), fy(0.32) + i * 14, 9 + i * 3, s > 0 ? -0.6 : Math.PI - 0.6, s > 0 ? 0.6 : Math.PI + 0.6); c.stroke();
+    }
+  }
+  // Solbriller i TIDEMANN-MODUS.
+  const brilleInn = S.modus ? (spillTid - S.modusT) / 0.25 : -1, brilleUt = !S.modus ? (spillTid - S.modusSlutt) / 0.3 : 9;
+  if (S.modus || brilleUt < 1) {
+    let dy = 0, ax = 1;
+    if (S.modus) dy = brilleInn < 1 ? lerp(-160, 0, redusert ? E.ut(brilleInn) : E.utTilbake(brilleInn)) : 0;
+    else { dy = 40 * E.inn(brilleUt); ax = 1 - brilleUt; }
+    c.globalAlpha = klamp(ax, 0, 1);
+    const gw = 0.28 * W, gh = 0.13 * H;
+    for (const [ox, oy] of A.oyne) { rr(fx(ox) - gw / 2, fy(oy) - gh / 2 + dy, gw, gh, 7); c.fillStyle = '#0b0b10'; c.fill(); c.fillStyle = 'rgba(255,255,255,.55)'; c.fillRect(fx(ox) - gw / 3, fy(oy) - gh / 4 + dy, gw / 4, 2.5); }
+    c.strokeStyle = '#0b0b10'; c.lineWidth = 4; c.beginPath(); c.moveTo(fx(A.oyne[0][0]) + gw / 2, fy(0.43) + dy); c.lineTo(fx(A.oyne[1][0]) - gw / 2, fy(0.43) + dy); c.stroke();
+    c.globalAlpha = 1;
+  }
+  if (DEBUG) { c.fillStyle = '#0f0'; for (const [ox, oy] of A.oyne) c.fillRect(fx(ox) - 2, fy(oy) - 2, 4, 4); c.strokeStyle = '#0f0'; c.lineWidth = 1; c.strokeRect(fx(A.panne.x[0]), fy(A.panne.y[0]), (A.panne.x[1] - A.panne.x[0]) * W, (A.panne.y[1] - A.panne.y[0]) * H); c.beginPath(); c.moveTo(-W / 2, fy(A.hake)); c.lineTo(W / 2, fy(A.hake)); c.stroke(); }
+  c.restore();
+  // TIDEMANN-MODUS: ringer i flaggfarger bak hodet tegnes her (oppå kanten, men lett gjennomsiktig).
+  if (S.modus) {
+    const p = 1 + 0.04 * Math.sin(real * Math.PI * 3);
+    c.globalAlpha = 0.6; c.lineWidth = 6;
+    [['#BA0C2F', 104], ['#fff', 112], ['#00205B', 120]].forEach(([f, r]) => { c.strokeStyle = f; c.beginPath(); c.arc(hx, hy, r * p, 0, Math.PI * 2); c.stroke(); });
+    c.globalAlpha = 1;
+  }
+  // Damp fra issen.
+  for (const d of damp) { c.globalAlpha = Math.max(0, 0.6 * (1 - d.liv)); c.fillStyle = '#fff'; c.beginPath(); c.arc(d.x, d.y, d.r * (1 + d.liv), 0, Math.PI * 2); c.fill(); }
+  c.globalAlpha = 1;
+  // Stjerner rundt hodet når runden er over.
+  if (S.tilstand === 'SLUTT' && slutt > 0) {
+    ['#fff', '#BA0C2F', '#3A5BD9'].forEach((f, i) => {
+      const a = real * 3 + i * Math.PI * 2 / 3, x = hx + Math.cos(a) * 70, y = hy - 105 + Math.sin(a) * 14;
+      stjerne(x, y, 8, f);
+    });
+  }
+}
+function stjerne(x, y, r, f) {
+  const c = cx; c.beginPath();
+  for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr2 = i % 2 ? r * 0.45 : r; c.lineTo(x + Math.cos(a) * rr2, y + Math.sin(a) * rr2); }
+  c.closePath(); c.fillStyle = f; c.fill(); c.strokeStyle = KONTUR; c.lineWidth = 1.5; c.stroke();
+}
+function skiveMal(kg) { return { 10: [6, 80], 15: [8, 96], 20: [10, 112], 25: [12, 128] }[kg]; }
+function stangEnde() { let x = 140; for (const s of skiver) x += skiveMal(s.kg)[0] + 1; return Math.max(200, x + 14); }
+function stangYved(x, ende) { const d = Math.min(14, 0.04 * kgNaa()) * (1 + fStang.x); return stangY + skj.y + d * (x / ende) ** 2; }
+function stangKurve(ende, dx, dy) {
+  const c = cx, yE = stangYved(ende, ende), y0 = stangY + skj.y;
+  c.beginPath(); c.moveTo(X(-ende) + dx + skj.x, yE + dy); c.quadraticCurveTo(X(0) + dx + skj.x, 2 * y0 - yE + dy, X(ende) + dx + skj.x, yE + dy);
+}
+function tegnStang() {
+  const c = cx, ende = stangEnde();
+  c.lineCap = 'round';
+  stangKurve(ende, 6, 10); c.strokeStyle = 'rgba(0,10,40,.25)'; c.lineWidth = 9; c.stroke();
+  stangKurve(ende, 0, 0); c.strokeStyle = '#4b5563'; c.lineWidth = 8; c.stroke();
+  stangKurve(ende, 0, 0); c.strokeStyle = '#9AA4B5'; c.lineWidth = 6; c.stroke();
+  stangKurve(ende, 0, -1.5); c.strokeStyle = '#C9D1DC'; c.lineWidth = 2; c.stroke();
+  c.strokeStyle = 'rgba(40,48,60,.45)'; c.lineWidth = 1;
+  for (const s of [-1, 1]) for (let x = 40; x <= 110; x += 4) { const y = stangYved(s * x, ende); c.beginPath(); c.moveTo(X(s * x) + skj.x, y - 2.5); c.lineTo(X(s * x) + skj.x, y + 2.5); c.stroke(); }
+  c.fillStyle = '#3b424d';
+  for (const s of [-1, 1]) { const y = stangYved(s * 136, ende); rr(X(s * 136) - 3 + skj.x, y - 10, 6, 20, 2); c.fill(); }
+}
+function tegnNever() {
+  const c = cx;
+  for (const s of [-1, 1]) {
+    const x = X(s * 94), y = stangY;
+    rr(x - 13, y - 11, 26, 22, 8); c.fillStyle = HUD_HUD; c.fill(); c.strokeStyle = KONTUR; c.lineWidth = 3; c.stroke();
+    c.strokeStyle = HUD_SKYGGE; c.lineWidth = 1.5;
+    for (let i = -1; i <= 1; i++) { c.beginPath(); c.moveTo(x + i * 6, y - 8); c.lineTo(x + i * 6, y - 3); c.stroke(); }
+  }
+}
+function tegnSkiver() {
+  const c = cx, ende = stangEnde();
+  for (const s of [-1, 1]) {
+    let x = 140;
+    for (const sk of skiver) {
+      const [th, h] = skiveMal(sk.kg), k = (spillTid - sk.inn) / 0.35;
+      const inn = k >= 1 ? 0 : (1 - (redusert ? E.ut(k) : E.utTilbake(k))) * 260;
+      const xm = s * (x + th / 2 + inn), y = stangYved(s * (x + th / 2), ende);
+      const x0 = X(xm) - th / 2 + skj.x;
+      if (sk.flagg) {
+        c.save(); rr(x0, y - h / 2, th, h, 3); c.clip();
+        let xx = x0; for (const [f, w] of [['#BA0C2F', 3], ['#fff', 2], ['#00205B', 3], ['#fff', 2], ['#BA0C2F', 2]]) { c.fillStyle = f; c.fillRect(s > 0 ? xx : x0 + th - (xx - x0) - w, y - h / 2, w, h); xx += w; }
+        c.restore(); rr(x0, y - h / 2, th, h, 3); c.strokeStyle = KONTUR; c.lineWidth = 1.2; c.stroke();
+      } else {
+        rr(x0, y - h / 2, th, h, 3);
+        c.fillStyle = { 10: '#fff', 15: '#00205B', 20: '#BA0C2F' }[sk.kg]; c.fill();
+        c.strokeStyle = sk.kg === 10 ? '#00205B' : '#fff'; c.lineWidth = 1.2; c.stroke();
+      }
+      x += th + 1;
+    }
+  }
+}
+function tegnMaaler(real) {
+  const c = cx, aktiv = S.tilstand === 'PRESS' && !pauset, etter = spillTid - P.sluttT, bomVis = spillTid - P.bomT < 0.6;
+  const vis = aktiv || etter < 0.35 || bomVis;
+  const yp = p => 600 - 350 * klamp(p, 0, 1);
+  const tt = aktiv ? spillTid : (P.frysT > 0 ? P.frysT : P.sluttT), fp = aktiv && iFastpunkt(spillTid);
+  // Mens stanga senkes, vises neste sone svakt, så spilleren rekker å se hvor den er.
+  const forvarsel = S.tilstand === 'SENK' && P.plan && !pauset;
+  for (const s of [-1, 1]) {
+    const xc = X(s * 118) + skj.x, x0 = xc - 7;
+    c.fillStyle = '#0A1A3F'; c.fillRect(x0, 250, 14, 350);
+    if (spillTid - P.bomT < 0.6) { c.globalAlpha = 1 - (spillTid - P.bomT) / 0.6; c.fillStyle = '#fff'; c.fillRect(x0 - 8, yp(P.bomP) - 1, 30, 2); c.globalAlpha = 1; }
+    if (forvarsel) {
+      const pl = P.plan, k = klamp((spillTid - S.tInn) / 0.15, 0, 1) * 0.5;
+      c.globalAlpha = k; c.fillStyle = 'rgba(43,214,123,.92)';
+      c.fillRect(x0 - 4, yp(pl.c0 + pl.fgod / 2), 22, yp(pl.c0 - pl.fgod / 2) - yp(pl.c0 + pl.fgod / 2));
+      c.fillStyle = '#FFD24A'; c.fillRect(x0 - 4, yp(pl.c0 + pl.fperf / 2), 22, Math.max(2, yp(pl.c0 - pl.fperf / 2) - yp(pl.c0 + pl.fperf / 2)));
+      c.globalAlpha = 1; continue;
+    }
+    if (!vis || P.T <= 0) continue;
+    c.globalAlpha = aktiv ? 1 : bomVis ? Math.max(1 - etter / 0.35, 0.6 * (1 - (spillTid - P.bomT) / 0.6)) : 1 - etter / 0.35;
+    const p = Math.min(1, fyll(tt)), cc = senter(tt);
+    c.fillStyle = '#BA0C2F'; c.fillRect(x0, yp(p), 14, 600 - yp(p));
+    const zt = yp(cc + P.fgod / 2), zb = yp(cc - P.fgod / 2);
+    const blink = spillTid - P.blinkT < 0.08;
+    c.fillStyle = blink ? '#fff' : 'rgba(43,214,123,.92)'; c.fillRect(x0 - 4, zt, 22, zb - zt);
+    c.fillStyle = '#fff'; c.fillRect(x0 - 4, zt - 1, 22, 2); c.fillRect(x0 - 4, zb - 1, 22, 2);
+    const pt = yp(cc + P.fperf / 2), pb = yp(cc - P.fperf / 2);
+    c.fillStyle = '#FFD24A'; c.fillRect(x0 - 4, pt, 22, Math.max(2, pb - pt));
+    if (P.fp && aktiv) { c.fillStyle = '#FFD24A'; c.fillRect(x0 - 7, yp(P.fp.s) - 1.5, 28, 3); }
+    const my = yp(p) + (fp && !redusert ? tilf(-2, 2) : 0);
+    c.save(); c.shadowColor = fp ? '#FFD24A' : '#fff'; c.shadowBlur = 8 * DPR * SK;
+    c.fillStyle = fp && Math.floor(real * 8) % 2 ? '#FFD24A' : '#fff'; c.fillRect(x0 - 6, my - 1.5, 26, 3); c.restore();
+    c.globalAlpha = 1;
+  }
+  // Opplæring: piler mot det grønne og en kort forklaring.
+  if (aktiv && P.visHjelp) {
+    const y = yp(senter(spillTid));
+    tekst('→', X(-150), y, '800 26px "Barlow Condensed"', '#fff', '#00205B', 4);
+    tekst('←', X(150), y, '800 26px "Barlow Condensed"', '#fff', '#00205B', 4);
+    tekst('Trykk når det røde er i det grønne', 195, 236, '800 16px "Barlow Condensed"', '#fff', '#00205B', 4);
+  }
+}
+function tegnSpotter(real) {
+  if (spotY == null) return;
+  const c = cx, x = 195, y = spotY;
+  if (spotArmer) {
+    c.strokeStyle = '#9AA4B5'; c.lineWidth = 4; c.lineCap = 'round';
+    for (const s of [-1, 1]) { c.beginPath(); c.moveTo(x + s * 14, y + 10); c.lineTo(x + s * 20, stangY - 2); c.stroke(); }
+  }
+  c.strokeStyle = KONTUR; c.lineWidth = 2; c.beginPath(); c.moveTo(x, y - 23); c.lineTo(x, y - 34); c.stroke();
+  const pr = Math.cos(real * 40);
+  c.fillStyle = '#9AA4B5'; c.beginPath(); c.ellipse(x - 11 * Math.abs(pr), y - 35, 11 * Math.abs(pr) + 1, 3, 0, 0, Math.PI * 2); c.fill();
+  c.beginPath(); c.ellipse(x + 11 * Math.abs(pr), y - 35, 11 * Math.abs(pr) + 1, 3, 0, 0, Math.PI * 2); c.fill();
+  c.fillStyle = '#fff'; c.strokeStyle = KONTUR; c.lineWidth = 3; c.beginPath(); c.arc(x, y, 23, 0, Math.PI * 2); c.fill(); c.stroke();
+  rr(x - 15, y - 7, 30, 10, 5); c.fillStyle = '#BA0C2F'; c.fill();
+  c.fillStyle = '#fff'; c.beginPath(); c.arc(x - 6, y - 2, 2, 0, Math.PI * 2); c.arc(x + 6, y - 2, 2, 0, Math.PI * 2); c.fill();
+  tekst('3000', x, y + 12, '700 8px "Barlow Condensed"', '#00205B');
+}
+function tegnPartikler() {
+  const c = cx;
+  for (const p of partikler) { c.globalAlpha = Math.max(0, 1 - p.liv / p.maks); c.fillStyle = p.farge; c.beginPath(); c.arc(p.x, p.y, p.r, 0, Math.PI * 2); c.fill(); }
+  c.globalAlpha = 1;
+}
+function tegnFlagg(real) {
+  const a = spillTid - milepaelT; if (a < 0 || a > 2) return;
+  const c = cx, x0 = 165, y0 = stangY - 74, w = 60, h = 44;
+  c.strokeStyle = '#C9D1DC'; c.lineWidth = 2; c.beginPath(); c.moveTo(x0, y0 - 4); c.lineTo(x0, stangY - 6); c.stroke();
+  for (let i = 0; i < w; i += 2) {
+    const dy = Math.sin(i / 9 - real * 8) * 3 * (i / w);
+    const col = i < 18 || i >= 26 ? null : 'v';
+    c.fillStyle = '#BA0C2F'; c.fillRect(x0 + i, y0 + dy, 2, h);
+    c.fillStyle = '#fff'; c.fillRect(x0 + i, y0 + dy + 16, 2, 12); if (i >= 16 && i < 28) c.fillRect(x0 + i, y0 + dy, 2, h);
+    c.fillStyle = '#00205B'; c.fillRect(x0 + i, y0 + dy + 19, 2, 6); if (i >= 19 && i < 25) c.fillRect(x0 + i, y0 + dy, 2, h);
+    void col;
+  }
+}
+function tegnKonfetti() {
+  const c = cx;
+  for (const k of konfetti) { c.save(); c.translate(k.x, k.y); c.rotate(k.r); c.fillStyle = k.farge; c.fillRect(-k.w / 2, -k.h / 2, k.w, k.h); c.restore(); }
+}
+function tegnPopups() {
+  for (const p of popups) {
+    const a = spillTid - p.t0;
+    if (p.type === 'poeng') {
+      const k = a / 0.8; if (k > 1) continue; cx.globalAlpha = 1 - E.inn(k);
+      tekst(p.tekst, p.x, zyHud(stangY) - 26 - 40 * E.ut(k), '800 20px "Barlow Condensed"', '#FFD24A', '#00205B', 4);
+    } else if (p.type === 'liten') {
+      const k = a / 0.9; if (k > 1) continue; cx.globalAlpha = 1 - E.inn(k);
+      tekst(p.tekst, 195, 306, '600 14px "Barlow"', '#c8d0e0', '#00205B', 3);
+    } else {
+      const k = a / 0.6; if (k > 1) continue;
+      const sk = redusert ? 1 : lerp(p.type === 'bom' ? 1.15 : 1.6, 1, E.ut(Math.min(1, a / 0.25)));
+      cx.globalAlpha = k < 0.6 ? 1 : 1 - (k - 0.6) / 0.4;
+      const st = { perfekt: [48, '#fff', '#00205B'], god: [28, '#fff', '#00205B'], bom: [40, '#fff', '#BA0C2F'] }[p.type];
+      cx.save(); cx.translate(195, 270 - 30 * E.ut(k)); cx.scale(sk, sk);
+      tekst(p.tekst, 0, 0, `800 ${st[0]}px "Barlow Condensed"`, st[1], st[2], 6, 'center', p.type === 'bom' ? 190 : undefined);
+      if (p.under) tekst(p.under, 0, 26, '600 14px "Barlow"', '#c8d0e0', '#00205B', 3);
+      cx.restore();
+    }
+    cx.globalAlpha = 1;
+  }
+}
+const zyHud = y => 420 + (y - 420) * zoomNaa();
+function tegnMilepael() {
+  const a = spillTid - milepaelT; if (a < 0 || a > CONFIG.MILEPAEL_S) return;
+  cx.globalAlpha = Math.min(1, a / 0.2, (CONFIG.MILEPAEL_S - a) / 0.3);
+  tekst('AI-NORGE', 195, 232, 'italic 600 44px "Fraunces"', '#fff', '#00205B', 6);
+  tekst('ER LØFTET!', 195, 278, 'italic 600 44px "Fraunces"', '#fff', '#00205B', 6);
+  cx.globalAlpha = 1;
+}
+function tegnBoble(Z) {
+  const b = aktivBoble; if (!b) return;
+  const c = cx, age = spillTid - b.start, a = klamp(Math.min(age / 0.12, (b.slutt - spillTid) / 0.15), 0, 1);
+  c.font = '700 16px "Barlow Condensed"';
+  const linjer = bryt(b.tekst, 150);
+  let w = Math.max(...linjer.map(l => c.measureText(l).width));
+  if (b.liten) { c.font = '600 11px "Barlow"'; w = Math.max(w, c.measureText(b.liten).width); }
+  w = Math.min(170, w + 22);
+  const h = linjer.length * 18 + (b.liten ? 15 : 0) + 14;
+  let mx, my;
+  if (b.kilde === 'spotter' && spotY != null) { mx = 195 + 30; my = 420 + (spotY - 26 - 420) * Z; }
+  else { mx = 195 + 40; my = 420 + (300 - 420) * Z; }
+  const bx = klamp(mx - w / 2 + 40, 10, 380 - w), by = 150;
+  c.globalAlpha = a;
+  c.fillStyle = '#fff'; c.strokeStyle = '#00205B'; c.lineWidth = 2;
+  rr(bx, by, w, h, 12); c.fill(); c.stroke();
+  const hx = klamp(mx, bx + 16, bx + w - 16), ty = Math.max(by + h + 10, Math.min(my, by + h + 40, P.visHjelp && S.tilstand === 'PRESS' ? 226 : 9999));
+  c.beginPath(); c.moveTo(hx - 8, by + h - 1); c.lineTo(mx - 4, ty); c.lineTo(hx + 8, by + h - 1); c.closePath(); c.fill();
+  c.beginPath(); c.moveTo(hx - 8, by + h); c.lineTo(mx - 4, ty); c.lineTo(hx + 8, by + h); c.stroke();
+  linjer.forEach((l, i) => tekst(l, bx + w / 2, by + 16 + i * 18, '700 16px "Barlow Condensed"', '#00205B'));
+  if (b.liten) tekst(b.liten, bx + w / 2, by + 16 + linjer.length * 18, '600 11px "Barlow"', '#55617a');
+  c.globalAlpha = 1;
+}
+function tegnBanner() {
+  if (!banner) return;
+  const a = spillTid - banner.t0, D = 1.6; if (a < 0) return; if (a > D) { banner = null; return; }
+  const c = cx;
+  if (!banner.l2s) {
+    c.font = '600 15px "Barlow"'; banner.l2s = bryt(banner.l2, 306);
+    c.font = '400 14px "Barlow"'; banner.l3s = banner.l3 ? bryt(banner.l3, 306) : [];
+  }
+  const h = 36 + banner.l2s.length * 19 + (banner.l3s.length ? 6 + banner.l3s.length * 18 : 0);
+  // Banneret ligger over HUD-en, så den nye skiva på stanga synes mens den glir på.
+  let y = 46, alpha = 1;
+  if (redusert) alpha = Math.min(1, a / 0.2, (D - a) / 0.25);
+  else { y = lerp(-110, 46, E.utTilbake(Math.min(1, a / 0.3))); if (a > D - 0.25) y -= 160 * E.inn((a - (D - 0.25)) / 0.25); }
+  c.globalAlpha = alpha;
+  rr(30, y, 330, h, 14); c.fillStyle = '#BA0C2F'; c.fill(); c.strokeStyle = '#fff'; c.lineWidth = 3; c.stroke();
+  tekst(banner.l1, 195, y + 22, '800 22px "Barlow Condensed"', '#fff');
+  banner.l2s.forEach((l, i) => tekst(l, 195, y + 46 + i * 19, '600 15px "Barlow"', '#fff'));
+  const y3 = y + 46 + banner.l2s.length * 19 + 6;
+  banner.l3s.forEach((l, i) => tekst(l, 195, y3 + i * 18, '400 14px "Barlow"', '#FFD24A'));
+  c.globalAlpha = 1;
+}
+function tegnHud(real) {
+  const c = cx, kg = kgNaa();
+  tekst(`${kg} KG`, 16, 70, '800 32px "Barlow Condensed"', '#fff', null, 0, 'left');
+  tekst(`${fmt(S.poeng)} kg løftet`, 16, 96, '600 13px "Barlow"', 'rgba(255,255,255,.85)', null, 0, 'left');
+  for (let i = 0; i < 3; i++) {
+    const x = 163 + i * 32, rod = i < S.lys;
+    let f = rod ? '#BA0C2F' : '#fff';
+    if (lysBlink && lysBlink.i === i && spillTid - lysBlink.t < 0.6) f = Math.floor((spillTid - lysBlink.t) / 0.1) % 2 ? '#BA0C2F' : '#fff';
+    c.fillStyle = f; c.beginPath(); c.arc(x, 62, 11, 0, Math.PI * 2); c.fill();
+    c.strokeStyle = rod ? '#fff' : 'rgba(255,255,255,.5)'; c.lineWidth = 2; c.stroke();
+  }
+  tekst('DOMMERNE', 195, 85, '700 9px "Barlow Condensed"', 'rgba(255,255,255,.75)');
+  const mult = 1 + CONFIG.COMBO_TERSKLER.filter(x => S.combo >= x).length;
+  if (mult >= 2) {
+    const k = (spillTid - comboPop) / 0.25, sk = k < 1 && !redusert ? lerp(1.3, 1, E.ut(k)) : 1;
+    c.save(); c.translate(195, 103); c.scale(sk, sk);
+    tekst(`×${mult} ${T.combo[mult]}`, 0, 0, '800 15px "Barlow Condensed"', mult >= 5 ? '#FFD24A' : '#fff', '#00205B', 3);
+    c.restore();
+  } else if (S.combo > 0) tekst(`combo ${S.combo}`, 195, 103, '700 12px "Barlow Condensed"', 'rgba(255,255,255,.7)');
+  tegnKart(330, 58, 44, 48, real);
+  const pst = S.n <= 12 ? `AI-NORGE ${Math.round((S.n - 1) / 12 * 100)} %` : 'AI-NORGE 100 % + OVERTID';
+  tekst(pst, 374, 116, '700 11px "Barlow Condensed"', '#fff', null, 0, 'right');
+  if (linje && spillTid - linje.t < 1.8) {
+    c.globalAlpha = Math.min(1, (1.8 - (spillTid - linje.t)) / 0.3);
+    tekst(linje.tekst, 195, 132, '700 13px "Barlow Condensed"', linje.farge);
+    c.globalAlpha = 1;
+  } else tekst(`SISTE SKIVE: ${skiveFor(S.n).navn}`, 195, 132, '700 13px "Barlow Condensed"', 'rgba(255,255,255,.8)');
+}
+const KART = (() => {
+  const pr = (lo, la) => [(lo - 15) * Math.cos(la * Math.PI / 180), -la];
+  const pts = NORGE.map(([lo, la]) => pr(lo, la));
+  const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+  return { pts, byer: BYER.map(b => pr(b[1], b[2])), minx: Math.min(...xs), maxx: Math.max(...xs), miny: Math.min(...ys), maxy: Math.max(...ys) };
+})();
+function tegnKart(x0, y0, w, h, real) {
+  const c = cx, sk = Math.min(w / (KART.maxx - KART.minx), h / (KART.maxy - KART.miny));
+  const ox = x0 + (w - (KART.maxx - KART.minx) * sk) / 2, oy = y0 + (h - (KART.maxy - KART.miny) * sk) / 2;
+  const P2 = ([x, y]) => [ox + (x - KART.minx) * sk, oy + (y - KART.miny) * sk];
+  c.beginPath(); KART.pts.forEach((p, i) => { const [x, y] = P2(p); i ? c.lineTo(x, y) : c.moveTo(x, y); }); c.closePath();
+  c.fillStyle = 'rgba(255,255,255,.2)'; c.fill();
+  c.save(); c.clip();
+  const idx = Math.min(S.n, 12) - 1, ferdig = S.n > 12;
+  const yLat = ferdig ? y0 - 5 : P2(KART.byer[idx])[1];
+  c.fillStyle = '#BA0C2F'; c.fillRect(x0 - 5, yLat, w + 10, y0 + h + 5 - yLat);
+  c.restore();
+  c.beginPath(); KART.pts.forEach((p, i) => { const [x, y] = P2(p); i ? c.lineTo(x, y) : c.moveTo(x, y); }); c.closePath();
+  c.strokeStyle = '#fff'; c.lineWidth = 1; c.stroke();
+  c.fillStyle = '#fff';
+  for (let i = 0; i <= Math.min(idx, 11); i++) {
+    const [x, y] = P2(KART.byer[i]);
+    if (i === idx && !ferdig) { if (Math.floor(real * 4) % 2) continue; c.beginPath(); c.arc(x, y, 2.5, 0, Math.PI * 2); c.fill(); }
+    else { c.beginPath(); c.arc(x, y, 1.5, 0, Math.PI * 2); c.fill(); }
+  }
+}
+function tegnVignett(real) {
+  const k = (real - vignettT) / 0.25; if (k >= 1 || k < 0) return;
+  const g = cx.createRadialGradient(195, 422, 150, 195, 422, 520);
+  g.addColorStop(0, 'rgba(186,12,47,0)'); g.addColorStop(1, `rgba(186,12,47,${0.25 * (1 - k)})`);
+  cx.fillStyle = g; cx.fillRect(-400, -200, 1190, 1244);
+}
+function tegnDebug(Z) {
+  const l = [`${S.tilstand} · nivå ${S.n} · fps ${fps.toFixed(0)} · zoom ${Z.toFixed(2)}`,
+    `T ${P.T.toFixed(2)} s · god ${(P.fgod * P.T * 1000).toFixed(0)} ms · perfekt ${(P.fperf * P.T * 1000).toFixed(0)} ms`,
+    `snittavvik siste ${avvik.length}: ${avvik.length ? (avvik.reduce((a, b) => a + b, 0) / avvik.length).toFixed(0) : '–'} ms (+ = seint)`];
+  cx.fillStyle = 'rgba(0,0,0,.6)'; cx.fillRect(4, 760, 382, 56);
+  l.forEach((s, i) => tekst(s, 10, 774 + i * 16, '600 11px monospace', '#0f0', null, 0, 'left'));
+}
+
+// ---------- Løkka ----------
+function bilde(ms) {
+  const real = ms / 1000;
+  let rdt = real - sistReal; sistReal = real; if (rdt < 0) rdt = 0;
+  if (rdt > 0 && rdt < 0.1) ramme += (rdt - ramme) * 0.05;
+  if (pauset || real < hitstopTil) offset += rdt;
+  else if (rdt > 0.1) offset += rdt - 0.1;
+  const ny = real - offset, dt = Math.max(0, ny - spillTid); spillTid = Math.max(spillTid, ny);
+  if (nedtelling) {
+    const igjen = nedtelling.slutt - performance.now() / 1000;
+    if (igjen <= 0) fortsett(); else { $('pauseT').textContent = String(Math.ceil(igjen / 0.3)); $('pauseT').className = 'tall'; }
+  }
+  if (!pauset) { oppdater(dt); oppdaterEffekter(dt); }
+  fpsAkk += rdt; fpsN++; if (fpsAkk > 0.5) { fps = fpsN / fpsAkk; fpsAkk = 0; fpsN = 0; }
+  tegn(real);
+  requestAnimationFrame(bilde);
+}
+
+// ---------- Inndata ----------
+const erKnapp = e => e.target instanceof Element && e.target.closest('button,a');
+addEventListener('pointerdown', e => {
+  if (e.button > 0 || erKnapp(e)) return;
+  e.preventDefault();
+  trykk(e.timeStamp, e.pointerType === 'mouse' ? 'mouse' : e.pointerType === 'pen' ? 'pen' : 'touch');
+}, { passive: false });
+document.addEventListener('touchstart', e => { if (!erKnapp(e)) e.preventDefault(); }, { passive: false });
+document.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+document.addEventListener('touchend', () => lagLyd(), { passive: true });
+addEventListener('contextmenu', e => e.preventDefault());
+addEventListener('keydown', e => {
+  if (e.repeat) return;
+  const knapp = e.target instanceof Element && e.target.closest('button,a');
+  if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
+    if (knapp && e.code === 'Space') return;
+    e.preventDefault(); trykk(e.timeStamp, 'key');
+  } else if (e.code === 'Enter' || e.code === 'NumpadEnter') {
+    if (knapp) return;
+    e.preventDefault(); if (S.tilstand === 'KLAR' || S.tilstand === 'SLUTT' || pauset) trykk(e.timeStamp, 'key');
+  } else if (e.code === 'KeyM') { lagLyd(); settLyd(!lydPaa); }
+  else if (e.code === 'KeyP' || e.code === 'Escape') { if (pauset) { if (!nedtelling) startNedtelling(); } else pause(); }
+});
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) return;
+  if (pauset) { nedtelling = null; $('pauseT').textContent = 'Trykk for å fortsette'; $('pauseT').className = ''; } else pause();
+});
+// Museklikk skal ikke gi knappene fokus, ellers treffer mellomrom knappen i stedet for å løfte. Tab virker som før.
+for (const id of ['lydK', 'pauseK']) $(id).addEventListener('mousedown', e => e.preventDefault());
+$('lydK').addEventListener('click', e => { lagLyd(); settLyd(!lydPaa); if (e.detail) cv.focus({ preventScroll: true }); });
+$('pauseK').addEventListener('click', e => { if (pauset) { if (!nedtelling) startNedtelling(); } else pause(); if (e.detail) cv.focus({ preventScroll: true }); });
+$('enTil').addEventListener('click', () => { if (S.tilstand === 'SLUTT' && S.kortVist && performance.now() / 1000 >= S.kortLaas) startRunde(); });
+$('delK').addEventListener('click', async () => {
+  const by = byFor(S.sluttN);
+  const tekstDel = `Jeg løftet ${fmt(S.poeng)} kg AI-Norge til ${by} med Tidemann. Slår du det?`, url = 'https://esbjugconsult.com/benkpress';
+  if (navigator.share) { try { await navigator.share({ title: 'Tidemann Løfter AI-Norge', text: tekstDel, url }); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
+  let ok = false;
+  try { await navigator.clipboard.writeText(tekstDel + ' ' + url); ok = true; } catch {}
+  if (!ok) { const ta = document.createElement('textarea'); ta.value = tekstDel + ' ' + url; ta.style.cssText = 'position:fixed;opacity:0'; document.body.append(ta); ta.select(); try { ok = document.execCommand('copy'); } catch {} ta.remove(); }
+  const k = $('delK'); k.textContent = ok ? 'Kopiert!' : 'Kunne ikke kopiere'; melde(ok ? 'Kopiert.' : 'Kunne ikke kopiere.'); setTimeout(() => { k.textContent = 'Del'; }, 1500);
+});
+
+// ---------- Skjermleser ----------
+let liveSist = 0, liveVent = null;
+function melde(s) {
+  if (!s) return;
+  const naa = performance.now(), sett = () => { $('live').textContent = s; liveSist = performance.now(); };
+  clearTimeout(liveVent);
+  if (naa - liveSist >= 1500) sett(); else liveVent = setTimeout(sett, 1500 - (naa - liveSist));
+}
+
+// ---------- Start ----------
+(function startskjerm() {
+  $('ctaT').textContent = GROV ? 'TRYKK FOR Å LØFTE' : 'MELLOMROM FOR Å LØFTE';
+  const pr = parseInt(lager.get('pr'), 10) || 0, by = lager.get('prBy');
+  if (pr > 0) { const r = $('rekord'); r.textContent = `Rekord: ${fmt(pr)} kg${by ? ' · ' + by : ''}`; r.hidden = false; }
+  sjekkRetning();
+  // Fontene lastes før første tegning, men aldri mer enn 1,5 s.
+  const fonter = ['italic 600 34px Fraunces', '800 32px "Barlow Condensed"', '700 13px "Barlow Condensed"', '400 16px Barlow', '600 14px Barlow']
+    .map(f => document.fonts && document.fonts.load ? document.fonts.load(f).catch(() => {}) : null);
+  Promise.race([Promise.all(fonter), new Promise(r => setTimeout(r, 1500))]).then(() =>
+    requestAnimationFrame(t => { sistReal = t / 1000; offset = sistReal; spillTid = 0; requestAnimationFrame(bilde); }));
+})();
+</script>
+</body>
+</html>
