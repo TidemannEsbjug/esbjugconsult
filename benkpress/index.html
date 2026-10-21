@@ -531,7 +531,7 @@ function bom(type, p) {
   S.lys++; S.okRad = 0;
   if (S.combo > 0) popup('Comboen gikk i møte', 'liten');
   S.combo = 0; if (S.modus) sluttModus();
-  popup(T.bom[type], 'bom'); settLinje(T.dommer[Math.min(2, S.lys - 1)], '#ff8f9f');
+  popup(T.bom[type], 'bom'); settLinje(T.dommer[Math.min(2, S.lys - 1)], '#fff');
   lyd.bom(); vibrer(40); rist(...CONFIG.RIST.bom); vignettT = performance.now() / 1000; svetteStot(3); hodeKlem = spillTid; bomFade = spillTid; mimikk('bom');
   if (S.lys >= 3) { sluttRunde(); return; }
   melde(`Rødt lys. ${S.lys === 1 ? 'To' : 'Ett'} igjen.`);
@@ -862,9 +862,17 @@ function tegn(real) {
 function tegnVegg(real) {
   const c = cx;
   c.fillStyle = '#00205B'; c.fillRect(-1500, -1500, 3390, 3844);
-  // Svakt norsk flaggkors bak alt.
-  c.globalAlpha = 0.06; c.fillStyle = '#fff'; c.fillRect(110, -1500, 80, 3844); c.fillRect(-1500, 380, 3390, 80);
-  c.fillStyle = '#BA0C2F'; c.fillRect(130, -1500, 40, 3844); c.fillRect(-1500, 400, 3390, 40); c.globalAlpha = 1;
+  // Norsk flagg bak alt: røde felt, hvite kanter og blått kors. Korset er selve veggen (blå),
+  // så bare de røde feltene og de hvite kantene tegnes, litt dempet. Korset sitter mot venstre, som i flagget.
+  const u = 22, kx = 132, ky = 420, V = -1500, B = 3390, H = 3844;
+  c.globalAlpha = 1; c.fillStyle = '#8E0B27';
+  c.fillRect(V, V, kx - 2 * u - V, ky - 2 * u - V); c.fillRect(kx + 2 * u, V, B, ky - 2 * u - V);
+  c.fillRect(V, ky + 2 * u, kx - 2 * u - V, H); c.fillRect(kx + 2 * u, ky + 2 * u, B, H);
+  c.globalAlpha = 0.62; c.fillStyle = '#fff';
+  // Hvitt = korsbåndet (4u) minus det blå korset (2u). De loddrette stripene tar hjørnene.
+  for (const x of [kx - 2 * u, kx + u]) { c.fillRect(x, V, u, ky - u - V); c.fillRect(x, ky + u, u, H); }
+  for (const y of [ky - 2 * u, ky + u]) { c.fillRect(V, y, kx - 2 * u - V, u); c.fillRect(kx + 2 * u, y, B, u); }
+  c.globalAlpha = 1;
   const g = c.createRadialGradient(0, 120, 0, 0, 120, 420);
   g.addColorStop(0, 'rgba(255,255,255,.12)'); g.addColorStop(1, 'rgba(255,255,255,0)');
   c.fillStyle = g; c.fillRect(-1500, -1500, 3390, 3844);
@@ -874,7 +882,7 @@ function tegnVegg(real) {
   }
 }
 function tegnStevne() {
-  rr(X(-150), 150, 300, 26, 4); cx.fillStyle = '#BA0C2F'; cx.fill();
+  rr(X(-150), 150, 300, 26, 4); cx.fillStyle = '#00205B'; cx.fill(); cx.strokeStyle = '#fff'; cx.lineWidth = 1.5; cx.stroke();
   tekst('NM I DIGITAL OMSTILLING · BENKPRESS, ÅPEN KLASSE', 195, 163.5, '800 13px "Barlow Condensed"', '#fff');
 }
 function tegnPlattform() {
@@ -889,8 +897,9 @@ function tegnPlattform() {
 function tegnBenk() {
   const c = cx;
   c.fillStyle = '#7D8794'; c.fillRect(X(-74), 760, 12, 50); c.fillRect(X(62), 760, 12, 50);
+  // Benken er i svart skinn, så den synes mot de røde feltene i flagget.
   poly([[X(-60), 300], [X(60), 300], [X(80), 770], [X(-80), 770]], 14);
-  c.fillStyle = '#BA0C2F'; c.fill(); c.strokeStyle = '#0A1A3F'; c.lineWidth = 2; c.stroke();
+  c.fillStyle = '#1d212b'; c.fill(); c.strokeStyle = '#05070c'; c.lineWidth = 2; c.stroke();
   poly([[X(-54), 306], [X(54), 306], [X(74), 764], [X(-74), 764]], 10);
   c.setLineDash([5, 5]); c.strokeStyle = 'rgba(255,255,255,.55)'; c.lineWidth = 1.2; c.stroke(); c.setLineDash([]);
 }
@@ -1323,6 +1332,8 @@ function tegnBanner() {
 }
 function tegnHud(real) {
   const c = cx, kg = kgNaa();
+  // Mørk skygge under HUD-en, så teksten leses mot både røde felt og hvite kanter i flagget.
+  c.save(); c.shadowColor = 'rgba(0,10,40,.75)'; c.shadowBlur = 5 * DPR * SK;
   tekst(`${kg} KG`, 16, 70, '800 32px "Barlow Condensed"', '#fff', null, 0, 'left');
   tekst(`${fmt(S.poeng)} kg løftet`, 16, 96, '600 13px "Barlow"', 'rgba(255,255,255,.85)', null, 0, 'left');
   for (let i = 0; i < 3; i++) {
@@ -1340,6 +1351,7 @@ function tegnHud(real) {
     tekst(`×${mult} ${T.combo[mult]}`, 0, 0, '800 15px "Barlow Condensed"', mult >= 5 ? '#FFD24A' : '#fff', '#00205B', 3);
     c.restore();
   } else if (S.combo > 0) tekst(`combo ${S.combo}`, 195, 103, '700 12px "Barlow Condensed"', 'rgba(255,255,255,.7)');
+  rr(325, 54, 54, 56, 8); c.fillStyle = 'rgba(0,32,91,.75)'; c.fill();
   tegnKart(330, 58, 44, 48, real);
   const pst = S.n <= 12 ? `AI-NORGE ${Math.round((S.n - 1) / 12 * 100)} %` : 'AI-NORGE 100 % + OVERTID';
   tekst(pst, 374, 116, '700 11px "Barlow Condensed"', '#fff', null, 0, 'right');
@@ -1348,6 +1360,7 @@ function tegnHud(real) {
     tekst(linje.tekst, 195, 132, '700 13px "Barlow Condensed"', linje.farge);
     c.globalAlpha = 1;
   } else tekst(`SISTE SKIVE: ${skiveFor(S.n).navn}`, 195, 132, '700 13px "Barlow Condensed"', 'rgba(255,255,255,.8)');
+  c.restore();
 }
 const KART = (() => {
   const pr = (lo, la) => [(lo - 15) * Math.cos(la * Math.PI / 180), -la];
@@ -1355,6 +1368,7 @@ const KART = (() => {
   const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
   return { pts, byer: BYER.map(b => pr(b[1], b[2])), minx: Math.min(...xs), maxx: Math.max(...xs), miny: Math.min(...ys), maxy: Math.max(...ys) };
 })();
+
 function tegnKart(x0, y0, w, h, real) {
   const c = cx, sk = Math.min(w / (KART.maxx - KART.minx), h / (KART.maxy - KART.miny));
   const ox = x0 + (w - (KART.maxx - KART.minx) * sk) / 2, oy = y0 + (h - (KART.maxy - KART.miny) * sk) / 2;
