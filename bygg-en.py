@@ -255,6 +255,8 @@ T = [
 
 # V2 (forsiden fra 7.10.2026) har egne tekster. V1-tekstene den har byttet ut hoppes over.
 T_NY = [
+    ('<b>Tidemann sover</b><span>Opp klokken 04:00. Skriv gjerne, så svarer jeg når jeg er våken.</span>',
+     '<b>Tidemann is asleep</b><span>Up at 04:00. Feel free to write, and I\'ll reply when I\'m awake.</span>'),
     ('aria-label="SuperIntelligens er her"', 'aria-label="SuperIntelligence is here"'),
     ('<b>S</b>uper<b>I</b>ntelligens</span> <span class="o e" aria-hidden="true">er her<',
      '<b>S</b>uper<b>I</b>ntelligence</span> <span class="o e" aria-hidden="true">is here<'),
