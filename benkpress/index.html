@@ -309,13 +309,14 @@ function tegnAnsikt(b, glans) {
 }
 
 // ---------- Lyd (WebAudio, syntetisert) ----------
+const LYD_NIVA = 0.35;   // lydeffektene under musikken
 let AC = null, master = null, stoyBuf = null, lydPaa = lager.get('lyd') !== '0', anstreng = null;
 function lagLyd() {
   if (AC) { if (AC.state !== 'running' && AC.state !== 'closed') AC.resume().catch(() => {}); return; }
   const C = window.AudioContext || window.webkitAudioContext; if (!C) return;
   try {
     AC = new C();
-    const comp = AC.createDynamicsCompressor(); master = AC.createGain(); master.gain.value = lydPaa ? 0.6 : 0;
+    const comp = AC.createDynamicsCompressor(); master = AC.createGain(); master.gain.value = lydPaa ? LYD_NIVA : 0;
     master.connect(comp); comp.connect(AC.destination);
     stoyBuf = AC.createBuffer(1, AC.sampleRate, AC.sampleRate);
     const d = stoyBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
@@ -364,7 +365,7 @@ const emoll = k => 659.25 * 2 ** ((EMOLL[k % 7] + 12 * Math.floor(k / 7)) / 12);
 // Musikken: «Tidemann, løft Norge opp» (e-moll, ~99 bpm) i loop bak spillet. Egen gain rett til høyttaleren, ikke gjennom
 // kompressoren, så den ikke presser lydeffektene ned. Den starter med første runde, dukker kort under bom, går ned på
 // resultatkortet, stopper ved pause og skjult fane, og følger lydknappen.
-const MUSIKK_NIVA = 0.3;
+const MUSIKK_NIVA = 1;   // full styrke: musikken er viktigere enn lydeffektene
 const musikk = {
   el: null, g: null, base: 1, dukkT: 0,
   lag() {
@@ -379,12 +380,12 @@ const musikk = {
   start() { this.lag(); if (!this.el) return; this.sett(this.base, 0.8); if (this.el.paused) this.el.play().catch(() => {}); },
   stopp() { if (this.el && !this.el.paused) this.el.pause(); },
   niva(k) { this.base = k; this.sett(k); },
-  dukk() { if (!this.g) return; this.sett(this.base * 0.4, 0.04); clearTimeout(this.dukkT); this.dukkT = setTimeout(() => this.sett(this.base, 0.9), 450); },
+  dukk() { if (!this.g) return; this.sett(this.base * 0.75, 0.04); clearTimeout(this.dukkT); this.dukkT = setTimeout(() => this.sett(this.base, 0.9), 450); },
 };
 function vibrer(m) { if (lydPaa && navigator.vibrate) try { navigator.vibrate(m); } catch {} }
 function settLyd(paa) {
   lydPaa = paa; lager.set('lyd', paa ? '1' : '0'); $('lydK').setAttribute('aria-pressed', paa);
-  if (master) master.gain.setTargetAtTime(paa ? 0.6 : 0, AC.currentTime, 0.02);
+  if (master) master.gain.setTargetAtTime(paa ? LYD_NIVA : 0, AC.currentTime, 0.02);
   musikk.sett(musikk.base, 0.06);
 }
 $('lydK').setAttribute('aria-pressed', lydPaa);
@@ -570,7 +571,7 @@ function startModus() { S.modus = true; S.modusT = spillTid; boble('Nå går det
 function sluttModus() { S.modus = false; S.modusSlutt = spillTid; }
 
 function sluttRunde() {
-  S.sluttN = S.n; musikk.niva(0.5);
+  S.sluttN = S.n; musikk.niva(0.85);
   const runder = (parseInt(lager.get('runder'), 10) || 0) + 1; lager.set('runder', runder);
   const pr = parseInt(lager.get('pr'), 10) || 0;
   S.forrigePr = pr; S.forrigePrBy = lager.get('prBy');
