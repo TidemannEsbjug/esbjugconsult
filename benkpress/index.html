@@ -52,7 +52,7 @@
   #pauselag p{margin:0;font:italic 500 calc(26px*var(--k))/1.2 "Fraunces",Georgia,serif}
   #pauselag b{font:800 calc(20px*var(--k))/1 "Barlow Condensed",sans-serif;letter-spacing:.04em}
   #pauselag b.tall{font-size:calc(72px*var(--k))}
-  #stempel{position:absolute;left:0;right:0;top:calc(250px*var(--k));display:flex;flex-direction:column;align-items:center;gap:calc(10px*var(--k))}
+  #stempel{transition:transform .35s cubic-bezier(.2,.9,.3,1);position:absolute;left:0;right:0;top:calc(250px*var(--k));display:flex;flex-direction:column;align-items:center;gap:calc(10px*var(--k))}
   #stempel b{display:block;padding:calc(4px*var(--k)) calc(16px*var(--k));border:calc(5px*var(--k)) solid #BA0C2F;border-radius:calc(10px*var(--k));background:#fff;color:#BA0C2F;font:800 calc(64px*var(--k))/1 "Barlow Condensed",sans-serif;letter-spacing:.02em;transform:rotate(-8deg);animation:stemp .2s cubic-bezier(.3,1.4,.5,1) both;box-shadow:0 8px 24px rgba(0,10,40,.4)}
   #stempel span{max-width:80%;font:600 calc(14px*var(--k))/1.3 "Barlow",sans-serif;text-shadow:0 1px 6px rgba(0,10,40,.8);animation:inn .3s .15s both}
   @keyframes stemp{from{transform:rotate(-8deg) scale(2);opacity:0}to{transform:rotate(-8deg) scale(1);opacity:1}}
@@ -253,7 +253,9 @@ function tilpass() {
 function sjekkRetning() {
   const ligg = GROV && innerWidth > innerHeight && innerHeight < 500;
   const el = document.getElementById('snu'); if (el) el.hidden = !ligg;
-  if (ligg && typeof pause === 'function') pause();
+  if (ligg && typeof pause === 'function') {
+    if (pauset) { nedtelling = null; $('pauseT').textContent = 'Trykk for å fortsette'; $('pauseT').className = ''; } else pause();
+  }
 }
 addEventListener('resize', () => { tilpass(); sjekkRetning(); });
 tilpass();
@@ -405,7 +407,7 @@ function startRunde() {
   P.c0Forrige = 0.6; P.aktiv = false; P.sluttT = -9; P.bomT = -9; P.plan = null;
   bobler.length = 0; aktivBoble = null; banner = null; linje = null; popups.length = 0; konfetti.length = 0;
   $('start').classList.add('ut'); setTimeout(() => { if (S.tilstand !== 'KLAR') $('start').hidden = true; }, 200);
-  $('kort').classList.remove('vis'); $('kort').hidden = true; $('stempel').hidden = true;
+  $('kort').classList.remove('vis'); $('kort').hidden = true; $('stempel').hidden = true; $('stempel').style.transform = '';
   cv.focus({ preventScroll: true });
   if ((parseInt(lager.get('runder'), 10) || 0) === 0) boble('Dag 1. AI-Norge er en tom stang. Mistenkelig lett.', 'tidemann', 0.1);
   melde(`Runden starter. Nivå ${S.n}: ${byFor(S.n)}, ${kgNaa()} kg.`);
@@ -423,8 +425,8 @@ function planleggRep() {
   const c0 = lo < hi ? tilf(lo, hi) : (lo + hi) / 2;
   let fp = null;
   if (n >= C.FASTPUNKT.fra && !S.forrigeFp && Math.random() < (n >= 13 ? C.FASTPUNKT.sjanseOvertid : C.FASTPUNKT.sjanse)) {
-    const sp = c0 - fgod / 2 - amp - tilf(...C.FASTPUNKT.foran_s) / T0;
-    if (sp >= C.FASTPUNKT.minP) fp = { s: sp, D: C.FASTPUNKT.varighet };
+    const maks = (c0 - fgod / 2 - amp - C.FASTPUNKT.minP) * T0, foran = Math.min(tilf(...C.FASTPUNKT.foran_s), maks);
+    if (foran >= 0.18) fp = { s: c0 - fgod / 2 - amp - foran / T0, D: C.FASTPUNKT.varighet };
   }
   P.plan = { T: T0, fgod, fperf, c0, glid, fp };
 }
@@ -450,6 +452,7 @@ function trykk(ts, type) {
   let t = ts / 1000;
   if (!(ts > 0) || Math.abs(t - real) > 1) t = real;
   lagLyd();
+  if (!$('snu').hidden) return;
   if (pauset) { if (!nedtelling) startNedtelling(); return; }
   if (S.tilstand === 'KLAR') { startRunde(); return; }
   if (S.tilstand === 'SLUTT') { if (S.kortVist && real >= S.kortLaas) startRunde(); return; }
@@ -575,7 +578,7 @@ function visKort() {
   // Kortet tar ikke imot trykk før sperra er ute, så et panikktrykk ikke hopper over resultatet.
   setTimeout(() => { if (S.kortVist) { k.classList.add('klar'); $('enTil').focus({ preventScroll: true }); } }, (CONFIG.SLUTT_SPERRE_S + 0.35) * 1000);
   // Stempelet flyttes opp hvis kortet ville dekket det (små skjermer).
-  requestAnimationFrame(() => { const st = $('stempel'), o = st.getBoundingClientRect().bottom - (innerHeight - k.offsetHeight - 12) + 8; st.style.transform = o > 0 ? `translateY(${-o}px)` : ''; });
+  requestAnimationFrame(() => { const st = $('stempel'); st.style.transform = ''; const o = st.getBoundingClientRect().bottom - (innerHeight - k.offsetHeight - 12) + 8; if (o > 0) st.style.transform = `translateY(${-o}px)`; });
   melde(`Underkjent. Du løftet ${fmt(S.poeng)} kg AI-Norge til ${by}.${S.nyPr ? ' Ny PR.' : ''}`);
 }
 
@@ -1217,7 +1220,7 @@ function tegnFlagg(real) {
 }
 function tegnKonfetti() {
   const c = cx;
-  for (const k of konfetti) { c.save(); c.translate(k.x, k.y); c.rotate(k.r); c.fillStyle = k.farge; c.fillRect(-k.w / 2, -k.h / 2, k.w, k.h); c.restore(); }
+  for (const k of konfetti) { c.save(); c.globalAlpha = klamp((CONFIG.MILEPAEL_S - k.liv) / 0.4, 0, 1); c.translate(k.x, k.y); c.rotate(k.r); c.fillStyle = k.farge; c.fillRect(-k.w / 2, -k.h / 2, k.w, k.h); c.restore(); }
 }
 function tegnPopups() {
   for (const p of popups) {
@@ -1407,7 +1410,7 @@ document.addEventListener('visibilitychange', () => {
   if (pauset) { nedtelling = null; $('pauseT').textContent = 'Trykk for å fortsette'; $('pauseT').className = ''; } else pause();
 });
 // Museklikk skal ikke gi knappene fokus, ellers treffer mellomrom knappen i stedet for å løfte. Tab virker som før.
-for (const id of ['lydK', 'pauseK']) $(id).addEventListener('mousedown', e => e.preventDefault());
+for (const id of ['lydK', 'pauseK', 'delK']) $(id).addEventListener('mousedown', e => e.preventDefault());
 $('lydK').addEventListener('click', e => { lagLyd(); settLyd(!lydPaa); if (e.detail) cv.focus({ preventScroll: true }); });
 $('pauseK').addEventListener('click', e => { if (pauset) { if (!nedtelling) startNedtelling(); } else pause(); if (e.detail) cv.focus({ preventScroll: true }); });
 $('enTil').addEventListener('click', () => { if (S.tilstand === 'SLUTT' && S.kortVist && performance.now() / 1000 >= S.kortLaas) startRunde(); });
