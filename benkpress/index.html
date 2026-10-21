@@ -150,7 +150,10 @@ const CONFIG = {
   STANG: { krok: 236, ut: 224, bryst: 548 },
   // Ankerpunkter i hode.png (dressbildet), som andeler av bildet.
   ANSIKT: { oyne: [[0.325, 0.447], [0.667, 0.432]], oyeR: 0.05, panne: { x: [0.28, 0.72], y: [0.13, 0.30] },
-            isseGlans: [0.50, 0.08, 0.36, 0.10], vene: [0.68, 0.21], hake: 0.93, kinn: 0.68, kjeve: 0.6 },
+            isseGlans: [0.50, 0.08, 0.36, 0.10], vene: [0.68, 0.21], hake: 0.93, kinn: 0.68, kjeve: 0.6,
+            bryn: [[0.20, 0.37, 0.43, 0.395], [0.80, 0.355, 0.57, 0.39]] },
+  // Giga-chad: ansiktet blir gradvis svart-hvitt med firkantet kjeve, fra CHAD.fra godkjente løft til CHAD.fra + CHAD.reps.
+  CHAD: { fra: 6, reps: 36 },
   // Tidemann vokser med godkjente løft: 1 + VEKST_MAKS · (1 − e^(−reps/VEKST_REPS)), pluss en kort pump per treff.
   VEKST_MAKS: 0.45, VEKST_REPS: 28, PUMP: { perfekt: 0.08, god: 0.04, s: 0.25 }, KNAPP_REPS: 22,
 };
@@ -262,7 +265,7 @@ tilpass();
 
 // ---------- Hodet: utklippskant og rødme på egne lerret ----------
 const hode = new Image();
-let hodeKlar = false, kantC = null, ansiktC = null, ansiktX = null, sistRodme = -1, sistGlans = -1;
+let hodeKlar = false, kantC = null, ansiktC = null, ansiktX = null, chadC = null, hudGraa = 170, sistRodme = -1, sistGlans = -1, sistChad = -1;
 const KANT_PAD = 26;
 hode.onload = () => {
   const w = hode.naturalWidth, h = hode.naturalHeight;
@@ -279,24 +282,35 @@ hode.onload = () => {
   ansiktX.drawImage(hode, 0, 0);
   const A = CONFIG.ANSIKT, px = [];
   for (const [ox, oy] of A.oyne) {
-    const d = ansiktX.getImageData(Math.round(ox * w) - 4, Math.round((oy - 0.075) * h) - 2, 8, 4).data;
+    const d = ansiktX.getImageData(Math.round(ox * w) - 4, Math.round((oy + 0.085) * h) - 2, 8, 4).data;
     for (let i = 0; i < d.length; i += 4) px.push([d[i], d[i + 1], d[i + 2]]);
   }
   hudBase = [0, 1, 2].map(j => px.reduce((s, p) => s + p[j], 0) / px.length);
-  hodeKlar = true; tegnAnsikt(0, 0.25);
+  chadC = document.createElement('canvas'); chadC.width = w; chadC.height = h;
+  const cc = chadC.getContext('2d'); cc.drawImage(hode, 0, 0);
+  const id = cc.getImageData(0, 0, w, h), d = id.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const l = 0.3 * d[i] + 0.59 * d[i + 1] + 0.11 * d[i + 2], v = klamp((l - 120) * 1.75 + 112, 0, 255);
+    d[i] = d[i + 1] = d[i + 2] = v;
+  }
+  cc.putImageData(id, 0, 0);
+  hudGraa = klamp((0.3 * hudBase[0] + 0.59 * hudBase[1] + 0.11 * hudBase[2] - 120) * 1.75 + 112, 0, 255);
+  hodeKlar = true; tegnAnsikt(0, 0.25, 0);
 };
 hode.src = 'hode.png';
 let hudBase = [226, 168, 146], hudFarge = 'rgb(226,168,146)';
-function tegnAnsikt(b, glans) {
+function tegnAnsikt(b, glans, ch) {
   const a = ansiktX, w = ansiktC.width, h = ansiktC.height;
   a.globalCompositeOperation = 'source-over'; a.clearRect(0, 0, w, h); a.drawImage(hode, 0, 0);
+  if (ch > 0.01) { a.globalAlpha = ch * 0.9; a.drawImage(chadC, 0, 0); a.globalAlpha = 1; }
   a.globalCompositeOperation = 'source-atop';
-  let rgb = hudBase;
+  let rgb = hudBase.map(v => lerp(v, hudGraa, ch * 0.9));
   if (b > 0.01) {
     const lilla = klamp((b - 0.85) / 0.15, 0, 1), r = [lerp(224, 122, lilla), lerp(48, 42, lilla), lerp(58, 140, lilla)];
     a.fillStyle = `rgb(${r.map(Math.round).join(',')})`;
-    a.globalAlpha = b * 0.55; a.fillRect(0, 0, w, h); a.globalAlpha = 1;
-    rgb = hudBase.map((v, i) => lerp(v, r[i], b * 0.55));
+    const ra = b * 0.55 * (1 - 0.65 * ch);
+    a.globalAlpha = ra; a.fillRect(0, 0, w, h); a.globalAlpha = 1;
+    rgb = rgb.map((v, i) => lerp(v, r[i], ra));
   }
   hudFarge = `rgb(${rgb.map(Math.round).join(',')})`;
   const [gx, gy, gw, gh] = CONFIG.ANSIKT.isseGlans;
@@ -305,7 +319,7 @@ function tegnAnsikt(b, glans) {
   a.save(); a.translate(gx * w, gy * h); a.scale(1, gh / gw); a.translate(-gx * w, -gy * h);
   a.fillStyle = g; a.beginPath(); a.arc(gx * w, gy * h, gw * w / 2, 0, Math.PI * 2); a.fill(); a.restore();
   a.globalCompositeOperation = 'source-over';
-  sistRodme = b; sistGlans = glans;
+  sistRodme = b; sistGlans = glans; sistChad = ch;
 }
 
 // ---------- Lyd (WebAudio, syntetisert) ----------
@@ -425,7 +439,7 @@ function startRunde() {
   lagLyd(); musikk.niva(1); musikk.start();
   Object.assign(S, { n: START_NIVA, repsNiva: 0, poeng: 0, lys: 0, okRad: 0, combo: 0, besteCombo: 0, reps: 0, perfekte: 0,
     forsok: 0, tyngste: 0, modus: false, modusT: -9, modusSlutt: -9, forrigeFp: false, forsteFp: true, nivaa4Fp: true, bomNr: 0,
-    tilBoble: 6 + Math.floor(Math.random() * 4), stempelVist: false, kortVist: false, nyPr: false, pumpA: 0, pumpT: -9, knappPop: false,
+    tilBoble: 6 + Math.floor(Math.random() * 4), stempelVist: false, kortVist: false, nyPr: false, pumpA: 0, pumpT: -9, knappPop: false, chadVist: false,
     opplaering: (parseInt(lager.get('runder'), 10) || 0) < 3 });
   S.spotterPool = [1, 2, 3, 4];
   skiver = []; for (let i = 2; i <= S.n; i++) skiver.push({ ...skiveFor(i), inn: -9 });
@@ -658,7 +672,7 @@ const fSX = fjar(60, 8, 1), fSY = fjar(60, 8, 1), fA = fjar(60, 8, 0), fStang = 
 function fjarSteg(f, dt) { const a = f.k * (f.mal - f.x) - f.c * f.v; f.v += a * dt; f.x += f.v * dt; }
 const jit = { x: 0, y: 0, r: 0, mx: 0, my: 0, mr: 0, neste: 0 };
 // Mimikk: bulende øyne og fallende kjeve er fjærer, så de spretter; puff, mys og gelé glir.
-const mim = { puff: 0, squint: 0, wob: 0, wobFase: 0, blunkTil: 0, nesteBlunk: 3, blunkOye: -1, bul: 1, jaw: 1, kickT: -9 };
+const mim = { puff: 0, squint: 0, wob: 0, wobFase: 0, blunkTil: 0, nesteBlunk: 3, blunkOye: -1, bul: 1, jaw: 1, kickT: -9, chad: 0 };
 const fBul = fjar(90, 5.5, 1), fJaw = fjar(80, 5.5, 1);
 function mimikk(type) {
   mim.squint = 0;
@@ -790,7 +804,11 @@ function oppdaterEffekter(dt) {
   // Rødme og svetteglans tegnes på nytt bare når de endrer seg merkbart.
   if (hodeKlar) {
     const b = belastning(), gl = S.tilstand === 'KLAR' ? 0.25 : Math.min(0.7, 0.25 + 0.04 * n);
-    if (Math.abs(b - sistRodme) > 0.02 || Math.abs(gl - sistGlans) > 0.02) tegnAnsikt(b, gl);
+    // Giga-chad-graden glir mot målet; første gang den er full i en runde, sier spillet fra.
+    const chMal = klamp((S.reps - CONFIG.CHAD.fra) / CONFIG.CHAD.reps + (S.modus ? 0.15 : 0), 0, 1);
+    mim.chad += (chMal - mim.chad) * Math.min(1, dt * 1.5);
+    if (chMal >= 1 && !S.chadVist && spillbar()) { S.chadVist = true; popup('GIGACHAD', 'perfekt'); boble('Jeg har blitt et meme.', 'tidemann', 0.4); lyd.jubel(1.2); }
+    if (Math.abs(b - sistRodme) > 0.02 || Math.abs(gl - sistGlans) > 0.02 || Math.abs(mim.chad - sistChad) > 0.02) tegnAnsikt(b, gl, mim.chad);
     if (b > 0.8) { dampAkk += dt * 3; while (dampAkk >= 1) { dampAkk--; damp.push({ x: 195 + tilf(-30, 30), y: 312, liv: 0, r: tilf(5, 9) }); } }
   }
   if (press) { svetteAkk += dt * 0.3 * n; while (svetteAkk >= 1) { svetteAkk--; nySvette(); } }
@@ -1000,15 +1018,17 @@ function tegnArmer() {
   }
 }
 function tegnHals() {
-  rr(X(-37 * VK), 462, 74 * VK, 62, 20); cx.fillStyle = HUD_HUD; cx.fill();
-  cx.fillStyle = HUD_SKYGGE; cx.fillRect(X(-30 * VK), 470, 60 * VK, 10);
+  const hb = VK * (1 + 0.25 * mim.chad);
+  rr(X(-37 * hb), 462, 74 * hb, 62, 20); cx.fillStyle = HUD_HUD; cx.fill();
+  cx.fillStyle = HUD_SKYGGE; cx.fillRect(X(-30 * hb), 470, 60 * hb, 10);
 }
 // ---------- Ansiktsforvrengning ----------
 // Fotoet tegnes i vannrette striper: kinnene blåses opp (bredere striper), kjeven faller (nedre del strekkes),
 // og ansiktet dirrer som gelé etter treff. Øynene kan bule ut, myse og blunke.
 const VARP_N = 34;
-const varpY = v => v < CONFIG.ANSIKT.kjeve ? v : CONFIG.ANSIKT.kjeve + (v - CONFIG.ANSIKT.kjeve) * fJaw.x;
-const varpKx = v => 1 + mim.puff * Math.exp(-(((v - CONFIG.ANSIKT.kinn) / 0.15) ** 2)) + mim.wob * 0.05 * Math.sin(v * 9 + mim.wobFase);
+const varpY = v => v < CONFIG.ANSIKT.kjeve ? v : CONFIG.ANSIKT.kjeve + (v - CONFIG.ANSIKT.kjeve) * fJaw.x * (1 + 0.14 * mim.chad);
+const varpKx = v => 1 + mim.puff * Math.exp(-(((v - CONFIG.ANSIKT.kinn) / 0.15) ** 2)) + mim.wob * 0.05 * Math.sin(v * 9 + mim.wobFase)
+  + mim.chad * (0.17 * Math.exp(-(((v - 0.84) / 0.11) ** 2)) + 0.05 * Math.exp(-(((v - 0.58) / 0.08) ** 2)));
 const varpXo = v => mim.wob * 4 * Math.sin(v * 7 - mim.wobFase * 1.3);
 function tegnVarp(src, pad, f) {
   const c = cx, sw = src.width, sh = src.height, fh = sh - 2 * pad, H = fh * f;
@@ -1037,19 +1057,51 @@ function tegnOyne(W, H, f) {
       o.fillStyle = g; o.fillRect(0, 0, 128, 128);
       c.drawImage(oyeC, ex - rD, ey - rD, 2 * rD, 2 * rD);
     }
-    // Øyelokk i hudfarge som senkes over øyet; helt igjen gir rynker ved ytterkanten.
+    // Øyelokk i hudfarge som senkes over øyet, med en rett, mørk kant (ingen vipper). Indre øyekrok ligger lavest.
     if (s > 0.03) {
-      const ew = R * 2.4, eh = R * 1.35, ly = ey - eh / 2 + eh * s;
+      const ew = R * 2.4, eh = R * 1.35, ly = ey - eh / 2 + eh * s, inn = i === 0 ? 1 : -1;
       c.save(); c.beginPath(); c.ellipse(ex, ey, ew / 2, eh / 2, 0, 0, Math.PI * 2); c.clip();
       c.fillStyle = hudFarge; c.fillRect(ex - ew / 2 - 1, ey - eh / 2 - 1, ew + 2, eh * s + 1); c.restore();
-      c.strokeStyle = 'rgba(70,35,25,.8)'; c.lineWidth = 1.6; c.lineCap = 'round';
-      c.beginPath(); c.moveTo(ex - ew / 2, ly - 1); c.quadraticCurveTo(ex, ly + 2.5 * s, ex + ew / 2, ly - 1); c.stroke();
-      if (s > 0.9) {
-        const side = i === 0 ? -1 : 1;
-        for (const d of [-1, 0, 1]) { c.beginPath(); c.moveTo(ex + side * (ew / 2 + 1), ey + d * 2); c.lineTo(ex + side * (ew / 2 + 7), ey + d * 5); c.stroke(); }
-      }
+      c.strokeStyle = 'rgba(45,28,22,.85)'; c.lineWidth = 2.2; c.lineCap = 'round';
+      c.beginPath(); c.moveTo(ex - inn * ew / 2, ly - 0.6 * s); c.lineTo(ex + inn * ew / 2, ly + 0.8 * s); c.stroke();
     }
   });
+}
+// Tunge, nedtrukne bryn og en sur rynke mellom dem når han anstrenger seg eller er blitt giga-chad.
+function tegnBryn(W, H) {
+  const c = cx, A = CONFIG.ANSIKT, intens = klamp(Math.max(mim.squint * 1.1, mim.chad * 0.85), 0, 1);
+  if (intens < 0.05) return;
+  const P2 = (xf, v) => [(xf - 0.5) * W * varpKx(v) + varpXo(v), (varpY(v) - 0.5) * H];
+  c.strokeStyle = `rgba(40,26,20,${0.25 + 0.6 * intens})`; c.lineWidth = 3.5 + 3 * intens; c.lineCap = 'round';
+  for (const [x0, y0, x1, y1] of A.bryn) {
+    const [ax, ay] = P2(x0, y0 - 0.012 * intens), [bx, by] = P2(x1, y1 + 0.03 * intens);
+    c.beginPath(); c.moveTo(ax, ay); c.quadraticCurveTo((ax + bx) / 2, Math.min(ay, by) - 2, bx, by); c.stroke();
+  }
+  if (intens > 0.45) {
+    c.strokeStyle = `rgba(40,26,20,${(intens - 0.45) * 0.9})`; c.lineWidth = 1.8;
+    for (const xf of [0.475, 0.525]) { const [x, y] = P2(xf, 0.38); c.beginPath(); c.moveTo(x, y); c.lineTo(x, y + 0.07 * H); c.stroke(); }
+  }
+}
+// Giga-chad-konturer: skygge under kinnbeina, langs kjevelinja og en kløft i haka.
+function tegnChad(W, H) {
+  const c = cx, ch = mim.chad; if (ch < 0.03) return;
+  const P2 = (xf, v) => [(xf - 0.5) * W * varpKx(v) + varpXo(v), (varpY(v) - 0.5) * H];
+  // En myk, avlang skygge: radial gradient strukket langs linja fra a til b.
+  const skygge = (a, b, bredde, alfa) => {
+    const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2, len = Math.hypot(b[0] - a[0], b[1] - a[1]) / 2 + bredde;
+    c.save(); c.translate(mx, my); c.rotate(Math.atan2(b[1] - a[1], b[0] - a[0])); c.scale(len / bredde, 1);
+    const g = c.createRadialGradient(0, 0, 0, 0, 0, bredde);
+    g.addColorStop(0, `rgba(0,0,0,${alfa})`); g.addColorStop(1, 'rgba(0,0,0,0)');
+    c.fillStyle = g; c.beginPath(); c.arc(0, 0, bredde, 0, Math.PI * 2); c.fill(); c.restore();
+  };
+  for (const sd of [-1, 1]) {
+    skygge(P2(0.5 + sd * 0.30, 0.60), P2(0.5 + sd * 0.17, 0.72), 7, 0.30 * ch);
+    // Kjevelinja som tre myke biter fra øret ned mot haka.
+    const pts = [[0.36, 0.72], [0.33, 0.82], [0.25, 0.90], [0.12, 0.95]].map(([dx, v]) => P2(0.5 + sd * dx, v));
+    for (let i = 0; i < pts.length - 1; i++) skygge(pts[i], pts[i + 1], 6, 0.34 * ch);
+  }
+  c.lineCap = 'round'; c.strokeStyle = `rgba(0,0,0,${0.35 * ch})`; c.lineWidth = 2;
+  const [kx, ky] = P2(0.5, 0.86), [, ky2] = P2(0.5, 0.92); c.beginPath(); c.moveTo(kx, ky); c.lineTo(kx, ky2); c.stroke();
 }
 function tegnHode(real) {
   if (!hodeKlar) return;
@@ -1066,7 +1118,9 @@ function tegnHode(real) {
   const f = W / hode.naturalWidth;
   tegnVarp(kantC, KANT_PAD, f);
   tegnVarp(ansiktC, 0, f);
+  tegnChad(W, H);
   if (!S.modus) tegnOyne(W, H, f);
+  tegnBryn(W, H);
   const fx = v => (v - 0.5) * W, fy = v => (varpY(v) - 0.5) * H;
   // Pannevene fra nivå 7, pulserer med fyllet.
   if (S.n >= 7 && spillbar()) {
