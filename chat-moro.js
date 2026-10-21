@@ -192,7 +192,29 @@ const frame = now => {
   cx.globalAlpha = 1;
   if (t < L) raf = requestAnimationFrame(frame); else { cx.clearRect(0, 0, W, H); cv.remove(); }
 };
-const fx = text => { if (!text) return; for (const [re, m] of FX) if (re.test(text)) { start(m); return; } };
+// «benkpress» på forsiden: spillet på /benkpress/ åpnes i fullskjerm over siden. × eller Esc lukker, det samme gjør lenken
+// tilbake til forsiden inne i spillet.
+const BENK = /benkpress|bench ?press/i;
+const benk = () => {
+  if (location.pathname !== '/' || document.querySelector('.cm-benk')) return;
+  const o = document.createElement('div'), f = document.createElement('iframe'), x = document.createElement('button');
+  o.className = 'cm-benk'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-label', 'Tidemann Løfter AI-Norge');
+  f.src = '/benkpress/'; f.title = 'Tidemann Løfter AI-Norge'; f.allow = 'fullscreen; autoplay';
+  x.type = 'button'; x.className = 'cm-benk-x'; x.setAttribute('aria-label', en ? 'Close' : 'Lukk'); x.textContent = '×';
+  const lukk = () => { o.classList.add('ut'); removeEventListener('keydown', esc); document.documentElement.classList.remove('cm-benk-paa'); setTimeout(() => o.remove(), 300); };
+  const esc = e => { if (e.key === 'Escape') lukk(); };
+  x.onclick = lukk; addEventListener('keydown', esc);
+  f.onload = () => { try { const d = f.contentDocument; d.addEventListener('keydown', esc); d.querySelectorAll('a[href="/"]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); lukk(); })); f.contentWindow.focus(); } catch {} };
+  o.append(f, x); document.body.append(o); document.documentElement.classList.add('cm-benk-paa');
+};
+css.textContent += `.cm-benk{position:fixed;inset:0;z-index:2500;background:#00205B;animation:cmBenk .45s cubic-bezier(.2,.8,.2,1)}
+.cm-benk.ut{transition:opacity .28s,transform .28s;opacity:0;transform:scale(.97)}
+.cm-benk iframe{display:block;width:100%;height:100%;border:0}
+.cm-benk-x{position:absolute;top:max(12px,env(safe-area-inset-top));right:12px;width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(255,255,255,.5);background:rgba(0,32,91,.55);color:#fff;font:300 30px/1 -apple-system,Arial,sans-serif;cursor:pointer;display:grid;place-items:center;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.cm-benk-x:hover{background:rgba(0,32,91,.8)}
+html.cm-benk-paa,html.cm-benk-paa body{overflow:hidden}
+@keyframes cmBenk{from{opacity:0;transform:scale(.96)}}`;
+const fx = text => { if (!text) return; if (BENK.test(text)) { benk(); return; } for (const [re, m] of FX) if (re.test(text)) { start(m); return; } };
 
 // ---------- speilet i Esbjug Chat-appen ----------
 // Appen viser siden den besøkende er på (?speil=1) og sender inn chatten slik den er hos dem: åpen eller lukket, fokus og
