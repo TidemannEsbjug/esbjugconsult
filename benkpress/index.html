@@ -866,10 +866,10 @@ function tegnVegg(real) {
   // Norsk flagg bak alt: røde felt, hvite kanter og blått kors. Korset er selve veggen (blå),
   // så bare de røde feltene og de hvite kantene tegnes, litt dempet. Korset sitter mot venstre, som i flagget.
   const u = 22, kx = 132, ky = 420, V = -1500, B = 3390, H = 3844;
-  c.globalAlpha = 1; c.fillStyle = '#8E0B27';
+  c.globalAlpha = 1; c.fillStyle = '#560A26';
   c.fillRect(V, V, kx - 2 * u - V, ky - 2 * u - V); c.fillRect(kx + 2 * u, V, B, ky - 2 * u - V);
   c.fillRect(V, ky + 2 * u, kx - 2 * u - V, H); c.fillRect(kx + 2 * u, ky + 2 * u, B, H);
-  c.globalAlpha = 0.62; c.fillStyle = '#fff';
+  c.globalAlpha = 0.3; c.fillStyle = '#fff';
   // Hvitt = korsbåndet (4u) minus det blå korset (2u). De loddrette stripene tar hjørnene.
   for (const x of [kx - 2 * u, kx + u]) { c.fillRect(x, V, u, ky - u - V); c.fillRect(x, ky + u, u, H); }
   for (const y of [ky - 2 * u, ky + u]) { c.fillRect(V, y, kx - 2 * u - V, u); c.fillRect(kx + 2 * u, y, B, u); }
