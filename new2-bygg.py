@@ -89,6 +89,9 @@ CSS = r'''  /* /new2: kartet er heroen. Leaflet med OpenStreetMap, gjort mørkt 
   @keyframes splatUt{to{opacity:0}}
   .splat .dr{animation:drypp 3.2s cubic-bezier(.5,0,.8,.6) .25s forwards}
   @keyframes drypp{to{transform:translateY(46px) scaleY(1.6)}}
+  .taper{position:absolute;z-index:6;pointer-events:none;transform:translate(-50%,-50%) rotate(var(--rot));white-space:nowrap;font:italic 800 clamp(22px,2.4vw,32px)/1 var(--serif);letter-spacing:-.02em;color:#fff;-webkit-text-stroke:1.5px #b0140c;text-shadow:0 3px 0 #b0140c,0 6px 18px rgba(120,0,0,.45);animation:taperInn .5s cubic-bezier(.2,1.8,.4,1) both,taperUt .5s ease 2.4s forwards}
+  @keyframes taperInn{from{opacity:0;transform:translate(-50%,-50%) rotate(var(--rot)) scale(.2)}to{opacity:1;transform:translate(-50%,-50%) rotate(var(--rot)) scale(1)}}
+  @keyframes taperUt{to{opacity:0;transform:translate(-50%,-90%) rotate(var(--rot)) scale(1.1)}}
   .sted.truffet{animation:truffet .4s cubic-bezier(.36,.07,.19,.97)}
   @keyframes truffet{20%{transform:translate(-5px,3px) rotate(-1.2deg)}45%{transform:translate(5px,-2px) rotate(1deg)}70%{transform:translate(-2px,1px)}}
   .gjor{display:flex;flex-direction:column;gap:6px;padding:14px 20px 15px}
@@ -278,7 +281,10 @@ setInterval(tegnPuls, 1000);
 // Le og kast tomat. Egne trykk vises med en gang; andres ser du når tellerne øker (høyst 4 av gangen).
 let kast = null, egne = { le: 0, tomat: 0 };
 const knapp = k => document.querySelector(k === 'le' ? '.k-le' : '.k-tomat');
-function visKast(k) {
+// Ordet som spretter opp der tomaten treffer.
+const TAPER = ['TAPER!', 'Taper.', 'Tapern!', 'Taperen!', 'TAAAAPER', 'Din taper', 'For en taper', 'Supertaper', 'Megataper', 'Ultrataper',
+  'Tapersjef', 'Taperkonge', 'Årets taper', 'Taper (igjen)', 'Taper-Tidemann', 'Taper, taper, taper', 'Taperen fra Frogn', 'TAPER™', 'Verdens største taper', 'Liten taper'];
+function visKast(k, fraX) {
   const b = knapp(k); b.classList.remove('puff'); void b.offsetWidth; b.classList.add('puff');
   const r = b.getBoundingClientRect();
   if (k === 'le') {
@@ -293,11 +299,16 @@ function visKast(k) {
   // Tomaten: fra knappen i en bue til et tilfeldig sted på kortet, så splash.
   const kort = $('.sted'), kr = kort.getBoundingClientRect();
   const mx = kr.width * (.2 + Math.random() * .6), my = kr.height * (.15 + Math.random() * .45);
-  const x0 = r.left + r.width / 2, y0 = r.top, x1 = kr.left + mx, y1 = kr.top + my;
+  // Kastet kommer fra den som ser på: stor nedenfra, under der man klikket (andres kast fra et tilfeldig sted),
+  // og blir mindre mens den flyr inn i skjermen mot kortet.
+  const x0 = fraX ?? innerWidth * (.15 + Math.random() * .7), y0 = innerHeight + 60, x1 = kr.left + mx, y1 = kr.top + my;
   const t = document.createElement('span'); t.className = 'flyr'; t.textContent = '🍅'; document.body.append(t);
-  const steg = [], N = 14;
-  for (let n = 0; n <= N; n++) { const f = n / N, x = x0 + (x1 - x0) * f - 17, y = y0 + (y1 - y0) * f - 160 * 4 * f * (1 - f) - 17; steg.push({ transform: `translate(${x}px,${y}px) rotate(${f * 540}deg) scale(${1 + .4 * Math.sin(f * Math.PI)})` }); }
-  t.animate(steg, { duration: still ? 1 : 520, easing: 'cubic-bezier(.3,.1,.6,1)' }).onfinish = () => {
+  const steg = [], N = 18, spinn = (Math.random() < .5 ? -1 : 1) * (360 + Math.random() * 360);
+  for (let n = 0; n <= N; n++) {
+    const f = n / N, e = 1 - Math.pow(1 - f, 2), x = x0 + (x1 - x0) * e - 17, y = y0 + (y1 - y0) * e - Math.min(220, innerHeight * .3) * 4 * f * (1 - f) - 17;
+    steg.push({ transform: `translate(${x}px,${y}px) rotate(${f * spinn}deg) scale(${(6.5 - 5.6 * e).toFixed(2)})`, filter: `blur(${((1 - f) * 3).toFixed(1)}px)` });
+  }
+  t.animate(steg, { duration: still ? 1 : 640, easing: 'linear' }).onfinish = () => {
     t.remove();
     kort.classList.remove('truffet'); void kort.offsetWidth; kort.classList.add('truffet');
     const sp = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); sp.setAttribute('class', 'splat'); sp.setAttribute('viewBox', '-75 -75 150 150');
@@ -309,15 +320,18 @@ function visKast(k) {
     for (let n = 0; n < 3; n++) { const x = -16 + n * 15 + Math.random() * 6; html += `<g class="dr" style="animation-delay:${.2 + n * .3}s"><rect x="${x - 3}" y="22" width="6" height="${16 + Math.random() * 12}" rx="3" fill="#c81f17"/><circle cx="${x}" cy="${40 + Math.random() * 8}" r="4.5" fill="#c81f17"/></g>`; }
     html += `<circle r="9" cx="22" cy="-26" fill="#3a7d2c"/><path d="M22 -34 l3 -8" stroke="#3a7d2c" stroke-width="3" stroke-linecap="round"/>`;
     sp.innerHTML = html; kort.append(sp); setTimeout(() => sp.remove(), 4600);
+    const o = document.createElement('span'); o.className = 'taper'; o.textContent = TAPER[Math.floor(Math.random() * TAPER.length)];
+    o.style.left = mx + 'px'; o.style.top = my - 46 + 'px'; o.style.setProperty('--rot', (Math.random() * 24 - 12).toFixed(1) + 'deg');
+    kort.append(o); setTimeout(() => o.remove(), 3000);
   };
 }
-async function klikk(k) {
-  egne[k]++; visKast(k);
+async function klikk(k, x) {
+  egne[k]++; visKast(k, x);
   const b = knapp(k).querySelector('b'); b.textContent = tall((kast ? kast[k] : 0) + egne[k]);
   try { const r = await fetch('/chat/kast', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ k }) }); if (r.ok) { kast = await r.json(); egne[k] = 0; } } catch {}
 }
 document.querySelector('.k-le').addEventListener('click', () => klikk('le'));
-document.querySelector('.k-tomat').addEventListener('click', () => klikk('tomat'));
+document.querySelector('.k-tomat').addEventListener('click', e => klikk('tomat', e.clientX || undefined));
 function nyeKast(ny) {
   if (kast) for (const k of ['le', 'tomat']) { const n = Math.min(4, ny[k] - kast[k]); for (let i = 0; i < n; i++) setTimeout(() => visKast(k), i * 450); }
   kast = ny;
