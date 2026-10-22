@@ -7,13 +7,18 @@
     <meta name="robots" content="noindex" />
     <link rel="stylesheet" href="../fonts.css" />
     <style>
-      /* Midlertidig: hit sender Klart folk fra «Prøv gratis» og «Jeg har en lisens».
-         Prøveperiode, kjøp og koder kommer her. Inntil da står det hva man kan gjøre. */
+      /* Hit sender Klart folk fra «Prøv gratis» og «Jeg har en lisens», med
+         maskinkoden i adressen. API-et er i .worker/klart.js. */
       :root {
         --ink: #15202e;
         --ink-2: #4d5b6c;
         --ink-3: #8492a4;
+        --rule: #dbe4f1;
         --signal: #2456e6;
+        --signal-deep: #1a3fb0;
+        --signal-soft: rgba(36, 86, 230, 0.08);
+        --flag: #c02744;
+        --ok: #0e7a5a;
         --sans: "Archivo", "Helvetica Neue", Arial, sans-serif;
         --mono: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
       }
@@ -23,30 +28,30 @@
       html,
       body {
         margin: 0;
-        min-height: 100%;
       }
       body {
         min-height: 100svh;
         display: grid;
         place-items: center;
-        padding: 24px 16px;
+        padding: 32px 16px;
         font-family: var(--sans);
         color: var(--ink);
-        background: #dfe8f2 url("../assets/hero-ski-slutt.jpg") center 40% / cover no-repeat;
+        background: #dfe8f2 url("../assets/hero-ski-slutt.jpg") center 40% / cover no-repeat fixed;
         -webkit-font-smoothing: antialiased;
         user-select: none;
       }
       main {
-        width: min(520px, 100%);
-        padding: 34px 32px 30px;
-        border-radius: 16px;
-        background: rgba(255, 255, 255, 0.86);
+        width: min(560px, 100%);
+        padding: 32px 32px 28px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.9);
         -webkit-backdrop-filter: saturate(1.3) blur(22px);
         backdrop-filter: saturate(1.3) blur(22px);
         border: 1px solid rgba(255, 255, 255, 0.7);
         box-shadow: 0 2px 4px rgba(20, 30, 40, 0.05), 0 22px 54px rgba(20, 40, 70, 0.18);
       }
       .merke {
+        margin: 0;
         font-family: var(--mono);
         font-size: 11px;
         letter-spacing: 0.12em;
@@ -54,64 +59,377 @@
         color: var(--ink-3);
       }
       h1 {
-        margin: 6px 0 14px;
+        margin: 6px 0 10px;
         font-size: 30px;
         line-height: 1.1;
         letter-spacing: -0.03em;
       }
       p {
         margin: 0 0 12px;
-        font-size: 15.5px;
+        font-size: 15px;
         line-height: 1.6;
         color: var(--ink-2);
       }
-      .maskin {
-        margin: 18px 0 4px;
-        padding: 10px 14px;
-        border-radius: 10px;
-        background: rgba(36, 86, 230, 0.08);
-        font-family: var(--mono);
-        font-size: 13px;
+      label {
+        display: block;
+        margin: 0 0 6px;
+        font-size: 12.5px;
+        color: var(--ink-2);
+      }
+      input {
+        width: 100%;
+        height: 42px;
+        padding: 0 12px;
+        font: inherit;
+        font-size: 15px;
         color: var(--ink);
+        background: #fff;
+        border: 1px solid var(--rule);
+        border-radius: 10px;
+        user-select: text;
+      }
+      input.kode-felt {
+        font-family: var(--mono);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      input:focus {
+        outline: 2px solid rgba(36, 86, 230, 0.35);
+        outline-offset: 1px;
+      }
+      .blokk {
+        margin-top: 18px;
+        padding-top: 18px;
+        border-top: 1px solid var(--rule);
+      }
+      .valg {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 18px;
+      }
+      button {
+        font: inherit;
+        cursor: pointer;
+      }
+      .knapp {
+        display: grid;
+        gap: 3px;
+        padding: 14px 16px;
+        text-align: left;
+        color: var(--ink);
+        background: #fff;
+        border: 1px solid var(--rule);
+        border-radius: 12px;
+        transition: border-color 140ms ease, box-shadow 140ms ease;
+      }
+      .knapp:hover:not(:disabled) {
+        border-color: rgba(36, 86, 230, 0.45);
+        box-shadow: 0 6px 18px -10px rgba(36, 86, 230, 0.5);
+      }
+      .knapp strong {
+        font-size: 15px;
+      }
+      .knapp span {
+        font-size: 12.5px;
+        color: var(--ink-2);
+      }
+      .knapp.hoved {
+        color: #fff;
+        background: var(--signal);
+        border-color: var(--signal);
+      }
+      .knapp.hoved span {
+        color: rgba(255, 255, 255, 0.85);
+      }
+      .knapp.hoved:hover:not(:disabled) {
+        background: var(--signal-deep);
+      }
+      .knapp:disabled {
+        opacity: 0.55;
+        cursor: default;
+      }
+      .rad {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+      }
+      .liten {
+        height: 42px;
+        padding: 0 18px;
+        font-weight: 600;
+        font-size: 14px;
+        color: #fff;
+        background: var(--signal);
+        border: 0;
+        border-radius: 10px;
+      }
+      .liten:disabled {
+        opacity: 0.55;
+        cursor: default;
+      }
+      .feil {
+        margin: 12px 0 0;
+        color: var(--flag);
+        font-size: 14px;
+      }
+      .resultat {
+        margin-top: 18px;
+        padding: 16px;
+        border-radius: 12px;
+        background: var(--signal-soft);
+        border: 1px solid rgba(36, 86, 230, 0.18);
+      }
+      .resultat strong {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--ok);
+        font-size: 15px;
+      }
+      .resultat textarea {
+        width: 100%;
+        height: 92px;
+        margin: 6px 0 10px;
+        padding: 10px 12px;
+        font-family: var(--mono);
+        font-size: 11.5px;
+        line-height: 1.5;
+        color: var(--ink);
+        background: #fff;
+        border: 1px solid var(--rule);
+        border-radius: 10px;
+        resize: none;
+        word-break: break-all;
         user-select: all;
       }
-      .maskin[hidden] {
-        display: none;
+      .resultat p {
+        margin: 0;
+        font-size: 13.5px;
+      }
+      [hidden] {
+        display: none !important;
       }
       a {
         color: var(--signal);
         font-weight: 600;
         text-decoration: none;
       }
+      .bunn {
+        margin: 18px 0 0;
+        font-size: 13px;
+      }
+      @media (max-width: 520px) {
+        main {
+          padding: 26px 20px 22px;
+        }
+        .valg {
+          grid-template-columns: 1fr;
+        }
+      }
     </style>
   </head>
   <body>
     <main>
       <p class="merke">Klart · aktivering</p>
-      <h1 id="tittel">Aktiveringen åpner snart</h1>
-      <p>
-        Prøveperiode og kjøp kommer på denne siden. Har du fått en aktiveringskode fra oss,
-        limer du den inn i feltet nederst på aktiveringsskjermen i Klart.
+      <h1 id="tittel">Kom i gang med Klart</h1>
+      <p id="ingress">
+        Prøv Klart gratis i 14 dager, eller kjøp en lisens. Koden du får her, limer du inn i Klart.
+        Selve programmet kobler seg aldri til internett.
       </p>
-      <p>
-        Vil du prøve Klart nå, send maskinkoden din til
-        <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a>, så får du en kode.
-      </p>
-      <p class="maskin" id="maskin" hidden></p>
-      <p><a href="../">Les mer om Klart</a></p>
+
+      <div>
+        <label for="maskin">Maskinkode (står nederst på aktiveringsskjermen i Klart)</label>
+        <input id="maskin" class="kode-felt" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="off" spellcheck="false" maxlength="19" />
+      </div>
+
+      <div class="valg" id="valg">
+        <button type="button" class="knapp hoved" id="prove">
+          <strong>Start prøveperioden</strong>
+          <span>14 dager, gratis. Ingen betalingskort.</span>
+        </button>
+        <button type="button" class="knapp" id="kjop" disabled>
+          <strong>Kjøp lisens</strong>
+          <span id="kjop-tekst">Kjøp åpner snart.</span>
+        </button>
+      </div>
+
+      <div class="blokk" id="hent-blokk">
+        <label for="epost">Har du kjøpt? Hent koden til denne maskinen med e-posten du brukte.</label>
+        <div class="rad">
+          <input id="epost" type="email" placeholder="navn@firma.no" autocomplete="email" />
+          <button type="button" class="liten" id="hent">Hent kode</button>
+        </div>
+      </div>
+
+      <p class="feil" id="feil" hidden></p>
+
+      <div class="resultat" id="resultat" hidden>
+        <strong id="resultat-tittel">Her er koden din</strong>
+        <textarea id="kode" readonly></textarea>
+        <div class="rad">
+          <p id="resultat-tekst">Lim den inn i Klart: i feltet nederst på aktiveringsskjermen, eller under lisensen i toppfeltet.</p>
+          <button type="button" class="liten" id="kopier">Kopier</button>
+        </div>
+      </div>
+
+      <p class="bunn"><a href="../">Les mer om Klart</a> · Spørsmål? <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a></p>
     </main>
+
     <script>
-      // Appen legger maskinkoden i adressen (?maskin=…). Vis den, så den er lett å sende.
-      var q = new URLSearchParams(location.search);
-      var m = (q.get("maskin") || "").toUpperCase();
-      if (/^[0-9A-Z]{4}(-[0-9A-Z]{4}){3}$/.test(m)) {
-        var el = document.getElementById("maskin");
-        el.textContent = "Maskinkode: " + m;
-        el.hidden = false;
-      }
-      if (q.get("hva") === "prove") {
-        document.getElementById("tittel").textContent = "Prøveperioden åpner snart";
-      }
+      (function () {
+        var q = new URLSearchParams(location.search);
+        var $ = function (id) {
+          return document.getElementById(id);
+        };
+        var maskin = $("maskin");
+        var MONSTER = /^[0-9A-HJKMNP-TV-Z]{4}(-[0-9A-HJKMNP-TV-Z]{4}){3}$/;
+
+        maskin.value = (q.get("maskin") || "").toUpperCase();
+
+        function feil(tekst) {
+          $("feil").textContent = tekst || "";
+          $("feil").hidden = !tekst;
+        }
+
+        function datoTekst(iso) {
+          if (!iso) return "";
+          var d = iso.split("-");
+          return new Date(+d[0], +d[1] - 1, +d[2]).toLocaleDateString("nb-NO", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          });
+        }
+
+        function visKode(svar, tittel) {
+          feil("");
+          $("kode").value = svar.kode;
+          $("resultat-tittel").textContent = tittel;
+          var tekst = "Lim den inn i Klart: i feltet nederst på aktiveringsskjermen, eller under lisensen i toppfeltet.";
+          if (svar.utloper) tekst += " Gyldig til og med " + datoTekst(svar.utloper) + ".";
+          $("resultat-tekst").textContent = tekst;
+          $("resultat").hidden = false;
+          $("resultat").scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+
+        function gyldigMaskin() {
+          var m = maskin.value.trim().toUpperCase();
+          if (!MONSTER.test(m)) {
+            feil("Skriv inn maskinkoden fra Klart. Den står nederst på aktiveringsskjermen, på formen XXXX-XXXX-XXXX-XXXX.");
+            maskin.focus();
+            return null;
+          }
+          return m;
+        }
+
+        function api(sti, data) {
+          return fetch("/GDPR/api/" + sti, data
+            ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(data) }
+            : undefined
+          ).then(function (r) {
+            return r.json().then(function (j) {
+              if (!r.ok) throw new Error(j.feil || "Noe gikk galt.");
+              return j;
+            });
+          });
+        }
+
+        function opptatt(knapp, ja) {
+          knapp.disabled = ja;
+        }
+
+        $("prove").addEventListener("click", function () {
+          var m = gyldigMaskin();
+          if (!m) return;
+          opptatt(this, true);
+          var knapp = this;
+          api("prove", { maskin: m })
+            .then(function (svar) {
+              visKode(svar, svar.igjen ? "Prøveperioden din er allerede i gang" : "Prøveperioden er klar");
+            })
+            .catch(function (e) {
+              feil(e.message);
+            })
+            .finally(function () {
+              opptatt(knapp, false);
+            });
+        });
+
+        $("kjop").addEventListener("click", function () {
+          var m = gyldigMaskin();
+          if (!m) return;
+          opptatt(this, true);
+          var knapp = this;
+          api("kjop", { maskin: m, epost: $("epost").value })
+            .then(function (svar) {
+              location.href = svar.adresse;
+            })
+            .catch(function (e) {
+              feil(e.message);
+              opptatt(knapp, false);
+            });
+        });
+
+        $("hent").addEventListener("click", function () {
+          var m = gyldigMaskin();
+          if (!m) return;
+          opptatt(this, true);
+          var knapp = this;
+          api("hent", { maskin: m, epost: $("epost").value })
+            .then(function (svar) {
+              visKode(svar, "Her er lisenskoden din");
+            })
+            .catch(function (e) {
+              feil(e.message);
+            })
+            .finally(function () {
+              opptatt(knapp, false);
+            });
+        });
+
+        $("kopier").addEventListener("click", function () {
+          var knapp = this;
+          navigator.clipboard.writeText($("kode").value).then(function () {
+            knapp.textContent = "Kopiert";
+            setTimeout(function () {
+              knapp.textContent = "Kopier";
+            }, 1600);
+          });
+        });
+
+        // Hva som er åpent: kjøp er stengt til prisen er satt.
+        api("status")
+          .then(function (s) {
+            $("kjop").disabled = !s.kjop;
+            $("kjop-tekst").textContent = s.kjop ? "Betal med kort hos Stripe." : "Kjøp åpner snart.";
+            if (!s.prove) {
+              $("prove").disabled = true;
+              $("prove").querySelector("span").textContent = "Åpner snart.";
+            }
+          })
+          .catch(function () {});
+
+        var hva = q.get("hva");
+        if (hva === "prove") $("tittel").textContent = "Prøv Klart gratis";
+        if (hva === "kjop") $("tittel").textContent = "Kjøp Klart";
+        if (hva === "aktiver") $("tittel").textContent = "Aktiver lisensen din";
+
+        // Tilbake fra Stripe: vis koden med en gang.
+        var okt = q.get("session");
+        if (okt) {
+          $("tittel").textContent = "Takk for kjøpet";
+          $("ingress").textContent = "Vi henter lisenskoden din.";
+          $("valg").hidden = true;
+          api("kvittering?session=" + encodeURIComponent(okt))
+            .then(function (svar) {
+              $("ingress").textContent = "Lisensen er registrert på " + (svar.epost || "e-posten din") + ".";
+              visKode(svar, "Her er lisenskoden din");
+            })
+            .catch(function (e) {
+              feil(e.message);
+            });
+        }
+      })();
     </script>
   </body>
 </html>

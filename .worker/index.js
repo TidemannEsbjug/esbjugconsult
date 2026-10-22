@@ -3,7 +3,9 @@
 // else is the static site. /login/ (customer portal) and /kunde/ (behind login) are in kunde.js.
 import { handleChat, pageVisit } from "./chat.js";
 import { handleKunde } from "./kunde.js";
+import { handleKlart } from "./klart.js";
 export { ChatHub } from "./chat.js";
+export { KlartLager } from "./klart.js";
 
 export default {
   async fetch(request, env, ctx) {
@@ -14,6 +16,8 @@ export default {
       return Response.redirect(url.toString(), 301);
     }
     if (url.pathname.startsWith("/chat/")) return handleChat(request, env, url);
+    // Klart: prøveperiode, kjøp og aktiveringskoder (klart.js).
+    if (url.pathname.startsWith("/GDPR/api/")) return handleKlart(request, env, url);
     // /login/ er kundeportalen, /kunde/ er lukket bak innlogging.
     if (url.pathname.startsWith("/login/") || url.pathname.startsWith("/kunde/")) return handleKunde(request, env, url);
     // /ny/ var arbeidskopien av V2. V2 er forsiden fra 7.10.2026, så gamle lenker sendes dit (spørrestrengen følger med).

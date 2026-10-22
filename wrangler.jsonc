@@ -13,12 +13,29 @@
   "workers_dev": false,
   // All of esbjugconsult.com except /jev*, which the more specific route in ../jev takes.
   // Live chat: one Durable Object holds every socket and the conversations (SQLite storage).
-  "durable_objects": { "bindings": [{ "name": "CHAT", "class_name": "ChatHub" }] },
+  // Klart: prøveperioder, lisenser og maskiner bak aktiveringssiden (.worker/klart.js).
+  "durable_objects": {
+    "bindings": [
+      { "name": "CHAT", "class_name": "ChatHub" },
+      { "name": "KLART", "class_name": "KlartLager" }
+    ]
+  },
   // Files in the chat (audio, images, documents), served with range support from /chat/file/<key>.
   "r2_buckets": [{ "binding": "FILES", "bucket_name": "esbjug-chat-files" }],
-  "migrations": [{ "tag": "chat-v1", "new_sqlite_classes": ["ChatHub"] }],
+  "migrations": [
+    { "tag": "chat-v1", "new_sqlite_classes": ["ChatHub"] },
+    { "tag": "klart-v1", "new_sqlite_classes": ["KlartLager"] }
+  ],
   // Push to the owner's iPhone app. Secrets (wrangler secret put): ADMIN_TOKEN, APNS_KEY, APNS_KEY_ID.
-  "vars": { "APNS_TEAM_ID": "N5BKVM258S", "APNS_TOPIC": "deviatehigh.EsbjugChat" },
+  "vars": {
+    "APNS_TEAM_ID": "N5BKVM258S",
+    "APNS_TOPIC": "deviatehigh.EsbjugChat",
+    // Klart. Tom STRIPE_PRICE_ID = «Kjøp åpner snart». KLART_MVA "auto" = Stripe Tax legger på mva.
+    // Hemmeligheter (wrangler secret put): KLART_LISENSNOKKEL, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET.
+    "STRIPE_PRICE_ID": "",
+    "KLART_MASKINER": "2",
+    "KLART_MVA": ""
+  },
   "routes": [
     { "pattern": "esbjugconsult.com/*", "zone_name": "esbjugconsult.com" },
     { "pattern": "www.esbjugconsult.com/*", "zone_name": "esbjugconsult.com" }
