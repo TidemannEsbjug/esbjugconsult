@@ -73,7 +73,7 @@ CSS = r'''  /* /new2: kartet er heroen. Leaflet med OpenStreetMap, gjort mørkt 
   .s-navn{font:italic 500 clamp(24px,2.6vw,36px)/1.05 var(--serif);letter-spacing:-.015em;color:var(--ink)}
   .s-sub{font-size:14px;font-weight:500;color:rgba(0,32,91,.75)}
   /* Le og kast tomat: felles tellere for alle som ser på. Tomaten flyr i en bue og splatter på kortet. */
-  .sted{position:relative;overflow:visible}
+  .paneler .gl{position:relative}
   .kast{display:flex;gap:8px;margin-top:8px}
   .kast button{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(0,32,91,.18);background:rgba(255,255,255,.55);color:var(--ink);border-radius:999px;padding:7px 12px 7px 10px;font:600 13px/1 inherit;font-family:inherit;cursor:pointer;transition:transform .15s,background .2s}
   .kast button:hover{background:#fff;transform:translateY(-1px)}
@@ -92,7 +92,8 @@ CSS = r'''  /* /new2: kartet er heroen. Leaflet med OpenStreetMap, gjort mørkt 
   .taper{position:absolute;z-index:6;pointer-events:none;transform:translate(-50%,-50%) rotate(var(--rot));white-space:nowrap;font:italic 800 clamp(22px,2.4vw,32px)/1 var(--serif);letter-spacing:-.02em;color:#fff;-webkit-text-stroke:1.5px #b0140c;text-shadow:0 3px 0 #b0140c,0 6px 18px rgba(120,0,0,.45);animation:taperInn .5s cubic-bezier(.2,1.8,.4,1) both,taperUt .5s ease 2.4s forwards}
   @keyframes taperInn{from{opacity:0;transform:translate(-50%,-50%) rotate(var(--rot)) scale(.2)}to{opacity:1;transform:translate(-50%,-50%) rotate(var(--rot)) scale(1)}}
   @keyframes taperUt{to{opacity:0;transform:translate(-50%,-90%) rotate(var(--rot)) scale(1.1)}}
-  .sted.truffet{animation:truffet .4s cubic-bezier(.36,.07,.19,.97)}
+  .paneler .gl{overflow:visible}
+  .paneler .gl.truffet{animation:truffet .4s cubic-bezier(.36,.07,.19,.97)}
   @keyframes truffet{20%{transform:translate(-5px,3px) rotate(-1.2deg)}45%{transform:translate(5px,-2px) rotate(1deg)}70%{transform:translate(-2px,1px)}}
   .gjor{display:flex;flex-direction:column;gap:6px;padding:14px 20px 15px}
   .gjor[hidden]{display:none}
@@ -296,8 +297,9 @@ function visKast(k, fraX) {
     }
     return;
   }
-  // Tomaten: fra knappen i en bue til et tilfeldig sted på kortet, så splash.
-  const kort = $('.sted'), kr = kort.getBoundingClientRect();
+  // Tomaten treffer et tilfeldig panel (stedet, holder på med, målingene, akselerometrene; ikke språkvalget), et tilfeldig sted på det.
+  const mål = [...document.querySelectorAll('.paneler .gl')].filter(e => !e.hidden && e.offsetWidth);
+  const kort = mål[Math.floor(Math.random() * mål.length)] || $('.sted'), kr = kort.getBoundingClientRect();
   const mx = kr.width * (.2 + Math.random() * .6), my = kr.height * (.15 + Math.random() * .45);
   // Kastet kommer fra den som ser på: stor nedenfra, under der man klikket (andres kast fra et tilfeldig sted),
   // og blir mindre mens den flyr inn i skjermen mot kortet.
