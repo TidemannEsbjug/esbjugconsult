@@ -12,29 +12,31 @@ def rep(a, b):
 rep('<meta name="theme-color"', '<meta name="robots" content="noindex">\n<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">\n<meta name="theme-color"')
 s = re.sub(r'<video class="hero-v".*?</video>', '<div id="kart" aria-label="Kart: hvor Tidemann er nå"></div>\n  <canvas id="gnist" aria-hidden="true"></canvas>', s, 1, flags=re.S)
 s = re.sub(r'  <div class="scene">.*?\n  </div>\n', '''  <div class="paneler">
+  <div class="venstre">
   <section class="sted gl" aria-live="polite">
     <span class="mono s-t"><i class="s-dot"></i><span class="s-live">Live</span></span>
     <b class="s-navn">Henter posisjonen …</b>
     <span class="s-sub">&nbsp;</span>
   </section>
+  <section class="bev gl" aria-label="Hvor mye telefonen beveger seg, siste 30 minutter">
+    <div class="bev-h"><span class="sl">Bevegelse</span><b class="bev-n">–</b></div>
+    <svg class="bev-g" viewBox="0 0 300 80" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="bevF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF6A3D" stop-opacity=".45"/><stop offset="1" stop-color="#FF6A3D" stop-opacity="0"/></linearGradient></defs><path class="bev-a" d=""/><path class="bev-l" d=""/><circle class="bev-p" r="3.5" cx="-10" cy="-10"/></svg>
+    <div class="bev-x"><span>30 min siden</span><span>nå</span></div>
+  </section>
+  </div>
   <section class="sens gl" aria-label="Alt telefonen og klokka måler">
+    <!--PULS-->
     <div class="sv" data-k="ibat"><span class="sl">iPhone</span><b>–</b><i class="bar"><i></i></i></div>
     <div class="sv" data-k="wbat"><span class="sl">Klokka</span><b>–</b><i class="bar"><i></i></i></div>
     <div class="sv" data-k="skritt"><span class="sl">Skritt i dag</span><b>–</b></div>
     <div class="sv" data-k="gatt"><span class="sl">Gått i dag</span><b>–</b></div>
     <div class="sv" data-k="etasjer"><span class="sl">Etasjer opp</span><b>–</b></div>
-    <div class="sv" data-k="trykk"><span class="sl">Lufttrykk</span><b>–</b></div>
     <div class="sv" data-k="moh"><span class="sl">Høyde</span><b>–</b></div>
-    <div class="sv" data-k="haand"><span class="sl">Hånda</span><b>–</b></div>
-    <div class="sv" data-k="stilling"><span class="sl">Telefonen</span><b>–</b><i class="fon" aria-hidden="true"></i></div>
-    <div class="sv" data-k="bevegelse"><span class="sl">Bevegelse</span><b>–</b><i class="bar"><i></i></i></div>
-    <div class="sv" data-k="kurs"><span class="sl">Retning</span><b>–</b><i class="pil" aria-hidden="true">➤</i></div>
     <div class="sv" data-k="laast"><span class="sl">Skjermen</span><b>–</b></div>
-    <div class="sv" data-k="lyd"><span class="sl">Lyden går til</span><b>–</b></div>
+    <div class="sv" data-k="lyd"><span class="sl">I ørene</span><b>–</b></div>
     <div class="sv" data-k="volum"><span class="sl">Volum</span><b>–</b><i class="bar"><i></i></i></div>
     <div class="sv" data-k="nett"><span class="sl">Nett</span><b>–</b></div>
     <div class="sv" data-k="varme"><span class="sl">Telefonen er</span><b>–</b></div>
-    <p class="enhet"></p>
   </section>
   </div>
 ''', s, 1, flags=re.S)
@@ -85,8 +87,24 @@ CSS = r'''  /* /new2: kartet er heroen. Leaflet med OpenStreetMap, gjort mørkt 
   .enhet{grid-column:1/-1;margin:2px 0 0;padding-top:10px;border-top:1px solid rgba(0,32,91,.12);font:600 9.5px/1.3 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(0,32,91,.55)}
   .enhet:empty{display:none}
   @media (min-width:1100px){.sens{grid-template-columns:repeat(4,minmax(0,1fr));width:min(620px,100%)}}
+  .venstre{display:flex;flex-direction:column;gap:14px;width:min(420px,100%)}
+  .venstre .sted{max-width:none}
+  /* Pulsen øverst i panelet til høyre, over hele bredden. */
+  .sens .hp{grid-column:1/-1;flex-direction:row;align-items:center;justify-content:space-between;gap:12px;padding-bottom:12px;border-bottom:1px solid rgba(0,32,91,.12)}
+  .sens .hp .st-v{font:640 clamp(26px,2.4vw,34px)/1 var(--serif);letter-spacing:-.02em;gap:10px;color:var(--ink)}
+  .sens .hp .g{width:160px;height:34px}
+  .sens .hp .st-l{font:600 9.5px/1.3 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(0,32,91,.6)}
+  /* Bevegelsesgrafen: siste 30 minutter, oppdateres hvert 5. sekund. */
+  .bev{padding:14px 18px 12px}
+  .bev-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+  .bev-n{font:640 clamp(20px,1.8vw,26px)/1 var(--serif);letter-spacing:-.01em;color:var(--ink)}
+  .bev-g{display:block;width:100%;height:84px;margin-top:8px;overflow:visible}
+  .bev-l{fill:none;stroke:#e0233c;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+  .bev-a{fill:url(#bevF)}
+  .bev-p{fill:#e0233c;stroke:#fff;stroke-width:2;vector-effect:non-scaling-stroke}
+  .bev-x{display:flex;justify-content:space-between;margin-top:4px;font:600 9px/1 "SF Mono",Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(0,32,91,.5)}
   @keyframes svNy{0%{color:#e0233c}100%{color:var(--ink)}}
-  @media (max-width:760px){.paneler{flex-direction:column;align-items:stretch;justify-content:flex-end}.sens{margin-left:0;width:100%;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 14px;padding:14px 16px}.sted{max-width:none}}
+  @media (max-width:760px){.venstre{width:100%}.paneler{flex-direction:column;align-items:stretch;justify-content:flex-end}.sens{margin-left:0;width:100%;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 14px;padding:14px 16px}.sted{max-width:none}}
   @media (prefers-reduced-motion:reduce){.spor-strom,.meg::before,.meg::after,.s-dot{animation:none}}
 </style>'''
 rep('</style>\n</head>', CSS + '\n</head>')
@@ -130,22 +148,14 @@ function tegn() {
   sett('skritt', i.skritt != null ? tall(i.skritt) : null);
   sett('gatt', i.meter != null ? (i.meter / 1000).toFixed(1).replace('.', ',') + ' km' : trail.length ? (km(trail) / 1000).toFixed(1).replace('.', ',') + ' km' : null);
   sett('etasjer', i.etasjer);
-  sett('trykk', i.trykk != null ? String(i.trykk).replace('.', ',') + ' hPa' : null);
   sett('moh', i.moh != null ? i.moh + ' moh' : live && live.alt != null ? Math.round(live.alt) + ' moh' : null);
-  sett('haand', w.haand != null ? (w.haand < .02 ? 'i ro' : w.haand < .08 ? 'litt i bevegelse' : 'i full fart') : null);
-  sett('lyd', i.lyd);
-  sett('nett', i.nett === 'Wi-Fi' ? (i.wifi || 'Wi-Fi') : i.nett === 'mobil' ? 'Mobil' + (i.radio ? ' · ' + i.radio : '') : i.nett);
+  // Bare typen, ikke merkenavnet: earbuds, headset eller ingen.
+  sett('lyd', i.lyd == null ? null : /^(høyttaler|telefonen)$/.test(i.lyd) ? 'Ingen' : /pods|buds|pop|ear|fit|dots/i.test(i.lyd) ? 'Earbuds' : 'Headset');
+  sett('nett', i.nett === 'Wi-Fi' ? 'Wi-Fi' : i.nett === 'mobil' || i.nett === 'mobilnett' ? 'Mobildata' : i.nett === 'ingen' ? 'Uten nett' : i.nett);
   sett('varme', i.varme);
   sett('volum', i.volum != null ? i.volum + ' %' : null, i.volum);
-  const ferskt = i.ts && nå - i.ts < 2 * 60e3;
-  sett('stilling', i.stilling && ({ 'på bordet, skjermen opp': 'på bordet', 'på bordet, skjermen ned': 'skjermen ned', 'står på høykant': 'på høykant', 'i lomma, på farta': 'i lomma', 'i hånda, på farta': 'i hånda' }[i.stilling] || i.stilling));
-  sett('bevegelse', i.bevegelse == null ? null : i.bevegelse < .01 ? 'helt i ro' : i.bevegelse < .05 ? 'rolig' : i.bevegelse < .15 ? 'beveger seg' : 'mye', i.bevegelse == null ? null : Math.min(100, i.bevegelse * 400));
-  const RET = ['nord', 'nordøst', 'øst', 'sørøst', 'sør', 'sørvest', 'vest', 'nordvest'];
-  sett('kurs', i.kurs != null ? 'mot ' + RET[Math.round(i.kurs / 45) % 8] : null);
   sett('laast', i.laast == null ? null : i.laast ? 'låst' : 'i bruk');
-  const fon = document.querySelector('.sv .fon'); if (fon && i.pitch != null) fon.style.transform = 'perspective(60px) rotateX(' + (-i.pitch) + 'deg) rotateY(' + i.roll + 'deg)';
-  const pil = document.querySelector('.sv .pil'); if (pil && i.kurs != null) pil.style.transform = 'rotate(' + (i.kurs - 90) + 'deg)';
-  $('.enhet').textContent = i.enhet ? i.enhet + (ferskt ? '' : ' · sist hørt fra ' + tid(nå - i.ts) + ' siden') : '';
+  tegnBev(i);
   if (!live) { $('.s-navn').textContent = 'Ingen posisjon ennå'; $('.s-live').textContent = 'Venter'; document.body.classList.add('gammel'); return; }
   const alder = nå - live.ts, gammel = alder > 10 * 60e3;
   document.body.classList.toggle('gammel', gammel);
@@ -183,8 +193,29 @@ function gnistFrame() {
 }
 kart.on('movestart zoomstart', () => { gnister = []; });
 requestAnimationFrame(gnistFrame);
+// Bevegelsen siste 30 min: serveren gir historikken, nye målinger legges til mens siden er åpen.
+let bev = [];
+const BEV = v => v < .01 ? 'helt i ro' : v < .05 ? 'rolig' : v < .15 ? 'beveger seg' : 'mye bevegelse';
+function tegnBev(i) {
+  const nå = Date.now() + skew;
+  if (i.bevegelse != null && i.ts && (!bev.length || i.ts > bev[bev.length - 1][0])) bev.push([i.ts, i.bevegelse]);
+  // Den siste målingen før vinduet beholdes, så linjen starter i venstre kant.
+  const forFor = bev.filter(p => p[0] <= nå - 30 * 60e3).pop();
+  bev = (forFor ? [forFor] : []).concat(bev.filter(p => p[0] > nå - 30 * 60e3));
+  $('.bev-n').textContent = bev.length ? BEV(bev[bev.length - 1][1]) : '–';
+  if (!bev.length) { $('.bev-l').setAttribute('d', ''); $('.bev-a').setAttribute('d', ''); return; }
+  const maks = Math.max(.2, ...bev.map(p => p[1]));
+  const X = t => (t - (nå - 30 * 60e3)) / (30 * 60e3) * 300, Y = v => 76 - Math.min(1, v / maks) * 70;
+  // Trappetrinn: en måling gjelder til neste (telefonen sender bare når bevegelsen endrer seg), og den siste helt til nå.
+  let d = '';
+  bev.forEach(([t, v], k) => { const x = X(Math.max(t, nå - 30 * 60e3)).toFixed(1), y = Y(v).toFixed(1); d += k ? 'L' + x + ' ' + Y(bev[k - 1][1]).toFixed(1) + 'L' + x + ' ' + y : 'M' + x + ' ' + y; });
+  d += 'L300 ' + Y(bev[bev.length - 1][1]).toFixed(1);
+  $('.bev-l').setAttribute('d', d);
+  $('.bev-a').setAttribute('d', 'M' + d.slice(1).split(' ')[0] + ' 80L' + d.slice(1) + 'L300 80Z');
+  const p = $('.bev-p'); p.setAttribute('cx', 300); p.setAttribute('cy', Y(bev[bev.length - 1][1]).toFixed(1));
+}
 async function hent() {
-  try { const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json(); skew = j.now - Date.now(); live = j.live; trail = j.trail || []; tele = j.tele || {}; } catch {}
+  try { const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json(); skew = j.now - Date.now(); live = j.live; trail = j.trail || []; tele = j.tele || {}; if (j.bev) bev = j.bev; } catch {}
   tegn();
 }
 hent(); setInterval(() => { if (!document.hidden) hent(); }, 5000);
@@ -193,6 +224,9 @@ setInterval(tegn, 1000);
 </script>
 '''
 rep('\n</body>', '\n' + JS + '</body>')
+m = re.search(r'<div class="st-i hp" hidden>.*?</span></span></div>', s, flags=re.S)
+assert m, 'fant ikke pulsen'
+s = s.replace(m.group(0), '', 1).replace('<!--PULS-->', m.group(0), 1)
 pathlib.Path('new2').mkdir(exist_ok=True)
 pathlib.Path('new2/index.html').write_text(s)
 print('new2/index.html skrevet', len(s))

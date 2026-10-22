@@ -395,6 +395,8 @@ export class ChatHub {
     // Heart rate samples from the owner's Apple Watch, for the graphs on the site. Kept 35 days.
     this.sql.exec(`CREATE TABLE IF NOT EXISTS hr (ts INTEGER PRIMARY KEY, bpm INTEGER)`);
     // The owner's position from his iPhone (raw, private). The public map only gets what sporPublic() lets through.
+    // How much the phone moves, every 5 s (for the movement graph on the map page). Kept a day.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS bev (ts INTEGER PRIMARY KEY, v REAL)`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS pos (ts INTEGER PRIMARY KEY, lat REAL, lon REAL, acc REAL, spd REAL, alt REAL, hdg REAL)`);
     // Today's unique visitors for the counter on the site (salted hashes, emptied every Oslo midnight).
     this.sql.exec(`CREATE TABLE IF NOT EXISTS uniq (day TEXT, k TEXT, net TEXT, PRIMARY KEY (day, k))`);
@@ -648,6 +650,10 @@ export class ChatHub {
       const gml = this.sql.exec(`SELECT v FROM kv WHERE k=?`, `tele:${kilde}`).toArray()[0];
       const ny = { ...(gml ? JSON.parse(gml.v) : {}), ...ren, ts: Date.now() };
       this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, `tele:${kilde}`, JSON.stringify(ny));
+      if (kilde === "iphone" && typeof ren.bevegelse === "number") {
+        this.sql.exec(`INSERT OR REPLACE INTO bev (ts, v) VALUES (?, ?)`, ny.ts, ren.bevegelse);
+        if (ny.ts - (this.bevPruned || 0) > 3600e3) { this.bevPruned = ny.ts; this.sql.exec(`DELETE FROM bev WHERE ts < ?`, ny.ts - 864e5); }
+      }
       this.toVisitors({ t: "tele", kilde, d: ny });
       return Response.json({ ok: true });
     }
@@ -1047,7 +1053,10 @@ export class ChatHub {
       trail.push([+r.lat.toFixed(5), +r.lon.toFixed(5), r.ts]);
       pl = r.lat; po = r.lon; pt = r.ts;
     }
-    return { now: Date.now(), live, trail, tele: this.tele() };
+    const fra = Date.now() - 30 * 60e3;
+    const bev = [...this.sql.exec(`SELECT ts, v FROM bev WHERE ts <= ? ORDER BY ts DESC LIMIT 1`, fra).toArray(),
+      ...this.sql.exec(`SELECT ts, v FROM bev WHERE ts > ? ORDER BY ts`, fra).toArray()].map((r) => [r.ts, r.v]);
+    return { now: Date.now(), live, trail, tele: this.tele(), bev };
   }
 
   // The name of the place he is at (neighbourhood, town, country), from OpenStreetMap's Nominatim. At most every
