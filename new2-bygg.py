@@ -18,12 +18,8 @@ s = re.sub(r'  <div class="scene">.*?\n  </div>\n', '''  <div class="paneler">
     <b class="s-navn">Henter posisjonen …</b>
     <span class="s-sub">&nbsp;</span>
   </section>
-  <section class="bev gl" aria-label="Hvor mye telefonen beveger seg, siste 30 minutter">
-    <div class="bev-h"><span class="sl">Bevegelse</span><b class="bev-n">–</b></div>
-    <svg class="bev-g" viewBox="0 0 300 80" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="bevF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF6A3D" stop-opacity=".45"/><stop offset="1" stop-color="#FF6A3D" stop-opacity="0"/></linearGradient></defs><path class="bev-a" d=""/><path class="bev-l" d=""/><circle class="bev-p" r="3.5" cx="-10" cy="-10"/></svg>
-    <div class="bev-x"><span>30 min siden</span><span>nå</span></div>
-  </section>
   </div>
+  <div class="hoyre">
   <section class="sens gl" aria-label="Alt telefonen og klokka måler">
     <!--PULS-->
     <div class="sv" data-k="ibat"><span class="sl">iPhone</span><b>–</b><i class="bar"><i></i></i></div>
@@ -36,8 +32,12 @@ s = re.sub(r'  <div class="scene">.*?\n  </div>\n', '''  <div class="paneler">
     <div class="sv" data-k="lyd"><span class="sl">I ørene</span><b>–</b></div>
     <div class="sv" data-k="volum"><span class="sl">Volum</span><b>–</b><i class="bar"><i></i></i></div>
     <div class="sv" data-k="nett"><span class="sl">Nett</span><b>–</b></div>
-    <div class="sv" data-k="varme"><span class="sl">Telefonen er</span><b>–</b></div>
   </section>
+  <section class="akse gl" aria-label="Akselerometeret i klokka og telefonen, live">
+    <div class="ak"><div class="ak-h"><span class="sl">Klokka · akselerometer</span><span class="ak-m">20 Hz · g</span></div><canvas class="ak-c" data-k="watch"></canvas></div>
+    <div class="ak"><div class="ak-h"><span class="sl">iPhone · akselerometer</span><span class="ak-m"><i class="kx">x</i> <i class="ky">y</i> <i class="kz">z</i></span></div><canvas class="ak-c" data-k="iphone"></canvas></div>
+  </section>
+  </div>
   </div>
 ''', s, 1, flags=re.S)
 
@@ -88,23 +88,24 @@ CSS = r'''  /* /new2: kartet er heroen. Leaflet med OpenStreetMap, gjort mørkt 
   .enhet:empty{display:none}
   @media (min-width:1100px){.sens{grid-template-columns:repeat(4,minmax(0,1fr));width:min(620px,100%)}}
   .venstre{display:flex;flex-direction:column;gap:14px;width:min(420px,100%)}
+  .hoyre{display:flex;flex-direction:column;gap:14px;margin-left:auto;width:min(470px,100%)}
+  @media (min-width:1100px){.hoyre{width:min(620px,100%)}}
+  .hoyre .sens{width:100%;margin-left:0}
+  /* Akselerometrene: tre kurver (x, y, z) i g, rullende 10 s, som et oscilloskop. */
+  .akse{display:flex;flex-direction:column;gap:10px;padding:14px 18px 14px}
+  .ak-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .ak-m{font:600 9.5px/1 "SF Mono",Menlo,monospace;letter-spacing:.1em;color:rgba(0,32,91,.5)}
+  .ak-m i{font-style:normal;font-weight:800}.kx{color:#e0233c}.ky{color:#d68a00}.kz{color:#2563eb}
+  .ak-c{display:block;width:100%;height:64px;min-height:0;margin:6px 0 0}
   .venstre .sted{max-width:none}
   /* Pulsen øverst i panelet til høyre, over hele bredden. */
   .sens .hp{grid-column:1/-1;flex-direction:row;align-items:center;justify-content:space-between;gap:12px;padding-bottom:12px;border-bottom:1px solid rgba(0,32,91,.12)}
   .sens .hp .st-v{font:640 clamp(26px,2.4vw,34px)/1 var(--serif);letter-spacing:-.02em;gap:10px;color:var(--ink)}
   .sens .hp .g{width:160px;height:34px}
   .sens .hp .st-l{font:600 9.5px/1.3 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(0,32,91,.6)}
-  /* Bevegelsesgrafen: siste 30 minutter, oppdateres hvert 5. sekund. */
-  .bev{padding:14px 18px 12px}
-  .bev-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
-  .bev-n{font:640 clamp(20px,1.8vw,26px)/1 var(--serif);letter-spacing:-.01em;color:var(--ink)}
-  .bev-g{display:block;width:100%;height:84px;margin-top:8px;overflow:visible}
-  .bev-l{fill:none;stroke:#e0233c;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
-  .bev-a{fill:url(#bevF)}
-  .bev-p{fill:#e0233c;stroke:#fff;stroke-width:2;vector-effect:non-scaling-stroke}
-  .bev-x{display:flex;justify-content:space-between;margin-top:4px;font:600 9px/1 "SF Mono",Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(0,32,91,.5)}
+
   @keyframes svNy{0%{color:#e0233c}100%{color:var(--ink)}}
-  @media (max-width:760px){.venstre{width:100%}.paneler{flex-direction:column;align-items:stretch;justify-content:flex-end}.sens{margin-left:0;width:100%;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 14px;padding:14px 16px}.sted{max-width:none}}
+  @media (max-width:760px){.venstre,.hoyre{width:100%}.paneler{flex-direction:column;align-items:stretch;justify-content:flex-end}.sens{margin-left:0;width:100%;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 14px;padding:14px 16px}.sted{max-width:none}}
   @media (prefers-reduced-motion:reduce){.spor-strom,.meg::before,.meg::after,.s-dot{animation:none}}
 </style>'''
 rep('</style>\n</head>', CSS + '\n</head>')
@@ -152,10 +153,9 @@ function tegn() {
   // Bare typen, ikke merkenavnet: earbuds, headset eller ingen.
   sett('lyd', i.lyd == null ? null : /^(høyttaler|telefonen)$/.test(i.lyd) ? 'Ingen' : /pods|buds|pop|ear|fit|dots/i.test(i.lyd) ? 'Earbuds' : 'Headset');
   sett('nett', i.nett === 'Wi-Fi' ? 'Wi-Fi' : i.nett === 'mobil' || i.nett === 'mobilnett' ? 'Mobildata' : i.nett === 'ingen' ? 'Uten nett' : i.nett);
-  sett('varme', i.varme);
   sett('volum', i.volum != null ? i.volum + ' %' : null, i.volum);
   sett('laast', i.laast == null ? null : i.laast ? 'låst' : 'i bruk');
-  tegnBev(i);
+  for (const k of ['iphone', 'watch']) inn(k, tele[k]);
   if (!live) { $('.s-navn').textContent = 'Ingen posisjon ennå'; $('.s-live').textContent = 'Venter'; document.body.classList.add('gammel'); return; }
   const alder = nå - live.ts, gammel = alder > 10 * 60e3;
   document.body.classList.toggle('gammel', gammel);
@@ -193,32 +193,46 @@ function gnistFrame() {
 }
 kart.on('movestart zoomstart', () => { gnister = []; });
 requestAnimationFrame(gnistFrame);
-// Bevegelsen siste 30 min: serveren gir historikken, nye målinger legges til mens siden er åpen.
-let bev = [];
-const BEV = v => v < .01 ? 'helt i ro' : v < .05 ? 'rolig' : v < .15 ? 'beveger seg' : 'mye bevegelse';
-function tegnBev(i) {
-  const nå = Date.now() + skew;
-  if (i.bevegelse != null && i.ts && (!bev.length || i.ts > bev[bev.length - 1][0])) bev.push([i.ts, i.bevegelse]);
-  // Den siste målingen før vinduet beholdes, så linjen starter i venstre kant.
-  const forFor = bev.filter(p => p[0] <= nå - 30 * 60e3).pop();
-  bev = (forFor ? [forFor] : []).concat(bev.filter(p => p[0] > nå - 30 * 60e3));
-  $('.bev-n').textContent = bev.length ? BEV(bev[bev.length - 1][1]) : '–';
-  if (!bev.length) { $('.bev-l').setAttribute('d', ''); $('.bev-a').setAttribute('d', ''); return; }
-  const maks = Math.max(.2, ...bev.map(p => p[1]));
-  const X = t => (t - (nå - 30 * 60e3)) / (30 * 60e3) * 300, Y = v => 76 - Math.min(1, v / maks) * 70;
-  // Trappetrinn: en måling gjelder til neste (telefonen sender bare når bevegelsen endrer seg), og den siste helt til nå.
-  let d = '';
-  bev.forEach(([t, v], k) => { const x = X(Math.max(t, nå - 30 * 60e3)).toFixed(1), y = Y(v).toFixed(1); d += k ? 'L' + x + ' ' + Y(bev[k - 1][1]).toFixed(1) + 'L' + x + ' ' + y : 'M' + x + ' ' + y; });
-  d += 'L300 ' + Y(bev[bev.length - 1][1]).toFixed(1);
-  $('.bev-l').setAttribute('d', d);
-  $('.bev-a').setAttribute('d', 'M' + d.slice(1).split(' ')[0] + ' 80L' + d.slice(1) + 'L300 80Z');
-  const p = $('.bev-p'); p.setAttribute('cx', 300); p.setAttribute('cy', Y(bev[bev.length - 1][1]).toFixed(1));
+// Akselerometrene: pakkene (20 målinger i sekundet, hver 5. s) spilles av jevnt, 7 s bak sanntid, så det ser live ut.
+const RATE = 50, FORS = 7000, VIN = 10000, AK = {};
+function inn(k, t) {
+  if (!t || !t.acc || !t.ts) return;
+  const a = AK[k] || (AK[k] = { sist: 0, s: [] });
+  if (t.ts <= a.sist) return;
+  a.sist = t.ts;
+  const rader = t.acc.split(';').map(r => r.split(',').map(n => +n / 100));
+  rader.forEach((r, n) => a.s.push([t.ts - (rader.length - 1 - n) * RATE, r[0], r[1], r[2]]));
+  a.s = a.s.filter(p => p[0] > t.ts - 30000);
 }
+function oskilloskop() {
+  requestAnimationFrame(oskilloskop);
+  if (!synlig) return;
+  const nå = Date.now() + skew - FORS, d = devicePixelRatio || 1;
+  for (const c of document.querySelectorAll('.ak-c')) {
+    const W = c.clientWidth, H = c.clientHeight;
+    if (c.width !== W * d) { c.width = W * d; c.height = H * d; }
+    const x = c.getContext('2d'); x.setTransform(d, 0, 0, d, 0, 0); x.clearRect(0, 0, W, H);
+    const Y = g => H / 2 - g / 2 * (H / 2 - 3);   // ±2 g
+    x.strokeStyle = 'rgba(0,32,91,.12)'; x.lineWidth = 1; x.setLineDash([2, 3]);
+    for (const g of [-1, 1]) { x.beginPath(); x.moveTo(0, Y(g)); x.lineTo(W, Y(g)); x.stroke(); }
+    x.setLineDash([]); x.strokeStyle = 'rgba(0,32,91,.25)'; x.beginPath(); x.moveTo(0, Y(0)); x.lineTo(W, Y(0)); x.stroke();
+    x.fillStyle = 'rgba(0,32,91,.4)'; x.font = '600 8px "SF Mono",Menlo,monospace'; x.fillText('+1', 2, Y(1) - 2); x.fillText('−1', 2, Y(-1) - 2);
+    const a = AK[c.dataset.k]; if (!a) continue;
+    const pts = a.s.filter(p => p[0] > nå - VIN && p[0] <= nå);
+    if (pts.length < 2) continue;
+    [['#e0233c', 1], ['#d68a00', 2], ['#2563eb', 3]].forEach(([farge, i]) => {
+      x.strokeStyle = farge; x.lineWidth = 1.6; x.lineJoin = 'round'; x.beginPath();
+      pts.forEach((p, n) => { const px = W - (nå - p[0]) / VIN * W, py = Y(Math.max(-2, Math.min(2, p[i]))); n ? x.lineTo(px, py) : x.moveTo(px, py); });
+      x.stroke();
+    });
+  }
+}
+requestAnimationFrame(oskilloskop);
 async function hent() {
-  try { const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json(); skew = j.now - Date.now(); live = j.live; trail = j.trail || []; tele = j.tele || {}; if (j.bev) bev = j.bev; } catch {}
+  try { const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json(); skew = j.now - Date.now(); live = j.live; trail = j.trail || []; tele = j.tele || {}; } catch {}
   tegn();
 }
-hent(); setInterval(() => { if (!document.hidden) hent(); }, 5000);
+hent(); setInterval(() => { if (!document.hidden) hent(); }, 2500);
 setInterval(tegn, 1000);
 })();
 </script>

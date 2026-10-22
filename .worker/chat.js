@@ -644,9 +644,11 @@ export class ChatHub {
     // per device is kept; every open page gets it at once.
     if (url.pathname === "/chat/admin/tele" && request.method === "POST") {
       const { kilde, d } = await request.json().catch(() => ({}));
-      if (!/^[a-z]{2,12}$/.test(kilde || "") || !d || typeof d !== "object" || JSON.stringify(d).length > 3000) return new Response("Bad request", { status: 400 });
+      if (!/^[a-z]{2,12}$/.test(kilde || "") || !d || typeof d !== "object" || JSON.stringify(d).length > 8000) return new Response("Bad request", { status: 400 });
       const ren = {};
       for (const [k, v] of Object.entries(d)) if (/^[a-zA-Z]{1,20}$/.test(k) && (typeof v === "number" || typeof v === "boolean" || (typeof v === "string" && v.length <= 80) || v === null)) ren[k] = v;
+      // The accelerometer: "x,y,z;…" in hundredths of a g at 20 Hz, a packet every 5 s.
+      if (typeof d.acc === "string" && d.acc.length <= 6000 && /^[-\d,;]*$/.test(d.acc)) ren.acc = d.acc;
       const gml = this.sql.exec(`SELECT v FROM kv WHERE k=?`, `tele:${kilde}`).toArray()[0];
       const ny = { ...(gml ? JSON.parse(gml.v) : {}), ...ren, ts: Date.now() };
       this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, `tele:${kilde}`, JSON.stringify(ny));
@@ -654,7 +656,8 @@ export class ChatHub {
         this.sql.exec(`INSERT OR REPLACE INTO bev (ts, v) VALUES (?, ?)`, ny.ts, ren.bevegelse);
         if (ny.ts - (this.bevPruned || 0) > 3600e3) { this.bevPruned = ny.ts; this.sql.exec(`DELETE FROM bev WHERE ts < ?`, ny.ts - 864e5); }
       }
-      this.toVisitors({ t: "tele", kilde, d: ny });
+      const { acc, ...uten } = ny;   // the chat pages don't need the accelerometer; the map page fetches it
+      this.toVisitors({ t: "tele", kilde, d: uten });
       return Response.json({ ok: true });
     }
     // Remove stored samples in a period (a faulty measurement). Returns the removed rows so they can be put back.
