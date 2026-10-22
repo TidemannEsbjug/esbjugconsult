@@ -23,6 +23,8 @@
 //   GET  /chat/file/<key>                         a file from R2, with Range support (Safari needs it for audio)
 //   GET  /chat/ice                                STUN + short-lived Cloudflare TURN credentials for calls
 //   GET  /chat/status                             the owner's status (available/meeting/sleeping) + whether the app is open
+//   POST /chat/admin/pos          {pts:[{ts,lat,lon,acc,spd,alt,hdg}]}  the owner's iPhone reports where he is (live, in the background)
+//   GET  /chat/spor                               the public map: live position and today's trail in Oslo, the White House outside Oslo
 //   GET  /chat/hr                                 today's heart rate from the owner's Apple Watch (Oslo day, per minute) + live bpm
 //   POST /chat/besok                              the page was shown from a prefetch/prerender: same visit push as a page load
 //   POST /chat/rec                                last batch of a visit recording (sendBeacon when the page closes)
@@ -67,6 +69,10 @@ export async function handleChat(request, env, url) {
 
   if (path === "/chat/status") {
     return hub.fetch(new Request("https://hub/internal/status", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }));
+  }
+
+  if (path === "/chat/spor") {
+    return hub.fetch(new Request("https://hub/internal/spor", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }));
   }
 
   if (path === "/chat/hr") {
@@ -272,6 +278,21 @@ async function serveFile(request, env, key) {
   return new Response(obj.body, { headers });
 }
 
+// Oslo on land: an outline along the waterfront from Lysaker over Bygdøy, Aker Brygge, Bjørvika and down to Ljan, and
+// round the hills to the north and east. The fjord is outside it, so the boat from Aker Brygge leaves Oslo.
+const OSLO = [[59.913,10.635],[59.940,10.640],[59.965,10.655],[59.990,10.700],[60.005,10.800],[59.990,10.880],[59.965,10.950],[59.930,10.975],
+  [59.890,10.960],[59.850,10.905],[59.825,10.840],[59.830,10.795],[59.850,10.790],[59.870,10.780],[59.890,10.768],[59.900,10.758],
+  [59.9045,10.7525],[59.9065,10.744],[59.9085,10.736],[59.9100,10.7315],[59.9092,10.7262],[59.9060,10.7215],[59.9070,10.7160],
+  [59.9110,10.7090],[59.9070,10.6990],[59.8990,10.6920],[59.8930,10.6780],[59.9000,10.6630],[59.9100,10.6450]];
+export function iOslo(lat, lon) {
+  let inn = false;
+  for (let i = 0, j = OSLO.length - 1; i < OSLO.length; j = i++) {
+    const [ai, oi] = OSLO[i], [aj, oj] = OSLO[j];
+    if ((oi > lon) !== (oj > lon) && lat < ((aj - ai) * (lon - oi)) / (oj - oi) + ai) inn = !inn;
+  }
+  return inn;
+}
+
 // Oslo wall-clock time for a timestamp.
 export function osloTime(ts) {
   const parts = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Oslo", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(new Date(ts));
@@ -387,6 +408,8 @@ export class ChatHub {
     this.sql.exec(`CREATE TABLE IF NOT EXISTS kv (k TEXT PRIMARY KEY, v TEXT)`);
     // Heart rate samples from the owner's Apple Watch, for the graphs on the site. Kept 35 days.
     this.sql.exec(`CREATE TABLE IF NOT EXISTS hr (ts INTEGER PRIMARY KEY, bpm INTEGER)`);
+    // The owner's position from his iPhone (raw, private). The public map only gets what sporPublic() lets through.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS pos (ts INTEGER PRIMARY KEY, lat REAL, lon REAL, acc REAL, spd REAL, alt REAL, hdg REAL)`);
     // Today's unique visitors for the counter on the site (salted hashes, emptied every Oslo midnight).
     this.sql.exec(`CREATE TABLE IF NOT EXISTS uniq (day TEXT, k TEXT, net TEXT, PRIMARY KEY (day, k))`);
     try { this.sql.exec(`ALTER TABLE uniq ADD COLUMN n INTEGER`); } catch {}   // the visitor's number that day
@@ -462,6 +485,9 @@ export class ChatHub {
       }
       if (url.pathname === "/internal/status") {
         return Response.json({ status: this.status(), owner: this.ownerOnline(), hr: this.liveHr() }, { headers: { "cache-control": "no-store" } });
+      }
+      if (url.pathname === "/internal/spor") {
+        return Response.json(this.spor(), { headers: { "cache-control": "no-store" } });
       }
       if (url.pathname === "/internal/hr") {
         return Response.json(this.hrRange(b.r), { headers: { "cache-control": "no-store" } });
@@ -606,6 +632,25 @@ export class ChatHub {
       }
       this.toVisitors({ t: "hr", bpm: v });
       return Response.json({ ok: true });
+    }
+    // Positions from the owner's iPhone: stored raw (35 days), and the public version goes straight to every open page.
+    if (url.pathname === "/chat/admin/pos" && request.method === "POST") {
+      const { pts } = await request.json().catch(() => ({}));
+      if (!Array.isArray(pts)) return new Response("Bad request", { status: 400 });
+      const now = Date.now();
+      let n = 0;
+      for (const p of pts.slice(-500)) {
+        const ts = Math.round(Number(p.ts)), lat = Number(p.lat), lon = Number(p.lon), acc = Number(p.acc);
+        if (!Number.isFinite(ts) || ts > now + 60e3 || ts < now - 7 * 864e5 || !(Math.abs(lat) <= 90) || !(Math.abs(lon) <= 180)) continue;
+        if (Number.isFinite(acc) && acc > 150) continue;   // too uncertain to draw
+        const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : null);
+        this.sql.exec(`INSERT OR REPLACE INTO pos (ts, lat, lon, acc, spd, alt, hdg) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          ts, lat, lon, num(p.acc), num(p.spd), num(p.alt), num(p.hdg));
+        n++;
+      }
+      if (now - (this.posPruned || 0) > 3600e3) { this.posPruned = now; this.sql.exec(`DELETE FROM pos WHERE ts < ?`, now - 35 * 864e5); }
+      if (n) { const l = this.sporLive(); if (l) this.toVisitors({ t: "pos", ...l }); }
+      return Response.json({ ok: true, n });
     }
     // Remove stored samples in a period (a faulty measurement). Returns the removed rows so they can be put back.
     if (url.pathname === "/chat/admin/hr-slett" && request.method === "POST") {
@@ -970,6 +1015,39 @@ export class ChatHub {
     m[pokeNet(ip)] = now;
     for (const k of Object.keys(m)) if (now - m[k] > 60 * 864e5) delete m[k];
     this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('ownerNets', ?)`, JSON.stringify(m));
+  }
+
+  // ---------- the map ----------
+  // In Oslo the public sees the real position and today's trail. Outside Oslo (the boat from Aker Brygge leaves the
+  // outline) he is at the White House, where the page lets him wander around. The trail only ever holds Oslo points.
+  sporLive() {
+    const r = this.sql.exec(`SELECT ts, lat, lon, acc, spd, hdg FROM pos ORDER BY ts DESC LIMIT 1`).toArray()[0];
+    if (!r) return null;
+    if (!iOslo(r.lat, r.lon)) {
+      // Outside since the last Oslo point: that is when he «arrived» at the White House.
+      const sist = this.sql.exec(`SELECT ts, lat, lon FROM pos WHERE ts <= ? ORDER BY ts DESC LIMIT 2000`, r.ts).toArray();
+      let fra = r.ts;
+      for (const x of sist) { if (iOslo(x.lat, x.lon)) break; fra = x.ts; }
+      return { modus: "dc", ts: r.ts, fra };
+    }
+    return { modus: "oslo", ts: r.ts, lat: r.lat, lon: r.lon, acc: r.acc, spd: r.spd, hdg: r.hdg };
+  }
+
+  spor() {
+    const live = this.sporLive();
+    const start = osloMidnight(Date.now());
+    const rows = this.sql.exec(`SELECT ts, lat, lon FROM pos WHERE ts >= ? ORDER BY ts`, start).toArray();
+    // Only Oslo points, at least ~12 m apart, so the trail stays light.
+    const trail = [];
+    let pl = 0, po = 0;
+    for (const r of rows) {
+      if (!iOslo(r.lat, r.lon)) { if (trail.length && trail[trail.length - 1] !== null) trail.push(null); continue; }
+      const dy = (r.lat - pl) * 111e3, dx = (r.lon - po) * 55.6e3;
+      if (trail.length && trail[trail.length - 1] !== null && dx * dx + dy * dy < 144) continue;
+      trail.push([+r.lat.toFixed(5), +r.lon.toFixed(5), r.ts]);
+      pl = r.lat; po = r.lon;
+    }
+    return { now: Date.now(), live, trail };
   }
 
   liveHr() {

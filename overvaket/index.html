@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tidemann · overvåket</title>
+<meta name="description" content="Hvor Tidemann er akkurat nå. Live.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#05081a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2300205B'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%23BA0C2F' stroke='%23fff' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+  @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces.woff2) format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+  @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces-italic.woff2) format("woff2");font-weight:100 900;font-style:italic;font-display:swap}
+  :root{--gul:#FFD23F;--kor:#FF6A3D;--ros:#FF2E7E;--ink:#05081a;--serif:"Fraunces",Georgia,serif}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--ink);color:#fff;font-family:-apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased;-webkit-user-select:none;user-select:none}
+  #kart{position:fixed;inset:0;background:var(--ink)}
+  .leaflet-container{background:var(--ink);font-family:inherit}
+  .leaflet-tile-pane{filter:invert(1) hue-rotate(195deg) brightness(.78) contrast(1.05) saturate(.55)}
+  .leaflet-control-attribution{background:rgba(5,8,26,.6)!important;color:rgba(255,255,255,.45)!important;font-size:10px}
+  .leaflet-control-attribution a{color:rgba(255,255,255,.6)!important}
+  .leaflet-control-zoom a{background:rgba(5,8,26,.75)!important;color:#fff!important;border-color:rgba(255,255,255,.15)!important}
+  /* Sporet: tre lag lys, og en strøm av gnister som renner langs linjen mot der han er nå. */
+  .spor-glod{filter:blur(6px)}
+  .spor-strom{stroke-dasharray:2 18;animation:strom 1.6s linear infinite}
+  @keyframes strom{to{stroke-dashoffset:-20}}
+  #gnist{position:fixed;inset:0;pointer-events:none;z-index:450}
+  /* Han selv: en lysende kule med ringer. */
+  .meg{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,var(--gul) 45%,var(--kor));box-shadow:0 0 18px 6px rgba(255,210,63,.65),0 0 60px 20px rgba(255,106,61,.35)}
+  .meg::before,.meg::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid rgba(255,210,63,.7);animation:ring 2.4s ease-out infinite}
+  .meg::after{animation-delay:1.2s}
+  @keyframes ring{from{transform:scale(1);opacity:1}to{transform:scale(3.4);opacity:0}}
+  .gammel .meg{filter:grayscale(.6) brightness(.8)}.gammel .meg::before,.gammel .meg::after{animation:none;opacity:0}
+  /* Kortet oppe til venstre. */
+  .kort{position:fixed;z-index:500;top:max(14px,env(safe-area-inset-top));left:14px;max-width:min(360px,calc(100vw - 28px));padding:16px 18px 14px;border-radius:18px;background:rgba(8,12,34,.72);-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);border:1px solid rgba(255,255,255,.12);box-shadow:0 18px 50px rgba(0,0,0,.45)}
+  .kort h1{margin:0;font:italic 500 26px/1.05 var(--serif);letter-spacing:-.01em}
+  .kort h1 b{font-style:normal;font-weight:650;background:linear-gradient(100deg,var(--gul),var(--kor),var(--ros));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .live{display:inline-flex;align-items:center;gap:7px;margin-top:10px;font:700 11px/1 "SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase}
+  .live i{width:8px;height:8px;border-radius:50%;background:#ff3d57;box-shadow:0 0 0 0 rgba(255,61,87,.6);animation:liveP 1.8s ease-out infinite}
+  .gammel .live i{background:#8a8fa3;animation:none}
+  @keyframes liveP{70%,100%{box-shadow:0 0 0 9px rgba(255,61,87,0)}}
+  .sted{margin:10px 0 0;font-size:15px;line-height:1.4;opacity:.9}
+  .tall{display:grid;grid-template-columns:repeat(3,auto);gap:4px 18px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.12)}
+  .tall span{display:block;font:600 9.5px/1.3 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;opacity:.55}
+  .tall b{font-size:19px;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+  .tom{position:fixed;inset:0;z-index:600;display:grid;place-items:center;text-align:center;padding:24px;background:rgba(5,8,26,.55)}
+  .tom[hidden]{display:none}
+  .tom p{font:italic 400 clamp(20px,3vw,30px)/1.3 var(--serif);max-width:20em}
+  .tilbake{position:fixed;z-index:500;right:14px;bottom:max(18px,env(safe-area-inset-bottom));color:#fff;opacity:.6;font-size:13px;text-decoration:none}
+  .tilbake:hover{opacity:1}
+  @media (prefers-reduced-motion:reduce){.spor-strom,.meg::before,.meg::after,.live i{animation:none}}
+</style>
+</head>
+<body>
+<div id="kart" aria-label="Kart over hvor Tidemann er"></div>
+<canvas id="gnist" aria-hidden="true"></canvas>
+<section class="kort" aria-live="polite">
+  <h1><b>Tidemann</b> er her</h1>
+  <span class="live"><i></i><span class="live-t">Live</span></span>
+  <p class="sted">Henter posisjonen …</p>
+  <div class="tall"><div><span>Fart</span><b class="t-fart">–</b></div><div><span>Gått i dag</span><b class="t-gatt">–</b></div><div><span>Sist sett</span><b class="t-sist">–</b></div></div>
+</section>
+<div class="tom" hidden><p>Tidemann har ikke vært ute i dag ennå.</p></div>
+<a class="tilbake" href="/">esbjugconsult.com</a>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+// Hvor Tidemann er, live fra iPhonen hans (GET /chat/spor hvert 5. sekund). I Oslo: den ekte posisjonen og dagens spor
+// som en lysende sti. Utenfor Oslo (båten fra Aker Brygge går ut av Oslo) er han i Det hvite hus, og går rundt der.
+const kart = L.map('kart', { zoomControl: false, attributionControl: true }).setView([59.9139, 10.7522], 14);
+L.control.zoom({ position: 'bottomleft' }).addTo(kart);
+// OpenStreetMap, gjort mørkt med et filter (invertert og dreid mot blått), så sporet lyser.
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+}).addTo(kart);
+
+const $ = q => document.querySelector(q), still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const meg = L.marker([0, 0], { icon: L.divIcon({ className: '', html: '<div class="meg"></div>', iconSize: [22, 22] }), interactive: false, keyboard: false });
+const lag = [
+  L.polyline([], { color: '#FF6A3D', weight: 16, opacity: .35, className: 'spor-glod', interactive: false }),
+  L.polyline([], { color: '#FFD23F', weight: 6, opacity: .75, interactive: false }),
+  L.polyline([], { color: '#fff', weight: 2, opacity: .9, interactive: false }),
+  L.polyline([], { color: '#fff7c2', weight: 3.5, opacity: 1, className: 'spor-strom', lineCap: 'round', interactive: false }),
+];
+lag.forEach(l => l.addTo(kart));
+let modus = null, live = null, trail = [], forste = true, skew = 0;
+
+// ---------- Det hvite hus ----------
+// En fast runde gjennom huset og hagen, i gangfart med stopp. Samme tid gir samme sted for alle som ser på.
+const DH = [[38.89737, -77.03745, 40], [38.89748, -77.03760, 0], [38.89768, -77.03712, 0], [38.89772, -77.03655, 60], [38.89780, -77.03620, 0],
+  [38.89770, -77.03565, 45], [38.89740, -77.03580, 0], [38.89705, -77.03630, 30], [38.89690, -77.03670, 0], [38.89712, -77.03715, 25], [38.89737, -77.03745, 0]];
+const dist = (a, b) => Math.hypot((a[0] - b[0]) * 111.2e3, (a[1] - b[1]) * 111.2e3 * Math.cos(a[0] * Math.PI / 180));
+const runde = (() => { const seg = []; let t = 0; for (let i = 0; i < DH.length - 1; i++) { const d = dist(DH[i], DH[i + 1]) / 0.9; seg.push({ t0: t, pause: DH[i][2], d, a: DH[i], b: DH[i + 1] }); t += DH[i][2] + d; } return { seg, len: t }; })();
+const dhPos = ms => {
+  let t = (ms / 1000) % runde.len;
+  for (const s of runde.seg) {
+    if (t < s.t0 + s.pause) return [s.a[0], s.a[1]];
+    if (t < s.t0 + s.pause + s.d) { const k = (t - s.t0 - s.pause) / s.d; return [s.a[0] + (s.b[0] - s.a[0]) * k, s.a[1] + (s.b[1] - s.a[1]) * k]; }
+  }
+  return [DH[0][0], DH[0][1]];
+};
+const dhSpor = (fra, til) => { const p = []; for (let t = Math.max(fra, til - 20 * 60e3); t <= til; t += 4000) p.push(dhPos(t)); return p; };
+
+// ---------- tegning ----------
+const fmtTid = ms => { const s = Math.max(0, Math.round(ms / 1000)); return s < 60 ? s + ' s' : s < 3600 ? Math.round(s / 60) + ' min' : Math.floor(s / 3600) + ' t ' + Math.round(s % 3600 / 60) + ' min'; };
+const km = pts => { let d = 0; for (let i = 1; i < pts.length; i++) if (pts[i] && pts[i - 1]) d += dist(pts[i - 1], pts[i]); return d; };
+const linjer = pts => { const ut = [[]]; for (const p of pts) { if (!p) { if (ut[ut.length - 1].length) ut.push([]); } else ut[ut.length - 1].push([p[0], p[1]]); } return ut.filter(l => l.length); };
+
+function tegn() {
+  const nå = Date.now() + skew;
+  if (!live) { $('.tom').hidden = false; $('.sted').textContent = 'Ingen posisjon ennå.'; return; }
+  $('.tom').hidden = true;
+  const alder = nå - live.ts, gammel = alder > 10 * 60e3;
+  document.body.classList.toggle('gammel', gammel);
+  $('.live-t').textContent = gammel ? 'Sist sett ' + fmtTid(alder) + ' siden' : 'Live';
+  $('.t-sist').textContent = fmtTid(alder);
+  let pos, spor;
+  if (live.modus === 'dc') {
+    pos = dhPos(nå); spor = [dhSpor(live.fra, nå)];
+    $('.sted').textContent = 'Det hvite hus, Washington, D.C.';
+    $('.t-fart').textContent = '3 km/t';
+    $('.t-gatt').textContent = (km(trail) / 1000).toFixed(1).replace('.', ',') + ' km';
+  } else {
+    pos = [live.lat, live.lon]; spor = linjer(trail);
+    if (spor.length) spor[spor.length - 1].push(pos); else spor = [[pos]];
+    $('.sted').textContent = 'Oslo';
+    $('.t-fart').textContent = live.spd != null && !gammel ? Math.round(live.spd * 3.6) + ' km/t' : '–';
+    $('.t-gatt').textContent = (km(trail) / 1000).toFixed(1).replace('.', ',') + ' km';
+  }
+  lag.forEach(l => l.setLatLngs(spor));
+  meg.setLatLng(pos); if (!kart.hasLayer(meg)) meg.addTo(kart);
+  if (modus !== live.modus || forste) {
+    modus = live.modus; forste = false;
+    if (modus === 'dc') kart.setView(pos, 18, { animate: false });
+    else { const alle = spor.flat(); if (alle.length > 1) kart.fitBounds(L.latLngBounds(alle).pad(.2), { maxZoom: 16, animate: false }); else kart.setView(pos, 16, { animate: false }); }
+  } else if (!kart.getBounds().pad(-.15).contains(pos)) kart.panTo(pos);
+  stier = spor;
+}
+
+// ---------- gnister langs sporet ----------
+const cv = $('#gnist'), cx = cv.getContext('2d');
+let stier = [], gnister = [];
+const storr = () => { const d = devicePixelRatio || 1; cv.width = innerWidth * d; cv.height = innerHeight * d; cx.setTransform(d, 0, 0, d, 0, 0); };
+addEventListener('resize', storr); storr();
+function gnistFrame() {
+  requestAnimationFrame(gnistFrame);
+  cx.clearRect(0, 0, innerWidth, innerHeight);
+  const pts = stier.flat(); if (pts.length < 2 || still) return;
+  for (let i = 0; i < 3; i++) {
+    // Nye gnister oftest nær slutten (der han er nå).
+    const k = Math.min(pts.length - 1, Math.floor(pts.length * Math.pow(Math.random(), .45)));
+    const p = kart.latLngToContainerPoint(pts[k]);
+    gnister.push({ x: p.x + (Math.random() - .5) * 8, y: p.y + (Math.random() - .5) * 8, vx: (Math.random() - .5) * .5, vy: -Math.random() * .7 - .1, l: 1, r: Math.random() * 2 + .8 });
+  }
+  gnister = gnister.filter(g => (g.l -= .014) > 0).slice(-260);
+  for (const g of gnister) {
+    g.x += g.vx; g.y += g.vy;
+    cx.globalAlpha = g.l; cx.fillStyle = g.l > .6 ? '#fff7c2' : '#FFD23F';
+    cx.shadowColor = '#FFD23F'; cx.shadowBlur = 8;
+    cx.beginPath(); cx.arc(g.x, g.y, g.r * g.l, 0, 7); cx.fill();
+  }
+  cx.globalAlpha = 1; cx.shadowBlur = 0;
+}
+kart.on('movestart zoomstart', () => { gnister = []; });
+requestAnimationFrame(gnistFrame);
+
+// ---------- henting ----------
+async function hent() {
+  try {
+    const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json();
+    skew = j.now - Date.now(); live = j.live; trail = j.trail || [];
+  } catch {}
+  tegn();
+}
+hent(); setInterval(hent, 5000);
+// I Det hvite hus går han hele tiden, også mellom hentingene.
+setInterval(() => { if (live && live.modus === 'dc') tegn(); }, 1000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) hent(); });
+</script>
+</body>
+</html>
