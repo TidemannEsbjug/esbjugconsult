@@ -1239,7 +1239,7 @@ function tegn() {
   document.body.classList.toggle('gammel', gammel);
   $('.s-live').textContent = gammel ? 'Sist sett ' + tid(alder) + ' siden' : 'Live · ' + tid(alder) + ' siden';
   $('.s-navn').textContent = st && st.by ? [st.strok, st.by].filter(Boolean).join(', ') + (st.kode && st.kode !== 'NO' ? ', ' + st.land : '') : 'Et sted på jorda';
-  const fart = live.spd != null && live.spd >= 0 && !gammel ? Math.round(live.spd * 3.6) + ' km/t' : null;
+  const fart = live.spd != null && live.spd >= .8 && !gammel && i.aktivitet !== 'står stille' ? Math.round(live.spd * 3.6) + ' km/t' : null;   // GPS-støy gir litt fart også når han står stille
   $('.s-sub').textContent = [i.aktivitet && i.aktivitet[0].toUpperCase() + i.aktivitet.slice(1), fart].filter(Boolean).join(' · ') || ' ';
   const pos = [live.lat, live.lon];
   let spor = linjer(trail); if (spor.length) spor[spor.length - 1].push(pos); else spor = [[pos]];

@@ -143,7 +143,7 @@ function tegn() {
     pos = [live.lat, live.lon]; spor = linjer(trail);
     if (spor.length) spor[spor.length - 1].push(pos); else spor = [[pos]];
     $('.sted').textContent = sted && sted.by ? [sted.strok, sted.by].filter(Boolean).join(', ') + (sted.kode && sted.kode !== 'NO' ? ', ' + sted.land : '') : 'Et sted på jorda';
-    $('.t-fart').textContent = live.spd != null && !gammel ? Math.round(live.spd * 3.6) + ' km/t' : '–';
+    $('.t-fart').textContent = live.spd != null && live.spd >= .8 && !gammel ? Math.round(live.spd * 3.6) + ' km/t' : '0 km/t';
     $('.t-gatt').textContent = (km(trail) / 1000).toFixed(1).replace('.', ',') + ' km';
   }
   lag.forEach(l => l.setLatLngs(spor));
