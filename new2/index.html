@@ -593,7 +593,7 @@
     <span class="mono s-t"><i class="s-dot"></i><span class="s-live">Live</span></span>
     <b class="s-navn">Henter posisjonen …</b>
     <span class="s-sub">&nbsp;</span>
-    <div class="kast"><button type="button" class="k-le" aria-label="Le av Tidemann">😂 <span>Le</span> <b>0</b></button><button type="button" class="k-tomat" aria-label="Kast en tomat på Tidemann">🍅 <span>Kast tomat</span> <b>0</b></button></div>
+    <div class="kast"><button type="button" class="k-tomat" aria-label="Kast en tomat på Tidemann">🍅 <span>Kast tomat</span> <b>0</b></button></div>
   </section>
   <section class="gjor gl" hidden aria-live="polite">
     <span class="mono s-t">Holder på med</span>
@@ -1462,12 +1462,11 @@ async function klikk(k, x) {
   const b = knapp(k).querySelector('b'); b.textContent = tall((kast ? kast[k] : 0) + egne[k]);
   try { const r = await fetch('/chat/kast', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ k }) }); if (r.ok) { kast = await r.json(); egne[k] = 0; } } catch {}
 }
-document.querySelector('.k-le').addEventListener('click', () => klikk('le'));
 document.querySelector('.k-tomat').addEventListener('click', e => klikk('tomat', e.clientX || undefined));
 function nyeKast(ny) {
-  if (kast) for (const k of ['le', 'tomat']) { const n = Math.min(4, ny[k] - kast[k]); for (let i = 0; i < n; i++) setTimeout(() => visKast(k), i * 450); }
+  if (kast) for (const k of ['tomat']) { const n = Math.min(4, ny[k] - kast[k]); for (let i = 0; i < n; i++) setTimeout(() => visKast(k), i * 450); }
   kast = ny;
-  knapp('le').querySelector('b').textContent = tall(ny.le); knapp('tomat').querySelector('b').textContent = tall(ny.tomat);
+  knapp('tomat').querySelector('b').textContent = tall(ny.tomat);
 }
 // Hva han holder på med, satt i appen: Jobber, Trener, Sover. Kortet er skjult når ingenting er valgt.
 const GJOR = { jobber: 'Jobber', trener: 'Trener', sover: 'Sover' };

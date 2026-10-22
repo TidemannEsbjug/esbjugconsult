@@ -81,7 +81,8 @@ export async function handleChat(request, env, url) {
   if (path === "/chat/kast" && request.method === "POST") {
     if (!/^https:\/\/(www\.)?esbjugconsult\.com$/.test(request.headers.get("Origin") || "")) return new Response("Forbidden", { status: 403 });
     const body = await request.text();
-    return hub.fetch(new Request("https://hub/internal/kast", { method: "POST", headers: { "x-role": "internal", "x-ip": request.headers.get("CF-Connecting-IP") || "" }, body }));
+    return hub.fetch(new Request("https://hub/internal/kast", { method: "POST", headers: { "x-role": "internal", "x-ip": request.headers.get("CF-Connecting-IP") || "",
+      "x-by": encodeURIComponent((request.cf && request.cf.city) || "") }, body }));
   }
 
   if (path === "/chat/hr") {
@@ -493,6 +494,7 @@ export class ChatHub {
         if (this.kastRate.size > 5000) this.kastRate.clear();
         const n = Number(this.sql.exec(`SELECT v FROM kv WHERE k=?`, `kast:${b.k}`).toArray()[0]?.v || 0) + 1;
         this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, `kast:${b.k}`, String(n));
+        if (b.k === "tomat") this.tomatVarsel(decodeURIComponent(request.headers.get("x-by") || ""));
         return Response.json(this.kast());
       }
       if (url.pathname === "/internal/spor") {
@@ -1077,6 +1079,12 @@ export class ChatHub {
   kjentSted(lat, lon) {
     for (const x of this.steder()) if (Math.hypot((lat - x.lat) * 111.2e3, (lon - x.lon) * 111.2e3 * Math.cos(lat * Math.PI / 180)) <= x.r) return x.navn;
     return null;
+  }
+
+  // A push to the owner's phone for every tomato, at once. No grouping and no throttle: it is supposed to be spammy.
+  tomatVarsel(by) {
+    const l = this.sporLive(), hjemme = l && l.kjent === "hjemme hos moren sin";
+    this.ctx.waitUntil(this.push(hjemme ? "🍅 Taper!" : "🍅 Tomat!", by ? `Noen i ${by} kastet en tomat på deg` : "Noen kastet en tomat på deg", null, { thread: "tomat" }));
   }
 
   kast() {
