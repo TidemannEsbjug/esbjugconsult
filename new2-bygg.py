@@ -9,6 +9,7 @@ def rep(a, b):
     assert s.count(a) == 1, a[:70]
     s = s.replace(a, b)
 
+rep('<meta name="theme-color"', '<script>history.scrollRestoration="manual"</script>\n<meta name="theme-color"')
 rep('<meta name="theme-color"', '<meta name="robots" content="noindex">\n<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">\n<meta name="theme-color"')
 s = re.sub(r'<video class="hero-v".*?</video>', '<div id="kart" aria-label="Kart: hvor Tidemann er nå"></div>\n  <canvas id="gnist" aria-hidden="true"></canvas>', s, 1, flags=re.S)
 s = re.sub(r'  <div class="scene">.*?\n  </div>\n', '''  <div class="paneler">
@@ -380,6 +381,8 @@ async function hent() {
   tegn();
 }
 hent(); setInterval(() => { if (!document.hidden) hent(); }, 2500);
+// Alltid øverst når siden åpnes (Safari på iPhone hopper ellers ned dit man var sist).
+if (!location.hash) { scrollTo(0, 0); addEventListener('load', () => scrollTo(0, 0)); addEventListener('pageshow', () => scrollTo(0, 0)); }
 setInterval(tegn, 1000);
 })();
 </script>

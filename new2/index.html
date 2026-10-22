@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Esbjug Consult</title>
 <meta name="description" content="Kode og design har gått gjennom en revolusjon som ikke må oversees.">
+<script>history.scrollRestoration="manual"</script>
 <meta name="robots" content="noindex">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <meta name="theme-color" content="#cfe4f6">
@@ -1491,6 +1492,8 @@ async function hent() {
   tegn();
 }
 hent(); setInterval(() => { if (!document.hidden) hent(); }, 2500);
+// Alltid øverst når siden åpnes (Safari på iPhone hopper ellers ned dit man var sist).
+if (!location.hash) { scrollTo(0, 0); addEventListener('load', () => scrollTo(0, 0)); addEventListener('pageshow', () => scrollTo(0, 0)); }
 setInterval(tegn, 1000);
 })();
 </script>
