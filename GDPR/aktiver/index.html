@@ -401,7 +401,11 @@
         api("status")
           .then(function (s) {
             $("kjop").disabled = !s.kjop;
-            $("kjop-tekst").textContent = s.kjop ? "Betal med kort hos Stripe." : "Kjøp åpner snart.";
+            $("kjop-tekst").textContent = s.kjop
+              ? s.test
+                ? "Testmodus: bruk testkort 4242 4242 4242 4242."
+                : "Betal med kort hos Stripe."
+              : "Kjøp åpner snart.";
             if (!s.prove) {
               $("prove").disabled = true;
               $("prove").querySelector("span").textContent = "Åpner snart.";

@@ -143,6 +143,7 @@ async function status(env) {
   return {
     prove: Boolean(env.KLART_LISENSNOKKEL),
     kjop: Boolean(env.KLART_LISENSNOKKEL && env.STRIPE_SECRET_KEY && env.STRIPE_PRICE_ID),
+    test: testmodus(env),
   };
 }
 
@@ -249,15 +250,23 @@ async function lisensFraOkt(env, okt) {
   });
 }
 
+/** Med en testnøkkel fra Stripe kan hvem som helst «betale» med testkort. Da gir kjøpet
+    en lisens merket «test» som varer en uke, aldri en ekte lisens. */
+function testmodus(env) {
+  return String(env.STRIPE_SECRET_KEY || "").startsWith("sk_test_");
+}
+
 async function kodeTilLisens(env, lisens, maskin) {
+  const test = testmodus(env);
+  const uke = omDager(7);
   return lagKode(env, {
     id: nyId(),
     type: "lisens",
-    navn: lisens.navn,
+    navn: test ? `${lisens.navn} (test)` : lisens.navn,
     epost: lisens.epost,
     maskin,
-    plan: lisens.plan || null,
-    utloper: lisens.utloper,
+    plan: test ? "test" : lisens.plan || null,
+    utloper: test ? (lisens.utloper && lisens.utloper < uke ? lisens.utloper : uke) : lisens.utloper,
   });
 }
 
