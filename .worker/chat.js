@@ -25,6 +25,8 @@
 //   GET  /chat/status                             the owner's status (available/meeting/sleeping) + whether the app is open
 //   POST /chat/admin/pos          {pts:[{ts,lat,lon,acc,spd,alt,hdg}]}  the owner's iPhone reports where he is (live, in the background)
 //   POST /chat/admin/tele         {kilde, d}          latest readings from the owner's iPhone/watch (battery, steps, pressure …)
+//   POST /chat/admin/sted-her     {navn, r}           name the place he is at now (e.g. «hjemme hos moren sin»), radius r m
+//   POST /chat/kast               {k: "le" | "tomat"} a visitor laughs or throws a tomato at the map card (shared counters)
 //   GET  /chat/spor                               the public map: live position, today's trail, place name and the readings
 //   GET  /chat/hr                                 today's heart rate from the owner's Apple Watch (Oslo day, per minute) + live bpm
 //   POST /chat/besok                              the page was shown from a prefetch/prerender: same visit push as a page load
@@ -74,6 +76,12 @@ export async function handleChat(request, env, url) {
 
   if (path === "/chat/spor") {
     return hub.fetch(new Request("https://hub/internal/spor", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }));
+  }
+
+  if (path === "/chat/kast" && request.method === "POST") {
+    if (!/^https:\/\/(www\.)?esbjugconsult\.com$/.test(request.headers.get("Origin") || "")) return new Response("Forbidden", { status: 403 });
+    const body = await request.text();
+    return hub.fetch(new Request("https://hub/internal/kast", { method: "POST", headers: { "x-role": "internal", "x-ip": request.headers.get("CF-Connecting-IP") || "" }, body }));
   }
 
   if (path === "/chat/hr") {
@@ -474,6 +482,19 @@ export class ChatHub {
       if (url.pathname === "/internal/status") {
         return Response.json({ status: this.status(), owner: this.ownerOnline(), hr: this.liveHr() }, { headers: { "cache-control": "no-store" } });
       }
+      if (url.pathname === "/internal/kast") {
+        // Laughs and tomatoes: shared counters, at most 20 a minute from one address.
+        if (!["le", "tomat"].includes(b.k)) return new Response("Bad request", { status: 400 });
+        const ip = request.headers.get("x-ip") || "", now = Date.now();
+        this.kastRate = this.kastRate || new Map();
+        const r = (this.kastRate.get(ip) || []).filter((t) => now - t < 60e3);
+        if (r.length >= 20) return new Response("Too many", { status: 429 });
+        r.push(now); this.kastRate.set(ip, r);
+        if (this.kastRate.size > 5000) this.kastRate.clear();
+        const n = Number(this.sql.exec(`SELECT v FROM kv WHERE k=?`, `kast:${b.k}`).toArray()[0]?.v || 0) + 1;
+        this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, `kast:${b.k}`, String(n));
+        return Response.json(this.kast());
+      }
       if (url.pathname === "/internal/spor") {
         return Response.json(this.spor(), { headers: { "cache-control": "no-store" } });
       }
@@ -531,7 +552,7 @@ export class ChatHub {
       this.ctx.acceptWebSocket(pair[1], ["o"]);
       pair[1].serializeAttachment({ role: "owner" });
       this.rememberOwnerNet(request.headers.get("CF-Connecting-IP") || "");
-      pair[1].send(JSON.stringify({ t: "state", visitors: this.allVisitors(), status: this.status(), notifyVisits: this.setting("notifyVisits") === "1", incall: this.incall() }));
+      pair[1].send(JSON.stringify({ t: "state", visitors: this.allVisitors(), status: this.status(), notifyVisits: this.setting("notifyVisits") === "1", incall: this.incall(), gjor: this.setting("gjor") || "" }));
       this.touchOwner();
       await this.ensureAlarm();
       this.toVisitors({ t: "owner", online: true });
@@ -639,6 +660,16 @@ export class ChatHub {
       if (now - (this.posPruned || 0) > 3600e3) { this.posPruned = now; this.sql.exec(`DELETE FROM pos WHERE ts < ?`, now - 35 * 864e5); }
       if (n) { const l = this.sporLive(); if (l) { this.toVisitors({ t: "pos", ...l }); this.ctx.waitUntil(this.stedNavn(l.lat, l.lon)); } }
       return Response.json({ ok: true, n });
+    }
+    // Name the place he is at now: the latest position, with a radius. The map then says the name instead of the town.
+    if (url.pathname === "/chat/admin/sted-her" && request.method === "POST") {
+      const { navn, r } = await request.json().catch(() => ({}));
+      const l = this.sporLive();
+      if (!l || typeof navn !== "string" || !navn.trim() || navn.length > 80) return new Response("Bad request", { status: 400 });
+      const steder = this.steder().filter((x) => x.navn !== navn.trim());
+      steder.push({ navn: navn.trim(), lat: l.lat, lon: l.lon, r: Number.isFinite(r) ? Math.min(2000, Math.max(30, r)) : 150 });
+      this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('steder', ?)`, JSON.stringify(steder));
+      return Response.json({ ok: true, steder: steder.map((x) => x.navn) });
     }
     // Readings from the owner's devices: {kilde: "iphone" | "watch", d: {bat, lader, skritt, trykk, …}}. Only the latest
     // per device is kept; every open page gets it at once.
@@ -836,6 +867,10 @@ export class ChatHub {
       } else if (m.t === "delsession" && typeof m.sid === "string") {
         this.sql.exec(`DELETE FROM rec WHERE sid=?`, m.sid);
         this.sql.exec(`DELETE FROM sessions WHERE sid=?`, m.sid);
+      } else if (m.t === "setgjor" && ["", "jobber", "trener", "sover"].includes(m.v)) {
+        // What he is doing, shown on the map page: Jobber, Trener, Sover (or nothing).
+        this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('gjor', ?)`, m.v);
+        this.toOwners({ t: "gjor", v: m.v });
       } else if (m.t === "setstatus" && ["available", "meeting", "sleeping"].includes(m.v)) {
         this.sql.exec(`DELETE FROM kv WHERE k='autoSlept'`);
         this.setStatus(m.v);
@@ -1031,7 +1066,22 @@ export class ChatHub {
   sporLive() {
     const r = this.sql.exec(`SELECT ts, lat, lon, acc, spd, alt, hdg FROM pos ORDER BY ts DESC LIMIT 1`).toArray()[0];
     if (!r) return null;
-    return { modus: "ekte", ts: r.ts, lat: r.lat, lon: r.lon, acc: r.acc, spd: r.spd, alt: r.alt, hdg: r.hdg };
+    return { modus: "ekte", ts: r.ts, lat: r.lat, lon: r.lon, acc: r.acc, spd: r.spd, alt: r.alt, hdg: r.hdg, kjent: this.kjentSted(r.lat, r.lon) };
+  }
+
+  steder() {
+    try { return JSON.parse(this.sql.exec(`SELECT v FROM kv WHERE k='steder'`).toArray()[0]?.v || "[]"); } catch { return []; }
+  }
+
+  // The named place he is at, if any (only the name goes out, never the stored coordinates).
+  kjentSted(lat, lon) {
+    for (const x of this.steder()) if (Math.hypot((lat - x.lat) * 111.2e3, (lon - x.lon) * 111.2e3 * Math.cos(lat * Math.PI / 180)) <= x.r) return x.navn;
+    return null;
+  }
+
+  kast() {
+    const n = (k) => Number(this.sql.exec(`SELECT v FROM kv WHERE k=?`, `kast:${k}`).toArray()[0]?.v || 0);
+    return { le: n("le"), tomat: n("tomat") };
   }
 
   tele() {
@@ -1061,7 +1111,7 @@ export class ChatHub {
       ...this.sql.exec(`SELECT ts, v FROM bev WHERE ts > ? ORDER BY ts`, fra).toArray()].map((r) => [r.ts, r.v]);
     // Heart rate the last 5 minutes, every stored sample (one per ~4 s while the watch shares it).
     const puls = this.sql.exec(`SELECT ts, bpm FROM hr WHERE ts > ? ORDER BY ts`, Date.now() - 5 * 60e3).toArray().map((r) => [r.ts, r.bpm]);
-    return { now: Date.now(), live, trail, tele: this.tele(), bev, puls };
+    return { now: Date.now(), live, trail, tele: this.tele(), bev, puls, kast: this.kast(), gjor: this.setting("gjor") || "" };
   }
 
   // The name of the place he is at (neighbourhood, town, country), from OpenStreetMap's Nominatim. At most every

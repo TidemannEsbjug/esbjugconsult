@@ -17,6 +17,11 @@ s = re.sub(r'  <div class="scene">.*?\n  </div>\n', '''  <div class="paneler">
     <span class="mono s-t"><i class="s-dot"></i><span class="s-live">Live</span></span>
     <b class="s-navn">Henter posisjonen …</b>
     <span class="s-sub">&nbsp;</span>
+    <div class="kast"><button type="button" class="k-le" aria-label="Le av Tidemann">😂 <span>Le</span> <b>0</b></button><button type="button" class="k-tomat" aria-label="Kast en tomat på Tidemann">🍅 <span>Kast tomat</span> <b>0</b></button></div>
+  </section>
+  <section class="gjor gl" hidden aria-live="polite">
+    <span class="mono s-t">Holder på med</span>
+    <b class="g-navn">–</b>
   </section>
   </div>
   <div class="hoyre">
@@ -26,9 +31,6 @@ s = re.sub(r'  <div class="scene">.*?\n  </div>\n', '''  <div class="paneler">
     <div class="sv" data-k="wbat"><span class="sl">Klokka</span><b>–</b><i class="bar"><i></i></i></div>
     <div class="sv" data-k="skritt"><span class="sl">Skritt i dag</span><b>–</b></div>
     <div class="sv" data-k="gatt"><span class="sl">Gått i dag</span><b>–</b></div>
-    <div class="sv" data-k="etasjer"><span class="sl">Etasjer opp</span><b>–</b></div>
-    <div class="sv" data-k="moh"><span class="sl">Høyde</span><b>–</b></div>
-    <div class="sv" data-k="laast"><span class="sl">Skjermen</span><b>–</b></div>
     <div class="sv" data-k="lyd"><span class="sl">I ørene</span><b>–</b></div>
     <div class="sv" data-k="volum"><span class="sl">Volum</span><b>–</b><i class="bar"><i></i></i></div>
     <div class="sv" data-k="nett"><span class="sl">Nett</span><b>–</b></div>
@@ -70,6 +72,29 @@ CSS = r'''  /* /new2: kartet er heroen. Leaflet med OpenStreetMap, gjort mørkt 
   .gammel .s-dot{background:#8a8fa3;animation:none}
   .s-navn{font:italic 500 clamp(24px,2.6vw,36px)/1.05 var(--serif);letter-spacing:-.015em;color:var(--ink)}
   .s-sub{font-size:14px;font-weight:500;color:rgba(0,32,91,.75)}
+  /* Le og kast tomat: felles tellere for alle som ser på. Tomaten flyr i en bue og splatter på kortet. */
+  .sted{position:relative;overflow:visible}
+  .kast{display:flex;gap:8px;margin-top:8px}
+  .kast button{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(0,32,91,.18);background:rgba(255,255,255,.55);color:var(--ink);border-radius:999px;padding:7px 12px 7px 10px;font:600 13px/1 inherit;font-family:inherit;cursor:pointer;transition:transform .15s,background .2s}
+  .kast button:hover{background:#fff;transform:translateY(-1px)}
+  .kast button:active{transform:scale(.94)}
+  .kast b{font-variant-numeric:tabular-nums;opacity:.6;font-weight:700}
+  .kast button.puff{animation:puff .35s ease}
+  @keyframes puff{50%{transform:scale(1.12)}}
+  .flyr{position:fixed;z-index:3000;left:0;top:0;font-size:34px;line-height:1;pointer-events:none;will-change:transform}
+  .le-fx{position:fixed;z-index:3000;pointer-events:none;font-size:26px;line-height:1;animation:leOpp 1.6s cubic-bezier(.2,.7,.3,1) forwards}
+  @keyframes leOpp{0%{opacity:0;transform:translate(0,0) scale(.4)}15%{opacity:1;transform:translate(calc(var(--dx)*.2),-20px) scale(1.1)}100%{opacity:0;transform:translate(var(--dx),-150px) scale(.9) rotate(var(--rot))}}
+  .splat{position:absolute;z-index:5;pointer-events:none;width:150px;height:150px;margin:-75px 0 0 -75px;transform-origin:50% 50%;animation:splatInn .22s cubic-bezier(.2,1.6,.4,1) forwards, splatUt .9s ease 3.6s forwards}
+  @keyframes splatInn{from{transform:scale(.2) rotate(var(--rot))}to{transform:scale(1) rotate(var(--rot))}}
+  @keyframes splatUt{to{opacity:0}}
+  .splat .dr{animation:drypp 3.2s cubic-bezier(.5,0,.8,.6) .25s forwards}
+  @keyframes drypp{to{transform:translateY(46px) scaleY(1.6)}}
+  .sted.truffet{animation:truffet .4s cubic-bezier(.36,.07,.19,.97)}
+  @keyframes truffet{20%{transform:translate(-5px,3px) rotate(-1.2deg)}45%{transform:translate(5px,-2px) rotate(1deg)}70%{transform:translate(-2px,1px)}}
+  .gjor{display:flex;flex-direction:column;gap:6px;padding:14px 20px 15px}
+  .gjor[hidden]{display:none}
+  .g-navn{font:italic 500 clamp(24px,2.6vw,36px)/1.05 var(--serif);letter-spacing:-.015em;color:var(--ink)}
+  .s-navn.kjent{font-size:clamp(20px,2vw,28px);line-height:1.15}
   .sens{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 20px;padding:16px 20px 16px;width:min(470px,100%);margin-left:auto}
   .sv{min-width:0}
   .sl{display:block;font:600 9.5px/1.3 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(0,32,91,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -87,9 +112,9 @@ CSS = r'''  /* /new2: kartet er heroen. Leaflet med OpenStreetMap, gjort mørkt 
   .enhet{grid-column:1/-1;margin:2px 0 0;padding-top:10px;border-top:1px solid rgba(0,32,91,.12);font:600 9.5px/1.3 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(0,32,91,.55)}
   .enhet:empty{display:none}
   @media (min-width:1100px){.sens{grid-template-columns:repeat(4,minmax(0,1fr));width:min(620px,100%)}}
-  .venstre{display:flex;flex-direction:column;gap:14px;width:min(420px,100%)}
-  .hoyre{display:flex;flex-direction:column;gap:14px;margin-left:auto;width:min(470px,100%)}
-  @media (min-width:1100px){.hoyre{width:min(620px,100%)}}
+  .venstre{display:flex;flex-direction:column;gap:14px;width:min(360px,100%)}
+  .hoyre{display:flex;flex-direction:column;gap:14px;margin-left:auto;width:min(400px,100%)}
+  @media (min-width:1100px){.hoyre{width:min(440px,100%)}.hoyre .sens{grid-template-columns:repeat(3,minmax(0,1fr))}}
   .hoyre .sens{width:100%;margin-left:0}
   /* Akselerometrene: tre kurver (x, y, z) i g, rullende 10 s, som et oscilloskop. */
   .akse{display:flex;flex-direction:column;gap:10px;padding:14px 18px 14px}
@@ -103,7 +128,8 @@ CSS = r'''  /* /new2: kartet er heroen. Leaflet med OpenStreetMap, gjort mørkt 
   .sens .hp .st-v{font:640 clamp(26px,2.4vw,34px)/1 var(--serif);letter-spacing:-.02em;gap:10px;color:var(--ink)}
   .sens .hp .g{display:none}
   .sens .hp{flex-wrap:wrap}
-  .sens .hp .hp-o{flex:1;min-width:0}
+  .sens .hp .hp-o{flex:1 1 100%;min-width:0}
+  .sens .hp .st-l{flex-basis:100%}
   .sens .hp .st-v{width:100%}
   .hk{flex:1 1 220px;min-width:180px;height:40px;overflow:visible}
   .hk-l{fill:none;stroke:#e0233c;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
@@ -155,21 +181,20 @@ function tegn() {
   sett('wbat', w.bat != null ? w.bat + ' %' + (w.lader ? ' ⚡' : '') : null, w.bat, w.lader);
   sett('skritt', i.skritt != null ? tall(i.skritt) : null);
   sett('gatt', i.meter != null ? (i.meter / 1000).toFixed(1).replace('.', ',') + ' km' : trail.length ? (km(trail) / 1000).toFixed(1).replace('.', ',') + ' km' : null);
-  sett('etasjer', i.etasjer);
-  sett('moh', i.moh != null ? i.moh + ' moh' : live && live.alt != null ? Math.round(live.alt) + ' moh' : null);
   // Bare typen, ikke merkenavnet: earbuds, headset eller ingen.
   sett('lyd', i.lyd == null ? null : /^(høyttaler|telefonen)$/.test(i.lyd) ? 'Ingen' : /pods|buds|pop|ear|fit|dots/i.test(i.lyd) ? 'Earbuds' : 'Headset');
   sett('nett', i.nett === 'Wi-Fi' ? 'Wi-Fi' : i.nett === 'mobil' || i.nett === 'mobilnett' ? 'Mobildata' : i.nett === 'ingen' ? 'Uten nett' : i.nett);
   sett('volum', i.volum != null ? i.volum + ' %' : null, i.volum);
-  sett('laast', i.laast == null ? null : i.laast ? 'låst' : 'i bruk');
   for (const k of ['iphone', 'watch']) inn(k, tele[k]);
   if (!live) { $('.s-navn').textContent = 'Ingen posisjon ennå'; $('.s-live').textContent = 'Venter'; document.body.classList.add('gammel'); return; }
   const alder = nå - live.ts, gammel = alder > 10 * 60e3;
   document.body.classList.toggle('gammel', gammel);
   $('.s-live').textContent = gammel ? 'Sist sett ' + tid(alder) + ' siden' : 'Live · ' + tid(alder) + ' siden';
-  $('.s-navn').textContent = st && st.by ? [st.strok, st.by].filter(Boolean).join(', ') + (st.kode && st.kode !== 'NO' ? ', ' + st.land : '') : 'Et sted på jorda';
+  $('.s-navn').classList.toggle('kjent', !!live.kjent);
+  $('.s-navn').textContent = live.kjent ? 'Tidemann er ' + live.kjent : st && st.by ? [st.strok, st.by].filter(Boolean).join(', ') + (st.kode && st.kode !== 'NO' ? ', ' + st.land : '') : 'Et sted på jorda';
   const fart = live.spd != null && live.spd >= .8 && !gammel && i.aktivitet !== 'står stille' ? Math.round(live.spd * 3.6) + ' km/t' : null;   // GPS-støy gir litt fart også når han står stille
-  $('.s-sub').textContent = [i.aktivitet && i.aktivitet[0].toUpperCase() + i.aktivitet.slice(1), fart].filter(Boolean).join(' · ') || ' ';
+  $('.s-sub').textContent = fart || '';
+  $('.s-sub').hidden = !fart;
   const pos = [live.lat, live.lon];
   let spor = linjer(trail); if (spor.length) spor[spor.length - 1].push(pos); else spor = [[pos]];
   lag.forEach(l => l.setLatLngs(spor)); stier = spor;
@@ -250,8 +275,59 @@ function tegnPuls() {
   const s = pts[pts.length - 1]; p.setAttribute('cx', X(s[0]).toFixed(1)); p.setAttribute('cy', Y(s[1]).toFixed(1));
 }
 setInterval(tegnPuls, 1000);
+// Le og kast tomat. Egne trykk vises med en gang; andres ser du når tellerne øker (høyst 4 av gangen).
+let kast = null, egne = { le: 0, tomat: 0 };
+const knapp = k => document.querySelector(k === 'le' ? '.k-le' : '.k-tomat');
+function visKast(k) {
+  const b = knapp(k); b.classList.remove('puff'); void b.offsetWidth; b.classList.add('puff');
+  const r = b.getBoundingClientRect();
+  if (k === 'le') {
+    for (let n = 0; n < 7; n++) {
+      const e = document.createElement('span'); e.className = 'le-fx'; e.textContent = ['😂', '🤣', '😆'][n % 3];
+      e.style.left = r.left + r.width * .25 + Math.random() * 20 + 'px'; e.style.top = r.top - 6 + 'px';
+      e.style.setProperty('--dx', (Math.random() - .5) * 120 + 'px'); e.style.setProperty('--rot', (Math.random() - .5) * 60 + 'deg');
+      e.style.animationDelay = n * 70 + 'ms'; document.body.append(e); setTimeout(() => e.remove(), 2400);
+    }
+    return;
+  }
+  // Tomaten: fra knappen i en bue til et tilfeldig sted på kortet, så splash.
+  const kort = $('.sted'), kr = kort.getBoundingClientRect();
+  const mx = kr.width * (.2 + Math.random() * .6), my = kr.height * (.15 + Math.random() * .45);
+  const x0 = r.left + r.width / 2, y0 = r.top, x1 = kr.left + mx, y1 = kr.top + my;
+  const t = document.createElement('span'); t.className = 'flyr'; t.textContent = '🍅'; document.body.append(t);
+  const steg = [], N = 14;
+  for (let n = 0; n <= N; n++) { const f = n / N, x = x0 + (x1 - x0) * f - 17, y = y0 + (y1 - y0) * f - 160 * 4 * f * (1 - f) - 17; steg.push({ transform: `translate(${x}px,${y}px) rotate(${f * 540}deg) scale(${1 + .4 * Math.sin(f * Math.PI)})` }); }
+  t.animate(steg, { duration: still ? 1 : 520, easing: 'cubic-bezier(.3,.1,.6,1)' }).onfinish = () => {
+    t.remove();
+    kort.classList.remove('truffet'); void kort.offsetWidth; kort.classList.add('truffet');
+    const sp = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); sp.setAttribute('class', 'splat'); sp.setAttribute('viewBox', '-75 -75 150 150');
+    sp.style.left = mx + 'px'; sp.style.top = my + 'px'; sp.style.setProperty('--rot', Math.random() * 360 + 'deg');
+    // En klatt med ujevn kant, sprut rundt og noen dråper som renner nedover.
+    let d = ''; const K = 16; for (let n = 0; n <= K; n++) { const a = n / K * Math.PI * 2, rr = 26 + (n % 2 ? 10 : 0) + Math.random() * 12; d += (n ? 'L' : 'M') + (Math.cos(a) * rr).toFixed(1) + ' ' + (Math.sin(a) * rr).toFixed(1); }
+    let html = `<path d="${d}Z" fill="#d9261c"/><circle r="15" cx="-6" cy="-6" fill="#f0473a" opacity=".8"/><circle r="5" cx="-10" cy="-12" fill="#ffd2c8" opacity=".9"/>`;
+    for (let n = 0; n < 9; n++) { const a = Math.random() * Math.PI * 2, rr = 46 + Math.random() * 22; html += `<circle cx="${(Math.cos(a) * rr).toFixed(1)}" cy="${(Math.sin(a) * rr).toFixed(1)}" r="${(2 + Math.random() * 5).toFixed(1)}" fill="#d9261c"/>`; }
+    for (let n = 0; n < 3; n++) { const x = -16 + n * 15 + Math.random() * 6; html += `<g class="dr" style="animation-delay:${.2 + n * .3}s"><rect x="${x - 3}" y="22" width="6" height="${16 + Math.random() * 12}" rx="3" fill="#c81f17"/><circle cx="${x}" cy="${40 + Math.random() * 8}" r="4.5" fill="#c81f17"/></g>`; }
+    html += `<circle r="9" cx="22" cy="-26" fill="#3a7d2c"/><path d="M22 -34 l3 -8" stroke="#3a7d2c" stroke-width="3" stroke-linecap="round"/>`;
+    sp.innerHTML = html; kort.append(sp); setTimeout(() => sp.remove(), 4600);
+  };
+}
+async function klikk(k) {
+  egne[k]++; visKast(k);
+  const b = knapp(k).querySelector('b'); b.textContent = tall((kast ? kast[k] : 0) + egne[k]);
+  try { const r = await fetch('/chat/kast', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ k }) }); if (r.ok) { kast = await r.json(); egne[k] = 0; } } catch {}
+}
+document.querySelector('.k-le').addEventListener('click', () => klikk('le'));
+document.querySelector('.k-tomat').addEventListener('click', () => klikk('tomat'));
+function nyeKast(ny) {
+  if (kast) for (const k of ['le', 'tomat']) { const n = Math.min(4, ny[k] - kast[k]); for (let i = 0; i < n; i++) setTimeout(() => visKast(k), i * 450); }
+  kast = ny;
+  knapp('le').querySelector('b').textContent = tall(ny.le); knapp('tomat').querySelector('b').textContent = tall(ny.tomat);
+}
+// Hva han holder på med, satt i appen: Jobber, Trener, Sover. Kortet er skjult når ingenting er valgt.
+const GJOR = { jobber: 'Jobber', trener: 'Trener', sover: 'Sover' };
+function gjor(v) { const e = $('.gjor'); e.hidden = !GJOR[v]; if (GJOR[v]) $('.g-navn').textContent = GJOR[v]; }
 async function hent() {
-  try { const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json(); skew = j.now - Date.now(); live = j.live; trail = j.trail || []; tele = j.tele || {}; if (j.puls) puls = j.puls; tegnPuls(); } catch {}
+  try { const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json(); skew = j.now - Date.now(); live = j.live; trail = j.trail || []; tele = j.tele || {}; if (j.puls) puls = j.puls; tegnPuls(); if (j.kast) nyeKast(j.kast); gjor(j.gjor); } catch {}
   tegn();
 }
 hent(); setInterval(() => { if (!document.hidden) hent(); }, 2500);
