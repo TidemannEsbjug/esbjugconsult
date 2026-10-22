@@ -586,10 +586,25 @@ section {
 
 .formats ul {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 14px;
-  max-width: 980px;
+  max-width: 1120px;
   margin: 0 auto;
+}
+
+/* At ansikter pikseleres står rett under filtypene, der folk ser etter. */
+.formats .ansikter {
+  max-width: 62ch;
+  margin: 22px auto 0;
+  color: var(--ink-2);
+  font-family: inherit;
+  font-size: 15px;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.formats .ansikter b {
+  color: var(--ink);
 }
 
 .formats li {
@@ -1610,7 +1625,7 @@ footer {
   }
 
   .formats ul {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .spec-grid,
@@ -1689,6 +1704,10 @@ footer {
 
   .formats ul {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .formats li:last-child {
+    grid-column: 1 / -1;
   }
 
   .titlebar .os-tag,

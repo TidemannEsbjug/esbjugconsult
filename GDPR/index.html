@@ -92,6 +92,13 @@
           />
         </symbol>
 
+        <symbol id="i-bilde" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#7a4fd6" />
+          <circle cx="23" cy="20" r="3" fill="#fff" />
+          <path d="M7.5 36l7.5-10 5.5 6.5 3.5-4 6.5 7.5z" fill="#fff" />
+        </symbol>
+
         <symbol id="i-text" viewBox="0 0 44 44">
           <use href="#page" />
           <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#5b6569" />
@@ -156,12 +163,18 @@
             <div class="lokal rise" style="--d: 120ms">
               <p class="hva">
                 Klart finner navn, fødselsnummer, adresser og helseopplysninger
-                i alle filene i en mappe, og lager en kopi der de er byttet ut.
-                Klar til innsyn, deling, arkiv eller AI.
+                i alle filene i en mappe, pikselerer ansikter i bilder, og lager
+                en kopi der alt er byttet ut. Klar til innsyn, deling, arkiv
+                eller AI.
               </p>
               <p>
                 <b>Lokal AI</b> betyr at AI-en ligger inne i programmet, på din
                 egen Mac eller PC. Ikke i skyen, ikke hos ChatGPT.
+              </p>
+              <p>
+                <b>Den kjører på en vanlig maskin.</b> Modellen er liten med
+                vilje og går på prosessoren, ikke på grafikkort. En vanlig
+                jobb-PC eller Mac med 8 GB minne holder.
               </p>
               <p class="avskaaret">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -183,7 +196,7 @@
               </span>
             </div>
             <p class="fineprint rise" style="--d: 230ms">
-              Ingen konto · ingen skytjeneste · ingenting lastes ned ved oppstart
+              Ingen konto · ingen skytjeneste · trenger ikke grafikkort
             </p>
           </div>
         </div>
@@ -218,11 +231,21 @@
               <span class="fext">.eml</span>
             </li>
             <li>
+              <svg class="ficon"><use href="#i-bilde" /></svg>
+              <span class="fname">Bilder</span>
+              <span class="fext">.jpg · .png · .tiff</span>
+            </li>
+            <li>
               <svg class="ficon"><use href="#i-text" /></svg>
               <span class="fname">Tekst</span>
               <span class="fext">.txt · .md</span>
             </li>
           </ul>
+          <p class="ansikter">
+            <b>Ansikter blir pikselert.</b> I bilder, og i bilder som ligger
+            inne i Word-, Excel- og PowerPoint-filer. Tekst i bildene, som et
+            navn på et skilt eller et skannet skjema, sladdes også.
+          </p>
         </div>
 
         <!-- Programvindu -->
@@ -378,7 +401,7 @@
           <span>nettverkskall</span>
         </div>
         <div>
-          <b>9</b>
+          <b>12</b>
           <span>filtyper leses</span>
         </div>
         <div>
@@ -759,7 +782,8 @@
               <dt>Motor</dt>
               <dd>
                 Regelmotor med norske sjekksummer, og en innebygd lokal
-                språkmodell som andre pass.
+                språkmodell som andre pass. Modellen er på 1,3 GB og kjører på
+                prosessoren. <em>Ingen grafikkort trengs.</em>
               </dd>
 
               <dt>Leser</dt>
@@ -767,14 +791,22 @@
                 <div class="exts">
                   <span>.docx</span><span>.xlsx</span><span>.xls</span
                   ><span>.csv</span><span>.pptx</span><span>.pdf</span
-                  ><span>.eml</span><span>.txt</span><span>.md</span>
+                  ><span>.eml</span><span>.txt</span><span>.md</span
+                  ><span>.jpg</span><span>.png</span><span>.tiff</span>
                 </div>
               </dd>
 
               <dt>Skriver</dt>
               <dd>
-                Samme format tilbake for Word, Excel og PowerPoint. PDF skrives
-                som ren tekst.
+                Samme format tilbake for Word, Excel og PowerPoint. PDF-er ser
+                ut som originalen, med sladden brent inn. Bilder skrives tilbake
+                med ansikter pikselert og tekst sladdet.
+              </dd>
+
+              <dt>Maskin</dt>
+              <dd>
+                Vanlig Mac eller PC med 8 GB minne. Prosessoren gjør jobben;
+                grafikkort brukes ikke.
               </dd>
 
               <dt>Utdata</dt>
