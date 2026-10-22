@@ -26,10 +26,15 @@ s = re.sub(r'  <div class="scene">.*?\n  </div>\n', '''  <div class="paneler">
     <div class="sv" data-k="trykk"><span class="sl">Lufttrykk</span><b>–</b></div>
     <div class="sv" data-k="moh"><span class="sl">Høyde</span><b>–</b></div>
     <div class="sv" data-k="haand"><span class="sl">Hånda</span><b>–</b></div>
+    <div class="sv" data-k="stilling"><span class="sl">Telefonen</span><b>–</b><i class="fon" aria-hidden="true"></i></div>
+    <div class="sv" data-k="bevegelse"><span class="sl">Bevegelse</span><b>–</b><i class="bar"><i></i></i></div>
+    <div class="sv" data-k="kurs"><span class="sl">Retning</span><b>–</b><i class="pil" aria-hidden="true">➤</i></div>
+    <div class="sv" data-k="laast"><span class="sl">Skjermen</span><b>–</b></div>
     <div class="sv" data-k="lyd"><span class="sl">Lyden går til</span><b>–</b></div>
+    <div class="sv" data-k="volum"><span class="sl">Volum</span><b>–</b><i class="bar"><i></i></i></div>
     <div class="sv" data-k="nett"><span class="sl">Nett</span><b>–</b></div>
     <div class="sv" data-k="varme"><span class="sl">Telefonen er</span><b>–</b></div>
-    <div class="sv" data-k="volum"><span class="sl">Volum</span><b>–</b></div>
+    <p class="enhet"></p>
   </section>
   </div>
 ''', s, 1, flags=re.S)
@@ -71,6 +76,15 @@ CSS = r'''  /* /new2: kartet er heroen. Leaflet med OpenStreetMap, gjort mørkt 
   .sv .bar i{display:block;height:100%;width:0;border-radius:2px;background:#16a34a;transition:width .8s ease}
   .sv.lav .bar i{background:#e0233c}.sv.lader .bar i{background:linear-gradient(90deg,#16a34a,#FFD23F)}
   .sv.ny b{animation:svNy 1.2s ease}
+  .sv{position:relative}
+  .sv .fon,.sv .pil{position:absolute;right:0;top:0;transition:transform .9s cubic-bezier(.2,.8,.2,1)}
+  .sv .fon{width:12px;height:20px;border:2px solid var(--ink);border-radius:3px;opacity:.75;transform-origin:50% 50%}
+  .sv .fon::after{content:"";position:absolute;left:50%;bottom:1px;width:3px;height:1.5px;margin-left:-1.5px;background:var(--ink)}
+  .sv .pil{font-size:15px;line-height:1;color:#e0233c;transform-origin:50% 50%}
+  .sv:has(.fon) b,.sv:has(.pil) b{padding-right:20px}
+  .enhet{grid-column:1/-1;margin:2px 0 0;padding-top:10px;border-top:1px solid rgba(0,32,91,.12);font:600 9.5px/1.3 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(0,32,91,.55)}
+  .enhet:empty{display:none}
+  @media (min-width:1100px){.sens{grid-template-columns:repeat(4,minmax(0,1fr));width:min(620px,100%)}}
   @keyframes svNy{0%{color:#e0233c}100%{color:var(--ink)}}
   @media (max-width:760px){.paneler{flex-direction:column;align-items:stretch;justify-content:flex-end}.sens{margin-left:0;width:100%;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 14px;padding:14px 16px}.sted{max-width:none}}
   @media (prefers-reduced-motion:reduce){.spor-strom,.meg::before,.meg::after,.s-dot{animation:none}}
@@ -120,9 +134,18 @@ function tegn() {
   sett('moh', i.moh != null ? i.moh + ' moh' : live && live.alt != null ? Math.round(live.alt) + ' moh' : null);
   sett('haand', w.haand != null ? (w.haand < .02 ? 'i ro' : w.haand < .08 ? 'litt i bevegelse' : 'i full fart') : null);
   sett('lyd', i.lyd);
-  sett('nett', i.nett);
+  sett('nett', i.nett === 'Wi-Fi' ? (i.wifi || 'Wi-Fi') : i.nett === 'mobil' ? 'Mobil' + (i.radio ? ' · ' + i.radio : '') : i.nett);
   sett('varme', i.varme);
-  sett('volum', i.volum != null ? i.volum + ' %' : null);
+  sett('volum', i.volum != null ? i.volum + ' %' : null, i.volum);
+  const ferskt = i.ts && nå - i.ts < 2 * 60e3;
+  sett('stilling', i.stilling && ({ 'på bordet, skjermen opp': 'på bordet', 'på bordet, skjermen ned': 'skjermen ned', 'står på høykant': 'på høykant', 'i lomma, på farta': 'i lomma', 'i hånda, på farta': 'i hånda' }[i.stilling] || i.stilling));
+  sett('bevegelse', i.bevegelse == null ? null : i.bevegelse < .01 ? 'helt i ro' : i.bevegelse < .05 ? 'rolig' : i.bevegelse < .15 ? 'beveger seg' : 'mye', i.bevegelse == null ? null : Math.min(100, i.bevegelse * 400));
+  const RET = ['nord', 'nordøst', 'øst', 'sørøst', 'sør', 'sørvest', 'vest', 'nordvest'];
+  sett('kurs', i.kurs != null ? 'mot ' + RET[Math.round(i.kurs / 45) % 8] : null);
+  sett('laast', i.laast == null ? null : i.laast ? 'låst' : 'i bruk');
+  const fon = document.querySelector('.sv .fon'); if (fon && i.pitch != null) fon.style.transform = 'perspective(60px) rotateX(' + (-i.pitch) + 'deg) rotateY(' + i.roll + 'deg)';
+  const pil = document.querySelector('.sv .pil'); if (pil && i.kurs != null) pil.style.transform = 'rotate(' + (i.kurs - 90) + 'deg)';
+  $('.enhet').textContent = i.enhet ? i.enhet + (ferskt ? '' : ' · sist hørt fra ' + tid(nå - i.ts) + ' siden') : '';
   if (!live) { $('.s-navn').textContent = 'Ingen posisjon ennå'; $('.s-live').textContent = 'Venter'; document.body.classList.add('gammel'); return; }
   const alder = nå - live.ts, gammel = alder > 10 * 60e3;
   document.body.classList.toggle('gammel', gammel);
