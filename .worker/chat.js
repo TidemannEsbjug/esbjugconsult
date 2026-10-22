@@ -24,7 +24,8 @@
 //   GET  /chat/ice                                STUN + short-lived Cloudflare TURN credentials for calls
 //   GET  /chat/status                             the owner's status (available/meeting/sleeping) + whether the app is open
 //   POST /chat/admin/pos          {pts:[{ts,lat,lon,acc,spd,alt,hdg}]}  the owner's iPhone reports where he is (live, in the background)
-//   GET  /chat/spor                               the public map: live position and today's trail in Oslo, the White House outside Oslo
+//   POST /chat/admin/tele         {kilde, d}          latest readings from the owner's iPhone/watch (battery, steps, pressure …)
+//   GET  /chat/spor                               the public map: live position, today's trail, place name and the readings
 //   GET  /chat/hr                                 today's heart rate from the owner's Apple Watch (Oslo day, per minute) + live bpm
 //   POST /chat/besok                              the page was shown from a prefetch/prerender: same visit push as a page load
 //   POST /chat/rec                                last batch of a visit recording (sendBeacon when the page closes)
@@ -276,21 +277,6 @@ async function serveFile(request, env, key) {
   }
   headers.set("content-length", String(obj.size));
   return new Response(obj.body, { headers });
-}
-
-// Oslo on land: an outline along the waterfront from Lysaker over Bygdøy, Aker Brygge, Bjørvika and down to Ljan, and
-// round the hills to the north and east. The fjord is outside it, so the boat from Aker Brygge leaves Oslo.
-const OSLO = [[59.913,10.635],[59.940,10.640],[59.965,10.655],[59.990,10.700],[60.005,10.800],[59.990,10.880],[59.965,10.950],[59.930,10.975],
-  [59.890,10.960],[59.850,10.905],[59.825,10.840],[59.830,10.795],[59.850,10.790],[59.870,10.780],[59.890,10.768],[59.900,10.758],
-  [59.9045,10.7525],[59.9065,10.744],[59.9085,10.736],[59.9100,10.7315],[59.9092,10.7262],[59.9060,10.7215],[59.9070,10.7160],
-  [59.9110,10.7090],[59.9070,10.6990],[59.8990,10.6920],[59.8930,10.6780],[59.9000,10.6630],[59.9100,10.6450]];
-export function iOslo(lat, lon) {
-  let inn = false;
-  for (let i = 0, j = OSLO.length - 1; i < OSLO.length; j = i++) {
-    const [ai, oi] = OSLO[i], [aj, oj] = OSLO[j];
-    if ((oi > lon) !== (oj > lon) && lat < ((aj - ai) * (lon - oi)) / (oj - oi) + ai) inn = !inn;
-  }
-  return inn;
 }
 
 // Oslo wall-clock time for a timestamp.
@@ -649,8 +635,21 @@ export class ChatHub {
         n++;
       }
       if (now - (this.posPruned || 0) > 3600e3) { this.posPruned = now; this.sql.exec(`DELETE FROM pos WHERE ts < ?`, now - 35 * 864e5); }
-      if (n) { const l = this.sporLive(); if (l) this.toVisitors({ t: "pos", ...l }); }
+      if (n) { const l = this.sporLive(); if (l) { this.toVisitors({ t: "pos", ...l }); this.ctx.waitUntil(this.stedNavn(l.lat, l.lon)); } }
       return Response.json({ ok: true, n });
+    }
+    // Readings from the owner's devices: {kilde: "iphone" | "watch", d: {bat, lader, skritt, trykk, …}}. Only the latest
+    // per device is kept; every open page gets it at once.
+    if (url.pathname === "/chat/admin/tele" && request.method === "POST") {
+      const { kilde, d } = await request.json().catch(() => ({}));
+      if (!/^[a-z]{2,12}$/.test(kilde || "") || !d || typeof d !== "object" || JSON.stringify(d).length > 3000) return new Response("Bad request", { status: 400 });
+      const ren = {};
+      for (const [k, v] of Object.entries(d)) if (/^[a-zA-Z]{1,20}$/.test(k) && (typeof v === "number" || typeof v === "boolean" || (typeof v === "string" && v.length <= 80) || v === null)) ren[k] = v;
+      const gml = this.sql.exec(`SELECT v FROM kv WHERE k=?`, `tele:${kilde}`).toArray()[0];
+      const ny = { ...(gml ? JSON.parse(gml.v) : {}), ...ren, ts: Date.now() };
+      this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, `tele:${kilde}`, JSON.stringify(ny));
+      this.toVisitors({ t: "tele", kilde, d: ny });
+      return Response.json({ ok: true });
     }
     // Remove stored samples in a period (a faulty measurement). Returns the removed rows so they can be put back.
     if (url.pathname === "/chat/admin/hr-slett" && request.method === "POST") {
@@ -1018,36 +1017,56 @@ export class ChatHub {
   }
 
   // ---------- the map ----------
-  // In Oslo the public sees the real position and today's trail. Outside Oslo (the boat from Aker Brygge leaves the
-  // outline) he is at the White House, where the page lets him wander around. The trail only ever holds Oslo points.
+  // The owner's real position, everywhere (he has nothing to hide), today's trail, the place name, and the latest
+  // readings from his phone and watch (battery, steps, air pressure …).
   sporLive() {
-    const r = this.sql.exec(`SELECT ts, lat, lon, acc, spd, hdg FROM pos ORDER BY ts DESC LIMIT 1`).toArray()[0];
+    const r = this.sql.exec(`SELECT ts, lat, lon, acc, spd, alt, hdg FROM pos ORDER BY ts DESC LIMIT 1`).toArray()[0];
     if (!r) return null;
-    if (!iOslo(r.lat, r.lon)) {
-      // Outside since the last Oslo point: that is when he «arrived» at the White House.
-      const sist = this.sql.exec(`SELECT ts, lat, lon FROM pos WHERE ts <= ? ORDER BY ts DESC LIMIT 2000`, r.ts).toArray();
-      let fra = r.ts;
-      for (const x of sist) { if (iOslo(x.lat, x.lon)) break; fra = x.ts; }
-      return { modus: "dc", ts: r.ts, fra };
+    return { modus: "ekte", ts: r.ts, lat: r.lat, lon: r.lon, acc: r.acc, spd: r.spd, alt: r.alt, hdg: r.hdg };
+  }
+
+  tele() {
+    const out = {};
+    for (const r of this.sql.exec(`SELECT k, v FROM kv WHERE k LIKE 'tele:%' OR k='sted'`).toArray()) {
+      try { out[r.k === "sted" ? "sted" : r.k.slice(5)] = JSON.parse(r.v); } catch {}
     }
-    return { modus: "oslo", ts: r.ts, lat: r.lat, lon: r.lon, acc: r.acc, spd: r.spd, hdg: r.hdg };
+    return out;
   }
 
   spor() {
     const live = this.sporLive();
     const start = osloMidnight(Date.now());
     const rows = this.sql.exec(`SELECT ts, lat, lon FROM pos WHERE ts >= ? ORDER BY ts`, start).toArray();
-    // Only Oslo points, at least ~12 m apart, so the trail stays light.
+    // At least ~12 m between points so the trail stays light; a gap (more than 1 km or 15 min, e.g. a flight) breaks the line.
     const trail = [];
-    let pl = 0, po = 0;
+    let pl = 0, po = 0, pt = 0;
     for (const r of rows) {
-      if (!iOslo(r.lat, r.lon)) { if (trail.length && trail[trail.length - 1] !== null) trail.push(null); continue; }
-      const dy = (r.lat - pl) * 111e3, dx = (r.lon - po) * 55.6e3;
-      if (trail.length && trail[trail.length - 1] !== null && dx * dx + dy * dy < 144) continue;
+      const k = Math.cos(r.lat * Math.PI / 180), dy = (r.lat - pl) * 111.2e3, dx = (r.lon - po) * 111.2e3 * k, d2 = dx * dx + dy * dy;
+      if (trail.length && d2 < 144) continue;
+      if (trail.length && (d2 > 1e6 || r.ts - pt > 15 * 60e3)) trail.push(null);
       trail.push([+r.lat.toFixed(5), +r.lon.toFixed(5), r.ts]);
-      pl = r.lat; po = r.lon;
+      pl = r.lat; po = r.lon; pt = r.ts;
     }
-    return { now: Date.now(), live, trail };
+    return { now: Date.now(), live, trail, tele: this.tele() };
+  }
+
+  // The name of the place he is at (neighbourhood, town, country), from OpenStreetMap's Nominatim. At most every
+  // 2 minutes and only after moving 150 m, so the free service is barely touched.
+  async stedNavn(lat, lon) {
+    const sist = this.sql.exec(`SELECT v FROM kv WHERE k='sted'`).toArray()[0];
+    const s = sist ? JSON.parse(sist.v) : null;
+    if (s && Date.now() - s.ts < 120e3) return;
+    if (s && Math.hypot((lat - s.lat) * 111.2e3, (lon - s.lon) * 111.2e3 * Math.cos(lat * Math.PI / 180)) < 150) return;
+    try {
+      const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=16&accept-language=nb&lat=${lat}&lon=${lon}`,
+        { headers: { "User-Agent": "esbjugconsult.com live map (tidemann@esbjugconsult.com)" } });
+      if (!r.ok) return;
+      const a = (await r.json()).address || {};
+      const navn = { strok: a.neighbourhood || a.quarter || a.suburb || a.hamlet || a.village || "", by: a.city || a.town || a.village || a.municipality || "",
+        land: a.country || "", kode: (a.country_code || "").toUpperCase(), lat, lon, ts: Date.now() };
+      this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('sted', ?)`, JSON.stringify(navn));
+      this.toVisitors({ t: "tele", kilde: "sted", d: navn });
+    } catch {}
   }
 
   liveHr() {
