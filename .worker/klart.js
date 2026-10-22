@@ -44,7 +44,9 @@ export async function handleKlart(request, env, url) {
     return json({ feil: "Finnes ikke." }, 404);
   } catch (err) {
     console.error("klart", sti, err && err.stack ? err.stack : err);
-    return json({ feil: "Noe gikk galt hos oss. Prøv igjen om litt." }, 500);
+    // I testmodus står den egentlige feilen med, så den kan rettes. Aldri i live.
+    const detalj = testmodus(env) ? ` (${err && err.message ? err.message : err})` : "";
+    return json({ feil: "Noe gikk galt hos oss. Prøv igjen om litt." + detalj }, 500);
   }
 }
 
