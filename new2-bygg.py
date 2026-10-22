@@ -29,10 +29,9 @@ s = re.sub(r'  <div class="scene">.*?\n  </div>\n', '''  <div class="paneler">
     <!--PULS-->
     <div class="sv" data-k="ibat"><span class="sl">iPhone</span><b>–</b><i class="bar"><i></i></i></div>
     <div class="sv" data-k="wbat"><span class="sl">Klokka</span><b>–</b><i class="bar"><i></i></i></div>
-    <div class="sv" data-k="skritt"><span class="sl">Skritt i dag</span><b>–</b></div>
+    <div class="sv" data-k="volum"><span class="sl">Volum</span><b>–</b><i class="bar"><i></i></i></div>
     <div class="sv" data-k="gatt"><span class="sl">Gått i dag</span><b>–</b></div>
     <div class="sv" data-k="lyd"><span class="sl">I ørene</span><b>–</b></div>
-    <div class="sv" data-k="volum"><span class="sl">Volum</span><b>–</b><i class="bar"><i></i></i></div>
     <div class="sv" data-k="nett"><span class="sl">Nett</span><b>–</b></div>
   </section>
   <section class="akse gl" aria-label="Akselerometeret i klokka og telefonen, live">
@@ -186,7 +185,6 @@ function tegn() {
   const i = tele.iphone || {}, w = tele.watch || {}, st = tele.sted;
   sett('ibat', i.bat != null ? i.bat + ' %' + (i.lader ? ' ⚡' : '') : null, i.bat, i.lader);
   sett('wbat', w.bat != null ? w.bat + ' %' + (w.lader ? ' ⚡' : '') : null, w.bat, w.lader);
-  sett('skritt', i.skritt != null ? tall(i.skritt) : null);
   sett('gatt', i.meter != null ? (i.meter / 1000).toFixed(1).replace('.', ',') + ' km' : trail.length ? (km(trail) / 1000).toFixed(1).replace('.', ',') + ' km' : null);
   // Bare typen, ikke merkenavnet: earbuds, headset eller ingen.
   sett('lyd', i.lyd == null ? null : /^(høyttaler|telefonen)$/.test(i.lyd) ? 'Ingen' : /pods|buds|pop|ear|fit|dots/i.test(i.lyd) ? 'Earbuds' : 'Headset');
