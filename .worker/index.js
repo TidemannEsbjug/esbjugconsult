@@ -27,6 +27,13 @@ export default {
       url.pathname = "/GDPR" + (gdpr[1] || "/");
       return Response.redirect(url.toString(), 301);
     }
+    // /klart er produktnavnet, og appen selv åpner /klart/aktiver?hva=…&maskin=… i nettleseren.
+    // Alt under /klart sendes til samme sted under /GDPR/, med spørrestrengen.
+    const klart = url.pathname.match(/^\/klart(\/.*)?$/i);
+    if (klart) {
+      url.pathname = "/GDPR" + (klart[1] || "/");
+      return Response.redirect(url.toString(), 302);
+    }
     // Visit push for page loads; never allowed to break serving the page.
     try { const visit = pageVisit(request, env, url); if (visit) ctx.waitUntil(visit); } catch {}
     return env.ASSETS.fetch(request);

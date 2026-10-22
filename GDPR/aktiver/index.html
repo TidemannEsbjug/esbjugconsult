@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="nb">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Aktiver Klart</title>
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="../fonts.css" />
+    <style>
+      /* Midlertidig: hit sender Klart folk fra «Prøv gratis» og «Jeg har en lisens».
+         Prøveperiode, kjøp og koder kommer her. Inntil da står det hva man kan gjøre. */
+      :root {
+        --ink: #15202e;
+        --ink-2: #4d5b6c;
+        --ink-3: #8492a4;
+        --signal: #2456e6;
+        --sans: "Archivo", "Helvetica Neue", Arial, sans-serif;
+        --mono: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+      }
+      body {
+        min-height: 100svh;
+        display: grid;
+        place-items: center;
+        padding: 24px 16px;
+        font-family: var(--sans);
+        color: var(--ink);
+        background: #dfe8f2 url("../assets/hero-ski-slutt.jpg") center 40% / cover no-repeat;
+        -webkit-font-smoothing: antialiased;
+        user-select: none;
+      }
+      main {
+        width: min(520px, 100%);
+        padding: 34px 32px 30px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.86);
+        -webkit-backdrop-filter: saturate(1.3) blur(22px);
+        backdrop-filter: saturate(1.3) blur(22px);
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        box-shadow: 0 2px 4px rgba(20, 30, 40, 0.05), 0 22px 54px rgba(20, 40, 70, 0.18);
+      }
+      .merke {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+      h1 {
+        margin: 6px 0 14px;
+        font-size: 30px;
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+      }
+      p {
+        margin: 0 0 12px;
+        font-size: 15.5px;
+        line-height: 1.6;
+        color: var(--ink-2);
+      }
+      .maskin {
+        margin: 18px 0 4px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        background: rgba(36, 86, 230, 0.08);
+        font-family: var(--mono);
+        font-size: 13px;
+        color: var(--ink);
+        user-select: all;
+      }
+      .maskin[hidden] {
+        display: none;
+      }
+      a {
+        color: var(--signal);
+        font-weight: 600;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="merke">Klart · aktivering</p>
+      <h1 id="tittel">Aktiveringen åpner snart</h1>
+      <p>
+        Prøveperiode og kjøp kommer på denne siden. Har du fått en aktiveringskode fra oss,
+        limer du den inn i feltet nederst på aktiveringsskjermen i Klart.
+      </p>
+      <p>
+        Vil du prøve Klart nå, send maskinkoden din til
+        <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a>, så får du en kode.
+      </p>
+      <p class="maskin" id="maskin" hidden></p>
+      <p><a href="../">Les mer om Klart</a></p>
+    </main>
+    <script>
+      // Appen legger maskinkoden i adressen (?maskin=…). Vis den, så den er lett å sende.
+      var q = new URLSearchParams(location.search);
+      var m = (q.get("maskin") || "").toUpperCase();
+      if (/^[0-9A-Z]{4}(-[0-9A-Z]{4}){3}$/.test(m)) {
+        var el = document.getElementById("maskin");
+        el.textContent = "Maskinkode: " + m;
+        el.hidden = false;
+      }
+      if (q.get("hva") === "prove") {
+        document.getElementById("tittel").textContent = "Prøveperioden åpner snart";
+      }
+    </script>
+  </body>
+</html>

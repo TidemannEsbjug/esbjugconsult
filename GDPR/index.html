@@ -122,29 +122,51 @@
     <main id="top">
       <!-- ================= Hero ================= -->
       <section class="hero" id="programmet">
-        <p class="tag rise">
-          Laget i Norge <em>·</em> Mac og Windows <em>·</em> kjører uten nett
-        </p>
-        <h1 class="rise" style="--d: 60ms">
-          GDPR-trygg AI-bruk,
-          <span>bygget for norske regler.</span>
-        </h1>
-        <p class="lead rise" style="--d: 120ms">
-          Klart åpner hele mappen og finner fødselsnummer, D-nummer, org.nr og
-          andre norske personopplysninger i hver enkelt fil — så skriver det en
-          renset kopi ved siden av originalene. Ingen filer forlater maskinen.
-        </p>
-        <div class="get rise" style="--d: 180ms">
-          <a class="btn" href="#last-ned">
-            Last ned <span class="os">MAC</span>
-          </a>
-          <a class="btn ghost" href="#last-ned">
-            Last ned <span class="os">WINDOWS</span>
-          </a>
+        <!-- Scenen: filmen fra appens intro. Skisporet leder opp mot hytta,
+             teksten står i himmelen og knappene nede i snøen. -->
+        <div class="scene">
+          <video
+            class="scene-film"
+            autoplay
+            muted
+            playsinline
+            preload="auto"
+            poster="assets/hero-ski-start.jpg"
+            aria-hidden="true"
+          >
+            <source src="assets/hero-ski.mp4" type="video/mp4" />
+          </video>
+          <div class="scene-slor" aria-hidden="true"></div>
+
+          <div class="scene-himmel">
+            <p class="tag rise">
+              Laget i Norge <em>·</em> Mac og Windows <em>·</em> kjører uten nett
+            </p>
+            <h1 class="rise" style="--d: 60ms">
+              GDPR-trygg AI-bruk,
+              <span>bygget for norske regler.</span>
+            </h1>
+          </div>
+
+          <div class="scene-sno">
+            <p class="lead rise" style="--d: 120ms">
+              Klart åpner hele mappen og finner fødselsnummer, D-nummer, org.nr og
+              andre norske personopplysninger i hver enkelt fil — så skriver det en
+              renset kopi ved siden av originalene. Ingen filer forlater maskinen.
+            </p>
+            <div class="get rise" style="--d: 180ms">
+              <a class="btn" href="#last-ned">
+                Last ned <span class="os">MAC</span>
+              </a>
+              <a class="btn ghost" href="#last-ned">
+                Last ned <span class="os">WINDOWS</span>
+              </a>
+            </div>
+            <p class="fineprint rise" style="--d: 230ms">
+              Ingen konto · ingen skytjeneste · ingenting lastes ned ved oppstart
+            </p>
+          </div>
         </div>
-        <p class="fineprint rise" style="--d: 230ms">
-          Ingen konto · ingen skytjeneste · ingenting lastes ned ved oppstart
-        </p>
 
         <!-- Filtypene tidlig. Dette er det folk lurer på først. -->
         <div class="formats rise" style="--d: 290ms">
@@ -750,6 +772,18 @@
       </div>
     </footer>
 
+    <script>
+      // Filmen i toppen spilles én gang og blir stående på siste bilde.
+      // Med redusert bevegelse vises bare stillbildet.
+      (function () {
+        var film = document.querySelector(".scene-film");
+        if (!film) return;
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          film.removeAttribute("autoplay");
+          film.pause();
+        }
+      })();
+    </script>
     <script>
       (function () {
         var reveal = document.querySelectorAll(".rise");
