@@ -107,6 +107,7 @@ CSS = r'''  /* /new2: kartet er heroen. Leaflet med OpenStreetMap, gjort mørkt 
   /* Notatet: et lite brev på papir, skrevet fra telefonen, med når det ble skrevet. */
   .paneler .brev{padding:16px 20px 14px;background:linear-gradient(#fffdf6,#fbf5e6);border:1px solid rgba(176,141,87,.35);box-shadow:0 14px 34px rgba(0,20,60,.25)}
   .brev::before{opacity:.12}
+  .brev .b-tid{font:300 11px/1.3 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;letter-spacing:.04em;text-transform:none;color:rgba(0,32,91,.45)}
   .b-tekst{margin:8px 0 0;font:italic 300 clamp(17px,1.5vw,20px)/1.4 var(--serif);color:rgba(0,32,91,.82);white-space:pre-wrap;overflow-wrap:anywhere}
   .g-navn{font:italic 500 clamp(24px,2.6vw,36px)/1.05 var(--serif);letter-spacing:-.015em;color:var(--ink)}
   .s-navn.kjent{font-size:clamp(20px,2vw,28px);line-height:1.15}
