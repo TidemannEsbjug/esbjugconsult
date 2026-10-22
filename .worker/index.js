@@ -23,6 +23,11 @@ export default {
     // /login/ er kundeportalen, /kunde/ er lukket bak innlogging.
     if (url.pathname.startsWith("/login/") || url.pathname.startsWith("/kunde/")) return handleKunde(request, env, url);
     // /ny/ var arbeidskopien av V2. V2 er forsiden fra 7.10.2026, så gamle lenker sendes dit (spørrestrengen følger med).
+    // /new2/ var arbeidskopien med kartet som hero; den er forsiden fra 22.10.2026.
+    if (url.pathname === "/new2" || url.pathname.startsWith("/new2/")) {
+      url.pathname = "/";
+      return Response.redirect(url.toString(), 301);
+    }
     if (url.pathname === "/ny" || url.pathname.startsWith("/ny/")) {
       url.pathname = url.pathname.startsWith("/ny/en") ? "/en/" : "/";
       return Response.redirect(url.toString(), 301);

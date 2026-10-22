@@ -876,11 +876,13 @@ export class ChatHub {
         const v = m.v.trim().slice(0, 600);
         this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('notat', ?)`, JSON.stringify({ v, ts: Date.now() }));
         this.toOwners({ t: "notat", v });
-      } else if (m.t === "setgjor" && ["", "jobber", "trener", "sover"].includes(m.v)) {
-        // What he is doing, shown on the map page: Jobber, Trener, Sover (or nothing).
+      } else if (m.t === "setgjor" && ["", "jobber", "trener"].includes(m.v)) {
+        // What he is doing, shown on the map page: Jobber, Trener (or nothing). Sleeping is the status, not this.
         this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('gjor', ?)`, m.v);
         this.toOwners({ t: "gjor", v: m.v });
       } else if (m.t === "setstatus" && ["available", "meeting", "sleeping"].includes(m.v)) {
+        // Asleep: «Holder på med» goes away (the night layer already says he sleeps).
+        if (m.v === "sleeping") { this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('gjor', '')`); this.toOwners({ t: "gjor", v: "" }); }
         this.sql.exec(`DELETE FROM kv WHERE k='autoSlept'`);
         this.setStatus(m.v);
       } else if (m.t === "setnotify" && typeof m.v === "boolean") {
