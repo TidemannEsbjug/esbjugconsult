@@ -131,14 +131,14 @@
             muted
             playsinline
             preload="auto"
-            poster="assets/hero-ski-start.jpg"
+            poster="assets/hero-film-start.jpg"
             aria-hidden="true"
           >
-            <source src="assets/hero-ski.mp4" type="video/mp4" />
+            <source src="assets/hero-film-16s.mp4" type="video/mp4" />
           </video>
           <div class="scene-slor" aria-hidden="true"></div>
 
-          <img class="scene-bilde" src="assets/hero-ski-bilde.jpg" alt="" aria-hidden="true" />
+          <img class="scene-bilde" src="assets/hero-film-slutt-skarp.jpg" alt="" aria-hidden="true" />
 
           <!-- All teksten samlet, nede i snøen. Himmelen, hytta og sporet står fritt over. -->
           <div class="scene-tekst">
@@ -160,9 +160,6 @@
                 Windows <span class="os">KOMMER SNART</span>
               </span>
             </div>
-            <p class="versjon rise" style="--d: 210ms">
-              Versjon 0.1.0 · macOS 13 Ventura eller nyere · Apple Silicon og Intel
-            </p>
             <p class="fineprint rise" style="--d: 230ms">
               Ingen konto · ingen skytjeneste · ingenting lastes ned ved oppstart
             </p>
@@ -751,8 +748,7 @@
           >
         </div>
         <p class="fineprint rise">
-          Klart 0.1.0 for Mac · macOS 13 Ventura eller nyere · Apple Silicon og
-          Intel · 1,2 GB · signert og godkjent av Apple
+          Mac: signert og godkjent av Apple · Windows kommer snart
         </p>
         <p class="fineprint rise">
           Ingen konto · ingen registrering · ingen data sendes ved installasjon
@@ -778,8 +774,9 @@
     </footer>
 
     <script>
-      // Filmen i toppen spilles én gang, og så toner det skarpe stillbildet inn
-      // (filmen er 1168 px bred, bildet 2400). Med redusert bevegelse vises bildet med en gang.
+      // Filmen i toppen spilles én gang, og så toner det skarpe stillbildet inn: siste
+      // bilde i filmen, hentet fra originalen og forstørret til 2336 px. Med redusert
+      // bevegelse vises bildet med en gang.
       (function () {
         var scene = document.querySelector(".scene");
         var film = document.querySelector(".scene-film");
