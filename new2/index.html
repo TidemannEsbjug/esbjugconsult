@@ -582,6 +582,14 @@
 
   @keyframes svNy{0%{color:#e0233c}100%{color:var(--ink)}}
   @media (max-width:760px){.venstre,.hoyre{width:100%}.paneler{flex-direction:column;align-items:stretch;justify-content:flex-end}.sens{margin-left:0;width:100%;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 14px;padding:14px 16px}.sted{max-width:none}}
+  /* Mobil: panelene dekker kartet, så en liten knapp oppe til høyre lar panelene gli bort og kartet kan brukes. */
+  .kartknapp{display:none;position:absolute;z-index:4;top:clamp(16px,2.6vw,36px);right:var(--g);width:44px;height:44px;border-radius:50%;padding:0;align-items:center;justify-content:center;color:var(--ink);cursor:pointer;pointer-events:auto}
+  .kartknapp svg{width:20px;height:20px}
+  .kartknapp .kk-x,.kartmodus .kartknapp .kk-kart{display:none}.kartmodus .kartknapp .kk-x{display:inline}
+  .paneler{transition:opacity .35s ease,transform .45s cubic-bezier(.2,.8,.2,1)}
+  .kartmodus .paneler{opacity:0;transform:translateY(24px);pointer-events:none}
+  .kartmodus .paneler .gl{pointer-events:none}
+  @media (max-width:760px){.kartknapp{display:flex}}
   @media (prefers-reduced-motion:reduce){.spor-strom,.meg::before,.meg::after,.s-dot{animation:none}}
 </style>
 </head>
@@ -594,6 +602,7 @@
   <div class="flyt"><div class="topp gl"><a class="lang" href="/en/" hreflang="en" aria-label="Språk: norsk. Bytt til engelsk"><span class="lang-k" aria-hidden="true"></span><span class="lf no" aria-hidden="true"><svg viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span class="lf gb" aria-hidden="true"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg></span></a>
   <div class="st"><div class="st-i tl-a" hidden data-av data-l="her nå"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">her nå</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><div class="st-i tl-b" hidden data-av data-l="unike besøkende" data-ny="+1 · du er nr. {n}" data-er="Du er nr. {n}" data-var="Du var nr. {n}"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unike besøkende</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><span class="tl-sr"></span></div>
   </div></div>
+  <button type="button" class="kartknapp gl" aria-label="Vis kartet" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="kk-kart" d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/><path class="kk-x" d="M6 6l12 12M18 6 6 18"/></svg></button>
   <div class="paneler">
   <div class="venstre">
   <section class="sted gl" aria-live="polite">
@@ -1487,6 +1496,14 @@ function brev(n) {
   $('.b-tid').textContent = dag.format(n.ts) + ' · ' + kl.format(n.ts);
   if ($('.b-tekst').textContent !== n.v) $('.b-tekst').textContent = n.v;
 }
+// Kartknappen (mobil): panelene glir bort, kartet kan dras og zoomes, og han havner midt i bildet. Trykk igjen for panelene.
+$('.kartknapp').addEventListener('click', () => {
+  const på = !hero.classList.contains('kartmodus');
+  hero.classList.toggle('kartmodus', på);
+  $('.kartknapp').setAttribute('aria-pressed', på); $('.kartknapp').setAttribute('aria-label', på ? 'Vis panelene' : 'Vis kartet');
+  if (på) { kart.dragging.enable(); kart.touchZoom.enable(); if (kart.hasLayer(meg)) kart.panTo(meg.getLatLng()); }
+  else if (mobil) kart.dragging.disable();
+});
 async function hent() {
   try { const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json(); skew = j.now - Date.now(); live = j.live; trail = j.trail || []; tele = j.tele || {}; if (j.puls) puls = j.puls; tegnPuls(); if (j.kast) nyeKast(j.kast); gjor(j.gjor); brev(j.notat); } catch {}
   tegn();

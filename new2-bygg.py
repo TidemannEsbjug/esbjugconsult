@@ -12,7 +12,8 @@ def rep(a, b):
 rep('<meta name="theme-color"', '<script>history.scrollRestoration="manual"</script>\n<meta name="theme-color"')
 rep('<meta name="theme-color"', '<meta name="robots" content="noindex">\n<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">\n<meta name="theme-color"')
 s = re.sub(r'<video class="hero-v".*?</video>', '<div id="kart" aria-label="Kart: hvor Tidemann er nå"></div>\n  <canvas id="gnist" aria-hidden="true"></canvas>', s, 1, flags=re.S)
-s = re.sub(r'  <div class="scene">.*?\n  </div>\n', '''  <div class="paneler">
+s = re.sub(r'  <div class="scene">.*?\n  </div>\n', '''  <button type="button" class="kartknapp gl" aria-label="Vis kartet" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="kk-kart" d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/><path class="kk-x" d="M6 6l12 12M18 6 6 18"/></svg></button>
+  <div class="paneler">
   <div class="venstre">
   <section class="sted gl" aria-live="polite">
     <span class="mono s-t"><i class="s-dot"></i><span class="s-live">Live</span></span>
@@ -156,6 +157,14 @@ CSS = r'''  /* /new2: kartet er heroen. Leaflet med OpenStreetMap, gjort mørkt 
 
   @keyframes svNy{0%{color:#e0233c}100%{color:var(--ink)}}
   @media (max-width:760px){.venstre,.hoyre{width:100%}.paneler{flex-direction:column;align-items:stretch;justify-content:flex-end}.sens{margin-left:0;width:100%;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 14px;padding:14px 16px}.sted{max-width:none}}
+  /* Mobil: panelene dekker kartet, så en liten knapp oppe til høyre lar panelene gli bort og kartet kan brukes. */
+  .kartknapp{display:none;position:absolute;z-index:4;top:clamp(16px,2.6vw,36px);right:var(--g);width:44px;height:44px;border-radius:50%;padding:0;align-items:center;justify-content:center;color:var(--ink);cursor:pointer;pointer-events:auto}
+  .kartknapp svg{width:20px;height:20px}
+  .kartknapp .kk-x,.kartmodus .kartknapp .kk-kart{display:none}.kartmodus .kartknapp .kk-x{display:inline}
+  .paneler{transition:opacity .35s ease,transform .45s cubic-bezier(.2,.8,.2,1)}
+  .kartmodus .paneler{opacity:0;transform:translateY(24px);pointer-events:none}
+  .kartmodus .paneler .gl{pointer-events:none}
+  @media (max-width:760px){.kartknapp{display:flex}}
   @media (prefers-reduced-motion:reduce){.spor-strom,.meg::before,.meg::after,.s-dot{animation:none}}
 </style>'''
 rep('</style>\n</head>', CSS + '\n</head>')
@@ -376,6 +385,14 @@ function brev(n) {
   $('.b-tid').textContent = dag.format(n.ts) + ' · ' + kl.format(n.ts);
   if ($('.b-tekst').textContent !== n.v) $('.b-tekst').textContent = n.v;
 }
+// Kartknappen (mobil): panelene glir bort, kartet kan dras og zoomes, og han havner midt i bildet. Trykk igjen for panelene.
+$('.kartknapp').addEventListener('click', () => {
+  const på = !hero.classList.contains('kartmodus');
+  hero.classList.toggle('kartmodus', på);
+  $('.kartknapp').setAttribute('aria-pressed', på); $('.kartknapp').setAttribute('aria-label', på ? 'Vis panelene' : 'Vis kartet');
+  if (på) { kart.dragging.enable(); kart.touchZoom.enable(); if (kart.hasLayer(meg)) kart.panTo(meg.getLatLng()); }
+  else if (mobil) kart.dragging.disable();
+});
 async function hent() {
   try { const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json(); skew = j.now - Date.now(); live = j.live; trail = j.trail || []; tele = j.tele || {}; if (j.puls) puls = j.puls; tegnPuls(); if (j.kast) nyeKast(j.kast); gjor(j.gjor); brev(j.notat); } catch {}
   tegn();
