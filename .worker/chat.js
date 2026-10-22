@@ -486,6 +486,8 @@ export class ChatHub {
       if (url.pathname === "/internal/kast") {
         // Laughs and tomatoes: shared counters, at most 20 a minute from one address.
         if (!["le", "tomat"].includes(b.k)) return new Response("Bad request", { status: 400 });
+        // Tomatoes only while he is at his mother's.
+        if (b.k === "tomat" && this.sporLive()?.kjent !== "hjemme hos moren sin") return new Response("Ikke hjemme hos moren sin", { status: 403 });
         const ip = request.headers.get("x-ip") || "", now = Date.now();
         this.kastRate = this.kastRate || new Map();
         const r = (this.kastRate.get(ip) || []).filter((t) => now - t < 60e3);
@@ -554,7 +556,7 @@ export class ChatHub {
       this.ctx.acceptWebSocket(pair[1], ["o"]);
       pair[1].serializeAttachment({ role: "owner" });
       this.rememberOwnerNet(request.headers.get("CF-Connecting-IP") || "");
-      pair[1].send(JSON.stringify({ t: "state", visitors: this.allVisitors(), status: this.status(), notifyVisits: this.setting("notifyVisits") === "1", incall: this.incall(), gjor: this.setting("gjor") || "" }));
+      pair[1].send(JSON.stringify({ t: "state", visitors: this.allVisitors(), status: this.status(), notifyVisits: this.setting("notifyVisits") === "1", incall: this.incall(), gjor: this.setting("gjor") || "", notat: this.notat()?.v || "" }));
       this.touchOwner();
       await this.ensureAlarm();
       this.toVisitors({ t: "owner", online: true });
@@ -869,6 +871,11 @@ export class ChatHub {
       } else if (m.t === "delsession" && typeof m.sid === "string") {
         this.sql.exec(`DELETE FROM rec WHERE sid=?`, m.sid);
         this.sql.exec(`DELETE FROM sessions WHERE sid=?`, m.sid);
+      } else if (m.t === "setnotat" && typeof m.v === "string") {
+        // A note he writes on his phone, shown as a letter on the map page with the time he wrote it. Empty removes it.
+        const v = m.v.trim().slice(0, 600);
+        this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('notat', ?)`, JSON.stringify({ v, ts: Date.now() }));
+        this.toOwners({ t: "notat", v });
       } else if (m.t === "setgjor" && ["", "jobber", "trener", "sover"].includes(m.v)) {
         // What he is doing, shown on the map page: Jobber, Trener, Sover (or nothing).
         this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('gjor', ?)`, m.v);
@@ -1087,6 +1094,10 @@ export class ChatHub {
     this.ctx.waitUntil(this.push(hjemme ? "🍅 Taper!" : "🍅 Tomat!", by ? `Noen i ${by} kastet en tomat på deg` : "Noen kastet en tomat på deg", null, { thread: "tomat" }));
   }
 
+  notat() {
+    try { const n = JSON.parse(this.setting("notat") || "null"); return n && n.v ? n : null; } catch { return null; }
+  }
+
   kast() {
     const n = (k) => Number(this.sql.exec(`SELECT v FROM kv WHERE k=?`, `kast:${k}`).toArray()[0]?.v || 0);
     return { le: n("le"), tomat: n("tomat") };
@@ -1119,7 +1130,7 @@ export class ChatHub {
       ...this.sql.exec(`SELECT ts, v FROM bev WHERE ts > ? ORDER BY ts`, fra).toArray()].map((r) => [r.ts, r.v]);
     // Heart rate the last 5 minutes, every stored sample (one per ~4 s while the watch shares it).
     const puls = this.sql.exec(`SELECT ts, bpm FROM hr WHERE ts > ? ORDER BY ts`, Date.now() - 5 * 60e3).toArray().map((r) => [r.ts, r.bpm]);
-    return { now: Date.now(), live, trail, tele: this.tele(), bev, puls, kast: this.kast(), gjor: this.setting("gjor") || "" };
+    return { now: Date.now(), live, trail, tele: this.tele(), bev, puls, kast: this.kast(), gjor: this.setting("gjor") || "", notat: this.notat() };
   }
 
   // The name of the place he is at (neighbourhood, town, country), from OpenStreetMap's Nominatim. At most every

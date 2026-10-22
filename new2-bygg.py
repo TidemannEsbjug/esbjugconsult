@@ -17,11 +17,16 @@ s = re.sub(r'  <div class="scene">.*?\n  </div>\n', '''  <div class="paneler">
     <span class="mono s-t"><i class="s-dot"></i><span class="s-live">Live</span></span>
     <b class="s-navn">Henter posisjonen …</b>
     <span class="s-sub">&nbsp;</span>
-    <div class="kast"><button type="button" class="k-tomat" aria-label="Kast en tomat på Tidemann">🍅 <span>Kast tomat</span> <b>0</b></button></div>
+    <div class="kast" hidden><button type="button" class="k-tomat" aria-label="Kast en tomat på Tidemann">🍅 <span>Kast tomat</span> <b>0</b></button></div>
   </section>
   <section class="gjor gl" hidden aria-live="polite">
     <span class="mono s-t">Holder på med</span>
     <b class="g-navn">–</b>
+  </section>
+  <section class="brev gl" hidden aria-live="polite">
+    <span class="mono s-t b-tid">Notat</span>
+    <p class="b-tekst"></p>
+    <span class="b-sign">– Tidemann</span>
   </section>
   </div>
   <div class="hoyre">
@@ -74,6 +79,7 @@ CSS = r'''  /* /new2: kartet er heroen. Leaflet med OpenStreetMap, gjort mørkt 
   /* Le og kast tomat: felles tellere for alle som ser på. Tomaten flyr i en bue og splatter på kortet. */
   .paneler .gl{position:relative}
   .kast{display:flex;gap:8px;margin-top:8px}
+  .kast[hidden]{display:none}
   .kast button{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(0,32,91,.18);background:rgba(255,255,255,.55);color:var(--ink);border-radius:999px;padding:7px 12px 7px 10px;font:600 13px/1 inherit;font-family:inherit;cursor:pointer;transition:transform .15s,background .2s}
   .kast button:hover{background:#fff;transform:translateY(-1px)}
   .kast button:active{transform:scale(.94)}
@@ -98,7 +104,12 @@ CSS = r'''  /* /new2: kartet er heroen. Leaflet med OpenStreetMap, gjort mørkt 
   .paneler .gl.truffet{animation:truffet .4s cubic-bezier(.36,.07,.19,.97)}
   @keyframes truffet{20%{transform:translate(-5px,3px) rotate(-1.2deg)}45%{transform:translate(5px,-2px) rotate(1deg)}70%{transform:translate(-2px,1px)}}
   .gjor{display:flex;flex-direction:column;gap:6px;padding:14px 20px 15px}
-  .gjor[hidden]{display:none}
+  .gjor[hidden],.brev[hidden]{display:none}
+  /* Notatet: et lite brev på papir, skrevet fra telefonen, med når det ble skrevet. */
+  .paneler .brev{padding:16px 20px 14px;background:linear-gradient(#fffdf6,#fbf5e6);background-image:repeating-linear-gradient(transparent 0 25px,rgba(0,32,91,.07) 25px 26px),linear-gradient(#fffdf6,#fbf5e6);border:1px solid rgba(176,141,87,.35);box-shadow:0 14px 34px rgba(0,20,60,.25)}
+  .brev::before{opacity:.12}
+  .b-tekst{margin:8px 0 0;font:italic 400 clamp(17px,1.5vw,20px)/26px var(--serif);color:var(--ink);white-space:pre-wrap;overflow-wrap:anywhere}
+  .b-sign{display:block;margin-top:6px;text-align:right;font:italic 500 15px/1 var(--serif);color:rgba(0,32,91,.7)}
   .g-navn{font:italic 500 clamp(24px,2.6vw,36px)/1.05 var(--serif);letter-spacing:-.015em;color:var(--ink)}
   .s-navn.kjent{font-size:clamp(20px,2vw,28px);line-height:1.15}
   .sens{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 20px;padding:16px 20px 16px;width:min(470px,100%);margin-left:auto}
@@ -197,6 +208,7 @@ function tegn() {
   document.body.classList.toggle('gammel', gammel);
   $('.s-live').textContent = gammel ? 'Sist sett ' + tid(alder) + ' siden' : 'Live · ' + tid(alder) + ' siden';
   $('.s-navn').classList.toggle('kjent', !!live.kjent);
+  $('.kast').hidden = live.kjent !== 'hjemme hos moren sin';   // tomater bare hjemme hos moren hans
   $('.s-navn').textContent = live.kjent ? 'Tidemann er ' + live.kjent : st && st.by ? [st.strok, st.by].filter(Boolean).join(', ') + (st.kode && st.kode !== 'NO' ? ', ' + st.land : '') : 'Et sted på jorda';
   const fart = live.spd != null && live.spd >= .8 && !gammel && i.aktivitet !== 'står stille' ? Math.round(live.spd * 3.6) + ' km/t' : null;   // GPS-støy gir litt fart også når han står stille
   $('.s-sub').textContent = fart || '';
@@ -358,8 +370,15 @@ function nyeKast(ny) {
 // Hva han holder på med, satt i appen: Jobber, Trener, Sover. Kortet er skjult når ingenting er valgt.
 const GJOR = { jobber: 'Jobber', trener: 'Trener', sover: 'Sover' };
 function gjor(v) { const e = $('.gjor'); e.hidden = !GJOR[v]; if (GJOR[v]) $('.g-navn').textContent = GJOR[v]; }
+const kl = new Intl.DateTimeFormat('nb-NO', { timeZone: 'Europe/Oslo', hour: '2-digit', minute: '2-digit' }), dag = new Intl.DateTimeFormat('nb-NO', { timeZone: 'Europe/Oslo', day: 'numeric', month: 'long' }), dagNr = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Oslo' });
+function brev(n) {
+  const e = $('.brev'); e.hidden = !n; if (!n) return;
+  const nå = Date.now() + skew, i = dagNr.format(n.ts) === dagNr.format(nå) ? 'i dag' : dagNr.format(n.ts) === dagNr.format(nå - 864e5) ? 'i går' : dag.format(n.ts);
+  $('.b-tid').textContent = 'Notat · skrevet ' + i + ' kl. ' + kl.format(n.ts);
+  if ($('.b-tekst').textContent !== n.v) $('.b-tekst').textContent = n.v;
+}
 async function hent() {
-  try { const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json(); skew = j.now - Date.now(); live = j.live; trail = j.trail || []; tele = j.tele || {}; if (j.puls) puls = j.puls; tegnPuls(); if (j.kast) nyeKast(j.kast); gjor(j.gjor); } catch {}
+  try { const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json(); skew = j.now - Date.now(); live = j.live; trail = j.trail || []; tele = j.tele || {}; if (j.puls) puls = j.puls; tegnPuls(); if (j.kast) nyeKast(j.kast); gjor(j.gjor); brev(j.notat); } catch {}
   tegn();
 }
 hent(); setInterval(() => { if (!document.hidden) hent(); }, 2500);
