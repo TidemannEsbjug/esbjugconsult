@@ -323,7 +323,7 @@
         }
 
         function api(sti, data) {
-          return fetch("/GDPR/api/" + sti, data
+          return fetch("/klart/api/" + sti, data
             ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(data) }
             : undefined
           ).then(function (r) {

@@ -16,9 +16,10 @@ export default {
       return Response.redirect(url.toString(), 301);
     }
     if (url.pathname.startsWith("/chat/")) return handleChat(request, env, url);
-    // Klart: prøveperiode, kjøp og aktiveringskoder (klart.js).
-    if (url.pathname.startsWith("/GDPR/api/")) return handleKlart(request, env, url);
-    if (url.pathname.startsWith("/GDPR/last-ned/")) return handleNedlasting(request, env, url);
+    // Klart: prøveperiode, kjøp og aktiveringskoder (klart.js). /GDPR/api/ og /GDPR/last-ned/ virker
+    // fortsatt, fordi Stripe-webhooken og eldre versjoner av appen bruker dem.
+    if (/^\/(klart|GDPR)\/api\//.test(url.pathname)) return handleKlart(request, env, url);
+    if (/^\/(klart|GDPR)\/last-ned\//.test(url.pathname)) return handleNedlasting(request, env, url);
     // /login/ er kundeportalen, /kunde/ er lukket bak innlogging.
     if (url.pathname.startsWith("/login/") || url.pathname.startsWith("/kunde/")) return handleKunde(request, env, url);
     // /ny/ var arbeidskopien av V2. V2 er forsiden fra 7.10.2026, så gamle lenker sendes dit (spørrestrengen følger med).
@@ -26,18 +27,27 @@ export default {
       url.pathname = url.pathname.startsWith("/ny/en") ? "/en/" : "/";
       return Response.redirect(url.toString(), 301);
     }
-    // Klart ligger i /GDPR/. Stiene skiller store og små bokstaver, så /gdpr, /Gdpr osv. sendes dit.
-    const gdpr = url.pathname.match(/^\/gdpr(\/.*)?$/i);
-    if (gdpr && !url.pathname.startsWith("/GDPR")) {
-      url.pathname = "/GDPR" + (gdpr[1] || "/");
-      return Response.redirect(url.toString(), 301);
-    }
-    // /klart er produktnavnet, og appen selv åpner /klart/aktiver?hva=…&maskin=… i nettleseren.
-    // Alt under /klart sendes til samme sted under /GDPR/, med spørrestrengen.
-    const klart = url.pathname.match(/^\/klart(\/.*)?$/i);
+    // Klart bor på /klart/. Filene ligger i mappa GDPR/, men adressen i nettleseren blir stående på
+    // /klart/. Gamle lenker til /gdpr, /GDPR, /Klart osv. sendes til /klart/, med spørrestrengen.
+    const klart = url.pathname.match(/^\/(?:klart|gdpr)(\/.*)?$/i);
     if (klart) {
-      url.pathname = "/GDPR" + (klart[1] || "/");
-      return Response.redirect(url.toString(), 302);
+      const rest = klart[1] || "/";
+      if (url.pathname !== "/klart" + rest) {
+        url.pathname = "/klart" + rest;
+        return Response.redirect(url.toString(), 301);
+      }
+      const fil = new URL(url);
+      fil.pathname = "/GDPR" + rest;
+      const svar = await env.ASSETS.fetch(new Request(fil, request));
+      // Assets legger til / på mapper (/klart/aktiver → /GDPR/aktiver/). Pek det tilbake til /klart.
+      const til = svar.headers.get("location");
+      if (til && /^(https?:\/\/[^/]+)?\/GDPR\//.test(til)) {
+        const hoder = new Headers(svar.headers);
+        hoder.set("location", til.replace(/\/GDPR\//, "/klart/"));
+        return new Response(svar.body, { status: svar.status, headers: hoder });
+      }
+      try { const visit = pageVisit(request, env, url); if (visit) ctx.waitUntil(visit); } catch {}
+      return svar;
     }
     // Visit push for page loads; never allowed to break serving the page.
     try { const visit = pageVisit(request, env, url); if (visit) ctx.waitUntil(visit); } catch {}

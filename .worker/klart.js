@@ -6,12 +6,12 @@
 // utløpsdato, signert med Ed25519. Appen sjekker signaturen lokalt mot den
 // offentlige nøkkelen den har innebygd (src-tauri/src/aktivering.rs i Klart).
 //
-//   GET  /GDPR/api/status       hva som er åpent: prøve og kjøp
-//   POST /GDPR/api/prove        { maskin }          → 14 dager, én gang per maskin
-//   POST /GDPR/api/kjop         { maskin, epost? }  → adresse til Stripe Checkout
-//   GET  /GDPR/api/kvittering?session=cs_…          → koden etter betaling
-//   POST /GDPR/api/hent         { maskin, epost }   → ny kode til en betalt lisens
-//   POST /GDPR/api/stripe       Stripe-webhook
+//   GET  /klart/api/status       hva som er åpent: prøve og kjøp
+//   POST /klart/api/prove        { maskin }          → 14 dager, én gang per maskin
+//   POST /klart/api/kjop         { maskin, epost? }  → adresse til Stripe Checkout
+//   GET  /klart/api/kvittering?session=cs_…          → koden etter betaling
+//   POST /klart/api/hent         { maskin, epost }   → ny kode til en betalt lisens
+//   POST /klart/api/stripe       Stripe-webhook
 //
 // Hemmeligheter (wrangler secret put): KLART_LISENSNOKKEL (PEM, PKCS#8, Ed25519),
 // STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET. Innstillinger (vars i wrangler.jsonc):
@@ -26,14 +26,14 @@ import { DurableObject } from "cloudflare:workers";
 const PROVEDAGER = 14;
 const NADE_DAGER = 14; // lisensen varer så mange dager etter at perioden er betalt til
 const MASKINKODE = /^[0-9A-HJKMNP-TV-Z]{4}(-[0-9A-HJKMNP-TV-Z]{4}){3}$/;
-const SIDE = "https://esbjugconsult.com/GDPR/aktiver/";
+const SIDE = "https://esbjugconsult.com/klart/aktiver/";
 
 // ---------------------------------------------------------------------------
 // Ruting
 // ---------------------------------------------------------------------------
 
 export async function handleKlart(request, env, url) {
-  const sti = url.pathname.replace(/^\/GDPR\/api\//, "");
+  const sti = url.pathname.replace(/^\/(klart|GDPR)\/api\//, "");
   try {
     if (sti === "status" && request.method === "GET") return json(await status(env));
     if (sti === "prove" && request.method === "POST") return await prove(request, env);
@@ -62,7 +62,7 @@ const FILER = {
 };
 
 export async function handleNedlasting(request, env, url) {
-  const hva = url.pathname.replace(/^\/GDPR\/last-ned\//, "").replace(/\/$/, "");
+  const hva = url.pathname.replace(/^\/(klart|GDPR)\/last-ned\//, "").replace(/\/$/, "");
   const fil = FILER[hva];
   if (!fil || !["GET", "HEAD"].includes(request.method)) return new Response("Finnes ikke.", { status: 404 });
   const obj = await env.KLART_FILER.get(fil.key, { range: request.headers, onlyIf: request.headers });
@@ -236,7 +236,7 @@ async function kjop(request, env, url) {
 
   const pris = await stripe(env, "GET", `prices/${env.STRIPE_PRICE_ID}`);
   const abonnement = Boolean(pris.recurring);
-  const side = url.hostname === "localhost" ? `${url.origin}/GDPR/aktiver/` : SIDE;
+  const side = url.hostname === "localhost" ? `${url.origin}/klart/aktiver/` : SIDE;
   const felt = {
     mode: abonnement ? "subscription" : "payment",
     "line_items[0][price]": env.STRIPE_PRICE_ID,
