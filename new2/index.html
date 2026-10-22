@@ -522,6 +522,9 @@
   @keyframes taperInn{from{opacity:0;transform:translate(-50%,-50%) rotate(var(--rot)) scale(.2)}to{opacity:1;transform:translate(-50%,-50%) rotate(var(--rot)) scale(1)}}
   @keyframes taperUt{to{opacity:0;transform:translate(-50%,-90%) rotate(var(--rot)) scale(1.1)}}
   .paneler .gl{overflow:visible}
+  .splat-kart{z-index:3}
+  .meg.truffet{animation:megTruffet .5s cubic-bezier(.2,1.6,.4,1)}
+  @keyframes megTruffet{0%{transform:scale(1)}25%{transform:scale(1.7,.45)}55%{transform:scale(.8,1.25)}100%{transform:scale(1)}}
   .paneler .gl.truffet{animation:truffet .4s cubic-bezier(.36,.07,.19,.97)}
   @keyframes truffet{20%{transform:translate(-5px,3px) rotate(-1.2deg)}45%{transform:translate(5px,-2px) rotate(1deg)}70%{transform:translate(-2px,1px)}}
   .gjor{display:flex;flex-direction:column;gap:6px;padding:14px 20px 15px}
@@ -1289,6 +1292,12 @@ const sett = (k, v, pct, kl) => {
   const bar = e.querySelector('.bar i'); if (bar) bar.style.width = (pct ?? 0) + '%';
   e.classList.toggle('lav', pct != null && pct <= 20); e.classList.toggle('lader', !!kl);
 };
+// Han skal stå i det ledige feltet, ikke under panelene: på bred skjerm litt til venstre for midten og nede, på mobil øverst over panelene.
+function ledig(pos) {
+  const sz = kart.getSize(), p = kart.latLngToContainerPoint(pos);
+  const mål = innerWidth > 760 ? [sz.x * .4, sz.y * .66] : [sz.x * .5, sz.y * .3];
+  kart.panBy([p.x - mål[0], p.y - mål[1]], { animate: false });
+}
 function tegn() {
   const nå = Date.now() + skew;
   const i = tele.iphone || {}, w = tele.watch || {}, st = tele.sted;
@@ -1302,7 +1311,8 @@ function tegn() {
   sett('volum', i.volum != null ? i.volum + ' %' : null, i.volum);
   for (const k of ['iphone', 'watch']) inn(k, tele[k]);
   if (!live) { $('.s-navn').textContent = 'Ingen posisjon ennå'; $('.s-live').textContent = 'Venter'; document.body.classList.add('gammel'); return; }
-  const alder = nå - live.ts, gammel = alder > 10 * 60e3;
+  // Posisjonen kommer bare når han flytter seg; telefonen sender ellers hvert 5. s, så den teller som livstegn.
+  const alder = nå - Math.max(live.ts, i.ts || 0), gammel = alder > 10 * 60e3;
   document.body.classList.toggle('gammel', gammel);
   $('.s-live').textContent = gammel ? 'Sist sett ' + tid(alder) + ' siden' : 'Live · ' + tid(alder) + ' siden';
   $('.s-navn').classList.toggle('kjent', !!live.kjent);
@@ -1314,7 +1324,7 @@ function tegn() {
   let spor = linjer(trail); if (spor.length) spor[spor.length - 1].push(pos); else spor = [[pos]];
   lag.forEach(l => l.setLatLngs(spor)); stier = spor;
   meg.setLatLng(pos); if (!kart.hasLayer(meg)) meg.addTo(kart);
-  if (forste) { forste = false; kart.setView(pos, 15, { animate: false }); }
+  if (forste) { forste = false; kart.setView(pos, 15, { animate: false }); ledig(pos); }
   else if (!kart.getBounds().pad(-.2).contains(pos)) kart.panTo(pos);
 }
 // Gnister langs sporet, flest der han er nå.
@@ -1396,6 +1406,7 @@ const knapp = k => document.querySelector(k === 'le' ? '.k-le' : '.k-tomat');
 // Ordet som spretter opp der tomaten treffer.
 const TAPER = ['TAPER!', 'Taper.', 'Tapern!', 'Taperen!', 'TAAAAPER', 'Din taper', 'For en taper', 'Supertaper', 'Megataper', 'Ultrataper',
   'Tapersjef', 'Taperkonge', 'Årets taper', 'Taper (igjen)', 'Taper-Tidemann', 'Taper, taper, taper', 'Taperen fra Frogn', 'TAPER™', 'Verdens største taper', 'Liten taper'];
+const TREFF = ['SPLÆSJ!', 'Treff!', 'Rett i fleisen', 'Bingo!', 'PANG!', 'Midt i blinken', 'Au!', 'Klæsj', 'Full pott', 'Den satt!'];
 function visKast(k, fraX) {
   const b = knapp(k); b.classList.remove('puff'); void b.offsetWidth; b.classList.add('puff');
   const r = b.getBoundingClientRect();
@@ -1408,10 +1419,19 @@ function visKast(k, fraX) {
     }
     return;
   }
-  // Tomaten treffer et tilfeldig panel (stedet, holder på med, målingene, akselerometrene; ikke språkvalget), et tilfeldig sted på det.
-  const mål = [...document.querySelectorAll('.paneler .gl')].filter(e => !e.hidden && e.offsetWidth);
-  const kort = mål[Math.floor(Math.random() * mål.length)] || $('.sted'), kr = kort.getBoundingClientRect();
-  const mx = kr.width * (.2 + Math.random() * .6), my = kr.height * (.15 + Math.random() * .45);
+  // Fire av fem tomater treffer ham: prikken på kartet (kartet flytter seg dit om han er utenfor bildet). Resten treffer
+  // et tilfeldig panel (stedet, holder på med, målingene, akselerometrene; aldri språkvalget), et tilfeldig sted på det.
+  let kort, mx, my, påHam = false;
+  if (live && kart.hasLayer(meg) && Math.random() < .8) {
+    { const p = kart.latLngToContainerPoint(meg.getLatLng()), sz = kart.getSize(); if (p.x < 0 || p.y < 0 || p.x > sz.x || p.y > sz.y) ledig(meg.getLatLng()); }
+    kort = hero; påHam = true;
+    const p = kart.latLngToContainerPoint(meg.getLatLng()); mx = p.x; my = p.y;
+  } else {
+    const mål = [...document.querySelectorAll('.paneler .gl')].filter(e => !e.hidden && e.offsetWidth);
+    kort = mål[Math.floor(Math.random() * mål.length)] || $('.sted');
+    const r0 = kort.getBoundingClientRect(); mx = r0.width * (.2 + Math.random() * .6); my = r0.height * (.15 + Math.random() * .45);
+  }
+  const kr = kort.getBoundingClientRect();
   // Kastet kommer fra den som ser på: stor nedenfra, under der man klikket (andres kast fra et tilfeldig sted),
   // og blir mindre mens den flyr inn i skjermen mot kortet.
   const x0 = fraX ?? innerWidth * (.15 + Math.random() * .7), y0 = innerHeight + 60, x1 = kr.left + mx, y1 = kr.top + my;
@@ -1423,7 +1443,8 @@ function visKast(k, fraX) {
   }
   t.animate(steg, { duration: still ? 1 : 640, easing: 'linear' }).onfinish = () => {
     t.remove();
-    kort.classList.remove('truffet'); void kort.offsetWidth; kort.classList.add('truffet');
+    const rist = påHam ? document.querySelector('.meg') : kort;
+    if (rist) { rist.classList.remove('truffet'); void rist.offsetWidth; rist.classList.add('truffet'); }
     const sp = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); sp.setAttribute('class', 'splat'); sp.setAttribute('viewBox', '-75 -75 150 150');
     sp.style.left = mx + 'px'; sp.style.top = my + 'px'; sp.style.setProperty('--rot', Math.random() * 360 + 'deg');
     // En klatt med ujevn kant, sprut rundt og noen dråper som renner nedover.
@@ -1432,9 +1453,13 @@ function visKast(k, fraX) {
     for (let n = 0; n < 9; n++) { const a = Math.random() * Math.PI * 2, rr = 46 + Math.random() * 22; html += `<circle cx="${(Math.cos(a) * rr).toFixed(1)}" cy="${(Math.sin(a) * rr).toFixed(1)}" r="${(2 + Math.random() * 5).toFixed(1)}" fill="#d9261c"/>`; }
     for (let n = 0; n < 3; n++) { const x = -16 + n * 15 + Math.random() * 6; html += `<g class="dr" style="animation-delay:${.2 + n * .3}s"><rect x="${x - 3}" y="22" width="6" height="${16 + Math.random() * 12}" rx="3" fill="#c81f17"/><circle cx="${x}" cy="${40 + Math.random() * 8}" r="4.5" fill="#c81f17"/></g>`; }
     html += `<circle r="9" cx="22" cy="-26" fill="#3a7d2c"/><path d="M22 -34 l3 -8" stroke="#3a7d2c" stroke-width="3" stroke-linecap="round"/>`;
+    if (påHam) sp.classList.add('splat-kart');
     sp.innerHTML = html; kort.append(sp); setTimeout(() => sp.remove(), 4600);
-    const o = document.createElement('span'); o.className = 'taper'; o.textContent = TAPER[Math.floor(Math.random() * TAPER.length)];
+    // «Taper» bare hjemme hos moren hans; ellers et vanlig treff-ord.
+    const ord = live && live.kjent === 'hjemme hos moren sin' ? TAPER : TREFF;
+    const o = document.createElement('span'); o.className = 'taper'; o.textContent = ord[Math.floor(Math.random() * ord.length)];
     o.style.left = mx + 'px'; o.style.top = my - 46 + 'px'; o.style.setProperty('--rot', (Math.random() * 24 - 12).toFixed(1) + 'deg');
+    if (påHam) o.style.zIndex = 4;
     kort.append(o); setTimeout(() => o.remove(), 3000);
   };
 }
