@@ -83,7 +83,7 @@ const lag = [
   L.polyline([], { color: '#fff7c2', weight: 3.5, opacity: 1, className: 'spor-strom', lineCap: 'round', interactive: false }),
 ];
 lag.forEach(l => l.addTo(kart));
-let modus = null, live = null, trail = [], forste = true, skew = 0;
+let modus = null, live = null, trail = [], forste = true, skew = 0, sted = null;
 
 // ---------- Det hvite hus ----------
 // En runde innendørs, langs gangene, etter byggenes omriss i OpenStreetMap: Vestfløyen (med Det ovale kontor),
@@ -142,7 +142,7 @@ function tegn() {
   } else {
     pos = [live.lat, live.lon]; spor = linjer(trail);
     if (spor.length) spor[spor.length - 1].push(pos); else spor = [[pos]];
-    $('.sted').textContent = 'Oslo';
+    $('.sted').textContent = sted && sted.by ? [sted.strok, sted.by].filter(Boolean).join(', ') + (sted.kode && sted.kode !== 'NO' ? ', ' + sted.land : '') : 'Et sted på jorda';
     $('.t-fart').textContent = live.spd != null && !gammel ? Math.round(live.spd * 3.6) + ' km/t' : '–';
     $('.t-gatt').textContent = (km(trail) / 1000).toFixed(1).replace('.', ',') + ' km';
   }
@@ -187,7 +187,7 @@ requestAnimationFrame(gnistFrame);
 async function hent() {
   try {
     const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json();
-    skew = j.now - Date.now(); live = j.live; trail = j.trail || [];
+    skew = j.now - Date.now(); live = j.live; trail = j.trail || []; sted = (j.tele || {}).sted;
   } catch {}
   tegn();
 }
