@@ -425,6 +425,26 @@ section {
   }
 }
 
+/* Versjon og krav rett under knappene. */
+.hero .scene .versjon {
+  margin-top: 16px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+  color: var(--ink-2);
+}
+
+.hero .scene .versjon + .fineprint {
+  margin-top: 6px;
+}
+
+@media (min-width: 1500px) {
+  .hero .scene .versjon {
+    margin-top: 20px;
+    font-size: clamp(11.5px, 0.66vw, 13.5px);
+  }
+}
+
 /* Windows-knappen før pakken ligger ute. */
 .btn.kommer,
 .btn.kommer:hover {

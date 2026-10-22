@@ -56,8 +56,9 @@ export async function handleKlart(request, env, url) {
 // ---------------------------------------------------------------------------
 
 const FILER = {
-  mac: { key: "mac/Klart_0.1.0_universal.dmg", navn: "Klart_0.1.0_universal.dmg", type: "application/x-apple-diskimage" },
-  windows: { key: "windows/Klart_0.1.0_x64-setup.exe", navn: "Klart_0.1.0_x64-setup.exe", type: "application/vnd.microsoft.portable-executable" },
+  // «key» er navnet i R2 (fra bygget), «navn» er det kunden får på disken.
+  mac: { key: "mac/Klart_0.1.0_universal.dmg", navn: "Klart-for-Mac-0.1.0.dmg", type: "application/x-apple-diskimage" },
+  windows: { key: "windows/Klart_0.1.0_x64-setup.exe", navn: "Klart-for-Windows-0.1.0.exe", type: "application/vnd.microsoft.portable-executable" },
 };
 
 export async function handleNedlasting(request, env, url) {
