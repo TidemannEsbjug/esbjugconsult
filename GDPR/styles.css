@@ -299,7 +299,7 @@ section {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-height: max(640px, min(100svh, 980px));
+  min-height: max(640px, 100svh);
   margin: 0 calc(-1 * var(--gut));
   /* Klassisk hero: teksten midt i bildet, med luft over og under. */
   padding: clamp(72px, 10vh, 120px) var(--gut);
@@ -386,6 +386,43 @@ section {
 
 .hero .scene .fineprint {
   color: var(--ink-2);
+}
+
+/* Store skjermer (1920 × 1080 og opp): teksten vokser med skjermen, så heroen
+   ikke ser liten ut. Laptop og mobil er som før. */
+@media (min-width: 1500px) {
+  .hero .scene h1 {
+    font-size: clamp(60px, 4.4vw, 104px);
+    max-width: 22ch;
+  }
+
+  .hero .scene .lead {
+    max-width: 62ch;
+    font-size: clamp(18px, 1.12vw, 24px);
+    margin-top: 28px;
+  }
+
+  .hero .scene .tag {
+    font-size: clamp(11.5px, 0.7vw, 14px);
+    padding: 9px 20px 8px;
+    margin-bottom: 36px;
+  }
+
+  .hero .scene .get {
+    margin-top: 42px;
+    gap: 16px;
+  }
+
+  .hero .scene .btn {
+    height: clamp(46px, 2.9vw, 60px);
+    padding: 0 clamp(22px, 1.6vw, 32px);
+    font-size: clamp(14.5px, 0.88vw, 18px);
+  }
+
+  .hero .scene .fineprint {
+    margin-top: 22px;
+    font-size: clamp(11px, 0.62vw, 13px);
+  }
 }
 
 /* Windows-knappen før pakken ligger ute. */
