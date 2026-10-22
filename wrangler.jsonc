@@ -21,7 +21,11 @@
     ]
   },
   // Files in the chat (audio, images, documents), served with range support from /chat/file/<key>.
-  "r2_buckets": [{ "binding": "FILES", "bucket_name": "esbjug-chat-files" }],
+  // KLART_FILER: installasjonsfilene til Klart (DMG og EXE), servert fra /GDPR/last-ned/mac og /windows.
+  "r2_buckets": [
+    { "binding": "FILES", "bucket_name": "esbjug-chat-files" },
+    { "binding": "KLART_FILER", "bucket_name": "klart-nedlasting" }
+  ],
   "migrations": [
     { "tag": "chat-v1", "new_sqlite_classes": ["ChatHub"] },
     { "tag": "klart-v1", "new_sqlite_classes": ["KlartLager"] }

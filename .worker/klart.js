@@ -50,6 +50,41 @@ export async function handleKlart(request, env, url) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Nedlasting: installasjonsfilene ligger i R2-bøtta klart-nedlasting, fordi de er
+// større enn det statiske filer på Cloudflare kan være (25 MB).
+// ---------------------------------------------------------------------------
+
+const FILER = {
+  mac: { key: "mac/Klart_0.1.0_universal.dmg", navn: "Klart_0.1.0_universal.dmg", type: "application/x-apple-diskimage" },
+  windows: { key: "windows/Klart_0.1.0_x64-setup.exe", navn: "Klart_0.1.0_x64-setup.exe", type: "application/vnd.microsoft.portable-executable" },
+};
+
+export async function handleNedlasting(request, env, url) {
+  const hva = url.pathname.replace(/^\/GDPR\/last-ned\//, "").replace(/\/$/, "");
+  const fil = FILER[hva];
+  if (!fil || !["GET", "HEAD"].includes(request.method)) return new Response("Finnes ikke.", { status: 404 });
+  const obj = await env.KLART_FILER.get(fil.key, { range: request.headers, onlyIf: request.headers });
+  if (!obj) return new Response("Filen er ikke lastet opp ennå.", { status: 404 });
+  const hoder = new Headers();
+  obj.writeHttpMetadata(hoder);
+  hoder.set("content-type", fil.type);
+  hoder.set("content-disposition", `attachment; filename="${fil.navn}"`);
+  hoder.set("etag", obj.httpEtag);
+  hoder.set("accept-ranges", "bytes");
+  hoder.set("cache-control", "public, max-age=3600");
+  if (!("body" in obj)) return new Response(null, { status: 304, headers: hoder });
+  if (obj.range && request.headers.has("range")) {
+    const start = obj.range.offset ?? obj.size - obj.range.suffix;
+    const lengde = obj.range.length ?? obj.size - start;
+    hoder.set("content-range", `bytes ${start}-${start + lengde - 1}/${obj.size}`);
+    hoder.set("content-length", String(lengde));
+    return new Response(request.method === "HEAD" ? null : obj.body, { status: 206, headers: hoder });
+  }
+  hoder.set("content-length", String(obj.size));
+  return new Response(request.method === "HEAD" ? null : obj.body, { headers: hoder });
+}
+
 function lager(env) {
   return env.KLART.get(env.KLART.idFromName("lisenser"));
 }

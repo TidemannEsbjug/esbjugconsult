@@ -103,10 +103,24 @@ button {
    Toppbar
    -------------------------------------------------------------------------- */
 
+/* Menyen er skjult øverst, så filmen får hele skjermen. Den glir inn når man
+   scroller (klassen «synlig» settes i index.html), eller når den får fokus. */
 .topbar {
   position: fixed;
   inset: 0 0 auto;
   z-index: 40;
+  transform: translateY(-100%);
+  opacity: 0;
+  transition: transform 420ms var(--ease), opacity 320ms var(--ease);
+}
+
+.topbar.synlig,
+.topbar:focus-within {
+  transform: none;
+  opacity: 1;
+}
+
+.topbar {
   display: flex;
   align-items: center;
   gap: 28px;
@@ -277,16 +291,17 @@ section {
   text-align: center;
 }
 
-/* Scenen: filmen fra appens intro over hele bredden. Himmelen øverst bærer
-   teksten, snøen nederst bærer knappene, og bunnen glir over i sidens bakgrunn. */
+/* Scenen: filmen fra appens intro over hele bredden. Himmelen, hytta og
+   skisporet står fritt; all teksten står samlet nede i snøen, der et lyst slør
+   gjør den lett å lese. Når filmen er ferdig, toner det skarpe stillbildet inn. */
 .scene {
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  min-height: max(640px, min(100svh, 980px));
+  justify-content: flex-end;
+  min-height: max(660px, min(100svh, 1000px));
   margin: 0 calc(-1 * var(--gut));
-  padding: clamp(112px, 15vh, 160px) var(--gut) clamp(56px, 9vh, 104px);
+  padding: 0 var(--gut) clamp(48px, 8vh, 96px);
   overflow: hidden;
   isolation: isolate;
   /* Uten dette kan en tynn strek av filmen skimte under den siste overgangen. */
@@ -294,15 +309,28 @@ section {
   background: #dfe8f2 url("assets/hero-ski-start.jpg") center 58% / cover no-repeat;
 }
 
-.scene-film {
+.scene-film,
+.scene-bilde {
   position: absolute;
   inset: 0;
-  z-index: -2;
+  z-index: -3;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center 58%;
   pointer-events: none;
+}
+
+.scene-bilde {
+  z-index: -2;
+  opacity: 0;
+  transform: scale(1.04);
+  transition: opacity 1600ms var(--ease), transform 2600ms var(--ease);
+}
+
+.scene.stille .scene-bilde {
+  opacity: 1;
+  transform: none;
 }
 
 .scene-slor {
@@ -312,61 +340,62 @@ section {
   pointer-events: none;
   background: linear-gradient(
     180deg,
-    rgba(14, 38, 72, 0.42) 0%,
-    rgba(14, 38, 72, 0.18) 30%,
-    rgba(14, 38, 72, 0) 48%,
-    rgba(238, 243, 251, 0) 66%,
-    rgba(238, 243, 251, 0.55) 86%,
+    rgba(238, 243, 251, 0) 0%,
+    rgba(238, 243, 251, 0) 34%,
+    rgba(240, 244, 250, 0.5) 54%,
+    rgba(242, 246, 251, 0.82) 72%,
     var(--ground) 100%
   );
 }
 
+.scene-tekst {
+  position: relative;
+}
+
+/* Et ekstra mykt lys bak teksten, så den står tydelig også der snøen har skygger. */
+.scene-tekst::before {
+  content: "";
+  position: absolute;
+  inset: -18% -12% -10%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(246, 249, 253, 0.85), rgba(246, 249, 253, 0.55) 55%, transparent);
+}
+
 .hero .scene .tag {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.16);
-  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.72);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
 
-.hero .scene .tag em {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.hero .scene h1 {
-  color: #fff;
-  text-shadow: 0 2px 28px rgba(10, 32, 64, 0.35);
-}
-
-.hero .scene h1 span {
-  background: linear-gradient(96deg, #ffffff 10%, #cfe0ff 90%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: none;
-  filter: drop-shadow(0 2px 18px rgba(10, 32, 64, 0.3));
-}
-
-/* Ingressen står nede i snøen, over knappene, så hytta er fri. */
 .hero .scene .lead {
-  margin: 0 auto 26px;
   color: var(--ink);
-  font-size: 17.5px;
-  text-shadow: 0 0 18px rgba(255, 255, 255, 0.9), 0 0 4px rgba(255, 255, 255, 0.7);
+  margin-top: 20px;
 }
 
 .hero .scene .get {
-  margin-top: 0;
+  margin-top: 30px;
 }
 
 .hero .scene .btn.ghost {
-  background: rgba(255, 255, 255, 0.86);
+  background: rgba(255, 255, 255, 0.88);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
 
 .hero .scene .fineprint {
   color: var(--ink-2);
+}
+
+/* Windows-knappen før pakken ligger ute. */
+.btn.kommer,
+.btn.kommer:hover {
+  cursor: default;
+  color: var(--ink-3);
+  background: rgba(255, 255, 255, 0.7);
+  border-color: var(--rule);
+  box-shadow: none;
+  transform: none;
 }
 
 .tag {
@@ -1518,12 +1547,23 @@ footer {
 }
 
 @media (max-width: 560px) {
+  /* Litt høyere scene og strammere tekst, så hytta står fri over overskriften. */
   .scene {
-    min-height: max(600px, 100svh);
+    min-height: max(720px, 112svh);
+    padding-bottom: 40px;
   }
 
   .hero .scene .lead {
-    font-size: 16px;
+    font-size: 15px;
+    margin-top: 14px;
+  }
+
+  .hero .scene .get {
+    margin-top: 22px;
+  }
+
+  .hero .scene .fineprint {
+    display: none;
   }
 
   .hero .scene .tag {
