@@ -86,20 +86,39 @@ lag.forEach(l => l.addTo(kart));
 let modus = null, live = null, trail = [], forste = true, skew = 0;
 
 // ---------- Det hvite hus ----------
-// En fast runde gjennom huset og hagen, i gangfart med stopp. Samme tid gir samme sted for alle som ser på.
-const DH = [[38.89737, -77.03745, 40], [38.89748, -77.03760, 0], [38.89768, -77.03712, 0], [38.89772, -77.03655, 60], [38.89780, -77.03620, 0],
-  [38.89770, -77.03565, 45], [38.89740, -77.03580, 0], [38.89705, -77.03630, 30], [38.89690, -77.03670, 0], [38.89712, -77.03715, 25], [38.89737, -77.03745, 0]];
+// En runde innendørs, langs gangene, etter byggenes omriss i OpenStreetMap: Vestfløyen (med Det ovale kontor),
+// Vestkolonnaden langs Rosehagen, og hovedhuset med statsrommene. Hvert punkt: [lat, lon, pause i s, rom].
+// Tid gir sted, så alle som ser på, ser ham samme sted. Gangfart innendørs ~1 m/s.
+const DH = [
+  [38.89738, -77.03741, 120, 'Det ovale kontor'],
+  [38.89747, -77.03744, 0], [38.89752, -77.03739, 45, 'Kabinettrommet'],
+  [38.89749, -77.03752, 30, 'Roosevelt-rommet'],
+  [38.89756, -77.03758, 0], [38.89757, -77.03764, 0], [38.89763, -77.03765, 50, 'Pressebriefingrommet'],
+  [38.89757, -77.03764, 0], [38.89757, -77.03748, 0], [38.89763, -77.03735, 0, 'Vestkolonnaden'],
+  [38.89765, -77.03712, 0, 'Vestkolonnaden'], [38.89766, -77.03688, 0],
+  [38.89767, -77.03677, 35, 'Statsspisesalen'],
+  [38.89768, -77.03667, 0], [38.89761, -77.03666, 25, 'Det røde rommet'],
+  [38.89768, -77.03664, 0], [38.89768, -77.03656, 0], [38.89757, -77.03656, 40, 'Det blå rommet'],
+  [38.89768, -77.03652, 0], [38.89768, -77.03646, 0], [38.89761, -77.03645, 25, 'Det grønne rommet'],
+  [38.89768, -77.03642, 0], [38.89768, -77.03632, 60, 'East Room'],
+  [38.89768, -77.03642, 0], [38.89775, -77.03652, 30, 'Inngangshallen'],
+  [38.89768, -77.03660, 0], [38.89768, -77.03672, 0], [38.89766, -77.03688, 0],
+  [38.89765, -77.03712, 0, 'Vestkolonnaden'], [38.89763, -77.03735, 0], [38.89747, -77.03744, 0],
+  [38.89738, -77.03741, 0],
+];
 const dist = (a, b) => Math.hypot((a[0] - b[0]) * 111.2e3, (a[1] - b[1]) * 111.2e3 * Math.cos(a[0] * Math.PI / 180));
-const runde = (() => { const seg = []; let t = 0; for (let i = 0; i < DH.length - 1; i++) { const d = dist(DH[i], DH[i + 1]) / 0.9; seg.push({ t0: t, pause: DH[i][2], d, a: DH[i], b: DH[i + 1] }); t += DH[i][2] + d; } return { seg, len: t }; })();
+const runde = (() => { const seg = []; let t = 0; for (let i = 0; i < DH.length - 1; i++) { const d = dist(DH[i], DH[i + 1]) / 1.0; seg.push({ t0: t, pause: DH[i][2], d, a: DH[i], b: DH[i + 1], i }); t += DH[i][2] + d; } return { seg, len: t }; })();
+// Neste navngitte rom fra punkt i (for «på vei til …»).
+const nesteRom = i => { for (let k = i + 1; k < DH.length; k++) if (DH[k][3] && DH[k][2]) return DH[k][3]; return DH[0][3]; };
 const dhPos = ms => {
   let t = (ms / 1000) % runde.len;
   for (const s of runde.seg) {
-    if (t < s.t0 + s.pause) return [s.a[0], s.a[1]];
-    if (t < s.t0 + s.pause + s.d) { const k = (t - s.t0 - s.pause) / s.d; return [s.a[0] + (s.b[0] - s.a[0]) * k, s.a[1] + (s.b[1] - s.a[1]) * k]; }
+    if (t < s.t0 + s.pause) return [s.a[0], s.a[1], s.a[3], true];
+    if (t < s.t0 + s.pause + s.d) { const k = (t - s.t0 - s.pause) / s.d; return [s.a[0] + (s.b[0] - s.a[0]) * k, s.a[1] + (s.b[1] - s.a[1]) * k, s.b[3] && !s.b[2] ? s.b[3] : nesteRom(s.i), false]; }
   }
-  return [DH[0][0], DH[0][1]];
+  return [DH[0][0], DH[0][1], DH[0][3], true];
 };
-const dhSpor = (fra, til) => { const p = []; for (let t = Math.max(fra, til - 20 * 60e3); t <= til; t += 4000) p.push(dhPos(t)); return p; };
+const dhSpor = (fra, til) => { const p = []; for (let t = Math.max(fra, til - 20 * 60e3); t <= til; t += 2000) p.push(dhPos(t).slice(0, 2)); return p; };
 
 // ---------- tegning ----------
 const fmtTid = ms => { const s = Math.max(0, Math.round(ms / 1000)); return s < 60 ? s + ' s' : s < 3600 ? Math.round(s / 60) + ' min' : Math.floor(s / 3600) + ' t ' + Math.round(s % 3600 / 60) + ' min'; };
@@ -116,9 +135,9 @@ function tegn() {
   $('.t-sist').textContent = fmtTid(alder);
   let pos, spor;
   if (live.modus === 'dc') {
-    pos = dhPos(nå); spor = [dhSpor(live.fra, nå)];
-    $('.sted').textContent = 'Det hvite hus, Washington, D.C.';
-    $('.t-fart').textContent = '3 km/t';
+    const [la, lo, rom, står] = dhPos(nå); pos = [la, lo]; spor = [dhSpor(live.fra, nå)];
+    $('.sted').textContent = 'Det hvite hus · ' + (står ? rom : 'på vei til ' + rom);
+    $('.t-fart').textContent = står ? '0 km/t' : '4 km/t';
     $('.t-gatt').textContent = (km(trail) / 1000).toFixed(1).replace('.', ',') + ' km';
   } else {
     pos = [live.lat, live.lon]; spor = linjer(trail);
@@ -131,7 +150,7 @@ function tegn() {
   meg.setLatLng(pos); if (!kart.hasLayer(meg)) meg.addTo(kart);
   if (modus !== live.modus || forste) {
     modus = live.modus; forste = false;
-    if (modus === 'dc') kart.setView(pos, 18, { animate: false });
+    if (modus === 'dc') kart.setView([38.89757, -77.03700], 19, { animate: false });
     else { const alle = spor.flat(); if (alle.length > 1) kart.fitBounds(L.latLngBounds(alle).pad(.2), { maxZoom: 16, animate: false }); else kart.setView(pos, 16, { animate: false }); }
   } else if (!kart.getBounds().pad(-.15).contains(pos)) kart.panTo(pos);
   stier = spor;
