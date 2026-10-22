@@ -1059,7 +1059,9 @@ export class ChatHub {
     const fra = Date.now() - 30 * 60e3;
     const bev = [...this.sql.exec(`SELECT ts, v FROM bev WHERE ts <= ? ORDER BY ts DESC LIMIT 1`, fra).toArray(),
       ...this.sql.exec(`SELECT ts, v FROM bev WHERE ts > ? ORDER BY ts`, fra).toArray()].map((r) => [r.ts, r.v]);
-    return { now: Date.now(), live, trail, tele: this.tele(), bev };
+    // Heart rate the last 5 minutes, every stored sample (one per ~4 s while the watch shares it).
+    const puls = this.sql.exec(`SELECT ts, bpm FROM hr WHERE ts > ? ORDER BY ts`, Date.now() - 5 * 60e3).toArray().map((r) => [r.ts, r.bpm]);
+    return { now: Date.now(), live, trail, tele: this.tele(), bev, puls };
   }
 
   // The name of the place he is at (neighbourhood, town, country), from OpenStreetMap's Nominatim. At most every

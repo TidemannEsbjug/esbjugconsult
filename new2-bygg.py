@@ -101,7 +101,14 @@ CSS = r'''  /* /new2: kartet er heroen. Leaflet med OpenStreetMap, gjort mørkt 
   /* Pulsen øverst i panelet til høyre, over hele bredden. */
   .sens .hp{grid-column:1/-1;flex-direction:row;align-items:center;justify-content:space-between;gap:12px;padding-bottom:12px;border-bottom:1px solid rgba(0,32,91,.12)}
   .sens .hp .st-v{font:640 clamp(26px,2.4vw,34px)/1 var(--serif);letter-spacing:-.02em;gap:10px;color:var(--ink)}
-  .sens .hp .g{width:160px;height:34px}
+  .sens .hp .g{display:none}
+  .sens .hp{flex-wrap:wrap}
+  .sens .hp .hp-o{flex:1;min-width:0}
+  .sens .hp .st-v{width:100%}
+  .hk{flex:1 1 220px;min-width:180px;height:40px;overflow:visible}
+  .hk-l{fill:none;stroke:#e0233c;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+  .hk-p{fill:#e0233c;stroke:#fff;stroke-width:2;vector-effect:non-scaling-stroke}
+  .hk-x{display:none}
   .sens .hp .st-l{font:600 9.5px/1.3 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(0,32,91,.6)}
 
   @keyframes svNy{0%{color:#e0233c}100%{color:var(--ink)}}
@@ -228,8 +235,23 @@ function oskilloskop() {
   }
 }
 requestAnimationFrame(oskilloskop);
+// Pulsen siste 5 minutter: hver måling er et punkt, siste punkt er nå. Skalaen følger tallene (minst 20 slag høy).
+let puls = [];
+function tegnPuls() {
+  const l = document.querySelector('.hk-l'), p = document.querySelector('.hk-p'); if (!l) return;
+  const nå = Date.now() + skew, fra = nå - 5 * 60e3, pts = puls.filter(q => q[0] > fra);
+  if (pts.length < 2) { l.setAttribute('d', ''); p.setAttribute('cx', -9); return; }
+  let lo = Math.min(...pts.map(q => q[1])), hi = Math.max(...pts.map(q => q[1]));
+  const midt = (lo + hi) / 2, h = Math.max(20, hi - lo + 6); lo = midt - h / 2; hi = midt + h / 2;
+  const X = t => (t - fra) / (5 * 60e3) * 200, Y = b => 38 - (b - lo) / (hi - lo) * 36;
+  let d = '', forr = 0;
+  for (const [t, b] of pts) { d += (d && t - forr < 30e3 ? 'L' : 'M') + X(t).toFixed(1) + ' ' + Y(b).toFixed(1); forr = t; }
+  l.setAttribute('d', d);
+  const s = pts[pts.length - 1]; p.setAttribute('cx', X(s[0]).toFixed(1)); p.setAttribute('cy', Y(s[1]).toFixed(1));
+}
+setInterval(tegnPuls, 1000);
 async function hent() {
-  try { const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json(); skew = j.now - Date.now(); live = j.live; trail = j.trail || []; tele = j.tele || {}; } catch {}
+  try { const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json(); skew = j.now - Date.now(); live = j.live; trail = j.trail || []; tele = j.tele || {}; if (j.puls) puls = j.puls; tegnPuls(); } catch {}
   tegn();
 }
 hent(); setInterval(() => { if (!document.hidden) hent(); }, 2500);
@@ -240,7 +262,10 @@ setInterval(tegn, 1000);
 rep('\n</body>', '\n' + JS + '</body>')
 m = re.search(r'<div class="st-i hp" hidden>.*?</span></span></div>', s, flags=re.S)
 assert m, 'fant ikke pulsen'
-s = s.replace(m.group(0), '', 1).replace('<!--PULS-->', m.group(0), 1)
+# Kortsiktig pulsgraf (siste 5 min) i stedet for hele dagen.
+puls = m.group(0).replace('<svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg>', '<svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg><svg class="hk" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true"><path class="hk-l" d=""/><circle class="hk-p" r="3" cx="-9" cy="-9"/></svg>', 1)
+assert puls != m.group(0), 'fant ikke pulsgrafen'
+s = s.replace(m.group(0), '', 1).replace('<!--PULS-->', puls + '<span class="hk-x" aria-hidden="true"><span>5 min</span><span>nå</span></span>', 1)
 pathlib.Path('new2').mkdir(exist_ok=True)
 pathlib.Path('new2/index.html').write_text(s)
 print('new2/index.html skrevet', len(s))
