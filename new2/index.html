@@ -1292,12 +1292,6 @@ const sett = (k, v, pct, kl) => {
   const bar = e.querySelector('.bar i'); if (bar) bar.style.width = (pct ?? 0) + '%';
   e.classList.toggle('lav', pct != null && pct <= 20); e.classList.toggle('lader', !!kl);
 };
-// Han skal stå i det ledige feltet, ikke under panelene: på bred skjerm litt til venstre for midten og nede, på mobil øverst over panelene.
-function ledig(pos) {
-  const sz = kart.getSize(), p = kart.latLngToContainerPoint(pos);
-  const mål = innerWidth > 760 ? [sz.x * .4, sz.y * .66] : [sz.x * .5, sz.y * .3];
-  kart.panBy([p.x - mål[0], p.y - mål[1]], { animate: false });
-}
 function tegn() {
   const nå = Date.now() + skew;
   const i = tele.iphone || {}, w = tele.watch || {}, st = tele.sted;
@@ -1324,7 +1318,7 @@ function tegn() {
   let spor = linjer(trail); if (spor.length) spor[spor.length - 1].push(pos); else spor = [[pos]];
   lag.forEach(l => l.setLatLngs(spor)); stier = spor;
   meg.setLatLng(pos); if (!kart.hasLayer(meg)) meg.addTo(kart);
-  if (forste) { forste = false; kart.setView(pos, 15, { animate: false }); ledig(pos); }
+  if (forste) { forste = false; kart.setView(pos, 15, { animate: false }); }
   else if (!kart.getBounds().pad(-.2).contains(pos)) kart.panTo(pos);
 }
 // Gnister langs sporet, flest der han er nå.
@@ -1423,7 +1417,7 @@ function visKast(k, fraX) {
   // et tilfeldig panel (stedet, holder på med, målingene, akselerometrene; aldri språkvalget), et tilfeldig sted på det.
   let kort, mx, my, påHam = false;
   if (live && kart.hasLayer(meg) && Math.random() < .8) {
-    { const p = kart.latLngToContainerPoint(meg.getLatLng()), sz = kart.getSize(); if (p.x < 0 || p.y < 0 || p.x > sz.x || p.y > sz.y) ledig(meg.getLatLng()); }
+    if (!kart.getBounds().pad(-.1).contains(meg.getLatLng())) kart.setView(meg.getLatLng(), kart.getZoom(), { animate: false });
     kort = hero; påHam = true;
     const p = kart.latLngToContainerPoint(meg.getLatLng()); mx = p.x; my = p.y;
   } else {
