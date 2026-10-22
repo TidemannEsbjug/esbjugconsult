@@ -481,7 +481,6 @@
   #kart .leaflet-control-attribution a{color:rgba(255,255,255,.6)}
   #kart .leaflet-control-zoom a{background:rgba(5,8,26,.75);color:#fff;border-color:rgba(255,255,255,.15)}
   #kart .leaflet-bottom.leaflet-left{bottom:8px}
-  canvas#gnist{position:absolute;inset:0;z-index:1;width:100%;height:100%;min-height:0;margin:0;pointer-events:none}
   .hero-i{z-index:2;pointer-events:none}
   .hero-i .flyt,.hero-i .gl{pointer-events:auto}
   .spor-glod{filter:blur(6px)}
@@ -598,7 +597,6 @@
 <script>document.body.classList.add('forspill');setTimeout(()=>document.body.classList.remove('forspill'),8000)</script>
 <header class="hero">
   <div id="kart" aria-label="Kart: hvor Tidemann er nå"></div>
-  <canvas id="gnist" aria-hidden="true"></canvas>
   <div class="hero-i">
   <div class="flyt"><button type="button" class="kartknapp gl" aria-label="Vis kartet" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="kk-kart" d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/><path class="kk-x" d="M6 6l12 12M18 6 6 18"/></svg></button><div class="topp gl"><a class="lang" href="/en/" hreflang="en" aria-label="Språk: norsk. Bytt til engelsk"><span class="lang-k" aria-hidden="true"></span><span class="lf no" aria-hidden="true"><svg viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span class="lf gb" aria-hidden="true"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg></span></a>
   <div class="st"><div class="st-i tl-a" hidden data-av data-l="her nå"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">her nå</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><div class="st-i tl-b" hidden data-av data-l="unike besøkende" data-ny="+1 · du er nr. {n}" data-er="Du er nr. {n}" data-var="Du var nr. {n}"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unike besøkende</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><span class="tl-sr"></span></div>
@@ -1283,7 +1281,7 @@ raf=requestAnimationFrame(draw);
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 // Kartet i heroen: hvor Tidemann er, live fra iPhonen (GET /chat/spor hvert 5. s), dagens spor som en lysende sti med
-// gnister, stedsnavnet, og alt telefonen og klokka måler i panelet. Rulling over kartet ruller siden; dra flytter kartet (ikke på mobil).
+// stedsnavnet, og alt telefonen og klokka måler i panelet. Rulling over kartet ruller siden; dra flytter kartet (ikke på mobil).
 (() => {
 // Norsk eller engelsk etter sidens språk (/en/ lages av bygg-en.py, som bare oversetter HTML-en).
 const EN = document.documentElement.lang === 'en';
@@ -1356,29 +1354,8 @@ function tegn() {
   if (forste) { forste = false; kart.setView(pos, 15, { animate: false }); }
   else if (!kart.getBounds().pad(-.2).contains(pos)) kart.panTo(pos);
 }
-// Gnister langs sporet, flest der han er nå.
-const cv = $('#gnist'), cx = cv.getContext('2d'), hero = $('.hero');
-let gnister = [];
-const storr = () => { const d = devicePixelRatio || 1, r = hero.getBoundingClientRect(); cv.width = r.width * d; cv.height = r.height * d; cx.setTransform(d, 0, 0, d, 0, 0); };
-addEventListener('resize', storr); storr();
+const hero = $('.hero');
 let synlig = true; new IntersectionObserver(e => { synlig = e[0].isIntersecting; }).observe(hero);
-function gnistFrame() {
-  requestAnimationFrame(gnistFrame);
-  if (!synlig || still) return;
-  const W = cv.width / (devicePixelRatio || 1), H = cv.height / (devicePixelRatio || 1);
-  cx.clearRect(0, 0, W, H);
-  const pts = stier.flat(); if (pts.length < 2) return;
-  for (let i = 0; i < 3; i++) {
-    const k = Math.min(pts.length - 1, Math.floor(pts.length * Math.pow(Math.random(), .45)));
-    const p = kart.latLngToContainerPoint(pts[k]);
-    gnister.push({ x: p.x + (Math.random() - .5) * 8, y: p.y + (Math.random() - .5) * 8, vx: (Math.random() - .5) * .5, vy: -Math.random() * .7 - .1, l: 1, r: Math.random() * 2 + .8 });
-  }
-  gnister = gnister.filter(g => (g.l -= .014) > 0).slice(-260);
-  for (const g of gnister) { g.x += g.vx; g.y += g.vy; cx.globalAlpha = g.l; cx.fillStyle = g.l > .6 ? '#fff7c2' : '#FFD23F'; cx.shadowColor = '#FFD23F'; cx.shadowBlur = 8; cx.beginPath(); cx.arc(g.x, g.y, g.r * g.l, 0, 7); cx.fill(); }
-  cx.globalAlpha = 1; cx.shadowBlur = 0;
-}
-kart.on('movestart zoomstart', () => { gnister = []; });
-requestAnimationFrame(gnistFrame);
 // Akselerometrene: pakkene (20 målinger i sekundet, hver 5. s) spilles av jevnt, 7 s bak sanntid, så det ser live ut.
 const RATE = 50, FORS = 7000, VIN = 10000, AK = {};
 function inn(k, t) {
@@ -1497,8 +1474,10 @@ async function klikk(k, x) {
   try { const r = await fetch('/chat/kast', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ k }) }); if (r.ok) { kast = await r.json(); egne[k] = 0; } } catch {}
 }
 document.querySelector('.k-tomat').addEventListener('click', e => klikk('tomat', e.clientX || undefined));
+let sistHent = 0;
 function nyeKast(ny) {
-  if (kast) for (const k of ['tomat']) { const n = Math.min(4, ny[k] - kast[k]); for (let i = 0; i < n; i++) setTimeout(() => visKast(k), i * 450); }
+  const fulgt = Date.now() - sistHent < 6000; sistHent = Date.now();
+  if (kast && fulgt) for (const k of ['tomat']) { const n = Math.min(4, ny[k] - kast[k]); for (let i = 0; i < n; i++) setTimeout(() => visKast(k), i * 450); }
   kast = ny;
   knapp('tomat').querySelector('b').textContent = tall(ny.tomat);
 }
