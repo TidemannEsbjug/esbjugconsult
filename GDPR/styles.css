@@ -291,22 +291,23 @@ section {
   text-align: center;
 }
 
-/* Scenen: filmen fra appens intro over hele bredden. Himmelen, hytta og
-   skisporet står fritt; all teksten står samlet nede i snøen, der et lyst slør
-   gjør den lett å lese. Når filmen er ferdig, toner det skarpe stillbildet inn. */
+/* Scenen: filmen fra appens intro over hele bredden, med mye himmel og luft.
+   All teksten står samlet midt i bildet, med et lyst slør bak så den er lett å
+   lese. Når filmen er ferdig, toner det skarpe stillbildet inn. */
 .scene {
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  min-height: max(660px, min(100svh, 1000px));
+  justify-content: center;
+  min-height: max(640px, min(100svh, 980px));
   margin: 0 calc(-1 * var(--gut));
-  padding: 0 var(--gut) clamp(48px, 8vh, 96px);
+  /* Klassisk hero: teksten midt i bildet, med luft over og under. */
+  padding: clamp(72px, 10vh, 120px) var(--gut);
   overflow: hidden;
   isolation: isolate;
   /* Uten dette kan en tynn strek av filmen skimte under den siste overgangen. */
   margin-bottom: -1px;
-  background: #dfe8f2 url("assets/hero-ski-start.jpg") center 58% / cover no-repeat;
+  background: #dfe8f2 url("assets/hero-ski-start.jpg") center 40% / cover no-repeat;
 }
 
 .scene-film,
@@ -317,7 +318,7 @@ section {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 58%;
+  object-position: center 40%;
   pointer-events: none;
 }
 
@@ -341,9 +342,9 @@ section {
   background: linear-gradient(
     180deg,
     rgba(238, 243, 251, 0) 0%,
-    rgba(238, 243, 251, 0) 34%,
-    rgba(240, 244, 250, 0.5) 54%,
-    rgba(242, 246, 251, 0.82) 72%,
+    rgba(238, 243, 251, 0.12) 30%,
+    rgba(240, 244, 250, 0.38) 55%,
+    rgba(242, 246, 251, 0.6) 80%,
     var(--ground) 100%
   );
 }
@@ -1549,8 +1550,8 @@ footer {
 @media (max-width: 560px) {
   /* Litt høyere scene og strammere tekst, så hytta står fri over overskriften. */
   .scene {
-    min-height: max(720px, 112svh);
-    padding-bottom: 40px;
+    min-height: max(640px, 100svh);
+    padding: 56px var(--gut) 40px;
   }
 
   .hero .scene .lead {
