@@ -374,20 +374,67 @@ section {
   margin-top: 20px;
 }
 
-/* Forklaringen av «lokal AI» under ingressen. */
+/* Ingressen og forklaringen av «lokal AI», samlet i én hvit boks under overskriften. */
 .hero .scene .lokal {
-  max-width: 58ch;
-  margin: 18px auto 0;
-  padding: 14px 20px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.78);
-  box-shadow: 0 1px 0 var(--rule);
+  max-width: 60ch;
+  margin: 22px auto 0;
+  padding: 18px 22px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: 0 1px 0 var(--rule), 0 10px 30px rgba(21, 32, 46, 0.06);
   color: var(--ink-2);
   font-size: 15.5px;
   text-align: left;
 }
 
+.hero .scene .lokal p + p {
+  margin-top: 10px;
+}
+
+.hero .scene .lokal .hva {
+  color: var(--ink);
+  font-size: 1.08em;
+}
+
 .hero .scene .lokal b {
+  color: var(--ink);
+}
+
+.hero .scene .lokal .avskaaret {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+}
+
+.hero .scene .lokal .avskaaret svg {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  margin-top: 1px;
+  fill: none;
+  stroke: var(--ink-3);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.hero .scene .lokal .avskaaret circle {
+  fill: var(--ink-3);
+  stroke: none;
+}
+
+.hero .scene .lokal .avskaaret .kryss {
+  stroke: var(--flag);
+  stroke-width: 2.4;
+}
+
+.hero .scene .lokal .avskaaret b {
+  color: var(--flag);
+}
+
+.hero .scene .lokal a {
   color: var(--signal-deep);
 }
 

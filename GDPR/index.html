@@ -148,20 +148,34 @@
             </p>
             <h1 class="rise" style="--d: 60ms">
               Rensede dokumenter,
-              <span>på din egen maskin.</span>
+              <span>med lokal AI.</span>
             </h1>
-            <p class="lead rise" style="--d: 120ms">
-              Klart finner navn, fødselsnummer, adresser og helseopplysninger i
-              alle filene i en mappe, og lager en kopi der de er byttet ut. Klar
-              til innsyn, deling, arkiv eller AI.
-            </p>
-            <!-- «Lokal AI» sier lite for de fleste. Her står det rett ut hva det betyr. -->
-            <p class="lokal rise" style="--d: 150ms">
-              <b>Hva betyr lokal AI?</b> AI-en følger med i programmet og
-              jobber på din egen Mac eller PC — ikke på internett, ikke i
-              skyen, ikke hos ChatGPT. Dokumentene sendes aldri noe sted. Skru
-              av wifi, og Klart virker like godt.
-            </p>
+            <!-- Ingressen og forklaringen av «lokal AI» i én boks. Det viktigste står
+                 nederst: Klart har ingen vei ut på nett (ingen HTTP- eller TLS-klient
+                 i appen; se til-it.html for hvordan IT sjekker det). -->
+            <div class="lokal rise" style="--d: 120ms">
+              <p class="hva">
+                Klart finner navn, fødselsnummer, adresser og helseopplysninger
+                i alle filene i en mappe, og lager en kopi der de er byttet ut.
+                Klar til innsyn, deling, arkiv eller AI.
+              </p>
+              <p>
+                <b>Lokal AI</b> betyr at AI-en ligger inne i programmet, på din
+                egen Mac eller PC. Ikke i skyen, ikke hos ChatGPT.
+              </p>
+              <p class="avskaaret">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M2 8.5a15 15 0 0 1 20 0M5.5 12a10 10 0 0 1 13 0M9 15.5a5 5 0 0 1 6 0" />
+                  <circle cx="12" cy="19" r="1.2" />
+                  <path class="kryss" d="M3 3l18 18" />
+                </svg>
+                <span>
+                  <b>Klart kan ikke koble seg til internett.</b> Programmet er
+                  bygget uten kode for nett, så dokumentene har ingen vei ut av
+                  maskinen. <a href="til-it.html">IT kan sjekke det selv</a>.
+                </span>
+              </p>
+            </div>
             <div class="get rise" style="--d: 180ms">
               <a class="btn" href="/klart/last-ned/mac" download>Last ned for Mac</a>
               <span class="btn ghost kommer" aria-disabled="true">
