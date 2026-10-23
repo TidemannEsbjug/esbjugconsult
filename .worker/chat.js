@@ -1520,7 +1520,8 @@ export class ChatHub {
       const liste = (a.accounts || a.list || (Array.isArray(a) ? a : [])).slice(0, 12);
       const kontoer = liste.map((k) => ({ key: k.key, navn: k.name || k.description || k.product || "Konto", nr: String(k.accountNumber?.formatted || k.accountNumber?.value || k.accountNumber || "").replace(/\D/g, "").slice(-4),
         saldo: Number(k.balance?.amount ?? k.balance ?? 0), disp: Number(k.availableBalance?.amount ?? k.availableBalance ?? 0), valuta: k.currencyCode || k.balance?.currencyCode || "NOK", type: k.type || "" }));
-      const bank = { ts: nå, kontoer: kontoer.map(({ key, ...k }) => k), sum: kontoer.reduce((s, k) => s + k.saldo, 0) };
+      // Summen er det disponible (det nettbanken viser): bokført saldo endrer seg først når en overføring er bokført.
+      const bank = { ts: nå, kontoer: kontoer.map(({ key, ...k }) => k), sum: kontoer.reduce((s, k) => s + k.disp, 0) };
       const forrige = this.setting("bank");
       this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('bank', ?)`, JSON.stringify(bank));
       // Historikken: saldoene hver gang de endrer seg (og minst én gang i timen).

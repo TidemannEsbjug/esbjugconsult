@@ -2021,7 +2021,7 @@ function visBank(b) {
   $('.bk-t').textContent = TX.oppdatert + kl.format(b.ts);
   $('.bk-kontoer').replaceChildren(...b.kontoer.map(k => {
     const l = document.createElement('li'), x = document.createElement('span'), y = document.createElement('b');
-    x.textContent = k.navn + (k.nr ? ' ··' + k.nr : ''); y.textContent = kr.format(k.saldo) + ' kr'; l.append(x, y); return l;
+    x.textContent = k.navn + (k.nr ? ' ··' + k.nr : ''); y.textContent = kr.format(k.disp ?? k.saldo) + ' kr'; l.append(x, y); return l;   // disponibelt, som i nettbanken
   }));
 }
 // Hva han holder på med, satt i appen: Jobber, Trener, Sover. Kortet er skjult når ingenting er valgt.
