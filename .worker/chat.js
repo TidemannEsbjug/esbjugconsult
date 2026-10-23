@@ -27,6 +27,7 @@
 //   POST /chat/admin/tele         {kilde, d}          latest readings from the owner's iPhone/watch (battery, steps, pressure …)
 //   POST /chat/admin/sted-her     {navn, r}           name the place he is at now (e.g. «hjemme hos moren sin»), radius r m
 //   POST /chat/kast               {k: "le" | "tomat"} a visitor laughs or throws a tomato at the map card (shared counters)
+//   POST /chat/android            {bat, lader}        the owner's Android phone reports its battery (its own key, ANDROID_TOKEN)
 //   GET  /chat/oyet                               weather now in Dubai, Koh Phangan and Lombok (Open-Meteo, cached 15 min)
 //   GET  /chat/spor                               the public map: live position, today's trail, place name and the readings
 //   GET  /chat/hr                                 today's heart rate from the owner's Apple Watch (Oslo day, per minute) + live bpm
@@ -87,6 +88,15 @@ export async function handleChat(request, env, url) {
   }
 
   // «Øyet mot»: weather in the three places on the front page (Dubai, Koh Phangan, Lombok, in that order). One call to Open-Meteo for all, cached 15 minutes.
+  // The Android phone: only battery and charging, with its own key, so the app never holds the admin token.
+  if (path === "/chat/android" && request.method === "POST") {
+    if (!env.ANDROID_TOKEN || request.headers.get("Authorization") !== `Bearer ${env.ANDROID_TOKEN}`) return new Response("Unauthorized", { status: 401 });
+    const { bat, lader } = await request.json().catch(() => ({}));
+    if (!Number.isFinite(bat) || bat < 0 || bat > 100) return new Response("Bad request", { status: 400 });
+    return hub.fetch(new Request("https://hub/chat/admin/tele", { method: "POST", headers: { "x-role": "owner" },
+      body: JSON.stringify({ kilde: "android", d: { bat: Math.round(bat), lader: !!lader } }) }));
+  }
+
   if (path === "/chat/oyet") {
     const key = new Request("https://esbjugconsult.com/chat/oyet?steder=dubai-kp-lombok");
     const hit = await caches.default.match(key);

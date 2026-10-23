@@ -264,7 +264,6 @@ T_NY = [
     ('aria-label="Kast en tomat på Tidemann">🍅 <span>Kast tomat</span>', 'aria-label="Throw a tomato at Tidemann">🍅 <span>Throw a tomato</span>'),
     ('<span class="mono s-t">Holder på med</span>', '<span class="mono s-t">Right now</span>'),
     ('aria-label="Alt iPhonen og Apple Watch måler"', 'aria-label="Everything his iPhone and Apple Watch measure"'),
-    ('<span class="sl">Volum</span>', '<span class="sl">Volume</span>'),
     ('<span class="sl">Gått i dag</span>', '<span class="sl">Walked today</span>'),
     ('<span class="sl">I ørene</span>', '<span class="sl">In his ears</span>'),
     ('<span class="sl">Nett</span>', '<span class="sl">Network</span>'),

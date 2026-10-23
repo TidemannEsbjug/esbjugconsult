@@ -613,6 +613,12 @@
   .kartknapp svg{width:20px;height:20px}
   .kartknapp .kk-x,.kartmodus .kartknapp .kk-kart{display:none}.kartmodus .kartknapp .kk-x{display:inline}
   .paneler{transition:opacity .35s ease,transform .45s cubic-bezier(.2,.8,.2,1)}
+  /* Ingen vekst eller flimring mens siden laster: panelene er usynlige til første svar er lagt inn (da har alle
+     kortene sin endelige størrelse), og tones så inn samlet. Pulsraden holder plassen sin selv før pulsen er kjent. */
+  html:not(.data-klar) .paneler{opacity:0;transition:none}
+  .data-klar .paneler{animation:panelInn .6s ease both}
+  @keyframes panelInn{from{opacity:0;transform:translateY(6px)}}
+  .sens .hp[hidden]{display:flex}
   .kartmodus .paneler{opacity:0;transform:translateY(24px);pointer-events:none}
   .kartmodus .paneler .gl{pointer-events:none}
   @media (max-width:760px){.kartknapp{display:flex}}
@@ -647,7 +653,7 @@
     <div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Puls i dag"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg><svg class="hk" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true"><path class="hk-l" d=""/><circle class="hk-p" r="3" cx="-9" cy="-9"/></svg></span></button><span class="st-l"><span class="hp-on">Live fra Apple Watch</span><span class="hp-av">Ikke live akkurat nå</span></span></div><span class="hk-x" aria-hidden="true"><span>5 min</span><span>nå</span></span>
     <div class="sv" data-k="ibat"><span class="sl">iPhone</span><b>–</b><i class="bar"><i></i></i></div>
     <div class="sv" data-k="wbat"><span class="sl">Apple Watch</span><b>–</b><i class="bar"><i></i></i></div>
-    <div class="sv" data-k="volum"><span class="sl">Volum</span><b>–</b><i class="bar"><i></i></i></div>
+    <div class="sv" data-k="abat"><span class="sl">Android</span><b>–</b><i class="bar"><i></i></i></div>
     <div class="sv" data-k="gatt"><span class="sl">Gått i dag</span><b>–</b></div>
     <div class="sv" data-k="lyd"><span class="sl">I ørene</span><b>–</b></div>
     <div class="sv" data-k="nett"><span class="sl">Nett</span><b>–</b></div>
@@ -1420,7 +1426,8 @@ function tegn() {
   // Bare typen, ikke merkenavnet: earbuds, headset eller ingen.
   sett('lyd', i.lyd == null ? null : /^(høyttaler|telefonen)$/.test(i.lyd) ? TX.ingen : /pods|buds|pop|ear|fit|dots/i.test(i.lyd) ? 'Earbuds' : 'Headset');
   sett('nett', i.nett === 'Wi-Fi' ? 'Wi-Fi' : i.nett === 'mobil' || i.nett === 'mobilnett' ? TX.mobil : i.nett === 'ingen' ? TX.utenNett : i.nett);
-  sett('volum', i.volum != null ? i.volum + ' %' : null, i.volum);
+  const a = tele.android || {};
+  sett('abat', a.bat != null ? a.bat + ' %' + (a.lader ? ' ⚡' : '') : null, a.bat, a.lader);
   for (const k of ['iphone', 'watch']) inn(k, tele[k]);
   if (!live) { $('.s-navn').textContent = TX.ingenPos; $('.s-live').textContent = TX.venter; document.body.classList.add('gammel'); return; }
   // Posisjonen kommer bare når han flytter seg; telefonen sender ellers hvert 5. s, så den teller som livstegn.
@@ -1648,6 +1655,7 @@ tegnOyet(); setInterval(tegnOyet, 1000); hentOyet(); setInterval(hentOyet, 15 * 
 async function hent() {
   try { const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json(); skew = j.now - Date.now(); live = j.live; trail = j.trail || []; tele = j.tele || {}; if (j.puls) puls = j.puls; tegnPuls(); if (j.kast) nyeKast(j.kast); gjor(j.gjor); settPoster(j.notater); } catch {}
   tegn();
+  document.documentElement.classList.add('data-klar');   // første svar er lagt inn: panelene kan vises
   leggKart();   // etter første svar: kartet står allerede der han er
 }
 hent(); setInterval(() => { if (!document.hidden) hent(); }, 2500);
