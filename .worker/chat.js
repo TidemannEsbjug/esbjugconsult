@@ -85,7 +85,12 @@ export async function handleChat(request, env, url) {
     return new Response(r.body, { status: r.status, headers: { "content-type": "application/json", "cache-control": "public, max-age=60" } });
   }
 
-  // Rå puls (hver lagret måling) i et vindu på høyst 30 min, til avspillingen i sanntid.
+  // Rå puls (hver lagret måling) og akselerometerpakker i et vindu på høyst 30 min, til avspillingen i sanntid.
+  if (path === "/chat/historikk/aks") {
+    const fra = Number(url.searchParams.get("fra")), til = Number(url.searchParams.get("til"));
+    if (!Number.isFinite(fra) || !Number.isFinite(til) || til <= fra || til - fra > 30 * 60e3) return new Response("Bad request", { status: 400 });
+    return hub.fetch(new Request("https://hub/internal/aks-raa", { method: "POST", headers: { "x-role": "internal" }, body: JSON.stringify({ fra, til }) }));
+  }
   if (path === "/chat/historikk/puls") {
     const fra = Number(url.searchParams.get("fra")), til = Number(url.searchParams.get("til"));
     if (!Number.isFinite(fra) || !Number.isFinite(til) || til <= fra || til - fra > 30 * 60e3) return new Response("Bad request", { status: 400 });
@@ -605,6 +610,10 @@ export class ChatHub {
         this.sql.exec(`DELETE FROM kv WHERE k='notat'`);
       }
     }
+    // Akselerometrene rått (pakker med 20 målinger i sekundet, én pakke hvert 5. s fra iPhone og klokka), til avspillingen.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS akslogg (kilde TEXT, ts INTEGER, acc TEXT, PRIMARY KEY (kilde, ts))`);
+    // Kontoutskriftene fra SpareBank 1, bare lagret (vises ikke på siden). Nøkkelen er kontoen + dato + beløp + tekst.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS banktrans (id TEXT PRIMARY KEY, konto TEXT, tid INTEGER, belop REAL, tekst TEXT, sett INTEGER)`);
     // Kartmatchede biter av sporet (veien han fulgte, med klokkeslett), fra Valhalla. Erstatter rå GPS i tidsrommet.
     this.sql.exec(`CREATE TABLE IF NOT EXISTS veispor (fra INTEGER PRIMARY KEY, til INTEGER, kost TEXT, geom TEXT)`);
     // Endringer over tid til avspillingen: «holder på med» (gjor), status og postene (hele lista etter hver endring). 35 dager.
@@ -689,6 +698,7 @@ export class ChatHub {
       const count = { live: this.liveCount(), total: this.uniqTotal() };
       pair[1].send(JSON.stringify({ t: "history", msgs: this.history(vid), owner: this.ownerOnline(), extras: !!ex?.extras, ring: !!ex?.ring, status: this.status(), sovnet: this.sovnet(), call: this.canCall(), hr: this.liveHr(), count:{ live: this.liveCount(), total: this.uniqTotal(), nr, ny: !!prov, pend: !!pend || !!prov, meg: !eier && (!sus || !!nr) } }));
       this.send(this.ctx.getWebSockets("v").filter((w) => w !== pair[1]), { t: "count", ...count });
+      this.loggBesok();
       this.toOwners({ t: "presence", v: this.visitor(vid) });
       if (newVisit && !eier && this.setting("notifyVisits") === "1") this.ctx.waitUntil(this.pushVisit({ key: vid, vid, first: false, city: geo.city, country: geo.country, ua }));
       this.ctx.waitUntil(this.ensureAlarm());
@@ -717,13 +727,13 @@ export class ChatHub {
         if (this.kastRate.size > 5000) this.kastRate.clear();
         const n = Number(this.sql.exec(`SELECT v FROM kv WHERE k=?`, `kast:${b.k}`).toArray()[0]?.v || 0) + 1;
         this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, `kast:${b.k}`, String(n));
+        this.loggFor("kast", JSON.stringify(this.kast()));
         if (b.k === "tomat") this.tomatVarsel(decodeURIComponent(request.headers.get("x-by") || ""));
         if (b.k === "heia") this.heiaVarsel(decodeURIComponent(request.headers.get("x-by") || ""));
         return Response.json(this.kast());
       }
-      if (url.pathname === "/internal/hr-raa") {
-        return Response.json(this.sql.exec(`SELECT ts, bpm FROM hr WHERE ts >= ? AND ts < ? ORDER BY ts`, b.fra, b.til).toArray().map((r) => [r.ts, r.bpm]),
-          { headers: { "cache-control": "public, max-age=30" } });
+      if (url.pathname === "/internal/hr-raa" || url.pathname === "/internal/aks-raa") {
+        return Response.json(await this.vindu(url.pathname === "/internal/aks-raa" ? "aks" : "hr", b.fra, b.til), { headers: { "cache-control": "public, max-age=30" } });
       }
       if (url.pathname === "/internal/verdi") {
         return Response.json(this.verdi(b));
@@ -732,7 +742,7 @@ export class ChatHub {
         return Response.json(this.oyeblikk());
       }
       if (url.pathname === "/internal/historikk") {
-        return Response.json(this.historikk(b.dag));
+        return Response.json(await this.historikk(b.dag));
       }
       if (url.pathname === "/internal/bank-tilbake") {
         return Response.json(await this.bankTilbake(b));
@@ -885,7 +895,7 @@ export class ChatHub {
       }
       if (now - this.hrPruned > 3600e3) {
         this.hrPruned = now;
-        this.sql.exec(`DELETE FROM hr WHERE ts < ?`, now - 35 * 864e5);
+        this.sql.exec(`DELETE FROM hr WHERE ts < ?`, this.slettFor(now));
       }
       this.toVisitors({ t: "hr", bpm: v });
       if (v) this.vaakneAvPuls(now, v);
@@ -906,7 +916,7 @@ export class ChatHub {
           ts, lat, lon, num(p.acc), num(p.spd), num(p.alt), num(p.hdg));
         n++;
       }
-      if (now - (this.posPruned || 0) > 3600e3) { this.posPruned = now; this.sql.exec(`DELETE FROM pos WHERE ts < ?`, now - 35 * 864e5); }
+      if (now - (this.posPruned || 0) > 3600e3) { this.posPruned = now; this.sql.exec(`DELETE FROM pos WHERE ts < ?`, this.slettFor(now)); }
       if (n) { const l = this.sporLive(); if (l) { this.toVisitors({ t: "pos", ...l }); this.ctx.waitUntil(this.stedNavn(l.lat, l.lon)); } }
       if (now - (this.matchet || 0) > 60e3) { this.matchet = now; this.ctx.waitUntil(this.matchNye().catch(() => {})); }
       return Response.json({ ok: true, n });
@@ -937,12 +947,16 @@ export class ChatHub {
         const v = kilde === "iphone" ? ren.bevegelse : kilde === "watch" ? ren.haand : undefined;
         if (typeof v === "number" && v >= 0 && v < 20) {
           this.sql.exec(`INSERT OR REPLACE INTO bevegelse (k, ts, v) VALUES (?, ?, ?)`, kilde, ny.ts, v);
-          if (ny.ts - (this.bevegelsePruned || 0) > 3600e3) { this.bevegelsePruned = ny.ts; this.sql.exec(`DELETE FROM bevegelse WHERE ts < ?`, ny.ts - 35 * 864e5); }
+          if (ny.ts - (this.bevegelsePruned || 0) > 3600e3) { this.bevegelsePruned = ny.ts; this.sql.exec(`DELETE FROM bevegelse WHERE ts < ?`, this.slettFor(ny.ts)); }
         }
       }
       if (kilde === "iphone" && typeof ren.bevegelse === "number") {
         this.sql.exec(`INSERT OR REPLACE INTO bev (ts, v) VALUES (?, ?)`, ny.ts, ren.bevegelse);
         if (ny.ts - (this.bevPruned || 0) > 3600e3) { this.bevPruned = ny.ts; this.sql.exec(`DELETE FROM bev WHERE ts < ?`, ny.ts - 864e5); }
+      }
+      if (ren.acc) {
+        this.sql.exec(`INSERT OR REPLACE INTO akslogg (kilde, ts, acc) VALUES (?, ?, ?)`, kilde, ny.ts, ren.acc);
+        if (ny.ts - (this.aksPruned || 0) > 3600e3) { this.aksPruned = ny.ts; this.sql.exec(`DELETE FROM akslogg WHERE ts < ?`, this.slettFor(ny.ts)); }
       }
       this.teleLogg = this.teleLogg || {};
       if (ny.ts - (this.teleLogg[kilde] || 0) >= 60e3) {
@@ -950,7 +964,7 @@ export class ChatHub {
         const d = {};
         for (const k of ["bat", "lader", "meter", "skritt", "etasjer", "lyd", "nett", "bevegelse", "haand", "aktivitet", "trykk"]) if (ny[k] !== undefined) d[k] = ny[k];
         this.sql.exec(`INSERT OR REPLACE INTO telelogg (kilde, ts, d) VALUES (?, ?, ?)`, kilde, ny.ts, JSON.stringify(d));
-        if (ny.ts - (this.teleLoggPruned || 0) > 3600e3) { this.teleLoggPruned = ny.ts; this.sql.exec(`DELETE FROM telelogg WHERE ts < ?`, ny.ts - 35 * 864e5); }
+        if (ny.ts - (this.teleLoggPruned || 0) > 3600e3) { this.teleLoggPruned = ny.ts; this.sql.exec(`DELETE FROM telelogg WHERE ts < ?`, this.slettFor(ny.ts)); }
       }
       const { acc, ...uten } = ny;   // the chat pages don't need the accelerometer; the map page fetches it
       this.toVisitors({ t: "tele", kilde, d: uten });
@@ -987,7 +1001,10 @@ export class ChatHub {
       const tell = {};
       for (const x of this.romSiste) tell[x.rom] = (tell[x.rom] || 0) + 1;
       const rom = Object.keys(tell).sort((a, c) => tell[c] - tell[a])[0] || null;
-      if (rom) this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('rom', ?)`, JSON.stringify({ rom, ts: now }));
+      if (rom) {
+        if (rom !== this.romForrige) { this.romForrige = rom; this.loggFor("rom", rom); }
+        this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('rom', ?)`, JSON.stringify({ rom, ts: now }));
+      }
       return Response.json({ ok: true, rom, gjett: g, h });
     }
     if (url.pathname === "/chat/admin/rom" && request.method === "GET") {
@@ -1234,7 +1251,7 @@ export class ChatHub {
     }
   }
 
-  async webSocketClose(ws) { this.gone(ws); }
+  async webSocketClose(ws) { this.gone(ws); this.loggBesok(); }
   async webSocketError(ws) { this.gone(ws); }
 
   gone(ws) {
@@ -1504,7 +1521,23 @@ export class ChatHub {
       const kontoer = liste.map((k) => ({ key: k.key, navn: k.name || k.description || k.product || "Konto", nr: String(k.accountNumber?.formatted || k.accountNumber?.value || k.accountNumber || "").replace(/\D/g, "").slice(-4),
         saldo: Number(k.balance?.amount ?? k.balance ?? 0), disp: Number(k.availableBalance?.amount ?? k.availableBalance ?? 0), valuta: k.currencyCode || k.balance?.currencyCode || "NOK", type: k.type || "" }));
       const bank = { ts: nå, kontoer: kontoer.map(({ key, ...k }) => k), sum: kontoer.reduce((s, k) => s + k.saldo, 0) };
+      const forrige = this.setting("bank");
       this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('bank', ?)`, JSON.stringify(bank));
+      // Historikken: saldoene hver gang de endrer seg (og minst én gang i timen).
+      const nøkkel = JSON.stringify(bank.kontoer);
+      if (!forrige || JSON.stringify(JSON.parse(forrige).kontoer) !== nøkkel || nå - (this.bankLogget || 0) > 3600e3) { this.bankLogget = nå; this.loggFor("bank", JSON.stringify(bank)); }
+      // Kontoutskriftene lagres privat (vises ikke): de siste transaksjonene på hver konto, uten dubletter.
+      for (const k of kontoer) {
+        try {
+          const tr = await hent("/personal/banking/transactions?accountKey=" + encodeURIComponent(k.key));
+          for (const x of tr.transactions || tr.list || []) {
+            const tid = typeof x.date === "number" ? x.date : Date.parse(x.date || x.bookingDate || x.valueDate || x.accountingDate || "") || null;
+            const belop = Number(x.amount?.amount ?? x.amount ?? 0), tekst = String(x.cleanedDescription || x.description || x.reference || "").slice(0, 200);
+            const id = String(x.id || [k.key, tid, belop, tekst].join("|")).slice(0, 300);
+            this.sql.exec(`INSERT OR IGNORE INTO banktrans (id, konto, tid, belop, tekst, sett) VALUES (?, ?, ?, ?, ?, ?)`, id, k.navn, tid, belop, tekst, nå);
+          }
+        } catch {}
+      }
       return { ok: true, kontoer: bank.kontoer.length };
     } catch (e) { return { ok: false, feil: String(e.message || e) }; }
   }
@@ -1564,21 +1597,33 @@ export class ChatHub {
   }
 
   // Sporet for én Oslo-dag (YYYY-MM-DD). Ferdige dager huskes, i dag regnes ut på nytt hvert minutt.
-  historikk(dag) {
+  // Historikken for én Oslo-dag til avspillingen. Dager som er slettet fra databasen hentes fra arkivet i R2.
+  async historikk(dag) {
     const start = osloMidnight(Date.parse(dag + "T12:00:00Z")), slutt = osloMidnight(start + 36 * 3600e3);
     this.histMemo = this.histMemo instanceof Map ? this.histMemo : new Map();
     const m = this.histMemo.get(dag);
     if (m && (slutt < Date.now() || Date.now() - m.at < 60e3)) return m.v;
-    const v = { dag, start, slutt, trail: this.sporFra(this.sql.exec(`SELECT ts, lat, lon FROM pos WHERE ts >= ? AND ts < ? ORDER BY ts`, start, slutt).toArray()),
-      // Pulsen som snitt per 15 s, og målingene fra telefonene og klokka (én per minutt).
-      hr: this.sql.exec(`SELECT CAST(ts / 15000 AS INTEGER) * 15000 AS t, CAST(ROUND(AVG(bpm)) AS INTEGER) AS b FROM hr WHERE ts >= ? AND ts < ? GROUP BY 1 ORDER BY 1`, start, slutt).toArray().map((r) => [r.t, r.b]),
-      tele: this.sql.exec(`SELECT kilde, ts, d FROM telelogg WHERE ts >= ? AND ts < ? ORDER BY ts`, start, slutt).toArray().map((r) => [r.ts, r.kilde, JSON.parse(r.d)]),
-      // Endringene den dagen, med tilstanden ved midnatt først (siste endring før dagen begynte).
-      logg: [...["gjor", "status", "notater"].flatMap((k) => this.sql.exec(`SELECT ts, k, v FROM logg WHERE k=? AND ts < ? ORDER BY ts DESC LIMIT 1`, k, start).toArray()),
-        ...this.sql.exec(`SELECT ts, k, v FROM logg WHERE ts >= ? AND ts < ? ORDER BY ts`, start, slutt).toArray()].sort((a, b) => a.ts - b.ts).map((r) => [r.ts, r.k, r.v]) };
+    const iBasen = start >= this.slettFor(Date.now());
+    const d = iBasen ? this.dagData(dag) : await this.arkivDag(dag);
+    if (!d) return { dag, start, slutt, trail: [], hr: [], tele: [], logg: [] };
+    // Pulsen som snitt per 15 s (rå puls hentes i vinduer), målingene én per minutt, endringene med tilstanden ved midnatt.
+    const hr15 = new Map();
+    for (const [ts, b] of d.hr) { const t = Math.floor(ts / 15000) * 15000, x = hr15.get(t) || [0, 0]; x[0] += b; x[1]++; hr15.set(t, x); }
+    const v = { dag, start, slutt, trail: this.sporFra(d.pos, d.veispor), hr: [...hr15].map(([t, x]) => [t, Math.round(x[0] / x[1])]), tele: d.tele, logg: d.logg };
     if (this.histMemo.size > 40) this.histMemo.clear();
     this.histMemo.set(dag, { at: Date.now(), v });
     return v;
+  }
+
+  // Rå puls og akselerometerpakker i et vindu (høyst 30 min), fra databasen eller arkivet.
+  async vindu(type, fra, til) {
+    if (fra >= this.slettFor(Date.now()))
+      return type === "aks"
+        ? this.sql.exec(`SELECT ts, kilde, acc FROM akslogg WHERE ts >= ? AND ts < ? ORDER BY ts`, fra, til).toArray().map((r) => [r.ts, r.kilde, r.acc])
+        : this.sql.exec(`SELECT ts, bpm FROM hr WHERE ts >= ? AND ts < ? ORDER BY ts`, fra, til).toArray().map((r) => [r.ts, r.bpm]);
+    const dag = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Oslo" }).format(fra);
+    const d = await this.arkivDag(dag);
+    return d ? (type === "aks" ? d.aks : d.hr).filter((x) => x[0] >= fra && x[0] < til) : [];
   }
 
   // Kartmatching av ferdige biter (eldre enn 90 s). Bitene deles der GPS-en har hull (over 2 min eller 1 km) og er høyst
@@ -1623,14 +1668,14 @@ export class ChatHub {
       this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('veisporTil', ?)`, String(fra));
     }
     if (n) this.histMemo = new Map();   // ferdige dager i historikken regnes ut på nytt med veiene
-    if (nå - (this.veisporPruned || 0) > 3600e3) { this.veisporPruned = nå; this.sql.exec(`DELETE FROM veispor WHERE til < ?`, nå - 35 * 864e5); }
+    if (nå - (this.veisporPruned || 0) > 3600e3) { this.veisporPruned = nå; this.sql.exec(`DELETE FROM veispor WHERE til < ?`, this.slettFor(nå)); }
     return n;
   }
 
   // Sporet fra posisjonene: kartmatchede biter der de finnes (veien), ellers rå GPS, lett nok til å sendes til alle sidene.
-  sporFra(rows) {
+  sporFra(rows, biterFra) {
     if (rows.length) {
-      const biter = this.sql.exec(`SELECT fra, til, geom FROM veispor WHERE til >= ? AND fra <= ? ORDER BY fra`, rows[0].ts, rows[rows.length - 1].ts).toArray();
+      const biter = (biterFra || this.sql.exec(`SELECT fra, til, geom FROM veispor WHERE til >= ? AND fra <= ? ORDER BY fra`, rows[0].ts, rows[rows.length - 1].ts).toArray()).map((b) => ({ ...b }));
       if (biter.length) {
         const ut = []; let k = 0;
         for (const r of rows) {
@@ -1732,6 +1777,7 @@ export class ChatHub {
       const navn = { strok: a.neighbourhood || a.quarter || a.suburb || a.hamlet || a.village || "", by: a.city || a.town || a.village || a.municipality || "",
         land: a.country || "", kode: (a.country_code || "").toUpperCase(), lat, lon, ts: Date.now() };
       this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('sted', ?)`, JSON.stringify(navn));
+      this.loggFor("sted", JSON.stringify(navn));
       this.toVisitors({ t: "tele", kilde: "sted", d: navn });
     } catch {}
   }
@@ -1823,10 +1869,78 @@ export class ChatHub {
     this.toOwners({ t: "status", v, status: v });
   }
 
+  // Antall besøkende på siden akkurat nå (og totalt), høyst én rad i minuttet.
+  loggBesok() {
+    const nå = Date.now();
+    if (nå - (this.besokLogget || 0) < 60e3) return;
+    this.besokLogget = nå;
+    this.loggFor("besok", JSON.stringify({ live: this.liveCount(), total: this.uniqTotal() }));
+  }
+
+  // Ingenting slettes før dagen er arkivert i R2: rader eldre enn 35 dager, men aldri nyere enn det siste arkivet.
+  slettFor(nå) {
+    const til = this.setting("arkivTil");
+    const arkivertTil = til ? osloMidnight(Date.parse(til + "T12:00:00Z") + 36 * 3600e3) : 0;
+    return Math.min(nå - 35 * 864e5, arkivertTil);
+  }
+
+  // Arkivet: hver ferdige dag (Oslo) pakkes som én gzip-JSON i R2 (historikk/<dag>.json.gz) og blir liggende for alltid.
+  // Tar opptil tre dager per runde (fra alarmen hvert kvarter), eldste først.
+  async arkiver() {
+    const dag = (ts) => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Oslo" }).format(ts);
+    let fra = this.setting("arkivTil");
+    if (!fra) {
+      const først = Math.min(...["pos", "hr", "telelogg", "logg", "akslogg"].map((t) => this.sql.exec(`SELECT MIN(ts) AS m FROM ${t}`).one().m || Date.now()));
+      fra = dag(osloMidnight(først) - 864e5);
+    }
+    const iDag = dag(Date.now());
+    for (let n = 0; n < 3; n++) {
+      const neste = dag(osloMidnight(Date.parse(fra + "T12:00:00Z") + 36 * 3600e3) + 3600e3);
+      if (neste >= iDag) return;
+      const data = this.dagData(neste);
+      const tekst = JSON.stringify(data);
+      const gz = await new Response(new Blob([tekst]).stream().pipeThrough(new CompressionStream("gzip"))).arrayBuffer();
+      await this.env.FILES.put(`historikk/${neste}.json.gz`, gz, { httpMetadata: { contentType: "application/json", contentEncoding: "gzip" } });
+      this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('arkivTil', ?)`, neste);
+      fra = neste;
+    }
+  }
+
+  // Alt som finnes for én Oslo-dag, rått: posisjoner, puls, målinger, akselerometre, bevegelse, endringer (med tilstanden
+  // ved midnatt), kartmatchede biter og kontoutskrifter.
+  dagData(dag) {
+    const start = osloMidnight(Date.parse(dag + "T12:00:00Z")), slutt = osloMidnight(start + 36 * 3600e3);
+    const q = (sql) => this.sql.exec(sql, start, slutt).toArray();
+    const LOGG = ["gjor", "status", "notater", "bank", "kast", "besok", "rom", "sted"];
+    return {
+      dag, start, slutt,
+      pos: q(`SELECT ts, lat, lon, acc, spd, alt, hdg FROM pos WHERE ts >= ? AND ts < ? ORDER BY ts`),
+      hr: q(`SELECT ts, bpm FROM hr WHERE ts >= ? AND ts < ? ORDER BY ts`).map((r) => [r.ts, r.bpm]),
+      tele: q(`SELECT kilde, ts, d FROM telelogg WHERE ts >= ? AND ts < ? ORDER BY ts`).map((r) => [r.ts, r.kilde, JSON.parse(r.d)]),
+      aks: q(`SELECT kilde, ts, acc FROM akslogg WHERE ts >= ? AND ts < ? ORDER BY ts`).map((r) => [r.ts, r.kilde, r.acc]),
+      bevegelse: q(`SELECT k, ts, v FROM bevegelse WHERE ts >= ? AND ts < ? ORDER BY ts`).map((r) => [r.ts, r.k, r.v]),
+      logg: [...LOGG.flatMap((k) => this.sql.exec(`SELECT ts, k, v FROM logg WHERE k=? AND ts < ? ORDER BY ts DESC LIMIT 1`, k, start).toArray()),
+        ...q(`SELECT ts, k, v FROM logg WHERE ts >= ? AND ts < ? ORDER BY ts`)].sort((a, b) => a.ts - b.ts).map((r) => [r.ts, r.k, r.v]),
+      veispor: this.sql.exec(`SELECT fra, til, kost, geom FROM veispor WHERE til >= ? AND fra < ? ORDER BY fra`, start, slutt).toArray(),
+      banktrans: q(`SELECT id, konto, tid, belop, tekst FROM banktrans WHERE tid >= ? AND tid < ? ORDER BY tid`),
+    };
+  }
+
+  // En dag fra arkivet (eldre enn det som ligger i databasen), lest én gang og husket.
+  async arkivDag(dag) {
+    this.arkivMemo = this.arkivMemo instanceof Map ? this.arkivMemo : new Map();
+    if (this.arkivMemo.has(dag)) return this.arkivMemo.get(dag);
+    const obj = await this.env.FILES.get(`historikk/${dag}.json.gz`);
+    const d = obj ? JSON.parse(await new Response(obj.body.pipeThrough(new DecompressionStream("gzip"))).text()) : null;
+    if (this.arkivMemo.size > 10) this.arkivMemo.clear();
+    this.arkivMemo.set(dag, d);
+    return d;
+  }
+
   loggFor(k, v) {
     const now = Date.now();
     this.sql.exec(`INSERT INTO logg (ts, k, v) VALUES (?, ?, ?)`, now, k, v);
-    if (now - (this.loggPruned || 0) > 3600e3) { this.loggPruned = now; this.sql.exec(`DELETE FROM logg WHERE ts < ?`, now - 35 * 864e5); }
+    if (now - (this.loggPruned || 0) > 3600e3) { this.loggPruned = now; this.sql.exec(`DELETE FROM logg WHERE ts < ?`, this.slettFor(now)); }
   }
 
   sovnet() {
@@ -1914,6 +2028,7 @@ export class ChatHub {
     }
     await this.matchNye().catch(() => {});   // også når telefonen ikke sender (resten av en tur)
     await this.bankOppdater().catch(() => {});
+    await this.arkiver().catch(() => {});
     await this.ctx.storage.setAlarm(nextQuarter(now + 1000));
   }
 

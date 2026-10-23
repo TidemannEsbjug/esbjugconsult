@@ -2140,6 +2140,17 @@ if (HUS) setTimeout(function lagAvspiller() {
     }
     return f && T >= f.fra && T <= f.til ? f.pts : null;
   };
+  // Akselerometerpakkene på samme måte, i vinduer på 20 min.
+  const finAks = T => {
+    const f = avsp.finA;
+    if (f && T >= f.fra && T <= f.til - 60e3) return f.pts;
+    if (!avsp.henterA) {
+      avsp.henterA = true;
+      const fra = Math.floor(T - 2 * 60e3), til = fra + 20 * 60e3, a = avsp;
+      fetch('/chat/historikk/aks?fra=' + fra + '&til=' + til).then(r => r.json()).then(pts => { if (avsp === a) a.finA = { fra, til, pts }; }).catch(() => {}).finally(() => { a.henterA = false; });
+    }
+    return f && T >= f.fra && T <= f.til ? f.pts : null;
+  };
   // Dagen fra midnatt til midnatt (eller til nå).
   async function last(dag) {
     if (avsp && avsp.dag === dag) return;
@@ -2204,6 +2215,16 @@ if (HUS) setTimeout(function lagAvspiller() {
     const da = {};
     for (const [ts, k, v] of avsp.logg) { if (ts > T) break; da[k] = v; }
     gjor(da.gjor ?? '');
+    // Saldoene, tellerne og rommet slik de var (fra loggen; før loggen startet vises ikke banken).
+    let bk = null; try { bk = da.bank ? JSON.parse(da.bank) : null; } catch {}
+    visBank(bk);
+    try { const kk = da.kast ? JSON.parse(da.kast) : null; if (kk) for (const k of ['tomat', 'heia']) if (kk[k] != null) knapp(k).querySelector('b').textContent = tall(kk[k]); } catch {}
+    rom = da.rom ?? null;
+    // Akselerometrene: de rå pakkene fram til T (hentes i vinduer). Spoler man bakover, begynner kurvene på nytt.
+    if (T < (avsp.sistT || 0) - 2000) { delete AK.iphone; delete AK.watch; }
+    avsp.sistT = T;
+    const ak = finAks(T);
+    if (ak) for (const [ts, kilde, acc] of ak) { if (ts > T) break; if (ts > (AK[kilde]?.sist || 0) && ts > T - 30000) inn(kilde, { acc, ts }); }
     let pst = null; try { pst = da.notater ? JSON.parse(da.notater) : null; } catch {}
     settPoster(pst || nåNotater.filter(x => x.ts <= T));
     tegn(); tegnPuls(); tegnNaa();
@@ -2228,7 +2249,7 @@ if (HUS) setTimeout(function lagAvspiller() {
     fortell(o.tekst);
     start();
   }
-  function gåLive() { kart.getSource('avsp-prikk')?.setData({ type: 'FeatureCollection', features: [] }); megMark.getElement().style.visibility = ''; document.body.classList.remove('i-replay'); avsp = null; window.__avsp = false; stopp(); trykket(null); kl2.textContent = '–'; fortell(''); sistSpor = ''; forste = true; hent(); }
+  function gåLive() { delete AK.iphone; delete AK.watch; bankNokkel = ''; kart.getSource('avsp-prikk')?.setData({ type: 'FeatureCollection', features: [] }); megMark.getElement().style.visibility = ''; document.body.classList.remove('i-replay'); avsp = null; window.__avsp = false; stopp(); trykket(null); kl2.textContent = '–'; fortell(''); sistSpor = ''; forste = true; hent(); }
   spill.onclick = () => { if (!avsp) return; if (avsp.spiller) stopp(); else { if (avsp.k >= 1) avsp.k = 0; start(); } };
   // Farten: en egen glidebryter (som på YouTube) fra 1× til 60×, jevnt fordelt på en logaritmisk skala.
   const fartvalg = q('.h-fartvalg'), fs = q('.h-fs');
