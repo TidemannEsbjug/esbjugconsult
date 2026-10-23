@@ -1813,12 +1813,15 @@ const sti = () => {
   stiMemo = { ts: plan.ts, p };
   return p;
 };
-// Tomta: øst for veien ved busstoppet og innen 120 m fra huset. GPS her inne teller ikke (hus og hage gir bare
-// krusedull). Går sporet inn på tomta, følger det stien fra busstoppet til døra; går det ut, følger det stien tilbake.
+// Tomta: under 40 m fra huset, eller nærmere huset enn busstoppet (og over 35 m fra busstoppet) innen 120 m. GPS her
+// inne teller ikke (hus og hage gir bare krusedull). Ved busstoppet og på veien teller GPS-en som vanlig. Går sporet inn på tomta, følger det stien fra busstoppet til døra; går det ut, følger det stien tilbake.
 // Hjemme går sporet til slutt fra døra til prikken i huset.
 let husMidtMemo = null;
 const husMidt = () => { if (husMidtMemo && husMidtMemo.ts === plan.ts) return husMidtMemo.p; const g = geoPkt(...midt(plan.rom.flatMap(x => x.gulv))); husMidtMemo = { ts: plan.ts, p: [g[1], g[0]] }; return husMidtMemo.p; };
-const påTomta = q => q[1] > plan.geo.buss[0] + .00003 && dist(q, husMidt()) < 120;
+const påTomta = q => {
+  const h = dist(q, husMidt()), b = dist(q, [plan.geo.buss[1], plan.geo.buss[0]]);
+  return h < 40 || (h < 120 && b > 35 && h < b);
+};
 function tomtSpor(linjer, hjemme) {
   const vei = sti().map(v => [v[1], v[0]]), tilbake = [...vei].reverse(), ut = [];
   for (const l of linjer) {
@@ -1900,16 +1903,21 @@ if (HUS) setTimeout(function lagAvspiller() {
     trykket(dag);
   }
   const Tav = k => avsp.t0 + k * (avsp.t1 - avsp.t0);
-  // Glattet posisjon ved T: vektet snitt (Gauss, 15 s) av punktene innen ±40 s; ellers rett linje mellom nabopunktene.
+  // Glattet posisjon ved T: vektet snitt (Gauss, 5 s) av punktene innen ±12 s når det finnes punkter på begge sider.
+  // Ellers: sporet har bare et punkt når han har flyttet seg 12 m, så et langt opphold betyr at han sto stille. Da står
+  // prikken på det siste punktet og går først de siste sekundene før neste.
   function glatt(T) {
     const m = avsp.med; if (!m.length) return null;
     let i = 0, j = m.length; while (i < j) { const h = i + j >> 1; if (m[h][2] < T) i = h + 1; else j = h; }
-    let sw = 0, sa = 0, so = 0;
-    for (let k = Math.max(0, i - 8); k < Math.min(m.length, i + 8); k++) { const dt = (m[k][2] - T) / 15000; if (Math.abs(dt) > 40 / 15) continue; const w = Math.exp(-dt * dt / 2); sw += w; sa += m[k][0] * w; so += m[k][1] * w; }
-    if (sw > .2) return [sa / sw, so / sw];
     const a = m[Math.max(0, i - 1)], b = m[Math.min(m.length - 1, i)];
-    if (!b || T <= a[2] || b[2] - a[2] > 180e3) return [a[0], a[1]];
-    const f = (T - a[2]) / (b[2] - a[2]); return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
+    if (!b || T <= a[2] || T >= b[2] || b[2] - a[2] > 180e3) return T >= b[2] ? [b[0], b[1]] : [a[0], a[1]];
+    if (b[2] - a[2] <= 12e3) {
+      let sw = 0, sa = 0, so = 0;
+      for (let k = Math.max(0, i - 6); k < Math.min(m.length, i + 6); k++) { const dt = (m[k][2] - T) / 5000; if (Math.abs(dt) > 12 / 5) continue; const w = Math.exp(-dt * dt / 2); sw += w; sa += m[k][0] * w; so += m[k][1] * w; }
+      if (sw > .2) return [sa / sw, so / sw];
+    }
+    const gå = Math.min(12e3, b[2] - a[2]), f = Math.max(0, (T - (b[2] - gå)) / gå);
+    return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
   }
   // Det tunge (sporet, panelene, pulsen) fire ganger i sekundet; prikken og kameraet hvert bilde.
   function vis(k, bareprikk) {
