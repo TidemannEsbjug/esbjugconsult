@@ -146,6 +146,46 @@
     .kunst{padding-top:48px}
     .kunst img{width:min(100%,36vh,300px);width:min(100cqw,100cqh,300px)}
   }
+  .tilspill{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 14px;border-radius:18px;background:rgba(255,255,255,.14);font-weight:650;font-size:15px;flex:none}
+  .tilspill svg{width:20px;height:20px}
+
+  /* Første play: vanlig spiller eller spill mens du lytter. */
+  .valg{position:fixed;inset:0;z-index:45;display:flex;align-items:flex-end;justify-content:center;padding:12px 12px calc(var(--sb) + 12px);background:rgba(0,12,36,.45);
+    opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+  .valg.vis{opacity:1;visibility:visible;transition:opacity .3s}
+  .vkort{width:100%;max-width:440px;background:#fff;border-radius:24px;padding:22px 14px 14px;box-shadow:0 24px 70px rgba(0,12,36,.35);transform:translateY(40px);transition:transform .45s cubic-bezier(.2,.9,.2,1)}
+  .valg.vis .vkort{transform:none}
+  .vkort h3{font-family:var(--serif);font-weight:600;font-size:22px;color:var(--navy);margin:0 8px 12px}
+  .vk{display:flex;align-items:center;gap:14px;width:100%;padding:14px;border-radius:16px;background:var(--soft);text-align:left;margin-top:10px;transition:transform .15s}
+  .vk:active{transform:scale(.98)}
+  .vk .ik{width:48px;height:48px;border-radius:14px;background:#fff;color:var(--navy);display:grid;place-items:center;flex:none}
+  .vk .ik svg{width:26px;height:26px}
+  .vk b{display:block;font-size:17px;font-weight:650;color:var(--ink)}
+  .vk small{display:block;font-size:14px;color:var(--mute);margin-top:2px}
+  .vk.vspill{background:var(--navy)}
+  .vk.vspill b{color:#fff}
+  .vk.vspill small{color:rgba(255,255,255,.7)}
+  .vk.vspill .ik{background:rgba(255,255,255,.14);color:#fff}
+  @media (min-width:700px){.valg{align-items:center}}
+
+  /* Spillet (podcast/spill/) over alt, med spilleren nederst. Lyden er den samme som i vanlig spiller. */
+  .spill{position:fixed;inset:0;z-index:50;background:#0c0a09;opacity:0;visibility:hidden;transition:opacity .35s,visibility 0s .35s}
+  .spill.apen{opacity:1;visibility:visible;transition:opacity .35s}
+  .spill iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+  .sx{position:absolute;z-index:2;top:calc(var(--st) + 10px);left:12px;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:#f4ead8;
+    background:rgba(12,10,9,.4);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+  .sx svg{width:20px;height:20px}
+  .sbar{position:absolute;z-index:2;left:10px;right:10px;bottom:calc(var(--sb) + 10px);max-width:620px;margin:0 auto;display:flex;align-items:center;gap:2px;padding:8px;border-radius:18px;
+    cursor:pointer;overflow:hidden;color:#f4ead8;background:rgba(12,10,9,.5);-webkit-backdrop-filter:blur(20px) saturate(1.4);backdrop-filter:blur(20px) saturate(1.4);box-shadow:0 0 0 1px rgba(244,234,216,.08)}
+  .sbar img{width:40px;height:40px;border-radius:9px;object-fit:cover;flex:none;margin-right:8px}
+  .sbar .st{flex:1;min-width:0}
+  .sbar .st b{display:block;font-size:14.5px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sbar .st span{font-size:12.5px;opacity:.65;font-variant-numeric:tabular-nums}
+  .sbar .kn{width:42px;height:42px;display:grid;place-items:center;border-radius:50%;flex:none}
+  .sbar .kn svg{width:24px;height:24px}
+  .sbar .kn.stor svg{width:28px;height:28px}
+  .sbar .kn:active{background:rgba(244,234,216,.12)}
+  .sbar .lin{position:absolute;left:0;bottom:0;height:2px;background:#f4ead8;opacity:.8;width:0}
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -191,12 +231,31 @@
     </div>
     <div class="bunn">
       <button class="fart" id="fart" type="button" aria-label="Avspillingsfart">1×</button>
+      <button class="tilspill" id="tilSpill" type="button" aria-label="Spill mens du lytter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 7h11a4 4 0 0 1 3.9 3.1l.9 4.3a2.6 2.6 0 0 1-4.6 2.1L16 14.5H8l-1.7 2a2.6 2.6 0 0 1-4.6-2.1l.9-4.3A4 4 0 0 1 6.5 7z"/><path d="M7.5 9.5v3M6 11h3"/><circle cx="15.5" cy="10.2" r=".7" fill="currentColor"/><circle cx="17.3" cy="12" r=".7" fill="currentColor"/></svg>Spill</button>
       <div class="neste" id="neste"></div>
     </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="valg" id="valg" aria-hidden="true">
+  <div class="vkort" role="dialog" aria-label="Hvordan vil du lytte?">
+    <h3>Hvordan vil du lytte?</h3>
+    <button class="vk" id="vVanlig" type="button"><span class="ik"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4.5" height="6.5" rx="1.6"/><rect x="16.5" y="14" width="4.5" height="6.5" rx="1.6"/></svg></span><span><b>Vanlig spiller</b><small>Bare lyd</small></span></button>
+    <button class="vk vspill" id="vSpill" type="button"><span class="ik"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 7h11a4 4 0 0 1 3.9 3.1l.9 4.3a2.6 2.6 0 0 1-4.6 2.1L16 14.5H8l-1.7 2a2.6 2.6 0 0 1-4.6-2.1l.9-4.3A4 4 0 0 1 6.5 7z"/><path d="M7.5 9.5v3M6 11h3"/><circle cx="15.5" cy="10.2" r=".7" fill="currentColor"/><circle cx="17.3" cy="12" r=".7" fill="currentColor"/></svg></span><span><b>Spill mens du lytter</b><small>Episoden går videre mens du spiller</small></span></button>
+  </div>
+</div>
+<div class="spill" id="spill" aria-hidden="true">
+  <button class="sx" id="spillLukk" type="button" aria-label="Lukk spillet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <div class="sbar" id="sbar" role="button" aria-label="Tilbake til vanlig spiller">
+    <img src="/podcast/ikon.jpg" alt="">
+    <div class="st"><b id="sTi"></b><span id="sMe"></span></div>
+    <button class="kn" id="sBak" type="button" aria-label="15 sekunder tilbake"></button>
+    <button class="kn stor" id="sPlay" type="button" aria-label="Spill"></button>
+    <button class="kn" id="sFrem" type="button" aria-label="30 sekunder frem"></button>
+    <div class="lin" id="sLin"></div>
+  </div>
+</div>
 <audio id="lyd" preload="none" playsinline></audio>
 <!-- Episodelista settes inn av workeren fra episoder.json (.worker/index.js). -->
 <script id="ep-data" type="application/json"></script>
@@ -265,7 +324,7 @@
       <div class="tx"><div class="me">Episode ${e.n} · ${dato(e.dato)}${ny ? '<span class="ny">NY</span>' : ""}</div>
       <div class="ti"></div><div class="ig"><span class="bars"><i></i><i></i><i></i></span><span class="rest"></span></div></div>`;
     li.querySelector(".ti").textContent = e.tittel;
-    li.addEventListener("click", () => (na === e ? veksle() : spill(e)));
+    li.addEventListener("click", () => medValg(() => (na === e ? veksle() : spill(e))));
     e.el = li;
     liste.appendChild(li);
   });
@@ -300,11 +359,11 @@
     return null;
   }
 
-  $("alle").addEventListener("click", () => {
+  $("alle").addEventListener("click", () => medValg(() => {
     if (spiller()) return lyd.pause();
     const e = fortsettEp() || EP[0];
     na === e ? lyd.play().catch(() => {}) : spill(e);
-  });
+  }));
 
   // ---- Avspilling ----
   function last(e, fra) {
@@ -381,7 +440,7 @@
 
   // ---- Mini og ark ----
   const mini = $("mini"), ark = $("ark");
-  $("mPlay").addEventListener("click", (ev) => { ev.stopPropagation(); veksle(); });
+  $("mPlay").addEventListener("click", (ev) => { ev.stopPropagation(); medValg(veksle); });
   $("mFrem").innerHTML = I.frem;
   $("mFrem").addEventListener("click", (ev) => { ev.stopPropagation(); hopp(30); });
   mini.addEventListener("click", apneArk);
@@ -389,7 +448,7 @@
   $("frem").innerHTML = I.frem;
   $("bak").addEventListener("click", () => hopp(-15));
   $("frem").addEventListener("click", () => hopp(30));
-  $("aPlay").addEventListener("click", veksle);
+  $("aPlay").addEventListener("click", () => medValg(veksle));
   $("forr").addEventListener("click", () => nabo(-1));
   $("nest").addEventListener("click", () => nabo(1));
   $("lukk").addEventListener("click", () => lukkArk());
@@ -432,6 +491,7 @@
     else history.replaceState(null, "", "/podcast/");
   }
   addEventListener("popstate", () => {
+    if (spillApen && !(history.state && history.state.spill)) lukkSpill(true);
     const e = fraAdresse();
     if (!e) return lukkArk(true);
     if (e !== na) { last(e, lager.hort[e.n] ? 0 : lager.pos[e.n] || 0); visMini(); }
@@ -517,7 +577,79 @@
     });
   })();
 
+  // ---- Spill mens du lytter ----
+  // Første gang du trykker play, velger du vanlig spiller eller spillet. Spillet ligger i en iframe over alt, med
+  // spilleren nederst. Lyden er den samme, så X tar deg tilbake til vanlig spiller der episoden er.
+  let valgt = false, etterValg = null, spillApen = false, ramme = null;
+  const valgEl = $("valg"), spillEl = $("spill");
+  function medValg(fn) {
+    if (valgt || spiller()) return fn();
+    etterValg = fn;
+    lagRamme();
+    valgEl.classList.add("vis");
+    valgEl.setAttribute("aria-hidden", "false");
+  }
+  function lukkValg() {
+    valgEl.classList.remove("vis");
+    valgEl.setAttribute("aria-hidden", "true");
+    etterValg = null;
+  }
+  $("vVanlig").addEventListener("click", () => { const fn = etterValg; valgt = true; lukkValg(); if (fn) fn(); });
+  $("vSpill").addEventListener("click", () => { const fn = etterValg; valgt = true; lukkValg(); if (fn) fn(); apneSpill(); });
+  valgEl.addEventListener("click", (ev) => { if (ev.target === valgEl) lukkValg(); });
+
+  // Spillet lastes når valget vises, så det er klart når du velger det. Det tegner bare mens det er åpent.
+  function lagRamme() {
+    if (ramme) return;
+    ramme = document.createElement("iframe");
+    ramme.src = "/podcast/spill/";
+    ramme.title = "Spill";
+    spillEl.prepend(ramme);
+  }
+  function sendSpill() {
+    try { if (ramme && ramme.contentWindow.spillTilstand) ramme.contentWindow.spillTilstand({ open: spillApen, playing: !!spiller() }); } catch {}
+  }
+  function apneSpill() {
+    if (!na || spillApen) return;
+    valgt = true;
+    apneArk();
+    lagRamme();
+    spillApen = true;
+    spillEl.classList.add("apen");
+    spillEl.setAttribute("aria-hidden", "false");
+    tema.content = "#0c0a09";
+    history.pushState({ ark: 1, spill: 1 }, "", epUrl(na));
+    tegnAlt();
+    sendSpill();
+    setTimeout(() => { try { ramme.contentWindow.focus(); } catch {} }, 60);
+  }
+  function lukkSpill(fraHistorikk) {
+    if (!spillApen) return;
+    spillApen = false;
+    spillEl.classList.remove("apen");
+    spillEl.setAttribute("aria-hidden", "true");
+    tema.content = "#00205B";
+    sendSpill();
+    if (fraHistorikk !== true && history.state && history.state.spill) history.back();
+  }
+  // Spillet kaller disse direkte (samme opprinnelse), så et trykk i spillet kan starte lyden på iPhone.
+  window.podcastSpill = {
+    veksle: () => veksle(),
+    spill: () => { if (na && lyd.paused) lyd.play().catch(() => {}); },
+    lukk: () => lukkSpill(),
+    klar: () => sendSpill(),
+  };
+  $("tilSpill").addEventListener("click", apneSpill);
+  $("spillLukk").addEventListener("click", () => lukkSpill());
+  $("sbar").addEventListener("click", () => lukkSpill());
+  $("sBak").innerHTML = I.bak;
+  $("sFrem").innerHTML = I.frem;
+  $("sBak").addEventListener("click", (ev) => { ev.stopPropagation(); hopp(-15); });
+  $("sFrem").addEventListener("click", (ev) => { ev.stopPropagation(); hopp(30); });
+  $("sPlay").addEventListener("click", (ev) => { ev.stopPropagation(); veksle(); });
+
   addEventListener("keydown", (ev) => {
+    if (spillApen) { if (ev.key === "Escape") lukkSpill(); return; }
     if (ev.target.closest && ev.target.closest("input,textarea")) return;
     if (ev.code === "Space") { ev.preventDefault(); veksle(); }
     if (ev.key === "Escape") lukkArk();
@@ -532,6 +664,8 @@
     $("fyll").style.width = p + "%";
     $("knott").style.left = p + "%";
     $("mLin").style.width = p + "%";
+    $("sLin").style.width = p + "%";
+    $("sMe").textContent = `Episode ${na.n} · ${tid(t)}`;
     $("tNa").textContent = tid(t);
     $("tIgjen").textContent = "-" + tid((len - t) / (lyd.playbackRate || 1));
     $("skrubb").setAttribute("aria-valuetext", `${tid(t)} av ${tid(len)}`);
@@ -554,6 +688,10 @@
       $("mPlay").setAttribute("aria-label", s ? "Pause" : "Spill");
       $("aPlay").innerHTML = s ? I.pause : I.play;
       $("aPlay").setAttribute("aria-label", s ? "Pause" : "Spill");
+      $("sPlay").innerHTML = s ? I.pause : I.play;
+      $("sPlay").setAttribute("aria-label", s ? "Pause" : "Spill");
+      $("sTi").textContent = na.tittel;
+      sendSpill();
       $("aMe").textContent = `Episode ${na.n} · ${dato(na.dato)}`;
       $("aTi").textContent = na.tittel;
       ark.classList.toggle("spiller", s);
