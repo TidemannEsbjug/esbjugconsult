@@ -750,11 +750,11 @@
     .hist .h-fartvalg{right:8px}
     .hist .h-kl{min-width:0}
   }
-  /* Egen peker (bare mus/styreflate): et tynt siktekors, som i en kikkert. Over kartet står koordinatene til punktet
-     ved siden av. Over noe klikkbart åpner korset seg og blir rødt; ved trykk strammes det. I tekstfelt: vanlig markør. */
+  /* Egen peker (bare mus/styreflate, bare i hero; resten av siden har vanlig peker): et tynt siktekors, som i en
+     kikkert. En lapp ved siden av sier hva modulen under viser (koordinatene over kartet, pulsen, saldoen …). Over noe klikkbart åpner korset seg og blir rødt; ved trykk strammes det. I tekstfelt: vanlig markør. */
   @media (hover:hover) and (pointer:fine){
-    html.mus, html.mus *{cursor:none!important}
-    html.mus input, html.mus textarea, html.mus [contenteditable]{cursor:text!important}
+    html.mus .hero, html.mus .hero *{cursor:none!important}
+    html.mus .hero input, html.mus .hero textarea, html.mus .hero [contenteditable]{cursor:text!important}
   }
   .mus-k{position:fixed;left:0;top:0;z-index:2147483646;pointer-events:none;opacity:0;transition:opacity .2s;--g:5px;--l:9px;--f:#fff}
   .mus-k i{position:absolute;background:var(--f);transition:transform .25s cubic-bezier(.2,.8,.2,1),background-color .2s;mix-blend-mode:difference}
@@ -767,7 +767,7 @@
   .mus-k b{position:absolute;left:-1.5px;top:-1.5px;width:3px;height:3px;border-radius:50%;background:#BA0C2F}
   .mus-k span{position:absolute;left:14px;top:12px;white-space:nowrap;font:600 10px/1 "SF Mono",Menlo,monospace;letter-spacing:.06em;color:#fff;background:rgba(0,32,91,.82);padding:4px 6px;border-radius:4px;opacity:0;transition:opacity .2s}
   html.mus.mus-inne .mus-k{opacity:1}
-  html.mus.mus-kart .mus-k span{opacity:1}
+  html.mus.mus-lapp .mus-k span{opacity:1}
   html.mus.mus-over .mus-k{--g:11px;--l:7px}
   html.mus.mus-over .mus-k i{background:#BA0C2F;mix-blend-mode:normal}
   html.mus.mus-ned .mus-k{--g:2px}
@@ -2485,8 +2485,9 @@ setInterval(tegn, 1000);
 })();
 </script>
 <script>
-// Egen peker: siktekorset står nøyaktig der pekeren er. Over kartet viser det koordinatene (kartet legger seg i
-// window.__kart). Bare med mus/styreflate.
+// Egen peker: siktekorset står nøyaktig der pekeren er, bare i hero (resten av siden og chatten har vanlig peker).
+// Lappen ved siden av sier hva modulen under viser: koordinatene over kartet (kartet legger seg i window.__kart),
+// pulsen, saldoen, klokka i byene i «Øyet mot» og så videre. Bare med mus/styreflate.
 (() => {
   if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
   const h = document.documentElement, k = document.createElement('div');
@@ -2495,19 +2496,44 @@ setInterval(tegn, 1000);
   const lapp = k.querySelector('span'), en = h.lang === 'en';
   const KLIKK = 'a,button,[role="button"],[role="tab"],label,select,summary,input[type="range"],input[type="checkbox"],.maplibregl-ctrl button,.poster,.hp-o,.ak';
   const grad = (v, pos, neg) => Math.abs(v).toFixed(5) + '° ' + (v >= 0 ? pos : neg);
+  const tekst = (el, sel) => (el.querySelector(sel)?.textContent || '').trim();
+  // Modul → lapp. Første treff vinner, så de mest spesifikke står først.
+  const LAPPER = [
+    ['.k-tomat', () => en ? 'Throw!' : 'Kast!'],
+    ['.k-heia', () => en ? 'Cheer!' : 'Heia!'],
+    ['.kn-spol', () => en ? 'Replay' : 'Replay'],
+    ['.kartknapp', () => en ? 'Map' : 'Kartet'],
+    ['.lang', () => en ? 'Norsk' : 'English'],
+    ['.pod-l a', () => en ? 'Listen' : 'Hør episoden'],
+    ['.pod', () => en ? 'Podcast' : 'Podkast'],
+    ['.ak', el => en ? 'See the movement' : 'Se bevegelsen'],
+    ['.hp', el => { const b = tekst(el, '.hb-n'); return '♥ ' + (b && b !== '–' ? b + ' bpm · ' : '') + (en ? 'open' : 'åpne'); }],
+    ['.sens', () => en ? 'Live from his devices' : 'Live fra enhetene hans'],
+    ['.bank', el => (en ? 'Balance ' : 'Saldo ') + tekst(el, '.bk-sum')],
+    ['.oy', el => tekst(el, '.oy-n') + ' · ' + tekst(el, '.oy-k')],
+    ['.oyet', () => en ? 'Eyes on' : 'Øyet mot'],
+    ['.poster', () => en ? 'Next post' : 'Neste post'],
+    ['.gjor', el => tekst(el, '.g-navn')],
+    ['.sted', () => en ? 'Live position' : 'Live posisjon'],
+    ['.naa', () => en ? 'Time in Oslo' : 'Klokka i Oslo'],
+    ['.hist', () => 'Replay'],
+  ];
   addEventListener('pointermove', e => {
     if (e.pointerType !== 'mouse') return;
-    k.style.transform = `translate(${e.clientX}px,${e.clientY}px)`;
-    h.classList.add('mus-inne');
     const t = e.target instanceof Element ? e.target : null;
-    h.classList.toggle('mus-over', !!t?.closest(KLIKK));
-    h.classList.toggle('mus-tekst', !!t?.closest('input:not([type="range"]):not([type="checkbox"]),textarea,[contenteditable]'));
-    const påKart = !!(window.__kart && t?.closest('.maplibregl-canvas-container'));
-    h.classList.toggle('mus-kart', påKart);
-    if (påKart) {
+    const iHero = !!t?.closest('.hero') && !t.closest('#chat');
+    h.classList.toggle('mus-inne', iHero);
+    if (!iHero) return;
+    k.style.transform = `translate(${e.clientX}px,${e.clientY}px)`;
+    h.classList.toggle('mus-over', !!t.closest(KLIKK));
+    h.classList.toggle('mus-tekst', !!t.closest('input:not([type="range"]):not([type="checkbox"]),textarea,[contenteditable]'));
+    let l = '';
+    if (window.__kart && t.closest('.maplibregl-canvas-container')) {
       const r = window.__kart.getContainer().getBoundingClientRect(), p = window.__kart.unproject([e.clientX - r.left, e.clientY - r.top]);
-      lapp.textContent = grad(p.lat, 'N', 'S') + '  ' + grad(p.lng, en ? 'E' : 'Ø', en ? 'W' : 'V');
-    }
+      l = grad(p.lat, 'N', 'S') + '  ' + grad(p.lng, en ? 'E' : 'Ø', en ? 'W' : 'V');
+    } else for (const [sel, f] of LAPPER) { const el = t.closest(sel); if (el) { l = f(el); break; } }
+    lapp.textContent = l;
+    h.classList.toggle('mus-lapp', !!l);
   }, { passive: true });
   addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') h.classList.add('mus-ned'); });
   addEventListener('pointerup', () => h.classList.remove('mus-ned'));
