@@ -137,6 +137,14 @@ export async function handleChat(request, env, url) {
     return new Response(r.body, { status: r.status, headers: { "content-type": "application/json", "cache-control": "public, max-age=60" } });
   }
 
+  // SpareBank 1: BankID-innloggingen kommer tilbake hit med en kode, som serveren bytter mot tilgang til kontoene.
+  if (path === "/bank/tilbake") {
+    const r = await hub.fetch(new Request("https://hub/internal/bank-tilbake", { method: "POST", headers: { "x-role": "internal" },
+      body: JSON.stringify({ code: url.searchParams.get("code") || "", state: url.searchParams.get("state") || "", feil: url.searchParams.get("error") || "" }) }));
+    const j = await r.json();
+    return new Response(`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Bank</title><body style="font:18px/1.5 -apple-system,system-ui,sans-serif;display:grid;place-items:center;min-height:90vh;color:#00205B"><p>${j.ok ? "Banken er koblet ✓ Saldo og transaksjoner hentes hvert kvarter." : "Fikk ikke koblet banken: " + String(j.feil || "ukjent feil").replace(/[<>&]/g, "")}</p>`, { headers: { "content-type": "text/html; charset=utf-8" } });
+  }
+
   if (path === "/chat/status") {
     return hub.fetch(new Request("https://hub/internal/status", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }));
   }
@@ -533,6 +541,9 @@ export function veiMedTid(shape, punkter) {
   return shape.map((p, i) => [+p[0].toFixed(6), +p[1].toFixed(6), Math.round(tid(kum[i]))]).filter((p, i) => kum[i] >= merker[0].s - .5 && kum[i] <= merker[merker.length - 1].s + .5);
 }
 
+// Adressen BankID-innloggingen hos SpareBank 1 sendes tilbake til (registrert på den personlige klienten).
+const SB1_TILBAKE = "https://esbjugconsult.com/bank/tilbake";
+
 // Søk i avspillingen per adresse, siste minutt (per isolat; nok til å stoppe misbruk).
 let sokTeller = [];
 
@@ -714,6 +725,9 @@ export class ChatHub {
       }
       if (url.pathname === "/internal/historikk") {
         return Response.json(this.historikk(b.dag));
+      }
+      if (url.pathname === "/internal/bank-tilbake") {
+        return Response.json(await this.bankTilbake(b));
       }
       if (url.pathname === "/internal/plan") {
         return new Response(this.setting("plan") || "null", { headers: { "content-type": "application/json" } });
@@ -973,6 +987,17 @@ export class ChatHub {
       const liste = this.sql.exec(`SELECT rom, COUNT(*) AS n FROM romprove GROUP BY rom ORDER BY MIN(id)`).toArray();
       const fyr = this.sql.exec(`SELECT v FROM kv WHERE k LIKE 'fyr:%'`).toArray().map((r) => JSON.parse(r.v));
       return Response.json({ rom, liste, fyr });
+    }
+    // SpareBank 1: lager lenken til BankID-innloggingen (state lever i 15 min, så bare eieren kan koble en bank).
+    if (url.pathname === "/chat/admin/bank/start" && request.method === "POST") {
+      if (!this.env.SB1_CLIENT_ID || !this.env.SB1_FININST) return Response.json({ feil: "SB1_CLIENT_ID og SB1_FININST mangler" }, { status: 400 });
+      const state = crypto.randomUUID();
+      this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('sb1state', ?)`, JSON.stringify({ state, til: Date.now() + 15 * 60e3 }));
+      const q = new URLSearchParams({ finInst: this.env.SB1_FININST, client_id: this.env.SB1_CLIENT_ID, state, redirect_uri: SB1_TILBAKE, response_type: "code" });
+      return Response.json({ url: "https://api-auth.sparebank1.no/oauth/authorize?" + q });
+    }
+    if (url.pathname === "/chat/admin/bank/hent" && request.method === "POST") {
+      return Response.json(await this.bankOppdater(true));
     }
     if (url.pathname === "/chat/admin/plan" && request.method === "POST") {
       const t = await request.text();
@@ -1414,6 +1439,81 @@ export class ChatHub {
     this.ctx.waitUntil(this.push(hjemme ? "🍅 Taper!" : "🍅 Tomat!", by ? `Noen i ${by} kastet en tomat på deg` : "Noen kastet en tomat på deg", null, { thread: "tomat" }));
   }
 
+  // ---------- SpareBank 1 (personlig API) ----------
+  // Tilgangen varer 10 min og fornyes med refresh-tokenet (30 dager), som byttes ut hver gang det brukes. Hvert kvarter:
+  // kontoene (saldo, disponibelt) og de siste transaksjonene, lagret i kv 'bank' og vist på forsiden. Kontonumrene vises
+  // bare med de fire siste sifrene. Går fornyelsen ut, kommer et varsel om å logge inn igjen.
+  async sb1Token(grant) {
+    const body = new URLSearchParams({ client_id: this.env.SB1_CLIENT_ID, client_secret: this.env.SB1_CLIENT_SECRET, ...grant });
+    const r = await fetch("https://api-auth.sparebank1.no/oauth/token", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok || !j.access_token) throw new Error(j.error_description || j.error || "token " + r.status);
+    const t = { access: j.access_token, exp: Date.now() + (j.expires_in || 600) * 1000 - 30e3, refresh: j.refresh_token || null,
+      rexp: Date.now() + (j.refresh_token_expires_in || 30 * 86400) * 1000 };
+    const gml = this.sb1();
+    if (!t.refresh && gml) { t.refresh = gml.refresh; t.rexp = gml.rexp; }
+    this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('sb1', ?)`, JSON.stringify(t));
+    return t;
+  }
+
+  sb1() { try { return JSON.parse(this.setting("sb1") || "null"); } catch { return null; } }
+
+  async bankTilbake({ code, state, feil }) {
+    if (feil) return { ok: false, feil };
+    const s = JSON.parse(this.setting("sb1state") || "null");
+    if (!s || s.state !== state || Date.now() > s.til || !code) return { ok: false, feil: "Lenken er brukt eller for gammel. Lag en ny." };
+    this.sql.exec(`DELETE FROM kv WHERE k='sb1state'`);
+    try {
+      await this.sb1Token({ grant_type: "authorization_code", code, redirect_uri: SB1_TILBAKE, state });
+      await this.bankOppdater(true);
+      return { ok: true };
+    } catch (e) { return { ok: false, feil: String(e.message || e) }; }
+  }
+
+  async bankOppdater(tving) {
+    let t = this.sb1();
+    if (!t || !this.env.SB1_CLIENT_ID) return { ok: false, feil: "ikke koblet" };
+    const nå = Date.now();
+    if (!tving && nå - (this.bankHentet || 0) < 10 * 60e3) return { ok: true, hoppet: true };
+    this.bankHentet = nå;
+    if (nå > t.exp) {
+      if (!t.refresh || nå > t.rexp) return { ok: false, feil: "innloggingen er utløpt" };
+      try { t = await this.sb1Token({ grant_type: "refresh_token", refresh_token: t.refresh }); }
+      catch (e) {
+        if (!this.setting("sb1varslet")) { this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('sb1varslet', '1')`); await this.push("🏦 Banken", "Koblingen til SpareBank 1 må fornyes med BankID.", null, { thread: "bank" }); }
+        return { ok: false, feil: String(e.message || e) };
+      }
+      this.sql.exec(`DELETE FROM kv WHERE k='sb1varslet'`);
+    }
+    const hent = async (sti) => {
+      const r = await fetch("https://api.sparebank1.no" + sti, { headers: { Authorization: "Bearer " + t.access, Accept: "application/vnd.sparebank1.v1+json; charset=utf-8" } });
+      if (!r.ok) throw new Error(sti + " " + r.status);
+      return r.json();
+    };
+    try {
+      const a = await hent("/personal/banking/accounts");
+      const liste = (a.accounts || a.list || (Array.isArray(a) ? a : [])).slice(0, 12);
+      const kontoer = liste.map((k) => ({ key: k.key, navn: k.name || k.description || k.product || "Konto", nr: String(k.accountNumber?.formatted || k.accountNumber?.value || k.accountNumber || "").replace(/\D/g, "").slice(-4),
+        saldo: Number(k.balance?.amount ?? k.balance ?? 0), disp: Number(k.availableBalance?.amount ?? k.availableBalance ?? 0), valuta: k.currencyCode || k.balance?.currencyCode || "NOK", type: k.type || "" }));
+      const trans = [];
+      for (const k of kontoer.slice(0, 6)) {
+        try {
+          const tr = await hent("/personal/banking/transactions?accountKey=" + encodeURIComponent(k.key));
+          for (const x of (tr.transactions || tr.list || []).slice(0, 25))
+            trans.push({ konto: k.navn, tid: x.date || x.bookingDate || x.valueDate || x.accountingDate || null, belop: Number(x.amount?.amount ?? x.amount ?? 0),
+              tekst: x.cleanedDescription || x.description || x.reference || "", status: x.bookingStatus || "" });
+        } catch {}
+      }
+      const tid = (x) => (typeof x.tid === "number" ? x.tid : Date.parse(x.tid) || 0);
+      trans.sort((x, y) => tid(y) - tid(x));
+      const bank = { ts: nå, kontoer: kontoer.map(({ key, ...k }) => k), trans: trans.slice(0, 30), sum: kontoer.reduce((s, k) => s + k.saldo, 0) };
+      this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('bank', ?)`, JSON.stringify(bank));
+      return { ok: true, kontoer: bank.kontoer.length, trans: bank.trans.length };
+    } catch (e) { return { ok: false, feil: String(e.message || e) }; }
+  }
+
+  bank() { try { return JSON.parse(this.setting("bank") || "null"); } catch { return null; } }
+
   // Heia: en push for hvert heiarop, som tomatene.
   heiaVarsel(by) {
     this.ctx.waitUntil(this.push("📣 Heia!", by ? `Noen i ${by} sier heia til deg` : "Noen sier heia til deg", null, { thread: "heia" }));
@@ -1617,7 +1717,7 @@ export class ChatHub {
       ...this.sql.exec(`SELECT ts, v FROM bev WHERE ts > ? ORDER BY ts`, fra).toArray()].map((r) => [r.ts, r.v]);
     // Heart rate the last 5 minutes, every stored sample (one per ~4 s while the watch shares it).
     const puls = this.sql.exec(`SELECT ts, bpm FROM hr WHERE ts > ? ORDER BY ts`, Date.now() - 5 * 60e3).toArray().map((r) => [r.ts, r.bpm]);
-    return { now: Date.now(), live, trail, tele: this.tele(), bev, puls, kast: this.kast(), gjor: this.setting("gjor") || "", notater: this.notater(20), rom: this.rom() };
+    return { now: Date.now(), live, trail, tele: this.tele(), bev, puls, kast: this.kast(), gjor: this.setting("gjor") || "", notater: this.notater(20), rom: this.rom(), bank: this.bank() };
   }
 
   // The name of the place he is at (neighbourhood, town, country), from OpenStreetMap's Nominatim. At most every
@@ -1816,6 +1916,7 @@ export class ChatHub {
       this.setStatus("available");
     }
     await this.matchNye().catch(() => {});   // også når telefonen ikke sender (resten av en tur)
+    await this.bankOppdater().catch(() => {});
     await this.ctx.storage.setAlarm(nextQuarter(now + 1000));
   }
 

@@ -663,6 +663,20 @@
   .ak-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
   .ak-m{font:600 9.5px/1 "SF Mono",Menlo,monospace;letter-spacing:.1em;color:rgba(0,32,91,.5)}
   .ak-m i{font-style:normal;font-weight:800}.kx{color:#e0233c}.ky{color:#d68a00}.kz{color:#2563eb}
+  /* Banken (SpareBank 1): samlet saldo, kontoene og de siste transaksjonene. Trykk viser alle. */
+  .bank{display:flex;flex-direction:column;gap:8px;padding:14px 18px 16px;cursor:pointer;outline:none}
+  .bank[hidden]{display:none}
+  .bank .s-t{display:flex;justify-content:space-between;width:100%}
+  .bk-sum{font:640 30px/1 var(--serif);letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums}
+  .bank ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
+  .bank li{display:flex;justify-content:space-between;gap:12px;font-size:13px;color:var(--ink);min-width:0}
+  .bank li span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .bank li b{font-weight:650;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .bk-kontoer li span:first-child{opacity:.75}
+  .bk-trans{border-top:1px solid rgba(0,32,91,.1);padding-top:7px!important}
+  .bk-trans li b.inn{color:#1a7f37}
+  .bk-trans li i{font-style:normal;opacity:.55;font:500 11px "SF Mono",Menlo,monospace;margin-right:6px}
+  .bank:not(.apen) .bk-mer{display:none}
   /* Øyet mot: tre steder ved siden av hverandre, hvert med et tydelig værikon, grader, ordet, stedet og klokka der. */
   .oyet{display:flex;flex-direction:column;gap:10px;padding:14px 18px 16px}
   .oy-rad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
@@ -774,6 +788,12 @@
       <div class="oy" data-tz="Asia/Bangkok"><span class="oy-n">Koh Phangan</span><svg class="oy-i" viewBox="0 0 48 48" aria-hidden="true"></svg><b class="oy-v">–</b><span class="oy-k">–</span></div>
       <div class="oy" data-tz="Asia/Makassar"><span class="oy-n">Lombok</span><svg class="oy-i" viewBox="0 0 48 48" aria-hidden="true"></svg><b class="oy-v">–</b><span class="oy-k">–</span></div>
     </div>
+  </section>
+  <section class="bank gl" hidden aria-label="Banken" tabindex="0" role="button" aria-expanded="false">
+    <span class="mono s-t"><span>SpareBank 1</span><span class="bk-t"></span></span>
+    <b class="bk-sum">–</b>
+    <ul class="bk-kontoer"></ul>
+    <ul class="bk-trans"></ul>
   </section>
   </div>
   </div>
@@ -1489,7 +1509,7 @@ const TX = EN ? {
   kjent: { 'hjemme hos moren sin': 'Tidemann is at his mother’s' }, ingen: 'None', mobil: 'Mobile data', utenNett: 'Offline', visKart: 'Show the map', visPanel: 'Show the panels', rom: 'Room: ',
   gjor: { jobber: 'Working', trener: 'Training' }, komma: '.',
   taper: ['LOSER!', 'Loser.', 'What a loser', 'Total loser', 'Mega loser', 'Ultra loser', 'Loser-in-chief', 'King of losers', 'Loser of the year', 'Loser (again)', 'Loser, loser, loser', 'LOOOOSER', 'LOSER™', 'The world’s biggest loser', 'Tiny loser'],
-  heiaHold: 'Click to fire!',
+  heiaHold: 'Click to fire!', oppdatert: 'updated ',
   heia: ['GO!', 'Go Tidemann!', 'Come on!', 'Go go go!', 'You got this!', 'Keep going!', 'Woohoo!'],
   treff: ['SPLAT!', 'Hit!', 'Right in the face', 'Bingo!', 'BAM!', 'Bullseye', 'Ouch!', 'Splosh', 'Jackpot', 'Got him!'],
 } : {
@@ -1498,7 +1518,7 @@ const TX = EN ? {
   gjor: { jobber: 'Jobber', trener: 'Trener' }, komma: ',',
   taper: ['TAPER!', 'Taper.', 'Tapern!', 'Taperen!', 'TAAAAPER', 'Din taper', 'For en taper', 'Supertaper', 'Megataper', 'Ultrataper',
     'Tapersjef', 'Taperkonge', 'Årets taper', 'Taper (igjen)', 'Taper-Tidemann', 'Taper, taper, taper', 'Taperen fra Frogn', 'TAPER™', 'Verdens største taper', 'Liten taper'],
-  heiaHold: 'Klikk for å skyte!',
+  heiaHold: 'Klikk for å skyte!', oppdatert: 'oppdatert ',
   heia: ['HEIA!', 'Heia Tidemann!', 'Kom igjen!', 'Heia heia!', 'Du klarer det!', 'Stå på!', 'Heeeia!'],
   treff: ['SPLÆSJ!', 'Treff!', 'Rett i fleisen', 'Bingo!', 'PANG!', 'Midt i blinken', 'Au!', 'Klæsj', 'Full pott', 'Den satt!'],
 };
@@ -1912,6 +1932,22 @@ function nyeKast(ny) {
   knapp('tomat').querySelector('b').textContent = tall(ny.tomat);
   knapp('heia').querySelector('b').textContent = tall(ny.heia || 0);
 }
+// Banken: samlet saldo, kontoene (fire siste sifre) og de siste transaksjonene; tre av hver, alle når kortet er åpnet.
+const kr = new Intl.NumberFormat(TX.loc, { maximumFractionDigits: 0 }), krD = new Intl.NumberFormat(TX.loc, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const bkDato = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', day: 'numeric', month: 'short' });
+let bankNokkel = '';
+function visBank(b) {
+  const e = $('.bank'); e.hidden = !b || !b.kontoer || !b.kontoer.length;
+  if (e.hidden) return;
+  const nk = b.ts + ':' + e.classList.contains('apen'); if (nk === bankNokkel) return; bankNokkel = nk;
+  $('.bk-sum').textContent = kr.format(b.sum) + ' kr';
+  $('.bk-t').textContent = TX.oppdatert + kl.format(b.ts);
+  const li = (a, bb, mer, cls) => { const l = document.createElement('li'); if (mer) l.className = 'bk-mer'; const x = document.createElement('span'); x.append(...a); const y = document.createElement('b'); y.textContent = bb; if (cls) y.className = cls; l.append(x, y); return l; };
+  $('.bk-kontoer').replaceChildren(...b.kontoer.map((k, i) => li([k.navn + (k.nr ? ' ··' + k.nr : '')], kr.format(k.saldo) + ' kr', i >= 3)));
+  $('.bk-trans').replaceChildren(...(b.trans || []).map((t, i) => { const d = document.createElement('i'); const tt = typeof t.tid === 'number' ? t.tid : Date.parse(t.tid); d.textContent = tt ? bkDato.format(tt) : ''; return li([d, t.tekst || '–'], (t.belop > 0 ? '+' : '') + krD.format(t.belop), i >= 3, t.belop > 0 ? 'inn' : ''); }));
+}
+{ const e = $('.bank'), veksle = () => { e.classList.toggle('apen'); e.setAttribute('aria-expanded', e.classList.contains('apen')); bankNokkel = ''; };
+  e.addEventListener('click', veksle); e.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); veksle(); } }); }
 // Hva han holder på med, satt i appen: Jobber, Trener, Sover. Kortet er skjult når ingenting er valgt.
 const GJOR = TX.gjor;
 // Huset hos moren hans, skannet med LiDAR i appen (GET /chat/plan). Bare på testsiden /hjem/ inntil videre.
@@ -2394,7 +2430,7 @@ addEventListener('resize', () => { if (!bvp.hidden) bvTegn(); });
 setInterval(() => { if (!bvp.hidden && !document.hidden) { if (bvR === 'fin') bvLast(); else bvTegn(); } }, 5000);
 async function hent() {
   if (window.__avsp) return;   // under avspilling står tiden stille på den valgte dagen
-  try { const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json(); skew = j.now - Date.now(); live = j.live; rom = j.rom || null; trail = j.trail || []; tele = j.tele || {}; if (j.puls) puls = j.puls; tegnPuls(); if (j.kast) nyeKast(j.kast); gjor(j.gjor); nåNotater = j.notater || []; settPoster(j.notater); } catch {}
+  try { const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json(); skew = j.now - Date.now(); live = j.live; rom = j.rom || null; trail = j.trail || []; tele = j.tele || {}; if (j.puls) puls = j.puls; tegnPuls(); if (j.kast) nyeKast(j.kast); gjor(j.gjor); visBank(j.bank); nåNotater = j.notater || []; settPoster(j.notater); } catch {}
   tegn();
   document.documentElement.classList.add('data-klar');   // første svar er lagt inn: panelene kan vises
   leggKart();   // etter første svar: kartet står allerede der han er

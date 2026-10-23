@@ -17,6 +17,7 @@ export default {
       return Response.redirect(url.toString(), 301);
     }
     if (url.pathname.startsWith("/chat/")) return handleChat(request, env, url);
+    if (url.pathname === "/bank/tilbake") return handleChat(request, env, url);   // SpareBank 1 sin BankID-innlogging kommer tilbake hit
     // Podcastepisodene ligger i R2 (FILES, nøkkel podcast/<fil>), ikke i dette offentlige repoet.
     if (url.pathname.startsWith("/podcast/lyd/")) return podcastLyd(request, env, url.pathname.slice("/podcast/lyd/".length));
     // /podcast/ og hver episode på /podcast/<n>/ er samme side, med episodelista og riktig tittel for deling satt inn.
