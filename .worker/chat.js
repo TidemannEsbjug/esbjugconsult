@@ -85,6 +85,12 @@ export async function handleChat(request, env, url) {
     return new Response(r.body, { status: r.status, headers: { "content-type": "application/json", "cache-control": "public, max-age=60" } });
   }
 
+  // Kalenderen i avspillingen: hvor mange timer hver dag har opptak (posisjon, puls eller målinger), fra databasen og arkivet.
+  if (path === "/chat/historikk/dager") {
+    const r = await hub.fetch(new Request("https://hub/internal/dager", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }));
+    return new Response(r.body, { status: r.status, headers: { "content-type": "application/json", "cache-control": "public, max-age=120" } });
+  }
+
   // Rå puls (hver lagret måling) og akselerometerpakker i et vindu på høyst 30 min, til avspillingen i sanntid.
   if (path === "/chat/historikk/aks") {
     const fra = Number(url.searchParams.get("fra")), til = Number(url.searchParams.get("til"));
@@ -731,6 +737,9 @@ export class ChatHub {
         if (b.k === "tomat") this.tomatVarsel(decodeURIComponent(request.headers.get("x-by") || ""));
         if (b.k === "heia") this.heiaVarsel(decodeURIComponent(request.headers.get("x-by") || ""));
         return Response.json(this.kast());
+      }
+      if (url.pathname === "/internal/dager") {
+        return Response.json(await this.dager());
       }
       if (url.pathname === "/internal/hr-raa" || url.pathname === "/internal/aks-raa") {
         return Response.json(await this.vindu(url.pathname === "/internal/aks-raa" ? "aks" : "hr", b.fra, b.til), { headers: { "cache-control": "public, max-age=30" } });
@@ -1881,27 +1890,30 @@ export class ChatHub {
   // Ingenting slettes før dagen er arkivert i R2: rader eldre enn 35 dager, men aldri nyere enn det siste arkivet.
   slettFor(nå) {
     const til = this.setting("arkivTil");
-    const arkivertTil = til ? osloMidnight(Date.parse(til + "T12:00:00Z") + 36 * 3600e3) : 0;
+    const arkivertTil = til ? osloMidnight(Date.parse(til + "T12:00:00Z") + 24 * 3600e3) : 0;   // midnatt etter siste arkiverte dag
     return Math.min(nå - 35 * 864e5, arkivertTil);
   }
 
   // Arkivet: hver ferdige dag (Oslo) pakkes som én gzip-JSON i R2 (historikk/<dag>.json.gz) og blir liggende for alltid.
-  // Tar opptil tre dager per runde (fra alarmen hvert kvarter), eldste først.
+  // Tar opptil åtte dager per runde (fra alarmen hvert kvarter), eldste først.
   async arkiver() {
     const dag = (ts) => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Oslo" }).format(ts);
+    // Versjon 2: den første versjonen hoppet over annenhver dag, så alt arkiveres på nytt fra starten.
+    if (this.setting("arkivVersjon") !== "2") { this.sql.exec(`DELETE FROM kv WHERE k='arkivTil'`); this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('arkivVersjon', '2')`); }
     let fra = this.setting("arkivTil");
     if (!fra) {
       const først = Math.min(...["pos", "hr", "telelogg", "logg", "akslogg"].map((t) => this.sql.exec(`SELECT MIN(ts) AS m FROM ${t}`).one().m || Date.now()));
       fra = dag(osloMidnight(først) - 864e5);
     }
     const iDag = dag(Date.now());
-    for (let n = 0; n < 3; n++) {
-      const neste = dag(osloMidnight(Date.parse(fra + "T12:00:00Z") + 36 * 3600e3) + 3600e3);
+    for (let n = 0; n < 8; n++) {
+      const neste = dag(Date.parse(fra + "T12:00:00Z") + 24 * 3600e3);   // dagen etter (kl. 12 UTC er alltid samme dato i Oslo)
       if (neste >= iDag) return;
       const data = this.dagData(neste);
       const tekst = JSON.stringify(data);
       const gz = await new Response(new Blob([tekst]).stream().pipeThrough(new CompressionStream("gzip"))).arrayBuffer();
-      await this.env.FILES.put(`historikk/${neste}.json.gz`, gz, { httpMetadata: { contentType: "application/json", contentEncoding: "gzip" } });
+      const timer = new Set([...data.pos.map((p) => Math.floor(p.ts / 3600e3)), ...data.hr.map((h) => Math.floor(h[0] / 3600e3)), ...data.tele.map((t) => Math.floor(t[0] / 3600e3))]).size;
+      await this.env.FILES.put(`historikk/${neste}.json.gz`, gz, { httpMetadata: { contentType: "application/json", contentEncoding: "gzip" }, customMetadata: { timer: String(timer) } });
       this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('arkivTil', ?)`, neste);
       fra = neste;
     }
@@ -1925,6 +1937,29 @@ export class ChatHub {
       veispor: this.sql.exec(`SELECT fra, til, kost, geom FROM veispor WHERE til >= ? AND fra < ? ORDER BY fra`, start, slutt).toArray(),
       banktrans: q(`SELECT id, konto, tid, belop, tekst FROM banktrans WHERE tid >= ? AND tid < ? ORDER BY tid`),
     };
+  }
+
+  // Timer med opptak per Oslo-dag: hver time med posisjon, puls eller målinger teller (0–24). Arkiverte dager har tallet
+  // i arkivets metadata. Huskes i 2 min.
+  async dager() {
+    const nå = Date.now();
+    if (this.dagerMemo && nå - this.dagerMemo.at < 120e3) return this.dagerMemo.v;
+    const timer = new Set();
+    for (const t of ["pos", "hr", "telelogg"]) for (const r of this.sql.exec(`SELECT DISTINCT CAST(ts / 3600000 AS INTEGER) AS h FROM ${t}`).toArray()) timer.add(r.h);
+    const dagN = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Oslo" }), v = {};
+    for (const h of timer) { const d = dagN.format(h * 3600e3 + 1800e3); v[d] = (v[d] || 0) + 1; }
+    try {
+      let cursor;
+      do {
+        const l = await this.env.FILES.list({ prefix: "historikk/", include: ["customMetadata"], cursor });
+        for (const o of l.objects) { const d = o.key.slice(10, 20); if (!v[d]) v[d] = Number(o.customMetadata?.timer || 1); }
+        cursor = l.truncated ? l.cursor : null;
+      } while (cursor);
+    } catch {}
+    for (const d in v) v[d] = Math.min(24, v[d]);
+    const svar = { dager: v, først: Object.keys(v).sort()[0] || null };
+    this.dagerMemo = { at: nå, v: svar };
+    return svar;
   }
 
   // En dag fra arkivet (eldre enn det som ligger i databasen), lest én gang og husket.

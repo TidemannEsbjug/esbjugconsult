@@ -525,6 +525,10 @@
   .kn button[aria-pressed="true"]{background:var(--ink);color:#fff}
   /* Replay: én bred linje øverst i stedet for flaggene, og spørreboksen som egen boks under datoen. */
   .replay .hero-i>.flyt{align-self:stretch;position:relative;z-index:30}   /* linja og fartvelgeren over panelene */
+  /* I replay følger nattlaget statusen den gang (sov han da?), ikke nå, og avspilleren ligger over det. */
+  body.i-replay .natt-lag{opacity:0;visibility:hidden}
+  body.i-replay.replay-sover .natt-lag{opacity:1;visibility:visible}
+  .replay .hero-i{z-index:5}
   .replay .hero-i>.flyt>.topp{display:none}
   .hist{order:4;position:relative;flex:1;min-width:0;display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0;padding:6px 8px;border-radius:999px;pointer-events:auto;animation:histInn .3s ease-out}
   @keyframes histInn{from{opacity:0;transform:translateX(-8px)}}
@@ -534,7 +538,23 @@
   .hist .h-spill{width:32px;padding:7px 0}
   .hist .h-ikon{width:32px;height:30px;padding:0;display:inline-grid;place-items:center;border-radius:50%;background:rgba(0,32,91,.08);color:var(--ink);font:500 20px/1 -apple-system,system-ui,sans-serif;cursor:pointer;position:relative}
   .hist .h-kal svg{width:17px;height:17px}
-  .hist .h-dato{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;border:0;padding:0}
+  /* Kalenderen (Wayback): måneden som et rutenett, dagene farget etter timer med opptak. */
+  .hist .h-kalender{position:absolute;right:56px;top:calc(100% + 8px);z-index:50;width:292px;padding:14px 14px 12px;border-radius:18px;background:rgba(255,255,255,.95);display:flex;flex-direction:column;gap:8px}
+  .hist .h-kalender[hidden]{display:none}
+  .kal-topp{display:flex;align-items:center;justify-content:space-between}
+  .kal-topp b{font:italic 500 18px/1 var(--serif);color:var(--ink);text-transform:capitalize}
+  .hist .kal-topp button{width:30px;height:30px;padding:0;border-radius:50%;font:500 18px/1 -apple-system,system-ui,sans-serif}
+  .hist .kal-topp button:disabled{opacity:.25;cursor:default}
+  .kal-uke,.kal-dager{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .kal-uke span{text-align:center;font:600 10px/1 "SF Mono",Menlo,monospace;color:rgba(0,32,91,.5);text-transform:uppercase;padding:2px 0}
+  .hist .kal-dager button{aspect-ratio:1;padding:0;border-radius:9px;background:transparent;color:var(--ink);font:600 13px/1 -apple-system,system-ui,sans-serif;letter-spacing:0;font-variant-numeric:tabular-nums;transition:transform .12s}
+  .hist .kal-dager button.med{background:rgba(186,12,47,var(--h))}
+  .hist .kal-dager button.sterk{color:#fff}
+  .hist .kal-dager button:disabled{opacity:.28;cursor:default}
+  .hist .kal-dager button:not(:disabled):hover{transform:scale(1.08)}
+  .hist .kal-dager button.idag{box-shadow:inset 0 0 0 1.5px var(--ink)}
+  .hist .kal-dager button[aria-pressed="true"]{background:var(--ink);color:#fff}
+  .kal-fot{margin:2px 0 0;font:600 10px/1.3 "SF Mono",Menlo,monospace;letter-spacing:.04em;color:rgba(0,32,91,.55);text-align:center}
   .hist .h-fart{min-width:46px}
   .hist .h-fartvalg{position:absolute;right:0;top:calc(100% + 8px);z-index:50;display:grid;grid-template-columns:1fr;gap:6px;padding:12px 14px;border-radius:16px;width:220px}
   .hist .h-fartvalg[hidden]{display:none}
@@ -2105,9 +2125,10 @@ if (HUS) setTimeout(function lagAvspiller() {
   // Én bred linje øverst (der flaggene står, de skjules i replay), så panelene ikke skyves ned.
   bar.innerHTML = '<button type="button" class="h-spill" aria-label="Spill av">▶</button><input type="range" class="h-tid" min="0" max="10000" value="0" aria-label="Tid"><span class="h-kl">–</span>'
     + '<button type="button" class="h-ikon h-forr" aria-label="Dagen før">‹</button>'
-    + '<label class="h-ikon h-kal" aria-label="Velg dato"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><input type="date" class="h-dato" aria-label="Dato"></label>'
+    + '<button type="button" class="h-ikon h-kal" aria-label="Velg dato" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></button>'
     + '<button type="button" class="h-ikon h-neste" aria-label="Dagen etter">›</button>'
     + '<button type="button" class="h-fart" aria-expanded="false" aria-label="Fart">1×</button>'
+    + '<div class="h-kalender gl" hidden role="dialog" aria-label="Kalender"><div class="kal-topp"><button type="button" class="kal-forr" aria-label="Forrige måned">‹</button><b class="kal-mnd"></b><button type="button" class="kal-neste" aria-label="Neste måned">›</button></div><div class="kal-uke"></div><div class="kal-dager"></div><p class="kal-fot"></p></div>'
     + '<div class="h-fartvalg gl" hidden><span class="h-fv">1×</span><input type="range" class="h-fs" min="0" max="100" value="0" aria-label="Fart fra 1× til 60×"><span class="h-fe"><span>1×</span><span>60×</span></span></div>';
   // Spørreboksen er en egen boks under datoen.
   const sokk = document.createElement('section');
@@ -2115,11 +2136,12 @@ if (HUS) setTimeout(function lagAvspiller() {
   sokk.innerHTML = '<form class="h-sok"><input type="search" placeholder="Spør: hvor var han i går kl. 14? sist han hadde 111 i puls?" aria-label="Spør om historikken" maxlength="200"></form><p class="h-svar" hidden></p>';
   document.querySelector('.hero-i>.flyt').append(rad, bar);
   document.querySelector('.naa').after(sokk);
-  const q = c => bar.querySelector(c) || sokk.querySelector(c) || rad.querySelector(c) || folgFelt.querySelector(c), spill = q('.h-spill'), tid = q('.h-tid'), kl2 = q('.h-kl'), svar = q('.h-svar'), folgK = q('.kn-folg'), dato = q('.h-dato');
+  const q = c => bar.querySelector(c) || sokk.querySelector(c) || rad.querySelector(c) || folgFelt.querySelector(c), spill = q('.h-spill'), tid = q('.h-tid'), kl2 = q('.h-kl'), svar = q('.h-svar'), folgK = q('.kn-folg');
   const ukedag = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', weekday: 'short' }), klS = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', hour: '2-digit', minute: '2-digit', second: '2-digit' });
   // Datoen: siste 35 dager (så lenge posisjonene lagres).
-  dato.max = dagNr.format(Date.now()); dato.min = dagNr.format(Date.now() - 34 * 864e5);
-  const trykket = dag => { if (dag) dato.value = dag; };
+  // Dagen som spilles; første dag med opptak og i dag avgrenser kalenderen og «dag fram/tilbake».
+  let valgtDag = null, minDag = dagNr.format(Date.now() - 34 * 864e5), maxDag = dagNr.format(Date.now()), opptak = {};
+  const trykket = dag => { if (dag) valgtDag = dag; };
   const fortell = t => { svar.textContent = t; svar.hidden = !t; };
   // «Følg» slippes når man drar i kartet selv.
   const settFolg = på => { følg = på; folgK.setAttribute('aria-pressed', på); if (på) { const p = megMark.getLngLat(); kart.easeTo({ center: p, zoom: Math.max(kart.getZoom(), 17), duration: 600 }); } };
@@ -2215,6 +2237,7 @@ if (HUS) setTimeout(function lagAvspiller() {
     const da = {};
     for (const [ts, k, v] of avsp.logg) { if (ts > T) break; da[k] = v; }
     gjor(da.gjor ?? '');
+    document.body.classList.toggle('replay-sover', da.status === 'sleeping');
     // Saldoene, tellerne og rommet slik de var (fra loggen; før loggen startet vises ikke banken).
     let bk = null; try { bk = da.bank ? JSON.parse(da.bank) : null; } catch {}
     visBank(bk);
@@ -2249,11 +2272,11 @@ if (HUS) setTimeout(function lagAvspiller() {
     fortell(o.tekst);
     start();
   }
-  function gåLive() { delete AK.iphone; delete AK.watch; bankNokkel = ''; kart.getSource('avsp-prikk')?.setData({ type: 'FeatureCollection', features: [] }); megMark.getElement().style.visibility = ''; document.body.classList.remove('i-replay'); avsp = null; window.__avsp = false; stopp(); trykket(null); kl2.textContent = '–'; fortell(''); sistSpor = ''; forste = true; hent(); }
+  function gåLive() { document.body.classList.remove('replay-sover'); delete AK.iphone; delete AK.watch; bankNokkel = ''; kart.getSource('avsp-prikk')?.setData({ type: 'FeatureCollection', features: [] }); megMark.getElement().style.visibility = ''; document.body.classList.remove('i-replay'); avsp = null; window.__avsp = false; stopp(); trykket(null); kl2.textContent = '–'; fortell(''); sistSpor = ''; forste = true; hent(); }
   spill.onclick = () => { if (!avsp) return; if (avsp.spiller) stopp(); else { if (avsp.k >= 1) avsp.k = 0; start(); } };
   // Farten: en egen glidebryter (som på YouTube) fra 1× til 60×, jevnt fordelt på en logaritmisk skala.
   const fartvalg = q('.h-fartvalg'), fs = q('.h-fs');
-  q('.h-fart').onclick = e => { const åpne = fartvalg.hidden; fartvalg.hidden = !åpne; e.currentTarget.setAttribute('aria-expanded', åpne); };
+  q('.h-fart').onclick = e => { const åpne = fartvalg.hidden; fartvalg.hidden = !åpne; q('.h-kalender').hidden = true; e.currentTarget.setAttribute('aria-expanded', åpne); };
   fs.oninput = () => {
     const f = Math.pow(60, fs.value / 100);
     fart = f < 1.05 ? 1 : f < 10 ? Math.round(f * 2) / 2 : Math.round(f);
@@ -2261,7 +2284,7 @@ if (HUS) setTimeout(function lagAvspiller() {
   };
   // En dag fram eller tilbake, på samme klokkeslett.
   const nyDag = async (dag, T) => {
-    if (dag < dato.min || dag > dato.max) return;
+    if (dag < minDag || dag > maxDag) return;
     const spilte = avsp && avsp.spiller; stopp();
     await last(dag);
     avsp.hopp = true; vis(T != null ? (T - avsp.t0) / (avsp.t1 - avsp.t0) : 0);
@@ -2270,8 +2293,47 @@ if (HUS) setTimeout(function lagAvspiller() {
   };
   const skift = n => { if (!avsp) return; const T = Tav(avsp.k) + n * 864e5; nyDag(dagNr.format(T), Math.min(T, Date.now())); };
   q('.h-forr').onclick = () => skift(-1); q('.h-neste').onclick = () => skift(1);
-  dato.onchange = () => { if (dato.value) nyDag(dato.value, avsp ? osloMidnatt(dato.value) + (Tav(avsp.k) - avsp.t0) : null); };
-  q('.h-kal').onclick = e => { e.preventDefault(); try { dato.showPicker(); } catch { dato.focus(); } };
+  // Kalenderen, som en Wayback-maskin: én måned av gangen, hver dag farget etter hvor mange timer som er spilt inn
+  // (posisjon, puls, målinger), i dag med ring og dagen som spilles fylt. Dager uten opptak er nedtonet.
+  const kal = q('.h-kalender'), kalDager = q('.kal-dager');
+  const mndNavn = new Intl.DateTimeFormat(TX.loc, { month: 'long', year: 'numeric', timeZone: 'UTC' });
+  const ukeNavn = new Intl.DateTimeFormat(TX.loc, { weekday: 'narrow', timeZone: 'UTC' });
+  const fotDato = new Intl.DateTimeFormat(TX.loc, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+  q('.kal-uke').replaceChildren(...[0, 1, 2, 3, 4, 5, 6].map(i => { const e = document.createElement('span'); e.textContent = ukeNavn.format(Date.UTC(2024, 0, 1 + i)); return e; }));
+  let visMnd = null;   // [år, måned 0–11]
+  const tegnKal = () => {
+    const [å, m] = visMnd, først = new Date(Date.UTC(å, m, 1)), dagerIMnd = new Date(Date.UTC(å, m + 1, 0)).getUTCDate(), fra = (først.getUTCDay() + 6) % 7, iDag = dagNr.format(Date.now());
+    q('.kal-mnd').textContent = mndNavn.format(først);
+    const celler = [];
+    for (let i = 0; i < fra; i++) celler.push(document.createElement('i'));
+    for (let d = 1; d <= dagerIMnd; d++) {
+      const dag = `${å}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`, t = opptak[dag] || 0, b = document.createElement('button');
+      b.type = 'button'; b.textContent = d; b.dataset.dag = dag;
+      if (t) { b.style.setProperty('--h', (.14 + .66 * Math.min(1, t / 18)).toFixed(2)); b.classList.add('med'); if (t >= 12) b.classList.add('sterk'); b.title = t + (TX.loc.startsWith('en') ? ' h recorded' : ' t spilt inn'); }
+      if (dag === iDag) b.classList.add('idag');
+      if (dag === valgtDag) b.setAttribute('aria-pressed', 'true');
+      if (dag > maxDag || (!t && dag !== iDag)) b.disabled = true;
+      b.onclick = () => { kal.hidden = true; q('.h-kal').setAttribute('aria-expanded', false); nyDag(dag, osloMidnatt(dag) + (avsp ? Tav(avsp.k) - avsp.t0 : 12 * 3600e3)); };
+      celler.push(b);
+    }
+    kalDager.replaceChildren(...celler);
+    const [fÅ, fM] = minDag.split('-').map(Number), [tÅ, tM] = maxDag.split('-').map(Number);
+    q('.kal-forr').disabled = å * 12 + m <= fÅ * 12 + fM - 1;
+    q('.kal-neste').disabled = å * 12 + m >= tÅ * 12 + tM - 1;
+  };
+  q('.kal-forr').onclick = () => { visMnd = visMnd[1] ? [visMnd[0], visMnd[1] - 1] : [visMnd[0] - 1, 11]; tegnKal(); };
+  q('.kal-neste').onclick = () => { visMnd = visMnd[1] < 11 ? [visMnd[0], visMnd[1] + 1] : [visMnd[0] + 1, 0]; tegnKal(); };
+  q('.h-kal').onclick = async e => {
+    const åpne = kal.hidden; kal.hidden = !åpne; e.currentTarget.setAttribute('aria-expanded', åpne); fartvalg.hidden = true;
+    if (!åpne) return;
+    const d = valgtDag || maxDag; visMnd = [+d.slice(0, 4), +d.slice(5, 7) - 1]; tegnKal();
+    try {
+      const j = await (await fetch('/chat/historikk/dager')).json();
+      opptak = j.dager || {}; if (j.først) minDag = j.først; maxDag = dagNr.format(Date.now());
+      q('.kal-fot').textContent = j.først ? (TX.loc.startsWith('en') ? 'Recording since ' : 'Spilt inn siden ') + fotDato.format(Date.parse(j.først + 'T12:00:00Z')) : '';
+      tegnKal();
+    } catch {}
+  };
   tid.oninput = () => { if (avsp) { avsp.hopp = true; vis(tid.value / 10000); } };
   q('.h-sok').onsubmit = async e => {
     e.preventDefault();
