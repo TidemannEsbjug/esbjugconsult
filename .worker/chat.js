@@ -111,13 +111,13 @@ export async function handleChat(request, env, url) {
   }
 
   if (path === "/chat/hr") {
-    const r = ["time", "dag", "uke", "mnd"].includes(url.searchParams.get("r")) ? url.searchParams.get("r") : "dag";
+    const r = ["time", "fin", "dag", "uke", "mnd"].includes(url.searchParams.get("r")) ? url.searchParams.get("r") : "dag";
     return hub.fetch(new Request("https://hub/internal/hr", { method: "POST", headers: { "x-role": "internal" }, body: JSON.stringify({ r }) }));
   }
 
   // Bevegelseshistorikk for akselerometrene (iPhone og Apple Watch), som pulsen: siste time, i dag, 7 dager, 30 dager.
   if (path === "/chat/bev") {
-    const r = ["time", "dag", "uke", "mnd"].includes(url.searchParams.get("r")) ? url.searchParams.get("r") : "time";
+    const r = ["time", "fin", "dag", "uke", "mnd"].includes(url.searchParams.get("r")) ? url.searchParams.get("r") : "time";
     const k = url.searchParams.get("k") === "watch" ? "watch" : "iphone";
     return hub.fetch(new Request("https://hub/internal/bev", { method: "POST", headers: { "x-role": "internal" }, body: JSON.stringify({ r, k }) }));
   }
@@ -1239,15 +1239,15 @@ export class ChatHub {
   // pts = [[minutes since start, bpm], ...]; beats = the sum of the per-minute averages (one minute of measuring at 70 bpm
   // = 70 beats), mins = measured minutes. The endpoint is public, so each period is reused for 30 s (dag) or 2 min.
   hrRange(r = "dag") {
-    if (r === "time") {
-      // Siste time: hver lagrede måling (én per ~4 s), med minutter (desimaler) fra starten.
-      const now = Date.now(), start = now - 3600e3;
+    if (r === "time" || r === "fin") {
+      // Hver lagrede måling (én per ~4–8 s), med minutter (desimaler) fra starten: siste time, eller i dag (fin) til zoom.
+      const now = Date.now(), start = r === "fin" ? osloMidnight(now) : now - 3600e3;
       const rows = this.sql.exec(`SELECT ts, bpm FROM hr WHERE ts >= ? ORDER BY ts`, start).toArray();
       const pts = rows.map((x) => [Math.round((x.ts - start) / 600) / 100, x.bpm]);
       let lo = null, hi = null, sum = 0;
       for (const [, b] of pts) { lo = lo == null ? b : Math.min(lo, b); hi = hi == null ? b : Math.max(hi, b); sum += b; }
       const mins = new Set(rows.map((x) => Math.floor(x.ts / 60000))).size;
-      return { r, start, now, step: 0.1, live: this.liveHr(), pts, beats: pts.length ? Math.round(sum / pts.length * mins) : 0, mins, lo, hi };
+      return { r, start, now, step: 0.5, live: this.liveHr(), pts, beats: pts.length ? Math.round(sum / pts.length * mins) : 0, mins, lo, hi };
     }
     const P = { dag: [0, 1, 30e3], uke: [6, 10, 120e3], mnd: [29, 60, 120e3] }[r] || [0, 1, 30e3];
     const now = Date.now(), start = osloMidnight(now - P[0] * 864e5), step = P[1];
@@ -1275,15 +1275,15 @@ export class ChatHub {
   // 30 dager (per time). Minutter fra starten, som pulsen; lavest/snitt/høyest i g og målt tid i minutter.
   bevRange(k = "iphone", r = "time") {
     const now = Date.now();
-    const start = r === "time" ? now - 3600e3 : osloMidnight(now - ({ dag: 0, uke: 6, mnd: 29 }[r] ?? 0) * 864e5);
-    const step = { time: 0, dag: 1, uke: 10, mnd: 60 }[r] ?? 1;
+    const start = r === "time" ? now - 3600e3 : osloMidnight(now - ({ dag: 0, fin: 0, uke: 6, mnd: 29 }[r] ?? 0) * 864e5);
+    const step = { time: 0, fin: 0, dag: 1, uke: 10, mnd: 60 }[r] ?? 1;
     const rows = step
       ? this.sql.exec(`SELECT CAST((ts - ?) / ? AS INTEGER) * ? AS m, AVG(v) AS v FROM bevegelse WHERE k=? AND ts >= ? GROUP BY 1 ORDER BY 1`, start, step * 60000, step, k, start).toArray()
       : this.sql.exec(`SELECT (ts - ?) / 60000.0 AS m, v FROM bevegelse WHERE k=? AND ts >= ? ORDER BY ts`, start, k, start).toArray();
     const pts = rows.map((x) => [Math.round(x.m * 100) / 100, Math.round(x.v * 1000) / 1000]);
     const t = this.sql.exec(`SELECT MIN(v) AS lo, AVG(v) AS av, MAX(v) AS hi, COUNT(DISTINCT CAST(ts / 60000 AS INTEGER)) AS mins FROM bevegelse WHERE k=? AND ts >= ?`, k, start).one();
     const r3 = (x) => (x == null ? null : Math.round(x * 1000) / 1000);
-    return { k, r, start, now, step: step || 0.1, pts, lo: r3(t.lo), av: r3(t.av), hi: r3(t.hi), mins: t.mins || 0 };
+    return { k, r, start, now, step: step || 0.5, pts, lo: r3(t.lo), av: r3(t.av), hi: r3(t.hi), mins: t.mins || 0 };
   }
 
   // Push for a visit (when the owner has turned it on in the app). Own caps: one per visitor per 15 s (stops reload
