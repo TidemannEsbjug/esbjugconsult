@@ -142,7 +142,7 @@ export async function handleChat(request, env, url) {
     const r = await hub.fetch(new Request("https://hub/internal/bank-tilbake", { method: "POST", headers: { "x-role": "internal" },
       body: JSON.stringify({ code: url.searchParams.get("code") || "", state: url.searchParams.get("state") || "", feil: url.searchParams.get("error") || "" }) }));
     const j = await r.json();
-    return new Response(`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Bank</title><body style="font:18px/1.5 -apple-system,system-ui,sans-serif;display:grid;place-items:center;min-height:90vh;color:#00205B"><p>${j.ok ? "Banken er koblet ✓ Saldo og transaksjoner hentes hvert kvarter." : "Fikk ikke koblet banken: " + String(j.feil || "ukjent feil").replace(/[<>&]/g, "")}</p>`, { headers: { "content-type": "text/html; charset=utf-8" } });
+    return new Response(`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Bank</title><body style="font:18px/1.5 -apple-system,system-ui,sans-serif;display:grid;place-items:center;min-height:90vh;color:#00205B"><p>${j.ok ? "Banken er koblet ✓ Saldoene hentes hvert kvarter." : "Fikk ikke koblet banken: " + String(j.feil || "ukjent feil").replace(/[<>&]/g, "")}</p>`, { headers: { "content-type": "text/html; charset=utf-8" } });
   }
 
   if (path === "/chat/status") {
