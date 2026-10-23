@@ -5,8 +5,8 @@
 (() => {
 const en = !/^(nb|no|nn)/.test(document.documentElement.lang || '');
 const T = en
-  ? { gif: 'GIF', search: 'Search GIFs', sending: 'Sending GIF …', many: 'That is a lot of GIFs. Wait a little.', fail: 'Could not send the GIF.', none: 'No GIFs found', react: 'React', close: 'Close', slett: 'Delete', sikker: 'Sure?' }
-  : { gif: 'GIF', search: 'Søk etter GIF', sending: 'Sender GIF …', many: 'Det var mange GIF-er. Vent litt.', fail: 'Fikk ikke sendt GIF-en.', none: 'Fant ingen GIF-er', react: 'Reager', close: 'Lukk', slett: 'Slett', sikker: 'Sikker?' };
+  ? { gif: 'GIF', search: 'Search GIFs', sending: 'Sending GIF …', many: 'That is a lot of GIFs. Wait a little.', fail: 'Could not send the GIF.', none: 'No GIFs found', react: 'React', close: 'Close', slett: 'Delete' }
+  : { gif: 'GIF', search: 'Søk etter GIF', sending: 'Sender GIF …', many: 'Det var mange GIF-er. Vent litt.', fail: 'Fikk ikke sendt GIF-en.', none: 'Fant ingen GIF-er', react: 'Reager', close: 'Lukk', slett: 'Slett' };
 const EMO = ['❤️', '👍', '😂', '😮', '😢', '🙏'];
 const still = matchMedia('(prefers-reduced-motion: reduce)');
 let api = null, bar = null;
@@ -17,13 +17,13 @@ css.textContent = `
 #chat .ch-m p.cm-har{margin-bottom:12px}
 .cm-r{position:absolute;bottom:-12px;display:flex;gap:1px;padding:2px 5px;border-radius:999px;background:#fff;color:#000;font-size:13px;line-height:1.1;box-shadow:0 1px 5px rgba(0,0,0,.22);pointer-events:none;white-space:nowrap}
 .him>.cm-r{right:6px}.me>.cm-r{left:6px}
-.cm-bar{position:absolute;bottom:calc(100% + 6px);z-index:3;display:flex;gap:2px;padding:4px;border-radius:999px;background:#fff;box-shadow:0 6px 22px rgba(0,0,0,.25);animation:cmInn .18s ease-out}
+.cm-bar{position:absolute;bottom:calc(100% + 6px);z-index:3;display:flex;flex-wrap:nowrap;width:max-content;white-space:nowrap;gap:2px;padding:4px;border-radius:999px;background:#fff;box-shadow:0 6px 22px rgba(0,0,0,.25);animation:cmInn .18s ease-out}
 .cm-bar.ned{bottom:auto;top:calc(100% + 6px)}
 .him>.cm-bar{left:0}.me>.cm-bar{right:0}
 .cm-bar button{border:0;background:none;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;padding:0;transition:transform .15s,background .15s}
 .cm-bar button:hover{transform:scale(1.18)}
 .cm-bar button[aria-pressed="true"]{background:rgba(0,0,0,.1)}
-.cm-bar .cm-slett{width:auto;height:36px;border-radius:999px;padding:0 12px;margin-left:2px;border-left:1px solid rgba(0,0,0,.1);font:600 13px/1 -apple-system,"SF Pro Text",Arial,sans-serif;color:#c0262d}
+.cm-bar .cm-slett{flex:none;white-space:nowrap;width:auto;height:36px;border-radius:999px;padding:0 12px;margin-left:2px;border-left:1px solid rgba(0,0,0,.1);font:600 13px/1 -apple-system,"SF Pro Text",Arial,sans-serif;color:#c0262d}
 .cm-bar .cm-slett:hover{transform:none;background:rgba(192,38,45,.08)}
 @keyframes cmInn{from{opacity:0;transform:translateY(4px) scale(.94)}}
 #chat .ch-f .cm-gb{font:800 12px/1 -apple-system,"SF Pro Text",Arial,sans-serif;letter-spacing:.04em}
@@ -70,15 +70,11 @@ const openBar = p => {
     b.onclick = ev => { ev.stopPropagation(); react(p, e); closeBar(); };
     bar.append(b);
   }
-  // Egne meldinger kan slettes: to trykk, så er den borte hos begge.
+  // Egne meldinger kan slettes: ett trykk, så er den borte hos begge.
   if (p.classList.contains('me') && !p.classList.contains('up') && p.dataset.id) {
     const d = document.createElement('button');
     d.type = 'button'; d.className = 'cm-slett'; d.textContent = T.slett;
-    d.onclick = ev => {
-      ev.stopPropagation();
-      if (d.dataset.sikker) { api?.send({ t: 'slettmelding', id: +p.dataset.id }); closeBar(); return; }
-      d.dataset.sikker = '1'; d.textContent = T.sikker;
-    };
+    d.onclick = ev => { ev.stopPropagation(); api?.send({ t: 'slettmelding', id: +p.dataset.id }); closeBar(); };
     bar.append(d);
   }
   p.append(bar);
