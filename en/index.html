@@ -473,9 +473,10 @@
   @media (max-width:560px){.natt-t span{display:none}.natt-sky{width:60vw}}
   @media (prefers-reduced-motion:reduce){.natt-mane,.natt-sky,.natt-st circle{animation:none}.ch-b.sover .zz i{animation:none;opacity:1}.ch-b.sover .zz i:nth-child(1){transform:translate(6px,-14px)}.ch-b.sover .zz i:nth-child(2){transform:translate(22px,-50px)}.ch-b.sover .zz i:nth-child(3){transform:translate(42px,-96px)}}
   /* /new2: kartet er heroen. Leaflet med OpenStreetMap, gjort mørkt med et filter, så sporet lyser. */
-  .hero{background:#05081a}
-  #kart{position:absolute;inset:0;z-index:0;background:#05081a}
-  #kart .leaflet-tile-pane{filter:invert(1) hue-rotate(195deg) brightness(.78) contrast(1.05) saturate(.55)}
+  .hero{background:#1c0f07}
+  #kart{position:absolute;inset:0;z-index:0;background:#1c0f07}
+  /* Høst: kartet i mørk rust og rav (OpenStreetMap invertert og farget brunt). */
+  #kart .leaflet-tile-pane{filter:invert(1) sepia(1) hue-rotate(-22deg) saturate(2.3) brightness(.6) contrast(1.15)}
   #kart.leaflet-container{font-family:inherit}
   #kart .leaflet-control-attribution{background:rgba(5,8,26,.6);color:rgba(255,255,255,.45);font-size:10px}
   #kart .leaflet-control-attribution a{color:rgba(255,255,255,.6)}
@@ -563,6 +564,12 @@
   .ak-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
   .ak-m{font:600 9.5px/1 "SF Mono",Menlo,monospace;letter-spacing:.1em;color:rgba(0,32,91,.5)}
   .ak-m i{font-style:normal;font-weight:800}.kx{color:#e0233c}.ky{color:#d68a00}.kz{color:#2563eb}
+  /* Øyet mot: tre steder, været og klokka der. Minimalistisk: navn, grader med et lite tegn, klokkeslett. */
+  .oyet{display:flex;flex-direction:column;gap:7px;padding:14px 18px 14px}
+  .oy{display:grid;grid-template-columns:1fr auto 52px;align-items:baseline;gap:14px;padding-top:7px;border-top:1px solid rgba(0,32,91,.1)}
+  .oy-n{font:italic 400 17px/1.2 var(--serif);color:var(--ink)}
+  .oy-v,.oy-k{font:500 12px/1 "SF Mono",Menlo,monospace;letter-spacing:.04em;color:rgba(0,32,91,.7);font-variant-numeric:tabular-nums;text-align:right}
+  .oy-k{color:rgba(0,32,91,.5)}
   .ak-c{display:block;width:100%;height:64px;min-height:0;margin:6px 0 0}
   .venstre .sted{max-width:none}
   /* Pulsen øverst i panelet til høyre, over hele bredden. */
@@ -631,6 +638,12 @@
   <section class="akse gl" aria-label="The accelerometers in his Apple Watch and iPhone, live">
     <div class="ak"><div class="ak-h"><span class="sl">Apple Watch · accelerometer</span><span class="ak-m">20 Hz · g</span></div><canvas class="ak-c" data-k="watch"></canvas></div>
     <div class="ak"><div class="ak-h"><span class="sl">iPhone · accelerometer</span><span class="ak-m"><i class="kx">x</i> <i class="ky">y</i> <i class="kz">z</i></span></div><canvas class="ak-c" data-k="iphone"></canvas></div>
+  </section>
+  <section class="oyet gl" aria-label="Eyes on">
+    <span class="mono s-t">Eyes on</span>
+    <div class="oy" data-tz="Asia/Bangkok"><span class="oy-n">Koh Phangan</span><span class="oy-v">–</span><span class="oy-k">–</span></div>
+    <div class="oy" data-tz="Asia/Dubai"><span class="oy-n">Dubai</span><span class="oy-v">–</span><span class="oy-k">–</span></div>
+    <div class="oy" data-tz="America/Chicago"><span class="oy-n">Texas</span><span class="oy-v">–</span><span class="oy-k">–</span></div>
   </section>
   </div>
   </div>
@@ -1498,6 +1511,22 @@ $('.kartknapp').addEventListener('click', () => {
   if (på) { kart.dragging.enable(); kart.touchZoom.enable(); if (kart.hasLayer(meg)) kart.panTo(meg.getLatLng()); }
   else if (mobil) kart.dragging.disable();
 });
+// Øyet mot: været fra /chat/oyet (hvert 15. min), klokkeslettet regnes her og går hvert sekund.
+const VAER = (k, dag) => k === 0 ? (dag ? '☀︎' : '☾') : k <= 2 ? (dag ? '◐' : '☾') : k === 3 ? '☁︎' : k <= 48 ? '≋' : k <= 67 || (k >= 80 && k <= 82) ? '☂︎' : k <= 86 ? '❄︎' : '⚡︎';
+const oyKl = {};
+function tegnOyet() {
+  document.querySelectorAll('.oy').forEach(r => {
+    const tz = r.dataset.tz, f = oyKl[tz] || (oyKl[tz] = new Intl.DateTimeFormat(TX.loc, { timeZone: tz, hour: '2-digit', minute: '2-digit' }));
+    r.querySelector('.oy-k').textContent = f.format(Date.now() + skew);
+  });
+}
+async function hentOyet() {
+  try {
+    const v = await (await fetch('/chat/oyet')).json();
+    document.querySelectorAll('.oy').forEach((r, n) => { const x = v[n]; if (x && Number.isFinite(x.t)) r.querySelector('.oy-v').textContent = x.t + '° ' + VAER(x.kode, x.dag); });
+  } catch {}
+}
+tegnOyet(); setInterval(tegnOyet, 1000); hentOyet(); setInterval(hentOyet, 15 * 60e3);
 async function hent() {
   try { const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json(); skew = j.now - Date.now(); live = j.live; trail = j.trail || []; tele = j.tele || {}; if (j.puls) puls = j.puls; tegnPuls(); if (j.kast) nyeKast(j.kast); gjor(j.gjor); brev(j.notat); } catch {}
   tegn();

@@ -27,6 +27,7 @@
 //   POST /chat/admin/tele         {kilde, d}          latest readings from the owner's iPhone/watch (battery, steps, pressure …)
 //   POST /chat/admin/sted-her     {navn, r}           name the place he is at now (e.g. «hjemme hos moren sin»), radius r m
 //   POST /chat/kast               {k: "le" | "tomat"} a visitor laughs or throws a tomato at the map card (shared counters)
+//   GET  /chat/oyet                               weather now in Koh Phangan, Dubai and Texas (Open-Meteo, cached 15 min)
 //   GET  /chat/spor                               the public map: live position, today's trail, place name and the readings
 //   GET  /chat/hr                                 today's heart rate from the owner's Apple Watch (Oslo day, per minute) + live bpm
 //   POST /chat/besok                              the page was shown from a prefetch/prerender: same visit push as a page load
@@ -83,6 +84,20 @@ export async function handleChat(request, env, url) {
     const body = await request.text();
     return hub.fetch(new Request("https://hub/internal/kast", { method: "POST", headers: { "x-role": "internal", "x-ip": request.headers.get("CF-Connecting-IP") || "",
       "x-by": encodeURIComponent((request.cf && request.cf.city) || "") }, body }));
+  }
+
+  // «Øyet mot»: weather in the three places on the front page. One call to Open-Meteo for all, cached 15 minutes.
+  if (path === "/chat/oyet") {
+    const key = new Request("https://esbjugconsult.com/chat/oyet");
+    const hit = await caches.default.match(key);
+    if (hit) return hit;
+    const r = await fetch("https://api.open-meteo.com/v1/forecast?latitude=9.73,25.2,30.27&longitude=100.01,55.27,-97.74&current=temperature_2m,weather_code,is_day");
+    if (!r.ok) return new Response("Open-Meteo " + r.status, { status: 502 });
+    const j = await r.json();
+    const steder = (Array.isArray(j) ? j : [j]).map((x) => ({ t: Math.round(x.current?.temperature_2m), kode: x.current?.weather_code, dag: !!x.current?.is_day }));
+    const res = Response.json(steder, { headers: { "cache-control": "public, max-age=900" } });
+    await caches.default.put(key, res.clone());
+    return res;
   }
 
   if (path === "/chat/hr") {

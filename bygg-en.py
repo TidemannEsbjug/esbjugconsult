@@ -271,6 +271,7 @@ T_NY = [
     ('aria-label="Akselerometeret i Apple Watch og iPhonen, live"', 'aria-label="The accelerometers in his Apple Watch and iPhone, live"'),
     ('<span class="sl">Apple Watch · akselerometer</span>', '<span class="sl">Apple Watch · accelerometer</span>'),
     ('<span class="sl">iPhone · akselerometer</span>', '<span class="sl">iPhone · accelerometer</span>'),
+    ('<section class="oyet gl" aria-label="Øyet mot">\n    <span class="mono s-t">Øyet mot</span>', '<section class="oyet gl" aria-label="Eyes on">\n    <span class="mono s-t">Eyes on</span>'),
     ('alt="To mobiltelefoner side om side, i blått og hvitt"', 'alt="Two phones side by side, in blue and white"'),
     ('alt="Hengelås i blått og hvitt"', 'alt="A padlock in blue and white"'),
 ]
