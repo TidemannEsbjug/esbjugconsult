@@ -651,9 +651,9 @@
   <section class="oyet gl" aria-label="Eyes on">
     <span class="mono s-t">Eyes on</span>
     <div class="oy-rad">
-      <div class="oy" data-tz="Asia/Bangkok"><span class="oy-n">Koh Phangan</span><svg class="oy-i" viewBox="0 0 48 48" aria-hidden="true"></svg><b class="oy-v">–</b><span class="oy-k">–</span></div>
-      <div class="oy" data-tz="Asia/Makassar"><span class="oy-n">Bali</span><svg class="oy-i" viewBox="0 0 48 48" aria-hidden="true"></svg><b class="oy-v">–</b><span class="oy-k">–</span></div>
       <div class="oy" data-tz="Asia/Dubai"><span class="oy-n">Dubai</span><svg class="oy-i" viewBox="0 0 48 48" aria-hidden="true"></svg><b class="oy-v">–</b><span class="oy-k">–</span></div>
+      <div class="oy" data-tz="Asia/Bangkok"><span class="oy-n">Koh Phangan</span><svg class="oy-i" viewBox="0 0 48 48" aria-hidden="true"></svg><b class="oy-v">–</b><span class="oy-k">–</span></div>
+      <div class="oy" data-tz="Asia/Makassar"><span class="oy-n">Lombok</span><svg class="oy-i" viewBox="0 0 48 48" aria-hidden="true"></svg><b class="oy-v">–</b><span class="oy-k">–</span></div>
     </div>
   </section>
   </div>
@@ -1594,7 +1594,7 @@ function tegnOyet() {
 }
 async function hentOyet() {
   try {
-    const v = await (await fetch('/chat/oyet')).json();
+    const v = await (await fetch('/chat/oyet?steder=dubai-kp-lombok')).json();   // rekkefølgen i adressen, så nettleserens mellomlager ikke blander gammel rekkefølge
     document.querySelectorAll('.oy').forEach((r, n) => {
       const x = v[n]; if (!x || !Number.isFinite(x.t)) return;
       const k = VAER(x.kode, x.dag);
