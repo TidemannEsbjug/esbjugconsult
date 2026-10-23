@@ -26,6 +26,10 @@
 //   POST /chat/admin/pos          {pts:[{ts,lat,lon,acc,spd,alt,hdg}]}  the owner's iPhone reports where he is (live, in the background)
 //   POST /chat/admin/tele         {kilde, d}          latest readings from the owner's iPhone/watch (battery, steps, pressure …)
 //   POST /chat/admin/sted-her     {navn, r}           name the place he is at now (e.g. «hjemme hos moren sin»), radius r m
+//   POST /chat/admin/fyr          {nr, navn, trykk}   a beacon phone in the house: its air pressure (hPa)
+//   POST /chat/admin/rom          {b, trykk, laer?}   what the iPhone hears from each beacon; learn a room or guess it
+//   GET  /chat/admin/rom                              current room, rooms with sample counts, beacons
+//   POST /chat/admin/rom-slett    {rom}               forget a room's samples
 //   POST /chat/kast               {k: "le" | "tomat"} a visitor laughs or throws a tomato at the map card (shared counters)
 //   POST /chat/android            {bat, lader}        the owner's Android phone reports its battery (its own key, ANDROID_TOKEN)
 //   GET  /chat/oyet                               weather now in Dubai, Koh Phangan and Lombok (Open-Meteo, cached 15 min)
@@ -450,6 +454,8 @@ export class ChatHub {
         this.sql.exec(`DELETE FROM kv WHERE k='notat'`);
       }
     }
+    // Rom hjemme: eksempler på hva iPhonen hører i hvert rom (styrken fra hvert fyr, dBm) og høyden over fyr 1 (m).
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS romprove (id INTEGER PRIMARY KEY AUTOINCREMENT, rom TEXT, ts INTEGER, b TEXT, h REAL)`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS pos (ts INTEGER PRIMARY KEY, lat REAL, lon REAL, acc REAL, spd REAL, alt REAL, hdg REAL)`);
     // Today's unique visitors for the counter on the site (salted hashes, emptied every Oslo midnight).
     this.sql.exec(`CREATE TABLE IF NOT EXISTS uniq (day TEXT, k TEXT, net TEXT, PRIMARY KEY (day, k))`);
@@ -747,6 +753,52 @@ export class ChatHub {
       }
       const { acc, ...uten } = ny;   // the chat pages don't need the accelerometer; the map page fetches it
       this.toVisitors({ t: "tele", kilde, d: uten });
+      return Response.json({ ok: true });
+    }
+    // Rom hjemme. Fyrene (gamle iPhoner som står fast i huset) sender Bluetooth-signal og sitt eget lufttrykk.
+    // iPhonen hans sender hvor sterkt den hører hvert fyr og sitt lufttrykk. Med «laer» lagres målingen som et eksempel
+    // på rommet; ellers velges rommet med de mest like eksemplene. Ser telefonen ingen fyr, sender den ingenting, og
+    // rommet forsvinner fra siden etter 30 s.
+    if (url.pathname === "/chat/admin/fyr" && request.method === "POST") {
+      const { nr, navn, trykk } = await request.json().catch(() => ({}));
+      if (!Number.isInteger(nr) || nr < 1 || nr > 99 || !(trykk > 800 && trykk < 1100)) return new Response("Bad request", { status: 400 });
+      this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, `fyr:${nr}`, JSON.stringify({ nr, navn: String(navn || "").slice(0, 40), trykk, ts: Date.now() }));
+      return Response.json({ ok: true });
+    }
+    if (url.pathname === "/chat/admin/rom" && request.method === "POST") {
+      const { b, trykk, laer } = await request.json().catch(() => ({}));
+      if (!b || typeof b !== "object") return new Response("Bad request", { status: 400 });
+      const sig = {};
+      for (const [k, v] of Object.entries(b)) if (/^\d{1,2}$/.test(k) && v < 0 && v > -110) sig[k] = Math.round(v);
+      const h = this.romHoyde(trykk), now = Date.now();
+      if (typeof laer === "string" && laer.trim()) {
+        if (!Object.keys(sig).length) return Response.json({ ok: false, feil: "Ser ingen fyr" });
+        const rom = laer.trim().slice(0, 40);
+        this.sql.exec(`INSERT INTO romprove (rom, ts, b, h) VALUES (?, ?, ?, ?)`, rom, now, JSON.stringify(sig), h);
+        this.romProver = null;
+        return Response.json({ ok: true, n: this.sql.exec(`SELECT COUNT(*) AS n FROM romprove WHERE rom=?`, rom).one().n });
+      }
+      if (!Object.keys(sig).length) return Response.json({ ok: true });
+      // Flertallet av gjetningene de siste 15 s, så rommet ikke hopper frem og tilbake på et enkelt støyende svar.
+      this.romSiste = (this.romSiste || []).filter((x) => now - x.ts < 15e3);
+      const g = this.romGjett(sig, h);
+      if (g) this.romSiste.push({ rom: g, ts: now });
+      const tell = {};
+      for (const x of this.romSiste) tell[x.rom] = (tell[x.rom] || 0) + 1;
+      const rom = Object.keys(tell).sort((a, c) => tell[c] - tell[a])[0] || null;
+      if (rom) this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('rom', ?)`, JSON.stringify({ rom, ts: now }));
+      return Response.json({ ok: true, rom, gjett: g, h });
+    }
+    if (url.pathname === "/chat/admin/rom" && request.method === "GET") {
+      const rom = this.rom();
+      const liste = this.sql.exec(`SELECT rom, COUNT(*) AS n FROM romprove GROUP BY rom ORDER BY MIN(id)`).toArray();
+      const fyr = this.sql.exec(`SELECT v FROM kv WHERE k LIKE 'fyr:%'`).toArray().map((r) => JSON.parse(r.v));
+      return Response.json({ rom, liste, fyr });
+    }
+    if (url.pathname === "/chat/admin/rom-slett" && request.method === "POST") {
+      const { rom } = await request.json().catch(() => ({}));
+      this.sql.exec(`DELETE FROM romprove WHERE rom=?`, String(rom || ""));
+      this.romProver = null;
       return Response.json({ ok: true });
     }
     // Remove stored samples in a period (a faulty measurement). Returns the removed rows so they can be put back.
@@ -1189,6 +1241,36 @@ export class ChatHub {
     return out;
   }
 
+  // Høyden over fyr 1 i meter, fra forskjellen i lufttrykk (ca. 8,4 m per hPa). Været endrer begge likt.
+  romHoyde(trykk) {
+    if (!(trykk > 800 && trykk < 1100)) return null;
+    const fyr = this.sql.exec(`SELECT v FROM kv WHERE k LIKE 'fyr:%'`).toArray().map((r) => JSON.parse(r.v))
+      .filter((f) => Date.now() - f.ts < 15 * 60e3).sort((a, c) => a.nr - c.nr)[0];
+    return fyr ? Math.round((fyr.trykk - trykk) * 84) / 10 : null;
+  }
+
+  // De fem nærmeste eksemplene stemmer, de nærmeste teller mest. Et fyr som ikke høres regnes som −100 dBm;
+  // én meter høyde teller som 4 dB.
+  romGjett(sig, h) {
+    if (!this.romProver) this.romProver = this.sql.exec(`SELECT rom, b, h FROM romprove`).toArray().map((r) => ({ rom: r.rom, b: JSON.parse(r.b), h: r.h }));
+    if (!this.romProver.length) return null;
+    const avst = (p) => {
+      let d = 0;
+      for (const k of new Set([...Object.keys(sig), ...Object.keys(p.b)])) d += ((sig[k] ?? -100) - (p.b[k] ?? -100)) ** 2;
+      if (h != null && p.h != null) d += (4 * (h - p.h)) ** 2;
+      return Math.sqrt(d);
+    };
+    const naer = this.romProver.map((p) => ({ rom: p.rom, d: avst(p) })).sort((a, c) => a.d - c.d).slice(0, 5);
+    const stemme = {};
+    for (const x of naer) stemme[x.rom] = (stemme[x.rom] || 0) + 1 / (1 + x.d);
+    return Object.keys(stemme).sort((a, c) => stemme[c] - stemme[a])[0];
+  }
+
+  rom() {
+    const r = this.setting("rom");
+    try { const x = r && JSON.parse(r); return x && Date.now() - x.ts < 30e3 ? x.rom : null; } catch { return null; }
+  }
+
   spor() {
     const live = this.sporLive();
     const start = osloMidnight(Date.now());
@@ -1208,7 +1290,7 @@ export class ChatHub {
       ...this.sql.exec(`SELECT ts, v FROM bev WHERE ts > ? ORDER BY ts`, fra).toArray()].map((r) => [r.ts, r.v]);
     // Heart rate the last 5 minutes, every stored sample (one per ~4 s while the watch shares it).
     const puls = this.sql.exec(`SELECT ts, bpm FROM hr WHERE ts > ? ORDER BY ts`, Date.now() - 5 * 60e3).toArray().map((r) => [r.ts, r.bpm]);
-    return { now: Date.now(), live, trail, tele: this.tele(), bev, puls, kast: this.kast(), gjor: this.setting("gjor") || "", notater: this.notater(20) };
+    return { now: Date.now(), live, trail, tele: this.tele(), bev, puls, kast: this.kast(), gjor: this.setting("gjor") || "", notater: this.notater(20), rom: this.rom() };
   }
 
   // The name of the place he is at (neighbourhood, town, country), from OpenStreetMap's Nominatim. At most every

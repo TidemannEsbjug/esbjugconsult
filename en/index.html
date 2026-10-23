@@ -1411,13 +1411,13 @@ raf=requestAnimationFrame(draw);
 const EN = document.documentElement.lang === 'en';
 const TX = EN ? {
   loc: 'en-GB', ingenPos: 'No position yet', venter: 'Waiting', sistSett: 'Last seen ', siden: ' ago', live: 'Live · ', t: ' h ', jorda: 'Somewhere on Earth',
-  kjent: { 'hjemme hos moren sin': 'Tidemann is at his mother’s' }, ingen: 'None', mobil: 'Mobile data', utenNett: 'Offline', visKart: 'Show the map', visPanel: 'Show the panels',
+  kjent: { 'hjemme hos moren sin': 'Tidemann is at his mother’s' }, ingen: 'None', mobil: 'Mobile data', utenNett: 'Offline', visKart: 'Show the map', visPanel: 'Show the panels', rom: 'Room: ',
   gjor: { jobber: 'Working', trener: 'Training' }, komma: '.',
   taper: ['LOSER!', 'Loser.', 'What a loser', 'Total loser', 'Mega loser', 'Ultra loser', 'Loser-in-chief', 'King of losers', 'Loser of the year', 'Loser (again)', 'Loser, loser, loser', 'LOOOOSER', 'LOSER™', 'The world’s biggest loser', 'Tiny loser'],
   treff: ['SPLAT!', 'Hit!', 'Right in the face', 'Bingo!', 'BAM!', 'Bullseye', 'Ouch!', 'Splosh', 'Jackpot', 'Got him!'],
 } : {
   loc: 'nb-NO', ingenPos: 'Ingen posisjon ennå', venter: 'Venter', sistSett: 'Sist sett ', siden: ' siden', live: 'Live · ', t: ' t ', jorda: 'Et sted på jorda',
-  kjent: {}, ingen: 'Ingen', mobil: 'Mobildata', utenNett: 'Uten nett', visKart: 'Vis kartet', visPanel: 'Vis panelene',
+  kjent: {}, ingen: 'Ingen', mobil: 'Mobildata', utenNett: 'Uten nett', visKart: 'Vis kartet', visPanel: 'Vis panelene', rom: 'Rom: ',
   gjor: { jobber: 'Jobber', trener: 'Trener' }, komma: ',',
   taper: ['TAPER!', 'Taper.', 'Tapern!', 'Taperen!', 'TAAAAPER', 'Din taper', 'For en taper', 'Supertaper', 'Megataper', 'Ultrataper',
     'Tapersjef', 'Taperkonge', 'Årets taper', 'Taper (igjen)', 'Taper-Tidemann', 'Taper, taper, taper', 'Taperen fra Frogn', 'TAPER™', 'Verdens største taper', 'Liten taper'],
@@ -1538,7 +1538,7 @@ function iBildet(lngLat, marg) {
 }
 const TILBAKE = 20000;   // ms uten berøring før kartet går tilbake til ham
 let rort = 0, holder = false;
-let live = null, trail = [], tele = {}, forste = true, skew = 0, stier = [], forrige = {};
+let live = null, rom = null, trail = [], tele = {}, forste = true, skew = 0, stier = [], forrige = {};
 const dist = (a, b) => Math.hypot((a[0] - b[0]) * 111.2e3, (a[1] - b[1]) * 111.2e3 * Math.cos(a[0] * Math.PI / 180));
 const km = pts => { let d = 0; for (let i = 1; i < pts.length; i++) if (pts[i] && pts[i - 1]) d += dist(pts[i - 1], pts[i]); return d; };
 const linjer = pts => { const ut = [[]]; for (const p of pts) { if (!p) { if (ut[ut.length - 1].length) ut.push([]); } else ut[ut.length - 1].push([p[0], p[1]]); } return ut.filter(l => l.length); };
@@ -1572,8 +1572,10 @@ function tegn() {
   $('.kast').hidden = live.kjent !== 'hjemme hos moren sin';   // tomater bare hjemme hos moren hans
   $('.s-navn').textContent = live.kjent ? (TX.kjent[live.kjent] || 'Tidemann er ' + live.kjent) : st && st.by ? [st.strok, st.by].filter(Boolean).join(', ') + (st.kode && st.kode !== 'NO' ? ', ' + st.land : '') : TX.jorda;
   const fart = live.spd != null && live.spd >= .8 && !gammel && i.aktivitet !== 'står stille' ? Math.round(live.spd * 3.6) + ' km/t' : null;   // GPS-støy gir litt fart også når han står stille
-  $('.s-sub').textContent = fart || '';
-  $('.s-sub').hidden = !fart;
+  // Rommet hjemme, fra fyrene i huset (se /chat/admin/rom). Navnene står slik han skrev dem.
+  const sub = fart || (rom && !gammel ? TX.rom + rom : null);
+  $('.s-sub').textContent = sub || '';
+  $('.s-sub').hidden = !sub;
   const pos = [live.lat, live.lon];
   let spor = linjer(trail); if (spor.length) spor[spor.length - 1].push(pos); else spor = [[pos]];
   stier = spor;
@@ -1912,7 +1914,7 @@ bvC.addEventListener('pointerleave', () => { bvI = null; bvTegn(); });
 addEventListener('resize', () => { if (!bvp.hidden) bvTegn(); });
 setInterval(() => { if (!bvp.hidden && !document.hidden) { if (bvR === 'fin') bvLast(); else bvTegn(); } }, 5000);
 async function hent() {
-  try { const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json(); skew = j.now - Date.now(); live = j.live; trail = j.trail || []; tele = j.tele || {}; if (j.puls) puls = j.puls; tegnPuls(); if (j.kast) nyeKast(j.kast); gjor(j.gjor); settPoster(j.notater); } catch {}
+  try { const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json(); skew = j.now - Date.now(); live = j.live; rom = j.rom || null; trail = j.trail || []; tele = j.tele || {}; if (j.puls) puls = j.puls; tegnPuls(); if (j.kast) nyeKast(j.kast); gjor(j.gjor); settPoster(j.notater); } catch {}
   tegn();
   document.documentElement.classList.add('data-klar');   // første svar er lagt inn: panelene kan vises
   leggKart();   // etter første svar: kartet står allerede der han er
