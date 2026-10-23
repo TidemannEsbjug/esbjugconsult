@@ -11,6 +11,9 @@
 <meta name="apple-mobile-web-app-title" content="Podcast">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta property="og:title" content="Podcast · Esbjug Consult">
+<meta property="og:description" content="Podcasten til Tidemann Esbjug.">
+<meta property="og:url" content="https://esbjugconsult.com/podcast/">
+<link rel="canonical" href="https://esbjugconsult.com/podcast/">
 <meta property="og:image" content="https://esbjugconsult.com/podcast/omslag.jpg">
 <link rel="apple-touch-icon" href="/podcast/ikon.jpg">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2300205B'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%23BA0C2F' stroke='%23fff' stroke-width='3'/%3E%3C/svg%3E">
@@ -87,21 +90,28 @@
   .mini .lin{position:absolute;left:0;bottom:0;height:3px;background:var(--red);width:0}
 
   /* Den store avspilleren: et ark som glir opp og kan dras ned igjen. */
-  .ark{position:fixed;inset:0;z-index:30;background:linear-gradient(180deg,#0a2d6e 0%,var(--navy) 45%,#001437 100%);color:#fff;
+  .ark{position:fixed;inset:0;z-index:30;--dy:0px;background:linear-gradient(180deg,#0a2d6e 0%,var(--navy) 45%,#001437 100%);color:#fff;
     display:flex;flex-direction:column;padding:calc(var(--st) + 10px) 26px calc(var(--sb) + 26px);
     transform:translateY(102%);transition:transform .45s cubic-bezier(.2,.9,.2,1);will-change:transform;touch-action:none}
-  .ark.apen{transform:none}
+  .ark.apen{transform:translateY(var(--dy))}
+  .slor{position:fixed;inset:0;z-index:29;background:rgba(0,12,36,.5);opacity:0;pointer-events:none;transition:opacity .4s}
+  .slor.vis{opacity:1;pointer-events:auto}
   .ark.drar{transition:none}
   .ark .in{width:100%;max-width:440px;margin:0 auto;display:flex;flex-direction:column;flex:1;min-height:0}
   .hdl{display:flex;justify-content:center;padding:6px 0 14px;cursor:grab}
   .hdl i{width:40px;height:5px;border-radius:3px;background:rgba(255,255,255,.35)}
   .lukk{position:absolute;top:calc(var(--st) + 10px);left:14px;width:44px;height:44px;display:grid;place-items:center;border-radius:50%;color:rgba(255,255,255,.8)}
   .lukk svg{width:26px;height:26px}
-  .kunst{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:14px 0 24px}
-  .kunst img{width:min(100%,46vh,380px);aspect-ratio:1;border-radius:20px;object-fit:cover;box-shadow:0 24px 60px rgba(0,0,0,.45);transition:transform .5s cubic-bezier(.2,1.4,.4,1)}
+  .del{position:absolute;top:calc(var(--st) + 10px);right:14px;width:44px;height:44px;display:grid;place-items:center;border-radius:50%;color:rgba(255,255,255,.8)}
+  .del svg{width:22px;height:22px}
+  .lukk:active,.del:active{background:rgba(255,255,255,.12)}
+  .toast{position:fixed;left:50%;top:calc(var(--st) + 18px);z-index:40;transform:translate(-50%,-80px);background:#fff;color:var(--navy);font-weight:650;font-size:15px;padding:12px 18px;border-radius:14px;box-shadow:0 12px 34px rgba(0,0,0,.25);transition:transform .4s cubic-bezier(.2,.9,.2,1);pointer-events:none;white-space:nowrap}
+  .toast.vis{transform:translate(-50%,0)}
+  .kunst{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:8px 0 34px}
+  .kunst img{width:min(100%,40vh,330px);aspect-ratio:1;border-radius:20px;object-fit:cover;box-shadow:0 24px 60px rgba(0,0,0,.45);transition:transform .5s cubic-bezier(.2,1.4,.4,1)}
   .ark:not(.spiller) .kunst img{transform:scale(.86)}
   .ark .me{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.6)}
-  .ark h2{font-family:var(--serif);font-weight:600;font-size:clamp(24px,7vw,30px);line-height:1.12;letter-spacing:-.01em;margin:6px 0 22px}
+  .ark h2{font-family:var(--serif);font-weight:600;font-size:clamp(24px,7vw,30px);line-height:1.12;letter-spacing:-.01em;margin:8px 0 24px}
 
   .skrubb{position:relative;height:36px;display:flex;align-items:center;cursor:pointer;touch-action:none}
   .skrubb .sp{position:relative;width:100%;height:5px;border-radius:3px;background:rgba(255,255,255,.22);transition:height .15s}
@@ -128,7 +138,12 @@
   @media (min-width:700px){
     .wrap{padding-top:56px}
     h1{font-size:56px}
-    .ark{padding-top:40px}
+    /* På store skjermer er avspilleren et panel midt på, over lista. */
+    .ark{inset:auto;left:50%;top:50%;width:420px;height:min(740px,calc(100vh - 48px));border-radius:28px;padding:20px 30px 28px;
+      box-shadow:0 40px 100px rgba(0,10,40,.45);transform:translate(-50%,calc(50vh + 20px))}
+    .ark.apen{transform:translate(-50%,calc(-50% + var(--dy)))}
+    .ark .lukk,.ark .del{top:14px}
+    .kunst img{width:min(100%,34vh,280px)}
   }
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -154,8 +169,10 @@
   <div class="lin" id="mLin"></div>
 </div>
 
+<div class="slor" id="slor"></div>
 <div class="ark" id="ark" aria-hidden="true">
   <button class="lukk" id="lukk" type="button" aria-label="Lukk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+  <button class="del" id="del" type="button" aria-label="Del episoden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7.5 7.5L12 3l4.5 4.5"/><path d="M8 11H6a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-2"/></svg></button>
   <div class="in">
     <div class="hdl" id="hdl"><i></i></div>
     <div class="kunst" id="kunst"><img src="/podcast/omslag.jpg" alt=""></div>
@@ -179,17 +196,26 @@
   </div>
 </div>
 
+<div class="toast" id="toast"></div>
 <audio id="lyd" preload="none" playsinline></audio>
+<!-- Episodelista settes inn av workeren fra episoder.json (.worker/index.js). -->
+<script id="ep-data" type="application/json"></script>
 
 <script>
-(() => {
-  // Episodene i rekkefølge. Lyden ligger i R2 og serveres fra /podcast/lyd/ (se .worker/index.js).
-  const EP = [
-    { n: 1, tittel: "Kunsten Å Plante Brennesle", dato: "2026-10-20", sek: 2801 },
-    { n: 2, tittel: "Sukkerspinn og TypeSafe Jev", dato: "2026-10-21", sek: 2928 },
-    { n: 3, tittel: "Max Ultracode Fyrstekake", dato: "2026-10-23", sek: 2141 },
-  ];
+(async () => {
+  // Episodene i rekkefølge, fra podcast/episoder.json. Lyden ligger i R2 og serveres fra /podcast/lyd/.
+  let EP = [];
+  try { EP = JSON.parse($id("ep-data").textContent || "[]"); } catch {}
+  if (!EP.length) EP = await (await fetch("/podcast/episoder.json")).json();
+  function $id(id) { return document.getElementById(id); }
   const lydUrl = (e) => `/podcast/lyd/ep${e.n}.m4a`;
+  // Hver episode har sin egen adresse, /podcast/2/. Den åpner siden med episoden klar i den store avspilleren.
+  const epUrl = (e) => `/podcast/${e.n}/`;
+  const fraAdresse = () => {
+    const m = location.pathname.match(/^\/podcast\/(\d+)\/?$/) || location.hash.match(/^#(\d+)$/);
+    return m ? EP.find((e) => e.n === +m[1]) : null;
+  };
+  const TITTEL = "Podcast · Esbjug Consult";
   const NY_DAGER = 7;
 
   const I = {
@@ -289,6 +315,7 @@
     lyd.src = lydUrl(e);
     lyd.playbackRate = lager.fart;
     lyd.load();
+    if (ark.classList.contains("apen")) history.replaceState({ ark: 1 }, "", epUrl(e));
     oppdaterMeta();
     tegnAlt();
   }
@@ -380,24 +407,55 @@
 
   function visMini() { if (na) mini.classList.add("vis"); }
   const tema = document.querySelector('meta[name="theme-color"]');
-  function apneArk() {
+  // Åpent ark = episodens adresse i adressefeltet, så den kan deles og tilbakeknappen lukker arket.
+  function apneArk(utenHistorikk) {
     if (!na || ark.classList.contains("apen")) return;
     ark.classList.add("apen");
+    $("slor").classList.add("vis");
     ark.setAttribute("aria-hidden", "false");
     tema.content = "#0a2d6e";
     document.body.style.overflow = "hidden";
-    history.pushState({ ark: 1 }, "");
+    if (utenHistorikk !== true) history.pushState({ ark: 1 }, "", epUrl(na));
+    document.title = `${na.tittel} · Esbjug Podcast`;
   }
   function lukkArk(fraHistorikk) {
     if (!ark.classList.contains("apen")) return;
     ark.classList.remove("apen");
-    ark.style.transform = "";
+    $("slor").classList.remove("vis");
+    ark.style.removeProperty("--dy");
     ark.setAttribute("aria-hidden", "true");
     tema.content = "#ffffff";
     document.body.style.overflow = "";
-    if (!fraHistorikk && history.state && history.state.ark) history.back();
+    document.title = TITTEL;
+    if (fraHistorikk === true) return;
+    if (history.state && history.state.ark) history.back();
+    else history.replaceState(null, "", "/podcast/");
   }
-  addEventListener("popstate", () => lukkArk(true));
+  addEventListener("popstate", () => {
+    const e = fraAdresse();
+    if (!e) return lukkArk(true);
+    if (e !== na) { last(e, lager.hort[e.n] ? 0 : lager.pos[e.n] || 0); visMini(); }
+    apneArk(true);
+  });
+  $("slor").addEventListener("click", () => lukkArk());
+
+  // Del: telefonens delingsark der det finnes, ellers kopieres lenken.
+  let toastTid;
+  function toast(t) {
+    $("toast").textContent = t;
+    $("toast").classList.add("vis");
+    clearTimeout(toastTid);
+    toastTid = setTimeout(() => $("toast").classList.remove("vis"), 2200);
+  }
+  $("del").addEventListener("click", async () => {
+    if (!na) return;
+    const url = location.origin + epUrl(na);
+    if (navigator.share && matchMedia("(pointer:coarse)").matches) {
+      try { await navigator.share({ title: na.tittel, text: `Episode ${na.n} av Esbjug Podcast`, url }); } catch {}
+      return;
+    }
+    try { await navigator.clipboard.writeText(url); toast("Lenke kopiert"); } catch { toast(url); }
+  });
 
   // Dra arket ned for å lukke (fra håndtaket, bildet eller tittelen).
   (() => {
@@ -411,7 +469,7 @@
     addEventListener("pointermove", (ev) => {
       if (y0 == null) return;
       dy = Math.max(0, ev.clientY - y0);
-      ark.style.transform = `translateY(${dy}px)`;
+      ark.style.setProperty("--dy", dy + "px");
     });
     const slutt = () => {
       if (y0 == null) return;
@@ -419,7 +477,7 @@
       const fart = dy / Math.max(1, performance.now() - t0);
       y0 = null;
       if (dy > 140 || (dy > 30 && fart > 0.6)) lukkArk();
-      else ark.style.transform = "";
+      else ark.style.removeProperty("--dy");
     };
     addEventListener("pointerup", slutt);
     addEventListener("pointercancel", slutt);
@@ -537,9 +595,16 @@
     h("seekto", (d) => { lyd.currentTime = d.seekTime; tegnTid(); });
   }
 
-  // Lenke rett til en episode: /podcast/#3 lastes klar (nettleseren tillater ikke autospill).
-  const fraLenke = EP.find((e) => "#" + e.n === location.hash);
-  if (fraLenke) { last(fraLenke, lager.pos[fraLenke.n] || 0); visMini(); }
+  // Kommer du rett til en episode (/podcast/2/ eller /podcast/#2), åpnes den i den store avspilleren, klar til å spille
+  // (nettleseren tillater ikke autospill). Lista ligger under, og tilbake eller lukk går til den.
+  const fraLenke = fraAdresse();
+  if (fraLenke) {
+    last(fraLenke, lager.hort[fraLenke.n] ? 0 : lager.pos[fraLenke.n] || 0);
+    visMini();
+    history.replaceState(null, "", "/podcast/");
+    history.pushState({ ark: 1 }, "", epUrl(fraLenke));
+    apneArk(true);
+  }
   else if (lager.siste && fortsettEp()) { last(fortsettEp(), lager.hort[fortsettEp().n] ? 0 : lager.pos[fortsettEp().n] || 0); visMini(); }
   tegnAlt();
 })();

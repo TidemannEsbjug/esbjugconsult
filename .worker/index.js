@@ -4,6 +4,7 @@
 import { handleChat, pageVisit } from "./chat.js";
 import { handleKunde } from "./kunde.js";
 import { handleKlart, handleNedlasting } from "./klart.js";
+import EPISODER from "../podcast/episoder.json";
 export { ChatHub } from "./chat.js";
 export { KlartLager } from "./klart.js";
 
@@ -18,6 +19,14 @@ export default {
     if (url.pathname.startsWith("/chat/")) return handleChat(request, env, url);
     // Podcastepisodene ligger i R2 (FILES, nøkkel podcast/<fil>), ikke i dette offentlige repoet.
     if (url.pathname.startsWith("/podcast/lyd/")) return podcastLyd(request, env, url.pathname.slice("/podcast/lyd/".length));
+    // /podcast/ og hver episode på /podcast/<n>/ er samme side, med episodelista og riktig tittel for deling satt inn.
+    const pod = url.pathname.match(/^\/podcast(?:\/(\d+))?(\/?)$/);
+    if (pod) {
+      if (!pod[2]) { url.pathname += "/"; return Response.redirect(url.toString(), 301); }
+      const ep = pod[1] ? EPISODER.find((e) => e.n === Number(pod[1])) : null;
+      if (pod[1] && !ep) { url.pathname = "/podcast/"; return Response.redirect(url.toString(), 302); }
+      return podcastSide(env, url, ep);
+    }
     // Klart: prøveperiode, kjøp og aktiveringskoder (klart.js). /GDPR/api/ og /GDPR/last-ned/ virker
     // fortsatt, fordi Stripe-webhooken og eldre versjoner av appen bruker dem.
     if (/^\/(klart|GDPR)\/api\//.test(url.pathname)) return handleKlart(request, env, url);
@@ -78,4 +87,26 @@ async function podcastLyd(request, env, fil) {
   }
   headers.set("content-length", String(obj.size));
   return new Response(request.method === "HEAD" ? null : obj.body, { headers });
+}
+
+async function podcastSide(env, url, ep) {
+  const svar = await env.ASSETS.fetch(new URL("/podcast/", url));
+  if (!svar.ok) return svar;
+  const data = JSON.stringify(EPISODER).replace(/</g, "\\u003c");
+  let rw = new HTMLRewriter().on("script#ep-data", { element: (el) => el.setInnerContent(data, { html: true }) });
+  if (ep) {
+    const tittel = `${ep.tittel} · Esbjug Podcast`;
+    const besk = `Episode ${ep.n} av podcasten til Tidemann Esbjug.`;
+    const adr = `https://esbjugconsult.com/podcast/${ep.n}/`;
+    rw = rw
+      .on("title", { element: (el) => el.setInnerContent(tittel) })
+      .on('meta[property="og:title"]', { element: (el) => el.setAttribute("content", tittel) })
+      .on('meta[property="og:description"], meta[name="description"]', { element: (el) => el.setAttribute("content", besk) })
+      .on('meta[property="og:url"]', { element: (el) => el.setAttribute("content", adr) })
+      .on('link[rel="canonical"]', { element: (el) => el.setAttribute("href", adr) });
+  }
+  const hoder = new Headers(svar.headers);
+  hoder.delete("etag");
+  hoder.set("cache-control", "no-cache");
+  return rw.transform(new Response(svar.body, { status: 200, headers: hoder }));
 }
