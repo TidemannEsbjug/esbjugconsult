@@ -570,7 +570,18 @@
   .kast{display:flex;gap:8px;margin-top:8px}
   .kast[hidden],.kast button[hidden]{display:none}
   /* Heia: konfetti i rødt, blått, hvitt og gult skytes opp fra prikken, og et heiarop spretter opp over den. */
-  .konf{position:fixed;z-index:3000;left:0;top:0;width:9px;height:14px;border-radius:2px;pointer-events:none;will-change:transform}
+  .konf{position:fixed;z-index:3000;left:0;top:0;width:9px;height:14px;margin:-7px 0 0 -4px;border-radius:2px;pointer-events:none;will-change:transform}
+  .konf.rund{width:8px;height:8px;border-radius:50%}
+  .konf.serp{width:4px;height:26px;border-radius:2px}
+  /* Popperen i hånda: følger pekeren og sikter mot prikken; et lite skilt sier at man skal klikke. */
+  .popper{position:fixed;z-index:3002;left:0;top:0;pointer-events:none}
+  .popper span{position:absolute;left:0;top:0;font-size:58px;line-height:1;filter:drop-shadow(0 6px 12px rgba(0,0,0,.35));transition:transform .08s}
+  .popper b{position:absolute;left:0;top:40px;transform:translateX(-50%);white-space:nowrap;padding:5px 10px;border-radius:999px;background:#00205B;color:#fff;font:700 12px/1 -apple-system,system-ui,sans-serif;animation:popperBlink 1s ease-in-out infinite}
+  @keyframes popperBlink{50%{opacity:.55}}
+  .popper.skutt span{animation:popperRekyl .38s ease-out forwards}
+  .popper.skutt b{display:none}
+  @keyframes popperRekyl{30%{scale:1.3}100%{scale:.6;opacity:0}}
+  .heia-ord.pop{-webkit-text-stroke:1.5px #BA0C2F;text-shadow:0 3px 0 #BA0C2F,0 6px 18px rgba(120,0,0,.4);animation:taperInn .3s cubic-bezier(.2,1.8,.4,1) both,taperUt .4s ease .8s forwards}
   .heia-ord{position:fixed;z-index:3001;pointer-events:none;transform:translate(-50%,-50%) rotate(var(--rot));white-space:nowrap;font:italic 800 clamp(24px,2.6vw,36px)/1 var(--serif);letter-spacing:-.02em;color:#fff;-webkit-text-stroke:1.5px #00205B;text-shadow:0 3px 0 #00205B,0 6px 18px rgba(0,20,70,.45);animation:taperInn .5s cubic-bezier(.2,1.8,.4,1) both,taperUt .5s ease 2.2s forwards}
   .meg.heiet{animation:megHeiet .7s cubic-bezier(.2,1.6,.4,1)}
   @keyframes megHeiet{0%{transform:scale(1)}30%{transform:translateY(-14px) scale(1.35)}60%{transform:translateY(0) scale(.9)}100%{transform:scale(1)}}
@@ -1478,6 +1489,7 @@ const TX = EN ? {
   kjent: { 'hjemme hos moren sin': 'Tidemann is at his mother’s' }, ingen: 'None', mobil: 'Mobile data', utenNett: 'Offline', visKart: 'Show the map', visPanel: 'Show the panels', rom: 'Room: ',
   gjor: { jobber: 'Working', trener: 'Training' }, komma: '.',
   taper: ['LOSER!', 'Loser.', 'What a loser', 'Total loser', 'Mega loser', 'Ultra loser', 'Loser-in-chief', 'King of losers', 'Loser of the year', 'Loser (again)', 'Loser, loser, loser', 'LOOOOSER', 'LOSER™', 'The world’s biggest loser', 'Tiny loser'],
+  heiaHold: 'Click to fire!',
   heia: ['GO!', 'Go Tidemann!', 'Come on!', 'Go go go!', 'You got this!', 'Keep going!', 'Woohoo!'],
   treff: ['SPLAT!', 'Hit!', 'Right in the face', 'Bingo!', 'BAM!', 'Bullseye', 'Ouch!', 'Splosh', 'Jackpot', 'Got him!'],
 } : {
@@ -1486,6 +1498,7 @@ const TX = EN ? {
   gjor: { jobber: 'Jobber', trener: 'Trener' }, komma: ',',
   taper: ['TAPER!', 'Taper.', 'Tapern!', 'Taperen!', 'TAAAAPER', 'Din taper', 'For en taper', 'Supertaper', 'Megataper', 'Ultrataper',
     'Tapersjef', 'Taperkonge', 'Årets taper', 'Taper (igjen)', 'Taper-Tidemann', 'Taper, taper, taper', 'Taperen fra Frogn', 'TAPER™', 'Verdens største taper', 'Liten taper'],
+  heiaHold: 'Klikk for å skyte!',
   heia: ['HEIA!', 'Heia Tidemann!', 'Kom igjen!', 'Heia heia!', 'Du klarer det!', 'Stå på!', 'Heeeia!'],
   treff: ['SPLÆSJ!', 'Treff!', 'Rett i fleisen', 'Bingo!', 'PANG!', 'Midt i blinken', 'Au!', 'Klæsj', 'Full pott', 'Den satt!'],
 };
@@ -1737,31 +1750,92 @@ const knapp = k => document.querySelector('.k-' + k);
 // Ordet som spretter opp der tomaten treffer.
 const TAPER = TX.taper;
 const TREFF = TX.treff;
-// Heia: konfettien skytes opp fra prikken på kartet (eller stedskortet om prikken ikke vises), drysser ned igjen, og
-// prikken hopper. Et heiarop spretter opp over.
-function visHeia() {
-  const b = knapp('heia'); b.classList.remove('puff'); void b.offsetWidth; b.classList.add('puff');
-  let x, y;
+// Heia. Andres heia (og de fleste egne): en 🎉-popper flyr inn fra den som ser på, stor nedenfra og mindre innover,
+// og smeller ved prikken. Iblant (hvert fjerde egne trykk) får man popperen i hånda: den følger pekeren og sikter mot
+// prikken, og neste klikk (eller etter 7 s) skyter en kjegle med konfetti dit. Prikken hopper og et heiarop spretter opp.
+const heiaMål = () => {
   if (live && kart && megMark && megMark._map) {
     if (!iBildet(megMark.getLngLat(), .1)) kart.jumpTo({ center: megMark.getLngLat() });
-    const p = kart.project(megMark.getLngLat()), r = kart.getContainer().getBoundingClientRect(); x = r.left + p.x; y = r.top + p.y;
-    const m = document.querySelector('.meg'); if (m) { m.classList.remove('heiet'); void m.offsetWidth; m.classList.add('heiet'); }
-  } else { const r = $('.sted').getBoundingClientRect(); x = r.left + r.width / 2; y = r.top + r.height / 2; }
-  if (!still) for (let n = 0; n < 34; n++) {
-    const e = document.createElement('span'); e.className = 'konf'; e.style.background = ['#BA0C2F', '#00205B', '#fff', '#FFD23F'][n % 4];
-    if (n % 3 === 0) e.style.borderRadius = '50%';
-    document.body.append(e);
-    const v = (Math.random() - .5) * Math.PI * .9, fart = 160 + Math.random() * 180, dx = Math.sin(v) * fart, opp = Math.cos(v) * fart, rot = (Math.random() - .5) * 1080;
-    const steg = [];
-    for (let i = 0; i <= 12; i++) { const f = i / 12; steg.push({ transform: `translate(${x + dx * f - 4}px,${y - opp * f + 420 * f * f - 7}px) rotate(${rot * f}deg) rotateX(${f * 720}deg)`, opacity: f < .8 ? 1 : (1 - f) * 5 }); }
-    e.animate(steg, { duration: 1300 + Math.random() * 500, easing: 'cubic-bezier(.2,.6,.4,1)', delay: Math.random() * 120 }).onfinish = () => e.remove();
+    const p = kart.project(megMark.getLngLat()), r = kart.getContainer().getBoundingClientRect();
+    return { x: r.left + p.x, y: r.top + p.y, prikk: true };
   }
+  const r = $('.sted').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+};
+const KONF = ['#BA0C2F', '#00205B', '#fff', '#FFD23F', '#BA0C2F', '#3d7bd9'];
+// Konfetti fra (x, y) i retning v (radianer, 0 = opp) med spredning. Firkanter, prikker og serpentiner som krøller seg,
+// med tyngdekraft og flagring.
+function konfetti(x, y, { v = 0, spredning = Math.PI * .9, antall = 70, fart = [380, 820] } = {}) {
+  if (still) return;
+  for (let n = 0; n < antall; n++) {
+    const e = document.createElement('span'), type = n % 5;
+    e.className = 'konf' + (type === 4 ? ' serp' : type === 3 ? ' rund' : '');
+    e.style.background = KONF[n % KONF.length];
+    document.body.append(e);
+    const a = v + (Math.random() - .5) * spredning, f = fart[0] + Math.random() * (fart[1] - fart[0]);
+    const vx = Math.sin(a) * f, vy = -Math.cos(a) * f, rot = (Math.random() - .5) * 1440, flagr = 12 + Math.random() * 24, T = 1.6 + Math.random() * .9;
+    const steg = [];
+    for (let i = 0; i <= 20; i++) {
+      const t = i / 20 * T, luft = 1 - Math.exp(-t * 2.2);   // luftmotstand: farten dør ut, så faller den
+      const px = x + vx / 2.2 * luft + Math.sin(t * 9 + n) * flagr * Math.min(1, t * 2), py = y + vy / 2.2 * luft + 160 * t * t;
+      steg.push({ transform: `translate(${px}px,${py}px) rotate(${rot * t / T}deg) rotateY(${t * 900}deg)`, opacity: i < 15 ? 1 : (20 - i) / 5 });
+    }
+    e.animate(steg, { duration: T * 1000, easing: 'linear', delay: Math.random() * 60 }).onfinish = () => e.remove();
+  }
+}
+function heiaTreff(m) {
+  if (m.prikk) { const p = document.querySelector('.meg'); if (p) { p.classList.remove('heiet'); void p.offsetWidth; p.classList.add('heiet'); } }
+  konfetti(m.x, m.y, { antall: 60, fart: [260, 560] });
   const o = document.createElement('span'); o.className = 'heia-ord'; o.textContent = TX.heia[Math.floor(Math.random() * TX.heia.length)];
-  o.style.left = x + 'px'; o.style.top = y - 56 + 'px'; o.style.setProperty('--rot', (Math.random() * 16 - 8).toFixed(1) + 'deg');
+  o.style.left = m.x + 'px'; o.style.top = m.y - 60 + 'px'; o.style.setProperty('--rot', (Math.random() * 16 - 8).toFixed(1) + 'deg');
   document.body.append(o); setTimeout(() => o.remove(), 2800);
 }
+// Popperen flyr inn som tomaten og smeller ved prikken.
+function heiaFly(fraX) {
+  const m = heiaMål(), x0 = fraX ?? innerWidth * (.15 + Math.random() * .7), y0 = innerHeight + 60;
+  const t = document.createElement('span'); t.className = 'flyr'; t.textContent = '🎉'; document.body.append(t);
+  const steg = [], N = 18, spinn = (Math.random() < .5 ? -1 : 1) * (200 + Math.random() * 240);
+  for (let n = 0; n <= N; n++) {
+    const f = n / N, e = 1 - Math.pow(1 - f, 2), x = x0 + (m.x - x0) * e - 17, y = y0 + (m.y - y0) * e - Math.min(240, innerHeight * .32) * 4 * f * (1 - f) - 17;
+    steg.push({ transform: `translate(${x}px,${y}px) rotate(${f * spinn}deg) scale(${(6 - 5 * e).toFixed(2)})`, filter: `blur(${((1 - f) * 3).toFixed(1)}px)` });
+  }
+  t.animate(steg, { duration: still ? 1 : 620, easing: 'linear' }).onfinish = () => {
+    t.remove();
+    konfetti(m.x, m.y, { antall: 90, fart: [420, 900] });   // smellet
+    heiaTreff(m);
+  };
+}
+// Popperen i hånda: følger pekeren, sikter mot prikken, og skyter ved neste klikk (eller etter 7 s).
+let iHånda = null;
+function heiaHold(px, py) {
+  if (iHånda) return iHånda.skyt();
+  const p = document.createElement('div'); p.className = 'popper'; p.innerHTML = '<span>🎉</span><b>' + TX.heiaHold + '</b>'; document.body.append(p);
+  let x = px ?? innerWidth / 2, y = py ?? innerHeight - 90;
+  const sikt = () => { const m = heiaMål(), v = Math.atan2(m.x - x, -(m.y - y)); p.style.transform = `translate(${x}px,${y}px)`; p.firstChild.style.transform = `translate(-50%,-50%) rotate(${v * 180 / Math.PI - 45}deg)`; return { m, v }; };
+  sikt();
+  const flytt = e => { x = e.clientX; y = e.clientY; sikt(); };
+  const skyt = () => {
+    if (!iHånda) return; iHånda = null;
+    removeEventListener('pointermove', flytt); removeEventListener('pointerdown', klikk, true); clearTimeout(tid);
+    const { m, v } = sikt();
+    p.classList.add('skutt');
+    const pop = document.createElement('span'); pop.className = 'heia-ord pop'; pop.textContent = 'POP!'; pop.style.left = x + 'px'; pop.style.top = y - 40 + 'px'; pop.style.setProperty('--rot', '-8deg');
+    document.body.append(pop); setTimeout(() => pop.remove(), 1400);
+    konfetti(x, y, { v, spredning: .7, antall: 120, fart: [700, 1300] });
+    setTimeout(() => { heiaTreff(m); p.remove(); }, 380);
+  };
+  const klikk = e => { e.preventDefault(); e.stopPropagation(); x = e.clientX; y = e.clientY; skyt(); };
+  addEventListener('pointermove', flytt);
+  setTimeout(() => addEventListener('pointerdown', klikk, true), 50);
+  const tid = setTimeout(skyt, 7000);
+  iHånda = { skyt };
+}
+function visHeia(fraX, egen, fraY) {
+  const b = knapp('heia'); b.classList.remove('puff'); void b.offsetWidth; b.classList.add('puff');
+  if (egen && (iHånda || Math.random() < .25)) return heiaHold(fraX, fraY);
+  heiaFly(fraX);
+}
 function visKast(k, fraX) {
-  if (k === 'heia') return visHeia();
+  if (k === 'heia') return visHeia(fraX);
   const b = knapp(k); b.classList.remove('puff'); void b.offsetWidth; b.classList.add('puff');
   const r = b.getBoundingClientRect();
   if (k === 'le') {
@@ -1819,11 +1893,14 @@ function visKast(k, fraX) {
 }
 async function klikk(k, x) {
   egne[k]++; egneVent[k] = (egneVent[k] || 0) + 1; visKast(k, x);
+  sendKast(k);
+}
+async function sendKast(k) {
   const b = knapp(k).querySelector('b'); b.textContent = tall((kast ? kast[k] : 0) + egne[k]);
   try { const r = await fetch('/chat/kast', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ k }) }); if (r.ok) { kast = await r.json(); egne[k] = 0; egneVent[k] = 0; } } catch {}
 }
 document.querySelector('.k-tomat').addEventListener('click', e => klikk('tomat', e.clientX || undefined));
-document.querySelector('.k-heia').addEventListener('click', () => klikk('heia'));
+document.querySelector('.k-heia').addEventListener('click', e => { egne.heia++; egneVent.heia++; visHeia(e.clientX || undefined, true, e.clientY || undefined); sendKast('heia'); });
 let sistHent = 0;
 function nyeKast(ny) {
   const fulgt = Date.now() - sistHent < 6000; sistHent = Date.now();
