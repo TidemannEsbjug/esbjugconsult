@@ -487,6 +487,52 @@ export function verdiSok(q) {
   return null;
 }
 
+// Kartmatching: GPS-punktene legges på veiene i OpenStreetMap, som i navigasjonsapper. Valhalla (FOSSGIS sin åpne
+// tjeneste) gir veien punktene fulgte (shape, polyline med 6 desimaler) og hvert punkt flyttet inn på veien.
+export function dekod6(str) {
+  const ut = []; let i = 0, lat = 0, lon = 0;
+  while (i < str.length) {
+    for (const k of [0, 1]) {
+      let b, sk = 0, r = 0;
+      do { b = str.charCodeAt(i++) - 63; r |= (b & 31) << sk; sk += 5; } while (b >= 32);
+      const d = r & 1 ? ~(r >> 1) : r >> 1;
+      if (k === 0) lat += d; else lon += d;
+    }
+    ut.push([lat / 1e6, lon / 1e6]);
+  }
+  return ut;
+}
+
+// Veien med klokkeslett: hvert punkt får sin plass langs veien (meter fra start), og hvert knekkpunkt på veien får
+// tiden mellom de to nærmeste punktene. Gir [[lat, lon, ts], ...] som resten av sporet.
+export function veiMedTid(shape, punkter) {
+  const m = (a, b) => Math.hypot((a[0] - b[0]) * 111200, (a[1] - b[1]) * 111200 * Math.cos(a[0] * Math.PI / 180));
+  const kum = [0];
+  for (let i = 1; i < shape.length; i++) kum.push(kum[i - 1] + m(shape[i - 1], shape[i]));
+  // Hvert punkt projiseres på veien, bare framover fra forrige (veien går én vei).
+  const merker = []; let seg = 0;
+  for (const p of punkter) {
+    let best = null;
+    for (let i = seg; i < Math.min(shape.length - 1, seg + 60); i++) {
+      const a = shape[i], b = shape[i + 1], l = m(a, b) || 1e-9;
+      const f = Math.max(0, Math.min(1, (((p[0] - a[0]) * (b[0] - a[0])) * 111200 * 111200 + ((p[1] - a[1]) * (b[1] - a[1])) * Math.pow(111200 * Math.cos(a[0] * Math.PI / 180), 2)) / (l * l)));
+      const q = [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f], d = m(p, q);
+      if (!best || d < best.d - .5) best = { d, i, s: kum[i] + l * f };
+    }
+    if (!best) continue;
+    seg = best.i;
+    const s = Math.max(best.s, merker.length ? merker[merker.length - 1].s : 0);
+    merker.push({ s, t: p[2] });
+  }
+  if (merker.length < 2) return null;
+  const tid = (s) => {
+    if (s <= merker[0].s) return merker[0].t;
+    for (let k = 1; k < merker.length; k++) if (s <= merker[k].s) { const a = merker[k - 1], b = merker[k]; return b.s - a.s < .01 ? b.t : a.t + (b.t - a.t) * (s - a.s) / (b.s - a.s); }
+    return merker[merker.length - 1].t;
+  };
+  return shape.map((p, i) => [+p[0].toFixed(6), +p[1].toFixed(6), Math.round(tid(kum[i]))]).filter((p, i) => kum[i] >= merker[0].s - .5 && kum[i] <= merker[merker.length - 1].s + .5);
+}
+
 // Søk i avspillingen per adresse, siste minutt (per isolat; nok til å stoppe misbruk).
 let sokTeller = [];
 
@@ -548,6 +594,8 @@ export class ChatHub {
         this.sql.exec(`DELETE FROM kv WHERE k='notat'`);
       }
     }
+    // Kartmatchede biter av sporet (veien han fulgte, med klokkeslett), fra Valhalla. Erstatter rå GPS i tidsrommet.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS veispor (fra INTEGER PRIMARY KEY, til INTEGER, kost TEXT, geom TEXT)`);
     // Endringer over tid til avspillingen: «holder på med» (gjor), status og postene (hele lista etter hver endring). 35 dager.
     this.sql.exec(`CREATE TABLE IF NOT EXISTS logg (ts INTEGER, k TEXT, v TEXT)`);
     this.sql.exec(`CREATE INDEX IF NOT EXISTS logg_k_ts ON logg (k, ts)`);
@@ -837,6 +885,7 @@ export class ChatHub {
       }
       if (now - (this.posPruned || 0) > 3600e3) { this.posPruned = now; this.sql.exec(`DELETE FROM pos WHERE ts < ?`, now - 35 * 864e5); }
       if (n) { const l = this.sporLive(); if (l) { this.toVisitors({ t: "pos", ...l }); this.ctx.waitUntil(this.stedNavn(l.lat, l.lon)); } }
+      if (now - (this.matchet || 0) > 60e3) { this.matchet = now; this.ctx.waitUntil(this.matchNye().catch(() => {})); }
       return Response.json({ ok: true, n });
     }
     // Name the place he is at now: the latest position, with a radius. The map then says the name instead of the town.
@@ -1429,16 +1478,76 @@ export class ChatHub {
     return v;
   }
 
-  // Dagens spor fra posisjonene, lett nok til å sendes til alle sidene.
+  // Kartmatching av ferdige biter (eldre enn 90 s). Bitene deles der GPS-en har hull (over 2 min eller 1 km) og er høyst
+  // 15 min lange. Farten avgjør hvordan Valhalla regner: gange, sykkel eller buss. Står han stille, matches ingenting.
+  // Finner ikke Valhalla en vei (tog, skog), blir rå GPS stående. Pekeren veisporTil sier hvor langt den har kommet.
+  async matchNye() {
+    const nå = Date.now(), grense = nå - 90e3;
+    let fra = Number(this.setting("veisporTil") || 0) || nå - 2 * 864e5;
+    const rows = this.sql.exec(`SELECT ts, lat, lon FROM pos WHERE ts > ? AND ts <= ? ORDER BY ts LIMIT 5000`, fra, grense).toArray();
+    if (rows.length < 2) return;
+    const m = (a, b) => Math.hypot((a.lat - b.lat) * 111200, (a.lon - b.lon) * 111200 * Math.cos(a.lat * Math.PI / 180));
+    const biter = []; let cur = [rows[0]];
+    for (let i = 1; i < rows.length; i++) {
+      const a = rows[i - 1], b = rows[i];
+      if (b.ts - a.ts > 120e3 || m(a, b) > 1000 || b.ts - cur[0].ts > 15 * 60e3) { biter.push(cur); cur = []; }
+      cur.push(b);
+    }
+    // Den siste biten tas bare når den er avsluttet (hull etterpå) eller lang nok; ellers venter den på flere punkter.
+    if (grense - cur[cur.length - 1].ts > 120e3 || cur[cur.length - 1].ts - cur[0].ts > 5 * 60e3) biter.push(cur);
+    let n = 0;
+    for (const b of biter.slice(0, 12)) {
+      const tynn = [b[0]];
+      for (const p of b.slice(1)) if (m(tynn[tynn.length - 1], p) >= 8) tynn.push(p);
+      if (tynn[tynn.length - 1] !== b[b.length - 1] && m(tynn[tynn.length - 1], b[b.length - 1]) > 2) tynn.push(b[b.length - 1]);
+      const lengde = tynn.reduce((s, p, i) => s + (i ? m(tynn[i - 1], p) : 0), 0), varighet = (b[b.length - 1].ts - b[0].ts) / 1000;
+      if (tynn.length >= 4 && lengde > 60) {
+        const kmt = varighet > 0 ? lengde / varighet * 3.6 : 0, kost = kmt > 25 ? "bus" : kmt > 11 ? "bicycle" : "pedestrian";
+        try {
+          const r = await fetch("https://valhalla1.openstreetmap.de/trace_attributes", { method: "POST",
+            headers: { "Content-Type": "application/json", "User-Agent": "esbjugconsult.com live map (tidemann@esbjugconsult.com)" },
+            body: JSON.stringify({ shape: tynn.map((p) => ({ lat: p.lat, lon: p.lon, time: p.ts / 1000 })), costing: kost, shape_match: "map_snap", use_timestamps: true,
+              filters: { attributes: ["shape", "matched.point", "matched.type"], action: "include" } }) });
+          if (r.ok) {
+            const j = await r.json(), mp = j.matched_points || [];
+            const pk = mp.map((p, i) => (p.type === "unmatched" ? null : [p.lat, p.lon, tynn[i].ts])).filter(Boolean);
+            const v = j.shape && pk.length >= 2 ? veiMedTid(dekod6(j.shape), pk) : null;
+            if (v && v.length >= 2) { this.sql.exec(`INSERT OR REPLACE INTO veispor (fra, til, kost, geom) VALUES (?, ?, ?, ?)`, b[0].ts, b[b.length - 1].ts, kost, JSON.stringify(v)); n++; }
+          }
+        } catch {}
+      }
+      fra = b[b.length - 1].ts;
+      this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('veisporTil', ?)`, String(fra));
+    }
+    if (n) this.histMemo = new Map();   // ferdige dager i historikken regnes ut på nytt med veiene
+    if (nå - (this.veisporPruned || 0) > 3600e3) { this.veisporPruned = nå; this.sql.exec(`DELETE FROM veispor WHERE til < ?`, nå - 35 * 864e5); }
+    return n;
+  }
+
+  // Sporet fra posisjonene: kartmatchede biter der de finnes (veien), ellers rå GPS, lett nok til å sendes til alle sidene.
   sporFra(rows) {
-    // At least ~12 m between points so the trail stays light; a gap (more than 1 km or 15 min, e.g. a flight) breaks the line.
+    if (rows.length) {
+      const biter = this.sql.exec(`SELECT fra, til, geom FROM veispor WHERE til >= ? AND fra <= ? ORDER BY fra`, rows[0].ts, rows[rows.length - 1].ts).toArray();
+      if (biter.length) {
+        const ut = []; let k = 0;
+        for (const r of rows) {
+          while (k < biter.length && biter[k].til < r.ts) k++;
+          const b = biter[k];
+          if (b && r.ts >= b.fra && r.ts <= b.til) { if (!b.lagt) { b.lagt = true; for (const p of JSON.parse(b.geom)) ut.push({ lat: p[0], lon: p[1], ts: p[2], vei: true }); } continue; }
+          ut.push(r);
+        }
+        rows = ut;
+      }
+    }
+    // At least ~12 m between points so the trail stays light (the road itself keeps its curves, 2 m); a gap (more than
+    // 1 km or 15 min, e.g. a flight) breaks the line.
     const trail = [];
     let pl = 0, po = 0, pt = 0;
     for (const r of rows) {
       const k = Math.cos(r.lat * Math.PI / 180), dy = (r.lat - pl) * 111.2e3, dx = (r.lon - po) * 111.2e3 * k, d2 = dx * dx + dy * dy;
-      if (trail.length && d2 < 144) continue;
+      if (trail.length && d2 < (r.vei ? 4 : 144)) continue;
       if (trail.length && (d2 > 1e6 || r.ts - pt > 15 * 60e3)) trail.push(null);
-      trail.push([+r.lat.toFixed(5), +r.lon.toFixed(5), r.ts]);
+      trail.push([+r.lat.toFixed(r.vei ? 6 : 5), +r.lon.toFixed(r.vei ? 6 : 5), r.ts]);
       pl = r.lat; po = r.lon; pt = r.ts;
     }
     return trail;
@@ -1700,6 +1809,7 @@ export class ChatHub {
       this.sql.exec(`DELETE FROM kv WHERE k='autoSlept'`);
       this.setStatus("available");
     }
+    await this.matchNye().catch(() => {});   // også når telefonen ikke sender (resten av en tur)
     await this.ctx.storage.setAlarm(nextQuarter(now + 1000));
   }
 
