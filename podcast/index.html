@@ -101,8 +101,6 @@
   @media (min-width:700px){.slor{display:block}}
   .ark.drar{transition:none}
   .ark .in{width:100%;max-width:440px;margin:0 auto;display:flex;flex-direction:column;flex:1;min-height:0}
-  .hdl{display:flex;justify-content:center;padding:6px 0 14px;cursor:grab}
-  .hdl i{width:40px;height:5px;border-radius:3px;background:rgba(255,255,255,.35)}
   .lukk{position:absolute;top:calc(var(--st) + 10px);left:14px;width:44px;height:44px;display:grid;place-items:center;border-radius:50%;color:rgba(255,255,255,.8)}
   .lukk svg{width:26px;height:26px}
   .del{position:absolute;top:calc(var(--st) + 10px);right:14px;width:44px;height:44px;display:grid;place-items:center;border-radius:50%;color:rgba(255,255,255,.8)}
@@ -110,9 +108,8 @@
   .lukk:active,.del:active{background:rgba(255,255,255,.12)}
   .toast{position:fixed;left:50%;top:calc(var(--st) + 18px);z-index:40;transform:translate(-50%,-80px);background:#fff;color:var(--navy);font-weight:650;font-size:15px;padding:12px 18px;border-radius:14px;box-shadow:0 12px 34px rgba(0,0,0,.25);transition:transform .4s cubic-bezier(.2,.9,.2,1);pointer-events:none;white-space:nowrap}
   .toast.vis{transform:translate(-50%,0)}
-  .kunst{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:4px 0 40px;container-type:size}
-  .kunst img{width:min(100%,36vh,330px);width:min(100cqw,100cqh,330px);aspect-ratio:1;border-radius:20px;object-fit:cover;box-shadow:0 20px 50px rgba(0,0,0,.4);transition:transform .45s cubic-bezier(.2,.9,.3,1);will-change:transform}
-  .ark:not(.spiller) .kunst img{transform:scale(.88)}
+  .kunst{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:58px 0 38px;container-type:size}
+  .kunst img{width:min(100%,42vh,380px);width:min(100cqw,100cqh,380px);aspect-ratio:1;border-radius:20px;object-fit:cover;box-shadow:0 20px 50px rgba(0,0,0,.4)}
   .ark .me{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.6)}
   .ark h2{font-family:var(--serif);font-weight:600;font-size:clamp(24px,7vw,30px);line-height:1.12;letter-spacing:-.01em;margin:8px 0 34px}
 
@@ -146,7 +143,8 @@
       box-shadow:0 40px 100px rgba(0,10,40,.45);transform:translate(-50%,calc(50vh + 20px))}
     .ark.apen{transform:translate(-50%,calc(-50% + var(--dy)))}
     .ark .lukk,.ark .del{top:14px}
-    .kunst img{width:min(100%,34vh,280px);width:min(100cqw,100cqh,280px)}
+    .kunst{padding-top:48px}
+    .kunst img{width:min(100%,36vh,300px);width:min(100cqw,100cqh,300px)}
   }
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -177,7 +175,6 @@
   <button class="lukk" id="lukk" type="button" aria-label="Lukk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
   <button class="del" id="del" type="button" aria-label="Del episoden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7.5 7.5L12 3l4.5 4.5"/><path d="M8 11H6a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-2"/></svg></button>
   <div class="in">
-    <div class="hdl" id="hdl"><i></i></div>
     <div class="kunst" id="kunst"><img src="/podcast/omslag.jpg" alt=""></div>
     <div class="me" id="aMe"></div>
     <h2 id="aTi"></h2>
