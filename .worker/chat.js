@@ -77,6 +77,14 @@ export async function handleChat(request, env, url) {
 
   if (path.startsWith("/chat/file/")) return serveFile(request, env, path.slice("/chat/file/".length));
 
+  // Historikken: sporet for én dag i Oslo-tid (?dag=2026-10-19), de siste 35 dagene. Brukes til avspilling på /hjem/.
+  if (path === "/chat/historikk") {
+    const dag = url.searchParams.get("dag") || "";
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dag)) return new Response("Bad request", { status: 400 });
+    const r = await hub.fetch(new Request("https://hub/internal/historikk", { method: "POST", headers: { "x-role": "internal" }, body: JSON.stringify({ dag }) }));
+    return new Response(r.body, { status: r.status, headers: { "content-type": "application/json", "cache-control": "public, max-age=60" } });
+  }
+
   // Plantegningen av huset (skannet med LiDAR i appen), flat 2D. Endres sjelden.
   if (path === "/chat/plan") {
     const r = await hub.fetch(new Request("https://hub/internal/plan", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }));
@@ -555,6 +563,9 @@ export class ChatHub {
         this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, `kast:${b.k}`, String(n));
         if (b.k === "tomat") this.tomatVarsel(decodeURIComponent(request.headers.get("x-by") || ""));
         return Response.json(this.kast());
+      }
+      if (url.pathname === "/internal/historikk") {
+        return Response.json(this.historikk(b.dag));
       }
       if (url.pathname === "/internal/plan") {
         return new Response(this.setting("plan") || "null", { headers: { "content-type": "application/json" } });
@@ -1288,10 +1299,20 @@ export class ChatHub {
     try { const x = r && JSON.parse(r); return x && Date.now() - x.ts < 30e3 ? x.rom : null; } catch { return null; }
   }
 
-  spor() {
-    const live = this.sporLive();
-    const start = osloMidnight(Date.now());
-    const rows = this.sql.exec(`SELECT ts, lat, lon FROM pos WHERE ts >= ? ORDER BY ts`, start).toArray();
+  // Sporet for én Oslo-dag (YYYY-MM-DD). Ferdige dager huskes, i dag regnes ut på nytt hvert minutt.
+  historikk(dag) {
+    const start = osloMidnight(Date.parse(dag + "T12:00:00Z")), slutt = osloMidnight(start + 36 * 3600e3);
+    this.histMemo = this.histMemo instanceof Map ? this.histMemo : new Map();
+    const m = this.histMemo.get(dag);
+    if (m && (slutt < Date.now() || Date.now() - m.at < 60e3)) return m.v;
+    const v = { dag, start, slutt, trail: this.sporFra(this.sql.exec(`SELECT ts, lat, lon FROM pos WHERE ts >= ? AND ts < ? ORDER BY ts`, start, slutt).toArray()) };
+    if (this.histMemo.size > 40) this.histMemo.clear();
+    this.histMemo.set(dag, { at: Date.now(), v });
+    return v;
+  }
+
+  // Dagens spor fra posisjonene, lett nok til å sendes til alle sidene.
+  sporFra(rows) {
     // At least ~12 m between points so the trail stays light; a gap (more than 1 km or 15 min, e.g. a flight) breaks the line.
     const trail = [];
     let pl = 0, po = 0, pt = 0;
@@ -1302,6 +1323,13 @@ export class ChatHub {
       trail.push([+r.lat.toFixed(5), +r.lon.toFixed(5), r.ts]);
       pl = r.lat; po = r.lon; pt = r.ts;
     }
+    return trail;
+  }
+
+  spor() {
+    const live = this.sporLive();
+    const start = osloMidnight(Date.now());
+    const trail = this.sporFra(this.sql.exec(`SELECT ts, lat, lon FROM pos WHERE ts >= ? ORDER BY ts`, start).toArray());
     const fra = Date.now() - 30 * 60e3;
     const bev = [...this.sql.exec(`SELECT ts, v FROM bev WHERE ts <= ? ORDER BY ts DESC LIMIT 1`, fra).toArray(),
       ...this.sql.exec(`SELECT ts, v FROM bev WHERE ts > ? ORDER BY ts`, fra).toArray()].map((r) => [r.ts, r.v]);

@@ -515,6 +515,13 @@
   /* Hjemme (bare /hjem/): mindre prikk, så den kan flytte seg rundt i huset. */
   .meg.liten{width:11px;height:11px;box-shadow:0 0 10px 3px rgba(255,210,63,.6),0 0 26px 8px rgba(255,106,61,.3)}
   .meg.liten::before,.meg.liten::after{inset:-3px;border-width:1.5px}
+  /* Historikken (bare /hjem/): dagene, spill av og en glidebryter nederst på kartet. */
+  .hist{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:40;display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;max-width:calc(100vw - 32px);flex-wrap:wrap;justify-content:center}
+  .hist[hidden]{display:none}
+  .hist button{border:0;border-radius:999px;padding:7px 11px;background:rgba(0,32,91,.08);color:var(--ink);font:600 12px/1 var(--mono,"SF Mono",Menlo,monospace);letter-spacing:.04em;cursor:pointer}
+  .hist button[aria-pressed="true"]{background:var(--ink);color:#fff}
+  .hist input{width:min(260px,40vw);accent-color:#BA0C2F}
+  .hist .h-kl{font:600 12px "SF Mono",Menlo,monospace;color:var(--ink);min-width:9ch;text-align:center}
   .gammel .meg{filter:grayscale(.6) brightness(.8)}.gammel .meg::before,.gammel .meg::after{animation:none;opacity:0}
   /* Panelene: stedet under toppmodulen, sensorene oppe til høyre. Samme glass som toppmodulen. */
   .paneler{flex:1;width:100%;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-top:14px}
@@ -1584,16 +1591,10 @@ function tegn() {
   const hus = husNå();
   const pos = hus ? [hus.pos[1], hus.pos[0]] : [live.lat, live.lon];
   let spor = linjer(trail);
-  if (hus) {
-    // Hjemme: GPS-sporet slutter der stien fra busstoppet begynner; stien tegnes for seg (stiplet) inn til huset.
-    const nær = q => dist(q, [hus.senter[1], hus.senter[0]]) < 35 || hus.sti.some(v => dist(q, [v[1], v[0]]) < 18);
-    spor = spor.map(l => l.filter(q => !nær(q))).filter(l => l.length);
-    const start = [hus.sti[0][1], hus.sti[0][0]];
-    if (spor.length) spor[spor.length - 1].push(start); else spor = [[start]];
-  }
-  else if (spor.length) spor[spor.length - 1].push(pos); else spor = [[pos]];
+  if (HUS && plan && plan.geo && plan.geo.buss) spor = tomtSpor(spor, !!hus);
+  if (spor.length) spor[spor.length - 1].push(pos); else spor = [[pos]];
   stier = spor;
-  if (!kart || !kart.getSource('spor')) return;
+  if (!kart || !kart.getSource('spor') || avsp) return;   // under avspilling eier historikken kartet
   const lngLat = [pos[1], pos[0]];
   husIKart(hus);
   // Sporet sendes bare til kartet når det har endret seg (tegn() går hvert sekund).
@@ -1753,17 +1754,106 @@ const geoPkt = (x, z) => {
   const g = plan.geo, c = Math.cos(g.th), s = Math.sin(g.th), u = x * c - z * s, v = x * s + z * c;
   return [g.lon + (u + g.tx) / (111320 * Math.cos(g.lat * Math.PI / 180)), g.lat + (-v + g.ty) / 110574];
 };
-// Stien fra busstoppet til døra, slik han tegnet den (plan.geo.buss og .vei), rundet av med Chaikin (hvert hjørne
-// kuttes til en myk bue, tre ganger).
+// Stien fra busstoppet til døra, slik han tegnet den (plan.geo.buss og .vei). Først forenkles den til noen få
+// knekkpunkter (Douglas–Peucker, 4 m), så rundes hjørnene av med Chaikin, så den blir et par myke svinger.
+const forenkle = (p, tol) => {
+  if (p.length < 3) return p;
+  const K = 111320 * Math.cos(p[0][1] * Math.PI / 180), m = q => [q[0] * K, q[1] * 110574], [a, b] = [m(p[0]), m(p[p.length - 1])];
+  let maks = 0, i = 0;
+  for (let k = 1; k < p.length - 1; k++) {
+    const c = m(p[k]), dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1, d = Math.abs(dy * (c[0] - a[0]) - dx * (c[1] - a[1])) / l;
+    if (d > maks) { maks = d; i = k; }
+  }
+  return maks > tol ? [...forenkle(p.slice(0, i + 1), tol).slice(0, -1), ...forenkle(p.slice(i), tol)] : [p[0], p[p.length - 1]];
+};
+let stiMemo = null;
 const sti = () => {
-  let p = [...(plan.geo.buss ? [plan.geo.buss] : []), ...(plan.geo.vei || [])];
-  for (let n = 0; n < 3 && p.length > 2; n++) {
+  if (stiMemo && stiMemo.ts === plan.ts) return stiMemo.p;
+  let p = forenkle([...(plan.geo.buss ? [plan.geo.buss] : []), ...(plan.geo.vei || [])], 4);
+  for (let n = 0; n < 5 && p.length > 2; n++) {
     const q = [p[0]];
     for (let i = 0; i < p.length - 1; i++) { const [a, b] = [p[i], p[i + 1]]; q.push([a[0] * .75 + b[0] * .25, a[1] * .75 + b[1] * .25], [a[0] * .25 + b[0] * .75, a[1] * .25 + b[1] * .75]); }
     q.push(p[p.length - 1]); p = q;
   }
-  return p.length ? p : [geoPkt(0, 0)];
+  p = p.length ? p : [geoPkt(0, 0)];
+  stiMemo = { ts: plan.ts, p };
+  return p;
 };
+// Tomta: øst for veien ved busstoppet og innen 120 m fra huset. GPS her inne teller ikke (hus og hage gir bare
+// krusedull). Går sporet inn på tomta, følger det stien fra busstoppet til døra; går det ut, følger det stien tilbake.
+// Hjemme går sporet til slutt fra døra til prikken i huset.
+let husMidtMemo = null;
+const husMidt = () => { if (husMidtMemo && husMidtMemo.ts === plan.ts) return husMidtMemo.p; const g = geoPkt(...midt(plan.rom.flatMap(x => x.gulv))); husMidtMemo = { ts: plan.ts, p: [g[1], g[0]] }; return husMidtMemo.p; };
+const påTomta = q => q[1] > plan.geo.buss[0] + .00003 && dist(q, husMidt()) < 120;
+function tomtSpor(linjer, hjemme) {
+  const vei = sti().map(v => [v[1], v[0]]), tilbake = [...vei].reverse(), ut = [];
+  for (const l of linjer) {
+    let cur = [], inne = false;
+    for (const q of l) {
+      if (påTomta(q)) { if (!inne && cur.length) cur.push(...vei); inne = true; continue; }
+      if (inne) cur.push(...tilbake);
+      inne = false; cur.push(q);
+    }
+    if (cur.length) ut.push(cur);
+  }
+  return ut;
+}
+// Historikk (bare /hjem/): velg en av de siste sju dagene og spill den av. Sporet tegnes fram etter klokka (en dag tar
+// 40 s), prikken følger med, og glidebryteren hopper i tid. «Live» går tilbake til nå.
+let avsp = null;
+if (HUS) setTimeout(() => {   // etter resten av skriptet (kl og dagNr defineres lenger ned)
+  const bar = document.createElement('div');
+  bar.className = 'hist gl';
+  bar.innerHTML = '<span class="h-dager"></span><button type="button" class="h-spill" aria-label="Spill av">▶</button><input type="range" class="h-tid" min="0" max="1000" value="0" aria-label="Tid"><span class="h-kl">–</span><button type="button" class="h-live" aria-pressed="true">Live</button>';
+  document.body.append(bar);
+  const dager = bar.querySelector('.h-dager'), spill = bar.querySelector('.h-spill'), tid = bar.querySelector('.h-tid'), kl2 = bar.querySelector('.h-kl'), liveK = bar.querySelector('.h-live');
+  const ukedag = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', weekday: 'short' });
+  for (let i = 6; i >= 0; i--) {
+    const t = Date.now() - i * 864e5, b = document.createElement('button');
+    b.type = 'button'; b.dataset.dag = dagNr.format(t); b.textContent = ukedag.format(t); b.setAttribute('aria-pressed', 'false');
+    b.onclick = () => velg(b); dager.append(b);
+  }
+  const trykket = el => bar.querySelectorAll('button[aria-pressed]').forEach(x => x.setAttribute('aria-pressed', x === el));
+  // Punktene i tidsrekkefølge, med null der sporet brytes. Avspillingen går fra første til siste måling.
+  async function velg(b) {
+    trykket(b);
+    try {
+      const j = await (await fetch('/chat/historikk?dag=' + b.dataset.dag)).json();
+      const pts = j.trail || [], med = pts.filter(Boolean);
+      if (!med.length) { kl2.textContent = '–'; return; }
+      avsp = { pts, t0: med[0][2], t1: med[med.length - 1][2], k: 0, spiller: false, sist: 0 };
+      const lo = med.map(q => q[1]), la = med.map(q => q[0]);
+      kart.fitBounds([[Math.min(...lo), Math.min(...la)], [Math.max(...lo), Math.max(...la)]], { padding: 80, maxZoom: 16, duration: 900 });
+      tid.value = 0; vis(0); start();
+    } catch {}
+  }
+  function vis(k) {
+    if (!avsp) return;
+    avsp.k = k;
+    const T = avsp.t0 + k * (avsp.t1 - avsp.t0), del = [];
+    let pos = null;
+    for (const q of avsp.pts) { if (!q) { del.push(null); continue; } if (q[2] > T) break; del.push(q); pos = q; }
+    let sp = linjer(del);
+    if (plan && plan.geo && plan.geo.buss) sp = tomtSpor(sp, false);
+    kart.getSource('spor').setData({ type: 'Feature', geometry: { type: 'MultiLineString', coordinates: sp.map(l => l.map(q => [q[1], q[0]])) } });
+    if (pos) megMark.setLngLat(plan && plan.geo && plan.geo.buss && påTomta(pos) ? husNåPkt() : [pos[1], pos[0]]);
+    kl2.textContent = ukedag.format(T) + ' ' + kl.format(T);
+    tid.value = Math.round(k * 1000);
+  }
+  function start() { avsp.spiller = true; spill.textContent = '❚❚'; avsp.sist = performance.now(); requestAnimationFrame(steg); }
+  function steg(nå) {
+    if (!avsp || !avsp.spiller) return;
+    const k = Math.min(1, avsp.k + (nå - avsp.sist) / 40000);
+    if (nå - avsp.sist > 90 || k >= 1) { vis(k); avsp.sist = nå; }   // ca. ti bilder i sekundet holder
+    if (k >= 1) { avsp.spiller = false; spill.textContent = '▶'; return; }
+    requestAnimationFrame(steg);
+  }
+  spill.onclick = () => { if (!avsp) return; if (avsp.spiller) { avsp.spiller = false; spill.textContent = '▶'; } else { if (avsp.k >= 1) avsp.k = 0; start(); } };
+  tid.oninput = () => { if (avsp) { avsp.spiller = false; spill.textContent = '▶'; vis(tid.value / 1000); } };
+  liveK.onclick = () => { avsp = null; trykket(liveK); spill.textContent = '▶'; kl2.textContent = '–'; sistSpor = ''; forste = true; tegn(); };
+});
+// Midt i huset (for avspilling: prikken står i huset når han var på tomta).
+const husNåPkt = () => { const m = husMidt(); return [m[1], m[0]]; };
 // Etasjene: gulvhøyder som ligger mindre enn 1,2 m fra hverandre er samme etasje (0 = nederst).
 const etasje = x => { const h = [...new Set(plan.rom.map(r => r.hoyde))].sort((a, b) => a - b), b = []; for (const v of h) if (!b.length || v - b[b.length - 1] > 1.2) b.push(v); return b.filter(v => x.hoyde >= v - .6).length - 1; };
 const midt = q => [q.reduce((s, p) => s + p[0], 0) / q.length, q.reduce((s, p) => s + p[1], 0) / q.length];
