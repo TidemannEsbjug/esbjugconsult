@@ -663,8 +663,8 @@
   .ak-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
   .ak-m{font:600 9.5px/1 "SF Mono",Menlo,monospace;letter-spacing:.1em;color:rgba(0,32,91,.5)}
   .ak-m i{font-style:normal;font-weight:800}.kx{color:#e0233c}.ky{color:#d68a00}.kz{color:#2563eb}
-  /* Banken (SpareBank 1): samlet saldo, kontoene og de siste transaksjonene. Trykk viser alle. */
-  .bank{display:flex;flex-direction:column;gap:8px;padding:14px 18px 16px;cursor:pointer;outline:none}
+  /* Banken (SpareBank 1): samlet saldo og saldoen på hver konto. */
+  .bank{display:flex;flex-direction:column;gap:8px;padding:14px 18px 16px}
   .bank[hidden]{display:none}
   .bank .s-t{display:flex;justify-content:space-between;width:100%}
   .bk-sum{font:640 30px/1 var(--serif);letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums}
@@ -673,10 +673,6 @@
   .bank li span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
   .bank li b{font-weight:650;font-variant-numeric:tabular-nums;white-space:nowrap}
   .bk-kontoer li span:first-child{opacity:.75}
-  .bk-trans{border-top:1px solid rgba(0,32,91,.1);padding-top:7px!important}
-  .bk-trans li b.inn{color:#1a7f37}
-  .bk-trans li i{font-style:normal;opacity:.55;font:500 11px "SF Mono",Menlo,monospace;margin-right:6px}
-  .bank:not(.apen) .bk-mer{display:none}
   /* Øyet mot: tre steder ved siden av hverandre, hvert med et tydelig værikon, grader, ordet, stedet og klokka der. */
   .oyet{display:flex;flex-direction:column;gap:10px;padding:14px 18px 16px}
   .oy-rad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
@@ -789,11 +785,10 @@
       <div class="oy" data-tz="Asia/Makassar"><span class="oy-n">Lombok</span><svg class="oy-i" viewBox="0 0 48 48" aria-hidden="true"></svg><b class="oy-v">–</b><span class="oy-k">–</span></div>
     </div>
   </section>
-  <section class="bank gl" hidden aria-label="Banken" tabindex="0" role="button" aria-expanded="false">
+  <section class="bank gl" hidden aria-label="Banken">
     <span class="mono s-t"><span>SpareBank 1</span><span class="bk-t"></span></span>
     <b class="bk-sum">–</b>
     <ul class="bk-kontoer"></ul>
-    <ul class="bk-trans"></ul>
   </section>
   </div>
   </div>
@@ -1932,22 +1927,20 @@ function nyeKast(ny) {
   knapp('tomat').querySelector('b').textContent = tall(ny.tomat);
   knapp('heia').querySelector('b').textContent = tall(ny.heia || 0);
 }
-// Banken: samlet saldo, kontoene (fire siste sifre) og de siste transaksjonene; tre av hver, alle når kortet er åpnet.
-const kr = new Intl.NumberFormat(TX.loc, { maximumFractionDigits: 0 }), krD = new Intl.NumberFormat(TX.loc, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const bkDato = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', day: 'numeric', month: 'short' });
+// Banken: samlet saldo og saldoen på hver konto (kontonummeret bare med de fire siste sifrene).
+const kr = new Intl.NumberFormat(TX.loc, { maximumFractionDigits: 0 });
 let bankNokkel = '';
 function visBank(b) {
   const e = $('.bank'); e.hidden = !b || !b.kontoer || !b.kontoer.length;
-  if (e.hidden) return;
-  const nk = b.ts + ':' + e.classList.contains('apen'); if (nk === bankNokkel) return; bankNokkel = nk;
+  if (e.hidden || b.ts === bankNokkel) return;
+  bankNokkel = b.ts;
   $('.bk-sum').textContent = kr.format(b.sum) + ' kr';
   $('.bk-t').textContent = TX.oppdatert + kl.format(b.ts);
-  const li = (a, bb, mer, cls) => { const l = document.createElement('li'); if (mer) l.className = 'bk-mer'; const x = document.createElement('span'); x.append(...a); const y = document.createElement('b'); y.textContent = bb; if (cls) y.className = cls; l.append(x, y); return l; };
-  $('.bk-kontoer').replaceChildren(...b.kontoer.map((k, i) => li([k.navn + (k.nr ? ' ··' + k.nr : '')], kr.format(k.saldo) + ' kr', i >= 3)));
-  $('.bk-trans').replaceChildren(...(b.trans || []).map((t, i) => { const d = document.createElement('i'); const tt = typeof t.tid === 'number' ? t.tid : Date.parse(t.tid); d.textContent = tt ? bkDato.format(tt) : ''; return li([d, t.tekst || '–'], (t.belop > 0 ? '+' : '') + krD.format(t.belop), i >= 3, t.belop > 0 ? 'inn' : ''); }));
+  $('.bk-kontoer').replaceChildren(...b.kontoer.map(k => {
+    const l = document.createElement('li'), x = document.createElement('span'), y = document.createElement('b');
+    x.textContent = k.navn + (k.nr ? ' ··' + k.nr : ''); y.textContent = kr.format(k.saldo) + ' kr'; l.append(x, y); return l;
+  }));
 }
-{ const e = $('.bank'), veksle = () => { e.classList.toggle('apen'); e.setAttribute('aria-expanded', e.classList.contains('apen')); bankNokkel = ''; };
-  e.addEventListener('click', veksle); e.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); veksle(); } }); }
 // Hva han holder på med, satt i appen: Jobber, Trener, Sover. Kortet er skjult når ingenting er valgt.
 const GJOR = TX.gjor;
 // Huset hos moren hans, skannet med LiDAR i appen (GET /chat/plan). Bare på testsiden /hjem/ inntil videre.

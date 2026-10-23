@@ -38,7 +38,7 @@ T = [
     ('&gt; Egne prosjekter', '&gt; Own projects'),
     ('<h3>Kunde i laksenæringen</h3>', '<h3>Client in the salmon industry</h3>'),
     ('<dd>Nettside og Markedsføring</dd>', '<dd>Website and Marketing</dd>'),
-    ('aria-label="Banken" tabindex="0"', 'aria-label="Bank" tabindex="0"'),
+    ('<section class="bank gl" hidden aria-label="Banken">', '<section class="bank gl" hidden aria-label="Bank">'),
     ('<dt>Hva</dt>', '<dt>What</dt>'),
     ('<dt>Pågått</dt>', '<dt>Running</dt>'),
     ('<dt>Størrelse</dt>', '<dt>Size</dt>'),

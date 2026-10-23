@@ -1441,7 +1441,7 @@ export class ChatHub {
 
   // ---------- SpareBank 1 (personlig API) ----------
   // Tilgangen varer 10 min og fornyes med refresh-tokenet (30 dager), som byttes ut hver gang det brukes. Hvert kvarter:
-  // kontoene (saldo, disponibelt) og de siste transaksjonene, lagret i kv 'bank' og vist på forsiden. Kontonumrene vises
+  // kontoene med saldo og disponibelt (ingen transaksjoner), lagret i kv 'bank' og vist på forsiden. Kontonumrene vises
   // bare med de fire siste sifrene. Går fornyelsen ut, kommer et varsel om å logge inn igjen.
   async sb1Token(grant) {
     const body = new URLSearchParams({ client_id: this.env.SB1_CLIENT_ID, client_secret: this.env.SB1_CLIENT_SECRET, ...grant });
@@ -1495,20 +1495,9 @@ export class ChatHub {
       const liste = (a.accounts || a.list || (Array.isArray(a) ? a : [])).slice(0, 12);
       const kontoer = liste.map((k) => ({ key: k.key, navn: k.name || k.description || k.product || "Konto", nr: String(k.accountNumber?.formatted || k.accountNumber?.value || k.accountNumber || "").replace(/\D/g, "").slice(-4),
         saldo: Number(k.balance?.amount ?? k.balance ?? 0), disp: Number(k.availableBalance?.amount ?? k.availableBalance ?? 0), valuta: k.currencyCode || k.balance?.currencyCode || "NOK", type: k.type || "" }));
-      const trans = [];
-      for (const k of kontoer.slice(0, 6)) {
-        try {
-          const tr = await hent("/personal/banking/transactions?accountKey=" + encodeURIComponent(k.key));
-          for (const x of (tr.transactions || tr.list || []).slice(0, 25))
-            trans.push({ konto: k.navn, tid: x.date || x.bookingDate || x.valueDate || x.accountingDate || null, belop: Number(x.amount?.amount ?? x.amount ?? 0),
-              tekst: x.cleanedDescription || x.description || x.reference || "", status: x.bookingStatus || "" });
-        } catch {}
-      }
-      const tid = (x) => (typeof x.tid === "number" ? x.tid : Date.parse(x.tid) || 0);
-      trans.sort((x, y) => tid(y) - tid(x));
-      const bank = { ts: nå, kontoer: kontoer.map(({ key, ...k }) => k), trans: trans.slice(0, 30), sum: kontoer.reduce((s, k) => s + k.saldo, 0) };
+      const bank = { ts: nå, kontoer: kontoer.map(({ key, ...k }) => k), sum: kontoer.reduce((s, k) => s + k.saldo, 0) };
       this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('bank', ?)`, JSON.stringify(bank));
-      return { ok: true, kontoer: bank.kontoer.length, trans: bank.trans.length };
+      return { ok: true, kontoer: bank.kontoer.length };
     } catch (e) { return { ok: false, feil: String(e.message || e) }; }
   }
 
