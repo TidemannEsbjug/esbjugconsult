@@ -664,17 +664,25 @@
   .ak-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
   .ak-m{font:600 9.5px/1 "SF Mono",Menlo,monospace;letter-spacing:.1em;color:rgba(0,32,91,.5)}
   .ak-m i{font-style:normal;font-weight:800}.kx{color:#e0233c}.ky{color:#d68a00}.kz{color:#2563eb}
-  /* Podkast: episodene som lenker, nyeste først, med lengden. Ingen avspilling her. */
+  /* Podkast: episodene, nyeste først, med datoen de ble laget. Trykk spiller av her i modulen, med en tynn spolelinje. */
   .pod{display:flex;flex-direction:column;gap:6px;padding:12px 18px 13px}
   .pod[hidden]{display:none}
   .pod a.s-t{color:rgba(0,32,91,.7);text-decoration:none}
   .pod-l{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
-  .pod-l a{display:flex;align-items:baseline;gap:10px;padding:5px 0;color:var(--ink);text-decoration:none;border-top:1px solid rgba(0,32,91,.08)}
-  .pod-l li:first-child a{border-top:0}
-  .pod-l a span:first-child{font:600 10px/1 "SF Mono",Menlo,monospace;opacity:.5;min-width:1.6em}
-  .pod-l a span:nth-child(2){flex:1;min-width:0;font:italic 500 15px/1.25 var(--serif);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .pod-l a span:last-child{font:600 10px/1 "SF Mono",Menlo,monospace;opacity:.5;white-space:nowrap}
-  .pod-l a:hover span:nth-child(2){color:#BA0C2F}
+  .pod-l button{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:baseline;gap:10px;padding:5px 0;color:var(--ink);cursor:pointer;border-top:1px solid rgba(0,32,91,.08)}
+  .pod-l li:first-child button{border-top:0}
+  .pod-l button span:first-child{font:600 10px/1 "SF Mono",Menlo,monospace;opacity:.5;min-width:1.6em}
+  .pod-l button span:nth-child(2){flex:1;min-width:0;font:italic 500 15px/1.25 var(--serif);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pod-l button span:last-child{font:600 10px/1 "SF Mono",Menlo,monospace;opacity:.5;white-space:nowrap}
+  .pod-l button:hover span:nth-child(2),.pod-l button[aria-pressed="true"] span:nth-child(2){color:#BA0C2F}
+  .pod-l button[aria-pressed="true"] span:first-child{opacity:1;color:#BA0C2F}
+  .pod-l button:focus-visible{outline:2px solid #BA0C2F;outline-offset:2px;border-radius:4px}
+  .pod-sp{display:flex;align-items:center;gap:10px;padding-top:4px}
+  .pod-sp[hidden]{display:none}
+  .pod-bar{flex:1;height:4px;border-radius:2px;background:rgba(0,32,91,.12);cursor:pointer;position:relative;outline:none}
+  .pod-bar::before{content:"";position:absolute;inset:-8px 0}
+  .pod-bar i{display:block;height:100%;width:0;border-radius:2px;background:#BA0C2F}
+  .pod-tid{font:600 10px/1 "SF Mono",Menlo,monospace;color:var(--ink);opacity:.6;font-variant-numeric:tabular-nums;white-space:nowrap}
   /* Banken (SpareBank 1): samlet saldo og saldoen på hver konto. */
   .bank{display:flex;flex-direction:column;gap:8px;padding:14px 18px 16px}
   .bank[hidden]{display:none}
@@ -827,6 +835,7 @@
   <section class="pod gl" hidden aria-label="Podcast">
     <a class="mono s-t" href="/podcast/">Podcast</a>
     <ol class="pod-l"></ol>
+    <div class="pod-sp" hidden><div class="pod-bar" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div><span class="pod-tid">0:00</span></div>
   </section>
   </div>
   </div>
@@ -1966,17 +1975,38 @@ function nyeKast(ny) {
   knapp('tomat').querySelector('b').textContent = tall(ny.tomat);
   knapp('heia').querySelector('b').textContent = tall(ny.heia || 0);
 }
-// Podkasten: episodelista (podcast/episoder.json), nyeste først, som lenker til /podcast/<n>/.
-fetch('/podcast/episoder.json').then(r => r.json()).then(eps => {
-  const l = $('.pod-l');
-  l.replaceChildren(...eps.slice().sort((a, b) => b.n - a.n).map(e => {
-    const li = document.createElement('li'), a = document.createElement('a');
-    a.href = '/podcast/' + e.n + '/';
-    for (const t of [String(e.n).padStart(2, '0'), e.tittel, Math.round(e.sek / 60) + ' min']) { const sp = document.createElement('span'); sp.textContent = t; a.append(sp); }
-    li.append(a); return li;
-  }));
-  $('.pod').hidden = !eps.length;
-}).catch(() => {});
+// Podkasten: episodelista (podcast/episoder.json), nyeste først, med datoen. Trykk spiller episoden av her i modulen
+// (lyden fra /podcast/lyd/ep<n>.m4a); et nytt trykk på samme episode setter på pause. Spolelinjen viser og flytter tiden.
+{
+  const lyd = new Audio(); lyd.preload = 'none';
+  const sp = $('.pod-sp'), bar = $('.pod-bar'), fyll = bar.firstChild, tidEl = $('.pod-tid');
+  const podDato = new Intl.DateTimeFormat(TX.loc, { day: 'numeric', month: 'short' });
+  const mmss = t => { t = Math.max(0, Math.floor(t || 0)); const h = Math.floor(t / 3600), m = Math.floor(t / 60) % 60, s = String(t % 60).padStart(2, '0'); return h ? h + ':' + String(m).padStart(2, '0') + ':' + s : m + ':' + s; };
+  let nå = null;
+  const merk = () => $('.pod-l').querySelectorAll('button').forEach(b => { const på = +b.dataset.n === nå && !lyd.paused; b.setAttribute('aria-pressed', på); b.firstChild.textContent = på ? '❚❚' : +b.dataset.n === nå ? '▶' : b.dataset.nr; });
+  lyd.addEventListener('timeupdate', () => { const p = lyd.duration ? lyd.currentTime / lyd.duration * 100 : 0; fyll.style.width = p + '%'; bar.setAttribute('aria-valuenow', Math.round(p)); tidEl.textContent = mmss(lyd.currentTime) + ' / ' + mmss(lyd.duration || (eps.find(e => e.n === nå)?.sek)); });
+  ['play', 'pause', 'ended'].forEach(ev => lyd.addEventListener(ev, merk));
+  const spol = x => { const r = bar.getBoundingClientRect(); if (lyd.duration) lyd.currentTime = Math.max(0, Math.min(1, (x - r.left) / r.width)) * lyd.duration; };
+  bar.addEventListener('pointerdown', e => { spol(e.clientX); bar.setPointerCapture(e.pointerId); });
+  bar.addEventListener('pointermove', e => { if (e.buttons) spol(e.clientX); });
+  bar.addEventListener('keydown', e => { const d = { ArrowLeft: -10, ArrowRight: 10 }[e.key]; if (d) { e.preventDefault(); lyd.currentTime += d; } });
+  let eps = [];
+  fetch('/podcast/episoder.json').then(r => r.json()).then(liste => {
+    eps = liste;
+    $('.pod-l').replaceChildren(...eps.slice().sort((a, b) => b.n - a.n).map(e => {
+      const li = document.createElement('li'), b = document.createElement('button');
+      b.type = 'button'; b.dataset.n = e.n; b.dataset.nr = String(e.n).padStart(2, '0'); b.setAttribute('aria-pressed', 'false');
+      for (const t of [b.dataset.nr, e.tittel, e.dato ? podDato.format(new Date(e.dato + 'T12:00:00')) : '']) { const x = document.createElement('span'); x.textContent = t; b.append(x); }
+      b.addEventListener('click', () => {
+        if (nå === e.n) { lyd.paused ? lyd.play() : lyd.pause(); return; }
+        nå = e.n; lyd.src = '/podcast/lyd/ep' + e.n + '.m4a'; lyd.play().catch(() => {});
+        sp.hidden = false; fyll.style.width = '0'; tidEl.textContent = '0:00 / ' + mmss(e.sek); merk();
+      });
+      li.append(b); return li;
+    }));
+    $('.pod').hidden = !eps.length;
+  }).catch(() => {});
+}
 // Banken: samlet saldo og saldoen på hver konto (kontonummeret bare med de fire siste sifrene).
 const kr = new Intl.NumberFormat(TX.loc, { maximumFractionDigits: 0 });
 let bankNokkel = '';
@@ -2504,7 +2534,8 @@ setInterval(tegn, 1000);
     ['.kn-spol', () => en ? 'Replay' : 'Replay'],
     ['.kartknapp', () => en ? 'Map' : 'Kartet'],
     ['.lang', () => en ? 'Norsk' : 'English'],
-    ['.pod-l a', () => en ? 'Listen' : 'Hør episoden'],
+    ['.pod-l button', el => el.getAttribute('aria-pressed') === 'true' ? 'Pause' : (en ? 'Play here' : 'Spill av her')],
+    ['.pod-bar', () => en ? 'Seek' : 'Spol'],
     ['.pod', () => en ? 'Podcast' : 'Podkast'],
     ['.ak', el => en ? 'See the movement' : 'Se bevegelsen'],
     ['.hp', el => { const b = tekst(el, '.hb-n'); return '♥ ' + (b && b !== '–' ? b + ' bpm · ' : '') + (en ? 'open' : 'åpne'); }],
