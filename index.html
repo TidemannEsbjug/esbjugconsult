@@ -567,7 +567,12 @@
   /* Le og kast tomat: felles tellere for alle som ser på. Tomaten flyr i en bue og splatter på kortet. */
   .paneler .gl{position:relative}
   .kast{display:flex;gap:8px;margin-top:8px}
-  .kast[hidden]{display:none}
+  .kast[hidden],.kast button[hidden]{display:none}
+  /* Heia: konfetti i rødt, blått, hvitt og gult skytes opp fra prikken, og et heiarop spretter opp over den. */
+  .konf{position:fixed;z-index:3000;left:0;top:0;width:9px;height:14px;border-radius:2px;pointer-events:none;will-change:transform}
+  .heia-ord{position:fixed;z-index:3001;pointer-events:none;transform:translate(-50%,-50%) rotate(var(--rot));white-space:nowrap;font:italic 800 clamp(24px,2.6vw,36px)/1 var(--serif);letter-spacing:-.02em;color:#fff;-webkit-text-stroke:1.5px #00205B;text-shadow:0 3px 0 #00205B,0 6px 18px rgba(0,20,70,.45);animation:taperInn .5s cubic-bezier(.2,1.8,.4,1) both,taperUt .5s ease 2.2s forwards}
+  .meg.heiet{animation:megHeiet .7s cubic-bezier(.2,1.6,.4,1)}
+  @keyframes megHeiet{0%{transform:scale(1)}30%{transform:translateY(-14px) scale(1.35)}60%{transform:translateY(0) scale(.9)}100%{transform:scale(1)}}
   .kast button{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(0,32,91,.18);background:rgba(255,255,255,.55);color:var(--ink);border-radius:999px;padding:7px 12px 7px 10px;font:600 13px/1 inherit;font-family:inherit;cursor:pointer;transition:transform .15s,background .2s}
   .kast button:hover{background:#fff;transform:translateY(-1px)}
   .kast button:active{transform:scale(.94)}
@@ -728,7 +733,7 @@
     <span class="mono s-t"><i class="s-dot"></i><span class="s-live">Live</span></span>
     <b class="s-navn">Henter posisjonen …</b>
     <span class="s-sub">&nbsp;</span>
-    <div class="kast" hidden><button type="button" class="k-tomat" aria-label="Kast en tomat på Tidemann">🍅 <span>Kast tomat</span> <b>0</b></button></div>
+    <div class="kast"><button type="button" class="k-tomat" aria-label="Kast en tomat på Tidemann" hidden>🍅 <span>Kast tomat</span> <b>0</b></button><button type="button" class="k-heia" aria-label="Si heia til Tidemann">📣 <span>Si heia</span> <b>0</b></button></div>
   </section>
   <section class="gjor gl" hidden aria-live="polite">
     <span class="mono s-t">Holder på med</span>
@@ -1472,6 +1477,7 @@ const TX = EN ? {
   kjent: { 'hjemme hos moren sin': 'Tidemann is at his mother’s' }, ingen: 'None', mobil: 'Mobile data', utenNett: 'Offline', visKart: 'Show the map', visPanel: 'Show the panels', rom: 'Room: ',
   gjor: { jobber: 'Working', trener: 'Training' }, komma: '.',
   taper: ['LOSER!', 'Loser.', 'What a loser', 'Total loser', 'Mega loser', 'Ultra loser', 'Loser-in-chief', 'King of losers', 'Loser of the year', 'Loser (again)', 'Loser, loser, loser', 'LOOOOSER', 'LOSER™', 'The world’s biggest loser', 'Tiny loser'],
+  heia: ['GO!', 'Go Tidemann!', 'Come on!', 'Go go go!', 'You got this!', 'Keep going!', 'Woohoo!'],
   treff: ['SPLAT!', 'Hit!', 'Right in the face', 'Bingo!', 'BAM!', 'Bullseye', 'Ouch!', 'Splosh', 'Jackpot', 'Got him!'],
 } : {
   loc: 'nb-NO', ingenPos: 'Ingen posisjon ennå', venter: 'Venter', sistSett: 'Sist sett ', siden: ' siden', live: 'Live · ', t: ' t ', jorda: 'Et sted på jorda',
@@ -1479,6 +1485,7 @@ const TX = EN ? {
   gjor: { jobber: 'Jobber', trener: 'Trener' }, komma: ',',
   taper: ['TAPER!', 'Taper.', 'Tapern!', 'Taperen!', 'TAAAAPER', 'Din taper', 'For en taper', 'Supertaper', 'Megataper', 'Ultrataper',
     'Tapersjef', 'Taperkonge', 'Årets taper', 'Taper (igjen)', 'Taper-Tidemann', 'Taper, taper, taper', 'Taperen fra Frogn', 'TAPER™', 'Verdens største taper', 'Liten taper'],
+  heia: ['HEIA!', 'Heia Tidemann!', 'Kom igjen!', 'Heia heia!', 'Du klarer det!', 'Stå på!', 'Heeeia!'],
   treff: ['SPLÆSJ!', 'Treff!', 'Rett i fleisen', 'Bingo!', 'PANG!', 'Midt i blinken', 'Au!', 'Klæsj', 'Full pott', 'Den satt!'],
 };
 const mobil = matchMedia('(pointer:coarse)').matches, still = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1633,7 +1640,7 @@ function tegn() {
   // Under avspilling: tiden som spilles, ikke «Live».
   $('.s-live').textContent = avsp ? 'Replay · ' + kl.format(nå) : gammel ? TX.sistSett + tid(alder) + TX.siden : TX.live + tid(alder) + TX.siden;
   $('.s-navn').classList.toggle('kjent', !!live.kjent);
-  $('.kast').hidden = live.kjent !== 'hjemme hos moren sin';   // tomater bare hjemme hos moren hans
+  $('.k-tomat').hidden = live.kjent !== 'hjemme hos moren sin';   // tomater bare hjemme hos moren hans; heia overalt
   $('.s-navn').textContent = live.kjent ? (TX.kjent[live.kjent] || 'Tidemann er ' + live.kjent) : st && st.by ? [st.strok, st.by].filter(Boolean).join(', ') + (st.kode && st.kode !== 'NO' ? ', ' + st.land : '') : TX.jorda;
   const fart = live.spd != null && live.spd >= .8 && !gammel && i.aktivitet !== 'står stille' ? Math.round(live.spd * 3.6) + ' km/t' : null;   // GPS-støy gir litt fart også når han står stille
   // Rommet hjemme, fra fyrene i huset (se /chat/admin/rom). Navnene står slik han skrev dem.
@@ -1722,12 +1729,38 @@ function tegnPuls() {
 }
 setInterval(tegnPuls, 1000);
 // Le og kast tomat. Egne trykk vises med en gang; andres ser du når tellerne øker (høyst 4 av gangen).
-let kast = null, egne = { le: 0, tomat: 0 };
-const knapp = k => document.querySelector(k === 'le' ? '.k-le' : '.k-tomat');
+let kast = null, egne = { le: 0, tomat: 0, heia: 0 };
+// Egne trykk som tellerne fra serveren ennå ikke er sett med: de er allerede vist, så de skal ikke vises en gang til.
+const egneVent = { tomat: 0, heia: 0 };
+const knapp = k => document.querySelector('.k-' + k);
 // Ordet som spretter opp der tomaten treffer.
 const TAPER = TX.taper;
 const TREFF = TX.treff;
+// Heia: konfettien skytes opp fra prikken på kartet (eller stedskortet om prikken ikke vises), drysser ned igjen, og
+// prikken hopper. Et heiarop spretter opp over.
+function visHeia() {
+  const b = knapp('heia'); b.classList.remove('puff'); void b.offsetWidth; b.classList.add('puff');
+  let x, y;
+  if (live && kart && megMark && megMark._map) {
+    if (!iBildet(megMark.getLngLat(), .1)) kart.jumpTo({ center: megMark.getLngLat() });
+    const p = kart.project(megMark.getLngLat()), r = kart.getContainer().getBoundingClientRect(); x = r.left + p.x; y = r.top + p.y;
+    const m = document.querySelector('.meg'); if (m) { m.classList.remove('heiet'); void m.offsetWidth; m.classList.add('heiet'); }
+  } else { const r = $('.sted').getBoundingClientRect(); x = r.left + r.width / 2; y = r.top + r.height / 2; }
+  if (!still) for (let n = 0; n < 34; n++) {
+    const e = document.createElement('span'); e.className = 'konf'; e.style.background = ['#BA0C2F', '#00205B', '#fff', '#FFD23F'][n % 4];
+    if (n % 3 === 0) e.style.borderRadius = '50%';
+    document.body.append(e);
+    const v = (Math.random() - .5) * Math.PI * .9, fart = 160 + Math.random() * 180, dx = Math.sin(v) * fart, opp = Math.cos(v) * fart, rot = (Math.random() - .5) * 1080;
+    const steg = [];
+    for (let i = 0; i <= 12; i++) { const f = i / 12; steg.push({ transform: `translate(${x + dx * f - 4}px,${y - opp * f + 420 * f * f - 7}px) rotate(${rot * f}deg) rotateX(${f * 720}deg)`, opacity: f < .8 ? 1 : (1 - f) * 5 }); }
+    e.animate(steg, { duration: 1300 + Math.random() * 500, easing: 'cubic-bezier(.2,.6,.4,1)', delay: Math.random() * 120 }).onfinish = () => e.remove();
+  }
+  const o = document.createElement('span'); o.className = 'heia-ord'; o.textContent = TX.heia[Math.floor(Math.random() * TX.heia.length)];
+  o.style.left = x + 'px'; o.style.top = y - 56 + 'px'; o.style.setProperty('--rot', (Math.random() * 16 - 8).toFixed(1) + 'deg');
+  document.body.append(o); setTimeout(() => o.remove(), 2800);
+}
 function visKast(k, fraX) {
+  if (k === 'heia') return visHeia();
   const b = knapp(k); b.classList.remove('puff'); void b.offsetWidth; b.classList.add('puff');
   const r = b.getBoundingClientRect();
   if (k === 'le') {
@@ -1784,17 +1817,22 @@ function visKast(k, fraX) {
   };
 }
 async function klikk(k, x) {
-  egne[k]++; visKast(k, x);
+  egne[k]++; egneVent[k] = (egneVent[k] || 0) + 1; visKast(k, x);
   const b = knapp(k).querySelector('b'); b.textContent = tall((kast ? kast[k] : 0) + egne[k]);
-  try { const r = await fetch('/chat/kast', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ k }) }); if (r.ok) { kast = await r.json(); egne[k] = 0; } } catch {}
+  try { const r = await fetch('/chat/kast', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ k }) }); if (r.ok) { kast = await r.json(); egne[k] = 0; egneVent[k] = 0; } } catch {}
 }
 document.querySelector('.k-tomat').addEventListener('click', e => klikk('tomat', e.clientX || undefined));
+document.querySelector('.k-heia').addEventListener('click', () => klikk('heia'));
 let sistHent = 0;
 function nyeKast(ny) {
   const fulgt = Date.now() - sistHent < 6000; sistHent = Date.now();
-  if (kast && fulgt) for (const k of ['tomat']) { const n = Math.min(4, ny[k] - kast[k]); for (let i = 0; i < n; i++) setTimeout(() => visKast(k), i * 450); }
+  if (kast && fulgt) for (const k of ['tomat', 'heia']) {
+    let n = (ny[k] || 0) - (kast[k] || 0); const egn = Math.min(Math.max(0, n), egneVent[k] || 0); n -= egn; egneVent[k] -= egn;
+    for (let i = 0; i < Math.min(4, n); i++) setTimeout(() => visKast(k), i * 450);
+  }
   kast = ny;
   knapp('tomat').querySelector('b').textContent = tall(ny.tomat);
+  knapp('heia').querySelector('b').textContent = tall(ny.heia || 0);
 }
 // Hva han holder på med, satt i appen: Jobber, Trener, Sover. Kortet er skjult når ingenting er valgt.
 const GJOR = TX.gjor;

@@ -686,8 +686,8 @@ export class ChatHub {
         return Response.json({ status: this.status(), sovnet: this.sovnet(), owner: this.ownerOnline(), hr: this.liveHr() }, { headers: { "cache-control": "no-store" } });
       }
       if (url.pathname === "/internal/kast") {
-        // Laughs and tomatoes: shared counters, at most 20 a minute from one address.
-        if (!["le", "tomat"].includes(b.k)) return new Response("Bad request", { status: 400 });
+        // Laughs, tomatoes and cheers (heia): shared counters, at most 20 a minute from one address.
+        if (!["le", "tomat", "heia"].includes(b.k)) return new Response("Bad request", { status: 400 });
         // Tomatoes only while he is at his mother's.
         if (b.k === "tomat" && this.sporLive()?.kjent !== "hjemme hos moren sin") return new Response("Ikke hjemme hos moren sin", { status: 403 });
         const ip = request.headers.get("x-ip") || "", now = Date.now();
@@ -699,6 +699,7 @@ export class ChatHub {
         const n = Number(this.sql.exec(`SELECT v FROM kv WHERE k=?`, `kast:${b.k}`).toArray()[0]?.v || 0) + 1;
         this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, `kast:${b.k}`, String(n));
         if (b.k === "tomat") this.tomatVarsel(decodeURIComponent(request.headers.get("x-by") || ""));
+        if (b.k === "heia") this.heiaVarsel(decodeURIComponent(request.headers.get("x-by") || ""));
         return Response.json(this.kast());
       }
       if (url.pathname === "/internal/hr-raa") {
@@ -1413,13 +1414,18 @@ export class ChatHub {
     this.ctx.waitUntil(this.push(hjemme ? "🍅 Taper!" : "🍅 Tomat!", by ? `Noen i ${by} kastet en tomat på deg` : "Noen kastet en tomat på deg", null, { thread: "tomat" }));
   }
 
+  // Heia: en push for hvert heiarop, som tomatene.
+  heiaVarsel(by) {
+    this.ctx.waitUntil(this.push("📣 Heia!", by ? `Noen i ${by} sier heia til deg` : "Noen sier heia til deg", null, { thread: "heia" }));
+  }
+
   notater(n = 100) {
     return this.sql.exec(`SELECT id, v, ts FROM notater ORDER BY ts DESC, id DESC LIMIT ?`, n).toArray();
   }
 
   kast() {
     const n = (k) => Number(this.sql.exec(`SELECT v FROM kv WHERE k=?`, `kast:${k}`).toArray()[0]?.v || 0);
-    return { le: n("le"), tomat: n("tomat") };
+    return { le: n("le"), tomat: n("tomat"), heia: n("heia") };
   }
 
   tele() {
