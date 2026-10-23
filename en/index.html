@@ -647,6 +647,10 @@
   .sens .hp[hidden]{display:flex}
   .kartmodus .paneler{opacity:0;transform:translateY(24px);pointer-events:none}
   .kartmodus .paneler .gl{pointer-events:none}
+  html.kartmodus,html.kartmodus body{overflow:hidden;overscroll-behavior:none}
+  .hero.kartmodus{position:fixed;inset:0;z-index:1500;min-height:0;height:100%}
+  .hero.kartmodus .hero-i>.flyt{position:relative;z-index:3}
+  .kartmodus #chat,.kartmodus .ck{display:none}
   @media (max-width:760px){.kartknapp{display:flex}}
   @media (prefers-reduced-motion:reduce){.spor-strom,.meg::before,.meg::after,.s-dot{animation:none}}
 </style>
@@ -1366,7 +1370,9 @@ const TX = EN ? {
   treff: ['SPLÆSJ!', 'Treff!', 'Rett i fleisen', 'Bingo!', 'PANG!', 'Midt i blinken', 'Au!', 'Klæsj', 'Full pott', 'Den satt!'],
 };
 const mobil = matchMedia('(pointer:coarse)').matches, still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const kart = L.map('kart', { zoomControl: false, scrollWheelZoom: false, dragging: !mobil, tap: false, attributionControl: true }).setView([59.9139, 10.7522], 13);
+const kart = L.map('kart', { zoomControl: false, scrollWheelZoom: false, dragging: !mobil, tap: false, attributionControl: true, trackResize: false }).setView([59.9139, 10.7522], 13);
+// Størrelsen endres uten å flytte kartet (adresselinjen i Safari kommer og går), så sporet blir liggende der det er.
+new ResizeObserver(() => kart.invalidateSize({ pan: false })).observe(document.getElementById('kart'));
 L.control.zoom({ position: 'bottomleft' }).addTo(kart);
 // Høstkartet: vektorkart fra OpenFreeMap (OpenStreetMap-data) med egne farger. Skogen i fem høstfarger fordelt på
 // skogområdene, park i gull, gress i oliven og gull, mørk varm bunn, dypblått vann og veier i rav. Uten WebGL: vanlig OSM.
@@ -1653,13 +1659,21 @@ addEventListener('resize', () => { if (kort.length && !bytter) postLag(); });
 $('.poster').addEventListener('click', nestePost);
 $('.poster').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); nestePost(); } });
 // Kartknappen (mobil): panelene glir bort, kartet kan dras og zoomes, og han havner midt i bildet. Trykk igjen for panelene.
-$('.kartknapp').addEventListener('click', () => {
-  const på = !hero.classList.contains('kartmodus');
+// Kartmodus er fullskjerm: heroen låses til hele skjermen og siden bak står stille, så × alltid er øverst og man
+// aldri kan dra seg bort fra den. Esc lukker også.
+let rulleFor = 0;
+function kartmodus(på) {
+  if (på === document.documentElement.classList.contains('kartmodus')) return;
+  if (på) rulleFor = scrollY;
+  document.documentElement.classList.toggle('kartmodus', på);
   hero.classList.toggle('kartmodus', på);
   $('.kartknapp').setAttribute('aria-pressed', på); $('.kartknapp').setAttribute('aria-label', på ? TX.visPanel : TX.visKart);
-  if (på) { kart.dragging.enable(); kart.touchZoom.enable(); if (kart.hasLayer(meg)) kart.panTo(meg.getLatLng()); }
-  else if (mobil) kart.dragging.disable();
-});
+  if (på) { kart.dragging.enable(); kart.touchZoom.enable(); }
+  else { if (mobil) kart.dragging.disable(); scrollTo(0, rulleFor); }
+  requestAnimationFrame(() => { kart.invalidateSize({ pan: false }); if (på && kart.hasLayer(meg)) kart.panTo(meg.getLatLng(), { animate: false }); });
+}
+$('.kartknapp').addEventListener('click', () => kartmodus(!document.documentElement.classList.contains('kartmodus')));
+addEventListener('keydown', e => { if (e.key === 'Escape') kartmodus(false); });
 // Dato og klokkeslett for ham, i Oslo-tid.
 const naaD = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', weekday: 'long', day: 'numeric', month: 'long' });
 const naaK = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', hour: '2-digit', minute: '2-digit', second: '2-digit' });
