@@ -737,6 +737,19 @@
     .hist .h-fartvalg{right:8px}
     .hist .h-kl{min-width:0}
   }
+  /* Egen peker (bare mus/styreflate): en liten rød prikk der pekeren er, og en tynn ring som glir mykt etter.
+     Over noe klikkbart vokser ringen og fylles svakt; ved trykk krymper den. I tekstfelt brukes vanlig skrivemarkør. */
+  @media (hover:hover) and (pointer:fine){
+    html.mus, html.mus *{cursor:none!important}
+    html.mus input, html.mus textarea, html.mus [contenteditable]{cursor:text!important}
+  }
+  .mus-p,.mus-r{position:fixed;left:0;top:0;z-index:2147483646;pointer-events:none;border-radius:50%;opacity:0;transition:opacity .25s}
+  .mus-p{width:6px;height:6px;margin:-3px 0 0 -3px;background:#BA0C2F;box-shadow:0 0 0 1.5px rgba(255,255,255,.85)}
+  .mus-r{width:34px;height:34px;margin:-17px 0 0 -17px;border:1.5px solid #fff;mix-blend-mode:difference;transition:opacity .25s,width .3s cubic-bezier(.2,.8,.2,1),height .3s cubic-bezier(.2,.8,.2,1),margin .3s cubic-bezier(.2,.8,.2,1),background-color .3s,border-color .3s}
+  html.mus.mus-inne .mus-p,html.mus.mus-inne .mus-r{opacity:1}
+  html.mus.mus-over .mus-r{width:54px;height:54px;margin:-27px 0 0 -27px;background:rgba(255,255,255,.18)}
+  html.mus.mus-ned .mus-r{width:24px;height:24px;margin:-12px 0 0 -12px}
+  html.mus.mus-tekst .mus-p,html.mus.mus-tekst .mus-r{opacity:0}
 </style>
 </head>
 <body>
@@ -2431,6 +2444,36 @@ hent(); setInterval(() => { if (!document.hidden) hent(); }, 2500);
 // Alltid øverst når siden åpnes (Safari på iPhone hopper ellers ned dit man var sist).
 if (!location.hash) { scrollTo(0, 0); addEventListener('load', () => scrollTo(0, 0)); addEventListener('pageshow', () => scrollTo(0, 0)); }
 setInterval(tegn, 1000);
+})();
+</script>
+<script>
+// Egen peker: prikken følger pekeren nøyaktig, ringen glir etter (halve avstanden på ca. 60 ms). Bare med mus/styreflate.
+(() => {
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  const h = document.documentElement, p = document.createElement('div'), r = document.createElement('div');
+  p.className = 'mus-p'; r.className = 'mus-r'; document.body.append(r, p); h.classList.add('mus');
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let x = -100, y = -100, rx = -100, ry = -100, sist = 0;
+  const KLIKK = 'a,button,[role="button"],[role="tab"],label,select,summary,input[type="range"],input[type="checkbox"],.maplibregl-ctrl button,.poster,.hp-o,.ak';
+  addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse') return;
+    x = e.clientX; y = e.clientY; h.classList.add('mus-inne');
+    const t = e.target instanceof Element ? e.target : null;
+    h.classList.toggle('mus-over', !!t?.closest(KLIKK));
+    h.classList.toggle('mus-tekst', !!t?.closest('input:not([type="range"]):not([type="checkbox"]),textarea,[contenteditable]'));
+    p.style.transform = `translate(${x}px,${y}px)`;
+  }, { passive: true });
+  addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') h.classList.add('mus-ned'); });
+  addEventListener('pointerup', () => h.classList.remove('mus-ned'));
+  document.addEventListener('mouseleave', () => h.classList.remove('mus-inne'));
+  const steg = nå => {
+    const dt = Math.min(64, nå - (sist || nå)); sist = nå;
+    const a = still ? 1 : 1 - Math.exp(-dt / 85);
+    rx += (x - rx) * a; ry += (y - ry) * a;
+    r.style.transform = `translate(${rx}px,${ry}px)`;
+    requestAnimationFrame(steg);
+  };
+  requestAnimationFrame(steg);
 })();
 </script>
 </body>
