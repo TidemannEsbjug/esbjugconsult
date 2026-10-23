@@ -523,23 +523,28 @@
   .kn-folgfelt svg{width:18px;height:18px;display:block;margin:auto}
   .kn-folgfelt button[aria-pressed="true"]{background:#00205B;color:#fff}
   .kn button[aria-pressed="true"]{background:var(--ink);color:#fff}
-  .hist{display:flex;flex-direction:column;gap:8px;margin:0;padding:10px 12px;pointer-events:auto;animation:histInn .3s ease-out}
-  @keyframes histInn{from{opacity:0;transform:translateY(-6px)}}
-  .hist[hidden],.hist [hidden]{display:none}
+  /* Replay: én bred linje øverst i stedet for flaggene, og spørreboksen som egen boks under datoen. */
+  .replay .hero-i>.flyt{align-self:stretch}
+  .replay .hero-i>.flyt>.topp{display:none}
+  .hist{order:4;position:relative;flex:1;min-width:0;display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0;padding:6px 8px;border-radius:999px;pointer-events:auto;animation:histInn .3s ease-out}
+  @keyframes histInn{from{opacity:0;transform:translateX(-8px)}}
+  .hist[hidden],.hist [hidden],.h-sokk[hidden],.h-sokk [hidden]{display:none}
   .hist button{border:0;border-radius:999px;padding:7px 11px;background:rgba(0,32,91,.08);color:var(--ink);font:600 12px/1 "SF Mono",Menlo,monospace;letter-spacing:.04em;cursor:pointer;white-space:nowrap}
   .hist button[aria-pressed="true"],.hist button[aria-expanded="true"]{background:var(--ink);color:#fff}
-  .hist .h-rad{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-  .hist .h-ut{display:flex;flex-direction:column;gap:8px}
-  .hist .h-tid{flex:1 1 120px;min-width:0;accent-color:#BA0C2F}
-  .hist .h-kl{font:600 12px "SF Mono",Menlo,monospace;color:var(--ink)}
-  .hist .h-sok{display:flex}
-  .hist .h-sok input{flex:1;min-width:0;border:0;border-radius:999px;padding:8px 13px;background:rgba(255,255,255,.75);font:500 13px -apple-system,system-ui,sans-serif;color:var(--ink);outline:none}
-  .hist .h-sok input:focus{box-shadow:0 0 0 2px #BA0C2F}
-  .hist .h-liste{display:flex;flex-direction:column;gap:4px;max-height:36vh;overflow:auto}
+  .hist .h-spill{width:32px;padding:7px 0}
+  .hist .h-dager{display:inline-flex;gap:4px;flex-wrap:wrap}
+  .hist .h-tid{flex:1 1 140px;min-width:100px;accent-color:#BA0C2F}
+  .hist .h-kl{font:600 12px "SF Mono",Menlo,monospace;color:var(--ink);min-width:12ch}
+  .hist .h-liste[hidden]{display:none}
+  .hist .h-liste{position:absolute;right:0;top:calc(100% + 8px);z-index:5;display:flex;flex-direction:column;gap:4px;max-height:50vh;overflow:auto;padding:8px;border-radius:16px;width:min(420px,90vw)}
   .hist .h-liste button{text-align:left;border-radius:10px;font:500 13px -apple-system,system-ui,sans-serif;letter-spacing:0;white-space:normal}
+  .h-sokk{display:flex;flex-direction:column;gap:6px;margin:0;padding:8px;pointer-events:auto;animation:histInn .3s ease-out}
+  .h-sok{display:flex}
+  .h-sok input{flex:1;min-width:0;border:0;border-radius:999px;padding:9px 14px;background:rgba(255,255,255,.75);font:500 13px -apple-system,system-ui,sans-serif;color:var(--ink);outline:none}
+  .h-sok input:focus{box-shadow:0 0 0 2px #BA0C2F}
+  .h-svar{margin:0 6px 2px;font:italic 500 14px/1.35 var(--serif);color:var(--ink)}
   /* I replay er klokka gammel tid: rødt merke på kortet. */
   .replay .naa{box-shadow:inset 3px 0 0 #BA0C2F}
-  .hist .h-svar{margin:0;text-align:center;font:italic 500 14px var(--serif);color:var(--ink)}
   .gammel .meg{filter:grayscale(.6) brightness(.8)}.gammel .meg::before,.gammel .meg::after{animation:none;opacity:0}
   /* Panelene: stedet under toppmodulen, sensorene oppe til høyre. Samme glass som toppmodulen. */
   .paneler{flex:1;width:100%;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-top:14px}
@@ -1845,12 +1850,17 @@ if (HUS) setTimeout(function lagAvspiller() {
   kart.addControl({ onAdd: () => folgFelt, onRemove: () => folgFelt.remove() }, 'bottom-left');
   const bar = document.createElement('section');
   bar.className = 'hist gl'; bar.hidden = true; bar.setAttribute('aria-label', 'Replay');
-  bar.innerHTML = '<div class="h-rad"><button type="button" class="h-spill" aria-label="Spill av">▶</button><input type="range" class="h-tid" min="0" max="10000" value="0" aria-label="Tid"><span class="h-kl">–</span><button type="button" class="h-mer" aria-expanded="false">Mer</button><button type="button" class="h-live">Live</button></div>'
-    + '<div class="h-ut" hidden><div class="h-rad"><span class="h-dager"></span><button type="button" class="h-tilb" aria-label="En time tilbake">−1 t</button><button type="button" class="h-frem" aria-label="En time fram">+1 t</button><button type="button" class="h-fart" aria-label="Fart">1×</button><button type="button" class="h-topp" aria-expanded="false">Topp</button></div>'
-    + '<form class="h-sok"><input type="search" placeholder="Spør: hvor var han i går kl. 14? sist han hadde 111 i puls?" aria-label="Søk i historikken" maxlength="200"></form><div class="h-liste" hidden></div></div><p class="h-svar" hidden></p>';
-  document.querySelector('.hero-i>.flyt').append(rad);
-  document.querySelector('.naa').after(bar);
-  const q = c => bar.querySelector(c) || rad.querySelector(c) || folgFelt.querySelector(c), dager = q('.h-dager'), spill = q('.h-spill'), tid = q('.h-tid'), kl2 = q('.h-kl'), svar = q('.h-svar'), liste = q('.h-liste'), folgK = q('.kn-folg');
+  // Én bred linje øverst (der flaggene står, de skjules i replay), så panelene ikke skyves ned.
+  bar.innerHTML = '<button type="button" class="h-spill" aria-label="Spill av">▶</button><input type="range" class="h-tid" min="0" max="10000" value="0" aria-label="Tid"><span class="h-kl">–</span>'
+    + '<span class="h-dager"></span><button type="button" class="h-tilb" aria-label="En time tilbake">−1 t</button><button type="button" class="h-frem" aria-label="En time fram">+1 t</button><button type="button" class="h-fart" aria-label="Fart">1×</button><button type="button" class="h-topp" aria-expanded="false">Topp</button><button type="button" class="h-live">Live</button>'
+    + '<div class="h-liste gl" hidden></div>';
+  // Spørreboksen er en egen boks under datoen.
+  const sokk = document.createElement('section');
+  sokk.className = 'h-sokk gl'; sokk.hidden = true; sokk.setAttribute('aria-label', 'Spør om historikken');
+  sokk.innerHTML = '<form class="h-sok"><input type="search" placeholder="Spør: hvor var han i går kl. 14? sist han hadde 111 i puls?" aria-label="Spør om historikken" maxlength="200"></form><p class="h-svar" hidden></p>';
+  document.querySelector('.hero-i>.flyt').append(rad, bar);
+  document.querySelector('.naa').after(sokk);
+  const q = c => bar.querySelector(c) || sokk.querySelector(c) || rad.querySelector(c) || folgFelt.querySelector(c), dager = q('.h-dager'), spill = q('.h-spill'), tid = q('.h-tid'), kl2 = q('.h-kl'), svar = q('.h-svar'), liste = q('.h-liste'), folgK = q('.kn-folg');
   const ukedag = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', weekday: 'short' }), klS = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', hour: '2-digit', minute: '2-digit', second: '2-digit' });
   for (let i = 6; i >= 0; i--) {
     const t = Date.now() - i * 864e5, b = document.createElement('button');
@@ -1864,8 +1874,7 @@ if (HUS) setTimeout(function lagAvspiller() {
   folgK.onclick = () => settFolg(!følg);
   kart.on('dragstart', () => { if (følg) settFolg(false); });
   // Replay: avspilleren åpnes én time tilbake i dag, på pause. Et nytt trykk går tilbake til live.
-  q('.kn-spol').onclick = e => { const åpne = bar.hidden; bar.hidden = !åpne; e.currentTarget.setAttribute('aria-pressed', åpne); document.body.classList.toggle('replay', åpne); if (åpne && !avsp) last(dagNr.format(Date.now())).then(() => vis(Math.max(0, 1 - 3600e3 / (avsp.t1 - avsp.t0)))); if (!åpne) { settFolg(false); gåLive(); } };
-  q('.h-mer').onclick = e => { const u = q('.h-ut'), åpne = u.hidden; u.hidden = !åpne; e.target.setAttribute('aria-expanded', åpne); };
+  q('.kn-spol').onclick = e => { const åpne = bar.hidden; bar.hidden = !åpne; sokk.hidden = !åpne; e.currentTarget.setAttribute('aria-pressed', åpne); document.body.classList.toggle('replay', åpne); if (åpne && !avsp) last(dagNr.format(Date.now())).then(() => vis(Math.max(0, 1 - 3600e3 / (avsp.t1 - avsp.t0)))); if (!åpne) { settFolg(false); gåLive(); } };
   // Sanntid som standard: ett sekund avspilling er ett sekund av dagen. 10× og 60× for å komme raskere fram.
   const FARTER = [1, 10, 60];
   let fart = 1;
@@ -1951,7 +1960,7 @@ if (HUS) setTimeout(function lagAvspiller() {
   q('.h-tilb').onclick = () => hopp(-1); q('.h-frem').onclick = () => hopp(1);
   q('.h-fart').onclick = e => { fart = FARTER[(FARTER.indexOf(fart) + 1) % FARTER.length]; e.target.textContent = fart + '×'; };
   tid.oninput = () => { if (avsp) vis(tid.value / 10000); };
-  q('.h-live').onclick = () => { bar.hidden = true; q('.kn-spol').setAttribute('aria-pressed', false); document.body.classList.remove('replay'); settFolg(false); gåLive(); };
+  q('.h-live').onclick = () => { bar.hidden = true; sokk.hidden = true; q('.kn-spol').setAttribute('aria-pressed', false); document.body.classList.remove('replay'); settFolg(false); gåLive(); };
   q('.h-topp').onclick = async e => {
     const åpen = liste.hidden; liste.hidden = !åpen; e.target.setAttribute('aria-expanded', åpen);
     if (!åpen) return;
