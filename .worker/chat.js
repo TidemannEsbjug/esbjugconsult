@@ -661,7 +661,15 @@ export class ChatHub {
            country=excluded.country, lat=excluded.lat, lon=excluded.lon, tz=excluded.tz, ua=excluded.ua, lang=excluded.lang`,
         vid, now, now, geo.city, geo.region, geo.country, geo.lat, geo.lon, geo.tz, ua, lang);
       const ip = request.headers.get("x-ip") || "";
-      if (ip && this.ctx.getWebSockets(`ip:${ip}`).length >= 10) return new Response("Too many connections", { status: 429 });
+      // Mange deler IP-adresse (mobilnett, kontorer), og døde sockets kan bli hengende en stund. I stedet for å avvise nye
+      // over grensen lukkes de eldste fra samme adresse (kode 4001: siden venter et minutt før den prøver igjen).
+      if (ip) {
+        const fra = this.ctx.getWebSockets(`ip:${ip}`);
+        if (fra.length >= 30) {
+          const eldst = fra.map((w) => ({ w, t: w.deserializeAttachment()?.t0 || 0 })).sort((a, b) => a.t - b.t);
+          for (const { w } of eldst.slice(0, fra.length - 29)) { try { w.close(4001, "for mange fra samme adresse"); } catch {} }
+        }
+      }
       // Unique-visitor counter: a known visitor gets their number back right away. A new one is only counted when the page
       // reports a person (an interaction, or 12 s on the page if nothing looks robotic): see «menneske» below.
       const sus = robotHint({ ua, lang, org: geo.org, webdriver: url.searchParams.get("w") === "1" });
