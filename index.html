@@ -6,7 +6,6 @@
 <title>Esbjug Consult</title>
 <meta name="description" content="Kode og design har gått gjennom en revolusjon som ikke må oversees.">
 <script>history.scrollRestoration="manual"</script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <meta name="theme-color" content="#cfe4f6">
 <link rel="alternate" hreflang="nb" href="https://esbjugconsult.com/">
@@ -494,11 +493,14 @@
   @keyframes kvPust{50%{opacity:.45}}
   @media (prefers-reduced-motion:reduce){.kv-prikk::before,.kv-prikk::after,.kv-t,.kv-i{animation:none}}
   @media (prefers-reduced-motion:reduce){#kart{transform:none;transition:opacity .4s ease}}
-  #kart.leaflet-container{font-family:inherit}
-  #kart .leaflet-control-attribution{background:rgba(5,8,26,.6);color:rgba(255,255,255,.45);font-size:10px}
-  #kart .leaflet-control-attribution a{color:rgba(255,255,255,.6)}
-  #kart .leaflet-control-zoom a{background:rgba(5,8,26,.75);color:#fff;border-color:rgba(255,255,255,.15)}
-  #kart .leaflet-bottom.leaflet-left{bottom:8px}
+  #kart .maplibregl-ctrl-group{background:rgba(28,15,7,.72);border-radius:10px;box-shadow:none;border:1px solid rgba(246,231,210,.15)}
+  #kart .maplibregl-ctrl-group button+button{border-top-color:rgba(246,231,210,.15)}
+  #kart .maplibregl-ctrl-group .maplibregl-ctrl-icon{filter:invert(1) opacity(.85)}
+  #kart .maplibregl-ctrl-attrib{background:rgba(28,15,7,.6);color:rgba(246,231,210,.5);font-size:10px}
+  #kart .maplibregl-ctrl-attrib a{color:rgba(246,231,210,.65)}
+  #kart .maplibregl-ctrl-attrib-button{filter:invert(1) opacity(.6)}
+  /* I kartmodus eier kartet alle berøringer, så nettleseren ikke zoomer eller ruller siden. */
+  .kartmodus #kart,.kartmodus #kart *{touch-action:none}
   .hero-i{z-index:2;pointer-events:none}
   .hero-i .flyt,.hero-i .gl{pointer-events:auto}
   .spor-glod{filter:blur(6px)}
@@ -1346,9 +1348,7 @@ new IntersectionObserver(e=>{vis=e[0].isIntersecting;if(vis&&!raf)raf=requestAni
 raf=requestAnimationFrame(draw);
 })();
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@maplibre/maplibre-gl-leaflet@0.0.22/leaflet-maplibre-gl.js"></script>
 <script>
 // Kartet i heroen: hvor Tidemann er, live fra iPhonen (GET /chat/spor hvert 5. s), dagens spor som en lysende sti med
 // stedsnavnet, og alt telefonen og klokka måler i panelet. Rulling over kartet ruller siden; dra flytter kartet (ikke på mobil).
@@ -1370,10 +1370,8 @@ const TX = EN ? {
   treff: ['SPLÆSJ!', 'Treff!', 'Rett i fleisen', 'Bingo!', 'PANG!', 'Midt i blinken', 'Au!', 'Klæsj', 'Full pott', 'Den satt!'],
 };
 const mobil = matchMedia('(pointer:coarse)').matches, still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const kart = L.map('kart', { zoomControl: false, scrollWheelZoom: false, dragging: !mobil, tap: false, attributionControl: true, trackResize: false }).setView([59.9139, 10.7522], 13);
-// Størrelsen endres uten å flytte kartet (adresselinjen i Safari kommer og går), så sporet blir liggende der det er.
-new ResizeObserver(() => kart.invalidateSize({ pan: false })).observe(document.getElementById('kart'));
-L.control.zoom({ position: 'bottomleft' }).addTo(kart);
+let kart = null;   // MapLibre-kartet lages når første posisjon er kjent (leggKart)
+const $ = q => document.querySelector(q);
 // Høstkartet: vektorkart fra OpenFreeMap (OpenStreetMap-data) med egne farger. Skogen i fem høstfarger fordelt på
 // skogområdene, park i gull, gress i oliven og gull, mørk varm bunn, dypblått vann og veier i rav. Uten WebGL: vanlig OSM.
 const HOST = {
@@ -1412,30 +1410,50 @@ const farg = (st) => {
   }
   return st;
 };
-const osm = () => L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(kart);
-// Innlastingen: stilen hentes med en gang, men kartet legges først på når første posisjon er kjent (så det ikke
-// hopper fra Oslo sentrum dit han er), og vises først når det er ferdig tegnet. Da tones det rolig inn.
-const gl = !!(window.maplibregl && L.maplibreGL);
-const stil = gl ? fetch('https://tiles.openfreemap.org/styles/liberty').then(r => r.json()).then(farg) : Promise.reject();
-let kartLagt = false;
+// Innlastingen: stilen hentes med en gang, men kartet lages først når første posisjon er kjent, med ham i midten
+// (så det ikke hopper), og vises først når det er ferdig tegnet. Da tones det rolig inn. Sporet og prikken tegnes i
+// selve kartet, så de aldri kommer i utakt med det under zoom og dra.
+const OSM = { version: 8, sources: { osm: { type: 'raster', tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'], tileSize: 256, attribution: '© OpenStreetMap' } }, layers: [{ id: 'osm', type: 'raster', source: 'osm' }] };
+const stil = window.maplibregl ? fetch('https://tiles.openfreemap.org/styles/liberty').then(r => r.json()).then(farg).catch(() => OSM) : null;
+let kartLagt = false, megMark = null, sistSpor = '';
 const visKart = () => document.documentElement.classList.add('kart-klar');
+const SPOR = ['spor-glod', 'spor-midt', 'spor-kjerne', 'spor-strom'];
 function leggKart() {
   if (kartLagt) return; kartLagt = true;
   setTimeout(visKart, 7000);   // uansett etter 7 s
+  if (!stil) { visKart(); return; }
   stil.then(st => {
-    const lag = L.maplibreGL({ style: st, attribution: '<a href="https://openfreemap.org">OpenFreeMap</a> © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(kart);
-    lag.getMaplibreMap().once('idle', visKart);
-  }).catch(() => { const t = osm(); t.once('load', visKart); });
+    const midt = live ? [live.lon, live.lat] : [10.7522, 59.9139];
+    kart = new maplibregl.Map({ container: 'kart', style: st, center: midt, zoom: live ? 14 : 12, attributionControl: { compact: true },
+      dragRotate: false, pitchWithRotate: false, touchPitch: false, scrollZoom: false, fadeDuration: 0 });
+    forste = !live;
+    kart.touchZoomRotate.disableRotation();
+    if (mobil) { kart.dragPan.disable(); kart.touchZoomRotate.disable(); }
+    kart.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-left');
+    kart.on('load', () => {
+      kart.addSource('spor', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+      const linje = { 'line-cap': 'round', 'line-join': 'round' };
+      kart.addLayer({ id: 'spor-glod', type: 'line', source: 'spor', layout: linje, paint: { 'line-color': '#FF6A3D', 'line-width': 16, 'line-blur': 10, 'line-opacity': .45 } });
+      kart.addLayer({ id: 'spor-midt', type: 'line', source: 'spor', layout: linje, paint: { 'line-color': '#FFD23F', 'line-width': 6, 'line-blur': 1, 'line-opacity': .75 } });
+      kart.addLayer({ id: 'spor-kjerne', type: 'line', source: 'spor', layout: linje, paint: { 'line-color': '#ffffff', 'line-width': 2, 'line-opacity': .9 } });
+      kart.addLayer({ id: 'spor-strom', type: 'line', source: 'spor', layout: { 'line-cap': 'butt', 'line-join': 'round' }, paint: { 'line-color': '#fff7c2', 'line-width': 3.5, 'line-dasharray': [0, 4, 3] } });
+      const el = document.createElement('div'); el.innerHTML = '<div class="meg"></div>';
+      megMark = new maplibregl.Marker({ element: el }).setLngLat(midt);
+      tegn();
+      // Strømmen starter først når kartet er tegnet; ellers tegnes kartet hele tiden og blir aldri «ferdig».
+      kart.once('idle', () => { visKart(); if (!still) strom(); });
+    });
+  });
 }
-const $ = q => document.querySelector(q);
-const meg = L.marker([0, 0], { icon: L.divIcon({ className: '', html: '<div class="meg"></div>', iconSize: [22, 22] }), interactive: false, keyboard: false });
-const lag = [
-  L.polyline([], { color: '#FF6A3D', weight: 16, opacity: .35, className: 'spor-glod', interactive: false }),
-  L.polyline([], { color: '#FFD23F', weight: 6, opacity: .75, interactive: false }),
-  L.polyline([], { color: '#fff', weight: 2, opacity: .9, interactive: false }),
-  L.polyline([], { color: '#fff7c2', weight: 3.5, opacity: 1, className: 'spor-strom', lineCap: 'round', interactive: false }),
-];
-lag.forEach(l => l.addTo(kart));
+// Strømmen langs sporet: streken flyttes et hakk av gangen (en kjent teknikk for animerte streker i MapLibre).
+const STEG = [[0, 4, 3], [0.5, 4, 2.5], [1, 4, 2], [1.5, 4, 1.5], [2, 4, 1], [2.5, 4, 0.5], [3, 4, 0], [0, 0.5, 3, 3.5], [0, 1, 3, 3], [0, 1.5, 3, 2.5], [0, 2, 3, 2], [0, 2.5, 3, 1.5], [0, 3, 3, 1], [0, 3.5, 3, 0.5]];
+let stromSteg = 0;
+function strom() { setInterval(() => { if (!kart || !synlig || document.hidden) return; stromSteg = (stromSteg + 1) % STEG.length; kart.setPaintProperty('spor-strom', 'line-dasharray', STEG[stromSteg]); }, 90); }
+// Er punktet innenfor kartet, med en marg (andel av bredde/høyde) inn fra kantene?
+function iBildet(lngLat, marg) {
+  const p = kart.project(lngLat), c = kart.getContainer(), w = c.clientWidth, h = c.clientHeight;
+  return p.x > w * marg && p.x < w * (1 - marg) && p.y > h * marg && p.y < h * (1 - marg);
+}
 let live = null, trail = [], tele = {}, forste = true, skew = 0, stier = [], forrige = {};
 const dist = (a, b) => Math.hypot((a[0] - b[0]) * 111.2e3, (a[1] - b[1]) * 111.2e3 * Math.cos(a[0] * Math.PI / 180));
 const km = pts => { let d = 0; for (let i = 1; i < pts.length; i++) if (pts[i] && pts[i - 1]) d += dist(pts[i - 1], pts[i]); return d; };
@@ -1474,10 +1492,15 @@ function tegn() {
   $('.s-sub').hidden = !fart;
   const pos = [live.lat, live.lon];
   let spor = linjer(trail); if (spor.length) spor[spor.length - 1].push(pos); else spor = [[pos]];
-  lag.forEach(l => l.setLatLngs(spor)); stier = spor;
-  meg.setLatLng(pos); if (!kart.hasLayer(meg)) meg.addTo(kart);
-  if (forste) { forste = false; kart.setView(pos, 15, { animate: false }); }
-  else if (!kart.getBounds().pad(-.2).contains(pos)) kart.panTo(pos);
+  stier = spor;
+  if (!kart || !kart.getSource('spor')) return;
+  const lngLat = [live.lon, live.lat];
+  // Sporet sendes bare til kartet når det har endret seg (tegn() går hvert sekund).
+  const sporNokkel = trail.length + ':' + (trail[trail.length - 1]?.[2] || 0) + ':' + live.lat + ',' + live.lon;
+  if (sporNokkel !== sistSpor) { sistSpor = sporNokkel; kart.getSource('spor').setData({ type: 'Feature', geometry: { type: 'MultiLineString', coordinates: spor.map(l => l.map(p => [p[1], p[0]])) } }); }
+  megMark.setLngLat(lngLat); if (!megMark._map) megMark.addTo(kart);
+  if (forste) { forste = false; kart.jumpTo({ center: lngLat, zoom: 14 }); }
+  else if (!iBildet(lngLat, .2)) kart.easeTo({ center: lngLat, duration: 900 });
 }
 const hero = $('.hero');
 let synlig = true; new IntersectionObserver(e => { synlig = e[0].isIntersecting; }).observe(hero);
@@ -1552,10 +1575,10 @@ function visKast(k, fraX) {
   // Fire av fem tomater treffer ham: prikken på kartet (kartet flytter seg dit om han er utenfor bildet). Resten treffer
   // et tilfeldig panel (stedet, holder på med, målingene, akselerometrene; aldri språkvalget), et tilfeldig sted på det.
   let kort, mx, my, påHam = false;
-  if (live && kart.hasLayer(meg) && Math.random() < .8) {
-    if (!kart.getBounds().pad(-.1).contains(meg.getLatLng())) kart.setView(meg.getLatLng(), kart.getZoom(), { animate: false });
+  if (live && kart && megMark && megMark._map && Math.random() < .8) {
+    if (!iBildet(megMark.getLngLat(), .1)) kart.jumpTo({ center: megMark.getLngLat() });
     kort = hero; påHam = true;
-    const p = kart.latLngToContainerPoint(meg.getLatLng()); mx = p.x; my = p.y;
+    const p = kart.project(megMark.getLngLat()); mx = p.x; my = p.y;
   } else {
     const mål = [...document.querySelectorAll('.paneler .gl')].filter(e => !e.hidden && e.offsetWidth);
     kort = mål[Math.floor(Math.random() * mål.length)] || $('.sted');
@@ -1668,9 +1691,9 @@ function kartmodus(på) {
   document.documentElement.classList.toggle('kartmodus', på);
   hero.classList.toggle('kartmodus', på);
   $('.kartknapp').setAttribute('aria-pressed', på); $('.kartknapp').setAttribute('aria-label', på ? TX.visPanel : TX.visKart);
-  if (på) { kart.dragging.enable(); kart.touchZoom.enable(); }
-  else { if (mobil) kart.dragging.disable(); scrollTo(0, rulleFor); }
-  requestAnimationFrame(() => { kart.invalidateSize({ pan: false }); if (på && kart.hasLayer(meg)) kart.panTo(meg.getLatLng(), { animate: false }); });
+  if (kart) { if (på) { kart.dragPan.enable(); kart.touchZoomRotate.enable(); kart.touchZoomRotate.disableRotation(); } else if (mobil) { kart.dragPan.disable(); kart.touchZoomRotate.disable(); } }
+  if (!på) scrollTo(0, rulleFor);
+  requestAnimationFrame(() => { if (!kart) return; kart.resize(); if (på && megMark && megMark._map) kart.jumpTo({ center: megMark.getLngLat() }); });
 }
 $('.kartknapp').addEventListener('click', () => kartmodus(!document.documentElement.classList.contains('kartmodus')));
 addEventListener('keydown', e => { if (e.key === 'Escape') kartmodus(false); });
