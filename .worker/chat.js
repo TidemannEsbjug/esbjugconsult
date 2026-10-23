@@ -994,7 +994,7 @@ export class ChatHub {
       const state = crypto.randomUUID();
       this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('sb1state', ?)`, JSON.stringify({ state, til: Date.now() + 15 * 60e3 }));
       const q = new URLSearchParams({ finInst: this.env.SB1_FININST, client_id: this.env.SB1_CLIENT_ID, state, redirect_uri: SB1_TILBAKE, response_type: "code" });
-      return Response.json({ url: "https://api-auth.sparebank1.no/oauth/authorize?" + q });
+      return Response.json({ url: "https://api.sparebank1.no/oauth/authorize?" + q });
     }
     if (url.pathname === "/chat/admin/bank/hent" && request.method === "POST") {
       return Response.json(await this.bankOppdater(true));
@@ -1440,16 +1440,16 @@ export class ChatHub {
   }
 
   // ---------- SpareBank 1 (personlig API) ----------
-  // Tilgangen varer 10 min og fornyes med refresh-tokenet (30 dager), som byttes ut hver gang det brukes. Hvert kvarter:
+  // Tilgangen varer 10 min og fornyes med refresh-tokenet (365 dager), som byttes ut hver gang det brukes. Hvert kvarter:
   // kontoene med saldo og disponibelt (ingen transaksjoner), lagret i kv 'bank' og vist på forsiden. Kontonumrene vises
   // bare med de fire siste sifrene. Går fornyelsen ut, kommer et varsel om å logge inn igjen.
   async sb1Token(grant) {
     const body = new URLSearchParams({ client_id: this.env.SB1_CLIENT_ID, client_secret: this.env.SB1_CLIENT_SECRET, ...grant });
-    const r = await fetch("https://api-auth.sparebank1.no/oauth/token", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body });
+    const r = await fetch("https://api.sparebank1.no/oauth/token", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body });
     const j = await r.json().catch(() => ({}));
     if (!r.ok || !j.access_token) throw new Error(j.error_description || j.error || "token " + r.status);
     const t = { access: j.access_token, exp: Date.now() + (j.expires_in || 600) * 1000 - 30e3, refresh: j.refresh_token || null,
-      rexp: Date.now() + (j.refresh_token_expires_in || 30 * 86400) * 1000 };
+      rexp: Date.now() + (j.refresh_token_expires_in || 365 * 86400) * 1000 };
     const gml = this.sb1();
     if (!t.refresh && gml) { t.refresh = gml.refresh; t.rexp = gml.rexp; }
     this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('sb1', ?)`, JSON.stringify(t));
