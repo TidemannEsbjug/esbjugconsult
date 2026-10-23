@@ -7,6 +7,7 @@
 <meta name="description" content="Kode og design har gått gjennom en revolusjon som ikke må oversees.">
 <script>history.scrollRestoration="manual"</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <meta name="theme-color" content="#cfe4f6">
 <link rel="alternate" hreflang="nb" href="https://esbjugconsult.com/">
 <link rel="alternate" hreflang="en" href="https://esbjugconsult.com/en/">
@@ -475,8 +476,6 @@
   /* /new2: kartet er heroen. Leaflet med OpenStreetMap, gjort mørkt med et filter, så sporet lyser. */
   .hero{background:#1c0f07}
   #kart{position:absolute;inset:0;z-index:0;background:#1c0f07}
-  /* Høst: kartet i mørk rust og rav (OpenStreetMap invertert og farget brunt). */
-  #kart .leaflet-tile-pane{filter:invert(1) sepia(1) hue-rotate(-22deg) saturate(2.3) brightness(.6) contrast(1.15)}
   #kart.leaflet-container{font-family:inherit}
   #kart .leaflet-control-attribution{background:rgba(5,8,26,.6);color:rgba(255,255,255,.45);font-size:10px}
   #kart .leaflet-control-attribution a{color:rgba(255,255,255,.6)}
@@ -564,12 +563,16 @@
   .ak-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
   .ak-m{font:600 9.5px/1 "SF Mono",Menlo,monospace;letter-spacing:.1em;color:rgba(0,32,91,.5)}
   .ak-m i{font-style:normal;font-weight:800}.kx{color:#e0233c}.ky{color:#d68a00}.kz{color:#2563eb}
-  /* Øyet mot: tre steder, været og klokka der. Minimalistisk: navn, grader med et lite tegn, klokkeslett. */
-  .oyet{display:flex;flex-direction:column;gap:7px;padding:14px 18px 14px}
-  .oy{display:grid;grid-template-columns:1fr auto 52px;align-items:baseline;gap:14px;padding-top:7px;border-top:1px solid rgba(0,32,91,.1)}
-  .oy-n{font:italic 400 17px/1.2 var(--serif);color:var(--ink)}
-  .oy-v,.oy-k{font:500 12px/1 "SF Mono",Menlo,monospace;letter-spacing:.04em;color:rgba(0,32,91,.7);font-variant-numeric:tabular-nums;text-align:right}
-  .oy-k{color:rgba(0,32,91,.5)}
+  /* Øyet mot: tre steder ved siden av hverandre, hvert med et tydelig værikon, grader, ordet, stedet og klokka der. */
+  .oyet{display:flex;flex-direction:column;gap:10px;padding:14px 18px 16px}
+  .oy-rad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .oy{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;min-width:0}
+  .oy+.oy{border-left:1px solid rgba(0,32,91,.1)}
+  .oy-i{width:46px;height:46px;margin-bottom:4px;overflow:visible}
+  .oy-v{font:640 24px/1 var(--serif);letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums}
+  .oy-o{font:600 9.5px/1.3 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(0,32,91,.55)}
+  .oy-n{margin-top:6px;font:italic 400 15px/1.15 var(--serif);color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .oy-k{font:500 11px/1 "SF Mono",Menlo,monospace;letter-spacing:.04em;color:rgba(0,32,91,.5);font-variant-numeric:tabular-nums}
   .ak-c{display:block;width:100%;height:64px;min-height:0;margin:6px 0 0}
   .venstre .sted{max-width:none}
   /* Pulsen øverst i panelet til høyre, over hele bredden. */
@@ -641,9 +644,11 @@
   </section>
   <section class="oyet gl" aria-label="Øyet mot">
     <span class="mono s-t">Øyet mot</span>
-    <div class="oy" data-tz="Asia/Bangkok"><span class="oy-n">Koh Phangan</span><span class="oy-v">–</span><span class="oy-k">–</span></div>
-    <div class="oy" data-tz="Asia/Dubai"><span class="oy-n">Dubai</span><span class="oy-v">–</span><span class="oy-k">–</span></div>
-    <div class="oy" data-tz="America/Chicago"><span class="oy-n">Texas</span><span class="oy-v">–</span><span class="oy-k">–</span></div>
+    <div class="oy-rad">
+      <div class="oy" data-tz="Asia/Bangkok"><svg class="oy-i" viewBox="0 0 48 48" aria-hidden="true"></svg><b class="oy-v">–</b><span class="oy-o">&nbsp;</span><span class="oy-n">Koh Phangan</span><span class="oy-k">–</span></div>
+      <div class="oy" data-tz="Asia/Dubai"><svg class="oy-i" viewBox="0 0 48 48" aria-hidden="true"></svg><b class="oy-v">–</b><span class="oy-o">&nbsp;</span><span class="oy-n">Dubai</span><span class="oy-k">–</span></div>
+      <div class="oy" data-tz="America/Chicago"><svg class="oy-i" viewBox="0 0 48 48" aria-hidden="true"></svg><b class="oy-v">–</b><span class="oy-o">&nbsp;</span><span class="oy-n">Texas</span><span class="oy-k">–</span></div>
+    </div>
   </section>
   </div>
   </div>
@@ -1292,6 +1297,8 @@ raf=requestAnimationFrame(draw);
 })();
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@maplibre/maplibre-gl-leaflet@0.0.22/leaflet-maplibre-gl.js"></script>
 <script>
 // Kartet i heroen: hvor Tidemann er, live fra iPhonen (GET /chat/spor hvert 5. s), dagens spor som en lysende sti med
 // stedsnavnet, og alt telefonen og klokka måler i panelet. Rulling over kartet ruller siden; dra flytter kartet (ikke på mobil).
@@ -1315,7 +1322,50 @@ const TX = EN ? {
 const mobil = matchMedia('(pointer:coarse)').matches, still = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const kart = L.map('kart', { zoomControl: false, scrollWheelZoom: false, dragging: !mobil, tap: false, attributionControl: true }).setView([59.9139, 10.7522], 13);
 L.control.zoom({ position: 'bottomleft' }).addTo(kart);
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(kart);
+// Høstkartet: vektorkart fra OpenFreeMap (OpenStreetMap-data) med egne farger. Skogen i fem høstfarger fordelt på
+// skogområdene, park i gull, gress i oliven og gull, mørk varm bunn, dypblått vann og veier i rav. Uten WebGL: vanlig OSM.
+const HOST = {
+  bunn: '#21160f', bolig: '#2b1d14', bygg: '#3a291e', vann: '#123048', elv: '#1b4766', park: '#c9971a', gress: '#8f7a22', eng: '#b98a1c',
+  skog: ['#b3261e', '#d9541e', '#e8891c', '#c4410f', '#a8681a'], vatmark: '#4f5a2a', sand: '#6e5634', kirkegard: '#5b3a2a', bane: '#6f7f25',
+  motorvei: '#b9874f', hoved: '#9c7a5a', sekundar: '#836a52', liten: '#5c4838', sti: '#4f3d2f', kant: '#140d08', jernbane: '#5f4838',
+  tekst: '#f6e7d2', halo: '#1a110b',
+};
+const farg = (st) => {
+  const skogF = ['match', ['%', ['coalesce', ['id'], ['to-number', ['get', 'osm_id'], 0], 0], 5], 0, HOST.skog[0], 1, HOST.skog[1], 2, HOST.skog[2], 3, HOST.skog[3], HOST.skog[4]];
+  for (const l of st.layers) {
+    const id = l.id, p = l.paint || (l.paint = {});
+    if (id === 'background') p['background-color'] = HOST.bunn;
+    else if (id === 'natural_earth' || id === 'building-3d' || id === 'park_outline') l.layout = { ...(l.layout || {}), visibility: 'none' };
+    else if (id === 'park') { p['fill-color'] = HOST.park; p['fill-opacity'] = .45; }
+    else if (id === 'landuse_residential') { p['fill-color'] = HOST.bolig; p['fill-opacity'] = 1; }
+    else if (id === 'landcover_wood') { p['fill-color'] = skogF; p['fill-opacity'] = .78; }
+    else if (id === 'landcover_grass') { p['fill-color'] = ['match', ['get', 'subclass'], ['meadow', 'grassland'], HOST.eng, HOST.gress]; p['fill-opacity'] = .55; }
+    else if (id === 'landcover_wetland') { p['fill-color'] = HOST.vatmark; p['fill-opacity'] = .6; }
+    else if (id === 'landcover_sand') p['fill-color'] = HOST.sand;
+    else if (id === 'landuse_cemetery') p['fill-color'] = HOST.kirkegard;
+    else if (id === 'landuse_pitch' || id === 'landuse_track') p['fill-color'] = HOST.bane;
+    else if (/^landuse_|^aeroway_fill/.test(id)) p['fill-color'] = HOST.bolig;
+    else if (id === 'water') p['fill-color'] = HOST.vann;
+    else if (/^waterway/.test(id) && l.type === 'line') p['line-color'] = HOST.elv;
+    else if (id === 'building') { p['fill-color'] = HOST.bygg; p['fill-outline-color'] = HOST.kant; }
+    else if (l.type === 'line' && /casing/.test(id)) p['line-color'] = HOST.kant;
+    else if (l.type === 'line' && /rail/.test(id)) p['line-color'] = HOST.jernbane;
+    else if (l.type === 'line' && /motorway/.test(id)) p['line-color'] = HOST.motorvei;
+    else if (l.type === 'line' && /trunk_primary/.test(id)) p['line-color'] = HOST.hoved;
+    else if (l.type === 'line' && /secondary_tertiary/.test(id)) p['line-color'] = HOST.sekundar;
+    else if (l.type === 'line' && /path|pedestrian|service_track/.test(id)) p['line-color'] = HOST.sti;
+    else if (l.type === 'line' && /minor|street|link/.test(id)) p['line-color'] = HOST.liten;
+    else if (l.type === 'line' && /boundary/.test(id)) p['line-color'] = 'rgba(246,231,210,.25)';
+    else if (l.type === 'symbol') { if (p['text-color'] !== undefined || l.layout?.['text-field']) { p['text-color'] = HOST.tekst; p['text-halo-color'] = HOST.halo; p['text-halo-width'] = 1.2; } if (/poi|shield|one_way/.test(id)) l.layout = { ...(l.layout || {}), visibility: 'none' }; }
+  }
+  return st;
+};
+const osm = () => L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(kart);
+if (window.maplibregl && L.maplibreGL) {
+  fetch('https://tiles.openfreemap.org/styles/liberty').then(r => r.json()).then(st => {
+    L.maplibreGL({ style: farg(st), attribution: '<a href="https://openfreemap.org">OpenFreeMap</a> © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(kart);
+  }).catch(osm);
+} else osm();
 const $ = q => document.querySelector(q);
 const meg = L.marker([0, 0], { icon: L.divIcon({ className: '', html: '<div class="meg"></div>', iconSize: [22, 22] }), interactive: false, keyboard: false });
 const lag = [
@@ -1511,8 +1561,21 @@ $('.kartknapp').addEventListener('click', () => {
   if (på) { kart.dragging.enable(); kart.touchZoom.enable(); if (kart.hasLayer(meg)) kart.panTo(meg.getLatLng()); }
   else if (mobil) kart.dragging.disable();
 });
-// Øyet mot: været fra /chat/oyet (hvert 15. min), klokkeslettet regnes her og går hvert sekund.
-const VAER = (k, dag) => k === 0 ? (dag ? '☀︎' : '☾') : k <= 2 ? (dag ? '◐' : '☾') : k === 3 ? '☁︎' : k <= 48 ? '≋' : k <= 67 || (k >= 80 && k <= 82) ? '☂︎' : k <= 86 ? '❄︎' : '⚡︎';
+// Øyet mot: været fra /chat/oyet (hvert 15. min) som tydelige ikoner, klokkeslettet regnes her og går hvert sekund.
+const SOL = '<g stroke="#f59e0b" stroke-width="3" stroke-linecap="round"><path d="M24 4v5M24 39v5M4 24h5M39 24h5M9.9 9.9l3.5 3.5M34.6 34.6l3.5 3.5M9.9 38.1l3.5-3.5M34.6 13.4l3.5-3.5"/></g><circle cx="24" cy="24" r="9" fill="#fbbf24"/>';
+const MANE = '<path d="M30 8a16 16 0 1 0 10 26A13 13 0 0 1 30 8z" fill="#fcd34d"/>';
+const SKY = (x = 0, y = 0, f = '#a8b4c4') => `<path transform="translate(${x} ${y})" d="M14 36h22a8 8 0 0 0 0-16 11 11 0 0 0-21-2A8 8 0 0 0 14 36z" fill="${f}"/>`;
+const IKON = {
+  sol: SOL, klart: MANE,
+  delvis: '<g transform="translate(-5 -6) scale(.8)">' + SOL + '</g>' + SKY(2, 6, '#c3ccd8'),
+  sky: SKY(0, 2), take: SKY(0, -4) + '<path d="M10 38h28M14 43h20" stroke="#a8b4c4" stroke-width="3" stroke-linecap="round"/>',
+  regn: SKY(0, -4) + '<path d="M16 37l-3 7M25 37l-3 7M34 37l-3 7" stroke="#2563eb" stroke-width="3" stroke-linecap="round"/>',
+  sno: SKY(0, -4) + '<g fill="#93c5fd"><circle cx="15" cy="40" r="2.5"/><circle cx="24" cy="43" r="2.5"/><circle cx="33" cy="40" r="2.5"/></g>',
+  torden: SKY(0, -5, '#7c8798') + '<path d="M25 30l-6 10h6l-3 8 9-12h-6l3-6z" fill="#facc15"/>',
+};
+const VAER = (k, dag) => k === 0 ? (dag ? 'sol' : 'klart') : k <= 2 ? (dag ? 'delvis' : 'klart') : k === 3 ? 'sky' : k <= 48 ? 'take' : k <= 67 || (k >= 80 && k <= 82) ? 'regn' : k <= 86 ? 'sno' : 'torden';
+const VORD = EN ? { sol: 'Sun', klart: 'Clear', delvis: 'Some sun', sky: 'Cloudy', take: 'Fog', regn: 'Rain', sno: 'Snow', torden: 'Thunder' }
+  : { sol: 'Sol', klart: 'Klart', delvis: 'Litt sol', sky: 'Sky', take: 'Tåke', regn: 'Regn', sno: 'Snø', torden: 'Torden' };
 const oyKl = {};
 function tegnOyet() {
   document.querySelectorAll('.oy').forEach(r => {
@@ -1523,7 +1586,11 @@ function tegnOyet() {
 async function hentOyet() {
   try {
     const v = await (await fetch('/chat/oyet')).json();
-    document.querySelectorAll('.oy').forEach((r, n) => { const x = v[n]; if (x && Number.isFinite(x.t)) r.querySelector('.oy-v').textContent = x.t + '° ' + VAER(x.kode, x.dag); });
+    document.querySelectorAll('.oy').forEach((r, n) => {
+      const x = v[n]; if (!x || !Number.isFinite(x.t)) return;
+      const k = VAER(x.kode, x.dag);
+      r.querySelector('.oy-i').innerHTML = IKON[k]; r.querySelector('.oy-v').textContent = x.t + '°'; r.querySelector('.oy-o').textContent = VORD[k];
+    });
   } catch {}
 }
 tegnOyet(); setInterval(tegnOyet, 1000); hentOyet(); setInterval(hentOyet, 15 * 60e3);
