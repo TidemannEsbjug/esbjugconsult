@@ -177,6 +177,7 @@ T = [
     ('data-fin="hjerteslag i dag" data-uke="hjerteslag siste 7 dager" data-mnd="hjerteslag siste 30 dager" data-t="t"', 'data-fin="heartbeats today" data-uke="heartbeats in the last 7 days" data-mnd="heartbeats in the last 30 days" data-t="h"'),
     ('<span class="hpp-cl">hjerteslag i dag</span>', '<span class="hpp-cl">heartbeats today</span>'),
     ('aria-selected="true">I dag<', 'aria-selected="true">Today<'),
+    ('data-blund="Tidemann tar en blund" data-blund-t="Mest sannsynlig en blund for å hente energi. Han er sannsynligvis våken igjen om en time eller to." data-sovet="Har sovet i" data-kort="Tar en blund, våken igjen om en time eller to" data-t="t"', 'data-blund="Tidemann is taking a nap" data-blund-t="Most likely a quick nap to recharge. He will probably be awake again in an hour or two." data-sovet="Has slept for" data-kort="Taking a nap, awake again in an hour or two" data-t="h"'),
     ('aria-label="Bevegelse" hidden data-iphone="Bevegelse · iPhone" data-watch="Bevegelse · Apple Watch"', 'aria-label="Movement" hidden data-iphone="Movement · iPhone" data-watch="Movement · Apple Watch"'),
     ('<span class="hpp-cl bvp-o">bevegelse nå</span>', '<span class="hpp-cl bvp-o">movement now</span>'),
     ('aria-selected="false">7 dager<', 'aria-selected="false">7 days<'),

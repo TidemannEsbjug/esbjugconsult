@@ -531,7 +531,7 @@ export class ChatHub {
       pair[1].serializeAttachment({ role: "visitor", vid, rate: [], win: 0, n: 0, nr, pend, prov, sus, t0: now, ok: (!!nr && !prov) || eier, eier });
       const ex = this.sql.exec(`SELECT extras, ring FROM visitors WHERE vid=?`, vid).toArray()[0];
       const count = { live: this.liveCount(), total: this.uniqTotal() };
-      pair[1].send(JSON.stringify({ t: "history", msgs: this.history(vid), owner: this.ownerOnline(), extras: !!ex?.extras, ring: !!ex?.ring, status: this.status(), call: this.canCall(), hr: this.liveHr(), count:{ live: this.liveCount(), total: this.uniqTotal(), nr, ny: !!prov, pend: !!pend || !!prov, meg: !eier && (!sus || !!nr) } }));
+      pair[1].send(JSON.stringify({ t: "history", msgs: this.history(vid), owner: this.ownerOnline(), extras: !!ex?.extras, ring: !!ex?.ring, status: this.status(), sovnet: this.sovnet(), call: this.canCall(), hr: this.liveHr(), count:{ live: this.liveCount(), total: this.uniqTotal(), nr, ny: !!prov, pend: !!pend || !!prov, meg: !eier && (!sus || !!nr) } }));
       this.send(this.ctx.getWebSockets("v").filter((w) => w !== pair[1]), { t: "count", ...count });
       this.toOwners({ t: "presence", v: this.visitor(vid) });
       if (newVisit && !eier && this.setting("notifyVisits") === "1") this.ctx.waitUntil(this.pushVisit({ key: vid, vid, first: false, city: geo.city, country: geo.country, ua }));
@@ -546,7 +546,7 @@ export class ChatHub {
         return t && Date.now() - t < 2 * 3600e3 && this.online(b.vid) ? new Response("ok") : new Response("no", { status: 403 });
       }
       if (url.pathname === "/internal/status") {
-        return Response.json({ status: this.status(), owner: this.ownerOnline(), hr: this.liveHr() }, { headers: { "cache-control": "no-store" } });
+        return Response.json({ status: this.status(), sovnet: this.sovnet(), owner: this.ownerOnline(), hr: this.liveHr() }, { headers: { "cache-control": "no-store" } });
       }
       if (url.pathname === "/internal/kast") {
         // Laughs and tomatoes: shared counters, at most 20 a minute from one address.
@@ -718,6 +718,7 @@ export class ChatHub {
         this.sql.exec(`DELETE FROM hr WHERE ts < ?`, now - 35 * 864e5);
       }
       this.toVisitors({ t: "hr", bpm: v });
+      if (v) this.vaakneAvPuls(now, v);
       return Response.json({ ok: true });
     }
     // Positions from the owner's iPhone: stored raw (35 days), and the public version goes straight to every open page.
@@ -1434,10 +1435,31 @@ export class ChatHub {
     await this.push(first ? "Ny besøkende" : "Besøkende tilbake", [where, device].filter(Boolean).join(" · "), vid || null, { thread: "besok", throttle: false, category: "VISIT" });
   }
 
+  // «Sover» husker når han la seg (sovnet), så siden kan si hvor lenge han har sovet.
   setStatus(v) {
+    if (v === "sleeping" && this.status() !== "sleeping") this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('sovnet', ?)`, String(Date.now()));
     this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('status', ?)`, v);
-    this.toVisitors({ t: "status", v });
+    const sovnet = this.sovnet();
+    this.toVisitors({ t: "status", v, sovnet });
     this.toOwners({ t: "status", v, status: v });
+  }
+
+  sovnet() {
+    return this.status() === "sleeping" ? Number(this.setting("sovnet") || 0) || null : null;
+  }
+
+  // Han sover ikke med klokka på. Står det «Sover» (lagt seg for over 10 min siden) og klokka sender puls som
+  // beveger seg (minst 8 målinger siste 2 min, minst 3 slag mellom laveste og høyeste), er han våken: «Jobber».
+  vaakneAvPuls(now, bpm) {
+    this.pulsVindu = (this.pulsVindu || []).filter((x) => now - x.ts < 120e3);
+    this.pulsVindu.push({ ts: now, bpm });
+    if (this.status() !== "sleeping" || now - (this.sovnet() || now) < 10 * 60e3) return;
+    const b = this.pulsVindu.map((x) => x.bpm);
+    if (b.length < 8 || Math.max(...b) - Math.min(...b) < 3) return;
+    this.sql.exec(`DELETE FROM kv WHERE k='autoSlept'`);
+    this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('gjor', 'jobber')`);
+    this.toOwners({ t: "gjor", v: "jobber" });
+    this.setStatus("available");
   }
 
   touchOwner() {
@@ -1494,7 +1516,8 @@ export class ChatHub {
       this.sql.exec(`DELETE FROM visitors WHERE last_seen < ? AND vid NOT IN (SELECT DISTINCT vid FROM messages) AND vid NOT IN (SELECT DISTINCT vid FROM sessions)`, now - 7 * 864e5);
     }
     const { hour, minute } = osloTime(now);
-    const active = this.ownerOnline() || now - Number(this.setting("ownerActive") || 0) < 30 * 60e3;
+    // Klokka med puls teller som aktiv (han sover uten den), ellers ville natta og pulsen vippet statusen fram og tilbake.
+    const active = this.ownerOnline() || now - Number(this.setting("ownerActive") || 0) < 30 * 60e3 || !!this.liveHr();
     const next = autoStatus({ hour, minute, status: this.status(), autoSlept: this.setting("autoSlept") === "1", active });
     if (next === "sleeping") {
       this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('autoSlept', '1')`);
