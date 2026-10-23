@@ -90,12 +90,15 @@
   .mini .lin{position:absolute;left:0;bottom:0;height:3px;background:var(--red);width:0}
 
   /* Den store avspilleren: et ark som glir opp og kan dras ned igjen. */
-  .ark{position:fixed;inset:0;z-index:30;--dy:0px;background:linear-gradient(180deg,#0a2d6e 0%,var(--navy) 45%,#001437 100%);color:#fff;
+  .ark{position:fixed;inset:0;z-index:30;--dy:0px;background:#0a2d6e linear-gradient(180deg,#0a2d6e 0%,var(--navy) 45%,#001437 100%);color:#fff;
     display:flex;flex-direction:column;padding:calc(var(--st) + 10px) 26px calc(var(--sb) + 26px);
     transform:translateY(102%);transition:transform .45s cubic-bezier(.2,.9,.2,1);will-change:transform;touch-action:none}
   .ark.apen{transform:translateY(var(--dy))}
-  .slor{position:fixed;inset:0;z-index:29;background:rgba(0,12,36,.5);opacity:0;pointer-events:none;transition:opacity .4s}
-  .slor.vis{opacity:1;pointer-events:auto}
+  /* Safari farger feltet ved notchen etter det som ligger fast øverst. På mobil skal det være det blå arket, så sløret
+     bak panelet finnes bare på store skjermer, og der bare mens panelet er åpent. */
+  .slor{display:none;position:fixed;inset:0;z-index:29;background:rgba(0,12,36,.5);opacity:0;visibility:hidden;transition:opacity .4s,visibility .4s}
+  .slor.vis{opacity:1;visibility:visible}
+  @media (min-width:700px){.slor{display:block}}
   .ark.drar{transition:none}
   .ark .in{width:100%;max-width:440px;margin:0 auto;display:flex;flex-direction:column;flex:1;min-height:0}
   .hdl{display:flex;justify-content:center;padding:6px 0 14px;cursor:grab}
