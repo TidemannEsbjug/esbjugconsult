@@ -1700,12 +1700,20 @@ let rulleFor = 0;
 function kartmodus(på) {
   if (på === document.documentElement.classList.contains('kartmodus')) return;
   if (på) rulleFor = scrollY;
+  // Kartet skal stå helt stille på skjermen: punktet øverst til venstre i kartet, og hvor kartet står på skjermen nå.
+  const anker = kart ? kart.unproject([0, 0]) : null, topp0 = document.getElementById('kart').getBoundingClientRect().top;
   document.documentElement.classList.toggle('kartmodus', på);
   hero.classList.toggle('kartmodus', på);
   $('.kartknapp').setAttribute('aria-pressed', på); $('.kartknapp').setAttribute('aria-label', på ? TX.visPanel : TX.visKart);
   if (kart && mobil) { if (på) kart.cooperativeGestures.disable(); else kart.cooperativeGestures.enable(); }
   if (!på) scrollTo(0, rulleFor);
-  requestAnimationFrame(() => { if (!kart) return; kart.resize(); if (på && megMark && megMark._map) kart.jumpTo({ center: megMark.getLngLat() }); });
+  // Ny størrelse, og så flyttes kartet så det samme punktet ligger på samme sted på skjermen, før neste bilde tegnes.
+  if (kart && anker) {
+    const topp1 = document.getElementById('kart').getBoundingClientRect().top;
+    kart.resize();
+    const p = kart.project(anker);
+    kart.panBy([p.x, p.y - (topp0 - topp1)], { animate: false });
+  }
 }
 $('.kartknapp').addEventListener('click', () => kartmodus(!document.documentElement.classList.contains('kartmodus')));
 addEventListener('keydown', e => { if (e.key === 'Escape') kartmodus(false); });
