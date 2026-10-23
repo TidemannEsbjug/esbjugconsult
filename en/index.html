@@ -575,6 +575,12 @@
   .oy-k{font:500 11px/1 "SF Mono",Menlo,monospace;letter-spacing:.04em;color:rgba(0,32,91,.5);font-variant-numeric:tabular-nums}
   .ak-c{display:block;width:100%;height:64px;min-height:0;margin:6px 0 0}
   .venstre .sted{max-width:none}
+  /* Dato og klokkeslett for ham (Oslo-tid), over stedet og under flaggene. */
+  .naa{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0;padding:10px 18px}
+  .naa-d{font:italic 400 16px/1.2 var(--serif);color:var(--ink)}
+  .naa-k{font:500 15px/1 "SF Mono",Menlo,monospace;letter-spacing:.04em;color:rgba(0,32,91,.75);font-variant-numeric:tabular-nums}
+  /* Flaggvalget i en mindre boks nå som pulsen har flyttet. */
+  .hero-i .topp{padding:5px 6px;gap:8px;border-radius:999px}
   /* Pulsen øverst i panelet til høyre, over hele bredden. */
   .sens .hp{grid-column:1/-1;flex-direction:row;align-items:center;justify-content:space-between;gap:12px;padding-bottom:12px;border-bottom:1px solid rgba(0,32,91,.12)}
   .sens .hp .st-v{font:640 clamp(26px,2.4vw,34px)/1 var(--serif);letter-spacing:-.02em;gap:10px;color:var(--ink)}
@@ -613,6 +619,7 @@
   </div></div>
   <div class="paneler">
   <div class="venstre">
+  <p class="naa gl" aria-live="off"><span class="naa-d">&nbsp;</span><b class="naa-k">&nbsp;</b></p>
   <section class="sted gl" aria-live="polite">
     <span class="mono s-t"><i class="s-dot"></i><span class="s-live">Live</span></span>
     <b class="s-navn">Finding him …</b>
@@ -1561,6 +1568,11 @@ $('.kartknapp').addEventListener('click', () => {
   if (på) { kart.dragging.enable(); kart.touchZoom.enable(); if (kart.hasLayer(meg)) kart.panTo(meg.getLatLng()); }
   else if (mobil) kart.dragging.disable();
 });
+// Dato og klokkeslett for ham, i Oslo-tid.
+const naaD = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', weekday: 'long', day: 'numeric', month: 'long' });
+const naaK = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+function tegnNaa() { const t = Date.now() + skew, d = naaD.format(t); $('.naa-d').textContent = d[0].toUpperCase() + d.slice(1); $('.naa-k').textContent = naaK.format(t).replace(/\./g, ':'); }
+tegnNaa(); setInterval(tegnNaa, 1000);
 // Øyet mot: været fra /chat/oyet (hvert 15. min) som tydelige ikoner, klokkeslettet regnes her og går hvert sekund.
 const SOL = '<g stroke="#f59e0b" stroke-width="3" stroke-linecap="round"><path d="M24 4v5M24 39v5M4 24h5M39 24h5M9.9 9.9l3.5 3.5M34.6 34.6l3.5 3.5M9.9 38.1l3.5-3.5M34.6 13.4l3.5-3.5"/></g><circle cx="24" cy="24" r="9" fill="#fbbf24"/>';
 const MANE = '<path d="M30 8a16 16 0 1 0 10 26A13 13 0 0 1 30 8z" fill="#fcd34d"/>';
