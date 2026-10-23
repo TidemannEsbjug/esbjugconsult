@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Podcast · Esbjug Consult</title>
+<meta name="description" content="Podcasten til Tidemann Esbjug. Alle episodene, rett i nettleseren.">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Podcast">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta property="og:title" content="Podcast · Esbjug Consult">
+<meta property="og:image" content="https://esbjugconsult.com/podcast/omslag.jpg">
+<link rel="apple-touch-icon" href="/podcast/ikon.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2300205B'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%23BA0C2F' stroke='%23fff' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preload" href="/media/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces.woff2) format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+  :root{--navy:#00205B;--red:#BA0C2F;--ink:#0b0b0f;--mute:#6b7080;--line:#e9ebf0;--soft:#f4f6fa;
+    --serif:"Fraunces",Georgia,serif;--sans:-apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;
+    --sb:env(safe-area-inset-bottom,0px);--st:env(safe-area-inset-top,0px)}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-text-size-adjust:100%}
+  img{-webkit-user-drag:none}
+  html,body{margin:0;background:#fff;color:var(--ink)}
+  body{font-family:var(--sans);-webkit-font-smoothing:antialiased;min-height:100svh}
+  button{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:pointer;touch-action:manipulation}
+  svg{display:block}
+  .wrap{max-width:640px;margin:0 auto;padding:calc(var(--st) + 22px) 18px calc(var(--sb) + 120px)}
+
+  /* Toppen: lite profilbilde, navn og «Spill alle». */
+  .topp{display:flex;align-items:center;gap:14px}
+  .topp img{width:52px;height:52px;border-radius:50%;object-fit:cover;flex:none;box-shadow:0 0 0 2px #fff,0 0 0 3.5px var(--navy)}
+  .topp .na{min-width:0}
+  .topp .ov{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+  .topp .nv{font-size:15px;font-weight:600;margin-top:2px}
+  h1{font-family:var(--serif);font-weight:600;font-size:44px;line-height:1;letter-spacing:-.02em;margin:26px 0 6px;color:var(--navy)}
+  .sub{color:var(--mute);font-size:15px;margin:0 0 20px}
+  .alle{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:56px;border-radius:16px;background:var(--navy);color:#fff;font-weight:650;font-size:17px;transition:transform .15s ease,opacity .15s}
+  .alle:active{transform:scale(.98);opacity:.9}
+  .alle svg{width:20px;height:20px}
+  .alle small{font-weight:500;opacity:.75;font-size:14px}
+
+  /* Episodelista */
+  .liste{list-style:none;margin:26px 0 0;padding:0}
+  .ep{display:flex;gap:14px;align-items:center;padding:16px 4px;border-top:1px solid var(--line);cursor:pointer;transition:background .15s}
+  .ep:last-child{border-bottom:1px solid var(--line)}
+  .ep:active{background:var(--soft)}
+  .ep .pk{position:relative;flex:none;width:48px;height:48px;border-radius:50%;background:var(--soft);color:var(--navy);display:grid;place-items:center}
+  .ep .pk svg.ik{width:20px;height:20px}
+  .ep .pk svg.ring{position:absolute;inset:0;width:48px;height:48px;transform:rotate(-90deg)}
+  .ep .pk .ring circle{fill:none;stroke-width:3}
+  .ep .pk .ring .bak{stroke:transparent}
+  .ep .pk .ring .fr{stroke:var(--red);stroke-linecap:round;transition:stroke-dashoffset .3s linear}
+  .ep.na .pk{background:var(--navy);color:#fff}
+  .ep .tx{min-width:0;flex:1}
+  .ep .me{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+  .ep .ti{font-size:17px;font-weight:650;line-height:1.25;margin:3px 0 4px}
+  .ep.na .ti{color:var(--navy)}
+  .ep .ig{font-size:14px;color:var(--mute);display:flex;align-items:center;gap:6px}
+  .ep .ig .hort{color:var(--navy);font-weight:600}
+  .ep .ny{display:inline-block;background:var(--red);color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.06em;padding:2px 6px;border-radius:5px;margin-left:6px;vertical-align:1px}
+  .bars{display:none;gap:2px;align-items:flex-end;height:12px}
+  .bars i{width:3px;background:var(--red);border-radius:1px;animation:bar .9s ease-in-out infinite}
+  .bars i:nth-child(2){animation-delay:-.3s}.bars i:nth-child(3){animation-delay:-.6s}
+  @keyframes bar{0%,100%{height:3px}50%{height:12px}}
+  .ep.spiller .bars{display:inline-flex}
+  .fot{color:var(--mute);font-size:13px;text-align:center;margin-top:28px}
+  .fot a{color:inherit}
+
+  /* Miniavspilleren nederst, som i podcastappene. Trykk åpner den store. */
+  .mini{position:fixed;left:10px;right:10px;bottom:calc(var(--sb) + 10px);max-width:620px;margin:0 auto;z-index:20;
+    display:flex;align-items:center;gap:12px;padding:10px 10px 10px 10px;border-radius:18px;cursor:pointer;
+    background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(24px) saturate(1.6);backdrop-filter:blur(24px) saturate(1.6);
+    box-shadow:0 10px 34px rgba(0,32,91,.18),0 0 0 1px rgba(0,32,91,.07);overflow:hidden;
+    transform:translateY(calc(100% + 30px));transition:transform .45s cubic-bezier(.2,.9,.2,1)}
+  .mini.vis{transform:none}
+  .mini img{width:44px;height:44px;border-radius:10px;object-fit:cover;flex:none}
+  .mini .mt{flex:1;min-width:0}
+  .mini .mt b{display:block;font-size:15px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mini .mt span{font-size:13px;color:var(--mute)}
+  .mini .kn{width:44px;height:44px;display:grid;place-items:center;border-radius:50%;color:var(--navy);flex:none}
+  .mini .kn:active{background:var(--soft)}
+  .mini .kn svg{width:26px;height:26px}
+  .mini .kn.sm svg{width:24px;height:24px}
+  .mini .lin{position:absolute;left:0;bottom:0;height:3px;background:var(--red);width:0}
+
+  /* Den store avspilleren: et ark som glir opp og kan dras ned igjen. */
+  .ark{position:fixed;inset:0;z-index:30;background:linear-gradient(180deg,#0a2d6e 0%,var(--navy) 45%,#001437 100%);color:#fff;
+    display:flex;flex-direction:column;padding:calc(var(--st) + 10px) 26px calc(var(--sb) + 26px);
+    transform:translateY(102%);transition:transform .45s cubic-bezier(.2,.9,.2,1);will-change:transform;touch-action:none}
+  .ark.apen{transform:none}
+  .ark.drar{transition:none}
+  .ark .in{width:100%;max-width:440px;margin:0 auto;display:flex;flex-direction:column;flex:1;min-height:0}
+  .hdl{display:flex;justify-content:center;padding:6px 0 14px;cursor:grab}
+  .hdl i{width:40px;height:5px;border-radius:3px;background:rgba(255,255,255,.35)}
+  .lukk{position:absolute;top:calc(var(--st) + 10px);left:14px;width:44px;height:44px;display:grid;place-items:center;border-radius:50%;color:rgba(255,255,255,.8)}
+  .lukk svg{width:26px;height:26px}
+  .kunst{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:14px 0 24px}
+  .kunst img{width:min(100%,46vh,380px);aspect-ratio:1;border-radius:20px;object-fit:cover;box-shadow:0 24px 60px rgba(0,0,0,.45);transition:transform .5s cubic-bezier(.2,1.4,.4,1)}
+  .ark:not(.spiller) .kunst img{transform:scale(.86)}
+  .ark .me{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+  .ark h2{font-family:var(--serif);font-weight:600;font-size:clamp(24px,7vw,30px);line-height:1.12;letter-spacing:-.01em;margin:6px 0 22px}
+
+  .skrubb{position:relative;height:36px;display:flex;align-items:center;cursor:pointer;touch-action:none}
+  .skrubb .sp{position:relative;width:100%;height:5px;border-radius:3px;background:rgba(255,255,255,.22);transition:height .15s}
+  .skrubb.aktiv .sp{height:9px}
+  .skrubb .fyll{position:absolute;left:0;top:0;bottom:0;border-radius:inherit;background:#fff}
+  .skrubb .last{position:absolute;left:0;top:0;bottom:0;border-radius:inherit;background:rgba(255,255,255,.2)}
+  .skrubb .kn{position:absolute;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.35);transition:transform .15s}
+  .skrubb.aktiv .kn{transform:scale(1.5)}
+  .tider{display:flex;justify-content:space-between;font-size:13px;font-variant-numeric:tabular-nums;color:rgba(255,255,255,.65);margin-top:2px}
+
+  .kontr{display:flex;align-items:center;justify-content:space-between;margin:20px 0 22px}
+  .kontr button{display:grid;place-items:center;border-radius:50%;color:#fff;transition:transform .12s,opacity .15s}
+  .kontr button:active{transform:scale(.9)}
+  .kontr button:disabled{opacity:.3}
+  .kontr .nx{width:48px;height:48px}.kontr .nx svg{width:28px;height:28px}
+  .kontr .sk{width:58px;height:58px}.kontr .sk svg{width:34px;height:34px}
+  .kontr .stor{width:78px;height:78px;background:#fff;color:var(--navy)}
+  .kontr .stor svg{width:34px;height:34px}
+  .bunn{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .fart{min-width:64px;height:36px;padding:0 12px;border-radius:18px;background:rgba(255,255,255,.14);font-weight:650;font-size:15px;font-variant-numeric:tabular-nums}
+  .neste{font-size:13px;color:rgba(255,255,255,.65);text-align:right;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .neste b{color:#fff;font-weight:600}
+
+  @media (min-width:700px){
+    .wrap{padding-top:56px}
+    h1{font-size:56px}
+    .ark{padding-top:40px}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topp">
+    <img src="/podcast/ikon.jpg" alt="Tidemann Esbjug" width="52" height="52">
+    <div class="na"><div class="ov">Esbjug Consult</div><div class="nv">Tidemann Esbjug</div></div>
+  </div>
+  <h1>Podcast</h1>
+  <p class="sub" id="sub"></p>
+  <button class="alle" id="alle" type="button"></button>
+  <ul class="liste" id="liste"></ul>
+  <p class="fot"><a href="/">esbjugconsult.com</a></p>
+</div>
+
+<div class="mini" id="mini" role="button" aria-label="Åpne avspilleren">
+  <img src="/podcast/ikon.jpg" alt="">
+  <div class="mt"><b id="mTi"></b><span id="mMe"></span></div>
+  <button class="kn" id="mPlay" type="button" aria-label="Spill"></button>
+  <button class="kn sm" id="mFrem" type="button" aria-label="30 sekunder frem"></button>
+  <div class="lin" id="mLin"></div>
+</div>
+
+<div class="ark" id="ark" aria-hidden="true">
+  <button class="lukk" id="lukk" type="button" aria-label="Lukk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+  <div class="in">
+    <div class="hdl" id="hdl"><i></i></div>
+    <div class="kunst" id="kunst"><img src="/podcast/omslag.jpg" alt=""></div>
+    <div class="me" id="aMe"></div>
+    <h2 id="aTi"></h2>
+    <div class="skrubb" id="skrubb" role="slider" aria-label="Posisjon" tabindex="0">
+      <div class="sp"><div class="last" id="last"></div><div class="fyll" id="fyll"></div><div class="kn" id="knott"></div></div>
+    </div>
+    <div class="tider"><span id="tNa">0:00</span><span id="tIgjen">-0:00</span></div>
+    <div class="kontr">
+      <button class="nx" id="forr" type="button" aria-label="Forrige episode"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM20 5.5v13a.5.5 0 0 1-.78.42L9.5 12.4a.5.5 0 0 1 0-.82l9.72-6.5A.5.5 0 0 1 20 5.5z"/></svg></button>
+      <button class="sk" id="bak" type="button" aria-label="15 sekunder tilbake"></button>
+      <button class="stor" id="aPlay" type="button" aria-label="Spill"></button>
+      <button class="sk" id="frem" type="button" aria-label="30 sekunder frem"></button>
+      <button class="nx" id="nest" type="button" aria-label="Neste episode"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2zM4 5.5v13a.5.5 0 0 0 .78.42l9.72-6.52a.5.5 0 0 0 0-.82L4.78 5.08A.5.5 0 0 0 4 5.5z"/></svg></button>
+    </div>
+    <div class="bunn">
+      <button class="fart" id="fart" type="button" aria-label="Avspillingsfart">1×</button>
+      <div class="neste" id="neste"></div>
+    </div>
+  </div>
+</div>
+
+<audio id="lyd" preload="none" playsinline></audio>
+
+<script>
+(() => {
+  // Episodene i rekkefølge. Lyden ligger i R2 og serveres fra /podcast/lyd/ (se .worker/index.js).
+  const EP = [
+    { n: 1, tittel: "Kunsten Å Plante Brennesle", dato: "2026-10-20", sek: 2801 },
+    { n: 2, tittel: "Sukkerspinn og TypeSafe Jev", dato: "2026-10-21", sek: 2928 },
+    { n: 3, tittel: "Max Ultracode Fyrstekake", dato: "2026-10-23", sek: 2141 },
+  ];
+  const lydUrl = (e) => `/podcast/lyd/ep${e.n}.m4a`;
+  const NY_DAGER = 7;
+
+  const I = {
+    play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.6v12.8a1 1 0 0 0 1.52.85l10.2-6.4a1 1 0 0 0 0-1.7L9.52 4.75A1 1 0 0 0 8 5.6z"/></svg>',
+    pause: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4.5" width="4.2" height="15" rx="1.2"/><rect x="13.8" y="4.5" width="4.2" height="15" rx="1.2"/></svg>',
+    bak: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 10.5A11 11 0 1 1 5 17"/><path d="M7.5 4.5v6h6"/><text x="16.5" y="21" font-size="9" font-weight="700" fill="currentColor" stroke="none" text-anchor="middle" font-family="-apple-system,Helvetica,Arial">15</text></svg>',
+    frem: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M24.5 10.5A11 11 0 1 0 27 17"/><path d="M24.5 4.5v6h-6"/><text x="15.5" y="21" font-size="9" font-weight="700" fill="currentColor" stroke="none" text-anchor="middle" font-family="-apple-system,Helvetica,Arial">30</text></svg>',
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const lyd = $("lyd");
+
+  // Lagret framdrift: posisjon per episode, hvilke som er hørt, siste episode og fart. Bare i denne nettleseren.
+  const LAGER = "esbjug_podcast";
+  let lager = { pos: {}, hort: {}, siste: 0, fart: 1 };
+  try { Object.assign(lager, JSON.parse(localStorage.getItem(LAGER) || "{}")); } catch {}
+  const lagre = () => { try { localStorage.setItem(LAGER, JSON.stringify(lager)); } catch {} };
+
+  let na = null;          // episoden som er lastet
+  let venterSok = null;   // posisjon å hoppe til når metadata er klar
+  let skrubber = false;
+
+  const tid = (s) => {
+    s = Math.max(0, Math.floor(s || 0));
+    const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = String(s % 60).padStart(2, "0");
+    return h ? `${h}:${String(m).padStart(2, "0")}:${x}` : `${m}:${x}`;
+  };
+  const min = (s) => {
+    const m = Math.max(1, Math.round(s / 60));
+    return m >= 60 ? `${Math.floor(m / 60)} t ${m % 60} min` : `${m} min`;
+  };
+  const dato = (d) => new Date(d + "T12:00:00").toLocaleDateString("nb-NO", { day: "numeric", month: "short" }).replace(".", "").replace(/\.$/, "");
+  const lengde = (e) => (na === e && isFinite(lyd.duration) && lyd.duration > 0 ? lyd.duration : e.sek);
+  const posFor = (e) => (na === e ? lyd.currentTime : lager.pos[e.n] || 0);
+  const spiller = () => na && !lyd.paused && !lyd.ended;
+
+  // ---- Lista ----
+  const liste = $("liste");
+  const total = EP.reduce((a, e) => a + e.sek, 0);
+  $("sub").textContent = `${EP.length} episoder · ${min(total)}`;
+  const C = 2 * Math.PI * 22.5;
+  EP.forEach((e) => {
+    const ny = (Date.now() - new Date(e.dato + "T00:00:00")) / 864e5 < NY_DAGER && e === EP[EP.length - 1];
+    const li = document.createElement("li");
+    li.className = "ep";
+    li.innerHTML = `<div class="pk"><svg class="ring" viewBox="0 0 48 48"><circle class="bak" cx="24" cy="24" r="22.5"/><circle class="fr" cx="24" cy="24" r="22.5" stroke-dasharray="${C}" stroke-dashoffset="${C}"/></svg><span class="ikn"></span></div>
+      <div class="tx"><div class="me">Episode ${e.n} · ${dato(e.dato)}${ny ? '<span class="ny">NY</span>' : ""}</div>
+      <div class="ti"></div><div class="ig"><span class="bars"><i></i><i></i><i></i></span><span class="rest"></span></div></div>`;
+    li.querySelector(".ti").textContent = e.tittel;
+    li.addEventListener("click", () => (na === e ? veksle() : spill(e)));
+    e.el = li;
+    liste.appendChild(li);
+  });
+
+  function tegnListe() {
+    EP.forEach((e) => {
+      const pos = posFor(e), len = lengde(e), aktiv = na === e;
+      e.el.classList.toggle("na", aktiv);
+      e.el.classList.toggle("spiller", aktiv && spiller());
+      e.el.querySelector(".ikn").innerHTML = aktiv && spiller() ? I.pause.replace("<svg", '<svg class="ik"') : I.play.replace("<svg", '<svg class="ik"');
+      const andel = lager.hort[e.n] && !aktiv ? 0 : Math.min(1, pos / len);
+      e.el.querySelector(".fr").style.strokeDashoffset = C * (1 - andel);
+      const rest = e.el.querySelector(".rest");
+      if (lager.hort[e.n] && !(aktiv && pos > 1)) rest.innerHTML = '<span class="hort">✓ Hørt</span> · ' + min(len);
+      else if (pos > 5) rest.textContent = `${min(len - pos)} igjen`;
+      else rest.textContent = min(len);
+    });
+    // «Spill alle»: fortsett der du slapp, ellers fra episode 1.
+    const fort = fortsettEp();
+    const alle = $("alle");
+    if (spiller()) alle.innerHTML = I.pause + `<span>Pause</span>`;
+    else if (fort && (posFor(fort) > 5 || fort.n > 1)) alle.innerHTML = I.play + `<span>Fortsett</span><small>Episode ${fort.n} · ${min(lengde(fort) - posFor(fort))} igjen</small>`;
+    else alle.innerHTML = I.play + `<span>Spill alle</span><small>fra episode 1</small>`;
+  }
+
+  // Episoden «Spill alle» fortsetter fra: den lastede, ellers den siste du hørte på (eller neste uhørte etter den).
+  function fortsettEp() {
+    if (na) return na;
+    const siste = EP.find((e) => e.n === lager.siste);
+    if (siste && !lager.hort[siste.n]) return siste;
+    if (siste) return EP[EP.indexOf(siste) + 1] || null;
+    return null;
+  }
+
+  $("alle").addEventListener("click", () => {
+    if (spiller()) return lyd.pause();
+    const e = fortsettEp() || EP[0];
+    na === e ? lyd.play().catch(() => {}) : spill(e);
+  });
+
+  // ---- Avspilling ----
+  function last(e, fra) {
+    na = e;
+    lager.siste = e.n;
+    lagre();
+    venterSok = fra > 0 ? fra : null;
+    lyd.src = lydUrl(e);
+    lyd.playbackRate = lager.fart;
+    lyd.load();
+    oppdaterMeta();
+    tegnAlt();
+  }
+  function spill(e, fra) {
+    if (fra == null) fra = lager.hort[e.n] ? 0 : lager.pos[e.n] || 0;
+    if (lengde(e) - fra < 10) fra = 0;
+    if (lager.hort[e.n] && fra === 0) delete lager.hort[e.n];
+    last(e, fra);
+    lyd.play().catch(() => {});
+    visMini();
+  }
+  function veksle() {
+    if (!na) return spill(fortsettEp() || EP[0]);
+    lyd.paused ? lyd.play().catch(() => {}) : lyd.pause();
+  }
+  function hopp(d) {
+    if (!na) return;
+    const len = lengde(na);
+    lyd.currentTime = Math.max(0, Math.min(len - 0.5, lyd.currentTime + d));
+    tegnTid();
+  }
+  function nabo(d) {
+    if (!na) return;
+    // Forrige: tilbake til start hvis mer enn 5 s er spilt, som i podcastappene.
+    if (d < 0 && lyd.currentTime > 5) { lyd.currentTime = 0; return; }
+    const e = EP[EP.indexOf(na) + d];
+    if (e) spill(e, 0);
+  }
+
+  lyd.addEventListener("loadedmetadata", () => {
+    if (venterSok != null) { try { lyd.currentTime = venterSok; } catch {} venterSok = null; }
+    tegnAlt();
+  });
+  ["play", "pause", "playing", "waiting"].forEach((t) => lyd.addEventListener(t, () => {
+    if (t === "pause") lagrePos();
+    if ("mediaSession" in navigator) navigator.mediaSession.playbackState = lyd.paused ? "paused" : "playing";
+    tegnAlt();
+  }));
+  let sistLagret = 0;
+  lyd.addEventListener("timeupdate", () => {
+    if (!skrubber) tegnTid();
+    if (Date.now() - sistLagret > 4000) lagrePos();
+  });
+  lyd.addEventListener("progress", tegnLast);
+  // Ferdig: merk som hørt og gå rett videre til neste episode.
+  lyd.addEventListener("ended", () => {
+    lager.hort[na.n] = 1;
+    delete lager.pos[na.n];
+    lagre();
+    const neste = EP[EP.indexOf(na) + 1];
+    if (neste) spill(neste, 0);
+    else tegnAlt();
+  });
+  function lagrePos() {
+    if (!na || venterSok != null) return;
+    sistLagret = Date.now();
+    const t = lyd.currentTime;
+    if (t > 1 && lengde(na) - t > 10) lager.pos[na.n] = Math.floor(t);
+    lagre();
+  }
+  addEventListener("pagehide", lagrePos);
+  document.addEventListener("visibilitychange", () => document.hidden && lagrePos());
+
+  // ---- Mini og ark ----
+  const mini = $("mini"), ark = $("ark");
+  $("mPlay").addEventListener("click", (ev) => { ev.stopPropagation(); veksle(); });
+  $("mFrem").innerHTML = I.frem;
+  $("mFrem").addEventListener("click", (ev) => { ev.stopPropagation(); hopp(30); });
+  mini.addEventListener("click", apneArk);
+  $("bak").innerHTML = I.bak;
+  $("frem").innerHTML = I.frem;
+  $("bak").addEventListener("click", () => hopp(-15));
+  $("frem").addEventListener("click", () => hopp(30));
+  $("aPlay").addEventListener("click", veksle);
+  $("forr").addEventListener("click", () => nabo(-1));
+  $("nest").addEventListener("click", () => nabo(1));
+  $("lukk").addEventListener("click", () => lukkArk());
+
+  const FART = [1, 1.25, 1.5, 1.75, 2, 0.8];
+  const fartTekst = (f) => String(f).replace(".", ",") + "×";
+  $("fart").textContent = fartTekst(lager.fart);
+  $("fart").addEventListener("click", () => {
+    lager.fart = FART[(FART.indexOf(lager.fart) + 1) % FART.length] || 1;
+    lyd.playbackRate = lager.fart;
+    $("fart").textContent = fartTekst(lager.fart);
+    lagre();
+    posisjonTilOS();
+  });
+
+  function visMini() { if (na) mini.classList.add("vis"); }
+  const tema = document.querySelector('meta[name="theme-color"]');
+  function apneArk() {
+    if (!na || ark.classList.contains("apen")) return;
+    ark.classList.add("apen");
+    ark.setAttribute("aria-hidden", "false");
+    tema.content = "#0a2d6e";
+    document.body.style.overflow = "hidden";
+    history.pushState({ ark: 1 }, "");
+  }
+  function lukkArk(fraHistorikk) {
+    if (!ark.classList.contains("apen")) return;
+    ark.classList.remove("apen");
+    ark.style.transform = "";
+    ark.setAttribute("aria-hidden", "true");
+    tema.content = "#ffffff";
+    document.body.style.overflow = "";
+    if (!fraHistorikk && history.state && history.state.ark) history.back();
+  }
+  addEventListener("popstate", () => lukkArk(true));
+
+  // Dra arket ned for å lukke (fra håndtaket, bildet eller tittelen).
+  (() => {
+    let y0 = null, dy = 0, t0 = 0;
+    const start = (ev) => {
+      if (ev.target.closest("button,.skrubb")) return;
+      y0 = ev.clientY; dy = 0; t0 = performance.now();
+      ark.classList.add("drar");
+    };
+    ark.addEventListener("pointerdown", start);
+    addEventListener("pointermove", (ev) => {
+      if (y0 == null) return;
+      dy = Math.max(0, ev.clientY - y0);
+      ark.style.transform = `translateY(${dy}px)`;
+    });
+    const slutt = () => {
+      if (y0 == null) return;
+      ark.classList.remove("drar");
+      const fart = dy / Math.max(1, performance.now() - t0);
+      y0 = null;
+      if (dy > 140 || (dy > 30 && fart > 0.6)) lukkArk();
+      else ark.style.transform = "";
+    };
+    addEventListener("pointerup", slutt);
+    addEventListener("pointercancel", slutt);
+  })();
+
+  // Skrubbelinja: dra eller trykk hvor som helst på den. Tiden følger fingeren, lyden hopper når du slipper.
+  (() => {
+    const s = $("skrubb");
+    let andel = 0;
+    const fra = (ev) => {
+      const r = s.getBoundingClientRect();
+      andel = Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width));
+      tegnTid(andel * lengde(na));
+    };
+    s.addEventListener("pointerdown", (ev) => {
+      if (!na) return;
+      skrubber = true;
+      s.classList.add("aktiv");
+      s.setPointerCapture(ev.pointerId);
+      fra(ev);
+    });
+    s.addEventListener("pointermove", (ev) => skrubber && fra(ev));
+    const slipp = () => {
+      if (!skrubber) return;
+      skrubber = false;
+      s.classList.remove("aktiv");
+      const t = andel * lengde(na);
+      if (venterSok != null) venterSok = t; else lyd.currentTime = t;
+      tegnTid();
+      lagrePos();
+    };
+    s.addEventListener("pointerup", slipp);
+    s.addEventListener("pointercancel", slipp);
+    s.addEventListener("keydown", (ev) => {
+      if (ev.key === "ArrowLeft") { hopp(-15); ev.preventDefault(); }
+      if (ev.key === "ArrowRight") { hopp(30); ev.preventDefault(); }
+    });
+  })();
+
+  addEventListener("keydown", (ev) => {
+    if (ev.target.closest && ev.target.closest("input,textarea")) return;
+    if (ev.code === "Space") { ev.preventDefault(); veksle(); }
+    if (ev.key === "Escape") lukkArk();
+  });
+
+  // ---- Tegning ----
+  function tegnTid(vist) {
+    if (!na) return;
+    const len = lengde(na);
+    const t = vist != null ? vist : venterSok != null ? venterSok : lyd.currentTime;
+    const p = Math.min(100, (t / len) * 100);
+    $("fyll").style.width = p + "%";
+    $("knott").style.left = p + "%";
+    $("mLin").style.width = p + "%";
+    $("tNa").textContent = tid(t);
+    $("tIgjen").textContent = "-" + tid((len - t) / (lyd.playbackRate || 1));
+    $("skrubb").setAttribute("aria-valuetext", `${tid(t)} av ${tid(len)}`);
+    if (Math.floor(t) % 5 === 0 || vist != null) tegnListe();
+    posisjonTilOS();
+  }
+  function tegnLast() {
+    if (!na || !lyd.buffered.length) return;
+    const len = lengde(na);
+    let slutt = 0;
+    for (let i = 0; i < lyd.buffered.length; i++) if (lyd.buffered.start(i) <= lyd.currentTime + 1) slutt = Math.max(slutt, lyd.buffered.end(i));
+    $("last").style.width = Math.min(100, (slutt / len) * 100) + "%";
+  }
+  function tegnAlt() {
+    if (na) {
+      const s = spiller();
+      $("mTi").textContent = na.tittel;
+      $("mMe").textContent = `Episode ${na.n}`;
+      $("mPlay").innerHTML = s ? I.pause : I.play;
+      $("mPlay").setAttribute("aria-label", s ? "Pause" : "Spill");
+      $("aPlay").innerHTML = s ? I.pause : I.play;
+      $("aPlay").setAttribute("aria-label", s ? "Pause" : "Spill");
+      $("aMe").textContent = `Episode ${na.n} · ${dato(na.dato)}`;
+      $("aTi").textContent = na.tittel;
+      ark.classList.toggle("spiller", s);
+      const i = EP.indexOf(na), neste = EP[i + 1];
+      $("nest").disabled = !neste;
+      $("neste").innerHTML = neste ? `Neste: <b></b>` : "Siste episode";
+      if (neste) $("neste").querySelector("b").textContent = neste.tittel;
+      tegnTid();
+      tegnLast();
+    }
+    tegnListe();
+  }
+
+  // ---- Låseskjerm, Kontrollsenter og hodetelefonknapper ----
+  function oppdaterMeta() {
+    if (!("mediaSession" in navigator) || !na) return;
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: na.tittel,
+      artist: "Tidemann Esbjug",
+      album: `Esbjug Podcast · Episode ${na.n}`,
+      artwork: [{ src: "/podcast/omslag.jpg", sizes: "512x512", type: "image/jpeg" }],
+    });
+  }
+  let sistOS = 0;
+  function posisjonTilOS() {
+    if (!("mediaSession" in navigator) || !navigator.mediaSession.setPositionState || !na) return;
+    if (Date.now() - sistOS < 1000) return;
+    sistOS = Date.now();
+    const len = lengde(na);
+    try { navigator.mediaSession.setPositionState({ duration: len, playbackRate: lyd.playbackRate || 1, position: Math.min(len, lyd.currentTime) }); } catch {}
+  }
+  if ("mediaSession" in navigator) {
+    const ms = navigator.mediaSession;
+    const h = (a, f) => { try { ms.setActionHandler(a, f); } catch {} };
+    h("play", () => lyd.play());
+    h("pause", () => lyd.pause());
+    h("seekbackward", (d) => hopp(-(d.seekOffset || 15)));
+    h("seekforward", (d) => hopp(d.seekOffset || 30));
+    h("seekto", (d) => { lyd.currentTime = d.seekTime; tegnTid(); });
+  }
+
+  // Lenke rett til en episode: /podcast/#3 lastes klar (nettleseren tillater ikke autospill).
+  const fraLenke = EP.find((e) => "#" + e.n === location.hash);
+  if (fraLenke) { last(fraLenke, lager.pos[fraLenke.n] || 0); visMini(); }
+  else if (lager.siste && fortsettEp()) { last(fortsettEp(), lager.hort[fortsettEp().n] ? 0 : lager.pos[fortsettEp().n] || 0); visMini(); }
+  tegnAlt();
+})();
+</script>
+</body>
+</html>

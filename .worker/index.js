@@ -16,6 +16,8 @@ export default {
       return Response.redirect(url.toString(), 301);
     }
     if (url.pathname.startsWith("/chat/")) return handleChat(request, env, url);
+    // Podcastepisodene ligger i R2 (FILES, nøkkel podcast/<fil>), ikke i dette offentlige repoet.
+    if (url.pathname.startsWith("/podcast/lyd/")) return podcastLyd(request, env, url.pathname.slice("/podcast/lyd/".length));
     // Klart: prøveperiode, kjøp og aktiveringskoder (klart.js). /GDPR/api/ og /GDPR/last-ned/ virker
     // fortsatt, fordi Stripe-webhooken og eldre versjoner av appen bruker dem.
     if (/^\/(klart|GDPR)\/api\//.test(url.pathname)) return handleKlart(request, env, url);
@@ -59,3 +61,21 @@ export default {
     return env.ASSETS.fetch(request);
   },
 };
+
+// En episode fra R2 med Range-støtte, så spoling virker (Safari krever det for lyd).
+async function podcastLyd(request, env, fil) {
+  if (!/^ep\d{1,3}\.m4a$/.test(fil)) return new Response("Not found", { status: 404 });
+  const range = request.headers.get("Range");
+  const obj = await env.FILES.get("podcast/" + fil, range ? { range: request.headers } : {});
+  if (!obj) return new Response("Not found", { status: 404 });
+  const headers = new Headers({ "content-type": "audio/mp4", "accept-ranges": "bytes", etag: obj.httpEtag, "cache-control": "public, max-age=86400" });
+  if (range && obj.range) {
+    const start = obj.range.offset ?? 0;
+    const len = obj.range.length ?? obj.size - start;
+    headers.set("content-range", `bytes ${start}-${start + len - 1}/${obj.size}`);
+    headers.set("content-length", String(len));
+    return new Response(request.method === "HEAD" ? null : obj.body, { status: 206, headers });
+  }
+  headers.set("content-length", String(obj.size));
+  return new Response(request.method === "HEAD" ? null : obj.body, { headers });
+}
