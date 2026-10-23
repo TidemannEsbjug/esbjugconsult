@@ -47,7 +47,7 @@ T = [
     ('>Siden april 2026<', '>Since April 2026<'),
     ('aria-label="Skjult"', 'aria-label="Hidden"'),
     ('Enkel konsultasjon i liten skala', 'Simple consulting on a small scale'),
-    ('Markedsføringsstrategi og restrukturering', 'Marketing strategy and restructuring'),
+    ('Markedsføring og Webutvikling', 'Marketing and Web Development'),
     ('alt="Laks som hopper, tegnet i gult og svart"', 'alt="A leaping salmon, drawn in yellow and black"'),
     ('Sammen har vi allerede gjort spennende fremskritt, i stor grad ved hjelp av analyse fra Claude Code.',
      'Together we have already made exciting progress, largely thanks to analysis from Claude Code.'),
