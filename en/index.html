@@ -500,7 +500,9 @@
   #kart .maplibregl-ctrl-attrib a{color:rgba(246,231,210,.65)}
   #kart .maplibregl-ctrl-attrib-button{filter:invert(1) opacity(.6)}
   /* I kartmodus eier kartet alle berøringer, så nettleseren ikke zoomer eller ruller siden. */
-  .kartmodus #kart,.kartmodus #kart *{touch-action:none}
+  .kartmodus #kart,.kartmodus #kart *,.hero.kartmodus{touch-action:none}
+  /* Hintet «Bruk to fingre …» i kartets egne farger. */
+  #kart .maplibregl-cooperative-gesture-screen{background:rgba(28,15,7,.55);color:#f6e7d2;font:italic 400 18px/1.3 var(--serif);padding:0 24px}
   .hero-i{z-index:2;pointer-events:none}
   .hero-i .flyt,.hero-i .gl{pointer-events:auto}
   .spor-glod{filter:blur(6px)}
@@ -1425,10 +1427,15 @@ function leggKart() {
   stil.then(st => {
     const midt = live ? [live.lon, live.lat] : [10.7522, 59.9139];
     kart = new maplibregl.Map({ container: 'kart', style: st, center: midt, zoom: live ? 14 : 12, attributionControl: { compact: true },
-      dragRotate: false, pitchWithRotate: false, touchPitch: false, scrollZoom: false, fadeDuration: 0 });
+      dragRotate: false, pitchWithRotate: false, touchPitch: false, scrollZoom: false, fadeDuration: 0,
+      // Mobil utenfor kartmodus: én finger ruller siden, to fingre flytter og zoomer kartet (så nettleseren aldri
+      // zoomer siden når man kniper på kartet). I kartmodus slås dette av og kartet tar alt.
+      cooperativeGestures: mobil,
+      locale: { 'CooperativeGesturesHandler.MobileHelpText': EN ? 'Use two fingers to move the map' : 'Bruk to fingre for å flytte kartet',
+        'CooperativeGesturesHandler.WindowsHelpText': EN ? 'Use Ctrl + scroll to zoom the map' : 'Bruk Ctrl + rulling for å zoome kartet',
+        'CooperativeGesturesHandler.MacHelpText': EN ? 'Use ⌘ + scroll to zoom the map' : 'Bruk ⌘ + rulling for å zoome kartet' } });
     forste = !live;
     kart.touchZoomRotate.disableRotation();
-    if (mobil) { kart.dragPan.disable(); kart.touchZoomRotate.disable(); }
     kart.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-left');
     kart.on('load', () => {
       kart.addSource('spor', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
@@ -1691,12 +1698,14 @@ function kartmodus(på) {
   document.documentElement.classList.toggle('kartmodus', på);
   hero.classList.toggle('kartmodus', på);
   $('.kartknapp').setAttribute('aria-pressed', på); $('.kartknapp').setAttribute('aria-label', på ? TX.visPanel : TX.visKart);
-  if (kart) { if (på) { kart.dragPan.enable(); kart.touchZoomRotate.enable(); kart.touchZoomRotate.disableRotation(); } else if (mobil) { kart.dragPan.disable(); kart.touchZoomRotate.disable(); } }
+  if (kart && mobil) { if (på) kart.cooperativeGestures.disable(); else kart.cooperativeGestures.enable(); }
   if (!på) scrollTo(0, rulleFor);
   requestAnimationFrame(() => { if (!kart) return; kart.resize(); if (på && megMark && megMark._map) kart.jumpTo({ center: megMark.getLngLat() }); });
 }
 $('.kartknapp').addEventListener('click', () => kartmodus(!document.documentElement.classList.contains('kartmodus')));
 addEventListener('keydown', e => { if (e.key === 'Escape') kartmodus(false); });
+// Safari på iPhone zoomer hele siden med sine egne «gesture»-hendelser; i kartmodus stoppes de, så kniping bare zoomer kartet.
+for (const t of ['gesturestart', 'gesturechange']) document.addEventListener(t, e => { if (document.documentElement.classList.contains('kartmodus')) e.preventDefault(); }, { passive: false });
 // Dato og klokkeslett for ham, i Oslo-tid.
 const naaD = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', weekday: 'long', day: 'numeric', month: 'long' });
 const naaK = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', hour: '2-digit', minute: '2-digit', second: '2-digit' });
