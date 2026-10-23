@@ -548,6 +548,14 @@ export class ChatHub {
         this.sql.exec(`DELETE FROM kv WHERE k='notat'`);
       }
     }
+    // Endringer over tid til avspillingen: «holder på med» (gjor), status og postene (hele lista etter hver endring). 35 dager.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS logg (ts INTEGER, k TEXT, v TEXT)`);
+    this.sql.exec(`CREATE INDEX IF NOT EXISTS logg_k_ts ON logg (k, ts)`);
+    if (!this.sql.exec(`SELECT 1 FROM logg LIMIT 1`).toArray().length) {   // første gang: dagens tilstand som utgangspunkt
+      const nå = Date.now();
+      for (const [k, v] of [["gjor", this.setting("gjor") || ""], ["status", this.setting("status") || "available"], ["notater", JSON.stringify(this.notater(20))]])
+        this.sql.exec(`INSERT INTO logg (ts, k, v) VALUES (?, ?, ?)`, nå, k, v);
+    }
     // Målingene over tid til avspillingen: hver enhet høyst én rad i minuttet, bare feltene panelene viser. 35 dager.
     this.sql.exec(`CREATE TABLE IF NOT EXISTS telelogg (kilde TEXT, ts INTEGER, d TEXT, PRIMARY KEY (kilde, ts))`);
     // Rom hjemme: eksempler på hva iPhonen hører i hvert rom (styrken fra hvert fyr, dBm) og høyden over fyr 1 (m).
@@ -1115,19 +1123,23 @@ export class ChatHub {
         // Posts on the front page: new, edit (the time stays), delete. Every app gets the whole list back.
         this.sql.exec(`INSERT INTO notater (v, ts) VALUES (?, ?)`, m.v.trim().slice(0, 600), Date.now());
         this.toOwners({ t: "notater", notater: this.notater() });
+        this.loggFor("notater", JSON.stringify(this.notater(20)));
       } else if (m.t === "endrenotat" && Number.isInteger(m.id) && typeof m.v === "string" && m.v.trim()) {
         this.sql.exec(`UPDATE notater SET v=? WHERE id=?`, m.v.trim().slice(0, 600), m.id);
         this.toOwners({ t: "notater", notater: this.notater() });
+        this.loggFor("notater", JSON.stringify(this.notater(20)));
       } else if (m.t === "slettnotat" && Number.isInteger(m.id)) {
         this.sql.exec(`DELETE FROM notater WHERE id=?`, m.id);
         this.toOwners({ t: "notater", notater: this.notater() });
+        this.loggFor("notater", JSON.stringify(this.notater(20)));
       } else if (m.t === "setgjor" && ["", "jobber", "trener"].includes(m.v)) {
         // What he is doing, shown on the map page: Jobber, Trener (or nothing). Sleeping is the status, not this.
         this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('gjor', ?)`, m.v);
         this.toOwners({ t: "gjor", v: m.v });
+        this.loggFor("gjor", m.v);
       } else if (m.t === "setstatus" && ["available", "meeting", "sleeping"].includes(m.v)) {
         // Asleep: «Holder på med» goes away (the night layer already says he sleeps).
-        if (m.v === "sleeping") { this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('gjor', '')`); this.toOwners({ t: "gjor", v: "" }); }
+        if (m.v === "sleeping") { this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('gjor', '')`); this.toOwners({ t: "gjor", v: "" }); this.loggFor("gjor", ""); }
         this.sql.exec(`DELETE FROM kv WHERE k='autoSlept'`);
         this.setStatus(m.v);
       } else if (m.t === "setnotify" && typeof m.v === "boolean") {
@@ -1408,7 +1420,10 @@ export class ChatHub {
     const v = { dag, start, slutt, trail: this.sporFra(this.sql.exec(`SELECT ts, lat, lon FROM pos WHERE ts >= ? AND ts < ? ORDER BY ts`, start, slutt).toArray()),
       // Pulsen som snitt per 15 s, og målingene fra telefonene og klokka (én per minutt).
       hr: this.sql.exec(`SELECT CAST(ts / 15000 AS INTEGER) * 15000 AS t, CAST(ROUND(AVG(bpm)) AS INTEGER) AS b FROM hr WHERE ts >= ? AND ts < ? GROUP BY 1 ORDER BY 1`, start, slutt).toArray().map((r) => [r.t, r.b]),
-      tele: this.sql.exec(`SELECT kilde, ts, d FROM telelogg WHERE ts >= ? AND ts < ? ORDER BY ts`, start, slutt).toArray().map((r) => [r.ts, r.kilde, JSON.parse(r.d)]) };
+      tele: this.sql.exec(`SELECT kilde, ts, d FROM telelogg WHERE ts >= ? AND ts < ? ORDER BY ts`, start, slutt).toArray().map((r) => [r.ts, r.kilde, JSON.parse(r.d)]),
+      // Endringene den dagen, med tilstanden ved midnatt først (siste endring før dagen begynte).
+      logg: [...["gjor", "status", "notater"].flatMap((k) => this.sql.exec(`SELECT ts, k, v FROM logg WHERE k=? AND ts < ? ORDER BY ts DESC LIMIT 1`, k, start).toArray()),
+        ...this.sql.exec(`SELECT ts, k, v FROM logg WHERE ts >= ? AND ts < ? ORDER BY ts`, start, slutt).toArray()].sort((a, b) => a.ts - b.ts).map((r) => [r.ts, r.k, r.v]) };
     if (this.histMemo.size > 40) this.histMemo.clear();
     this.histMemo.set(dag, { at: Date.now(), v });
     return v;
@@ -1589,10 +1604,17 @@ export class ChatHub {
   // «Sover» husker når han la seg (sovnet), så siden kan si hvor lenge han har sovet.
   setStatus(v) {
     if (v === "sleeping" && this.status() !== "sleeping") this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('sovnet', ?)`, String(Date.now()));
+    if (v !== this.status()) this.loggFor("status", v);
     this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('status', ?)`, v);
     const sovnet = this.sovnet();
     this.toVisitors({ t: "status", v, sovnet });
     this.toOwners({ t: "status", v, status: v });
+  }
+
+  loggFor(k, v) {
+    const now = Date.now();
+    this.sql.exec(`INSERT INTO logg (ts, k, v) VALUES (?, ?, ?)`, now, k, v);
+    if (now - (this.loggPruned || 0) > 3600e3) { this.loggPruned = now; this.sql.exec(`DELETE FROM logg WHERE ts < ?`, now - 35 * 864e5); }
   }
 
   sovnet() {
@@ -1610,6 +1632,7 @@ export class ChatHub {
     this.sql.exec(`DELETE FROM kv WHERE k='autoSlept'`);
     this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('gjor', 'jobber')`);
     this.toOwners({ t: "gjor", v: "jobber" });
+    this.loggFor("gjor", "jobber");
     this.setStatus("available");
   }
 

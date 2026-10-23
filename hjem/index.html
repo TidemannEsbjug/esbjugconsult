@@ -562,7 +562,7 @@
   .s-t{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.14em;color:rgba(0,32,91,.7)}
   .s-dot{width:8px;height:8px;border-radius:50%;background:#e0233c;animation:sDot 1.8s ease-out infinite}
   @keyframes sDot{0%{box-shadow:0 0 0 0 rgba(224,35,60,.55)}70%,100%{box-shadow:0 0 0 8px rgba(224,35,60,0)}}
-  .gammel .s-dot{background:#8a8fa3;animation:none}
+  .gammel .s-dot,.i-replay .s-dot{background:#8a8fa3;animation:none}
   .s-navn{font:italic 500 clamp(24px,2.6vw,36px)/1.05 var(--serif);letter-spacing:-.015em;color:var(--ink)}
   .s-sub{font-size:14px;font-weight:500;color:rgba(0,32,91,.75)}
   /* Le og kast tomat: felles tellere for alle som ser på. Tomaten flyr i en bue og splatter på kortet. */
@@ -1566,6 +1566,10 @@ function leggKart() {
       kart.addLayer({ id: 'spor-midt', type: 'line', source: 'spor', layout: linje, paint: { 'line-color': '#FFD23F', 'line-width': 6, 'line-blur': 1, 'line-opacity': .75 } });
       kart.addLayer({ id: 'spor-kjerne', type: 'line', source: 'spor', layout: linje, paint: { 'line-color': '#ffffff', 'line-width': 2, 'line-opacity': .9 } });
       kart.addLayer({ id: 'spor-strom', type: 'line', source: 'spor', layout: { 'line-cap': 'butt', 'line-join': 'round' }, paint: { 'line-color': '#fff7c2', 'line-width': 3.5, 'line-dasharray': [0, 4, 3] } });
+      // Prikken under avspilling tegnes i kartet selv (ikke som HTML over det), så den aldri henger etter kameraet.
+      kart.addSource('avsp-prikk', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+      kart.addLayer({ id: 'avsp-glod', type: 'circle', source: 'avsp-prikk', paint: { 'circle-radius': 22, 'circle-color': '#FFD23F', 'circle-opacity': .35, 'circle-blur': 1 } });
+      kart.addLayer({ id: 'avsp-prikk', type: 'circle', source: 'avsp-prikk', paint: { 'circle-radius': 7, 'circle-color': '#FFD23F', 'circle-stroke-color': '#fff8dc', 'circle-stroke-width': 3 } });
       const el = document.createElement('div'); el.innerHTML = '<div class="meg"></div>';
       megMark = new maplibregl.Marker({ element: el }).setLngLat(midt);
       tegn();
@@ -1627,7 +1631,8 @@ function tegn() {
   // Posisjonen kommer bare når han flytter seg; telefonen sender ellers hvert 5. s, så den teller som livstegn.
   const alder = nå - Math.max(live.ts, i.ts || 0), gammel = alder > 10 * 60e3;
   document.body.classList.toggle('gammel', gammel);
-  $('.s-live').textContent = gammel ? TX.sistSett + tid(alder) + TX.siden : TX.live + tid(alder) + TX.siden;
+  // Under avspilling: tiden som spilles, ikke «Live».
+  $('.s-live').textContent = avsp ? 'Replay · ' + kl.format(nå) : gammel ? TX.sistSett + tid(alder) + TX.siden : TX.live + tid(alder) + TX.siden;
   $('.s-navn').classList.toggle('kjent', !!live.kjent);
   $('.kast').hidden = live.kjent !== 'hjemme hos moren sin';   // tomater bare hjemme hos moren hans
   $('.s-navn').textContent = live.kjent ? (TX.kjent[live.kjent] || 'Tidemann er ' + live.kjent) : st && st.by ? [st.strok, st.by].filter(Boolean).join(', ') + (st.kode && st.kode !== 'NO' ? ', ' + st.land : '') : TX.jorda;
@@ -1913,9 +1918,9 @@ if (HUS) setTimeout(function lagAvspiller() {
   async function last(dag) {
     if (avsp && avsp.dag === dag) return;
     const j = await (await fetch('/chat/historikk?dag=' + dag)).json();
-    avsp = { dag, pts: j.trail || [], hr: j.hr || [], tele: j.tele || [], t0: j.start, t1: Math.min(j.slutt, Date.now()), k: 0, spiller: false, sist: 0, tung: 0, sted: tele.sted };
+    avsp = { dag, pts: j.trail || [], hr: j.hr || [], tele: j.tele || [], logg: j.logg || [], hopp: true, t0: j.start, t1: Math.min(j.slutt, Date.now()), k: 0, spiller: false, sist: 0, tung: 0, sted: tele.sted };
     avsp.med = avsp.pts.filter(Boolean);
-    window.__avsp = true;
+    window.__avsp = true; document.body.classList.add('i-replay');
     trykket(dag);
   }
   const Tav = k => avsp.t0 + k * (avsp.t1 - avsp.t0);
@@ -1944,9 +1949,18 @@ if (HUS) setTimeout(function lagAvspiller() {
     const T = Tav(avsp.k), g = glatt(T);
     skew = T - Date.now();
     if (g) {
-      const ll = [g[1], g[0]], hjemme = plan && plan.geo && plan.geo.buss && påTomta(g);
-      if (!hjemme) megMark.setLngLat(ll);
-      if (følg) kart.jumpTo({ center: hjemme ? megMark.getLngLat() : ll });
+      // Prikken dempes mot målet (halvparten av avstanden på ca. 0,1 s), så små rykk i sporet glattes ut. Etter et
+      // hopp i tid (glidebryter, dag, søk) står den rett på plass med en gang.
+      const hjemme = plan && plan.geo && plan.geo.buss && påTomta(g), mål = hjemme ? (() => { const h = husNå(); return h ? [h.pos[1], h.pos[0]] : g; })() : g;
+      const nå = performance.now(), dt = Math.min(200, nå - (avsp.vt || nå));
+      avsp.vt = nå;
+      if (!avsp.vp || avsp.hopp || dist(avsp.vp, mål) > 300) avsp.vp = mål.slice();
+      else { const a = 1 - Math.exp(-dt / 140); avsp.vp = [avsp.vp[0] + (mål[0] - avsp.vp[0]) * a, avsp.vp[1] + (mål[1] - avsp.vp[1]) * a]; }
+      avsp.hopp = false;
+      const ll = [avsp.vp[1], avsp.vp[0]];
+      kart.getSource('avsp-prikk')?.setData({ type: 'Feature', geometry: { type: 'Point', coordinates: ll } });
+      megMark.getElement().style.visibility = 'hidden';
+      if (følg) kart.jumpTo({ center: ll });
     }
     if (bareprikk) return;
     const del = [];
@@ -1959,6 +1973,13 @@ if (HUS) setTimeout(function lagAvspiller() {
     puls = (finPuls(T) || avsp.hr).filter(x => x[0] > T - 5 * 60e3 && x[0] <= T);
     const sist = puls[puls.length - 1];
     hrTop.avsp(sist && T - sist[0] < 60e3 ? sist[1] : null);
+    // Det som sto på siden da: «holder på med» og postene. Uten logg fra før (loggen starter 23.10.) vises postene som
+    // var skrevet før T.
+    const da = {};
+    for (const [ts, k, v] of avsp.logg) { if (ts > T) break; da[k] = v; }
+    gjor(da.gjor ?? '');
+    let pst = null; try { pst = da.notater ? JSON.parse(da.notater) : null; } catch {}
+    settPoster(pst || nåNotater.filter(x => x.ts <= T));
     tegn(); tegnPuls(); tegnNaa();
     kl2.textContent = ukedag.format(T) + ' ' + klS.format(T);
     tid.value = Math.round(avsp.k * 10000);
@@ -1976,12 +1997,12 @@ if (HUS) setTimeout(function lagAvspiller() {
   // Hopp til et øyeblikk: last dagen, still tiden, fly kartet dit og spill videre i sanntid.
   async function til(o) {
     await last(dagNr.format(o.ts)); stopp();
-    vis((o.ts - avsp.t0) / (avsp.t1 - avsp.t0));
+    avsp.hopp = true; vis((o.ts - avsp.t0) / (avsp.t1 - avsp.t0));
     if (live) kart.easeTo({ center: [live.lon, live.lat], zoom: Math.max(kart.getZoom(), 16), duration: 900 });
     fortell(o.tekst);
     start();
   }
-  function gåLive() { avsp = null; window.__avsp = false; stopp(); trykket(null); kl2.textContent = '–'; fortell(''); sistSpor = ''; forste = true; hent(); }
+  function gåLive() { kart.getSource('avsp-prikk')?.setData({ type: 'FeatureCollection', features: [] }); megMark.getElement().style.visibility = ''; document.body.classList.remove('i-replay'); avsp = null; window.__avsp = false; stopp(); trykket(null); kl2.textContent = '–'; fortell(''); sistSpor = ''; forste = true; hent(); }
   spill.onclick = () => { if (!avsp) return; if (avsp.spiller) stopp(); else { if (avsp.k >= 1) avsp.k = 0; start(); } };
   // Farten: en egen glidebryter (som på YouTube) fra 1× til 60×, jevnt fordelt på en logaritmisk skala.
   const fartvalg = q('.h-fartvalg'), fs = q('.h-fs');
@@ -1996,7 +2017,7 @@ if (HUS) setTimeout(function lagAvspiller() {
     if (dag < dato.min || dag > dato.max) return;
     const spilte = avsp && avsp.spiller; stopp();
     await last(dag);
-    vis(T != null ? (T - avsp.t0) / (avsp.t1 - avsp.t0) : 0);
+    avsp.hopp = true; vis(T != null ? (T - avsp.t0) / (avsp.t1 - avsp.t0) : 0);
     if (live) kart.easeTo({ center: [live.lon, live.lat], duration: 700 });
     if (spilte) start();
   };
@@ -2004,7 +2025,7 @@ if (HUS) setTimeout(function lagAvspiller() {
   q('.h-forr').onclick = () => skift(-1); q('.h-neste').onclick = () => skift(1);
   dato.onchange = () => { if (dato.value) nyDag(dato.value, avsp ? osloMidnatt(dato.value) + (Tav(avsp.k) - avsp.t0) : null); };
   q('.h-kal').onclick = e => { e.preventDefault(); try { dato.showPicker(); } catch { dato.focus(); } };
-  tid.oninput = () => { if (avsp) vis(tid.value / 10000); };
+  tid.oninput = () => { if (avsp) { avsp.hopp = true; vis(tid.value / 10000); } };
   q('.h-sok').onsubmit = async e => {
     e.preventDefault();
     const inp = q('.h-sok input'), sp = inp.value.trim(); if (!sp) return;
@@ -2069,6 +2090,7 @@ function gjor(v) { const e = $('.gjor'); e.hidden = !GJOR[v]; if (GJOR[v]) $('.g
 const kl = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', hour: '2-digit', minute: '2-digit' }), dag = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', day: 'numeric', month: 'long' }), dagNr = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Oslo' });
 // Postene som en bunke: alle kortene står i siden, og et trykk endrer bare hvilket lag de er i, så de glir rolig
 // på plass. Høyden følger det øverste kortet (de bakre får samme høyde, så bare kantene stikker ut).
+let nåNotater = [];   // postene slik de er nå (avspillingen viser dem som var skrevet før tiden den står på)
 let poster = [], kort = [], toppPost = 0, posterNokkel = '';
 const KANT = 14;
 const naturlig = c => { const h = c.style.height; c.style.height = 'auto'; const x = c.offsetHeight; c.style.height = h; return x; };
@@ -2257,7 +2279,7 @@ addEventListener('resize', () => { if (!bvp.hidden) bvTegn(); });
 setInterval(() => { if (!bvp.hidden && !document.hidden) { if (bvR === 'fin') bvLast(); else bvTegn(); } }, 5000);
 async function hent() {
   if (window.__avsp) return;   // under avspilling står tiden stille på den valgte dagen
-  try { const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json(); skew = j.now - Date.now(); live = j.live; rom = j.rom || null; trail = j.trail || []; tele = j.tele || {}; if (j.puls) puls = j.puls; tegnPuls(); if (j.kast) nyeKast(j.kast); gjor(j.gjor); settPoster(j.notater); } catch {}
+  try { const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json(); skew = j.now - Date.now(); live = j.live; rom = j.rom || null; trail = j.trail || []; tele = j.tele || {}; if (j.puls) puls = j.puls; tegnPuls(); if (j.kast) nyeKast(j.kast); gjor(j.gjor); nåNotater = j.notater || []; settPoster(j.notater); } catch {}
   tegn();
   document.documentElement.classList.add('data-klar');   // første svar er lagt inn: panelene kan vises
   leggKart();   // etter første svar: kartet står allerede der han er
