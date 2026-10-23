@@ -1773,7 +1773,9 @@ function husNå() {
   if (!HUS || !live || !plan || !plan.geo || live.kjent !== plan.geo.sted) return null;
   const r = rom ? plan.rom.find(x => x.navn.toLowerCase() === rom.toLowerCase()) : null;
   const alle = plan.rom.flatMap(x => x.gulv), senter = geoPkt(...midt(alle));
-  return { r, etg: r ? etasje(r) : 0, pos: r && r.gulv.length ? geoPkt(...midt(r.gulv)) : senter, senter, sti: sti() };
+  // ?etasje=2 viser andre etasje mens vi tester (før fyrene vet hvor han er).
+  const valgt = +new URLSearchParams(location.search).get('etasje') - 1;
+  return { r, etg: r ? etasje(r) : valgt > 0 ? valgt : 0, pos: r && r.gulv.length ? geoPkt(...midt(r.gulv)) : senter, senter, sti: sti() };
 }
 // Bare etasjen han er i, enkelt: gulvene som én lys flate, tynne vegger, rommet hans svakt rødt. Zoomer man langt
 // inn, står rommets navn ved prikken. Tegnes på nytt bare når noe endres.
@@ -1798,7 +1800,7 @@ function husIKart(hus) {
   if (kart.getSource('hus')) { kart.getSource('hus').setData(data); return; }
   kart.addSource('hus', { type: 'geojson', data });
   const før = kart.getLayer('spor-glod') ? 'spor-glod' : undefined;
-  kart.addLayer({ id: 'hus-gulv', type: 'fill', source: 'hus', filter: ['==', ['get', 't'], 'gulv'], paint: { 'fill-color': ['case', ['get', 'her'], '#BA0C2F', '#fffaf0'], 'fill-opacity': ['case', ['get', 'her'], .3, .14] } }, før);
+  kart.addLayer({ id: 'hus-gulv', type: 'fill', source: 'hus', filter: ['==', ['get', 't'], 'gulv'], paint: { 'fill-color': ['case', ['get', 'her'], '#6b2a2c', '#3d3631'] } }, før);   // tette farger: rom som overlapper blir ikke mørkere
   kart.addLayer({ id: 'hus-vegg', type: 'line', source: 'hus', filter: ['==', ['get', 't'], 'vegg'], layout: { 'line-cap': 'round' }, paint: { 'line-color': '#fffaf0', 'line-opacity': .75, 'line-width': ['interpolate', ['linear'], ['zoom'], 17, .6, 21, 2.2] } }, før);
   // Stien: korte streker med mellomrom, som en sti på et turkart. Busstoppet er en liten rund prikk.
   kart.addLayer({ id: 'hus-sti', type: 'line', source: 'hus', filter: ['==', ['get', 't'], 'sti'], layout: { 'line-cap': 'round', 'line-join': 'round' },
