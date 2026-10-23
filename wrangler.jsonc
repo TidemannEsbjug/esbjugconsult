@@ -22,6 +22,9 @@
   },
   // Files in the chat (audio, images, documents), served with range support from /chat/file/<key>.
   // KLART_FILER: installasjonsfilene til Klart (DMG og EXE), servert fra /GDPR/last-ned/mac og /windows.
+  // Jev (TypeSafe) via jev-workeren, som har nøkkelen: søket i avspillingen på /hjem/ (POST /chat/sok).
+  // Hemmeligheten INTERN_KEY er den samme i begge workerne.
+  "services": [{ "binding": "JEV", "service": "esbjug-jev" }],
   "r2_buckets": [
     { "binding": "FILES", "bucket_name": "esbjug-chat-files" },
     { "binding": "KLART_FILER", "bucket_name": "klart-nedlasting" }

@@ -85,6 +85,36 @@ export async function handleChat(request, env, url) {
     return new Response(r.body, { status: r.status, headers: { "content-type": "application/json", "cache-control": "public, max-age=60" } });
   }
 
+  // Øyeblikkene de siste sju dagene (topp-øyeblikk i avspillingen).
+  if (path === "/chat/oyeblikk") {
+    const r = await hub.fetch(new Request("https://hub/internal/oyeblikk", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }));
+    return new Response(r.body, { status: r.status, headers: { "content-type": "application/json", "cache-control": "public, max-age=60" } });
+  }
+
+  // Søk i avspillingen: «når hadde han minst batteri?». Jev (TypeSafe, via jev-workeren som har nøkkelen) velger
+  // det øyeblikket som svarer best. Høyst 10 søk i minuttet fra én adresse.
+  if (path === "/chat/sok" && request.method === "POST") {
+    const { q } = await request.json().catch(() => ({}));
+    if (typeof q !== "string" || !q.trim() || q.length > 200) return new Response("Bad request", { status: 400 });
+    const ip = request.headers.get("CF-Connecting-IP") || "", nå = Date.now();
+    sokTeller = sokTeller.filter((x) => nå - x.t < 60e3);
+    if (sokTeller.filter((x) => x.ip === ip).length >= 10) return new Response("For mange søk", { status: 429 });
+    sokTeller.push({ ip, t: nå });
+    const ob = await (await hub.fetch(new Request("https://hub/internal/oyeblikk", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }))).json();
+    if (!ob.length) return Response.json({ funnet: null });
+    if (!env.JEV || !env.INTERN_KEY) return new Response("Jev er ikke koblet til", { status: 503 });
+    const idag = new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", weekday: "long", day: "numeric", month: "long" }).format(nå);
+    const body = {
+      state: { sporsmal: q.trim(), idag },
+      questions: { moment: { type: "choice", instructions: "Hvilket øyeblikk spør `sporsmal` etter? Det handler om Tidemanns målinger (puls, batteri, bevegelse, fart). Dagens dato er `idag`, så «i går», «tirsdag» osv. regnes fra den. Spør det ikke om en bestemt dag, velg det som gjelder hele uka.",
+        criteria: Object.fromEntries(ob.map((o) => [o.id, o.tekst])) } },
+    };
+    const r = await env.JEV.fetch(new Request("https://jev/intern/jev", { method: "POST", headers: { "x-intern": env.INTERN_KEY, "Content-Type": "application/json" }, body: JSON.stringify(body) }));
+    if (!r.ok) return new Response("Jev svarte ikke", { status: 502 });
+    const j = await r.json(), a = j.data?.answers?.moment;
+    return Response.json({ funnet: ob.find((o) => o.id === a?.choice) || null, sikkerhet: a?.confidence ?? null });
+  }
+
   // Plantegningen av huset (skannet med LiDAR i appen), flat 2D. Endres sjelden.
   if (path === "/chat/plan") {
     const r = await hub.fetch(new Request("https://hub/internal/plan", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }));
@@ -411,6 +441,9 @@ export function osloMidnight(ts) {
   return utc - 3600e3;
 }
 
+// Søk i avspillingen per adresse, siste minutt (per isolat; nok til å stoppe misbruk).
+let sokTeller = [];
+
 // Next :00/:15/:30/:45 after ts (Oslo is a whole-hour offset from UTC, so UTC quarters line up).
 export function nextQuarter(ts) {
   return Math.floor(ts / 900e3) * 900e3 + 900e3;
@@ -469,6 +502,8 @@ export class ChatHub {
         this.sql.exec(`DELETE FROM kv WHERE k='notat'`);
       }
     }
+    // Målingene over tid til avspillingen: hver enhet høyst én rad i minuttet, bare feltene panelene viser. 35 dager.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS telelogg (kilde TEXT, ts INTEGER, d TEXT, PRIMARY KEY (kilde, ts))`);
     // Rom hjemme: eksempler på hva iPhonen hører i hvert rom (styrken fra hvert fyr, dBm) og høyden over fyr 1 (m).
     this.sql.exec(`CREATE TABLE IF NOT EXISTS romprove (id INTEGER PRIMARY KEY AUTOINCREMENT, rom TEXT, ts INTEGER, b TEXT, h REAL)`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS pos (ts INTEGER PRIMARY KEY, lat REAL, lon REAL, acc REAL, spd REAL, alt REAL, hdg REAL)`);
@@ -563,6 +598,9 @@ export class ChatHub {
         this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, `kast:${b.k}`, String(n));
         if (b.k === "tomat") this.tomatVarsel(decodeURIComponent(request.headers.get("x-by") || ""));
         return Response.json(this.kast());
+      }
+      if (url.pathname === "/internal/oyeblikk") {
+        return Response.json(this.oyeblikk());
       }
       if (url.pathname === "/internal/historikk") {
         return Response.json(this.historikk(b.dag));
@@ -772,6 +810,14 @@ export class ChatHub {
       if (kilde === "iphone" && typeof ren.bevegelse === "number") {
         this.sql.exec(`INSERT OR REPLACE INTO bev (ts, v) VALUES (?, ?)`, ny.ts, ren.bevegelse);
         if (ny.ts - (this.bevPruned || 0) > 3600e3) { this.bevPruned = ny.ts; this.sql.exec(`DELETE FROM bev WHERE ts < ?`, ny.ts - 864e5); }
+      }
+      this.teleLogg = this.teleLogg || {};
+      if (ny.ts - (this.teleLogg[kilde] || 0) >= 60e3) {
+        this.teleLogg[kilde] = ny.ts;
+        const d = {};
+        for (const k of ["bat", "lader", "meter", "skritt", "etasjer", "lyd", "nett", "bevegelse", "haand", "aktivitet", "trykk"]) if (ny[k] !== undefined) d[k] = ny[k];
+        this.sql.exec(`INSERT OR REPLACE INTO telelogg (kilde, ts, d) VALUES (?, ?, ?)`, kilde, ny.ts, JSON.stringify(d));
+        if (ny.ts - (this.teleLoggPruned || 0) > 3600e3) { this.teleLoggPruned = ny.ts; this.sql.exec(`DELETE FROM telelogg WHERE ts < ?`, ny.ts - 35 * 864e5); }
       }
       const { acc, ...uten } = ny;   // the chat pages don't need the accelerometer; the map page fetches it
       this.toVisitors({ t: "tele", kilde, d: uten });
@@ -1306,7 +1352,10 @@ export class ChatHub {
     this.histMemo = this.histMemo instanceof Map ? this.histMemo : new Map();
     const m = this.histMemo.get(dag);
     if (m && (slutt < Date.now() || Date.now() - m.at < 60e3)) return m.v;
-    const v = { dag, start, slutt, trail: this.sporFra(this.sql.exec(`SELECT ts, lat, lon FROM pos WHERE ts >= ? AND ts < ? ORDER BY ts`, start, slutt).toArray()) };
+    const v = { dag, start, slutt, trail: this.sporFra(this.sql.exec(`SELECT ts, lat, lon FROM pos WHERE ts >= ? AND ts < ? ORDER BY ts`, start, slutt).toArray()),
+      // Pulsen som snitt per 15 s, og målingene fra telefonene og klokka (én per minutt).
+      hr: this.sql.exec(`SELECT CAST(ts / 15000 AS INTEGER) * 15000 AS t, CAST(ROUND(AVG(bpm)) AS INTEGER) AS b FROM hr WHERE ts >= ? AND ts < ? GROUP BY 1 ORDER BY 1`, start, slutt).toArray().map((r) => [r.t, r.b]),
+      tele: this.sql.exec(`SELECT kilde, ts, d FROM telelogg WHERE ts >= ? AND ts < ? ORDER BY ts`, start, slutt).toArray().map((r) => [r.ts, r.kilde, JSON.parse(r.d)]) };
     if (this.histMemo.size > 40) this.histMemo.clear();
     this.histMemo.set(dag, { at: Date.now(), v });
     return v;
@@ -1325,6 +1374,42 @@ export class ChatHub {
       pl = r.lat; po = r.lon; pt = r.ts;
     }
     return trail;
+  }
+
+  // Øyeblikkene de siste sju dagene som avspillingen kan hoppe til og Jev kan velge mellom: høyeste og laveste puls,
+  // laveste batteri på hver enhet, mest bevegelse og raskest fart, for hver dag og for hele uka.
+  oyeblikk() {
+    const nå = Date.now(), dagN = new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", weekday: "long", day: "numeric", month: "numeric" });
+    const kl = new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", hour: "2-digit", minute: "2-digit" });
+    const ut = [], beste = {};
+    const legg = (id, type, ts, verdi, tekst, hoy) => {
+      if (ts == null || verdi == null) return;
+      ut.push({ id, type, ts, verdi, tekst });
+      const b = beste[type];
+      if (!b || (hoy ? verdi > b.verdi : verdi < b.verdi)) beste[type] = { ts, verdi, tekst };
+    };
+    const TYPER = {
+      pulsHoy: ["høyest puls", (v) => v + " bpm", true], pulsLav: ["lavest puls", (v) => v + " bpm", false],
+      iphoneBat: ["lavest batteri på iPhonen", (v) => v + " %", false], watchBat: ["lavest batteri på Apple Watch", (v) => v + " %", false],
+      androidBat: ["lavest batteri på Android-telefonen", (v) => v + " %", false],
+      bevegelse: ["mest bevegelse (iPhone)", (v) => v.toFixed(2).replace(".", ",") + " g", true], haand: ["mest bevegelse i hånda (Apple Watch)", (v) => v.toFixed(2).replace(".", ",") + " g", true],
+      fart: ["raskest fart", (v) => Math.round(v * 3.6) + " km/t", true],
+    };
+    for (let i = 6; i >= 0; i--) {
+      const start = osloMidnight(nå - i * 864e5), slutt = osloMidnight(start + 36 * 3600e3), navn = dagN.format(start + 12 * 3600e3);
+      const en = (sql, ...a) => this.sql.exec(sql, ...a).toArray()[0];
+      const fyll = (type, r) => { if (!r) return; const [t, fmt, hoy] = TYPER[type]; legg(`${type}-${i}`, type, r.ts, r.v, `${t[0].toUpperCase() + t.slice(1)} ${navn}: ${fmt(r.v)} kl. ${kl.format(r.ts)}`, hoy); };
+      fyll("pulsHoy", en(`SELECT ts, bpm AS v FROM hr WHERE ts >= ? AND ts < ? ORDER BY bpm DESC LIMIT 1`, start, slutt));
+      fyll("pulsLav", en(`SELECT ts, bpm AS v FROM hr WHERE ts >= ? AND ts < ? ORDER BY bpm ASC LIMIT 1`, start, slutt));
+      for (const [k, type] of [["iphone", "iphoneBat"], ["watch", "watchBat"], ["android", "androidBat"]])
+        fyll(type, en(`SELECT ts, json_extract(d, '$.bat') AS v FROM telelogg WHERE kilde=? AND ts >= ? AND ts < ? AND json_extract(d, '$.bat') IS NOT NULL ORDER BY v ASC, ts ASC LIMIT 1`, k, start, slutt));
+      fyll("bevegelse", en(`SELECT ts, v FROM bevegelse WHERE k='iphone' AND ts >= ? AND ts < ? ORDER BY v DESC LIMIT 1`, start, slutt));
+      fyll("haand", en(`SELECT ts, v FROM bevegelse WHERE k='watch' AND ts >= ? AND ts < ? ORDER BY v DESC LIMIT 1`, start, slutt));
+      fyll("fart", en(`SELECT ts, spd AS v FROM pos WHERE ts >= ? AND ts < ? AND spd IS NOT NULL AND acc < 30 ORDER BY spd DESC LIMIT 1`, start, slutt));
+    }
+    for (const [type, b] of Object.entries(beste)) ut.push({ id: `${type}-uke`, type, ts: b.ts, verdi: b.verdi, uke: true,
+      tekst: `${TYPER[type][0][0].toUpperCase() + TYPER[type][0].slice(1)} hele uka: ${b.tekst.split(": ").slice(1).join(": ")} (${dagN.format(b.ts)})` });
+    return ut;
   }
 
   spor() {
