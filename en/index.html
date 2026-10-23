@@ -1454,6 +1454,13 @@ function leggKart() {
     kart.setPadding(marg()); kart.jumpTo({ center: midt });   // midten er den synlige skjermen, ikke den høye heroen
     addEventListener('resize', () => { if (kart) kart.setPadding(marg()); });
     kart.touchZoomRotate.disableRotation();
+    // Den besøkende kan flytte og zoome fritt. Mens man holder eller nettopp har rørt kartet, står det i ro;
+    // etter TILBAKE ms uten berøring glir det tilbake til ham.
+    const ror = e => { if (e.originalEvent) rort = Date.now(); };
+    kart.on('move', ror); kart.on('zoom', ror);
+    kart.getCanvasContainer().addEventListener('pointerdown', () => { holder = true; rort = Date.now(); });
+    addEventListener('pointerup', () => { if (holder) { holder = false; rort = Date.now(); } });
+    addEventListener('pointercancel', () => { holder = false; });
     kart.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-left');
     kart.on('load', () => {
       kart.addSource('spor', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
@@ -1492,6 +1499,8 @@ function iBildet(lngLat, marg) {
   const p = kart.project(lngLat), c = kart.getContainer(), w = c.clientWidth, h = c.clientHeight;
   return p.x > w * marg && p.x < w * (1 - marg) && p.y > h * marg && p.y < h * (1 - marg);
 }
+const TILBAKE = 20000;   // ms uten berøring før kartet går tilbake til ham
+let rort = 0, holder = false;
 let live = null, trail = [], tele = {}, forste = true, skew = 0, stier = [], forrige = {};
 const dist = (a, b) => Math.hypot((a[0] - b[0]) * 111.2e3, (a[1] - b[1]) * 111.2e3 * Math.cos(a[0] * Math.PI / 180));
 const km = pts => { let d = 0; for (let i = 1; i < pts.length; i++) if (pts[i] && pts[i - 1]) d += dist(pts[i - 1], pts[i]); return d; };
@@ -1538,6 +1547,12 @@ function tegn() {
   if (sporNokkel !== sistSpor) { sistSpor = sporNokkel; kart.getSource('spor').setData({ type: 'Feature', geometry: { type: 'MultiLineString', coordinates: spor.map(l => l.map(p => [p[1], p[0]])) } }); }
   megMark.setLngLat(lngLat); if (!megMark._map) megMark.addTo(kart);
   if (forste) { forste = false; kart.jumpTo({ center: lngLat, zoom: 14 }); }
+  else if (holder || Date.now() - rort < TILBAKE) return;
+  else if (rort) {
+    const p = kart.project(lngLat), m = kart.project(kart.getCenter());
+    if (Math.hypot(p.x - m.x, p.y - m.y) > 30 || Math.abs(kart.getZoom() - 14) > .2) kart.easeTo({ center: lngLat, zoom: 14, duration: 1800 });
+    rort = 0;
+  }
   else if (!iBildet(lngLat, .2)) kart.easeTo({ center: lngLat, duration: 900 });
 }
 const hero = $('.hero');
