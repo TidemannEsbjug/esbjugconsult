@@ -454,7 +454,7 @@
     if (!na) return;
     const url = location.origin + epUrl(na);
     if (navigator.share && matchMedia("(pointer:coarse)").matches) {
-      try { await navigator.share({ title: na.tittel, text: `Episode ${na.n} av Esbjug Podcast`, url }); } catch {}
+      try { await navigator.share({ url }); } catch {}
       return;
     }
     try { await navigator.clipboard.writeText(url); toast("Lenke kopiert"); } catch { toast(url); }
