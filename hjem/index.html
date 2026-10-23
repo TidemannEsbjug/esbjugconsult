@@ -525,7 +525,7 @@
   .kn-folgfelt button[aria-pressed="true"]{background:#00205B;color:#fff}
   .kn button[aria-pressed="true"]{background:var(--ink);color:#fff}
   /* Replay: én bred linje øverst i stedet for flaggene, og spørreboksen som egen boks under datoen. */
-  .replay .hero-i>.flyt{align-self:stretch}
+  .replay .hero-i>.flyt{align-self:stretch;position:relative;z-index:30}   /* linja og fartvelgeren over panelene */
   .replay .hero-i>.flyt>.topp{display:none}
   .hist{order:4;position:relative;flex:1;min-width:0;display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0;padding:6px 8px;border-radius:999px;pointer-events:auto;animation:histInn .3s ease-out}
   @keyframes histInn{from{opacity:0;transform:translateX(-8px)}}
@@ -537,11 +537,12 @@
   .hist .h-kal svg{width:17px;height:17px}
   .hist .h-dato{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;border:0;padding:0}
   .hist .h-fart{min-width:46px}
-  .hist .h-fartvalg{position:absolute;right:0;top:calc(100% + 8px);z-index:5;display:grid;grid-template-columns:1fr;gap:6px;padding:12px 14px;border-radius:16px;width:220px}
+  .hist .h-fartvalg{position:absolute;right:0;top:calc(100% + 8px);z-index:50;display:grid;grid-template-columns:1fr;gap:6px;padding:12px 14px;border-radius:16px;width:220px}
   .hist .h-fartvalg[hidden]{display:none}
   .hist .h-fv{font:700 18px "SF Mono",Menlo,monospace;color:var(--ink);text-align:center}
   .hist .h-fs{width:100%;accent-color:#BA0C2F}
   .hist .h-fe{display:flex;justify-content:space-between;font:600 11px "SF Mono",Menlo,monospace;color:rgba(0,32,91,.6)}
+  .hist .h-fartvalg{background:rgba(255,255,255,.94)}
   .kn .kn-lukk,.kn [aria-pressed="true"] .kn-play{display:none}
   .kn [aria-pressed="true"] .kn-lukk{display:block}
   .kn [aria-pressed="true"] svg{margin-left:0}
@@ -703,6 +704,14 @@
   .kartmodus #chat,.kartmodus .ck,.kartmodus .natt-lag{display:none}
   @media (max-width:760px){.kartknapp{display:flex}}
   @media (prefers-reduced-motion:reduce){.spor-strom,.meg::before,.meg::after,.s-dot{animation:none}}
+  /* Replay på mobil: linja på egen rad under knappene, tidslinja alene øverst (sist i stilarket, så den vinner). */
+  @media (max-width:760px){
+    .replay .hero-i>.flyt{flex-wrap:wrap}
+    .hist{flex-basis:100%;border-radius:20px;justify-content:space-between}
+    .hist .h-tid{flex:1 0 calc(100% - 46px)}   /* tidslinja alene på første rad, resten under */
+    .hist .h-fartvalg{right:8px}
+    .hist .h-kl{min-width:0}
+  }
 </style>
 </head>
 <body>
