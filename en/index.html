@@ -655,6 +655,8 @@
   @media (min-width:1100px){.sens{grid-template-columns:repeat(4,minmax(0,1fr));width:min(620px,100%)}}
   .venstre{display:flex;flex-direction:column;gap:14px;width:min(360px,100%)}
   .hoyre{display:flex;flex-direction:column;gap:14px;margin-left:auto;width:min(400px,100%)}
+  /* Store skjermer (1600 px og bredere, f.eks. 1920 × 1080): kortene får mer plass. */
+  @media (min-width:1600px){.venstre{width:min(440px,100%)}.hoyre{width:min(500px,100%)}.sens{width:min(700px,100%)}.sted{max-width:100%}}
   @media (min-width:1100px){.hoyre{width:min(440px,100%)}.hoyre .sens{grid-template-columns:repeat(3,minmax(0,1fr))}}
   .hoyre .sens{width:100%;margin-left:0}
   /* Akselerometrene: tre kurver (x, y, z) i g, rullende 10 s, som et oscilloskop. */
@@ -662,6 +664,17 @@
   .ak-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
   .ak-m{font:600 9.5px/1 "SF Mono",Menlo,monospace;letter-spacing:.1em;color:rgba(0,32,91,.5)}
   .ak-m i{font-style:normal;font-weight:800}.kx{color:#e0233c}.ky{color:#d68a00}.kz{color:#2563eb}
+  /* Podkast: episodene som lenker, nyeste først, med lengden. Ingen avspilling her. */
+  .pod{display:flex;flex-direction:column;gap:6px;padding:12px 18px 13px}
+  .pod[hidden]{display:none}
+  .pod a.s-t{color:rgba(0,32,91,.7);text-decoration:none}
+  .pod-l{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+  .pod-l a{display:flex;align-items:baseline;gap:10px;padding:5px 0;color:var(--ink);text-decoration:none;border-top:1px solid rgba(0,32,91,.08)}
+  .pod-l li:first-child a{border-top:0}
+  .pod-l a span:first-child{font:600 10px/1 "SF Mono",Menlo,monospace;opacity:.5;min-width:1.6em}
+  .pod-l a span:nth-child(2){flex:1;min-width:0;font:italic 500 15px/1.25 var(--serif);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pod-l a span:last-child{font:600 10px/1 "SF Mono",Menlo,monospace;opacity:.5;white-space:nowrap}
+  .pod-l a:hover span:nth-child(2){color:#BA0C2F}
   /* Banken (SpareBank 1): samlet saldo og saldoen på hver konto. */
   .bank{display:flex;flex-direction:column;gap:8px;padding:14px 18px 16px}
   .bank[hidden]{display:none}
@@ -737,19 +750,28 @@
     .hist .h-fartvalg{right:8px}
     .hist .h-kl{min-width:0}
   }
-  /* Egen peker (bare mus/styreflate): en liten rød prikk der pekeren er, og en tynn ring som glir mykt etter.
-     Over noe klikkbart vokser ringen og fylles svakt; ved trykk krymper den. I tekstfelt brukes vanlig skrivemarkør. */
+  /* Egen peker (bare mus/styreflate): et tynt siktekors, som i en kikkert. Over kartet står koordinatene til punktet
+     ved siden av. Over noe klikkbart åpner korset seg og blir rødt; ved trykk strammes det. I tekstfelt: vanlig markør. */
   @media (hover:hover) and (pointer:fine){
     html.mus, html.mus *{cursor:none!important}
     html.mus input, html.mus textarea, html.mus [contenteditable]{cursor:text!important}
   }
-  .mus-p,.mus-r{position:fixed;left:0;top:0;z-index:2147483646;pointer-events:none;border-radius:50%;opacity:0;transition:opacity .25s}
-  .mus-p{width:6px;height:6px;margin:-3px 0 0 -3px;background:#BA0C2F;box-shadow:0 0 0 1.5px rgba(255,255,255,.85)}
-  .mus-r{width:34px;height:34px;margin:-17px 0 0 -17px;border:1.5px solid #fff;mix-blend-mode:difference;transition:opacity .25s,width .3s cubic-bezier(.2,.8,.2,1),height .3s cubic-bezier(.2,.8,.2,1),margin .3s cubic-bezier(.2,.8,.2,1),background-color .3s,border-color .3s}
-  html.mus.mus-inne .mus-p,html.mus.mus-inne .mus-r{opacity:1}
-  html.mus.mus-over .mus-r{width:54px;height:54px;margin:-27px 0 0 -27px;background:rgba(255,255,255,.18)}
-  html.mus.mus-ned .mus-r{width:24px;height:24px;margin:-12px 0 0 -12px}
-  html.mus.mus-tekst .mus-p,html.mus.mus-tekst .mus-r{opacity:0}
+  .mus-k{position:fixed;left:0;top:0;z-index:2147483646;pointer-events:none;opacity:0;transition:opacity .2s;--g:5px;--l:9px;--f:#fff}
+  .mus-k i{position:absolute;background:var(--f);transition:transform .25s cubic-bezier(.2,.8,.2,1),background-color .2s;mix-blend-mode:difference}
+  .mus-k i:nth-child(1),.mus-k i:nth-child(2){width:1.5px;height:var(--l);left:-.75px}
+  .mus-k i:nth-child(3),.mus-k i:nth-child(4){height:1.5px;width:var(--l);top:-.75px}
+  .mus-k i:nth-child(1){top:0;transform:translateY(calc(-1 * (var(--g) + var(--l))))}
+  .mus-k i:nth-child(2){top:0;transform:translateY(var(--g))}
+  .mus-k i:nth-child(3){left:0;transform:translateX(calc(-1 * (var(--g) + var(--l))))}
+  .mus-k i:nth-child(4){left:0;transform:translateX(var(--g))}
+  .mus-k b{position:absolute;left:-1.5px;top:-1.5px;width:3px;height:3px;border-radius:50%;background:#BA0C2F}
+  .mus-k span{position:absolute;left:14px;top:12px;white-space:nowrap;font:600 10px/1 "SF Mono",Menlo,monospace;letter-spacing:.06em;color:#fff;background:rgba(0,32,91,.82);padding:4px 6px;border-radius:4px;opacity:0;transition:opacity .2s}
+  html.mus.mus-inne .mus-k{opacity:1}
+  html.mus.mus-kart .mus-k span{opacity:1}
+  html.mus.mus-over .mus-k{--g:11px;--l:7px}
+  html.mus.mus-over .mus-k i{background:#BA0C2F;mix-blend-mode:normal}
+  html.mus.mus-ned .mus-k{--g:2px}
+  html.mus.mus-tekst .mus-k{opacity:0}
 </style>
 </head>
 <body>
@@ -801,6 +823,10 @@
       <div class="oy" data-tz="Asia/Bangkok"><span class="oy-n">Koh Phangan</span><svg class="oy-i" viewBox="0 0 48 48" aria-hidden="true"></svg><b class="oy-v">–</b><span class="oy-k">–</span></div>
       <div class="oy" data-tz="Asia/Makassar"><span class="oy-n">Lombok</span><svg class="oy-i" viewBox="0 0 48 48" aria-hidden="true"></svg><b class="oy-v">–</b><span class="oy-k">–</span></div>
     </div>
+  </section>
+  <section class="pod gl" hidden aria-label="Podcast">
+    <a class="mono s-t" href="/podcast/">Podcast</a>
+    <ol class="pod-l"></ol>
   </section>
   </div>
   </div>
@@ -1595,6 +1621,7 @@ function leggKart() {
         'CooperativeGesturesHandler.WindowsHelpText': EN ? 'Use Ctrl + scroll to zoom the map' : 'Bruk Ctrl + rulling for å zoome kartet',
         'CooperativeGesturesHandler.MacHelpText': EN ? 'Use ⌘ + scroll to zoom the map' : 'Bruk ⌘ + rulling for å zoome kartet' } });
     forste = !live;
+    window.__kart = kart;   // pekeren viser koordinatene over kartet
     kart.setPadding(marg()); kart.jumpTo({ center: midt });   // midten er den synlige skjermen, ikke den høye heroen
     addEventListener('resize', () => { if (kart) kart.setPadding(marg()); });
     kart.touchZoomRotate.disableRotation();
@@ -1939,6 +1966,17 @@ function nyeKast(ny) {
   knapp('tomat').querySelector('b').textContent = tall(ny.tomat);
   knapp('heia').querySelector('b').textContent = tall(ny.heia || 0);
 }
+// Podkasten: episodelista (podcast/episoder.json), nyeste først, som lenker til /podcast/<n>/.
+fetch('/podcast/episoder.json').then(r => r.json()).then(eps => {
+  const l = $('.pod-l');
+  l.replaceChildren(...eps.slice().sort((a, b) => b.n - a.n).map(e => {
+    const li = document.createElement('li'), a = document.createElement('a');
+    a.href = '/podcast/' + e.n + '/';
+    for (const t of [String(e.n).padStart(2, '0'), e.tittel, Math.round(e.sek / 60) + ' min']) { const sp = document.createElement('span'); sp.textContent = t; a.append(sp); }
+    li.append(a); return li;
+  }));
+  $('.pod').hidden = !eps.length;
+}).catch(() => {});
 // Banken: samlet saldo og saldoen på hver konto (kontonummeret bare med de fire siste sifrene).
 const kr = new Intl.NumberFormat(TX.loc, { maximumFractionDigits: 0 });
 let bankNokkel = '';
@@ -2447,33 +2485,33 @@ setInterval(tegn, 1000);
 })();
 </script>
 <script>
-// Egen peker: prikken følger pekeren nøyaktig, ringen glir etter (halve avstanden på ca. 60 ms). Bare med mus/styreflate.
+// Egen peker: siktekorset står nøyaktig der pekeren er. Over kartet viser det koordinatene (kartet legger seg i
+// window.__kart). Bare med mus/styreflate.
 (() => {
   if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
-  const h = document.documentElement, p = document.createElement('div'), r = document.createElement('div');
-  p.className = 'mus-p'; r.className = 'mus-r'; document.body.append(r, p); h.classList.add('mus');
-  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let x = -100, y = -100, rx = -100, ry = -100, sist = 0;
+  const h = document.documentElement, k = document.createElement('div');
+  k.className = 'mus-k'; k.innerHTML = '<i></i><i></i><i></i><i></i><b></b><span></span>';
+  document.body.append(k); h.classList.add('mus');
+  const lapp = k.querySelector('span'), en = h.lang === 'en';
   const KLIKK = 'a,button,[role="button"],[role="tab"],label,select,summary,input[type="range"],input[type="checkbox"],.maplibregl-ctrl button,.poster,.hp-o,.ak';
+  const grad = (v, pos, neg) => Math.abs(v).toFixed(5) + '° ' + (v >= 0 ? pos : neg);
   addEventListener('pointermove', e => {
     if (e.pointerType !== 'mouse') return;
-    x = e.clientX; y = e.clientY; h.classList.add('mus-inne');
+    k.style.transform = `translate(${e.clientX}px,${e.clientY}px)`;
+    h.classList.add('mus-inne');
     const t = e.target instanceof Element ? e.target : null;
     h.classList.toggle('mus-over', !!t?.closest(KLIKK));
     h.classList.toggle('mus-tekst', !!t?.closest('input:not([type="range"]):not([type="checkbox"]),textarea,[contenteditable]'));
-    p.style.transform = `translate(${x}px,${y}px)`;
+    const påKart = !!(window.__kart && t?.closest('.maplibregl-canvas-container'));
+    h.classList.toggle('mus-kart', påKart);
+    if (påKart) {
+      const r = window.__kart.getContainer().getBoundingClientRect(), p = window.__kart.unproject([e.clientX - r.left, e.clientY - r.top]);
+      lapp.textContent = grad(p.lat, 'N', 'S') + '  ' + grad(p.lng, en ? 'E' : 'Ø', en ? 'W' : 'V');
+    }
   }, { passive: true });
   addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') h.classList.add('mus-ned'); });
   addEventListener('pointerup', () => h.classList.remove('mus-ned'));
   document.addEventListener('mouseleave', () => h.classList.remove('mus-inne'));
-  const steg = nå => {
-    const dt = Math.min(64, nå - (sist || nå)); sist = nå;
-    const a = still ? 1 : 1 - Math.exp(-dt / 85);
-    rx += (x - rx) * a; ry += (y - ry) * a;
-    r.style.transform = `translate(${rx}px,${ry}px)`;
-    requestAnimationFrame(steg);
-  };
-  requestAnimationFrame(steg);
 })();
 </script>
 </body>

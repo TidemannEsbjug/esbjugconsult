@@ -39,6 +39,7 @@ T = [
     ('<h3>Kunde i laksenæringen</h3>', '<h3>Client in the salmon industry</h3>'),
     ('<dd>Nettside og Markedsføring</dd>', '<dd>Website and Marketing</dd>'),
     ('<section class="bank gl" hidden aria-label="Banken">', '<section class="bank gl" hidden aria-label="Bank">'),
+    ('<section class="pod gl" hidden aria-label="Podkast">\n    <a class="mono s-t" href="/podcast/">Podkast</a>', '<section class="pod gl" hidden aria-label="Podcast">\n    <a class="mono s-t" href="/podcast/">Podcast</a>'),
     ('<dt>Hva</dt>', '<dt>What</dt>'),
     ('<dt>Pågått</dt>', '<dt>Running</dt>'),
     ('<dt>Størrelse</dt>', '<dt>Size</dt>'),
