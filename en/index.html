@@ -480,11 +480,12 @@
   /* Mens kartet lastes: bare «Esbjug Consult», lite, midt i. Kartet tones inn over det. */
   /* Lasteskjermen mens kartet hentes: en rav-prikk med en ring som pulserer rolig ut (som prikken hans på kartet),
      «Esbjug Consult» og en dempet linje under. Tones bort når kartet er tegnet. */
-  .kart-venter{position:absolute;inset:0;z-index:0;display:grid;place-items:center;pointer-events:none;transition:opacity .9s ease;background:radial-gradient(60% 50% at 50% 50%,#2a1a10,#1c0f07)}
+  .kart-venter{position:absolute;inset:0;z-index:0;pointer-events:none;transition:opacity .9s ease;background:radial-gradient(60% 50% at 50% 50%,#2a1a10,#1c0f07)}
   .kart-klar .kart-venter{opacity:0}
-  .kv-i{display:flex;flex-direction:column;align-items:center;gap:12px;animation:kvInn 1.2s ease both}
-  @keyframes kvInn{from{opacity:0;transform:translateY(6px)}}
-  .kv-prikk{position:relative;width:12px;height:12px;margin-bottom:10px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,#FFD23F 45%,#FF6A3D);box-shadow:0 0 14px 4px rgba(255,210,63,.45)}
+  /* Prikken står nøyaktig i midten, der posisjonsprikken dukker opp når kartet tones inn; teksten under. */
+  .kv-i{position:absolute;left:50%;top:calc(50% + 34px);transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:12px;white-space:nowrap;animation:kvInn 1.2s ease both}
+  @keyframes kvInn{from{opacity:0;transform:translate(-50%,6px)}}
+  .kv-prikk{position:absolute;left:50%;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,#FFD23F 45%,#FF6A3D);box-shadow:0 0 14px 4px rgba(255,210,63,.45)}
   .kv-prikk::before,.kv-prikk::after{content:"";position:absolute;inset:-3px;border-radius:50%;border:1.5px solid rgba(255,210,63,.6);animation:kvRing 2.4s cubic-bezier(.2,.6,.3,1) infinite}
   .kv-prikk::after{animation-delay:1.2s}
   @keyframes kvRing{from{transform:scale(1);opacity:1}to{transform:scale(4.2);opacity:0}}
@@ -550,16 +551,17 @@
   /* Postene: en bunke papirkort. Det øverste vises helt; de neste stikker så vidt ut bak (tynne, falmede kanter).
      Trykk, og det øverste tones ut og neste kommer fram. Tiden er når posten først ble skrevet. */
   .poster{position:relative;pointer-events:auto;cursor:pointer;-webkit-tap-highlight-color:transparent;outline:none;transition:height .5s cubic-bezier(.2,.8,.2,1)}
+  /* Kortene bak krymper fra bunnen, så en tydelig kant stikker ut under det øverste. Bytte: det øverste sveipes ut
+     til venstre med en liten vridning mens neste vokser opp på plass; det gamle legger seg bakerst. Ingen toning av tekst. */
   .post{position:absolute;left:0;right:0;top:0;box-sizing:border-box;overflow:hidden;padding:16px 20px 14px;border-radius:22px;background:linear-gradient(#fffdf6,#fbf5e6);border:1px solid rgba(176,141,87,.35);box-shadow:0 14px 34px rgba(0,20,60,.22);
-    transform-origin:50% 0;transition:transform .55s cubic-bezier(.2,.8,.2,1),opacity .45s ease,height .5s cubic-bezier(.2,.8,.2,1)}
-  .post>*{transition:opacity .35s ease .12s}
+    transform-origin:50% 100%;transition:transform .55s cubic-bezier(.2,.8,.2,1),opacity .45s ease,height .5s cubic-bezier(.2,.8,.2,1)}
   .post[data-l="0"]{z-index:4}
-  .post[data-l="1"]{z-index:3;transform:translateY(8px) scale(.965);opacity:.7;pointer-events:none}
-  .post[data-l="2"]{z-index:2;transform:translateY(15px) scale(.93);opacity:.4;pointer-events:none}
-  .post[data-l="3"]{z-index:1;transform:translateY(15px) scale(.93);opacity:0;pointer-events:none}
-  .post:not([data-l="0"])>*{opacity:0;transition-delay:0s}
-  .post.ut{z-index:5;transform:translateY(-6px) scale(1.01);opacity:0;transition:transform .4s ease,opacity .32s ease}
-  .post.stille,.post.stille>*{transition:none!important}
+  .post[data-l="1"]{z-index:3;transform:translateY(7px) scale(.95);pointer-events:none;background:linear-gradient(#f7f1e3,#efe6d2)}
+  .post[data-l="2"]{z-index:2;transform:translateY(14px) scale(.9);pointer-events:none;background:linear-gradient(#efe7d5,#e5dac2)}
+  .post[data-l="3"]{z-index:1;transform:translateY(14px) scale(.9);opacity:0;pointer-events:none}
+  .post.ut{z-index:5;transform:translateX(-112%) rotate(-7deg);transition:transform .55s cubic-bezier(.45,0,.2,1)}
+  .post.stille{transition:none!important}
+  .post:not([data-l="0"]):not(.ut)>*{visibility:hidden}   /* teksten på kortene bak skal ikke titte ut i kanten */
   .poster:focus-visible .post[data-l="0"]{box-shadow:0 0 0 2px rgba(0,32,91,.4),0 14px 34px rgba(0,20,60,.22)}
   .p-tid{display:block;font:300 11px/1.3 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;letter-spacing:.04em;color:rgba(0,32,91,.45)}
   .p-tekst{margin:8px 0 0;font:italic 300 clamp(17px,1.5vw,20px)/1.4 var(--serif);color:rgba(0,32,91,.82);white-space:pre-wrap;overflow-wrap:anywhere}
@@ -572,8 +574,13 @@
   .sv .bar{display:block;margin-top:5px;height:4px;border-radius:2px;background:rgba(0,32,91,.12);overflow:hidden}
   .sv .bar i{display:block;height:100%;width:0;border-radius:2px;background:#16a34a;transition:width .8s ease}
   .sv.lav .bar i{background:#e0233c}
-  /* Lader: et lite, tynt lyn i samme dempede farge som teksten, ikke et gult ikon som drar blikket. */
-  .sv.lader b::after{content:"";display:inline-block;width:6px;height:10px;margin-left:5px;vertical-align:1px;background:currentColor;opacity:.32;clip-path:polygon(60% 0,0 58%,45% 58%,35% 100%,100% 40%,55% 40%)}
+  /* Lader: et mykt grønt lys glir gjennom tallet og stolpen (klassisk lading), og et lite lyn i dempet grønt. */
+  .sv.lader b{background:linear-gradient(100deg,var(--ink) 0 38%,#3f9d63 47%,#7fc79a 50%,#3f9d63 53%,var(--ink) 62% 100%) 0 0/260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:ladeTekst 2.8s ease-in-out infinite}
+  @keyframes ladeTekst{from{background-position:100% 0}to{background-position:-60% 0}}
+  .sv.lader b::after{content:"";display:inline-block;width:8px;height:12px;margin-left:6px;vertical-align:0;background:#4f9e6c;clip-path:polygon(60% 0,0 58%,45% 58%,35% 100%,100% 40%,55% 40%)}
+  .sv.lader .bar i{background:linear-gradient(90deg,#2f8f55 0,#2f8f55 35%,#8fd3a8 50%,#2f8f55 65%,#2f8f55 100%) 0 0/250% 100%;animation:ladeBar 2.8s ease-in-out infinite}
+  @keyframes ladeBar{from{background-position:100% 0}to{background-position:-50% 0}}
+  @media (prefers-reduced-motion:reduce){.sv.lader b,.sv.lader .bar i{animation:none}}
   .sv.ny b{animation:svNy 1.2s ease}
   .sv{position:relative}
   .sv .fon,.sv .pil{position:absolute;right:0;top:0;transition:transform .9s cubic-bezier(.2,.8,.2,1)}
@@ -647,7 +654,7 @@
 <body>
 <script>document.body.classList.add('forspill');setTimeout(()=>document.body.classList.remove('forspill'),8000)</script>
 <header class="hero">
-  <div class="kart-venter" aria-hidden="true"><div class="kv-i"><span class="kv-prikk"></span><b>Esbjug Consult</b><span class="kv-t">finding Tidemann …</span></div></div><div id="kart" aria-label="Map: where Tidemann is now"></div>
+  <div class="kart-venter" aria-hidden="true"><span class="kv-prikk"></span><div class="kv-i"><b>Esbjug Consult</b><span class="kv-t">finding Tidemann …</span></div></div><div id="kart" aria-label="Map: where Tidemann is now"></div>
   <div class="hero-i">
   <div class="flyt"><button type="button" class="kartknapp gl" aria-label="Show the map" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="kk-kart" d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/><path class="kk-x" d="M6 6l12 12M18 6 6 18"/></svg></button><div class="topp gl"><a class="lang en" href="/" hreflang="nb" aria-label="Language: English. Switch to Norwegian"><span class="lang-k" aria-hidden="true"></span><span class="lf no" aria-hidden="true"><svg viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span class="lf gb" aria-hidden="true"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg></span></a>
   <div class="st"><div class="st-i tl-a" hidden data-av data-l="here now"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">here now</span><span class="tl-deg" aria-hidden="true">+1 · that's you</span></div></div><div class="st-i tl-b" hidden data-av data-l="unique visitors" data-ny="+1 · you are no. {n}" data-er="You are no. {n}" data-var="You were no. {n}"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unique visitors</span><span class="tl-deg" aria-hidden="true">+1 · that's you</span></div></div><span class="tl-sr"></span></div>
@@ -1600,7 +1607,7 @@ const kl = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', hour: '2-d
 // Postene som en bunke: alle kortene står i siden, og et trykk endrer bare hvilket lag de er i, så de glir rolig
 // på plass. Høyden følger det øverste kortet (de bakre får samme høyde, så bare kantene stikker ut).
 let poster = [], kort = [], toppPost = 0, posterNokkel = '';
-const KANT = 15;
+const KANT = 14;
 const naturlig = c => { const h = c.style.height; c.style.height = 'auto'; const x = c.offsetHeight; c.style.height = h; return x; };
 function postLag(unntak) {
   const n = kort.length;
@@ -1634,10 +1641,11 @@ function nestePost() {
   toppPost = (toppPost + 1) % kort.length;
   postLag(ut);
   setTimeout(() => {
-    // Det gamle kortet går bakerst uten å fly gjennom bunken.
-    ut.classList.add('stille'); ut.classList.remove('ut'); postLag(); void ut.offsetWidth; ut.classList.remove('stille');
+    // Det gamle kortet legges bakerst uten å fly gjennom bunken, og kanten glir så rolig inn.
+    ut.classList.add('stille'); ut.classList.remove('ut'); ut.dataset.l = 3; void ut.offsetWidth; ut.classList.remove('stille');
+    postLag();
     bytter = false;
-  }, still ? 0 : 420);
+  }, still ? 0 : 560);
 }
 // Høyden måles på nytt når skriften er lastet (reserveskriften tar mer plass) og når vinduet endrer størrelse.
 document.fonts?.ready.then(() => { if (kort.length) postLag(); });
