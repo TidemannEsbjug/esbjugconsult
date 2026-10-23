@@ -1744,7 +1744,22 @@ const GJOR = TX.gjor;
 // Plantegningen hentes ved start og hvert 10. minutt. Rommet han er i (fra fyrene) finnes på navnet; da vises etasjen
 // det ligger i. Etasjene telles nedenfra etter gulvhøyden. Gir false når det ikke er noe å vise.
 let plan = null, husNokkel = '';
-const hentPlan = async () => { try { plan = await (await fetch('/chat/plan')).json(); husNokkel = ''; } catch {} };
+// Skanningen står skrått (den starter der telefonen peker). Hele huset dreies så de lengste veggene blir rette:
+// snittet av veggvinklene ganger fire (så 0°, 90°, 180° og 270° teller likt), vektet med lengden.
+const rett = p => {
+  if (!p || !p.rom) return p;
+  let sx = 0, sy = 0;
+  for (const r of p.rom) for (const v of r.vegger) { const dx = v[2] - v[0], dz = v[3] - v[1], l = Math.hypot(dx, dz), a = Math.atan2(dz, dx) * 4; sx += l * Math.cos(a); sy += l * Math.sin(a); }
+  const a = -Math.atan2(sy, sx) / 4, cs = Math.cos(a), sn = Math.sin(a), d = (x, z) => [x * cs - z * sn, x * sn + z * cs];
+  const lin = v => [...d(v[0], v[1]), ...d(v[2], v[3])];
+  for (const r of p.rom) {
+    r.gulv = r.gulv.map(q => d(q[0], q[1]));
+    for (const k of ['vegger', 'dorer', 'vinduer', 'apninger']) r[k] = r[k].map(lin);
+    for (const t of r.ting) { t.p = d(t.p[0], t.p[1]); t.a += a; }
+  }
+  return p;
+};
+const hentPlan = async () => { try { plan = rett(await (await fetch('/chat/plan')).json()); husNokkel = ''; } catch {} };
 hentPlan(); setInterval(hentPlan, 10 * 60e3);
 function tegnHus() {
   const e = $('.hus'), r = rom && plan && plan.rom ? plan.rom.find(x => x.navn.toLowerCase() === rom.toLowerCase()) : null;
@@ -1753,8 +1768,10 @@ function tegnHus() {
   const nokkel = rom + ':' + plan.ts;
   if (nokkel === husNokkel) return true;
   husNokkel = nokkel;
-  const hoyder = [...new Set(plan.rom.map(x => Math.round(x.hoyde * 2) / 2))].sort((a, b) => a - b);
-  const nivå = x => hoyder.indexOf(Math.round(x.hoyde * 2) / 2);
+  // Gulvhøyder som ligger mindre enn 1,2 m fra hverandre er samme etasje.
+  const hoyder = [];
+  for (const h of plan.rom.map(x => x.hoyde).sort((a, b) => a - b)) if (!hoyder.length || h - hoyder[hoyder.length - 1] > 1.2) hoyder.push(h);
+  const nivå = x => hoyder.filter(h => x.hoyde - h > -1.2 + 1e-9 && x.hoyde >= h - .6).length - 1;
   const etg = plan.rom.filter(x => nivå(x) === nivå(r));
   $('.h-rom').textContent = r.navn;
   $('.h-t').textContent = hoyder.length > 1 ? $('.h-t').dataset.t + ' · ' + TX.etasje(nivå(r)) : $('.h-t').dataset.t;
