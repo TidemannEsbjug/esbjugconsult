@@ -110,6 +110,12 @@ export async function handleChat(request, env, url) {
     // Et klokkeslett («hvor var han i går klokken 14:30») tolkes direkte; resten går til Jev.
     const tp = tidspunkt(q, nå);
     if (tp) return Response.json({ funnet: tp, sikkerhet: 1 });
+    // En bestemt verdi («sist han hadde 111 i puls», «da iPhonen hadde 20 % batteri») slås opp direkte.
+    const vv = verdiSok(q);
+    if (vv) {
+      const r = await (await hub.fetch(new Request("https://hub/internal/verdi", { method: "POST", headers: { "x-role": "internal" }, body: JSON.stringify(vv) }))).json();
+      return Response.json({ funnet: r, sikkerhet: r ? 1 : null });
+    }
     const ob = await (await hub.fetch(new Request("https://hub/internal/oyeblikk", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }))).json();
     if (!ob.length) return Response.json({ funnet: null });
     if (!env.JEV || !env.INTERN_KEY) return new Response("Jev er ikke koblet til", { status: 503 });
@@ -471,6 +477,16 @@ export function tidspunkt(q, nå) {
   return { id: "tid", type: "tid", ts, tekst: `Her var han ${navn} kl. ${kl}` };
 }
 
+// «Sist han hadde 111 i puls», «puls på 95», «når hadde iPhonen 20 %»: hvilken måling og hvilken verdi.
+export function verdiSok(q) {
+  const t = q.toLowerCase(), forst = /først|første/.test(t);
+  let m = t.match(/(\d{2,3})\s*(?:i\s+)?(?:puls|bpm|slag)/) || t.match(/puls\D{0,14}(\d{2,3})/);
+  if (m) return { type: "puls", v: +m[1], forst };
+  m = t.match(/(\d{1,3})\s*(?:%|prosent)/);
+  if (m && (/batteri|%|prosent/.test(t))) return { type: "bat", v: +m[1], forst, kilde: /klokk|watch/.test(t) ? "watch" : /android|moto/.test(t) ? "android" : "iphone" };
+  return null;
+}
+
 // Søk i avspillingen per adresse, siste minutt (per isolat; nok til å stoppe misbruk).
 let sokTeller = [];
 
@@ -632,6 +648,9 @@ export class ChatHub {
       if (url.pathname === "/internal/hr-raa") {
         return Response.json(this.sql.exec(`SELECT ts, bpm FROM hr WHERE ts >= ? AND ts < ? ORDER BY ts`, b.fra, b.til).toArray().map((r) => [r.ts, r.bpm]),
           { headers: { "cache-control": "public, max-age=30" } });
+      }
+      if (url.pathname === "/internal/verdi") {
+        return Response.json(this.verdi(b));
       }
       if (url.pathname === "/internal/oyeblikk") {
         return Response.json(this.oyeblikk());
@@ -1408,6 +1427,19 @@ export class ChatHub {
       pl = r.lat; po = r.lon; pt = r.ts;
     }
     return trail;
+  }
+
+  // Siste (eller første) gang en verdi ble målt de siste sju dagene. Finnes ikke akkurat den, brukes den nærmeste.
+  verdi({ type, v, forst, kilde }) {
+    const fra = Date.now() - 7 * 864e5, rekke = forst ? "ASC" : "DESC";
+    const r = type === "puls"
+      ? this.sql.exec(`SELECT ts, bpm AS v FROM hr WHERE ts >= ? ORDER BY ABS(bpm - ?) ASC, ts ${rekke} LIMIT 1`, fra, v).toArray()[0]
+      : this.sql.exec(`SELECT ts, json_extract(d, '$.bat') AS v FROM telelogg WHERE kilde=? AND ts >= ? AND json_extract(d, '$.bat') IS NOT NULL ORDER BY ABS(json_extract(d, '$.bat') - ?) ASC, ts ${rekke} LIMIT 1`, kilde, fra, v).toArray()[0];
+    if (!r) return null;
+    const navn = new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", weekday: "long", day: "numeric", month: "numeric" }).format(r.ts);
+    const kl = new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", hour: "2-digit", minute: "2-digit" }).format(r.ts);
+    const hva = type === "puls" ? `${r.v} i puls` : `${r.v} % batteri på ${{ iphone: "iPhonen", watch: "Apple Watch", android: "Android-telefonen" }[kilde]}`;
+    return { id: "verdi", type, ts: r.ts, verdi: r.v, tekst: `${forst ? "Første" : "Siste"} gang han hadde ${hva}: ${navn} kl. ${kl}` + (r.v !== v ? ` (nærmeste: ${r.v})` : "") };
   }
 
   // Øyeblikkene de siste sju dagene som avspillingen kan hoppe til og Jev kan velge mellom: høyeste og laveste puls,
