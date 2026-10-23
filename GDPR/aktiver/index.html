@@ -7,7 +7,7 @@
     <meta name="robots" content="noindex" />
     <link rel="stylesheet" href="../fonts.css" />
     <style>
-      /* Hit sender Klart folk fra «Prøv gratis» og «Jeg har en lisens», med
+      /* Hit sender Klart folk fra «Kjøp lisens» og «Jeg har en lisens», med
          maskinkoden i adressen. API-et er i .worker/klart.js. */
       :root {
         --ink: #15202e;
@@ -233,21 +233,18 @@
       <p class="merke">Klart · aktivering</p>
       <h1 id="tittel">Kom i gang med Klart</h1>
       <p id="ingress">
-        Prøv Klart gratis i 14 dager, eller kjøp en lisens. Koden du får her, limer du inn i Klart.
-        Selve programmet kobler seg aldri til internett.
+        Klart er gratis å laste ned og prøve: du ser alt det finner i dine egne dokumenter. Med en
+        lisens lagrer du de rensede filene. Koden du får her, limer du inn i Klart. Selve programmet
+        kobler seg aldri til internett.
       </p>
 
       <div>
-        <label for="maskin">Maskinkode (står nederst på aktiveringsskjermen i Klart)</label>
+        <label for="maskin">Maskinkode (står i lisensvinduet i Klart, øverst til høyre)</label>
         <input id="maskin" class="kode-felt" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="off" spellcheck="false" maxlength="19" />
       </div>
 
       <div class="valg" id="valg">
-        <button type="button" class="knapp hoved" id="prove">
-          <strong>Start prøveperioden</strong>
-          <span>14 dager, gratis. Ingen betalingskort.</span>
-        </button>
-        <button type="button" class="knapp" id="kjop" disabled>
+        <button type="button" class="knapp hoved" id="kjop" disabled>
           <strong>Kjøp lisens</strong>
           <span id="kjop-tekst">Kjøp åpner snart.</span>
         </button>
@@ -267,7 +264,7 @@
         <strong id="resultat-tittel">Her er koden din</strong>
         <textarea id="kode" readonly></textarea>
         <div class="rad">
-          <p id="resultat-tekst">Lim den inn i Klart: i feltet nederst på aktiveringsskjermen, eller under lisensen i toppfeltet.</p>
+          <p id="resultat-tekst">Lim den inn i Klart: klikk «Kjøp lisens» øverst til høyre, og lim koden inn i feltet der.</p>
           <button type="button" class="liten" id="kopier">Kopier</button>
         </div>
       </div>
@@ -305,7 +302,7 @@
           feil("");
           $("kode").value = svar.kode;
           $("resultat-tittel").textContent = tittel;
-          var tekst = "Lim den inn i Klart: i feltet nederst på aktiveringsskjermen, eller under lisensen i toppfeltet.";
+          var tekst = "Lim den inn i Klart: klikk «Kjøp lisens» øverst til høyre, og lim koden inn i feltet der.";
           if (svar.utloper) tekst += " Gyldig til og med " + datoTekst(svar.utloper) + ".";
           $("resultat-tekst").textContent = tekst;
           $("resultat").hidden = false;
@@ -315,7 +312,7 @@
         function gyldigMaskin() {
           var m = maskin.value.trim().toUpperCase();
           if (!MONSTER.test(m)) {
-            feil("Skriv inn maskinkoden fra Klart. Den står nederst på aktiveringsskjermen, på formen XXXX-XXXX-XXXX-XXXX.");
+            feil("Skriv inn maskinkoden fra Klart. Den står i lisensvinduet i Klart (øverst til høyre), på formen XXXX-XXXX-XXXX-XXXX.");
             maskin.focus();
             return null;
           }
@@ -337,23 +334,6 @@
         function opptatt(knapp, ja) {
           knapp.disabled = ja;
         }
-
-        $("prove").addEventListener("click", function () {
-          var m = gyldigMaskin();
-          if (!m) return;
-          opptatt(this, true);
-          var knapp = this;
-          api("prove", { maskin: m })
-            .then(function (svar) {
-              visKode(svar, svar.igjen ? "Prøveperioden din er allerede i gang" : "Prøveperioden er klar");
-            })
-            .catch(function (e) {
-              feil(e.message);
-            })
-            .finally(function () {
-              opptatt(knapp, false);
-            });
-        });
 
         $("kjop").addEventListener("click", function () {
           var m = gyldigMaskin();
@@ -406,15 +386,10 @@
                 ? "Testmodus: bruk testkort 4242 4242 4242 4242."
                 : "Betal med kort hos Stripe."
               : "Kjøp åpner snart.";
-            if (!s.prove) {
-              $("prove").disabled = true;
-              $("prove").querySelector("span").textContent = "Åpner snart.";
-            }
           })
           .catch(function () {});
 
         var hva = q.get("hva");
-        if (hva === "prove") $("tittel").textContent = "Prøv Klart gratis";
         if (hva === "kjop") $("tittel").textContent = "Kjøp Klart";
         if (hva === "aktiver") $("tittel").textContent = "Aktiver lisensen din";
 

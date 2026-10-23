@@ -1,4 +1,8 @@
-// Klart: prøveperiode, kjøp og aktiveringskoder.
+// Klart: kjøp og aktiveringskoder.
+//
+// Det finnes ingen prøveperiode lenger. Uten lisens er Klart en gratis
+// forhåndsvisning: alt skannes og vises, og tre rensede filer kan lagres.
+// Prøvekoder som alt er gitt ut, virker til de går ut.
 //
 // Programmet Klart går aldri på nett. Knappene i appen åpner /klart/aktiver i
 // nettleseren, med maskinkoden i adressen. Siden kaller API-et her, og det som
@@ -6,8 +10,8 @@
 // utløpsdato, signert med Ed25519. Appen sjekker signaturen lokalt mot den
 // offentlige nøkkelen den har innebygd (src-tauri/src/aktivering.rs i Klart).
 //
-//   GET  /klart/api/status       hva som er åpent: prøve og kjøp
-//   POST /klart/api/prove        { maskin }          → 14 dager, én gang per maskin
+//   GET  /klart/api/status       hva som er åpent: kjøp
+//   POST /klart/api/prove        410: erstattet av forhåndsvisningen i appen
 //   POST /klart/api/kjop         { maskin, epost? }  → adresse til Stripe Checkout
 //   GET  /klart/api/kvittering?session=cs_…          → koden etter betaling
 //   POST /klart/api/hent         { maskin, epost }   → ny kode til en betalt lisens
@@ -23,7 +27,6 @@
 
 import { DurableObject } from "cloudflare:workers";
 
-const PROVEDAGER = 14;
 const NADE_DAGER = 14; // lisensen varer så mange dager etter at perioden er betalt til
 const MASKINKODE = /^[0-9A-HJKMNP-TV-Z]{4}(-[0-9A-HJKMNP-TV-Z]{4}){3}$/;
 const SIDE = "https://esbjugconsult.com/klart/aktiver/";
@@ -179,34 +182,20 @@ function nyId() {
 
 async function status(env) {
   return {
-    prove: Boolean(env.KLART_LISENSNOKKEL),
+    prove: false,
     kjop: Boolean(env.KLART_LISENSNOKKEL && env.STRIPE_SECRET_KEY && env.STRIPE_PRICE_ID),
     test: testmodus(env),
   };
 }
 
-async function prove(request, env) {
-  const { maskin: rå } = await body(request);
-  const maskin = maskinFra(rå);
-  if (!maskin) return json({ feil: "Maskinkoden ser ikke riktig ut. Den står nederst på aktiveringsskjermen i Klart." }, 400);
-  if (!env.KLART_LISENSNOKKEL) return json({ feil: "Prøveperioden er ikke åpnet ennå." }, 503);
-
-  const tidligere = await lager(env).finnProve(maskin);
-  if (tidligere) {
-    if (tidligere.utloper >= idag()) {
-      // Samme maskin spør igjen innen perioden: samme kode, ingen ny prøvetid.
-      return json({ kode: tidligere.kode, utloper: tidligere.utloper, igjen: true });
-    }
-    return json(
-      { feil: "Denne maskinen har allerede brukt prøveperioden. Kjøp en lisens for å fortsette.", brukt: true },
-      409
-    );
-  }
-  // Siste dag teller med i appen, så 14 dager = i dag + 13.
-  const utloper = omDager(PROVEDAGER - 1);
-  const kode = await lagKode(env, { id: nyId(), type: "prove", navn: "Prøveperiode", maskin, utloper });
-  const lagret = await lager(env).nyProve(maskin, utloper, kode);
-  return json({ kode: lagret.kode, utloper: lagret.utloper });
+async function prove() {
+  return json(
+    {
+      feil: "Prøveperioden er erstattet av en gratis forhåndsvisning. Last ned Klart og prøv det uten kode.",
+      brukt: true,
+    },
+    410
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -231,7 +220,7 @@ async function stripe(env, metode, sti, felt) {
 async function kjop(request, env, url) {
   const { maskin: rå, epost: råEpost } = await body(request);
   const maskin = maskinFra(rå);
-  if (!maskin) return json({ feil: "Maskinkoden ser ikke riktig ut. Den står nederst på aktiveringsskjermen i Klart." }, 400);
+  if (!maskin) return json({ feil: "Maskinkoden ser ikke riktig ut. Den står i lisensvinduet i Klart, øverst til høyre." }, 400);
   if (!(await status(env)).kjop) return json({ feil: "Kjøp åpner snart." }, 503);
 
   const pris = await stripe(env, "GET", `prices/${env.STRIPE_PRICE_ID}`);
