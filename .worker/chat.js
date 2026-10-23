@@ -85,6 +85,13 @@ export async function handleChat(request, env, url) {
     return new Response(r.body, { status: r.status, headers: { "content-type": "application/json", "cache-control": "public, max-age=60" } });
   }
 
+  // Rå puls (hver lagret måling) i et vindu på høyst 30 min, til avspillingen i sanntid.
+  if (path === "/chat/historikk/puls") {
+    const fra = Number(url.searchParams.get("fra")), til = Number(url.searchParams.get("til"));
+    if (!Number.isFinite(fra) || !Number.isFinite(til) || til <= fra || til - fra > 30 * 60e3) return new Response("Bad request", { status: 400 });
+    return hub.fetch(new Request("https://hub/internal/hr-raa", { method: "POST", headers: { "x-role": "internal" }, body: JSON.stringify({ fra, til }) }));
+  }
+
   // Øyeblikkene de siste sju dagene (topp-øyeblikk i avspillingen).
   if (path === "/chat/oyeblikk") {
     const r = await hub.fetch(new Request("https://hub/internal/oyeblikk", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }));
@@ -100,6 +107,9 @@ export async function handleChat(request, env, url) {
     sokTeller = sokTeller.filter((x) => nå - x.t < 60e3);
     if (sokTeller.filter((x) => x.ip === ip).length >= 10) return new Response("For mange søk", { status: 429 });
     sokTeller.push({ ip, t: nå });
+    // Et klokkeslett («hvor var han i går klokken 14:30») tolkes direkte; resten går til Jev.
+    const tp = tidspunkt(q, nå);
+    if (tp) return Response.json({ funnet: tp, sikkerhet: 1 });
     const ob = await (await hub.fetch(new Request("https://hub/internal/oyeblikk", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }))).json();
     if (!ob.length) return Response.json({ funnet: null });
     if (!env.JEV || !env.INTERN_KEY) return new Response("Jev er ikke koblet til", { status: 503 });
@@ -441,6 +451,26 @@ export function osloMidnight(ts) {
   return utc - 3600e3;
 }
 
+// «Hvor var han i går klokken 14:30», «i dag kl. 9», «tirsdag 18.15»: dag (i dag, i går, i forgårs eller en
+// ukedag de siste sju dagene) og klokkeslett. Uten dag og med et klokkeslett som ikke har vært ennå i dag: i går.
+export function tidspunkt(q, nå) {
+  const t = q.toLowerCase();
+  const m = t.match(/\bkl(?:\.|okk(?:a|en))?\s*(\d{1,2})(?:[:.](\d{2}))?/) || t.match(/\b(\d{1,2})[:.](\d{2})\b/);
+  if (!m) return null;
+  const h = +m[1], mi = +(m[2] || 0);
+  if (h > 23 || mi > 59) return null;
+  const UKE = ["søndag", "mandag", "tirsdag", "onsdag", "torsdag", "fredag", "lørdag"];
+  const idag = UKE.indexOf(new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", weekday: "long" }).format(nå));
+  let siden = /forgårs/.test(t) ? 2 : /i\s*går/.test(t) ? 1 : /i\s*dag/.test(t) ? 0 : null;
+  if (siden == null) { const i = UKE.findIndex((d) => t.includes(d)); if (i >= 0) siden = (idag - i + 7) % 7; }
+  let ts = osloMidnight(nå - (siden || 0) * 864e5) + (h * 60 + mi) * 60e3;
+  if (ts > nå && siden == null) ts -= 864e5;
+  if (ts > nå || ts < nå - 7 * 864e5) return null;
+  const navn = new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", weekday: "long", day: "numeric", month: "numeric" }).format(ts);
+  const kl = new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", hour: "2-digit", minute: "2-digit" }).format(ts);
+  return { id: "tid", type: "tid", ts, tekst: `Her var han ${navn} kl. ${kl}` };
+}
+
 // Søk i avspillingen per adresse, siste minutt (per isolat; nok til å stoppe misbruk).
 let sokTeller = [];
 
@@ -599,6 +629,10 @@ export class ChatHub {
         if (b.k === "tomat") this.tomatVarsel(decodeURIComponent(request.headers.get("x-by") || ""));
         return Response.json(this.kast());
       }
+      if (url.pathname === "/internal/hr-raa") {
+        return Response.json(this.sql.exec(`SELECT ts, bpm FROM hr WHERE ts >= ? AND ts < ? ORDER BY ts`, b.fra, b.til).toArray().map((r) => [r.ts, r.bpm]),
+          { headers: { "cache-control": "public, max-age=30" } });
+      }
       if (url.pathname === "/internal/oyeblikk") {
         return Response.json(this.oyeblikk());
       }
@@ -747,7 +781,7 @@ export class ChatHub {
       const v = Number.isFinite(bpm) && bpm > 25 && bpm < 240 ? Math.round(bpm) : null;
       const now = Date.now();
       this.hr = { bpm: v, ts: now };
-      if (v && now - this.hrSaved >= 4000) {
+      if (v && now - this.hrSaved >= 900) {   // hver måling klokka sender (høyst én i sekundet), til avspillingen
         this.hrSaved = now;
         this.sql.exec(`INSERT OR REPLACE INTO hr (ts, bpm) VALUES (?, ?)`, now, v);
       }

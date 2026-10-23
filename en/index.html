@@ -1822,12 +1822,12 @@ let avsp = null;
 if (HUS) setTimeout(() => {   // etter resten av skriptet (kl og dagNr defineres lenger ned)
   const bar = document.createElement('div');
   bar.className = 'hist gl';
-  bar.innerHTML = '<div class="h-rad"><span class="h-dager"></span><button type="button" class="h-topp" aria-expanded="false">Topp</button><form class="h-sok"><input type="search" placeholder="Spør: når hadde han minst batteri?" aria-label="Søk i historikken" maxlength="200"></form></div>'
+  bar.innerHTML = '<div class="h-rad"><span class="h-dager"></span><button type="button" class="h-topp" aria-expanded="false">Topp</button><form class="h-sok"><input type="search" placeholder="Spør: hvor var han i går kl. 14? når var pulsen høyest?" aria-label="Søk i historikken" maxlength="200"></form></div>'
     + '<div class="h-rad"><button type="button" class="h-tilb" aria-label="En time tilbake">−1 t</button><button type="button" class="h-spill" aria-label="Spill av">▶</button><button type="button" class="h-frem" aria-label="En time fram">+1 t</button><input type="range" class="h-tid" min="0" max="1000" value="0" aria-label="Tid"><span class="h-kl">–</span><button type="button" class="h-fart">1×</button><button type="button" class="h-live" aria-pressed="true">Live</button></div>'
     + '<div class="h-liste" hidden></div><p class="h-svar" hidden></p>';
   document.body.append(bar);
   const q = c => bar.querySelector(c), dager = q('.h-dager'), spill = q('.h-spill'), tid = q('.h-tid'), kl2 = q('.h-kl'), liveK = q('.h-live'), svar = q('.h-svar'), liste = q('.h-liste');
-  const ukedag = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', weekday: 'short' });
+  const ukedag = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', weekday: 'short' }), klS = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', hour: '2-digit', minute: '2-digit', second: '2-digit' });
   for (let i = 6; i >= 0; i--) {
     const t = Date.now() - i * 864e5, b = document.createElement('button');
     b.type = 'button'; b.dataset.dag = dagNr.format(t); b.textContent = ukedag.format(t); b.setAttribute('aria-pressed', 'false');
@@ -1835,8 +1835,21 @@ if (HUS) setTimeout(() => {   // etter resten av skriptet (kl og dagNr defineres
   }
   const trykket = dag => bar.querySelectorAll('button[aria-pressed]').forEach(x => x.setAttribute('aria-pressed', dag ? x.dataset.dag === dag : x === liveK));
   const fortell = t => { svar.textContent = t; svar.hidden = !t; };
+  // Sanntid som standard: ett sekund avspilling er ett sekund av dagen. 10× og 60× for å komme raskere fram.
+  const FARTER = [1, 10, 60];
   let fart = 1;
-  // Dagen fra midnatt til midnatt (eller til nå). En dag spilles på 60 s (5×: 12 s).
+  // Rå puls (hver måling) hentes i vinduer rundt tiden som spilles, så pulsen slår som den gjorde.
+  const finPuls = T => {
+    const f = avsp.fin;
+    if (f && T >= f.fra + 5 * 60e3 && T <= f.til - 60e3) return f.pts;
+    if (!avsp.henter) {
+      avsp.henter = true;
+      const fra = Math.floor(T - 6 * 60e3), til = fra + 25 * 60e3, a = avsp;
+      fetch('/chat/historikk/puls?fra=' + fra + '&til=' + til).then(r => r.json()).then(pts => { if (avsp === a) a.fin = { fra, til, pts }; }).catch(() => {}).finally(() => { a.henter = false; });
+    }
+    return f && T >= f.fra && T <= f.til ? f.pts : null;
+  };
+  // Dagen fra midnatt til midnatt (eller til nå).
   async function last(dag) {
     if (avsp && avsp.dag === dag) return;
     const j = await (await fetch('/chat/historikk?dag=' + dag)).json();
@@ -1852,8 +1865,10 @@ if (HUS) setTimeout(() => {   // etter resten av skriptet (kl og dagNr defineres
     const T = avsp.t0 + avsp.k * (avsp.t1 - avsp.t0);
     skew = T - Date.now();
     // Sporet fram til T, og posisjonen da.
-    const del = []; let p = null;
-    for (const x of avsp.pts) { if (!x) { del.push(null); continue; } if (x[2] > T) break; del.push(x); p = x; }
+    const del = []; let p = null, neste = null;
+    for (const x of avsp.pts) { if (!x) { del.push(null); continue; } if (x[2] > T) { neste = x; break; } del.push(x); p = x; }
+    // Prikken glir mellom to punkter i sporet (høyst 3 min mellom dem), så den beveger seg jevnt i sanntid.
+    if (p && neste && neste[2] - p[2] < 180e3) { const f = (T - p[2]) / (neste[2] - p[2]); p = [p[0] + (neste[0] - p[0]) * f, p[1] + (neste[1] - p[1]) * f, T]; del.push(p); }
     p = p || avsp.pts.find(Boolean);
     trail = del;
     live = p ? { lat: p[0], lon: p[1], ts: p[2], kjent: plan && plan.geo && plan.geo.buss && påTomta(p) ? plan.geo.sted : null } : null;
@@ -1861,20 +1876,22 @@ if (HUS) setTimeout(() => {   // etter resten av skriptet (kl og dagNr defineres
     const t = { sted: avsp.sted };
     for (const [ts, kilde, d] of avsp.tele) { if (ts > T) break; t[kilde] = { ...d, ts: T }; }
     tele = t;
-    puls = avsp.hr.filter(x => x[0] > T - 5 * 60e3 && x[0] <= T);
+    puls = (finPuls(T) || avsp.hr).filter(x => x[0] > T - 5 * 60e3 && x[0] <= T);
     const sist = puls[puls.length - 1];
     hrTop.avsp(sist && T - sist[0] < 60e3 ? sist[1] : null);
     tegn(); tegnPuls(); tegnNaa();
-    kl2.textContent = ukedag.format(T) + ' ' + kl.format(T);
+    kl2.textContent = ukedag.format(T) + ' ' + klS.format(T);
     tid.value = Math.round(avsp.k * 1000);
   }
   function start() { avsp.spiller = true; spill.textContent = '❚❚'; avsp.sist = performance.now(); requestAnimationFrame(steg); }
   function stopp() { if (avsp) avsp.spiller = false; spill.textContent = '▶'; }
   function steg(nå) {
     if (!avsp || !avsp.spiller) return;
-    const k = Math.min(1, avsp.k + (nå - avsp.sist) * fart / 60000);
-    if (nå - avsp.sist > 90 || k >= 1) { vis(k); avsp.sist = nå; }   // ca. ti bilder i sekundet holder
-    if (k >= 1) { stopp(); return; }
+    if (nå - avsp.sist > 200) {   // fem bilder i sekundet holder
+      const k = Math.min(1, avsp.k + (nå - avsp.sist) * fart / (avsp.t1 - avsp.t0));
+      vis(k); avsp.sist = nå;
+      if (k >= 1) { stopp(); return; }
+    }
     requestAnimationFrame(steg);
   }
   const hopp = timer => { if (!avsp) return; stopp(); vis(avsp.k + timer * 3600e3 / (avsp.t1 - avsp.t0)); };
@@ -1884,10 +1901,11 @@ if (HUS) setTimeout(() => {   // etter resten av skriptet (kl og dagNr defineres
     vis((o.ts - avsp.t0) / (avsp.t1 - avsp.t0));
     if (live) kart.easeTo({ center: [live.lon, live.lat], zoom: Math.max(kart.getZoom(), 16), duration: 900 });
     fortell(o.tekst);
+    start();   // spiller videre i sanntid fra øyeblikket
   }
   spill.onclick = () => { if (!avsp) { const b = dager.lastElementChild; last(b.dataset.dag).then(() => { vis(0); start(); }); return; } if (avsp.spiller) stopp(); else { if (avsp.k >= 1) avsp.k = 0; start(); } };
   q('.h-tilb').onclick = () => hopp(-1); q('.h-frem').onclick = () => hopp(1);
-  q('.h-fart').onclick = e => { fart = fart === 1 ? 5 : 1; e.target.textContent = fart + '×'; };
+  q('.h-fart').onclick = e => { fart = FARTER[(FARTER.indexOf(fart) + 1) % FARTER.length]; e.target.textContent = fart + '×'; };
   tid.oninput = () => { if (avsp) { stopp(); vis(tid.value / 1000); } };
   liveK.onclick = () => { avsp = null; window.__avsp = false; stopp(); trykket(null); kl2.textContent = '–'; fortell(''); sistSpor = ''; forste = true; hent(); };
   q('.h-topp').onclick = async e => {
