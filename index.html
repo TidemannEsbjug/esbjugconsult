@@ -478,8 +478,20 @@
   #kart{position:absolute;inset:0;z-index:0;background:#1c0f07;opacity:0;transform:scale(1.035);transition:opacity 1.1s ease,transform 1.8s cubic-bezier(.2,.8,.2,1)}
   .kart-klar #kart{opacity:1;transform:none}
   /* Mens kartet lastes: bare «Esbjug Consult», lite, midt i. Kartet tones inn over det. */
-  .kart-venter{position:absolute;inset:0;z-index:0;display:grid;place-items:center;font:600 11px/1 "SF Mono",Menlo,monospace;letter-spacing:.32em;text-transform:uppercase;color:rgba(246,231,210,.42);transition:opacity .8s ease;pointer-events:none}
+  /* Lasteskjermen mens kartet hentes: en rav-prikk med en ring som pulserer rolig ut (som prikken hans på kartet),
+     «Esbjug Consult» og en dempet linje under. Tones bort når kartet er tegnet. */
+  .kart-venter{position:absolute;inset:0;z-index:0;display:grid;place-items:center;pointer-events:none;transition:opacity .9s ease;background:radial-gradient(60% 50% at 50% 50%,#2a1a10,#1c0f07)}
   .kart-klar .kart-venter{opacity:0}
+  .kv-i{display:flex;flex-direction:column;align-items:center;gap:12px;animation:kvInn 1.2s ease both}
+  @keyframes kvInn{from{opacity:0;transform:translateY(6px)}}
+  .kv-prikk{position:relative;width:12px;height:12px;margin-bottom:10px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,#FFD23F 45%,#FF6A3D);box-shadow:0 0 14px 4px rgba(255,210,63,.45)}
+  .kv-prikk::before,.kv-prikk::after{content:"";position:absolute;inset:-3px;border-radius:50%;border:1.5px solid rgba(255,210,63,.6);animation:kvRing 2.4s cubic-bezier(.2,.6,.3,1) infinite}
+  .kv-prikk::after{animation-delay:1.2s}
+  @keyframes kvRing{from{transform:scale(1);opacity:1}to{transform:scale(4.2);opacity:0}}
+  .kv-i b{font:italic 400 clamp(24px,2.6vw,34px)/1 var(--serif);letter-spacing:-.01em;color:#f6e7d2}
+  .kv-t{font:500 10.5px/1 "SF Mono",Menlo,monospace;letter-spacing:.24em;text-transform:uppercase;color:rgba(246,231,210,.4);animation:kvPust 2.4s ease-in-out infinite}
+  @keyframes kvPust{50%{opacity:.45}}
+  @media (prefers-reduced-motion:reduce){.kv-prikk::before,.kv-prikk::after,.kv-t,.kv-i{animation:none}}
   @media (prefers-reduced-motion:reduce){#kart{transform:none;transition:opacity .4s ease}}
   #kart.leaflet-container{font-family:inherit}
   #kart .leaflet-control-attribution{background:rgba(5,8,26,.6);color:rgba(255,255,255,.45);font-size:10px}
@@ -559,7 +571,9 @@
   .sv b{display:block;margin-top:3px;font:640 clamp(17px,1.5vw,21px)/1.15 var(--serif);letter-spacing:-.01em;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .sv .bar{display:block;margin-top:5px;height:4px;border-radius:2px;background:rgba(0,32,91,.12);overflow:hidden}
   .sv .bar i{display:block;height:100%;width:0;border-radius:2px;background:#16a34a;transition:width .8s ease}
-  .sv.lav .bar i{background:#e0233c}.sv.lader .bar i{background:linear-gradient(90deg,#16a34a,#FFD23F)}
+  .sv.lav .bar i{background:#e0233c}
+  /* Lader: et lite, tynt lyn i samme dempede farge som teksten, ikke et gult ikon som drar blikket. */
+  .sv.lader b::after{content:"";display:inline-block;width:6px;height:10px;margin-left:5px;vertical-align:1px;background:currentColor;opacity:.32;clip-path:polygon(60% 0,0 58%,45% 58%,35% 100%,100% 40%,55% 40%)}
   .sv.ny b{animation:svNy 1.2s ease}
   .sv{position:relative}
   .sv .fon,.sv .pil{position:absolute;right:0;top:0;transition:transform .9s cubic-bezier(.2,.8,.2,1)}
@@ -633,7 +647,7 @@
 <body>
 <script>document.body.classList.add('forspill');setTimeout(()=>document.body.classList.remove('forspill'),8000)</script>
 <header class="hero">
-  <div class="kart-venter" aria-hidden="true">Esbjug Consult</div><div id="kart" aria-label="Kart: hvor Tidemann er nå"></div>
+  <div class="kart-venter" aria-hidden="true"><div class="kv-i"><span class="kv-prikk"></span><b>Esbjug Consult</b><span class="kv-t">finner Tidemann …</span></div></div><div id="kart" aria-label="Kart: hvor Tidemann er nå"></div>
   <div class="hero-i">
   <div class="flyt"><button type="button" class="kartknapp gl" aria-label="Vis kartet" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="kk-kart" d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/><path class="kk-x" d="M6 6l12 12M18 6 6 18"/></svg></button><div class="topp gl"><a class="lang" href="/en/" hreflang="en" aria-label="Språk: norsk. Bytt til engelsk"><span class="lang-k" aria-hidden="true"></span><span class="lf no" aria-hidden="true"><svg viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span class="lf gb" aria-hidden="true"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg></span></a>
   <div class="st"><div class="st-i tl-a" hidden data-av data-l="her nå"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">her nå</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><div class="st-i tl-b" hidden data-av data-l="unike besøkende" data-ny="+1 · du er nr. {n}" data-er="Du er nr. {n}" data-var="Du var nr. {n}"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unike besøkende</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><span class="tl-sr"></span></div>
@@ -1425,14 +1439,14 @@ const sett = (k, v, pct, kl) => {
 function tegn() {
   const nå = Date.now() + skew;
   const i = tele.iphone || {}, w = tele.watch || {}, st = tele.sted;
-  sett('ibat', i.bat != null ? i.bat + ' %' + (i.lader ? ' ⚡' : '') : null, i.bat, i.lader);
-  sett('wbat', w.bat != null ? w.bat + ' %' + (w.lader ? ' ⚡' : '') : null, w.bat, w.lader);
+  sett('ibat', i.bat != null ? i.bat + ' %' : null, i.bat, i.lader);
+  sett('wbat', w.bat != null ? w.bat + ' %' : null, w.bat, w.lader);
   sett('gatt', i.meter != null ? (i.meter / 1000).toFixed(1).replace('.', TX.komma) + ' km' : trail.length ? (km(trail) / 1000).toFixed(1).replace('.', TX.komma) + ' km' : null);
   // Bare typen, ikke merkenavnet: earbuds, headset eller ingen.
   sett('lyd', i.lyd == null ? null : /^(høyttaler|telefonen)$/.test(i.lyd) ? TX.ingen : /pods|buds|pop|ear|fit|dots/i.test(i.lyd) ? 'Earbuds' : 'Headset');
   sett('nett', i.nett === 'Wi-Fi' ? 'Wi-Fi' : i.nett === 'mobil' || i.nett === 'mobilnett' ? TX.mobil : i.nett === 'ingen' ? TX.utenNett : i.nett);
   const a = tele.android || {};
-  sett('abat', a.bat != null ? a.bat + ' %' + (a.lader ? ' ⚡' : '') : null, a.bat, a.lader);
+  sett('abat', a.bat != null ? a.bat + ' %' : null, a.bat, a.lader);
   for (const k of ['iphone', 'watch']) inn(k, tele[k]);
   if (!live) { $('.s-navn').textContent = TX.ingenPos; $('.s-live').textContent = TX.venter; document.body.classList.add('gammel'); return; }
   // Posisjonen kommer bare når han flytter seg; telefonen sender ellers hvert 5. s, så den teller som livstegn.

@@ -259,6 +259,7 @@ T_NY = [
      '<b>Tidemann is asleep</b><span>Up at 04:00. Feel free to write, and I\'ll reply when I\'m awake.</span>'),
     # Kartet i heroen (fra 22.10.2026): HTML-en. Teksten i kartskriptet velger selv språk etter <html lang>.
     ('aria-label="Kart: hvor Tidemann er nå"', 'aria-label="Map: where Tidemann is now"'),
+    ('<span class="kv-t">finner Tidemann …</span>', '<span class="kv-t">finding Tidemann …</span>'),
     ('aria-label="Vis kartet"', 'aria-label="Show the map"'),
     ('<b class="s-navn">Henter posisjonen …</b>', '<b class="s-navn">Finding him …</b>'),
     ('aria-label="Kast en tomat på Tidemann">🍅 <span>Kast tomat</span>', 'aria-label="Throw a tomato at Tidemann">🍅 <span>Throw a tomato</span>'),
