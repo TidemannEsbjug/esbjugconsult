@@ -111,8 +111,15 @@ export async function handleChat(request, env, url) {
   }
 
   if (path === "/chat/hr") {
-    const r = ["dag", "uke", "mnd"].includes(url.searchParams.get("r")) ? url.searchParams.get("r") : "dag";
+    const r = ["time", "dag", "uke", "mnd"].includes(url.searchParams.get("r")) ? url.searchParams.get("r") : "dag";
     return hub.fetch(new Request("https://hub/internal/hr", { method: "POST", headers: { "x-role": "internal" }, body: JSON.stringify({ r }) }));
+  }
+
+  // Bevegelseshistorikk for akselerometrene (iPhone og Apple Watch), som pulsen: siste time, i dag, 7 dager, 30 dager.
+  if (path === "/chat/bev") {
+    const r = ["time", "dag", "uke", "mnd"].includes(url.searchParams.get("r")) ? url.searchParams.get("r") : "time";
+    const k = url.searchParams.get("k") === "watch" ? "watch" : "iphone";
+    return hub.fetch(new Request("https://hub/internal/bev", { method: "POST", headers: { "x-role": "internal" }, body: JSON.stringify({ r, k }) }));
   }
 
   if (path === "/chat/besok" && request.method === "POST") {
@@ -431,6 +438,8 @@ export class ChatHub {
     // The owner's position from his iPhone (raw, private). The public map only gets what sporPublic() lets through.
     // How much the phone moves, every 5 s (for the movement graph on the map page). Kept a day.
     this.sql.exec(`CREATE TABLE IF NOT EXISTS bev (ts INTEGER PRIMARY KEY, v REAL)`);
+    // Bevegelse fra akselerometrene over tid (iPhone: «bevegelse», Apple Watch: «haand»; snitt i g uten tyngdekraft). 35 dager.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS bevegelse (k TEXT, ts INTEGER, v REAL, PRIMARY KEY (k, ts))`);
     // Notes on the front page, as posts: the newest on top. Editing keeps the original time.
     this.sql.exec(`CREATE TABLE IF NOT EXISTS notater (id INTEGER PRIMARY KEY AUTOINCREMENT, v TEXT, ts INTEGER)`);
     {
@@ -536,6 +545,9 @@ export class ChatHub {
       }
       if (url.pathname === "/internal/spor") {
         return Response.json(this.spor(), { headers: { "cache-control": "no-store" } });
+      }
+      if (url.pathname === "/internal/bev") {
+        return Response.json(this.bevRange(b.k, b.r), { headers: { "cache-control": "no-store" } });
       }
       if (url.pathname === "/internal/hr") {
         return Response.json(this.hrRange(b.r), { headers: { "cache-control": "no-store" } });
@@ -722,6 +734,13 @@ export class ChatHub {
       const gml = this.sql.exec(`SELECT v FROM kv WHERE k=?`, `tele:${kilde}`).toArray()[0];
       const ny = { ...(gml ? JSON.parse(gml.v) : {}), ...ren, ts: Date.now() };
       this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, `tele:${kilde}`, JSON.stringify(ny));
+      {
+        const v = kilde === "iphone" ? ren.bevegelse : kilde === "watch" ? ren.haand : undefined;
+        if (typeof v === "number" && v >= 0 && v < 20) {
+          this.sql.exec(`INSERT OR REPLACE INTO bevegelse (k, ts, v) VALUES (?, ?, ?)`, kilde, ny.ts, v);
+          if (ny.ts - (this.bevegelsePruned || 0) > 3600e3) { this.bevegelsePruned = ny.ts; this.sql.exec(`DELETE FROM bevegelse WHERE ts < ?`, ny.ts - 35 * 864e5); }
+        }
+      }
       if (kilde === "iphone" && typeof ren.bevegelse === "number") {
         this.sql.exec(`INSERT OR REPLACE INTO bev (ts, v) VALUES (?, ?)`, ny.ts, ren.bevegelse);
         if (ny.ts - (this.bevPruned || 0) > 3600e3) { this.bevPruned = ny.ts; this.sql.exec(`DELETE FROM bev WHERE ts < ?`, ny.ts - 864e5); }
@@ -1220,6 +1239,16 @@ export class ChatHub {
   // pts = [[minutes since start, bpm], ...]; beats = the sum of the per-minute averages (one minute of measuring at 70 bpm
   // = 70 beats), mins = measured minutes. The endpoint is public, so each period is reused for 30 s (dag) or 2 min.
   hrRange(r = "dag") {
+    if (r === "time") {
+      // Siste time: hver lagrede måling (én per ~4 s), med minutter (desimaler) fra starten.
+      const now = Date.now(), start = now - 3600e3;
+      const rows = this.sql.exec(`SELECT ts, bpm FROM hr WHERE ts >= ? ORDER BY ts`, start).toArray();
+      const pts = rows.map((x) => [Math.round((x.ts - start) / 600) / 100, x.bpm]);
+      let lo = null, hi = null, sum = 0;
+      for (const [, b] of pts) { lo = lo == null ? b : Math.min(lo, b); hi = hi == null ? b : Math.max(hi, b); sum += b; }
+      const mins = new Set(rows.map((x) => Math.floor(x.ts / 60000))).size;
+      return { r, start, now, step: 0.1, live: this.liveHr(), pts, beats: pts.length ? Math.round(sum / pts.length * mins) : 0, mins, lo, hi };
+    }
     const P = { dag: [0, 1, 30e3], uke: [6, 10, 120e3], mnd: [29, 60, 120e3] }[r] || [0, 1, 30e3];
     const now = Date.now(), start = osloMidnight(now - P[0] * 864e5), step = P[1];
     this.hrMemo = this.hrMemo instanceof Map ? this.hrMemo : new Map();
@@ -1240,6 +1269,21 @@ export class ChatHub {
 
   setting(k) {
     return this.sql.exec(`SELECT v FROM kv WHERE k=?`, k).toArray()[0]?.v;
+  }
+
+  // Bevegelse over tid for ett akselerometer: siste time (hver måling), i dag (per minutt), 7 dager (per 10 min),
+  // 30 dager (per time). Minutter fra starten, som pulsen; lavest/snitt/høyest i g og målt tid i minutter.
+  bevRange(k = "iphone", r = "time") {
+    const now = Date.now();
+    const start = r === "time" ? now - 3600e3 : osloMidnight(now - ({ dag: 0, uke: 6, mnd: 29 }[r] ?? 0) * 864e5);
+    const step = { time: 0, dag: 1, uke: 10, mnd: 60 }[r] ?? 1;
+    const rows = step
+      ? this.sql.exec(`SELECT CAST((ts - ?) / ? AS INTEGER) * ? AS m, AVG(v) AS v FROM bevegelse WHERE k=? AND ts >= ? GROUP BY 1 ORDER BY 1`, start, step * 60000, step, k, start).toArray()
+      : this.sql.exec(`SELECT (ts - ?) / 60000.0 AS m, v FROM bevegelse WHERE k=? AND ts >= ? ORDER BY ts`, start, k, start).toArray();
+    const pts = rows.map((x) => [Math.round(x.m * 100) / 100, Math.round(x.v * 1000) / 1000]);
+    const t = this.sql.exec(`SELECT MIN(v) AS lo, AVG(v) AS av, MAX(v) AS hi, COUNT(DISTINCT CAST(ts / 60000 AS INTEGER)) AS mins FROM bevegelse WHERE k=? AND ts >= ?`, k, start).one();
+    const r3 = (x) => (x == null ? null : Math.round(x * 1000) / 1000);
+    return { k, r, start, now, step: step || 0.1, pts, lo: r3(t.lo), av: r3(t.av), hi: r3(t.hi), mins: t.mins || 0 };
   }
 
   // Push for a visit (when the owner has turned it on in the app). Own caps: one per visitor per 15 s (stops reload
