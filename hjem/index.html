@@ -513,6 +513,9 @@
   .meg::before,.meg::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid rgba(255,210,63,.7);animation:megRing 2.4s ease-out infinite}
   .meg::after{animation-delay:1.2s}
   @keyframes megRing{from{transform:scale(1);opacity:1}to{transform:scale(3.4);opacity:0}}
+  /* Hjemme (bare /hjem/): mindre prikk, så den kan flytte seg rundt i huset. */
+  .meg.liten{width:11px;height:11px;box-shadow:0 0 10px 3px rgba(255,210,63,.6),0 0 26px 8px rgba(255,106,61,.3)}
+  .meg.liten::before,.meg.liten::after{inset:-3px;border-width:1.5px}
   .gammel .meg{filter:grayscale(.6) brightness(.8)}.gammel .meg::before,.gammel .meg::after{animation:none;opacity:0}
   /* Panelene: stedet under toppmodulen, sensorene oppe til høyre. Samme glass som toppmodulen. */
   .paneler{flex:1;width:100%;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-top:14px}
@@ -1578,13 +1581,12 @@ function tegn() {
   $('.s-sub').textContent = sub || '';
   $('.s-sub').hidden = !sub;
   // Hjemme (bare /hjem/): huset tegnes i kartet, prikken står midt i rommet han er i (eller midt i huset), og
-  // GPS-sporet inne i og rundt huset tas bort, for innendørs er GPS bare krusedull.
+  // GPS-sporet inne i og rundt huset tas bort, for innendørs er GPS bare krusedull. Sporet fra veien går inn til prikken.
   const hus = husNå();
   const pos = hus ? [hus.pos[1], hus.pos[0]] : [live.lat, live.lon];
   let spor = linjer(trail);
   if (hus) spor = spor.map(l => l.filter(q => dist(q, [hus.senter[1], hus.senter[0]]) > 35)).filter(l => l.length);
-  if (hus) { if (!spor.length) spor = [[pos]]; }   // hjemme går ingen strek inn til prikken
-  else if (spor.length) spor[spor.length - 1].push(pos); else spor = [[pos]];
+  if (spor.length) spor[spor.length - 1].push(pos); else spor = [[pos]];
   stier = spor;
   if (!kart || !kart.getSource('spor')) return;
   const lngLat = [pos[1], pos[0]];
@@ -1593,8 +1595,9 @@ function tegn() {
   const sporNokkel = trail.length + ':' + (trail[trail.length - 1]?.[2] || 0) + ':' + pos;
   if (sporNokkel !== sistSpor) { sistSpor = sporNokkel; kart.getSource('spor').setData({ type: 'Feature', geometry: { type: 'MultiLineString', coordinates: spor.map(l => l.map(p => [p[1], p[0]])) } }); }
   megMark.setLngLat(lngLat); if (!megMark._map) megMark.addTo(kart);
+  megMark.getElement().querySelector('.meg').classList.toggle('liten', !!hus);
   // Hjemme zoomes kartet helt inn på huset; ute er det vanlig zoom.
-  const zoom = hus ? 20 : 14;
+  const zoom = hus ? 18.6 : 14;
   if (forste) { forste = false; varHjemme = !!hus; kart.jumpTo({ center: lngLat, zoom }); }
   else if (holder || Date.now() - rort < TILBAKE) return;
   else if (rort || varHjemme !== !!hus) {
@@ -1755,7 +1758,8 @@ function husNå() {
   const alle = plan.rom.flatMap(x => x.gulv), senter = geoPkt(...midt(alle));
   return { r, etg: r ? etasje(r) : 0, pos: r && r.gulv.length ? geoPkt(...midt(r.gulv)) : senter, senter };
 }
-// Bare etasjen han er i: gulvene (rommet hans i rødt), veggene, vinduene og dørene. Tegnes på nytt bare når noe endres.
+// Bare etasjen han er i, enkelt: gulvene som én lys flate, tynne vegger, rommet hans svakt rødt. Zoomer man langt
+// inn, står rommets navn ved prikken. Tegnes på nytt bare når noe endres.
 let husTegnet = '';
 function husIKart(hus) {
   if (!HUS || !kart.isStyleLoaded()) return;
@@ -1763,20 +1767,23 @@ function husIKart(hus) {
   if (nokkel === husTegnet) return;
   husTegnet = nokkel;
   const f = [];
-  if (hus) for (const x of plan.rom) {
-    if (etasje(x) !== hus.etg) continue;
-    if (x.gulv.length > 2) f.push({ type: 'Feature', properties: { t: 'gulv', her: x === hus.r }, geometry: { type: 'Polygon', coordinates: [[...x.gulv, x.gulv[0]].map(p => geoPkt(...p))] } });
-    for (const [k, t] of [['vegger', 'vegg'], ['vinduer', 'vindu'], ['dorer', 'dor'], ['apninger', 'dor']])
-      for (const v of x[k]) f.push({ type: 'Feature', properties: { t }, geometry: { type: 'LineString', coordinates: [geoPkt(v[0], v[1]), geoPkt(v[2], v[3])] } });
+  if (hus) {
+    for (const x of plan.rom) {
+      if (etasje(x) !== hus.etg) continue;
+      if (x.gulv.length > 2) f.push({ type: 'Feature', properties: { t: 'gulv', her: x === hus.r }, geometry: { type: 'Polygon', coordinates: [[...x.gulv, x.gulv[0]].map(p => geoPkt(...p))] } });
+      for (const v of x.vegger) f.push({ type: 'Feature', properties: { t: 'vegg' }, geometry: { type: 'LineString', coordinates: [geoPkt(v[0], v[1]), geoPkt(v[2], v[3])] } });
+    }
+    if (hus.r) f.push({ type: 'Feature', properties: { t: 'navn', navn: hus.r.navn }, geometry: { type: 'Point', coordinates: hus.pos } });
   }
   const data = { type: 'FeatureCollection', features: f };
   if (kart.getSource('hus')) { kart.getSource('hus').setData(data); return; }
   kart.addSource('hus', { type: 'geojson', data });
   const før = kart.getLayer('spor-glod') ? 'spor-glod' : undefined;
-  kart.addLayer({ id: 'hus-gulv', type: 'fill', source: 'hus', filter: ['==', ['get', 't'], 'gulv'], paint: { 'fill-color': ['case', ['get', 'her'], '#BA0C2F', '#fffaf0'], 'fill-opacity': ['case', ['get', 'her'], .45, .85] } }, før);
-  kart.addLayer({ id: 'hus-vegg', type: 'line', source: 'hus', filter: ['==', ['get', 't'], 'vegg'], layout: { 'line-cap': 'round' }, paint: { 'line-color': '#00205B', 'line-width': ['interpolate', ['exponential', 2], ['zoom'], 17, 1, 22, 10] } }, før);
-  kart.addLayer({ id: 'hus-vindu', type: 'line', source: 'hus', filter: ['==', ['get', 't'], 'vindu'], paint: { 'line-color': '#5b8fd6', 'line-width': ['interpolate', ['exponential', 2], ['zoom'], 17, 1, 22, 8] } }, før);
-  kart.addLayer({ id: 'hus-dor', type: 'line', source: 'hus', filter: ['==', ['get', 't'], 'dor'], paint: { 'line-color': '#fffaf0', 'line-width': ['interpolate', ['exponential', 2], ['zoom'], 17, 1.5, 22, 12] } }, før);
+  kart.addLayer({ id: 'hus-gulv', type: 'fill', source: 'hus', filter: ['==', ['get', 't'], 'gulv'], paint: { 'fill-color': ['case', ['get', 'her'], '#BA0C2F', '#fffaf0'], 'fill-opacity': ['case', ['get', 'her'], .3, .14] } }, før);
+  kart.addLayer({ id: 'hus-vegg', type: 'line', source: 'hus', filter: ['==', ['get', 't'], 'vegg'], layout: { 'line-cap': 'round' }, paint: { 'line-color': '#fffaf0', 'line-opacity': .75, 'line-width': ['interpolate', ['linear'], ['zoom'], 17, .6, 21, 2.2] } }, før);
+  kart.addLayer({ id: 'hus-navn', type: 'symbol', source: 'hus', minzoom: 19.5, filter: ['==', ['get', 't'], 'navn'],
+    layout: { 'text-field': ['get', 'navn'], 'text-font': ['Noto Sans Italic'], 'text-size': 13, 'text-offset': [0, 1.3], 'text-anchor': 'top' },
+    paint: { 'text-color': '#fffaf0', 'text-halo-color': 'rgba(0,0,0,.55)', 'text-halo-width': 1.4 } });
 }
 function gjor(v) { const e = $('.gjor'); e.hidden = !GJOR[v]; if (GJOR[v]) $('.g-navn').textContent = GJOR[v]; }
 const kl = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', hour: '2-digit', minute: '2-digit' }), dag = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', day: 'numeric', month: 'long' }), dagNr = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Oslo' });
