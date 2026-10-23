@@ -177,6 +177,7 @@ T = [
     ('data-fin="hjerteslag i dag" data-uke="hjerteslag siste 7 dager" data-mnd="hjerteslag siste 30 dager" data-t="t"', 'data-fin="heartbeats today" data-uke="heartbeats in the last 7 days" data-mnd="heartbeats in the last 30 days" data-t="h"'),
     ('<span class="hpp-cl">hjerteslag i dag</span>', '<span class="hpp-cl">heartbeats today</span>'),
     ('aria-selected="true">I dag<', 'aria-selected="true">Today<'),
+    ('<span class="mono s-t h-t" data-t="Hjemme">Hjemme</span>', '<span class="mono s-t h-t" data-t="At home">At home</span>'),
     ('aria-label="Bevegelse" hidden data-iphone="Bevegelse · iPhone" data-watch="Bevegelse · Apple Watch"', 'aria-label="Movement" hidden data-iphone="Movement · iPhone" data-watch="Movement · Apple Watch"'),
     ('<span class="hpp-cl bvp-o">bevegelse nå</span>', '<span class="hpp-cl bvp-o">movement now</span>'),
     ('aria-selected="false">7 dager<', 'aria-selected="false">7 days<'),

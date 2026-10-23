@@ -30,6 +30,7 @@
 //   POST /chat/admin/rom          {b, trykk, laer?}   what the iPhone hears from each beacon; learn a room or guess it
 //   GET  /chat/admin/rom                              current room, rooms with sample counts, beacons
 //   POST /chat/admin/rom-slett    {rom}               forget a room's samples
+//   POST /chat/admin/plan         {ts, rom: [...]}    the house plan from the LiDAR scan (2D, metres); public at GET /chat/plan
 //   POST /chat/kast               {k: "le" | "tomat"} a visitor laughs or throws a tomato at the map card (shared counters)
 //   POST /chat/android            {bat, lader}        the owner's Android phone reports its battery (its own key, ANDROID_TOKEN)
 //   GET  /chat/oyet                               weather now in Dubai, Koh Phangan and Lombok (Open-Meteo, cached 15 min)
@@ -75,6 +76,12 @@ export async function handleChat(request, env, url) {
   }
 
   if (path.startsWith("/chat/file/")) return serveFile(request, env, path.slice("/chat/file/".length));
+
+  // Plantegningen av huset (skannet med LiDAR i appen), flat 2D. Endres sjelden.
+  if (path === "/chat/plan") {
+    const r = await hub.fetch(new Request("https://hub/internal/plan", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }));
+    return new Response(r.body, { status: r.status, headers: { "content-type": "application/json", "cache-control": "public, max-age=60" } });
+  }
 
   if (path === "/chat/status") {
     return hub.fetch(new Request("https://hub/internal/status", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }));
@@ -549,6 +556,9 @@ export class ChatHub {
         if (b.k === "tomat") this.tomatVarsel(decodeURIComponent(request.headers.get("x-by") || ""));
         return Response.json(this.kast());
       }
+      if (url.pathname === "/internal/plan") {
+        return new Response(this.setting("plan") || "null", { headers: { "content-type": "application/json" } });
+      }
       if (url.pathname === "/internal/spor") {
         return Response.json(this.spor(), { headers: { "cache-control": "no-store" } });
       }
@@ -794,6 +804,13 @@ export class ChatHub {
       const liste = this.sql.exec(`SELECT rom, COUNT(*) AS n FROM romprove GROUP BY rom ORDER BY MIN(id)`).toArray();
       const fyr = this.sql.exec(`SELECT v FROM kv WHERE k LIKE 'fyr:%'`).toArray().map((r) => JSON.parse(r.v));
       return Response.json({ rom, liste, fyr });
+    }
+    if (url.pathname === "/chat/admin/plan" && request.method === "POST") {
+      const t = await request.text();
+      let p; try { p = JSON.parse(t); } catch {}
+      if (!p || !Array.isArray(p.rom) || t.length > 900000) return new Response("Bad request", { status: 400 });
+      this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('plan', ?)`, t);
+      return Response.json({ ok: true, rom: p.rom.length });
     }
     if (url.pathname === "/chat/admin/rom-slett" && request.method === "POST") {
       const { rom } = await request.json().catch(() => ({}));

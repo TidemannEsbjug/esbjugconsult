@@ -550,7 +550,20 @@
   .paneler .gl.truffet{animation:truffet .4s cubic-bezier(.36,.07,.19,.97)}
   @keyframes truffet{20%{transform:translate(-5px,3px) rotate(-1.2deg)}45%{transform:translate(5px,-2px) rotate(1deg)}70%{transform:translate(-2px,1px)}}
   .gjor{display:flex;flex-direction:column;gap:6px;padding:14px 20px 15px}
-  .gjor[hidden],.poster[hidden]{display:none}
+  .gjor[hidden],.poster[hidden],.hus[hidden]{display:none}
+  /* Huset: plantegningen fra LiDAR-skanningen, etasjen han er i, rommet i rødt og en prikk midt i det. */
+  .hus{display:flex;flex-direction:column;gap:6px;padding:14px 20px 15px}
+  .h-plan{display:block;width:100%;height:auto;max-height:230px;margin-top:4px}
+  .h-plan .gu{fill:rgba(0,32,91,.06);stroke:none}
+  .h-plan .gu.her{fill:rgba(186,12,47,.16)}
+  .h-plan .ve{stroke:var(--ink);stroke-width:2.2;stroke-linecap:round;vector-effect:non-scaling-stroke}
+  .h-plan .do{stroke:#fff;stroke-width:3;vector-effect:non-scaling-stroke}
+  .h-plan .vi{stroke:#5b8fd6;stroke-width:2.2;vector-effect:non-scaling-stroke}
+  .h-plan .ti{fill:rgba(0,32,91,.1);stroke:rgba(0,32,91,.25);stroke-width:1;vector-effect:non-scaling-stroke}
+  .h-plan .pr{fill:#BA0C2F;stroke:#fff;stroke-width:2;vector-effect:non-scaling-stroke}
+  .h-plan .pu{fill:#BA0C2F;opacity:.35;transform-box:fill-box;transform-origin:center;animation:husPuls 1.8s ease-out infinite}
+  @keyframes husPuls{0%{transform:scale(1);opacity:.45}100%{transform:scale(3.2);opacity:0}}
+  @media (prefers-reduced-motion:reduce){.h-plan .pu{animation:none}}
   html:has(#chat.natt) .gjor{display:none}   /* sover han, sier natta det; «Holder på med» skjules */
   /* Postene: en bunke papirkort. Det øverste vises helt; de neste stikker så vidt ut bak (tynne, falmede kanter).
      Trykk, og det øverste tones ut og neste kommer fram. Tiden er når posten først ble skrevet. */
@@ -679,6 +692,11 @@
     <b class="s-navn">Finding him …</b>
     <span class="s-sub">&nbsp;</span>
     <div class="kast" hidden><button type="button" class="k-tomat" aria-label="Throw a tomato at Tidemann">🍅 <span>Throw a tomato</span> <b>0</b></button></div>
+  </section>
+  <section class="hus gl" hidden aria-live="polite">
+    <span class="mono s-t h-t" data-t="At home">At home</span>
+    <b class="g-navn h-rom">–</b>
+    <svg class="h-plan" aria-hidden="true"></svg>
   </section>
   <section class="gjor gl" hidden aria-live="polite">
     <span class="mono s-t">Right now</span>
@@ -1411,13 +1429,13 @@ raf=requestAnimationFrame(draw);
 const EN = document.documentElement.lang === 'en';
 const TX = EN ? {
   loc: 'en-GB', ingenPos: 'No position yet', venter: 'Waiting', sistSett: 'Last seen ', siden: ' ago', live: 'Live · ', t: ' h ', jorda: 'Somewhere on Earth',
-  kjent: { 'hjemme hos moren sin': 'Tidemann is at his mother’s' }, ingen: 'None', mobil: 'Mobile data', utenNett: 'Offline', visKart: 'Show the map', visPanel: 'Show the panels', rom: 'Room: ',
+  kjent: { 'hjemme hos moren sin': 'Tidemann is at his mother’s' }, ingen: 'None', mobil: 'Mobile data', utenNett: 'Offline', visKart: 'Show the map', visPanel: 'Show the panels', rom: 'Room: ', etasje: n => ['Ground floor', '1st floor', '2nd floor', '3rd floor'][n] || n + 'th floor',
   gjor: { jobber: 'Working', trener: 'Training' }, komma: '.',
   taper: ['LOSER!', 'Loser.', 'What a loser', 'Total loser', 'Mega loser', 'Ultra loser', 'Loser-in-chief', 'King of losers', 'Loser of the year', 'Loser (again)', 'Loser, loser, loser', 'LOOOOSER', 'LOSER™', 'The world’s biggest loser', 'Tiny loser'],
   treff: ['SPLAT!', 'Hit!', 'Right in the face', 'Bingo!', 'BAM!', 'Bullseye', 'Ouch!', 'Splosh', 'Jackpot', 'Got him!'],
 } : {
   loc: 'nb-NO', ingenPos: 'Ingen posisjon ennå', venter: 'Venter', sistSett: 'Sist sett ', siden: ' siden', live: 'Live · ', t: ' t ', jorda: 'Et sted på jorda',
-  kjent: {}, ingen: 'Ingen', mobil: 'Mobildata', utenNett: 'Uten nett', visKart: 'Vis kartet', visPanel: 'Vis panelene', rom: 'Rom: ',
+  kjent: {}, ingen: 'Ingen', mobil: 'Mobildata', utenNett: 'Uten nett', visKart: 'Vis kartet', visPanel: 'Vis panelene', rom: 'Rom: ', etasje: n => n + 1 + '. etasje',
   gjor: { jobber: 'Jobber', trener: 'Trener' }, komma: ',',
   taper: ['TAPER!', 'Taper.', 'Tapern!', 'Taperen!', 'TAAAAPER', 'Din taper', 'For en taper', 'Supertaper', 'Megataper', 'Ultrataper',
     'Tapersjef', 'Taperkonge', 'Årets taper', 'Taper (igjen)', 'Taper-Tidemann', 'Taper, taper, taper', 'Taperen fra Frogn', 'TAPER™', 'Verdens største taper', 'Liten taper'],
@@ -1573,7 +1591,7 @@ function tegn() {
   $('.s-navn').textContent = live.kjent ? (TX.kjent[live.kjent] || 'Tidemann er ' + live.kjent) : st && st.by ? [st.strok, st.by].filter(Boolean).join(', ') + (st.kode && st.kode !== 'NO' ? ', ' + st.land : '') : TX.jorda;
   const fart = live.spd != null && live.spd >= .8 && !gammel && i.aktivitet !== 'står stille' ? Math.round(live.spd * 3.6) + ' km/t' : null;   // GPS-støy gir litt fart også når han står stille
   // Rommet hjemme, fra fyrene i huset (se /chat/admin/rom). Navnene står slik han skrev dem.
-  const sub = fart || (rom && !gammel ? TX.rom + rom : null);
+  const sub = fart || (rom && !gammel && !tegnHus() ? TX.rom + rom : null);
   $('.s-sub').textContent = sub || '';
   $('.s-sub').hidden = !sub;
   const pos = [live.lat, live.lon];
@@ -1723,6 +1741,40 @@ function nyeKast(ny) {
 }
 // Hva han holder på med, satt i appen: Jobber, Trener, Sover. Kortet er skjult når ingenting er valgt.
 const GJOR = TX.gjor;
+// Plantegningen hentes ved start og hvert 10. minutt. Rommet han er i (fra fyrene) finnes på navnet; da vises etasjen
+// det ligger i. Etasjene telles nedenfra etter gulvhøyden. Gir false når det ikke er noe å vise.
+let plan = null, husNokkel = '';
+const hentPlan = async () => { try { plan = await (await fetch('/chat/plan')).json(); husNokkel = ''; } catch {} };
+hentPlan(); setInterval(hentPlan, 10 * 60e3);
+function tegnHus() {
+  const e = $('.hus'), r = rom && plan && plan.rom ? plan.rom.find(x => x.navn.toLowerCase() === rom.toLowerCase()) : null;
+  e.hidden = !r;
+  if (!r) return false;
+  const nokkel = rom + ':' + plan.ts;
+  if (nokkel === husNokkel) return true;
+  husNokkel = nokkel;
+  const hoyder = [...new Set(plan.rom.map(x => Math.round(x.hoyde * 2) / 2))].sort((a, b) => a - b);
+  const nivå = x => hoyder.indexOf(Math.round(x.hoyde * 2) / 2);
+  const etg = plan.rom.filter(x => nivå(x) === nivå(r));
+  $('.h-rom').textContent = r.navn;
+  $('.h-t').textContent = hoyder.length > 1 ? $('.h-t').dataset.t + ' · ' + TX.etasje(nivå(r)) : $('.h-t').dataset.t;
+  const pk = etg.flatMap(x => [...x.gulv, ...x.vegger.flatMap(v => [[v[0], v[1]], [v[2], v[3]]])]);
+  if (!pk.length) return true;
+  const xs = pk.map(p => p[0]), zs = pk.map(p => p[1]), x0 = Math.min(...xs) - .4, z0 = Math.min(...zs) - .4, w = Math.max(...xs) + .4 - x0, h = Math.max(...zs) + .4 - z0;
+  const svg = $('.h-plan'); svg.setAttribute('viewBox', [x0, z0, w, h].map(v => v.toFixed(2)).join(' '));
+  const NS = 'http://www.w3.org/2000/svg', el = (n, a) => { const t = document.createElementNS(NS, n); for (const k in a) t.setAttribute(k, a[k]); svg.append(t); return t; };
+  const ln = (v, c) => el('line', { class: c, x1: v[0], y1: v[1], x2: v[2], y2: v[3] });
+  svg.textContent = '';
+  for (const x of etg) if (x.gulv.length > 2) el('polygon', { class: 'gu' + (x === r ? ' her' : ''), points: x.gulv.map(p => p.join(',')).join(' ') });
+  for (const x of etg) for (const t of x.ting) el('rect', { class: 'ti', x: t.p[0] - t.w / 2, y: t.p[1] - t.d / 2, width: t.w, height: t.d, transform: `rotate(${t.a * 180 / Math.PI} ${t.p[0]} ${t.p[1]})` });
+  for (const x of etg) x.vegger.forEach(v => ln(v, 've'));
+  for (const x of etg) { x.vinduer.forEach(v => ln(v, 'vi')); x.dorer.forEach(v => ln(v, 'do')); x.apninger.forEach(v => ln(v, 'do')); }
+  // Prikken midt i rommet (snittet av gulvhjørnene, eller av veggene om gulvet mangler).
+  const hj = r.gulv.length ? r.gulv : r.vegger.flatMap(v => [[v[0], v[1]], [v[2], v[3]]]);
+  const cx = hj.reduce((s, p) => s + p[0], 0) / hj.length, cz = hj.reduce((s, p) => s + p[1], 0) / hj.length, rr = Math.max(w, h) * .022;
+  el('circle', { class: 'pu', cx, cy: cz, r: rr }); el('circle', { class: 'pr', cx, cy: cz, r: rr });
+  return true;
+}
 function gjor(v) { const e = $('.gjor'); e.hidden = !GJOR[v]; if (GJOR[v]) $('.g-navn').textContent = GJOR[v]; }
 const kl = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', hour: '2-digit', minute: '2-digit' }), dag = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', day: 'numeric', month: 'long' }), dagNr = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Oslo' });
 // Postene som en bunke: alle kortene står i siden, og et trykk endrer bare hvilket lag de er i, så de glir rolig
