@@ -1437,6 +1437,8 @@ function leggKart() {
         'CooperativeGesturesHandler.WindowsHelpText': EN ? 'Use Ctrl + scroll to zoom the map' : 'Bruk Ctrl + rulling for å zoome kartet',
         'CooperativeGesturesHandler.MacHelpText': EN ? 'Use ⌘ + scroll to zoom the map' : 'Bruk ⌘ + rulling for å zoome kartet' } });
     forste = !live;
+    kart.setPadding(marg()); kart.jumpTo({ center: midt });   // midten er den synlige skjermen, ikke den høye heroen
+    addEventListener('resize', () => { if (kart) kart.setPadding(marg()); });
     kart.touchZoomRotate.disableRotation();
     kart.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-left');
     kart.on('load', () => {
@@ -1461,6 +1463,16 @@ let stromSteg = 0;
 let beveger = false;
 function strom() { kart.on('movestart', () => { beveger = true; }); kart.on('moveend', () => { beveger = false; });
   setInterval(() => { if (!kart || !synlig || beveger || document.hidden) return; stromSteg = (stromSteg + 1) % STEG.length; kart.setPaintProperty('spor-strom', 'line-dasharray', STEG[stromSteg]); }, 90); }
+// Lasteprikken står der posisjonsprikken kommer: midt på den synlige skjermen (se marg()).
+{ const h = document.getElementById('kart').clientHeight, y = Math.min(h / 2, innerHeight / 2);
+  document.querySelector('.kv-prikk').style.top = y + 'px'; document.querySelector('.kv-i').style.top = (y + 34) + 'px'; }
+// «Midten» av kartet er midten av den synlige skjermen: på mobil er heroen høyere enn skjermen (panelene ligger over
+// kartet), så kartet får en marg nederst lik den delen som er under skjermkanten. Da står han midt på skjermen fra
+// start, akkurat der han står i kartmodus. I kartmodus er heroen like høy som skjermen, og margen er null.
+function marg() {
+  const h = document.getElementById('kart').clientHeight;
+  return { top: 0, left: 0, right: 0, bottom: document.documentElement.classList.contains('kartmodus') ? 0 : Math.max(0, h - innerHeight) };
+}
 // Er punktet innenfor kartet, med en marg (andel av bredde/høyde) inn fra kantene?
 function iBildet(lngLat, marg) {
   const p = kart.project(lngLat), c = kart.getContainer(), w = c.clientWidth, h = c.clientHeight;
@@ -1711,6 +1723,7 @@ function kartmodus(på) {
   if (kart && anker) {
     const topp1 = document.getElementById('kart').getBoundingClientRect().top;
     kart.resize();
+    kart.setPadding(marg());
     const p = kart.project(anker);
     kart.panBy([p.x, p.y - (topp0 - topp1)], { animate: false });
   }
