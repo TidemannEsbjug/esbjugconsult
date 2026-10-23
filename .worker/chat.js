@@ -839,6 +839,9 @@ export class ChatHub {
         this.toOwners({ t: "live", vid: a.vid, d: m.d });
       } else if (m.t === "typing") {
         this.toOwners({ t: "typing", vid: a.vid });
+      } else if (m.t === "slettmelding" && Number.isInteger(m.id)) {
+        // A visitor deletes one of their own messages.
+        await this.slettMelding(a.vid, m.id, false);
       } else if (m.t === "react" && Number.isInteger(m.id) && typeof m.e === "string") {
         const now = Date.now();
         a.rrate = (a.rrate || []).filter((t) => now - t < 60000);
@@ -879,6 +882,9 @@ export class ChatHub {
         this.sql.exec(`UPDATE visitors SET unread = 0 WHERE vid=?`, m.vid);
         this.toVisitor(m.vid, { t: "msg", m: msg });
         this.toOwners({ t: "msg", vid: m.vid, m: msg, v: this.visitor(m.vid) });
+      } else if (m.t === "slettmelding" && typeof m.vid === "string" && Number.isInteger(m.id)) {
+        // The owner deletes one message in a conversation (his own or the visitor's).
+        await this.slettMelding(m.vid, m.id, true);
       } else if (m.t === "react" && typeof m.vid === "string" && Number.isInteger(m.id) && typeof m.e === "string") {
         this.react(m.vid, m.id, true, m.e);
       } else if (m.t === "read" && typeof m.vid === "string") {
@@ -974,6 +980,17 @@ export class ChatHub {
       `INSERT INTO messages (vid, from_owner, text, ts, kind, file, mime, name, size, gif) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
       vid, fromOwner ? 1 : 0, text, ts, f?.kind ?? null, f?.file ?? null, f?.mime ?? null, f?.name ?? null, f?.size ?? null, f?.gif ?? null).one();
     return this.row({ id: row.id, from_owner: fromOwner ? 1 : 0, text, ts, ...f });
+  }
+
+  // One message gone, everywhere: the row, its file in R2 (image, voice message, GIF), the visitor's page and the apps.
+  // A visitor may only delete their own messages; the owner any message in the conversation.
+  async slettMelding(vid, id, avEier) {
+    const r = this.sql.exec(`SELECT file, from_owner FROM messages WHERE id=? AND vid=?`, id, vid).toArray()[0];
+    if (!r || (!avEier && r.from_owner)) return;
+    this.sql.exec(`DELETE FROM messages WHERE id=? AND vid=?`, id, vid);
+    if (r.file) await this.env.FILES.delete(r.file).catch(() => {});
+    this.toVisitor(vid, { t: "slettet", id });
+    this.toOwners({ t: "slettet", vid, id });
   }
 
   // Reactions: one emoji per side per message (rv the visitor's, ro the owner's), '' takes it away. Both sides get the new pair.

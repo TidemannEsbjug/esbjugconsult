@@ -5,8 +5,8 @@
 (() => {
 const en = !/^(nb|no|nn)/.test(document.documentElement.lang || '');
 const T = en
-  ? { gif: 'GIF', search: 'Search GIFs', sending: 'Sending GIF …', many: 'That is a lot of GIFs. Wait a little.', fail: 'Could not send the GIF.', none: 'No GIFs found', react: 'React', close: 'Close' }
-  : { gif: 'GIF', search: 'Søk etter GIF', sending: 'Sender GIF …', many: 'Det var mange GIF-er. Vent litt.', fail: 'Fikk ikke sendt GIF-en.', none: 'Fant ingen GIF-er', react: 'Reager', close: 'Lukk' };
+  ? { gif: 'GIF', search: 'Search GIFs', sending: 'Sending GIF …', many: 'That is a lot of GIFs. Wait a little.', fail: 'Could not send the GIF.', none: 'No GIFs found', react: 'React', close: 'Close', slett: 'Delete', sikker: 'Sure?' }
+  : { gif: 'GIF', search: 'Søk etter GIF', sending: 'Sender GIF …', many: 'Det var mange GIF-er. Vent litt.', fail: 'Fikk ikke sendt GIF-en.', none: 'Fant ingen GIF-er', react: 'Reager', close: 'Lukk', slett: 'Slett', sikker: 'Sikker?' };
 const EMO = ['❤️', '👍', '😂', '😮', '😢', '🙏'];
 const still = matchMedia('(prefers-reduced-motion: reduce)');
 let api = null, bar = null;
@@ -23,6 +23,8 @@ css.textContent = `
 .cm-bar button{border:0;background:none;font-size:22px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;padding:0;transition:transform .15s,background .15s}
 .cm-bar button:hover{transform:scale(1.18)}
 .cm-bar button[aria-pressed="true"]{background:rgba(0,0,0,.1)}
+.cm-bar .cm-slett{width:auto;height:36px;border-radius:999px;padding:0 12px;margin-left:2px;border-left:1px solid rgba(0,0,0,.1);font:600 13px/1 -apple-system,"SF Pro Text",Arial,sans-serif;color:#c0262d}
+.cm-bar .cm-slett:hover{transform:none;background:rgba(192,38,45,.08)}
 @keyframes cmInn{from{opacity:0;transform:translateY(4px) scale(.94)}}
 #chat .ch-f .cm-gb{font:800 12px/1 -apple-system,"SF Pro Text",Arial,sans-serif;letter-spacing:.04em}
 .cm-g{position:absolute;left:0;right:0;bottom:var(--cm-b,68px);height:min(60%,380px);z-index:4;display:flex;flex-direction:column;background:inherit;color:inherit;border-top:1px solid rgba(127,127,127,.3);box-shadow:0 -10px 30px rgba(0,0,0,.12)}
@@ -67,6 +69,17 @@ const openBar = p => {
     b.type = 'button'; b.textContent = e; b.setAttribute('aria-pressed', p.dataset.rv === e);
     b.onclick = ev => { ev.stopPropagation(); react(p, e); closeBar(); };
     bar.append(b);
+  }
+  // Egne meldinger kan slettes: to trykk, så er den borte hos begge.
+  if (p.classList.contains('me') && !p.classList.contains('up') && p.dataset.id) {
+    const d = document.createElement('button');
+    d.type = 'button'; d.className = 'cm-slett'; d.textContent = T.slett;
+    d.onclick = ev => {
+      ev.stopPropagation();
+      if (d.dataset.sikker) { api?.send({ t: 'slettmelding', id: +p.dataset.id }); closeBar(); return; }
+      d.dataset.sikker = '1'; d.textContent = T.sikker;
+    };
+    bar.append(d);
   }
   p.append(bar);
   const box = p.closest('.ch-m');
@@ -270,6 +283,7 @@ window.chatMoro = {
     if (live && m.kind !== 'file') fx(m.text);
   },
   ws(m) {
+    if (m.t === 'slettet') { document.querySelector(`#chat .ch-m p[data-id="${m.id}"]`)?.remove(); return; }
     if (m.t !== 'react') return;
     const p = document.querySelector(`#chat .ch-m p[data-id="${m.id}"]`);
     if (p) badge(p, m);
