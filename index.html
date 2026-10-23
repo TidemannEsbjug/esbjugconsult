@@ -475,7 +475,9 @@
   @media (prefers-reduced-motion:reduce){.natt-mane,.natt-sky,.natt-st circle{animation:none}.ch-b.sover .zz i{animation:none;opacity:1}.ch-b.sover .zz i:nth-child(1){transform:translate(6px,-14px)}.ch-b.sover .zz i:nth-child(2){transform:translate(22px,-50px)}.ch-b.sover .zz i:nth-child(3){transform:translate(42px,-96px)}}
   /* /new2: kartet er heroen. Leaflet med OpenStreetMap, gjort mørkt med et filter, så sporet lyser. */
   .hero{background:#1c0f07}
-  #kart{position:absolute;inset:0;z-index:0;background:#1c0f07}
+  #kart{position:absolute;inset:0;z-index:0;background:#1c0f07;opacity:0;transform:scale(1.035);transition:opacity 1.1s ease,transform 1.8s cubic-bezier(.2,.8,.2,1)}
+  .kart-klar #kart{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){#kart{transform:none;transition:opacity .4s ease}}
   #kart.leaflet-container{font-family:inherit}
   #kart .leaflet-control-attribution{background:rgba(5,8,26,.6);color:rgba(255,255,255,.45);font-size:10px}
   #kart .leaflet-control-attribution a{color:rgba(255,255,255,.6)}
@@ -528,13 +530,22 @@
   .paneler .gl.truffet{animation:truffet .4s cubic-bezier(.36,.07,.19,.97)}
   @keyframes truffet{20%{transform:translate(-5px,3px) rotate(-1.2deg)}45%{transform:translate(5px,-2px) rotate(1deg)}70%{transform:translate(-2px,1px)}}
   .gjor{display:flex;flex-direction:column;gap:6px;padding:14px 20px 15px}
-  .gjor[hidden],.brev[hidden]{display:none}
+  .gjor[hidden],.poster[hidden]{display:none}
   html:has(#chat.natt) .gjor{display:none}   /* sover han, sier natta det; «Holder på med» skjules */
-  /* Notatet: et lite brev på papir, skrevet fra telefonen, med når det ble skrevet. */
-  .paneler .brev{padding:16px 20px 14px;background:linear-gradient(#fffdf6,#fbf5e6);border:1px solid rgba(176,141,87,.35);box-shadow:0 14px 34px rgba(0,20,60,.25)}
-  .brev::before{opacity:.12}
-  .brev .b-tid{font:300 11px/1.3 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;letter-spacing:.04em;text-transform:none;color:rgba(0,32,91,.45)}
-  .b-tekst{margin:8px 0 0;font:italic 300 clamp(17px,1.5vw,20px)/1.4 var(--serif);color:rgba(0,32,91,.82);white-space:pre-wrap;overflow-wrap:anywhere}
+  /* Postene: en bunke papirkort. Det øverste vises helt; de neste stikker så vidt ut bak (tynne, falmede kanter).
+     Trykk, og det øverste tones ut og neste kommer fram. Tiden er når posten først ble skrevet. */
+  .poster{position:relative;pointer-events:auto;cursor:pointer;-webkit-tap-highlight-color:transparent;outline:none}
+  .post{padding:16px 20px 14px;border-radius:22px;background:linear-gradient(#fffdf6,#fbf5e6);border:1px solid rgba(176,141,87,.35);box-shadow:0 14px 34px rgba(0,20,60,.22);transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .45s ease}
+  .post.l0{position:relative;z-index:3}
+  .post.l1,.post.l2{position:absolute;left:0;right:0;top:0;bottom:0;pointer-events:none}
+  .post.l1{z-index:2;transform:translateY(8px) scale(.965);opacity:.7}
+  .post.l2{z-index:1;transform:translateY(15px) scale(.93);opacity:.4}
+  .post.l1>*,.post.l2>*{visibility:hidden}
+  .post.ut{transform:translateY(-10px) rotate(-1.2deg);opacity:0}
+  .poster.flere{padding-bottom:15px}
+  .poster:focus-visible .post.l0{box-shadow:0 0 0 2px rgba(0,32,91,.4),0 14px 34px rgba(0,20,60,.22)}
+  .p-tid{display:block;font:300 11px/1.3 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;letter-spacing:.04em;color:rgba(0,32,91,.45)}
+  .p-tekst{margin:8px 0 0;font:italic 300 clamp(17px,1.5vw,20px)/1.4 var(--serif);color:rgba(0,32,91,.82);white-space:pre-wrap;overflow-wrap:anywhere}
   .g-navn{font:italic 500 clamp(24px,2.6vw,36px)/1.05 var(--serif);letter-spacing:-.015em;color:var(--ink)}
   .s-navn.kjent{font-size:clamp(20px,2vw,28px);line-height:1.15}
   .sens{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 20px;padding:16px 20px 16px;width:min(470px,100%);margin-left:auto}
@@ -629,10 +640,7 @@
     <span class="mono s-t">Holder på med</span>
     <b class="g-navn">–</b>
   </section>
-  <section class="brev gl" hidden aria-live="polite">
-    <span class="mono s-t b-tid"></span>
-    <p class="b-tekst"></p>
-  </section>
+  <section class="poster" hidden aria-live="polite" aria-label="Poster fra Tidemann. Trykk for neste." role="button" tabindex="0"></section>
   </div>
   <div class="hoyre">
   <section class="sens gl" aria-label="Alt iPhonen og Apple Watch måler">
@@ -1367,11 +1375,20 @@ const farg = (st) => {
   return st;
 };
 const osm = () => L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(kart);
-if (window.maplibregl && L.maplibreGL) {
-  fetch('https://tiles.openfreemap.org/styles/liberty').then(r => r.json()).then(st => {
-    L.maplibreGL({ style: farg(st), attribution: '<a href="https://openfreemap.org">OpenFreeMap</a> © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(kart);
-  }).catch(osm);
-} else osm();
+// Innlastingen: stilen hentes med en gang, men kartet legges først på når første posisjon er kjent (så det ikke
+// hopper fra Oslo sentrum dit han er), og vises først når det er ferdig tegnet. Da tones det rolig inn.
+const gl = !!(window.maplibregl && L.maplibreGL);
+const stil = gl ? fetch('https://tiles.openfreemap.org/styles/liberty').then(r => r.json()).then(farg) : Promise.reject();
+let kartLagt = false;
+const visKart = () => document.documentElement.classList.add('kart-klar');
+function leggKart() {
+  if (kartLagt) return; kartLagt = true;
+  setTimeout(visKart, 7000);   // uansett etter 7 s
+  stil.then(st => {
+    const lag = L.maplibreGL({ style: st, attribution: '<a href="https://openfreemap.org">OpenFreeMap</a> © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(kart);
+    lag.getMaplibreMap().once('idle', visKart);
+  }).catch(() => { const t = osm(); t.once('load', visKart); });
+}
 const $ = q => document.querySelector(q);
 const meg = L.marker([0, 0], { icon: L.divIcon({ className: '', html: '<div class="meg"></div>', iconSize: [22, 22] }), interactive: false, keyboard: false });
 const lag = [
@@ -1554,11 +1571,36 @@ function nyeKast(ny) {
 const GJOR = TX.gjor;
 function gjor(v) { const e = $('.gjor'); e.hidden = !GJOR[v]; if (GJOR[v]) $('.g-navn').textContent = GJOR[v]; }
 const kl = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', hour: '2-digit', minute: '2-digit' }), dag = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', day: 'numeric', month: 'long' }), dagNr = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Oslo' });
-function brev(n) {
-  const e = $('.brev'); e.hidden = !n; if (!n) return;
-  $('.b-tid').textContent = dag.format(n.ts) + ' · ' + kl.format(n.ts);
-  if ($('.b-tekst').textContent !== n.v) $('.b-tekst').textContent = n.v;
+let poster = [], toppPost = 0, posterNokkel = '';
+function tegnPoster() {
+  const e = $('.poster'); e.textContent = '';
+  const n = poster.length; e.hidden = !n; e.classList.toggle('flere', n > 1); if (!n) return;
+  for (let k = Math.min(n, 3) - 1; k >= 0; k--) {
+    const p = poster[(toppPost + k) % n], c = document.createElement('article');
+    c.className = 'post l' + k;
+    const t = document.createElement('span'); t.className = 'p-tid'; t.textContent = dag.format(p.ts) + ' · ' + kl.format(p.ts);
+    const x = document.createElement('p'); x.className = 'p-tekst'; x.textContent = p.v;
+    c.append(t, x); e.append(c);
+  }
 }
+function settPoster(liste) {
+  liste = liste || [];
+  const nk = liste.map(p => p.id + ':' + p.v).join('|');
+  if (nk === posterNokkel) return;
+  // Ny post øverst: vis den. Ellers behold hvor man er i bunken.
+  const nyesteFor = poster[0]?.id;
+  posterNokkel = nk; poster = liste;
+  if (!liste.length || liste[0].id !== nyesteFor) toppPost = 0; else toppPost = Math.min(toppPost, liste.length - 1);
+  tegnPoster();
+}
+function nestePost() {
+  if (poster.length < 2) return;
+  const topp = $('.poster .post.l0'); if (!topp || topp.classList.contains('ut')) return;
+  topp.classList.add('ut');
+  setTimeout(() => { toppPost = (toppPost + 1) % poster.length; tegnPoster(); }, still ? 0 : 320);
+}
+$('.poster').addEventListener('click', nestePost);
+$('.poster').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); nestePost(); } });
 // Kartknappen (mobil): panelene glir bort, kartet kan dras og zoomes, og han havner midt i bildet. Trykk igjen for panelene.
 $('.kartknapp').addEventListener('click', () => {
   const på = !hero.classList.contains('kartmodus');
@@ -1604,8 +1646,9 @@ async function hentOyet() {
 }
 tegnOyet(); setInterval(tegnOyet, 1000); hentOyet(); setInterval(hentOyet, 15 * 60e3);
 async function hent() {
-  try { const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json(); skew = j.now - Date.now(); live = j.live; trail = j.trail || []; tele = j.tele || {}; if (j.puls) puls = j.puls; tegnPuls(); if (j.kast) nyeKast(j.kast); gjor(j.gjor); brev(j.notat); } catch {}
+  try { const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json(); skew = j.now - Date.now(); live = j.live; trail = j.trail || []; tele = j.tele || {}; if (j.puls) puls = j.puls; tegnPuls(); if (j.kast) nyeKast(j.kast); gjor(j.gjor); settPoster(j.notater); } catch {}
   tegn();
+  leggKart();   // etter første svar: kartet står allerede der han er
 }
 hent(); setInterval(() => { if (!document.hidden) hent(); }, 2500);
 // Alltid øverst når siden åpnes (Safari på iPhone hopper ellers ned dit man var sist).

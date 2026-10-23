@@ -421,6 +421,16 @@ export class ChatHub {
     // The owner's position from his iPhone (raw, private). The public map only gets what sporPublic() lets through.
     // How much the phone moves, every 5 s (for the movement graph on the map page). Kept a day.
     this.sql.exec(`CREATE TABLE IF NOT EXISTS bev (ts INTEGER PRIMARY KEY, v REAL)`);
+    // Notes on the front page, as posts: the newest on top. Editing keeps the original time.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS notater (id INTEGER PRIMARY KEY AUTOINCREMENT, v TEXT, ts INTEGER)`);
+    {
+      // The single note from before becomes the first post.
+      const gml = this.sql.exec(`SELECT v FROM kv WHERE k='notat'`).toArray()[0];
+      if (gml) {
+        try { const n = JSON.parse(gml.v); if (n && n.v) this.sql.exec(`INSERT INTO notater (v, ts) VALUES (?, ?)`, n.v, n.ts || Date.now()); } catch {}
+        this.sql.exec(`DELETE FROM kv WHERE k='notat'`);
+      }
+    }
     this.sql.exec(`CREATE TABLE IF NOT EXISTS pos (ts INTEGER PRIMARY KEY, lat REAL, lon REAL, acc REAL, spd REAL, alt REAL, hdg REAL)`);
     // Today's unique visitors for the counter on the site (salted hashes, emptied every Oslo midnight).
     this.sql.exec(`CREATE TABLE IF NOT EXISTS uniq (day TEXT, k TEXT, net TEXT, PRIMARY KEY (day, k))`);
@@ -571,7 +581,7 @@ export class ChatHub {
       this.ctx.acceptWebSocket(pair[1], ["o"]);
       pair[1].serializeAttachment({ role: "owner" });
       this.rememberOwnerNet(request.headers.get("CF-Connecting-IP") || "");
-      pair[1].send(JSON.stringify({ t: "state", visitors: this.allVisitors(), status: this.status(), notifyVisits: this.setting("notifyVisits") === "1", incall: this.incall(), gjor: this.setting("gjor") || "", notat: this.notat()?.v || "" }));
+      pair[1].send(JSON.stringify({ t: "state", visitors: this.allVisitors(), status: this.status(), notifyVisits: this.setting("notifyVisits") === "1", incall: this.incall(), gjor: this.setting("gjor") || "", notater: this.notater() }));
       this.touchOwner();
       await this.ensureAlarm();
       this.toVisitors({ t: "owner", online: true });
@@ -886,11 +896,16 @@ export class ChatHub {
       } else if (m.t === "delsession" && typeof m.sid === "string") {
         this.sql.exec(`DELETE FROM rec WHERE sid=?`, m.sid);
         this.sql.exec(`DELETE FROM sessions WHERE sid=?`, m.sid);
-      } else if (m.t === "setnotat" && typeof m.v === "string") {
-        // A note he writes on his phone, shown as a letter on the map page with the time he wrote it. Empty removes it.
-        const v = m.v.trim().slice(0, 600);
-        this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('notat', ?)`, JSON.stringify({ v, ts: Date.now() }));
-        this.toOwners({ t: "notat", v });
+      } else if (m.t === "nynotat" && typeof m.v === "string" && m.v.trim()) {
+        // Posts on the front page: new, edit (the time stays), delete. Every app gets the whole list back.
+        this.sql.exec(`INSERT INTO notater (v, ts) VALUES (?, ?)`, m.v.trim().slice(0, 600), Date.now());
+        this.toOwners({ t: "notater", notater: this.notater() });
+      } else if (m.t === "endrenotat" && Number.isInteger(m.id) && typeof m.v === "string" && m.v.trim()) {
+        this.sql.exec(`UPDATE notater SET v=? WHERE id=?`, m.v.trim().slice(0, 600), m.id);
+        this.toOwners({ t: "notater", notater: this.notater() });
+      } else if (m.t === "slettnotat" && Number.isInteger(m.id)) {
+        this.sql.exec(`DELETE FROM notater WHERE id=?`, m.id);
+        this.toOwners({ t: "notater", notater: this.notater() });
       } else if (m.t === "setgjor" && ["", "jobber", "trener"].includes(m.v)) {
         // What he is doing, shown on the map page: Jobber, Trener (or nothing). Sleeping is the status, not this.
         this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('gjor', ?)`, m.v);
@@ -1111,8 +1126,8 @@ export class ChatHub {
     this.ctx.waitUntil(this.push(hjemme ? "🍅 Taper!" : "🍅 Tomat!", by ? `Noen i ${by} kastet en tomat på deg` : "Noen kastet en tomat på deg", null, { thread: "tomat" }));
   }
 
-  notat() {
-    try { const n = JSON.parse(this.setting("notat") || "null"); return n && n.v ? n : null; } catch { return null; }
+  notater(n = 100) {
+    return this.sql.exec(`SELECT id, v, ts FROM notater ORDER BY ts DESC, id DESC LIMIT ?`, n).toArray();
   }
 
   kast() {
@@ -1147,7 +1162,7 @@ export class ChatHub {
       ...this.sql.exec(`SELECT ts, v FROM bev WHERE ts > ? ORDER BY ts`, fra).toArray()].map((r) => [r.ts, r.v]);
     // Heart rate the last 5 minutes, every stored sample (one per ~4 s while the watch shares it).
     const puls = this.sql.exec(`SELECT ts, bpm FROM hr WHERE ts > ? ORDER BY ts`, Date.now() - 5 * 60e3).toArray().map((r) => [r.ts, r.bpm]);
-    return { now: Date.now(), live, trail, tele: this.tele(), bev, puls, kast: this.kast(), gjor: this.setting("gjor") || "", notat: this.notat() };
+    return { now: Date.now(), live, trail, tele: this.tele(), bev, puls, kast: this.kast(), gjor: this.setting("gjor") || "", notater: this.notater(20) };
   }
 
   // The name of the place he is at (neighbourhood, town, country), from OpenStreetMap's Nominatim. At most every
