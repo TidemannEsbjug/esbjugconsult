@@ -90,10 +90,10 @@
   .mini .lin{position:absolute;left:0;bottom:0;height:3px;background:var(--red);width:0}
 
   /* Den store avspilleren: et ark som glir opp og kan dras ned igjen. */
-  .ark{position:fixed;inset:0;z-index:30;--dy:0px;background:#0a2d6e linear-gradient(180deg,#0a2d6e 0%,var(--navy) 45%,#001437 100%);color:#fff;
+  .ark{position:fixed;inset:0;z-index:30;--dy:0px;background:var(--navy) linear-gradient(180deg,var(--navy) 0%,var(--navy) 50%,#001437 100%);color:#fff;
     display:flex;flex-direction:column;padding:calc(var(--st) + 10px) 26px calc(var(--sb) + 26px);
-    transform:translateY(102%);transition:transform .45s cubic-bezier(.2,.9,.2,1);will-change:transform;touch-action:none}
-  .ark.apen{transform:translateY(var(--dy))}
+    transform:translateY(102%);visibility:hidden;transition:transform .45s cubic-bezier(.2,.9,.2,1),visibility 0s .45s;will-change:transform;touch-action:none}
+  .ark.apen{transform:translateY(var(--dy));visibility:visible;transition:transform .45s cubic-bezier(.2,.9,.2,1),visibility 0s}
   /* Safari farger feltet ved notchen etter det som ligger fast øverst. På mobil skal det være det blå arket, så sløret
      bak panelet finnes bare på store skjermer, og der bare mens panelet er åpent. */
   .slor{display:none;position:fixed;inset:0;z-index:29;background:rgba(0,12,36,.5);opacity:0;visibility:hidden;transition:opacity .4s,visibility .4s}
@@ -110,11 +110,11 @@
   .lukk:active,.del:active{background:rgba(255,255,255,.12)}
   .toast{position:fixed;left:50%;top:calc(var(--st) + 18px);z-index:40;transform:translate(-50%,-80px);background:#fff;color:var(--navy);font-weight:650;font-size:15px;padding:12px 18px;border-radius:14px;box-shadow:0 12px 34px rgba(0,0,0,.25);transition:transform .4s cubic-bezier(.2,.9,.2,1);pointer-events:none;white-space:nowrap}
   .toast.vis{transform:translate(-50%,0)}
-  .kunst{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:8px 0 34px}
-  .kunst img{width:min(100%,40vh,330px);aspect-ratio:1;border-radius:20px;object-fit:cover;box-shadow:0 24px 60px rgba(0,0,0,.45);transition:transform .5s cubic-bezier(.2,1.4,.4,1)}
-  .ark:not(.spiller) .kunst img{transform:scale(.86)}
+  .kunst{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:4px 0 40px;container-type:size}
+  .kunst img{width:min(100%,36vh,330px);width:min(100cqw,100cqh,330px);aspect-ratio:1;border-radius:20px;object-fit:cover;box-shadow:0 20px 50px rgba(0,0,0,.4);transition:transform .45s cubic-bezier(.2,.9,.3,1);will-change:transform}
+  .ark:not(.spiller) .kunst img{transform:scale(.88)}
   .ark .me{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.6)}
-  .ark h2{font-family:var(--serif);font-weight:600;font-size:clamp(24px,7vw,30px);line-height:1.12;letter-spacing:-.01em;margin:8px 0 24px}
+  .ark h2{font-family:var(--serif);font-weight:600;font-size:clamp(24px,7vw,30px);line-height:1.12;letter-spacing:-.01em;margin:8px 0 34px}
 
   .skrubb{position:relative;height:36px;display:flex;align-items:center;cursor:pointer;touch-action:none}
   .skrubb .sp{position:relative;width:100%;height:5px;border-radius:3px;background:rgba(255,255,255,.22);transition:height .15s}
@@ -146,7 +146,7 @@
       box-shadow:0 40px 100px rgba(0,10,40,.45);transform:translate(-50%,calc(50vh + 20px))}
     .ark.apen{transform:translate(-50%,calc(-50% + var(--dy)))}
     .ark .lukk,.ark .del{top:14px}
-    .kunst img{width:min(100%,34vh,280px)}
+    .kunst img{width:min(100%,34vh,280px);width:min(100cqw,100cqh,280px)}
   }
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -416,7 +416,7 @@
     ark.classList.add("apen");
     $("slor").classList.add("vis");
     ark.setAttribute("aria-hidden", "false");
-    tema.content = "#0a2d6e";
+    tema.content = "#00205B";
     document.body.style.overflow = "hidden";
     if (utenHistorikk !== true) history.pushState({ ark: 1 }, "", epUrl(na));
     document.title = `${na.tittel} · Esbjug Podcast`;
