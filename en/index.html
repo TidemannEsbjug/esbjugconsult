@@ -649,12 +649,13 @@
   .data-klar .paneler{animation:panelInn .6s ease both}
   @keyframes panelInn{from{opacity:0;transform:translateY(6px)}}
   .sens .hp[hidden]{display:flex}
-  .kartmodus .paneler{opacity:0;transform:translateY(24px);pointer-events:none}
+  .kartmodus .paneler{opacity:0;transform:translateY(24px);pointer-events:none;visibility:hidden;transition:opacity .35s ease,transform .45s cubic-bezier(.2,.8,.2,1),visibility 0s .45s}
+  /* Glasspanelene (uskarphet av det bak) er skjult helt i kartmodus, så telefonen ikke regner på dem mens kartet beveger seg. */
   .kartmodus .paneler .gl{pointer-events:none}
   html.kartmodus,html.kartmodus body{overflow:hidden;overscroll-behavior:none}
   .hero.kartmodus{position:fixed;inset:0;z-index:1500;min-height:0;height:100%}
   .hero.kartmodus .hero-i>.flyt{position:relative;z-index:3}
-  .kartmodus #chat,.kartmodus .ck{display:none}
+  .kartmodus #chat,.kartmodus .ck,.kartmodus .natt-lag{display:none}
   @media (max-width:760px){.kartknapp{display:flex}}
   @media (prefers-reduced-motion:reduce){.spor-strom,.meg::before,.meg::after,.s-dot{animation:none}}
 </style>
@@ -1428,6 +1429,7 @@ function leggKart() {
     const midt = live ? [live.lon, live.lat] : [10.7522, 59.9139];
     kart = new maplibregl.Map({ container: 'kart', style: st, center: midt, zoom: live ? 14 : 12, attributionControl: { compact: true },
       dragRotate: false, pitchWithRotate: false, touchPitch: false, scrollZoom: false, fadeDuration: 0,
+      pixelRatio: Math.min(devicePixelRatio || 1, 2),   // iPhonens 3× er ni ganger så mange piksler som 1×; 2× er skarpt nok og mye lettere
       // Mobil utenfor kartmodus: én finger ruller siden, to fingre flytter og zoomer kartet (så nettleseren aldri
       // zoomer siden når man kniper på kartet). I kartmodus slås dette av og kartet tar alt.
       cooperativeGestures: mobil,
@@ -1455,7 +1457,10 @@ function leggKart() {
 // Strømmen langs sporet: streken flyttes et hakk av gangen (en kjent teknikk for animerte streker i MapLibre).
 const STEG = [[0, 4, 3], [0.5, 4, 2.5], [1, 4, 2], [1.5, 4, 1.5], [2, 4, 1], [2.5, 4, 0.5], [3, 4, 0], [0, 0.5, 3, 3.5], [0, 1, 3, 3], [0, 1.5, 3, 2.5], [0, 2, 3, 2], [0, 2.5, 3, 1.5], [0, 3, 3, 1], [0, 3.5, 3, 0.5]];
 let stromSteg = 0;
-function strom() { setInterval(() => { if (!kart || !synlig || document.hidden) return; stromSteg = (stromSteg + 1) % STEG.length; kart.setPaintProperty('spor-strom', 'line-dasharray', STEG[stromSteg]); }, 90); }
+// Pause mens kartet beveges (kniping og dra skal få all kraften).
+let beveger = false;
+function strom() { kart.on('movestart', () => { beveger = true; }); kart.on('moveend', () => { beveger = false; });
+  setInterval(() => { if (!kart || !synlig || beveger || document.hidden) return; stromSteg = (stromSteg + 1) % STEG.length; kart.setPaintProperty('spor-strom', 'line-dasharray', STEG[stromSteg]); }, 90); }
 // Er punktet innenfor kartet, med en marg (andel av bredde/høyde) inn fra kantene?
 function iBildet(lngLat, marg) {
   const p = kart.project(lngLat), c = kart.getContainer(), w = c.clientWidth, h = c.clientHeight;
@@ -1524,7 +1529,7 @@ function inn(k, t) {
 }
 function oskilloskop() {
   requestAnimationFrame(oskilloskop);
-  if (!synlig) return;
+  if (!synlig || document.documentElement.classList.contains('kartmodus')) return;   // skjult i kartmodus
   const nå = Date.now() + skew - FORS, d = devicePixelRatio || 1;
   for (const c of document.querySelectorAll('.ak-c')) {
     const W = c.clientWidth, H = c.clientHeight;
