@@ -520,60 +520,56 @@
   .kn button{width:44px;height:44px;border-radius:50%;padding:0;display:grid;place-items:center;color:var(--ink);font:500 22px/1 -apple-system,system-ui,sans-serif;cursor:pointer;border:0}
   .kn svg{width:20px;height:20px;margin-left:2px}
   .kn-folgfelt{display:none}.replay .kn-folgfelt{display:block}
+  .kn .kn-lukk{display:none}   /* replay avsluttes med × i modulen; play-knappen ved flaggene er alltid ▶ */
   .kn-folgfelt svg{width:18px;height:18px;display:block;margin:auto}
   .kn-folgfelt button[aria-pressed="true"]{background:#00205B;color:#fff}
   .kn button[aria-pressed="true"]{background:var(--ink);color:#fff}
-  /* Replay: én bred linje øverst i stedet for flaggene, og spørreboksen som egen boks under datoen. */
-  .replay .hero-i>.flyt{align-self:stretch;position:relative;z-index:30}   /* linja og fartvelgeren over panelene */
-  /* I replay følger nattlaget statusen den gang (sov han da?), ikke nå, og avspilleren ligger over det. */
+  /* Replay: én modul nede på midten (nederste fjerdedel), toppen er uendret. Øverst et stort spørrefelt, under det
+     spill/pause, tidslinjen, tiden, dag tilbake/kalender/dag fram, fart og × som avslutter. Kalender og fart åpner over. */
   body.i-replay .natt-lag{opacity:0;visibility:hidden}
   body.i-replay.replay-sover .natt-lag{opacity:1;visibility:visible}
-  .replay .hero-i{z-index:5}
-  .replay .hero-i>.flyt>.topp{display:none}
-  .hist{order:4;position:relative;flex:1;min-width:0;display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0;padding:6px 8px;border-radius:999px;pointer-events:auto;animation:histInn .3s ease-out}
-  @keyframes histInn{from{opacity:0;transform:translateX(-8px)}}
-  .hist[hidden],.hist [hidden],.h-sokk[hidden],.h-sokk [hidden]{display:none}
-  .hist button{border:0;border-radius:999px;padding:7px 11px;background:rgba(0,32,91,.08);color:var(--ink);font:600 12px/1 "SF Mono",Menlo,monospace;letter-spacing:.04em;cursor:pointer;white-space:nowrap}
+  .hist{position:fixed;left:50%;bottom:clamp(18px,7vh,80px);transform:translateX(-50%);z-index:60;width:min(860px,calc(100vw - 32px));display:flex;flex-direction:column;gap:12px;margin:0;padding:16px 18px 14px;border-radius:26px;pointer-events:auto;animation:histInn .35s cubic-bezier(.2,.8,.2,1)}
+  @keyframes histInn{from{opacity:0;transform:translate(-50%,14px)}}
+  .hist[hidden],.hist [hidden]{display:none}
+  .h-rad{display:flex;align-items:center;gap:8px;min-width:0}
+  .hist button{border:0;border-radius:999px;padding:8px 12px;background:rgba(0,32,91,.07);color:var(--ink);font:600 12px/1 "SF Mono",Menlo,monospace;letter-spacing:.04em;cursor:pointer;white-space:nowrap;transition:background .2s}
+  .hist button:hover{background:rgba(0,32,91,.13)}
   .hist button[aria-pressed="true"],.hist button[aria-expanded="true"]{background:var(--ink);color:#fff}
-  .hist .h-spill{width:32px;padding:7px 0}
-  .hist .h-ikon{width:32px;height:30px;padding:0;display:inline-grid;place-items:center;border-radius:50%;background:rgba(0,32,91,.08);color:var(--ink);font:500 20px/1 -apple-system,system-ui,sans-serif;cursor:pointer;position:relative}
-  .hist .h-kal svg{width:17px;height:17px}
-  /* Kalenderen (Wayback): måneden som et rutenett, dagene farget etter timer med opptak. */
-  .hist .h-kalender{position:absolute;right:56px;top:calc(100% + 8px);z-index:50;width:292px;padding:14px 14px 12px;border-radius:18px;background:rgba(255,255,255,.95);display:flex;flex-direction:column;gap:8px}
+  .hist .h-spill{width:40px;height:40px;padding:0;font-size:15px;background:transparent;border:1.5px solid rgba(0,32,91,.35)}
+  .hist .h-ikon{width:36px;height:36px;padding:0;display:inline-grid;place-items:center;border-radius:50%;font:500 20px/1 -apple-system,system-ui,sans-serif;position:relative}
+  .hist .h-kal svg{width:18px;height:18px}
+  .hist .h-lukk{width:36px;height:36px;padding:0;font:400 22px/1 -apple-system,system-ui,sans-serif;margin-left:4px}
+  .hist .h-tid{flex:1 1 160px;min-width:90px;accent-color:var(--ink);height:22px}
+  .hist .h-kl{font:600 13px "SF Mono",Menlo,monospace;color:var(--ink);min-width:12ch;text-align:center}
+  .hist .h-fart{min-width:52px}
+  .h-sok{display:flex}
+  .h-sok input{flex:1;min-width:0;border:1.5px solid rgba(0,32,91,.14);border-radius:16px;padding:14px 18px;background:rgba(255,255,255,.8);font:500 16px -apple-system,system-ui,sans-serif;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+  .h-sok input:focus{border-color:var(--ink);box-shadow:0 0 0 4px rgba(0,32,91,.1)}
+  .h-svar{margin:-4px 6px 0;font:italic 500 15px/1.35 var(--serif);color:var(--ink)}
+  /* Kalenderen (Wayback), i blått: mørkeblått kort over modulen, dagene i lyseblått etter hvor mange timer som er spilt
+     inn, dagen som spilles hvit, i dag med ring. */
+  .hist .h-kalender{position:absolute;right:70px;bottom:calc(100% + 12px);z-index:70;width:360px;padding:18px 18px 14px;border-radius:24px;background:linear-gradient(160deg,#0b2a6b,#00205B 60%,#001640);box-shadow:0 30px 70px rgba(0,20,60,.45),inset 0 1px 0 rgba(255,255,255,.12);display:flex;flex-direction:column;gap:10px;animation:kalInn .3s cubic-bezier(.2,.8,.2,1)}
+  @keyframes kalInn{from{opacity:0;transform:translateY(10px) scale(.98)}}
   .hist .h-kalender[hidden]{display:none}
   .kal-topp{display:flex;align-items:center;justify-content:space-between}
-  .kal-topp b{font:italic 500 18px/1 var(--serif);color:var(--ink);text-transform:capitalize}
-  .hist .kal-topp button{width:30px;height:30px;padding:0;border-radius:50%;font:500 18px/1 -apple-system,system-ui,sans-serif}
-  .hist .kal-topp button:disabled{opacity:.25;cursor:default}
-  .kal-uke,.kal-dager{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
-  .kal-uke span{text-align:center;font:600 10px/1 "SF Mono",Menlo,monospace;color:rgba(0,32,91,.5);text-transform:uppercase;padding:2px 0}
-  .hist .kal-dager button{aspect-ratio:1;padding:0;border-radius:9px;background:transparent;color:var(--ink);font:600 13px/1 -apple-system,system-ui,sans-serif;letter-spacing:0;font-variant-numeric:tabular-nums;transition:transform .12s}
-  .hist .kal-dager button.med{background:rgba(186,12,47,var(--h))}
-  .hist .kal-dager button.sterk{color:#fff}
-  .hist .kal-dager button:disabled{opacity:.28;cursor:default}
-  .hist .kal-dager button:not(:disabled):hover{transform:scale(1.08)}
-  .hist .kal-dager button.idag{box-shadow:inset 0 0 0 1.5px var(--ink)}
-  .hist .kal-dager button[aria-pressed="true"]{background:var(--ink);color:#fff}
-  .kal-fot{margin:2px 0 0;font:600 10px/1.3 "SF Mono",Menlo,monospace;letter-spacing:.04em;color:rgba(0,32,91,.55);text-align:center}
-  .hist .h-fart{min-width:46px}
-  .hist .h-fartvalg{position:absolute;right:0;top:calc(100% + 8px);z-index:50;display:grid;grid-template-columns:1fr;gap:6px;padding:12px 14px;border-radius:16px;width:220px}
+  .kal-topp b{font:italic 500 24px/1 var(--serif);color:#fff;text-transform:capitalize;letter-spacing:-.01em}
+  .hist .kal-topp button{width:34px;height:34px;padding:0;border-radius:50%;font:500 20px/1 -apple-system,system-ui,sans-serif;background:rgba(255,255,255,.1);color:#fff}
+  .hist .kal-topp button:hover{background:rgba(255,255,255,.2)}
+  .hist .kal-topp button:disabled{opacity:.2;cursor:default}
+  .kal-uke,.kal-dager{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+  .kal-uke span{text-align:center;font:600 10px/1 "SF Mono",Menlo,monospace;color:rgba(190,210,255,.6);text-transform:uppercase;padding:4px 0 2px}
+  .hist .kal-dager button{aspect-ratio:1;padding:0;border-radius:11px;background:rgba(255,255,255,.04);color:rgba(220,232,255,.85);font:600 14px/1 -apple-system,system-ui,sans-serif;letter-spacing:0;font-variant-numeric:tabular-nums;transition:transform .12s,background .2s}
+  .hist .kal-dager button.med{background:rgba(110,160,255,var(--h));color:#fff}
+  .hist .kal-dager button:disabled{opacity:.25;cursor:default;background:transparent}
+  .hist .kal-dager button:not(:disabled):hover{transform:scale(1.1)}
+  .hist .kal-dager button.idag{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.85)}
+  .hist .kal-dager button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 0 0 3px rgba(255,255,255,.25)}
+  .kal-fot{margin:2px 0 0;font:600 10px/1.3 "SF Mono",Menlo,monospace;letter-spacing:.06em;color:rgba(190,210,255,.65);text-align:center}
+  .hist .h-fartvalg{position:absolute;right:46px;bottom:calc(100% + 12px);z-index:70;display:grid;grid-template-columns:1fr;gap:6px;padding:14px 16px;border-radius:18px;width:230px;background:rgba(255,255,255,.96)}
   .hist .h-fartvalg[hidden]{display:none}
-  .hist .h-fv{font:700 18px "SF Mono",Menlo,monospace;color:var(--ink);text-align:center}
-  .hist .h-fs{width:100%;accent-color:#BA0C2F}
+  .hist .h-fv{font:700 20px "SF Mono",Menlo,monospace;color:var(--ink);text-align:center}
+  .hist .h-fs{width:100%;accent-color:var(--ink)}
   .hist .h-fe{display:flex;justify-content:space-between;font:600 11px "SF Mono",Menlo,monospace;color:rgba(0,32,91,.6)}
-  .hist .h-fartvalg{background:rgba(255,255,255,.94)}
-  .kn .kn-lukk,.kn [aria-pressed="true"] .kn-play{display:none}
-  .kn [aria-pressed="true"] .kn-lukk{display:block}
-  .kn [aria-pressed="true"] svg{margin-left:0}
-  .hist .h-tid{flex:1 1 140px;min-width:100px;accent-color:#BA0C2F}
-  .hist .h-kl{font:600 12px "SF Mono",Menlo,monospace;color:var(--ink);min-width:12ch}
-  .h-sokk{display:flex;flex-direction:column;gap:6px;margin:0;padding:8px;pointer-events:auto;animation:histInn .3s ease-out}
-  .h-sok{display:flex}
-  .h-sok input{flex:1;min-width:0;border:0;border-radius:999px;padding:9px 14px;background:rgba(255,255,255,.75);font:500 13px -apple-system,system-ui,sans-serif;color:var(--ink);outline:none}
-  .h-sok input:focus{box-shadow:0 0 0 2px #BA0C2F}
-  .h-svar{margin:0 6px 2px;font:italic 500 14px/1.35 var(--serif);color:var(--ink)}
-  /* I replay er klokka gammel tid: rødt merke på kortet. */
-  .replay .naa{box-shadow:inset 3px 0 0 #BA0C2F}
   .gammel .meg{filter:grayscale(.6) brightness(.8)}.gammel .meg::before,.gammel .meg::after{animation:none;opacity:0}
   /* Panelene: stedet under toppmodulen, sensorene oppe til høyre. Samme glass som toppmodulen. */
   .paneler{flex:1;width:100%;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-top:14px}
@@ -818,13 +814,18 @@
   .kartmodus #chat,.kartmodus .ck,.kartmodus .natt-lag{display:none}
   @media (max-width:760px){.kartknapp{display:flex}}
   @media (prefers-reduced-motion:reduce){.spor-strom,.meg::before,.meg::after,.s-dot{animation:none}}
-  /* Replay på mobil: linja på egen rad under knappene, tidslinja alene øverst (sist i stilarket, så den vinner). */
+  /* Replay på mobil: modulen nederst over hele bredden; tidslinjen alene på sin rad, knappene under. */
   @media (max-width:760px){
-    .replay .hero-i>.flyt{flex-wrap:wrap}
-    .hist{flex-basis:100%;border-radius:20px;justify-content:space-between}
-    .hist .h-tid{flex:1 0 calc(100% - 46px)}   /* tidslinja alene på første rad, resten under */
+    .hist{bottom:12px;padding:12px;border-radius:22px;gap:10px}
+    .hist .h-kontroll{flex-wrap:wrap;justify-content:space-between;gap:10px 6px}
+    .hist .h-spill{order:-2}
+    .hist .h-tid{flex:1 1 calc(100% - 64px);order:-1;min-width:0}
+    .hist .h-kl{min-width:0;font-size:12px;margin-right:auto}
+    .hist .h-ikon,.hist .h-lukk{width:34px;height:34px}
+    .hist .h-fart{min-width:44px;padding:8px 8px}
+    .hist .h-kalender{right:50%;transform:translateX(50%);width:min(340px,calc(100vw - 40px))}
     .hist .h-fartvalg{right:8px}
-    .hist .h-kl{min-width:0}
+    .h-sok input{font-size:16px;padding:12px 14px}
   }
   /* Egen peker (bare mus/styreflate, bare i hero; resten av siden har vanlig peker): et tynt siktekors, som i en
      kikkert. En lapp ved siden av sier hva modulen under viser (koordinatene over kartet, pulsen, saldoen …). Over noe klikkbart åpner korset seg og blir rødt; ved trykk strammes det. I tekstfelt: vanlig markør. */
@@ -2219,21 +2220,18 @@ if (HUS) setTimeout(function lagAvspiller() {
   kart.addControl({ onAdd: () => folgFelt, onRemove: () => folgFelt.remove() }, 'bottom-left');
   const bar = document.createElement('section');
   bar.className = 'hist gl'; bar.hidden = true; bar.setAttribute('aria-label', 'Replay');
-  // Én bred linje øverst (der flaggene står, de skjules i replay), så panelene ikke skyves ned.
-  bar.innerHTML = '<button type="button" class="h-spill" aria-label="Spill av">▶</button><input type="range" class="h-tid" min="0" max="10000" value="0" aria-label="Tid"><span class="h-kl">–</span>'
+  // Modulen nede på midten: spørrefeltet øverst, kontrollene under, × til slutt (avslutter replay).
+  bar.innerHTML = '<form class="h-sok"><input type="search" placeholder="Spør: hvor var han i går kl. 14? sist han hadde 111 i puls?" aria-label="Spør om historikken" maxlength="200"></form><p class="h-svar" hidden></p>'
+    + '<div class="h-rad h-kontroll"><button type="button" class="h-spill" aria-label="Spill av">▶</button><input type="range" class="h-tid" min="0" max="10000" value="0" aria-label="Tid"><span class="h-kl">–</span>'
     + '<button type="button" class="h-ikon h-forr" aria-label="Dagen før">‹</button>'
     + '<button type="button" class="h-ikon h-kal" aria-label="Velg dato" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></button>'
     + '<button type="button" class="h-ikon h-neste" aria-label="Dagen etter">›</button>'
-    + '<button type="button" class="h-fart" aria-expanded="false" aria-label="Fart">1×</button>'
+    + '<button type="button" class="h-fart" aria-expanded="false" aria-label="Fart">1×</button><button type="button" class="h-lukk" aria-label="Avslutt replay">×</button></div>'
     + '<div class="h-kalender gl" hidden role="dialog" aria-label="Kalender"><div class="kal-topp"><button type="button" class="kal-forr" aria-label="Forrige måned">‹</button><b class="kal-mnd"></b><button type="button" class="kal-neste" aria-label="Neste måned">›</button></div><div class="kal-uke"></div><div class="kal-dager"></div><p class="kal-fot"></p></div>'
     + '<div class="h-fartvalg gl" hidden><span class="h-fv">1×</span><input type="range" class="h-fs" min="0" max="100" value="0" aria-label="Fart fra 1× til 60×"><span class="h-fe"><span>1×</span><span>60×</span></span></div>';
-  // Spørreboksen er en egen boks under datoen.
-  const sokk = document.createElement('section');
-  sokk.className = 'h-sokk gl'; sokk.hidden = true; sokk.setAttribute('aria-label', 'Spør om historikken');
-  sokk.innerHTML = '<form class="h-sok"><input type="search" placeholder="Spør: hvor var han i går kl. 14? sist han hadde 111 i puls?" aria-label="Spør om historikken" maxlength="200"></form><p class="h-svar" hidden></p>';
-  document.querySelector('.hero-i>.flyt').append(rad, bar);
-  document.querySelector('.naa').after(sokk);
-  const q = c => bar.querySelector(c) || sokk.querySelector(c) || rad.querySelector(c) || folgFelt.querySelector(c), spill = q('.h-spill'), tid = q('.h-tid'), kl2 = q('.h-kl'), svar = q('.h-svar'), folgK = q('.kn-folg');
+  document.querySelector('.hero-i>.flyt').append(rad);
+  document.body.append(bar);
+  const q = c => bar.querySelector(c) || rad.querySelector(c) || folgFelt.querySelector(c), spill = q('.h-spill'), tid = q('.h-tid'), kl2 = q('.h-kl'), svar = q('.h-svar'), folgK = q('.kn-folg');
   const ukedag = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', weekday: 'short' }), klS = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', hour: '2-digit', minute: '2-digit', second: '2-digit' });
   // Datoen: siste 35 dager (så lenge posisjonene lagres).
   // Dagen som spilles; første dag med opptak og i dag avgrenser kalenderen og «dag fram/tilbake».
@@ -2245,7 +2243,10 @@ if (HUS) setTimeout(function lagAvspiller() {
   folgK.onclick = () => settFolg(!følg);
   kart.on('dragstart', () => { if (følg) settFolg(false); });
   // Replay: avspilleren åpnes én time tilbake i dag, på pause. Et nytt trykk går tilbake til live.
-  q('.kn-spol').onclick = e => { const åpne = bar.hidden; bar.hidden = !åpne; sokk.hidden = !åpne; e.currentTarget.setAttribute('aria-pressed', åpne); e.currentTarget.setAttribute('aria-label', åpne ? 'Lukk replay' : 'Replay'); fartvalg.hidden = true; document.body.classList.toggle('replay', åpne); if (åpne && !avsp) last(dagNr.format(Date.now())).then(() => vis(Math.max(0, 1 - 3600e3 / (avsp.t1 - avsp.t0)))); if (!åpne) { settFolg(false); gåLive(); } };
+  // Play-knappen ved flaggene åpner modulen (og lukker den igjen); toppen ellers uendret. × i modulen avslutter.
+  const replay = åpne => { bar.hidden = !åpne; fartvalg.hidden = true; q('.h-kalender').hidden = true; document.body.classList.toggle('replay', åpne); if (åpne && !avsp) last(dagNr.format(Date.now())).then(() => vis(Math.max(0, 1 - 3600e3 / (avsp.t1 - avsp.t0)))); if (!åpne) { settFolg(false); gåLive(); } };
+  q('.kn-spol').onclick = () => replay(bar.hidden);
+  q('.h-lukk').onclick = () => replay(false);
   // Sanntid som standard: ett sekund avspilling er ett sekund av dagen. 10× og 60× for å komme raskere fram.
   let fart = 1;
   // Rå puls (hver måling) hentes i vinduer rundt tiden som spilles, så pulsen slår som den gjorde.
