@@ -24,6 +24,9 @@
 //
 // Prissiden (/klart/pris/) selger lisenser for hele virksomheten, priset fra antall ansatte:
 //
+//   GET  /klart/api/sok?q=…               → opptil seks virksomheter som passer navnet (forslag i feltet)
+//   GET  /klart/api/sjekk?orgnr=…         → virksomheten, og om den er stor nok for skreddersydd oppsett.
+//                                           Uten pris: forsiden viser den aldri ved nedlasting.
 //   GET  /klart/api/pris?orgnr=…[&som=kunde]  → virksomheten, prisen og hvordan den kan betale
 //   POST /klart/api/kasse        { type, orgnr, betaling, kunder?, epost?, referanse?, ehf? }
 //                                → adresse til Stripe Checkout, eller fakturaen og nøkkelen
@@ -54,6 +57,8 @@ import {
   virksomhetFra,
   grunnlagFra,
   fornyetBelop,
+  telteAnsatte,
+  leverandorAktuell,
 } from "./klart-pris.js";
 
 const NADE_DAGER = 14; // lisensen varer så mange dager etter at perioden er betalt til
@@ -74,6 +79,8 @@ export async function handleKlart(request, env, url) {
     if (sti === "kvittering" && request.method === "GET") return await kvittering(env, url);
     if (sti === "hent" && request.method === "POST") return await hent(request, env);
     if (sti === "stripe" && request.method === "POST") return await webhook(request, env);
+    if (sti === "sok" && request.method === "GET") return await sok(url);
+    if (sti === "sjekk" && request.method === "GET") return await sjekk(env, url);
     if (sti === "pris" && request.method === "GET") return await pris(env, url);
     if (sti === "kasse" && request.method === "POST") return await kasse(request, env, url);
     if (sti === "ordre" && request.method === "GET") return await ordre(env, url);
@@ -595,6 +602,43 @@ function underenhetTekst(o) {
   return `Dette er en underenhet av ${o.overordnet.navn}. Fortsett med ${orgnrTekst(o.overordnet.orgnr)}.`;
 }
 
+// --- Søk og sjekk (feltet på forsiden og prissiden) -------------------------------
+
+/** Forslag mens noen skriver navnet. Enhetsregisteret slipper ikke nettleseren til selv (ingen CORS). */
+async function sok(url) {
+  const q = tekstFra(url.searchParams.get("q"), 80);
+  if (q.length < 2) return json({ treff: [] });
+  const svar = await fetch(
+    `https://data.brreg.no/enhetsregisteret/api/enheter?navn=${encodeURIComponent(q)}&size=12&konkurs=false&underAvvikling=false`,
+    { headers: { accept: "application/json" }, cf: { cacheEverything: true, cacheTtl: 3600 } }
+  );
+  if (!svar.ok) throw new Error(`Enhetsregisteret søk: ${svar.status}`);
+  const data = await svar.json();
+  const treff = (data._embedded?.enheter || [])
+    // Utenlandske enheter (UTLA) kan ikke kjøpe.
+    .filter((e) => aktiv(e) && e.organisasjonsform?.kode !== "UTLA")
+    .slice(0, 6)
+    .map((e) => ({ orgnr: e.organisasjonsnummer, navn: e.navn, sted: e.forretningsadresse?.poststed || e.postadresse?.poststed || "" }));
+  return json({ treff });
+}
+
+/** Nedlasting på forsiden: virksomheten finnes og er aktiv, og om den er stor. Aldri pris. */
+async function sjekk(env, url) {
+  const p = priser(env);
+  const orgnr = orgnrFra(url.searchParams.get("orgnr"));
+  if (!orgnr) return json({ feil: "Organisasjonsnummeret må være ni sifre og gyldig." }, 400);
+  const o = await slaaOppVirksomhet(orgnr);
+  if (o.feil) return json({ feil: o.feil }, o.kode);
+  if (o.underenhet) return json({ underenhet: o.underenhet, overordnet: o.overordnet });
+  const g = p ? grunnlag(p, o) : null;
+  return json({
+    orgnr: o.virksomhet.orgnr,
+    navn: o.virksomhet.navn,
+    stor: Boolean(g && sprintFor(p, telteAnsatte(p, g.v))),
+    konsern: Boolean(g?.konsern),
+  });
+}
+
 // --- Pris ---------------------------------------------------------------------
 
 async function pris(env, url) {
@@ -623,7 +667,10 @@ async function pris(env, url) {
     // Et konsern betaler som et konsern: faktura og avdrag følger størrelsen på konsernet.
     betaling: betalingFor(p, g.v.ansatte, l.pris),
     testing: testet ? null : { pris: p.testing.pris, eksporter: p.testing.eksporter, apen: testmodus(env) || TESTING_I_APPEN },
-    sprint: sprintFor(p, l.ansatte),
+    // Stor nok for skreddersydd oppsett (sprinten). Prisen på den vises ikke; den tas i samtalen.
+    stor: Boolean(sprintFor(p, l.ansatte)),
+    // Behandler trolig data for andre: da er det et eget steg i kassen.
+    leverandorAktuell: leverandorAktuell(p, v),
     kjop: kjopApent(env),
     test: testmodus(env),
   });
@@ -742,14 +789,14 @@ async function stripeKunde(env, v, meta, { epost, referanse, ehf } = {}) {
   return kunde;
 }
 
-/** Kundene til en tjenesteleverandør, slått opp og priset hver for seg. Én linje (og ett produkt) per kunde. */
-async function kunderFra(env, p, lev, liste, har = []) {
+/** Kundene til en tjenesteleverandør, slått opp og priset hver for seg. Én linje (og ett produkt) per kunde.
+    «ledig» er hvor mange linjer det er plass til: Stripe tar 20 i ett abonnement, og den egne lisensen er én. */
+async function kunderFra(env, p, lev, liste, har = [], ledig = 19) {
   const orgnre = [...new Set((Array.isArray(liste) ? liste : []).map(orgnrFra).filter(Boolean))].filter(
     (o) => o !== lev.orgnr && !har.includes(o)
   );
   if (!orgnre.length) return { feil: "Legg til minst én kunde med et gyldig organisasjonsnummer." };
-  // Stripe tar opptil 20 linjer i ett abonnement.
-  if (orgnre.length + har.length > 20) return { feil: `En leverandørlisens kan ha opptil 20 kunder. Skriv til ${EIER} for flere.` };
+  if (orgnre.length > ledig) return { feil: `Det er plass til ${Math.max(ledig, 0)} kunder til på lisensen. Skriv til ${EIER} for flere.` };
   const linjer = [];
   for (const k of orgnre) {
     const o = await slaaOppVirksomhet(k);
@@ -815,10 +862,13 @@ async function kasse(request, env, url) {
         : `Klart for ${v.navn} (org.nr ${orgnrTekst(v.orgnr)}). Alle brukere og enheter, virksomhetens egne data.`) +
       (betaling === "avdrag" ? " Fire kvartalsvise betalinger på en lisens over 12 måneder." : "");
   } else {
+    // Egne data og kunders data i ett abonnement: virksomhetens egen lisens, og én linje per kunde.
     const k = await kunderFra(env, p, v, inn.kunder);
     if (k.feil) return json({ feil: k.feil }, k.kode || 400);
-    linjer = k.linjer;
-    beskrivelse = `Klart tjenesteleverandørlisens for ${v.navn} (org.nr ${orgnrTekst(v.orgnr)}), ${linjer.length} ${linjer.length === 1 ? "kunde" : "kunder"}.`;
+    const egen = { produkt: await produkt(env, PRODUKT_LISENS, "Klart – lisens for virksomheten", { klart: "lisens" }), belop: l.pris * 100 };
+    linjer = [egen, ...k.linjer];
+    const antall = `${k.linjer.length} ${k.linjer.length === 1 ? "kunde" : "kunder"}`;
+    beskrivelse = `Klart for ${v.navn} (org.nr ${orgnrTekst(v.orgnr)}): egne data, og tjenesteleverandørlisens for ${antall}.`;
   }
 
   const meta = {
@@ -831,7 +881,7 @@ async function kasse(request, env, url) {
     value_factor: l.faktor.toFixed(2),
     accounts_year: g.regnskap ? g.regnskap.aar : "",
     // Priset på hele konsernet gjelder lisensen hele konsernet.
-    scope: g.konsern && type === "lisens" ? "konsern" : "virksomhet",
+    scope: g.konsern && type !== "testing" ? "konsern" : "virksomhet",
     license_type: type,
     betaling,
   };
@@ -1073,7 +1123,7 @@ async function leggTilKunder(request, env) {
   if (!o.virksomhet) return json({ feil: o.feil || IKKE_AKTIV }, 409);
   const abo = await stripe(env, "GET", `subscriptions/${lisens.id}?expand[]=items.data.price.product`);
   const har = abo.items.data.map((i) => i.price.product?.metadata?.kunde).filter(Boolean);
-  const k = await kunderFra(env, p, o.virksomhet, inn.kunder, har);
+  const k = await kunderFra(env, p, o.virksomhet, inn.kunder, har, 20 - abo.items.data.length);
   if (k.feil) return json({ feil: k.feil }, k.kode || 400);
   const mva = await mvaSats(env);
   for (const [i, linje] of k.linjer.entries()) {

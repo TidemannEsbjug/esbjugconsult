@@ -184,10 +184,36 @@
                 </span>
               </p>
             </div>
-            <div class="get rise" style="--d: 180ms">
-              <a class="btn" href="/klart/last-ned/mac" download>Last ned for Mac</a>
-              <a class="btn ghost" href="/klart/last-ned/windows" download>Last ned for Windows</a>
-            </div>
+            <!-- Nedlasting: virksomheten først (orgfelt.js og skriptet nederst). Ingen pris her. -->
+            <form class="orgport rise" data-orgport style="--d: 180ms" novalidate>
+              <div data-orgport-sok>
+                <label for="orgport-topp">Skriv inn organisasjonsnummer eller navn for å laste ned</label>
+                <div class="orgport-rad">
+                  <div class="orgfelt">
+                    <input id="orgport-topp" type="text" autocomplete="off" spellcheck="false" placeholder="Organisasjonsnummer eller navn" maxlength="80" />
+                    <ul class="orgforslag" role="listbox" hidden></ul>
+                  </div>
+                  <button class="btn" type="submit">Last ned</button>
+                </div>
+                <p class="orgport-feil" role="alert" hidden></p>
+              </div>
+              <div class="orgport-svar" data-orgport-svar hidden aria-live="polite">
+                <p class="orgport-ok">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+                  <span><b data-navn></b> er godkjent for Klart.</span>
+                </p>
+                <div class="get">
+                  <a class="btn" href="/klart/last-ned/mac" download>Last ned for Mac</a>
+                  <a class="btn ghost" href="/klart/last-ned/windows" download>Last ned for Windows</a>
+                </div>
+                <p class="orgport-stor" data-stor hidden>
+                  <b>For en virksomhet av deres størrelse</b> tilbyr vi også et skreddersydd oppsett: en større modell,
+                  finjustert på deres egne dokumenter og satt opp hos dere.
+                  <a data-oppsett href="pris/">Les om skreddersydd oppsett</a>
+                </p>
+                <button type="button" class="orgport-endre" data-endre>Ikke deres virksomhet?</button>
+              </div>
+            </form>
             <p class="fineprint rise" style="--d: 230ms">
               Ingen konto · ingen skytjeneste · ingenting lastes ned ved oppstart
             </p>
@@ -845,10 +871,35 @@
           Klart finner i dine egne dokumenter, og lagre ti rensede filer av
           hver filtype. Lisenser selges til bedrifter.
         </p>
-        <div class="get rise">
-          <a class="btn" href="/klart/last-ned/mac" download>Last ned for Mac</a>
-          <a class="btn ghost" href="/klart/last-ned/windows" download>Last ned for Windows</a>
-        </div>
+        <form class="orgport rise" data-orgport novalidate>
+          <div data-orgport-sok>
+            <label for="orgport-bunn">Skriv inn organisasjonsnummer eller navn for å laste ned</label>
+            <div class="orgport-rad">
+              <div class="orgfelt">
+                <input id="orgport-bunn" type="text" autocomplete="off" spellcheck="false" placeholder="Organisasjonsnummer eller navn" maxlength="80" />
+                <ul class="orgforslag" role="listbox" hidden></ul>
+              </div>
+              <button class="btn" type="submit">Last ned</button>
+            </div>
+            <p class="orgport-feil" role="alert" hidden></p>
+          </div>
+          <div class="orgport-svar" data-orgport-svar hidden aria-live="polite">
+            <p class="orgport-ok">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+              <span><b data-navn></b> er godkjent for Klart.</span>
+            </p>
+            <div class="get">
+              <a class="btn" href="/klart/last-ned/mac" download>Last ned for Mac</a>
+              <a class="btn ghost" href="/klart/last-ned/windows" download>Last ned for Windows</a>
+            </div>
+            <p class="orgport-stor" data-stor hidden>
+              <b>For en virksomhet av deres størrelse</b> tilbyr vi også et skreddersydd oppsett: en større modell,
+              finjustert på deres egne dokumenter og satt opp hos dere.
+              <a data-oppsett href="pris/">Les om skreddersydd oppsett</a>
+            </p>
+            <button type="button" class="orgport-endre" data-endre>Ikke deres virksomhet?</button>
+          </div>
+        </form>
         <p class="sub rise" style="margin-top: 18px">
           <a href="pris/" style="color: var(--signal); font-weight: 600">Se prisen for virksomheten deres</a>
         </p>
@@ -909,6 +960,88 @@
         }
         window.addEventListener("scroll", sjekk, { passive: true });
         sjekk();
+      })();
+    </script>
+    <script src="orgfelt.js"></script>
+    <script>
+      // Nedlasting: virksomheten først. Små og store får «godkjent» og knappene; de store får også høre
+      // om skreddersydd oppsett. Ingen pris her (GET /klart/api/sjekk gir den ikke). Begge feltene på
+      // siden viser samme svar.
+      (function () {
+        var skjemaer = document.querySelectorAll("[data-orgport]");
+
+        function visSvar(svar) {
+          skjemaer.forEach(function (s) {
+            s.querySelector("[data-orgport-sok]").hidden = true;
+            var boks = s.querySelector("[data-orgport-svar]");
+            boks.querySelector("[data-navn]").textContent = svar.navn;
+            boks.querySelector("[data-stor]").hidden = !svar.stor;
+            boks.querySelector("[data-oppsett]").href = "pris/?orgnr=" + svar.orgnr + "&vis=oppsett";
+            boks.hidden = false;
+          });
+        }
+
+        function nullstill() {
+          skjemaer.forEach(function (s) {
+            s.querySelector("[data-orgport-svar]").hidden = true;
+            s.querySelector("[data-orgport-sok]").hidden = false;
+          });
+        }
+
+        skjemaer.forEach(function (skjema) {
+          var input = skjema.querySelector("input");
+          var knapp = skjema.querySelector("button[type=submit]");
+          var feilEl = skjema.querySelector(".orgport-feil");
+          var felt = KlartOrgfelt(input, skjema.querySelector(".orgforslag"), sjekk);
+
+          function feil(tekst) {
+            feilEl.textContent = tekst || "";
+            feilEl.hidden = !tekst;
+          }
+
+          function sjekk(o) {
+            feil("");
+            knapp.disabled = true;
+            fetch("/klart/api/sjekk?orgnr=" + o)
+              .then(function (r) {
+                return r.json().then(function (j) {
+                  if (!r.ok) throw new Error(j.feil || "Noe gikk galt. Prøv igjen om litt.");
+                  return j;
+                });
+              })
+              .then(function (svar) {
+                // En underenhet laster ned på vegne av hovedenheten.
+                if (svar.underenhet) return sjekk(svar.overordnet.orgnr);
+                visSvar(svar);
+              })
+              .catch(function (err) {
+                feil(err.message);
+              })
+              .finally(function () {
+                knapp.disabled = false;
+              });
+          }
+
+          skjema.addEventListener("submit", function (e) {
+            e.preventDefault();
+            var o = felt.orgnr() || (!felt.sifre() && felt.forste());
+            if (!o) {
+              feil(
+                felt.sifre()
+                  ? "Organisasjonsnummeret stemmer ikke. Sjekk at alle ni sifrene er riktige."
+                  : "Fant ingen virksomhet med det navnet. Prøv organisasjonsnummeret."
+              );
+              return;
+            }
+            sjekk(o);
+          });
+
+          skjema.querySelector("[data-endre]").addEventListener("click", function () {
+            nullstill();
+            felt.tom();
+            input.focus();
+          });
+        });
       })();
     </script>
     <script>

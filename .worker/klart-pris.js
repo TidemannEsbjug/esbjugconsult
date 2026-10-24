@@ -190,6 +190,13 @@ export function kundepris(priser, v, regnskap = null) {
   return lisenspris(priser, v, regnskap).pris * (priser.leverandorFaktor || 1);
 }
 
+/** Om virksomheten trolig behandler data for andre (IT, regnskap, rådgivning, HR-tjenester …). Da spør
+    kassen om det som et eget steg; for andre (et flyselskap) er det bare en lenke. «leverandorBransjer». */
+export function leverandorAktuell(priser, v) {
+  const kode = String(v.naering || "");
+  return (priser.leverandorBransjer || []).some((n) => kode.startsWith(n));
+}
+
 /** Sprinten hos virksomheter fra «fra» ansatte og opp, med trinnet som gjelder. Ellers null.
     Får de talte ansatte: sprinten handler om hvor mye dokumentarbeid det er. */
 export function sprintFor(priser, ansatte) {

@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="../fonts.css" />
     <link rel="stylesheet" href="../styles.css" />
     <style>
-      /* Prissiden. Bare porten (org.nr) og bunnen vises før oppslaget har gått gjennom; alt
-         annet har «hidden» til svaret er her. Prisen regnes ut i .worker/klart.js, aldri her. */
+      /* Prissiden er ett kort som går steg for steg: virksomhet → pris → hvem lisensen dekker → betaling →
+         bekreft. Prisen regnes ut i .worker/klart.js, aldri her. Bare porten og bunnen vises før oppslaget. */
       body {
         user-select: none;
         -webkit-user-select: none;
@@ -26,42 +26,104 @@
         display: none !important;
       }
 
-      /* ---------- Porten: kortet over vinterbildet ---------- */
+      /* ---------- Kortet over vinterbildet ---------- */
       .port {
-        position: relative;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 16px;
         min-height: 100svh;
-        padding: clamp(40px, 12vh, 140px) 16px clamp(48px, 8vh, 96px);
+        padding: clamp(32px, 10vh, 120px) 16px clamp(48px, 8vh, 96px);
         background: #dfe8f2 url("../assets/hero-film-slutt.jpg") center 38% / cover no-repeat;
       }
-      .port.svar {
-        min-height: 0;
-        padding-top: clamp(32px, 7vh, 80px);
-      }
       .kort {
-        width: min(540px, 100%);
+        width: min(560px, 100%);
         padding: clamp(24px, 4vw, 38px);
         border-radius: 20px;
-        background: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.92);
         -webkit-backdrop-filter: saturate(1.3) blur(22px);
         backdrop-filter: saturate(1.3) blur(22px);
         border: 1px solid rgba(255, 255, 255, 0.75);
         box-shadow: 0 2px 4px rgba(20, 30, 40, 0.05), 0 22px 54px rgba(20, 40, 70, 0.18);
         transition: width 360ms var(--ease);
       }
-      .kort.bred,
-      .leverandor {
-        width: min(880px, 100%);
+      .kort.middels {
+        width: min(680px, 100%);
       }
+      .kort.bred {
+        width: min(1000px, 100%);
+      }
+
+      /* Hvert steg glir inn fra høyre (fram) eller venstre (tilbake). */
+      .steg {
+        animation: fram 340ms var(--ease) both;
+      }
+      .steg.tilbake-inn {
+        animation-name: tilbake;
+      }
+      @keyframes fram {
+        from {
+          opacity: 0;
+          transform: translateX(28px);
+        }
+      }
+      @keyframes tilbake {
+        from {
+          opacity: 0;
+          transform: translateX(-28px);
+        }
+      }
+
+      .stegrad {
+        display: flex;
+        gap: 6px;
+        margin: 0 0 22px;
+        padding: 0;
+        list-style: none;
+        font-family: var(--mono);
+        font-size: 10.5px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink-4);
+      }
+      .stegrad li {
+        flex: 1;
+        padding-top: 9px;
+        border-top: 2px solid var(--rule);
+        transition: color 200ms ease, border-color 200ms ease;
+      }
+      .stegrad li.ferdig {
+        color: var(--ink-3);
+        border-color: var(--signal-lit);
+      }
+      .stegrad li.her {
+        color: var(--signal-deep);
+        border-color: var(--signal);
+      }
+
       .merke {
         font-family: var(--mono);
         font-size: 11px;
         letter-spacing: 0.12em;
         text-transform: uppercase;
         color: var(--ink-3);
+      }
+      .kort h1,
+      .kort h2 {
+        margin: 8px 0 10px;
+        font-size: clamp(27px, 3.6vw, 36px);
+        line-height: 1.08;
+        letter-spacing: -0.03em;
+      }
+      .kort h1 {
+        font-size: clamp(30px, 4.2vw, 40px);
+      }
+      .kort h2:focus {
+        outline: none;
+      }
+      .ingress {
+        color: var(--ink-2);
+        font-size: 16px;
+        line-height: 1.55;
       }
       .kvote {
         margin-bottom: 14px;
@@ -72,17 +134,56 @@
         background: var(--signal-soft);
         border: 1px solid rgba(36, 86, 230, 0.18);
       }
-      .kort h1 {
-        margin: 8px 0 10px;
-        font-size: clamp(30px, 4.2vw, 40px);
-        line-height: 1.06;
-        letter-spacing: -0.03em;
+      .tilbake {
+        margin: -6px 0 14px;
+        padding: 0;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--ink-3);
       }
-      .ingress {
-        color: var(--ink-2);
-        font-size: 16px;
-        line-height: 1.55;
+      .tilbake:hover {
+        color: var(--signal);
       }
+      .lenke {
+        padding: 0;
+        font-size: 14.5px;
+        font-weight: 600;
+        color: var(--signal);
+        text-align: left;
+      }
+      .lenke:hover {
+        color: var(--signal-deep);
+      }
+      .smaa {
+        margin-top: 10px;
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.02em;
+        color: var(--ink-3);
+      }
+      .feil {
+        margin-top: 12px;
+        font-size: 14.5px;
+        color: var(--flag);
+      }
+      .venter {
+        opacity: 0.6;
+        pointer-events: none;
+      }
+      .knapper {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px 18px;
+        margin-top: 26px;
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: default;
+        transform: none;
+      }
+
+      /* ---------- Felt ---------- */
       .felt {
         margin-top: 22px;
       }
@@ -98,7 +199,7 @@
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto;
         gap: 10px;
-        align-items: center;
+        align-items: start;
       }
       input[type="text"],
       input[type="email"],
@@ -118,11 +219,6 @@
         padding: 0 14px;
         font-size: 16px;
       }
-      input.orgnr {
-        font-family: var(--mono);
-        font-size: 17px;
-        letter-spacing: 0.06em;
-      }
       textarea {
         padding: 11px 14px;
         font-size: 15px;
@@ -135,26 +231,8 @@
         outline-offset: 1px;
         border-color: var(--signal-lit);
       }
-      .btn:disabled,
-      .btn[aria-disabled="true"] {
-        opacity: 0.55;
-        cursor: default;
-        transform: none;
-      }
       .rad .btn {
         height: 48px;
-      }
-      .smaa {
-        margin-top: 10px;
-        font-family: var(--mono);
-        font-size: 11px;
-        letter-spacing: 0.02em;
-        color: var(--ink-3);
-      }
-      .feil {
-        margin-top: 12px;
-        font-size: 14.5px;
-        color: var(--flag);
       }
       .underenhet {
         margin-top: 14px;
@@ -168,22 +246,28 @@
       .underenhet .btn {
         margin-top: 10px;
       }
-      .lenke {
-        padding: 0;
-        font-size: 14.5px;
-        font-weight: 600;
-        color: var(--signal);
-        text-align: left;
+      .skjema {
+        display: grid;
+        gap: 14px;
+        margin-top: 18px;
       }
-      .lenke:hover {
-        color: var(--signal-deep);
-      }
-      .venter {
-        opacity: 0.6;
-        pointer-events: none;
+      .skjult-felt {
+        position: absolute;
+        left: -9999px;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
       }
 
-      /* ---------- Resultatet ---------- */
+      /* ---------- Prisen ---------- */
+      .pris-grid {
+        display: grid;
+        gap: clamp(22px, 3vw, 36px);
+      }
+      .kort.bred .pris-grid {
+        grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+        align-items: stretch;
+      }
       .bekreftet {
         font-size: 15px;
         color: var(--ink-2);
@@ -192,9 +276,9 @@
         color: var(--ink);
       }
       .pristall {
-        margin: 10px 0 6px;
-        font-size: clamp(36px, 6vw, 58px);
-        line-height: 1.02;
+        margin: 10px 0 6px !important;
+        font-size: clamp(36px, 5.6vw, 56px) !important;
+        line-height: 1.02 !important;
         font-weight: 700;
         letter-spacing: -0.035em;
       }
@@ -205,27 +289,29 @@
         letter-spacing: -0.01em;
         color: var(--ink-2);
       }
-      .pristall:focus {
-        outline: none;
-      }
-      .resultat-endre {
-        margin-top: 6px;
-      }
-      .inkludert {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px 28px;
-        margin-top: 26px;
-        padding-top: 22px;
+      .vilkar-tittel {
+        margin-top: 24px;
+        padding-top: 20px;
         border-top: 1px solid var(--rule);
+        font-family: var(--mono);
+        font-size: 11px;
+        font-weight: 400;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ink-3);
       }
-      .inkludert li {
+      .vilkar {
+        display: grid;
+        gap: 9px;
+        margin-top: 12px;
+      }
+      .vilkar li {
         position: relative;
         padding-left: 26px;
         font-size: 15px;
         line-height: 1.5;
       }
-      .inkludert li::before {
+      .vilkar li::before {
         content: "";
         position: absolute;
         left: 3px;
@@ -236,131 +322,141 @@
         border-bottom: 2px solid var(--signal);
         transform: rotate(-45deg);
       }
-      .omfang {
-        margin-top: 16px;
-        font-size: 14.5px;
-        font-weight: 600;
-        color: var(--ink);
+      .ekstra {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 20px;
+        margin-top: 18px;
+        font-size: 14px;
       }
-      .betaling {
+      .ekstra .lenke {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--ink-2);
+        text-decoration: underline;
+        text-decoration-color: var(--rule);
+        text-underline-offset: 3px;
+      }
+      .ekstra .lenke:hover {
+        color: var(--signal);
+      }
+
+      /* Skreddersydd oppsett ved siden av prisen, for de store */
+      .oppsett-kort {
+        display: flex;
+        flex-direction: column;
+        padding: 24px;
+        border-radius: 16px;
+        color: #fff;
+        background: linear-gradient(160deg, #1a3fb0, #15306f);
+        box-shadow: 0 18px 40px -22px rgba(26, 63, 176, 0.8);
+      }
+      .oppsett-kort .merke {
+        color: rgba(255, 255, 255, 0.65);
+      }
+      .oppsett-kort h3 {
+        margin-top: 10px;
+        font-size: 22px;
+        line-height: 1.2;
+        letter-spacing: -0.02em;
+      }
+      .oppsett-kort p {
+        margin-top: 10px;
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.85);
+      }
+      .oppsett-kort svg {
+        width: 100%;
+        max-width: 260px;
+        margin: 14px auto 0;
+        display: block;
+      }
+      .oppsett-kort .btn {
+        margin-top: auto;
+        align-self: flex-start;
+        color: var(--signal-deep);
+        background: #fff;
+        border-color: #fff;
+      }
+      .oppsett-kort .btn:hover {
+        background: var(--signal-soft);
+      }
+
+      /* ---------- Valg (hvem lisensen dekker, betaling) ---------- */
+      .valgliste {
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 10px;
-        margin-top: 24px;
+        margin-top: 20px;
       }
       .valg {
+        position: relative;
         display: grid;
-        align-content: start;
         gap: 3px;
-        min-height: 66px;
-        padding: 13px 16px;
+        padding: 15px 18px 15px 48px;
         text-align: left;
         color: var(--ink);
         background: #fff;
         border: 1px solid var(--rule);
         border-radius: 14px;
-        transition: border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
+        cursor: pointer;
+        transition: border-color 140ms ease, box-shadow 140ms ease;
+      }
+      .valg::before {
+        content: "";
+        position: absolute;
+        left: 18px;
+        top: 18px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 1.5px solid var(--ink-4);
+        background: #fff;
+      }
+      .valg:hover {
+        border-color: rgba(36, 86, 230, 0.45);
+      }
+      .valg[aria-checked="true"] {
+        border-color: var(--signal);
+        box-shadow: 0 0 0 1px var(--signal) inset, 0 8px 22px -14px rgba(36, 86, 230, 0.6);
+      }
+      .valg[aria-checked="true"]::before {
+        border: 5px solid var(--signal);
       }
       .valg strong {
-        font-size: 15px;
+        font-size: 15.5px;
         font-weight: 600;
       }
       .valg span {
-        font-size: 12.5px;
-        color: var(--ink-2);
-      }
-      .valg:hover:not(:disabled) {
-        border-color: rgba(36, 86, 230, 0.45);
-        box-shadow: 0 6px 18px -10px rgba(36, 86, 230, 0.5);
-      }
-      .valg.hoved {
-        color: #fff;
-        background: var(--signal);
-        border-color: var(--signal);
-      }
-      .valg.hoved span {
-        color: rgba(255, 255, 255, 0.85);
-      }
-      .valg.hoved:hover:not(:disabled) {
-        background: var(--signal-deep);
-      }
-      .valg:disabled {
-        cursor: default;
-        opacity: 0.5;
-      }
-      .avdraglinje {
-        margin-top: 12px;
         font-size: 13.5px;
         color: var(--ink-2);
       }
-      .testmerk {
-        margin-top: 12px;
-        padding: 8px 12px;
-        border-radius: 10px;
-        font-family: var(--mono);
-        font-size: 11.5px;
-        color: #7a4a00;
-        background: #fff4dc;
-        border: 1px solid #f1d9a6;
-      }
-
-      /* ---------- Tjenesteleverandør ---------- */
-      .leverandor {
-        padding: 22px clamp(20px, 3.4vw, 32px);
-        border-radius: 18px;
-        background: rgba(255, 255, 255, 0.82);
-        -webkit-backdrop-filter: saturate(1.3) blur(18px);
-        backdrop-filter: saturate(1.3) blur(18px);
-        border: 1px solid rgba(255, 255, 255, 0.7);
-        box-shadow: 0 14px 40px -18px rgba(20, 40, 70, 0.3);
-      }
-      .lev-topp {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 14px 28px;
-        align-items: center;
-      }
-      .leverandor h2 {
-        font-size: 18px;
-        letter-spacing: -0.015em;
-      }
-      .leverandor p {
-        margin-top: 4px;
-        font-size: 15px;
-        color: var(--ink-2);
-      }
-      .leverandor .mut {
-        font-size: 13.5px;
-        color: var(--ink-3);
-      }
-      .lev-panel {
-        margin-top: 20px;
-        padding-top: 20px;
+      .underpanel {
+        margin-top: 18px;
+        padding-top: 18px;
         border-top: 1px solid var(--rule);
       }
-      .lev-hvem {
-        font-size: 14.5px;
-      }
-      .lev-liste {
-        margin-top: 16px;
+
+      /* Kundene til en tjenesteleverandør */
+      .kundeliste {
+        margin-top: 14px;
         border-top: 1px solid var(--rule-2);
       }
-      .lev-liste li {
+      .kundeliste li {
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto auto;
         gap: 14px;
         align-items: center;
-        padding: 11px 0;
+        padding: 10px 0;
         border-bottom: 1px solid var(--rule-2);
         font-size: 14.5px;
       }
-      .lev-liste small {
+      .kundeliste small {
         display: block;
         font-family: var(--mono);
         font-size: 11px;
         color: var(--ink-3);
       }
-      .lev-liste .belop {
+      .kundeliste .belop {
         font-weight: 600;
         white-space: nowrap;
       }
@@ -376,188 +472,123 @@
         color: var(--flag);
         background: rgba(192, 39, 68, 0.08);
       }
-      .lev-sum {
+      .sum {
         display: flex;
         justify-content: space-between;
         gap: 12px;
-        margin-top: 14px;
-        font-size: 16px;
-        font-weight: 700;
+        margin-top: 12px;
+        font-size: 15px;
       }
-      .lev-sum span:last-child {
+      .sum b {
         white-space: nowrap;
       }
-      .lev-betaling {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-      .lev-har {
+      .har-lisens {
         margin-top: 18px;
         font-size: 14.5px;
       }
-      .lev-har summary {
+      .har-lisens summary {
         cursor: pointer;
         font-weight: 600;
         color: var(--signal);
       }
-      .lev-har textarea {
+      .har-lisens textarea {
         margin-top: 10px;
         height: 84px;
         font-family: var(--mono);
         font-size: 11.5px;
         word-break: break-all;
       }
-      .lev-har .btn {
+      .har-lisens .btn {
         margin-top: 10px;
       }
 
-      /* ---------- Seksjonene under ---------- */
-      .seksjon {
-        max-width: 1180px;
-        margin: 0 auto;
-      }
-      .seksjon .sub {
+      /* ---------- Bekreft og nøkkel ---------- */
+      .sammendrag {
         margin-top: 18px;
+        border-top: 1px solid var(--rule);
       }
-      .kortrad {
+      .sammendrag div {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 18px;
-        margin-top: clamp(30px, 4vw, 48px);
+        grid-template-columns: minmax(110px, 0.8fr) minmax(0, 1.2fr);
+        gap: 14px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--rule-2);
+        font-size: 14.5px;
       }
-      .valgkort {
-        display: flex;
-        flex-direction: column;
-        padding: 26px;
-        border-radius: 18px;
-        background: var(--card);
-        border: 1px solid var(--rule);
-        box-shadow: var(--shadow);
+      .sammendrag dt {
+        color: var(--ink-2);
       }
-      .valgkort h3 {
-        margin-top: 10px;
-        font-size: 20px;
-        line-height: 1.25;
-        letter-spacing: -0.015em;
-      }
-      .kortpris {
-        margin-top: 14px;
-        font-size: 26px;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-      }
-      .kortpris small {
-        font-size: 13.5px;
+      .sammendrag dd {
+        margin: 0;
         font-weight: 500;
-        color: var(--ink-3);
+        text-align: right;
       }
-      .kortetikett {
-        margin-top: 2px;
+      .sammendrag .sum-rad dd {
+        font-size: 17px;
+        font-weight: 700;
+      }
+      .mvamerk {
+        margin-top: 10px;
         font-size: 13px;
         color: var(--ink-3);
       }
-      .valgkort p.vilkaar {
-        margin-top: 10px;
-        font-size: 15px;
+      .testmerk {
+        margin-top: 14px;
+        padding: 8px 12px;
+        border-radius: 10px;
+        font-family: var(--mono);
+        font-size: 11.5px;
+        color: #7a4a00;
+        background: #fff4dc;
+        border: 1px solid #f1d9a6;
+      }
+      .nokkel {
+        margin-top: 18px;
+        padding: 16px;
+        border-radius: 14px;
+        background: var(--signal-soft);
+        border: 1px solid rgba(36, 86, 230, 0.18);
+      }
+      .nokkel textarea {
+        height: 96px;
+        margin-bottom: 10px;
+        font-family: var(--mono);
+        font-size: 11.5px;
+        word-break: break-all;
+        resize: none;
+        user-select: all;
+        -webkit-user-select: all;
+      }
+      .nokkel p {
+        font-size: 13.5px;
         color: var(--ink-2);
       }
-      .kortknapper {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: auto;
-        padding-top: 22px;
+      .nokkel .rad {
+        align-items: center;
       }
-      .linje-under {
-        margin-top: 26px;
-        max-width: 70ch;
-        font-size: 14.5px;
-        color: var(--ink-2);
+      .ok {
+        color: var(--ok);
       }
 
-      .sprint {
-        background: var(--card);
-        border-top: 1px solid var(--rule);
-        border-bottom: 1px solid var(--rule);
-      }
-      .sprint-grid {
+      /* ---------- Skreddersydd oppsett, utvidet testing ---------- */
+      .oppsett-grid {
         display: grid;
-        grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-        gap: clamp(30px, 5vw, 80px);
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+        gap: clamp(22px, 3vw, 40px);
         align-items: start;
       }
-      .punkter {
-        margin-top: 22px;
-        display: grid;
-        gap: 8px;
-      }
-      .punkter li {
-        position: relative;
-        padding-left: 20px;
-        font-size: 15.5px;
-        color: var(--ink-2);
-      }
-      .punkter li::before {
-        content: "";
-        position: absolute;
-        left: 2px;
-        top: 11px;
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        background: var(--signal-lit);
-      }
-      .sprint h3 {
-        margin-top: 30px;
-        font-size: 16px;
-        letter-spacing: -0.01em;
-      }
-      .sprint-tabell {
-        width: 100%;
-        max-width: 460px;
-        margin-top: 26px;
-        border-collapse: collapse;
-        font-size: 15px;
-      }
-      .sprint-tabell th,
-      .sprint-tabell td {
-        padding: 11px 0;
-        text-align: left;
-        border-bottom: 1px solid var(--rule);
-      }
-      .sprint-tabell thead th {
-        font-family: var(--mono);
-        font-size: 11px;
-        font-weight: 400;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--ink-3);
-      }
-      .sprint-tabell td {
-        text-align: right;
-        font-weight: 600;
-        font-variant-numeric: tabular-nums;
-      }
-      .sprint-tabell thead th:last-child {
-        text-align: right;
-      }
-      .sprint .tekst {
+      .tekst {
         margin-top: 14px;
-        max-width: 60ch;
-        font-size: 15.5px;
+        font-size: 15px;
         color: var(--ink-2);
       }
-      .sprint .tekst b {
+      .tekst b {
         color: var(--ink);
       }
-      .sprint .btn {
-        margin-top: 30px;
-      }
       .mac {
-        position: sticky;
-        top: 40px;
         margin: 0;
-        padding: clamp(20px, 3vw, 36px);
-        border-radius: 22px;
+        padding: 20px;
+        border-radius: 18px;
         background: linear-gradient(180deg, var(--ground), var(--ground-2));
         border: 1px solid var(--rule);
       }
@@ -567,26 +598,29 @@
         height: auto;
       }
       .mac figcaption {
-        margin-top: 10px;
+        margin-top: 8px;
         font-family: var(--mono);
         font-size: 11px;
         color: var(--ink-3);
         text-align: center;
       }
-
-      .fakta {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 0 40px;
-        margin-top: clamp(26px, 3.6vw, 44px);
+      .kortpris {
+        margin-top: 14px;
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
       }
-      .fakta li {
-        padding: 14px 0;
-        border-top: 1px solid var(--rule);
-        font-size: 15.5px;
-        color: var(--ink-2);
+      .kortpris small {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--ink-3);
       }
 
+      /* ---------- Spørsmål og bunn ---------- */
+      .seksjon {
+        max-width: 1180px;
+        margin: 0 auto;
+      }
       .faq {
         max-width: 820px;
         margin-top: clamp(26px, 3.6vw, 44px);
@@ -626,8 +660,6 @@
         font-size: 15.5px;
         color: var(--ink-2);
       }
-
-      /* ---------- Bunnen ---------- */
       .pris-bunn .selger {
         font-size: 14.5px;
         line-height: 1.7;
@@ -650,158 +682,10 @@
         color: inherit;
       }
 
-      /* ---------- Bekreftelse, faktura og samtale ---------- */
-      dialog {
-        width: min(580px, calc(100% - 32px));
-        max-height: calc(100svh - 32px);
-        padding: 0;
-        color: var(--ink);
-        border: 0;
-        border-radius: 20px;
-        background: #fff;
-        box-shadow: 0 30px 80px -20px rgba(20, 40, 70, 0.45);
-      }
-      dialog::backdrop {
-        background: rgba(21, 32, 46, 0.42);
-        -webkit-backdrop-filter: blur(4px);
-        backdrop-filter: blur(4px);
-      }
-      .dialog-inn {
-        position: relative;
-        padding: clamp(22px, 4vw, 32px);
-      }
-      .lukk {
-        position: absolute;
-        top: 14px;
-        right: 14px;
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        font-size: 22px;
-        line-height: 1;
-        color: var(--ink-3);
-      }
-      .lukk:hover {
-        color: var(--ink);
-        background: var(--ground);
-      }
-      dialog h2 {
-        margin: 6px 40px 0 0;
-        font-size: 24px;
-        line-height: 1.15;
-        letter-spacing: -0.02em;
-      }
-      .sammendrag {
-        margin-top: 18px;
-        border-top: 1px solid var(--rule);
-      }
-      .sammendrag div {
-        display: grid;
-        grid-template-columns: minmax(110px, 0.8fr) minmax(0, 1.2fr);
-        gap: 14px;
-        padding: 10px 0;
-        border-bottom: 1px solid var(--rule-2);
-        font-size: 14.5px;
-      }
-      .sammendrag dt {
-        color: var(--ink-2);
-      }
-      .sammendrag dd {
-        margin: 0;
-        font-weight: 500;
-        text-align: right;
-      }
-      .sammendrag .sum dd {
-        font-size: 17px;
-        font-weight: 700;
-      }
-      .mvamerk {
-        margin-top: 10px;
-        font-size: 13px;
-        color: var(--ink-3);
-      }
-      .skjemafelt {
-        display: grid;
-        gap: 14px;
-        margin-top: 20px;
-      }
-      .ja-nei {
-        display: flex;
-        gap: 18px;
-        font-size: 15px;
-      }
-      .ja-nei label {
-        display: flex;
-        align-items: center;
-        gap: 7px;
-        margin: 0;
-        font-size: 15px;
-        color: var(--ink);
-      }
-      .dialog-knapper {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-        gap: 10px;
-        margin-top: 24px;
-      }
-      .skjult-felt {
-        position: absolute;
-        left: -9999px;
-        width: 1px;
-        height: 1px;
-        overflow: hidden;
-      }
-
-      .nokkel {
-        margin-top: 18px;
-        padding: 16px;
-        border-radius: 14px;
-        background: var(--signal-soft);
-        border: 1px solid rgba(36, 86, 230, 0.18);
-      }
-      .nokkel textarea {
-        height: 96px;
-        margin-bottom: 10px;
-        font-family: var(--mono);
-        font-size: 11.5px;
-        word-break: break-all;
-        resize: none;
-        user-select: all;
-        -webkit-user-select: all;
-      }
-      .nokkel p {
-        font-size: 13.5px;
-        color: var(--ink-2);
-      }
-      .ok {
-        color: var(--ok);
-      }
-      .ferdig-tekst {
-        margin-top: 10px;
-        font-size: 15px;
-        color: var(--ink-2);
-      }
-
-      @media (max-width: 720px) {
-        .betaling,
-        .lev-betaling {
+      @media (max-width: 760px) {
+        .kort.bred .pris-grid,
+        .oppsett-grid {
           grid-template-columns: 1fr;
-        }
-        .valg {
-          min-height: 0;
-        }
-        .inkludert {
-          grid-template-columns: 1fr;
-        }
-        .lev-topp {
-          grid-template-columns: 1fr;
-        }
-        .sprint-grid {
-          grid-template-columns: 1fr;
-        }
-        .mac {
-          position: static;
         }
         .rad {
           grid-template-columns: 1fr;
@@ -816,17 +700,13 @@
         .sammendrag dd {
           text-align: left;
         }
-        .kortknapper .btn {
-          flex: 1 1 100%;
-          justify-content: center;
+        .stegrad {
+          font-size: 9.5px;
+          letter-spacing: 0.04em;
         }
       }
       @media (max-width: 560px) {
         section.seksjon,
-        section.sprint {
-          padding-left: 16px;
-          padding-right: 16px;
-        }
         footer {
           padding-left: 16px;
           padding-right: 16px;
@@ -842,11 +722,12 @@
   </head>
   <body>
     <main>
-      <!-- ================= 1–4: porten, prisen, betaling og tjenesteleverandør ================= -->
       <section class="port" id="port">
         <div class="kort" id="kort" aria-live="polite">
-          <!-- 1. Porten -->
-          <div id="v-port">
+          <ol class="stegrad" id="stegrad" hidden aria-label="Steg"></ol>
+
+          <!-- 1. Virksomheten -->
+          <div class="steg" id="s-port">
             <p class="kvote" id="kvote" hidden>De gratis eksportene er brukt opp. Fullversjonen har ingen grense.</p>
             <p class="merke">Klart</p>
             <h1>Få prisen deres</h1>
@@ -854,18 +735,12 @@
               Lisensieres per virksomhet. Skriv inn organisasjonsnummeret for å se den nøyaktige årsprisen.
             </p>
             <form class="felt" id="port-skjema" novalidate>
-              <label for="orgnr">Organisasjonsnummer (9 siffer)</label>
+              <label for="orgnr">Organisasjonsnummer eller navn</label>
               <div class="rad">
-                <input
-                  id="orgnr"
-                  class="orgnr"
-                  type="text"
-                  inputmode="numeric"
-                  autocomplete="off"
-                  spellcheck="false"
-                  placeholder="123 456 789"
-                  maxlength="11"
-                />
+                <div class="orgfelt">
+                  <input id="orgnr" type="text" autocomplete="off" spellcheck="false" placeholder="123 456 789" maxlength="80" />
+                  <ul class="orgforslag" id="orgnr-forslag" role="listbox" hidden></ul>
+                </div>
                 <button class="btn" type="submit" id="vis">Vis prisen</button>
               </div>
               <p class="smaa">Kun for norske virksomheter.</p>
@@ -877,264 +752,294 @@
             </form>
           </div>
 
-          <!-- 2–3. Prisen og betalingen -->
-          <div id="v-pris" hidden>
-            <p class="bekreftet" id="r-hvem"></p>
-            <h2 class="pristall" id="r-pris" tabindex="-1"></h2>
-            <p class="resultat-endre">
-              <button type="button" class="lenke" id="endre">Ikke deres virksomhet? Endre organisasjonsnummer.</button>
+          <!-- 2. Prisen, og for de store: skreddersydd oppsett ved siden av -->
+          <div class="steg" id="s-pris" hidden>
+            <div class="pris-grid">
+              <div>
+                <p class="bekreftet" id="r-hvem"></p>
+                <h2 class="pristall" id="r-pris" tabindex="-1"></h2>
+                <button type="button" class="lenke" data-endre>Ikke deres virksomhet? Endre.</button>
+                <h3 class="vilkar-tittel">Lisensen</h3>
+                <ul class="vilkar" id="r-vilkar"></ul>
+                <div class="knapper">
+                  <button type="button" class="btn" id="pris-videre">Gå videre</button>
+                  <span class="smaa" id="kjop-stengt" hidden>Betaling åpner snart.</span>
+                </div>
+                <p class="ekstra">
+                  <button type="button" class="lenke" id="til-dekker" hidden>Behandler dere data for andre virksomheter?</button>
+                  <button type="button" class="lenke" id="til-testing" hidden>Vil dere teste mer først?</button>
+                  <a class="lenke" href="/klart/#last-ned">Ikke prøvd Klart ennå? Last det ned gratis.</a>
+                </p>
+              </div>
+              <aside class="oppsett-kort" id="r-oppsett" hidden>
+                <p class="merke">For store virksomheter</p>
+                <h3>Skreddersydd oppsett</h3>
+                <p>En større modell, finjustert på deres egne dokumenter og satt opp hos dere, på maskinvare dere eier.</p>
+                <svg viewBox="0 0 560 300" aria-hidden="true">
+                  <ellipse cx="280" cy="270" rx="230" ry="22" fill="#000" opacity="0.18" />
+                  <rect x="122" y="240" width="316" height="22" rx="9" fill="#9aa4b0" />
+                  <path d="M96 128 L128 82 Q134 74 146 74 L414 74 Q426 74 432 82 L464 128 Z" fill="#eef2f6" />
+                  <path d="M96 128 H464 V230 Q464 248 446 248 H114 Q96 248 96 230 Z" fill="#d9dfe6" />
+                  <path d="M96 128.5 H464" stroke="#fff" stroke-width="1.6" />
+                  <g fill="#2b3139">
+                    <rect x="128" y="178" width="22" height="8" rx="4" />
+                    <rect x="162" y="178" width="22" height="8" rx="4" />
+                    <rect x="386" y="180" width="42" height="4" rx="2" />
+                  </g>
+                </svg>
+                <button type="button" class="btn sm" id="til-oppsett">Les mer</button>
+              </aside>
+            </div>
+          </div>
+
+          <!-- Skreddersydd oppsett: hva det er, og en samtale. Ingen pris her; den tas i samtalen. -->
+          <div class="steg" id="s-oppsett" hidden>
+            <button type="button" class="tilbake" data-tilbake>← Tilbake</button>
+            <div class="oppsett-grid">
+              <div>
+                <p class="merke">Skreddersydd oppsett</p>
+                <h2 tabindex="-1">En sprint hos dere</h2>
+                <p class="ingress">
+                  En større modell, finjustert på deres ekte data, på maskinvare dere eier. Opptil 10 sammenhengende
+                  kalenderdager, og sprinten slutter den dagen suksesskriteriene er nådd.
+                </p>
+                <ul class="vilkar" style="margin-top: 18px">
+                  <li>På stedet, under taushetserklæring og databehandleravtale</li>
+                  <li>Suksesskriteriene avtales skriftlig før dag én</li>
+                  <li>Et grunnhonorar betales på forhånd</li>
+                  <li>Kriteriene er nådd: hele beløpet gjelder, og grunnhonoraret trekkes fra</li>
+                  <li>Kriteriene er ikke nådd: dere betaler bare grunnhonoraret</li>
+                </ul>
+                <p class="tekst">
+                  <b>Dere stiller med</b> en Mac Studio i toppkonfigurasjon, med minst 128 GB samlet minne, kjøpt av dere
+                  og deres å beholde, og Claude-abonnementer og API-kostnader for sprinten.
+                </p>
+                <p class="tekst"><b>Faktureres separat:</b> den årlige lisensen.</p>
+                <p class="tekst">
+                  <b>Eierskap:</b> Dataene deres og alt som lages, er deres. Programvaren, arkitekturen og generelle
+                  forbedringer forblir hos <span class="selger-navn">[Selskap]</span> og kan gå inn i kjerneproduktet.
+                </p>
+              </div>
+              <div>
+                <figure class="mac">
+                  <!-- Egen tegning. Ikke bilder fra Apple Newsroom. Byttes gjerne med et eget foto. -->
+                  <svg viewBox="0 0 560 340" role="img" aria-label="Mac Studio">
+                    <defs>
+                      <linearGradient id="ms-front" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" stop-color="#f3f5f8" />
+                        <stop offset="0.55" stop-color="#e1e6ec" />
+                        <stop offset="1" stop-color="#c4cbd4" />
+                      </linearGradient>
+                      <linearGradient id="ms-kant" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0" stop-color="#6d7783" stop-opacity="0.28" />
+                        <stop offset="0.08" stop-color="#6d7783" stop-opacity="0" />
+                        <stop offset="0.92" stop-color="#6d7783" stop-opacity="0" />
+                        <stop offset="1" stop-color="#6d7783" stop-opacity="0.32" />
+                      </linearGradient>
+                      <linearGradient id="ms-topp" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" stop-color="#e9edf2" />
+                        <stop offset="1" stop-color="#fbfcfd" />
+                      </linearGradient>
+                      <radialGradient id="ms-skygge" cx="0.5" cy="0.5" r="0.5">
+                        <stop offset="0" stop-color="#1a2c4a" stop-opacity="0.32" />
+                        <stop offset="1" stop-color="#1a2c4a" stop-opacity="0" />
+                      </radialGradient>
+                    </defs>
+                    <ellipse cx="280" cy="292" rx="236" ry="26" fill="url(#ms-skygge)" />
+                    <rect x="122" y="262" width="316" height="24" rx="9" fill="#8d96a1" />
+                    <rect x="128" y="276" width="304" height="6" rx="3" fill="#6e7782" />
+                    <path d="M96 150 L128 104 Q134 96 146 96 L414 96 Q426 96 432 104 L464 150 Z" fill="url(#ms-topp)" stroke="#d3d9e1" stroke-width="1.2" />
+                    <path d="M96 150 H464 V252 Q464 270 446 270 H114 Q96 270 96 252 Z" fill="url(#ms-front)" />
+                    <path d="M96 150 H464 V252 Q464 270 446 270 H114 Q96 270 96 252 Z" fill="url(#ms-kant)" />
+                    <path d="M96 150.5 H464" stroke="#ffffff" stroke-width="1.6" />
+                    <g fill="#2b3139">
+                      <rect x="128" y="200" width="22" height="8" rx="4" />
+                      <rect x="162" y="200" width="22" height="8" rx="4" />
+                      <rect x="386" y="202" width="42" height="4" rx="2" />
+                    </g>
+                    <circle cx="114" cy="254" r="2.4" fill="#ffffff" />
+                    <circle cx="114" cy="254" r="5" fill="#ffffff" opacity="0.25" />
+                  </svg>
+                  <figcaption>Mac Studio, illustrasjon</figcaption>
+                </figure>
+                <form class="skjema" id="samtale-skjema" novalidate>
+                  <div>
+                    <label for="sa-navn">Navn</label>
+                    <input id="sa-navn" type="text" autocomplete="name" maxlength="120" />
+                  </div>
+                  <div>
+                    <label for="sa-epost">E-post</label>
+                    <input id="sa-epost" type="email" autocomplete="email" />
+                  </div>
+                  <div>
+                    <label for="sa-tlf">Telefon (valgfritt)</label>
+                    <input id="sa-tlf" type="tel" autocomplete="tel" maxlength="40" />
+                  </div>
+                  <div>
+                    <label for="sa-melding">Hva vil dere oppnå?</label>
+                    <textarea id="sa-melding" rows="3" maxlength="3000"></textarea>
+                  </div>
+                  <div class="skjult-felt" aria-hidden="true">
+                    <label for="sa-nettside">Nettside</label>
+                    <input id="sa-nettside" type="text" tabindex="-1" autocomplete="off" />
+                  </div>
+                  <p class="feil" id="sa-feil" role="alert" hidden></p>
+                  <button type="submit" class="btn">Book en samtale</button>
+                </form>
+                <div id="samtale-ferdig" hidden>
+                  <p class="merke ok" style="margin-top: 18px">Sendt</p>
+                  <p class="tekst">Takk. Vi tar kontakt på e-postadressen dere oppga, og foreslår et tidspunkt.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Utvidet testing -->
+          <div class="steg" id="s-testing" hidden>
+            <button type="button" class="tilbake" data-tilbake>← Tilbake</button>
+            <p class="merke">Utvidet testing</p>
+            <h2 tabindex="-1">Test på flere av deres egne filer</h2>
+            <p class="ingress">
+              Klart selges som det er. Det kan forekomme tilfeller der det overser noe, så kontroller det på deres egne
+              filer først.
             </p>
-            <ul class="inkludert" aria-label="Inkludert">
-              <li id="r-alle">Alle brukere og enheter i virksomheten</li>
-              <li>Word, PDF, PowerPoint og andre vanlige formater, ubegrenset eksport</li>
-              <li>Kjører helt uten nett, så filene forlater aldri maskinen</li>
-              <li>Konsekvent pseudonymisering på tvers av filer: Person 1 forblir Person 1</li>
-              <li>Ansikter pikseleres i bilder</li>
-              <li>Filene beholder originalformatet og utformingen</li>
-              <li>Hver eksport åpnes på nytt og kontrolleres før den leveres</li>
-            </ul>
-            <p class="omfang" id="r-omfang">Dekker virksomhetens egne data.</p>
-            <div class="betaling" id="betaling">
-              <button type="button" class="valg hoved" data-betaling="kort">
-                <strong>Betal med kort</strong>
-                <span>Årlig, fornyes automatisk</span>
+            <p class="kortpris"><span id="t-pris"></span> <small>eks. mva</small></p>
+            <ul class="vilkar" id="t-vilkar"></ul>
+            <p class="tekst">
+              Hver eksport åpnes på nytt og kontrolleres før levering. En fil som ikke består kontrollen, holdes tilbake og
+              telles aldri.
+            </p>
+            <div class="knapper">
+              <button type="button" class="btn" id="t-videre">Gå videre</button>
+            </div>
+          </div>
+
+          <!-- 3. Hvem lisensen dekker -->
+          <div class="steg" id="s-dekker" hidden>
+            <button type="button" class="tilbake" data-tilbake>← Tilbake</button>
+            <p class="merke">Lisensen</p>
+            <h2 tabindex="-1">Hvem sine data skal Klart rense?</h2>
+            <div class="valgliste" role="radiogroup" aria-label="Hvem lisensen dekker">
+              <button type="button" class="valg" role="radio" data-dekker="egen" aria-checked="true">
+                <strong>Bare våre egne data</strong>
+                <span>Dokumenter virksomheten selv har.</span>
               </button>
-              <button type="button" class="valg" data-betaling="faktura">
-                <strong>Betal med faktura</strong>
-                <span data-faktura-grense>Fra 51 ansatte</span>
-              </button>
-              <button type="button" class="valg" data-betaling="avdrag">
-                <strong>Kvartalsvise avdrag</strong>
-                <span data-avdrag-grense>Opptil 50 ansatte</span>
+              <button type="button" class="valg" role="radio" data-dekker="kunder" aria-checked="false">
+                <strong>Våre egne og kunders data</strong>
+                <span>Vi renser også filer på vegne av andre virksomheter. Hver kunde prises for seg.</span>
               </button>
             </div>
-            <p class="avdraglinje">Fire kvartalsvise betalinger på en lisens over 12 måneder.</p>
-            <p class="avdraglinje" id="kjop-stengt" hidden><b>Betaling åpner snart.</b></p>
-            <p class="testmerk" id="testmerk" hidden>
-              Testmodus: ingen ekte betaling. Bruk testkortet 4242 4242 4242 4242.
-            </p>
+            <div class="underpanel" id="kunde-panel" hidden>
+              <form id="kunde-skjema" novalidate>
+                <label for="kunde-orgnr">Kundens organisasjonsnummer eller navn</label>
+                <div class="rad">
+                  <div class="orgfelt">
+                    <input id="kunde-orgnr" type="text" autocomplete="off" spellcheck="false" placeholder="123 456 789" maxlength="80" />
+                    <ul class="orgforslag" id="kunde-forslag" role="listbox" hidden></ul>
+                  </div>
+                  <button class="btn ghost" type="submit">Legg til kunde</button>
+                </div>
+                <p class="feil" id="kunde-feil" role="alert" hidden></p>
+              </form>
+              <ul class="kundeliste" id="kundeliste" aria-label="Kunder"></ul>
+              <div id="kunde-sum" hidden>
+                <p class="sum"><span>Egen lisens</span><b id="sum-egen"></b></p>
+                <p class="sum"><span>Kunder</span><b id="sum-kunder"></b></p>
+                <p class="sum"><span><b>Totalt per år, eks. mva</b></span><b id="sum-totalt"></b></p>
+              </div>
+              <details class="har-lisens">
+                <summary>Har dere allerede en leverandørlisens? Legg kundene til den.</summary>
+                <label for="lev-kode" class="etikett" style="margin-top: 12px">Lisensnøkkelen dere fikk på e-post</label>
+                <textarea id="lev-kode" spellcheck="false" placeholder="KLART-…"></textarea>
+                <button type="button" class="btn sm" id="lev-legg-til">Legg kundene til lisensen</button>
+                <p class="feil" id="lev-feil" role="alert" hidden></p>
+                <div id="lev-ferdig"></div>
+              </details>
+            </div>
+            <div class="knapper">
+              <button type="button" class="btn" id="dekker-videre">Gå videre</button>
+            </div>
+          </div>
+
+          <!-- 4. Betaling: bare det virksomheten kan bruke -->
+          <div class="steg" id="s-betaling" hidden>
+            <button type="button" class="tilbake" data-tilbake>← Tilbake</button>
+            <p class="merke">Betaling</p>
+            <h2 tabindex="-1">Hvordan vil dere betale?</h2>
+            <div class="valgliste" role="radiogroup" aria-label="Betaling">
+              <button type="button" class="valg" role="radio" data-betaling="kort" aria-checked="false">
+                <strong>Kort</strong>
+                <span>Årlig, fornyes automatisk.</span>
+              </button>
+              <button type="button" class="valg" role="radio" data-betaling="faktura" aria-checked="false">
+                <strong>Faktura</strong>
+                <span>30 dagers betalingsfrist. EHF for offentlige kjøpere.</span>
+              </button>
+              <button type="button" class="valg" role="radio" data-betaling="avdrag" aria-checked="false">
+                <strong>Kvartalsvise avdrag</strong>
+                <span id="avdrag-tekst">Fire kvartalsvise betalinger på en lisens over 12 måneder.</span>
+              </button>
+            </div>
+            <div class="underpanel skjema" id="faktura-felt" hidden>
+              <div>
+                <label for="b-epost">E-post fakturaen skal til</label>
+                <input id="b-epost" type="email" autocomplete="email" placeholder="faktura@virksomhet.no" />
+              </div>
+              <div>
+                <label for="b-ref">Bestillingsnummer eller referanse (valgfritt)</label>
+                <input id="b-ref" type="text" autocomplete="off" maxlength="140" />
+              </div>
+              <div>
+                <span class="etikett">EHF-faktura</span>
+                <div class="valgliste" role="radiogroup" aria-label="EHF-faktura" style="margin-top: 0; grid-template-columns: 1fr 1fr">
+                  <button type="button" class="valg" role="radio" data-ehf="nei" aria-checked="true"><strong>Nei</strong></button>
+                  <button type="button" class="valg" role="radio" data-ehf="ja" aria-checked="false"><strong>Ja, vi trenger EHF</strong></button>
+                </div>
+              </div>
+            </div>
+            <p class="feil" id="betaling-feil" role="alert" hidden></p>
+            <div class="knapper">
+              <button type="button" class="btn" id="betaling-videre">Gå videre</button>
+            </div>
+          </div>
+
+          <!-- 5. Bekreft -->
+          <div class="steg" id="s-bekreft" hidden>
+            <button type="button" class="tilbake" data-tilbake>← Tilbake</button>
+            <p class="merke" id="b-merke">Bekreft</p>
+            <h2 id="b-tittel" tabindex="-1"></h2>
+            <dl class="sammendrag" id="b-liste"></dl>
+            <p class="mvamerk" id="b-mva"></p>
+            <p class="testmerk" id="b-test" hidden>Testmodus: ingen ekte betaling. Bruk testkortet 4242 4242 4242 4242.</p>
+            <p class="feil" id="b-feil" role="alert" hidden></p>
+            <div class="knapper">
+              <button type="button" class="btn" id="b-ok"></button>
+            </div>
+          </div>
+
+          <!-- Faktura sendt -->
+          <div class="steg" id="s-ferdig" hidden>
+            <p class="merke ok">Fakturaen er sendt</p>
+            <h2 id="f-tittel" tabindex="-1"></h2>
+            <p class="ingress" id="f-tekst"></p>
+            <div id="f-nokkel"></div>
+            <div class="knapper">
+              <a class="btn ghost" id="f-faktura" href="#" target="_blank" rel="noopener" hidden>Åpne fakturaen</a>
+            </div>
           </div>
 
           <!-- Tilbake fra Stripe -->
-          <div id="v-kvittering" hidden>
+          <div class="steg" id="s-kvittering" hidden>
             <p class="merke">Klart · kvittering</p>
             <h1 id="k-tittel">Takk for kjøpet</h1>
             <p class="ingress" id="k-tekst">Vi henter lisensnøkkelen.</p>
             <div id="k-nokkel"></div>
             <p class="feil" id="k-feil" role="alert" hidden></p>
-            <p class="ferdig-tekst"><a class="lenke" href="./">Tilbake til prisen</a></p>
+            <p class="ekstra"><a class="lenke" href="./">Tilbake til prisen</a></p>
           </div>
         </div>
-
-        <!-- 4. Tjenesteleverandør -->
-        <aside class="leverandor" id="leverandor" hidden aria-labelledby="lev-tittel">
-          <div class="lev-topp">
-            <div>
-              <h2 id="lev-tittel">Lisens for tjenesteleverandører</h2>
-              <p>Behandler dere data for kunder? Lisensen for tjenesteleverandører prises per kunde.</p>
-              <p class="mut">
-                En standardlisens dekker virksomhetens egne data. Å rense filer på vegne av en annen virksomhet
-                krever en tjenesteleverandørlisens for hver kunde.
-              </p>
-            </div>
-            <button type="button" class="btn ghost" id="lev-start">Få en leverandørpris</button>
-          </div>
-          <div class="lev-panel" id="lev-panel" hidden>
-            <p class="lev-hvem" id="lev-hvem"></p>
-            <form class="felt" id="lev-skjema" novalidate>
-              <label for="lev-orgnr">Kundens organisasjonsnummer</label>
-              <div class="rad">
-                <input
-                  id="lev-orgnr"
-                  class="orgnr"
-                  type="text"
-                  inputmode="numeric"
-                  autocomplete="off"
-                  spellcheck="false"
-                  placeholder="123 456 789"
-                  maxlength="11"
-                />
-                <button class="btn ghost" type="submit">Legg til kunde</button>
-              </div>
-              <p class="feil" id="lev-feil" role="alert" hidden></p>
-            </form>
-            <ul class="lev-liste" id="lev-liste" aria-label="Kunder"></ul>
-            <div id="lev-sum-blokk" hidden>
-              <p class="lev-sum"><span>Totalt per år, eks. mva</span><span id="lev-sum"></span></p>
-              <div class="betaling lev-betaling">
-                <button type="button" class="valg hoved" data-lev-betaling="kort">
-                  <strong>Betal med kort</strong>
-                  <span>Årlig, fornyes automatisk</span>
-                </button>
-                <button type="button" class="valg" data-lev-betaling="faktura">
-                  <strong>Betal med faktura</strong>
-                  <span data-faktura-grense>Fra 51 ansatte</span>
-                </button>
-              </div>
-              <details class="lev-har">
-                <summary>Har dere allerede en leverandørlisens? Legg kundene til den.</summary>
-                <label for="lev-kode" class="etikett" style="margin-top: 12px">Lisensnøkkelen dere fikk på e-post</label>
-                <textarea id="lev-kode" spellcheck="false" placeholder="KLART-…"></textarea>
-                <button type="button" class="btn sm" id="lev-legg-til">Legg kundene til lisensen</button>
-                <p class="feil" id="lev-har-feil" role="alert" hidden></p>
-                <div id="lev-har-ferdig"></div>
-              </details>
-            </div>
-          </div>
-        </aside>
       </section>
 
-      <!-- ================= 5. Ikke klare ennå ================= -->
-      <section class="seksjon" id="ikke-klar" hidden>
-        <h2 class="title">Ikke klare til å kjøpe ennå?</h2>
-        <p class="sub">
-          Klart selges som det er. Det kan forekomme tilfeller der det overser noe, så kontroller det på deres egne
-          filer først.
-        </p>
-        <div class="kortrad">
-          <article class="valgkort">
-            <p class="merke">Gratis prøve</p>
-            <h3>Ikke prøvd ennå? Last det ned gratis.</h3>
-            <p class="kortpris">Gratis</p>
-            <p class="vilkaar">Ubegrenset skanning med full forhåndsvisning i appen. 10 eksporter per støttet filtype.</p>
-            <div class="kortknapper">
-              <a class="btn" href="/klart/last-ned/mac" download>Last ned for macOS</a>
-              <a class="btn ghost" href="/klart/last-ned/windows" download>Last ned for Windows</a>
-            </div>
-          </article>
-          <article class="valgkort" id="testing-kort" hidden>
-            <p class="merke">Utvidet testing</p>
-            <h3>Prøv på flere av deres egne filer.</h3>
-            <p class="kortpris"><span id="t-pris"></span> <small>eks. mva</small></p>
-            <p class="vilkaar" id="t-vilkaar"></p>
-            <div class="kortknapper">
-              <button type="button" class="btn ghost" id="t-start">Start utvidet testing</button>
-            </div>
-          </article>
-          <article class="valgkort" id="sprint-kort" hidden>
-            <p class="merke">Sprint hos dere</p>
-            <h3>En større modell, finjustert på stedet på deres egne data.</h3>
-            <p class="kortpris"><span id="s-grunn-kort"></span> <small>eks. mva</small></p>
-            <p class="kortetikett">Grunnhonorar, på forhånd</p>
-            <p class="vilkaar">For virksomheter over 250 ansatte.</p>
-            <div class="kortknapper">
-              <a class="btn ghost" href="#sprint">Se sprinten</a>
-            </div>
-          </article>
-        </div>
-        <p class="linje-under">
-          Hver eksport åpnes på nytt og kontrolleres før levering. En fil som ikke består kontrollen, holdes tilbake og
-          telles aldri.
-        </p>
-      </section>
-
-      <!-- ================= 6. Sprint hos dere (bare fra 251 ansatte) ================= -->
-      <section class="sprint" id="sprint" hidden>
-        <div class="seksjon sprint-grid">
-          <div>
-            <h2 class="title">Sprint hos dere</h2>
-            <p class="sub">
-              En større modell, finjustert på deres ekte data, på maskinvare dere eier. Opptil 10 sammenhengende
-              kalenderdager, og sprinten slutter den dagen suksesskriteriene er nådd.
-            </p>
-            <ul class="punkter">
-              <li>På stedet, under taushetserklæring og databehandleravtale</li>
-              <li>Suksesskriteriene avtales skriftlig før dag én</li>
-              <li>Grunnhonoraret betales på forhånd</li>
-              <li>Kriteriene er nådd: hele beløpet gjelder, og grunnhonoraret trekkes fra</li>
-              <li>Kriteriene er ikke nådd: dere betaler bare grunnhonoraret</li>
-            </ul>
-            <table class="sprint-tabell">
-              <thead>
-                <tr>
-                  <th scope="col">NOK, eks. mva</th>
-                  <th scope="col" id="s-trinn"></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th scope="row">Grunnhonorar, på forhånd</th>
-                  <td id="s-grunn"></td>
-                </tr>
-                <tr>
-                  <th scope="row">Totalt ved suksess</th>
-                  <td id="s-total"></td>
-                </tr>
-              </tbody>
-            </table>
-            <h3>Dere stiller med</h3>
-            <ul class="punkter">
-              <li>En Mac Studio i toppkonfigurasjon, med minst 128 GB samlet minne, kjøpt av dere og deres å beholde</li>
-              <li>Claude-abonnementer og API-kostnader for sprinten</li>
-            </ul>
-            <p class="tekst"><b>Faktureres separat:</b> den årlige virksomhetslisensen.</p>
-            <p class="tekst">
-              <b>Eierskap:</b> Dataene deres og alt som lages, er deres. Programvaren, arkitekturen og generelle
-              forbedringer forblir hos <span class="selger-navn">[Selskap]</span> og kan gå inn i kjerneproduktet.
-            </p>
-            <button type="button" class="btn" id="sprint-samtale">Book en sprintsamtale</button>
-          </div>
-          <figure class="mac">
-            <!-- Egen tegning. Ikke bilder fra Apple Newsroom. Byttes gjerne med et eget foto. -->
-            <svg viewBox="0 0 560 340" role="img" aria-label="Mac Studio">
-              <defs>
-                <linearGradient id="ms-front" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0" stop-color="#f3f5f8" />
-                  <stop offset="0.55" stop-color="#e1e6ec" />
-                  <stop offset="1" stop-color="#c4cbd4" />
-                </linearGradient>
-                <linearGradient id="ms-kant" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0" stop-color="#6d7783" stop-opacity="0.28" />
-                  <stop offset="0.08" stop-color="#6d7783" stop-opacity="0" />
-                  <stop offset="0.92" stop-color="#6d7783" stop-opacity="0" />
-                  <stop offset="1" stop-color="#6d7783" stop-opacity="0.32" />
-                </linearGradient>
-                <linearGradient id="ms-topp" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0" stop-color="#e9edf2" />
-                  <stop offset="1" stop-color="#fbfcfd" />
-                </linearGradient>
-                <radialGradient id="ms-skygge" cx="0.5" cy="0.5" r="0.5">
-                  <stop offset="0" stop-color="#1a2c4a" stop-opacity="0.32" />
-                  <stop offset="1" stop-color="#1a2c4a" stop-opacity="0" />
-                </radialGradient>
-              </defs>
-              <ellipse cx="280" cy="292" rx="236" ry="26" fill="url(#ms-skygge)" />
-              <rect x="122" y="262" width="316" height="24" rx="9" fill="#8d96a1" />
-              <rect x="128" y="276" width="304" height="6" rx="3" fill="#6e7782" />
-              <path d="M96 150 L128 104 Q134 96 146 96 L414 96 Q426 96 432 104 L464 150 Z" fill="url(#ms-topp)" stroke="#d3d9e1" stroke-width="1.2" />
-              <path d="M96 150 H464 V252 Q464 270 446 270 H114 Q96 270 96 252 Z" fill="url(#ms-front)" />
-              <path d="M96 150 H464 V252 Q464 270 446 270 H114 Q96 270 96 252 Z" fill="url(#ms-kant)" />
-              <path d="M96 150.5 H464" stroke="#ffffff" stroke-width="1.6" />
-              <g fill="#2b3139">
-                <rect x="128" y="200" width="22" height="8" rx="4" />
-                <rect x="162" y="200" width="22" height="8" rx="4" />
-                <rect x="386" y="202" width="42" height="4" rx="2" />
-              </g>
-              <circle cx="114" cy="254" r="2.4" fill="#ffffff" />
-              <circle cx="114" cy="254" r="5" fill="#ffffff" opacity="0.25" />
-            </svg>
-            <figcaption>Mac Studio, illustrasjon</figcaption>
-          </figure>
-        </div>
-      </section>
-
-      <!-- ================= 7. Fakturering ================= -->
-      <section class="seksjon" id="fakturering" hidden>
-        <h2 class="title">Fakturering</h2>
-        <ul class="fakta">
-          <li>Faktureres årlig. Fornyes automatisk, med påminnelse 14 dager før fornyelsen.</li>
-          <li>Ved hver fornyelse kommer en ny signert lisensnøkkel på e-post. Appen trenger aldri å gå på nett.</li>
-          <li>14 dager ekstra etter utløp.</li>
-          <li id="betalingsmaater">
-            Betal med kort, med faktura fra 51 ansatte, eller i kvartalsvise avdrag for virksomheter med opptil 50
-            ansatte.
-          </li>
-          <li>EHF-faktura for offentlige kjøpere.</li>
-          <li>Alle priser i NOK, eks. mva.</li>
-        </ul>
-      </section>
-
-      <!-- ================= 8. Spørsmål ================= -->
       <section class="seksjon" id="sporsmal" hidden>
         <h2 class="title">Spørsmål og svar</h2>
         <div class="faq">
@@ -1174,8 +1079,7 @@
       </section>
     </main>
 
-    <!-- ================= 9. Bunnen, alltid synlig ================= -->
-    <!-- Selgeren etter ehandelsloven § 8. Hakeparentesene fylles inn når selskapet er bestemt. -->
+    <!-- Bunnen er alltid synlig. Selgeren etter ehandelsloven § 8; hakeparentesene fylles inn når selskapet er bestemt. -->
     <footer class="pris-bunn">
       <div class="colofon">
         <p class="wordmark"><a href="/klart/"><b>Klart</b></a> <span>v0.1.0</span></p>
@@ -1192,97 +1096,7 @@
       </div>
     </footer>
 
-    <!-- Bekreft kjøpet: det som står her, er det som sendes til Stripe. -->
-    <dialog id="bekreft" aria-labelledby="b-tittel">
-      <div class="dialog-inn">
-        <button type="button" class="lukk" data-lukk aria-label="Lukk">×</button>
-        <div id="b-skjema">
-          <p class="merke" id="b-merke">Bekreft</p>
-          <h2 id="b-tittel"></h2>
-          <dl class="sammendrag" id="b-liste"></dl>
-          <p class="mvamerk" id="b-mva">25 % mva legges til i kassen.</p>
-          <div class="skjemafelt" id="b-faktura" hidden>
-            <div>
-              <label for="b-epost">E-post fakturaen skal til</label>
-              <input id="b-epost" type="email" autocomplete="email" placeholder="faktura@virksomhet.no" />
-            </div>
-            <div>
-              <label for="b-ref">Bestillingsnummer eller referanse (valgfritt)</label>
-              <input id="b-ref" type="text" autocomplete="off" maxlength="140" />
-            </div>
-            <div>
-              <span class="etikett">EHF-faktura</span>
-              <div class="ja-nei">
-                <label><input type="radio" name="b-ehf" value="nei" checked /> Nei</label>
-                <label><input type="radio" name="b-ehf" value="ja" /> Ja, vi trenger EHF</label>
-              </div>
-            </div>
-          </div>
-          <p class="testmerk" id="b-test" hidden>Testmodus: ingen ekte betaling. Bruk testkortet 4242 4242 4242 4242.</p>
-          <p class="feil" id="b-feil" role="alert" hidden></p>
-          <div class="dialog-knapper">
-            <button type="button" class="btn ghost" data-lukk>Avbryt</button>
-            <button type="button" class="btn" id="b-ok"></button>
-          </div>
-        </div>
-        <div id="b-ferdig" hidden>
-          <p class="merke ok">Fakturaen er sendt</p>
-          <h2 id="f-tittel"></h2>
-          <p class="ferdig-tekst" id="f-tekst"></p>
-          <div id="f-nokkel"></div>
-          <div class="dialog-knapper">
-            <a class="btn ghost" id="f-faktura" href="#" target="_blank" rel="noopener" hidden>Åpne fakturaen</a>
-            <button type="button" class="btn" data-lukk>Ferdig</button>
-          </div>
-        </div>
-      </div>
-    </dialog>
-
-    <!-- Book en sprintsamtale: et kontaktskjema, ikke en kasse. -->
-    <dialog id="samtale" aria-labelledby="sa-tittel">
-      <div class="dialog-inn">
-        <button type="button" class="lukk" data-lukk aria-label="Lukk">×</button>
-        <form id="samtale-skjema" novalidate>
-          <p class="merke">Sprint hos dere</p>
-          <h2 id="sa-tittel">Book en sprintsamtale</h2>
-          <p class="ferdig-tekst">Fortell kort hva dere vil oppnå, så foreslår vi et tidspunkt for en samtale.</p>
-          <div class="skjemafelt">
-            <div>
-              <label for="sa-navn">Navn</label>
-              <input id="sa-navn" type="text" autocomplete="name" maxlength="120" />
-            </div>
-            <div>
-              <label for="sa-epost">E-post</label>
-              <input id="sa-epost" type="email" autocomplete="email" />
-            </div>
-            <div>
-              <label for="sa-tlf">Telefon (valgfritt)</label>
-              <input id="sa-tlf" type="tel" autocomplete="tel" maxlength="40" />
-            </div>
-            <div>
-              <label for="sa-melding">Hva vil dere oppnå?</label>
-              <textarea id="sa-melding" rows="4" maxlength="3000"></textarea>
-            </div>
-            <div class="skjult-felt" aria-hidden="true">
-              <label for="sa-nettside">Nettside</label>
-              <input id="sa-nettside" type="text" tabindex="-1" autocomplete="off" />
-            </div>
-          </div>
-          <p class="feil" id="sa-feil" role="alert" hidden></p>
-          <div class="dialog-knapper">
-            <button type="button" class="btn ghost" data-lukk>Avbryt</button>
-            <button type="submit" class="btn">Send</button>
-          </div>
-        </form>
-        <div id="samtale-ferdig" hidden>
-          <p class="merke ok">Sendt</p>
-          <h2>Takk. Vi tar kontakt.</h2>
-          <p class="ferdig-tekst">Svaret kommer til e-postadressen dere oppga.</p>
-          <div class="dialog-knapper"><button type="button" class="btn" data-lukk>Lukk</button></div>
-        </div>
-      </div>
-    </dialog>
-
+    <script src="../orgfelt.js"></script>
     <script>
       (function () {
         var q = new URLSearchParams(location.search);
@@ -1290,19 +1104,20 @@
           return document.getElementById(id);
         };
         var tall = new Intl.NumberFormat("nb-NO", { maximumFractionDigits: 2 });
-        var SEKSJONER = ["leverandor", "ikke-klar", "fakturering", "sporsmal"];
+        var orgnrTekst = KlartOrgfelt.tekst;
 
-        var tilbud = null; // svaret fra /klart/api/pris for virksomheten
-        var kunder = []; // tjenesteleverandørens kunder: { orgnr, navn, ansatte, pris }
-        var kjopet = null; // det som bekreftes i dialogen
+        // Det kjøperen har valgt så langt.
+        var tilbud = null; // svaret fra /klart/api/pris
+        var dekker = "egen"; // «egen» eller «kunder»
+        var kunder = []; // { orgnr, navn, ansatte, konsern, pris }
+        var betaling = null; // «kort», «faktura» eller «avdrag»
+        var kjop = null; // «lisens» eller «testing»
+        var historikk = []; // stegene vi har vært på, for «Tilbake»
 
         // ---------- Hjelpere ----------
 
         function nok(n) {
           return tall.format(n) + " NOK";
-        }
-        function orgnrTekst(o) {
-          return String(o).replace(/^(\d{3})(\d{3})(\d{3})$/, "$1 $2 $3");
         }
         function ansatteTekst(n) {
           return n === 1 ? "1 registrert ansatt" : tall.format(n) + " registrerte ansatte";
@@ -1310,32 +1125,7 @@
         function datoTekst(iso) {
           if (!iso) return "";
           var d = iso.split("-");
-          return new Date(+d[0], +d[1] - 1, +d[2]).toLocaleDateString("nb-NO", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          });
-        }
-        function renOrgnr(v) {
-          return String(v || "").replace(/\D/g, "");
-        }
-        /** MOD11 med vektene 3 2 7 6 5 4 3 2. Rest 11 gir 0, rest 10 er ugyldig. Sjekkes igjen på serveren. */
-        function gyldigOrgnr(o) {
-          if (!/^\d{9}$/.test(o)) return false;
-          var v = [3, 2, 7, 6, 5, 4, 3, 2];
-          var sum = 0;
-          for (var i = 0; i < 8; i++) sum += v[i] * +o[i];
-          var k = 11 - (sum % 11);
-          if (k === 10) return false;
-          return (k === 11 ? 0 : k) === +o[8];
-        }
-        function formaterFelt(felt) {
-          felt.addEventListener("input", function () {
-            var d = renOrgnr(felt.value).slice(0, 9);
-            felt.value = d.replace(/^(\d{3})(\d{1,3})?(\d{1,3})?$/, function (_, a, b, c) {
-              return [a, b, c].filter(Boolean).join(" ");
-            });
-          });
+          return new Date(+d[0], +d[1] - 1, +d[2]).toLocaleDateString("nb-NO", { day: "numeric", month: "long", year: "numeric" });
         }
         function feil(id, tekst) {
           $(id).textContent = tekst || "";
@@ -1344,9 +1134,7 @@
         function api(sti, data) {
           return fetch(
             "/klart/api/" + sti,
-            data
-              ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(data) }
-              : undefined
+            data ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(data) } : undefined
           ).then(function (r) {
             return r
               .json()
@@ -1366,10 +1154,82 @@
         function settAdresse(orgnr) {
           var ny = new URLSearchParams(location.search);
           ny.delete("ordre");
+          ny.delete("vis");
           if (orgnr) ny.set("orgnr", orgnr);
           else ny.delete("orgnr");
           var s = ny.toString();
           history.replaceState(null, "", location.pathname + (s ? "?" + s : ""));
+        }
+        function li(tekst) {
+          var el = document.createElement("li");
+          el.textContent = tekst;
+          return el;
+        }
+        function velgEn(gruppe, attr, verdi) {
+          document.querySelectorAll("[" + attr + "]").forEach(function (b) {
+            if (gruppe && !gruppe.contains(b)) return;
+            b.setAttribute("aria-checked", b.getAttribute(attr) === verdi ? "true" : "false");
+          });
+        }
+
+        // ---------- Stegene: ett om gangen i samme kort ----------
+
+        var STEG = ["s-port", "s-pris", "s-oppsett", "s-testing", "s-dekker", "s-betaling", "s-bekreft", "s-ferdig", "s-kvittering"];
+        // Kortet er bredere der det er mer å se.
+        var BREDDE = { "s-oppsett": "bred", "s-dekker": "middels", "s-betaling": "middels", "s-bekreft": "middels", "s-ferdig": "middels", "s-testing": "middels" };
+
+        function vis(steg, tilbake) {
+          STEG.forEach(function (id) {
+            $(id).hidden = id !== steg;
+          });
+          var el = $(steg);
+          el.classList.toggle("tilbake-inn", Boolean(tilbake));
+          el.style.animation = "none";
+          void el.offsetHeight;
+          el.style.animation = "";
+          var bredde = steg === "s-pris" ? (tilbud && tilbud.stor ? "bred" : "middels") : BREDDE[steg];
+          $("kort").classList.toggle("bred", bredde === "bred");
+          $("kort").classList.toggle("middels", bredde === "middels");
+          tegnStegrad(steg);
+          var overskrift = el.querySelector("h2[tabindex], h1");
+          if (overskrift && steg !== "s-port") overskrift.focus({ preventScroll: true });
+          if ($("port").getBoundingClientRect().top < 0) $("port").scrollIntoView({ behavior: "smooth" });
+        }
+
+        function gaaTil(steg) {
+          var her = STEG.find(function (id) {
+            return !$(id).hidden;
+          });
+          if (her && her !== steg) historikk.push(her);
+          vis(steg);
+        }
+
+        document.querySelectorAll("[data-tilbake]").forEach(function (b) {
+          b.addEventListener("click", function () {
+            vis(historikk.pop() || "s-pris", true);
+          });
+        });
+
+        /** Stegraden øverst: Pris · (Lisensen) · Betaling · Bekreft. «Lisensen» er bare med når den er et steg. */
+        function tegnStegrad(steg) {
+          var rekke = ["s-pris", "s-dekker", "s-betaling", "s-bekreft"];
+          var navn = { "s-pris": "Pris", "s-dekker": "Lisensen", "s-betaling": "Betaling", "s-bekreft": "Bekreft" };
+          var med = rekke.filter(function (s) {
+            return s !== "s-dekker" || (tilbud && (tilbud.leverandorAktuell || dekker === "kunder" || steg === "s-dekker"));
+          });
+          var i = med.indexOf(steg);
+          var rad = $("stegrad");
+          rad.hidden = i < 0 || kjop === "testing";
+          rad.innerHTML = "";
+          med.forEach(function (s, j) {
+            var el = li(navn[s]);
+            if (j < i) el.className = "ferdig";
+            if (j === i) {
+              el.className = "her";
+              el.setAttribute("aria-current", "step");
+            }
+            rad.appendChild(el);
+          });
         }
 
         /** Nøkkelen i en boks med kopier-knapp. */
@@ -1387,11 +1247,8 @@
           rad.className = "rad";
           var tekst = document.createElement("p");
           var hva = "Lim den inn i Klart: klikk «Gratis prøve» øverst til høyre, og lim nøkkelen inn i feltet der.";
-          if (svar.type === "testing") {
-            hva = "Koden gir 50 eksporter, uten tidsgrense. Den tas i bruk i neste versjon av Klart.";
-          } else if (svar.utloper) {
-            hva += " Gjelder alle brukere og enheter, til og med " + datoTekst(svar.utloper) + ".";
-          }
+          if (svar.type === "testing") hva = "Koden gir 50 eksporter, uten tidsgrense. Den tas i bruk i neste versjon av Klart.";
+          else if (svar.utloper) hva += " Gjelder til og med " + datoTekst(svar.utloper) + ".";
           tekst.textContent = hva;
           var kopier = document.createElement("button");
           kopier.type = "button";
@@ -1413,19 +1270,25 @@
           mal.appendChild(boks);
         }
 
-        // ---------- 1. Porten ----------
+        // ---------- 1. Virksomheten ----------
 
         if (q.get("from") === "quota") $("kvote").hidden = false;
-        formaterFelt($("orgnr"));
-        formaterFelt($("lev-orgnr"));
+        var portfelt = KlartOrgfelt($("orgnr"), $("orgnr-forslag"), function (orgnr) {
+          slaaOpp(orgnr);
+        });
 
         $("port-skjema").addEventListener("submit", function (e) {
           e.preventDefault();
-          var o = renOrgnr($("orgnr").value);
           feil("port-feil", "");
           $("underenhet").hidden = true;
-          if (!gyldigOrgnr(o)) {
-            feil("port-feil", "Organisasjonsnummeret stemmer ikke. Sjekk at alle ni sifrene er riktige.");
+          var o = portfelt.orgnr() || (!portfelt.sifre() && portfelt.forste());
+          if (!o) {
+            feil(
+              "port-feil",
+              portfelt.sifre()
+                ? "Organisasjonsnummeret stemmer ikke. Sjekk at alle ni sifrene er riktige."
+                : "Fant ingen virksomhet med det navnet. Prøv organisasjonsnummeret."
+            );
             $("orgnr").focus();
             return;
           }
@@ -1461,387 +1324,106 @@
           $("underenhet").hidden = false;
         }
 
-        // ---------- 2–3. Prisen og betalingen ----------
+        // ---------- 2. Prisen ----------
 
         function visPris(d) {
           tilbud = d;
+          dekker = "egen";
+          kunder = [];
+          betaling = null;
+          kjop = "lisens";
+          historikk = [];
+
           $("r-hvem").innerHTML = "";
           var navn = document.createElement("b");
           navn.textContent = d.navn;
           $("r-hvem").appendChild(navn);
-          $("r-hvem").appendChild(
-            document.createTextNode(" · Org.nr. " + orgnrTekst(d.orgnr) + " · " + (d.konsern ? "konsern" : ansatteTekst(d.ansatte)))
-          );
+          $("r-hvem").appendChild(document.createTextNode(" · Org.nr. " + orgnrTekst(d.orgnr) + " · " + (d.konsern ? "konsern" : ansatteTekst(d.ansatte))));
           $("r-pris").innerHTML = "";
           $("r-pris").appendChild(document.createTextNode(nok(d.pris) + " "));
           var per = document.createElement("span");
           per.textContent = "per år, eks. mva";
           $("r-pris").appendChild(per);
-          // Et morselskap med konsernregnskap er priset på hele konsernet, og lisensen gjelder hele konsernet.
-          $("r-alle").textContent = "Alle brukere og enheter i " + (d.konsern ? "hele konsernet" : "virksomheten");
-          $("r-omfang").textContent = d.konsern ? "Dekker egne data i hele konsernet." : "Dekker virksomhetens egne data.";
 
-          var b = d.betaling;
-          // Grensene står i KLART_PRISER. Faktura er for de store, avdrag for de små.
-          document.querySelectorAll("[data-faktura-grense]").forEach(function (el) {
-            el.textContent = "Fra " + b.fakturaFra + " ansatte";
-          });
-          document.querySelectorAll("[data-avdrag-grense]").forEach(function (el) {
-            el.textContent = "Opptil " + b.avdragTil + " ansatte";
-          });
-          $("betalingsmaater").textContent =
-            "Betal med kort, med faktura fra " +
-            b.fakturaFra +
-            " ansatte, eller i kvartalsvise avdrag for virksomheter med opptil " +
-            b.avdragTil +
-            " ansatte.";
-          var knapper = document.querySelectorAll("[data-betaling]");
-          knapper.forEach(function (k) {
-            k.disabled = !d.kjop || !b[k.getAttribute("data-betaling")];
-          });
+          // Vilkårene som betyr noe for kjøperen. Hva programmet gjør, vet de alt.
+          var hvem = d.konsern ? "hele konsernet" : "virksomheten";
+          var v = $("r-vilkar");
+          v.innerHTML = "";
+          v.appendChild(li("Gjelder alle brukere og enheter i " + hvem + "."));
+          v.appendChild(li(d.konsern ? "Dekker egne data i hele konsernet." : "Dekker virksomhetens egne data."));
+          v.appendChild(li("Faktureres årlig og fornyes automatisk, med påminnelse 14 dager før."));
+          v.appendChild(li("Ny signert lisensnøkkel på e-post ved hver fornyelse. Appen går aldri på nett."));
+          v.appendChild(li("14 dager ekstra etter utløp."));
+
+          $("pris-videre").disabled = !d.kjop;
           $("kjop-stengt").hidden = d.kjop;
-          $("testmerk").hidden = !(d.kjop && d.test);
-
-          // 4. Tjenesteleverandør
-          $("lev-hvem").innerHTML = "";
-          $("lev-hvem").appendChild(document.createTextNode("Leverandør: "));
-          var lev = document.createElement("b");
-          lev.textContent = d.navn;
-          $("lev-hvem").appendChild(lev);
-          $("lev-hvem").appendChild(document.createTextNode(" · Org.nr. " + orgnrTekst(d.orgnr)));
-          kunder = [];
-          tegnKunder();
-          $("lev-panel").hidden = true;
-          $("lev-start").hidden = false;
-
-          // 5. Ikke klare ennå: utvidet testing bare for dem som ikke har hatt det, sprinten bare fra 251
-          $("testing-kort").hidden = !d.testing;
+          // Behandler de trolig data for andre, blir det et eget steg. Ellers bare en lenke.
+          $("til-dekker").hidden = d.leverandorAktuell;
+          $("til-testing").hidden = !d.testing;
+          $("r-oppsett").hidden = !d.stor;
           if (d.testing) {
             $("t-pris").textContent = nok(d.testing.pris);
-            $("t-vilkaar").textContent =
-              d.testing.eksporter +
-              " eksporter. Ingen tidsgrense. Én per virksomhet. Hele beløpet på " +
-              nok(d.testing.pris) +
-              " godskrives lisensen.";
-            var start = $("t-start");
-            start.disabled = !d.kjop || !d.testing.apen;
-            start.textContent = d.testing.apen ? "Start utvidet testing" : "Åpner snart";
-          }
-          $("sprint-kort").hidden = !d.sprint;
-          $("sprint").hidden = !d.sprint;
-          if (d.sprint) {
-            $("s-grunn-kort").textContent = nok(d.sprint.grunn);
-            $("s-trinn").textContent = d.sprint.trinn;
-            $("s-grunn").textContent = tall.format(d.sprint.grunn);
-            $("s-total").textContent = tall.format(d.sprint.total);
+            var t = $("t-vilkar");
+            t.innerHTML = "";
+            t.appendChild(li(d.testing.eksporter + " eksporter. Ingen tidsgrense."));
+            t.appendChild(li("Én per virksomhet."));
+            t.appendChild(li("Hele beløpet på " + nok(d.testing.pris) + " godskrives lisensen."));
+            $("t-videre").disabled = !d.kjop || !d.testing.apen;
+            $("t-videre").textContent = d.testing.apen ? "Gå videre" : "Åpner snart";
           }
 
-          $("v-port").hidden = true;
-          $("v-pris").hidden = false;
-          $("kort").classList.add("bred");
-          $("port").classList.add("svar");
-          SEKSJONER.forEach(function (id) {
-            $(id).hidden = false;
+          // Betalingsmåtene virksomheten kan bruke. De andre vises ikke.
+          document.querySelectorAll("[data-betaling]").forEach(function (b) {
+            b.hidden = !d.betaling[b.getAttribute("data-betaling")];
           });
+          $("avdrag-tekst").textContent =
+            "Fire kvartalsvise betalinger på " + nok(d.betaling.kvartal) + " på en lisens over 12 måneder.";
+
+          velgEn(null, "data-dekker", "egen");
+          $("kunde-panel").hidden = true;
+          tegnKunder();
+          $("sporsmal").hidden = false;
           settAdresse(d.orgnr);
-          $("r-pris").focus({ preventScroll: true });
-          window.scrollTo({ top: 0 });
-        }
-
-        $("endre").addEventListener("click", function () {
-          tilbud = null;
-          $("v-pris").hidden = true;
-          $("v-port").hidden = false;
-          $("kort").classList.remove("bred");
-          $("port").classList.remove("svar");
-          SEKSJONER.concat(["sprint"]).forEach(function (id) {
-            $(id).hidden = true;
-          });
-          $("orgnr").value = "";
-          settAdresse(null);
-          $("orgnr").focus();
-        });
-
-        document.querySelectorAll("[data-betaling]").forEach(function (k) {
-          k.addEventListener("click", function () {
-            var betaling = k.getAttribute("data-betaling");
-            var rader = [
-              ["Virksomhet", tilbud.navn],
-              ["Org.nr.", orgnrTekst(tilbud.orgnr)],
-              tilbud.konsern ? ["Gjelder", "Hele konsernet"] : ["Registrerte ansatte", tall.format(tilbud.ansatte)],
-            ];
-            if (betaling === "avdrag") {
-              rader.push(["Betaling", "Fire kvartalsvise betalinger på " + nok(tilbud.betaling.kvartal)]);
-              rader.push(["Binding", "12 måneder"]);
-            } else if (betaling === "faktura") {
-              rader.push(["Betaling", "Faktura, 30 dagers betalingsfrist"]);
-            } else {
-              rader.push(["Betaling", "Kort, årlig"]);
-            }
-            rader.push(["Pris per år, eks. mva", nok(tilbud.pris), "sum"]);
-            bekreft({
-              tittel: "Lisens for " + tilbud.navn,
-              rader: rader,
-              data: { type: "lisens", orgnr: tilbud.orgnr, betaling: betaling },
-            });
-          });
-        });
-
-        // ---------- Bekreft og betal ----------
-
-        function bekreft(k) {
-          kjopet = k;
-          $("b-tittel").textContent = k.tittel;
-          $("b-merke").textContent = k.data.type === "testing" ? "Utvidet testing" : "Bekreft kjøpet";
-          var liste = $("b-liste");
-          liste.innerHTML = "";
-          k.rader.forEach(function (r) {
-            var rad = document.createElement("div");
-            if (r[2]) rad.className = r[2];
-            var dt = document.createElement("dt");
-            dt.textContent = r[0];
-            var dd = document.createElement("dd");
-            dd.textContent = r[1];
-            rad.appendChild(dt);
-            rad.appendChild(dd);
-            liste.appendChild(rad);
-          });
-          var faktura = k.data.betaling === "faktura";
-          $("b-faktura").hidden = !faktura;
-          $("b-mva").textContent = faktura ? "25 % mva legges til på fakturaen." : "25 % mva legges til i kassen.";
-          $("b-test").hidden = !(tilbud && tilbud.test) || faktura;
-          $("b-ok").textContent = faktura ? "Bekreft og send faktura" : "Bekreft og gå til betaling";
-          feil("b-feil", "");
-          $("b-skjema").hidden = false;
-          $("b-ferdig").hidden = true;
-          $("bekreft").showModal();
-        }
-
-        $("b-ok").addEventListener("click", function () {
-          var knapp = this;
-          var data = Object.assign({}, kjopet.data);
-          if (data.betaling === "faktura") {
-            data.epost = $("b-epost").value.trim();
-            data.referanse = $("b-ref").value.trim();
-            data.ehf = document.querySelector('input[name="b-ehf"]:checked').value === "ja";
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.epost)) {
-              feil("b-feil", "Skriv inn e-postadressen fakturaen skal sendes til.");
-              $("b-epost").focus();
-              return;
-            }
-          }
-          feil("b-feil", "");
-          opptatt(knapp, true);
-          api("kasse", data)
-            .then(function (svar) {
-              if (svar.adresse) {
-                location.href = svar.adresse;
-                return;
-              }
-              visFaktura(svar);
-              opptatt(knapp, false);
-            })
-            .catch(function (err) {
-              feil("b-feil", err.message);
-              opptatt(knapp, false);
-            });
-        });
-
-        function visFaktura(svar) {
-          var f = svar.faktura;
-          $("f-tittel").textContent = svar.navn;
-          $("f-tekst").textContent =
-            "Faktura" +
-            (f.nummer ? " " + f.nummer : "") +
-            " på " +
-            nok(f.belop) +
-            " inkl. mva er sendt til " +
-            svar.epost +
-            (f.forfall ? ", med forfall " + datoTekst(f.forfall) : "") +
-            ". Nøkkelen under gjelder fra i dag.";
-          nokkelBoks($("f-nokkel"), svar);
-          $("f-faktura").hidden = !f.adresse;
-          if (f.adresse) $("f-faktura").href = f.adresse;
-          $("b-skjema").hidden = true;
-          $("b-ferdig").hidden = false;
-        }
-
-        document.querySelectorAll("dialog [data-lukk]").forEach(function (k) {
-          k.addEventListener("click", function () {
-            k.closest("dialog").close();
-          });
-        });
-        document.querySelectorAll("dialog").forEach(function (d) {
-          d.addEventListener("click", function (e) {
-            if (e.target === d) d.close();
-          });
-        });
-
-        // ---------- 4. Tjenesteleverandør ----------
-
-        $("lev-start").addEventListener("click", function () {
-          $("lev-panel").hidden = false;
-          this.hidden = true;
-          $("lev-orgnr").focus();
-        });
-
-        $("lev-skjema").addEventListener("submit", function (e) {
-          e.preventDefault();
-          var o = renOrgnr($("lev-orgnr").value);
-          feil("lev-feil", "");
-          if (!gyldigOrgnr(o)) return feil("lev-feil", "Organisasjonsnummeret stemmer ikke. Sjekk at alle ni sifrene er riktige.");
-          if (o === tilbud.orgnr) return feil("lev-feil", "Det er deres eget organisasjonsnummer. Egne data dekkes av standardlisensen.");
-          if (kunder.some(function (k) { return k.orgnr === o; })) return feil("lev-feil", "Den kunden står allerede på listen.");
-          if (kunder.length >= 20) return feil("lev-feil", "En leverandørlisens kan ha opptil 20 kunder.");
-          var skjema = this;
-          skjema.classList.add("venter");
-          api("pris?som=kunde&orgnr=" + o)
-            .then(function (k) {
-              if (k.underenhet) {
-                feil("lev-feil", "Dette er en underenhet av " + k.overordnet.navn + ". Bruk " + orgnrTekst(k.overordnet.orgnr) + ".");
-                return;
-              }
-              kunder.push(k);
-              $("lev-orgnr").value = "";
-              tegnKunder();
-            })
-            .catch(function (err) {
-              feil("lev-feil", err.message);
-            })
-            .finally(function () {
-              skjema.classList.remove("venter");
-              $("lev-orgnr").focus();
-            });
-        });
-
-        function tegnKunder() {
-          var liste = $("lev-liste");
-          liste.innerHTML = "";
-          var sum = 0;
-          kunder.forEach(function (k, i) {
-            sum += k.pris;
-            var li = document.createElement("li");
-            var hvem = document.createElement("span");
-            hvem.textContent = k.navn;
-            var detaljer = document.createElement("small");
-            detaljer.textContent = "Org.nr. " + orgnrTekst(k.orgnr) + " · " + (k.konsern ? "konsern" : ansatteTekst(k.ansatte));
-            hvem.appendChild(detaljer);
-            var belop = document.createElement("span");
-            belop.className = "belop";
-            belop.textContent = nok(k.pris);
-            var fjern = document.createElement("button");
-            fjern.type = "button";
-            fjern.className = "fjern";
-            fjern.setAttribute("aria-label", "Fjern " + k.navn);
-            fjern.textContent = "×";
-            fjern.addEventListener("click", function () {
-              kunder.splice(i, 1);
-              tegnKunder();
-            });
-            li.appendChild(hvem);
-            li.appendChild(belop);
-            li.appendChild(fjern);
-            liste.appendChild(li);
-          });
-          $("lev-sum").textContent = nok(sum);
-          $("lev-sum-blokk").hidden = !kunder.length;
-          if (tilbud) {
-            document.querySelectorAll("[data-lev-betaling]").forEach(function (k) {
-              k.disabled = !tilbud.kjop || !tilbud.betaling[k.getAttribute("data-lev-betaling")];
-            });
+          // Fra forsiden («Les om skreddersydd oppsett») går vi rett dit.
+          if (q.get("vis") === "oppsett" && d.stor) {
+            historikk = ["s-pris"];
+            vis("s-oppsett");
+          } else {
+            vis("s-pris");
+            $("r-pris").focus({ preventScroll: true });
           }
         }
 
-        document.querySelectorAll("[data-lev-betaling]").forEach(function (k) {
-          k.addEventListener("click", function () {
-            var betaling = k.getAttribute("data-lev-betaling");
-            var sum = 0;
-            var rader = [
-              ["Leverandør", tilbud.navn],
-              ["Org.nr.", orgnrTekst(tilbud.orgnr)],
-            ];
-            kunder.forEach(function (c) {
-              sum += c.pris;
-              rader.push([c.navn + " (" + orgnrTekst(c.orgnr) + ")", nok(c.pris)]);
-            });
-            rader.push(["Betaling", betaling === "faktura" ? "Faktura, 30 dagers betalingsfrist" : "Kort, årlig"]);
-            rader.push(["Pris per år, eks. mva", nok(sum), "sum"]);
-            bekreft({
-              tittel: "Tjenesteleverandørlisens",
-              rader: rader,
-              data: {
-                type: "leverandor",
-                orgnr: tilbud.orgnr,
-                betaling: betaling,
-                kunder: kunder.map(function (c) {
-                  return c.orgnr;
-                }),
-              },
-            });
+        document.querySelectorAll("[data-endre]").forEach(function (b) {
+          b.addEventListener("click", function () {
+            tilbud = null;
+            historikk = [];
+            portfelt.tom();
+            $("sporsmal").hidden = true;
+            settAdresse(null);
+            vis("s-port", true);
+            $("orgnr").focus();
           });
         });
 
-        $("lev-legg-til").addEventListener("click", function () {
-          var knapp = this;
-          feil("lev-har-feil", "");
-          $("lev-har-ferdig").innerHTML = "";
-          if (!$("lev-kode").value.trim()) return feil("lev-har-feil", "Lim inn lisensnøkkelen dere fikk på e-post.");
-          opptatt(knapp, true);
-          api("kunder", {
-            kode: $("lev-kode").value,
-            kunder: kunder.map(function (c) {
-              return c.orgnr;
-            }),
-          })
-            .then(function (svar) {
-              var p = document.createElement("p");
-              p.className = "ferdig-tekst ok";
-              p.textContent =
-                "Lagt til: " +
-                svar.kunder
-                  .map(function (c) {
-                    return c.navn;
-                  })
-                  .join(", ") +
-                ". Prisen for resten av perioden faktureres nå. Den nye nøkkelen erstatter den gamle.";
-              $("lev-har-ferdig").appendChild(p);
-              var mal = document.createElement("div");
-              $("lev-har-ferdig").appendChild(mal);
-              nokkelBoks(mal, svar);
-            })
-            .catch(function (err) {
-              feil("lev-har-feil", err.message);
-            })
-            .finally(function () {
-              opptatt(knapp, false);
-            });
+        $("pris-videre").addEventListener("click", function () {
+          kjop = "lisens";
+          if (!tilbud.leverandorAktuell) forberedBetaling();
+          gaaTil(tilbud.leverandorAktuell ? "s-dekker" : "s-betaling");
+        });
+        $("til-dekker").addEventListener("click", function () {
+          kjop = "lisens";
+          gaaTil("s-dekker");
+        });
+        $("til-oppsett").addEventListener("click", function () {
+          gaaTil("s-oppsett");
+        });
+        $("til-testing").addEventListener("click", function () {
+          kjop = "testing";
+          gaaTil("s-testing");
         });
 
-        // ---------- 5. Utvidet testing ----------
-
-        $("t-start").addEventListener("click", function () {
-          bekreft({
-            tittel: "Utvidet testing for " + tilbud.navn,
-            rader: [
-              ["Virksomhet", tilbud.navn],
-              ["Org.nr.", orgnrTekst(tilbud.orgnr)],
-              ["Omfang", tilbud.testing.eksporter + " eksporter, uten tidsgrense"],
-              ["Godskrives", "Hele beløpet, på lisensen"],
-              ["Pris, eks. mva", nok(tilbud.testing.pris), "sum"],
-            ],
-            data: { type: "testing", orgnr: tilbud.orgnr, betaling: "kort" },
-          });
-        });
-
-        // ---------- 6. Sprintsamtale ----------
-
-        $("sprint-samtale").addEventListener("click", function () {
-          $("samtale-skjema").hidden = false;
-          $("samtale-ferdig").hidden = true;
-          feil("sa-feil", "");
-          $("samtale").showModal();
-          $("sa-navn").focus();
-        });
+        // ---------- Skreddersydd oppsett: samtale ----------
 
         $("samtale-skjema").addEventListener("submit", function (e) {
           e.preventDefault();
@@ -1871,12 +1453,295 @@
             });
         });
 
+        // ---------- Utvidet testing ----------
+
+        $("t-videre").addEventListener("click", function () {
+          kjop = "testing";
+          betaling = "kort";
+          visBekreft();
+        });
+
+        // ---------- 3. Hvem lisensen dekker ----------
+
+        document.querySelectorAll("[data-dekker]").forEach(function (b) {
+          b.addEventListener("click", function () {
+            dekker = b.getAttribute("data-dekker");
+            velgEn(null, "data-dekker", dekker);
+            $("kunde-panel").hidden = dekker !== "kunder";
+            if (dekker === "kunder") $("kunde-orgnr").focus();
+            tegnKunder();
+            tegnStegrad("s-dekker");
+          });
+        });
+
+        var kundefelt = KlartOrgfelt($("kunde-orgnr"), $("kunde-forslag"), function (orgnr) {
+          leggTilKunde(orgnr);
+        });
+
+        $("kunde-skjema").addEventListener("submit", function (e) {
+          e.preventDefault();
+          var o = kundefelt.orgnr() || (!kundefelt.sifre() && kundefelt.forste());
+          if (!o) return feil("kunde-feil", "Fant ikke virksomheten. Prøv organisasjonsnummeret.");
+          leggTilKunde(o);
+        });
+
+        function leggTilKunde(o) {
+          feil("kunde-feil", "");
+          if (o === tilbud.orgnr) return feil("kunde-feil", "Det er deres eget organisasjonsnummer. Egne data dekkes av lisensen.");
+          if (kunder.some(function (k) {
+            return k.orgnr === o;
+          })) return feil("kunde-feil", "Den kunden står allerede på listen.");
+          if (kunder.length >= 19) return feil("kunde-feil", "En leverandørlisens kan ha opptil 19 kunder her. Skriv til oss for flere.");
+          var skjema = $("kunde-skjema");
+          skjema.classList.add("venter");
+          api("pris?som=kunde&orgnr=" + o)
+            .then(function (k) {
+              if (k.underenhet) {
+                return feil("kunde-feil", "Dette er en underenhet av " + k.overordnet.navn + ". Bruk " + orgnrTekst(k.overordnet.orgnr) + ".");
+              }
+              kunder.push(k);
+              kundefelt.tom();
+              tegnKunder();
+            })
+            .catch(function (err) {
+              feil("kunde-feil", err.message);
+            })
+            .finally(function () {
+              skjema.classList.remove("venter");
+              $("kunde-orgnr").focus();
+            });
+        }
+
+        function kundesum() {
+          return kunder.reduce(function (s, k) {
+            return s + k.pris;
+          }, 0);
+        }
+
+        function tegnKunder() {
+          var liste = $("kundeliste");
+          liste.innerHTML = "";
+          kunder.forEach(function (k, i) {
+            var el = document.createElement("li");
+            var hvem = document.createElement("span");
+            hvem.textContent = k.navn;
+            var mer = document.createElement("small");
+            mer.textContent = "Org.nr. " + orgnrTekst(k.orgnr) + " · " + (k.konsern ? "konsern" : ansatteTekst(k.ansatte));
+            hvem.appendChild(mer);
+            var belop = document.createElement("span");
+            belop.className = "belop";
+            belop.textContent = nok(k.pris);
+            var fjern = document.createElement("button");
+            fjern.type = "button";
+            fjern.className = "fjern";
+            fjern.setAttribute("aria-label", "Fjern " + k.navn);
+            fjern.textContent = "×";
+            fjern.addEventListener("click", function () {
+              kunder.splice(i, 1);
+              tegnKunder();
+            });
+            el.appendChild(hvem);
+            el.appendChild(belop);
+            el.appendChild(fjern);
+            liste.appendChild(el);
+          });
+          if (tilbud) {
+            $("sum-egen").textContent = nok(tilbud.pris);
+            $("sum-kunder").textContent = nok(kundesum());
+            $("sum-totalt").textContent = nok(tilbud.pris + kundesum());
+          }
+          $("kunde-sum").hidden = !kunder.length;
+          $("dekker-videre").disabled = dekker === "kunder" && !kunder.length;
+        }
+
+        $("dekker-videre").addEventListener("click", function () {
+          forberedBetaling();
+          gaaTil("s-betaling");
+        });
+
+        $("lev-legg-til").addEventListener("click", function () {
+          var knapp = this;
+          feil("lev-feil", "");
+          $("lev-ferdig").innerHTML = "";
+          if (!$("lev-kode").value.trim()) return feil("lev-feil", "Lim inn lisensnøkkelen dere fikk på e-post.");
+          if (!kunder.length) return feil("lev-feil", "Legg til kundene først.");
+          opptatt(knapp, true);
+          api("kunder", {
+            kode: $("lev-kode").value,
+            kunder: kunder.map(function (c) {
+              return c.orgnr;
+            }),
+          })
+            .then(function (svar) {
+              var p = document.createElement("p");
+              p.className = "tekst ok";
+              p.textContent =
+                "Lagt til: " +
+                svar.kunder
+                  .map(function (c) {
+                    return c.navn;
+                  })
+                  .join(", ") +
+                ". Prisen for resten av perioden faktureres nå. Den nye nøkkelen erstatter den gamle.";
+              $("lev-ferdig").appendChild(p);
+              var mal = document.createElement("div");
+              $("lev-ferdig").appendChild(mal);
+              nokkelBoks(mal, svar);
+            })
+            .catch(function (err) {
+              feil("lev-feil", err.message);
+            })
+            .finally(function () {
+              opptatt(knapp, false);
+            });
+        });
+
+        // ---------- 4. Betaling ----------
+
+        /** Velger den første betalingsmåten virksomheten kan bruke, og skjuler avdrag for kunder. */
+        function forberedBetaling() {
+          var med = function (m) {
+            return tilbud.betaling[m] && !(m === "avdrag" && dekker === "kunder");
+          };
+          document.querySelectorAll("[data-betaling]").forEach(function (b) {
+            b.hidden = !med(b.getAttribute("data-betaling"));
+          });
+          if (!betaling || !med(betaling)) betaling = ["kort", "faktura", "avdrag"].find(med);
+          velgEn(null, "data-betaling", betaling);
+          $("faktura-felt").hidden = betaling !== "faktura";
+          feil("betaling-feil", "");
+        }
+
+        document.querySelectorAll("[data-betaling]").forEach(function (b) {
+          b.addEventListener("click", function () {
+            betaling = b.getAttribute("data-betaling");
+            velgEn(null, "data-betaling", betaling);
+            $("faktura-felt").hidden = betaling !== "faktura";
+            if (betaling === "faktura") $("b-epost").focus();
+          });
+        });
+        document.querySelectorAll("[data-ehf]").forEach(function (b) {
+          b.addEventListener("click", function () {
+            velgEn(null, "data-ehf", b.getAttribute("data-ehf"));
+          });
+        });
+
+        $("betaling-videre").addEventListener("click", function () {
+          if (betaling === "faktura" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($("b-epost").value.trim())) {
+            feil("betaling-feil", "Skriv inn e-postadressen fakturaen skal sendes til.");
+            $("b-epost").focus();
+            return;
+          }
+          kjop = "lisens";
+          visBekreft();
+        });
+
+        // ---------- 5. Bekreft ----------
+
+        var BETALING = { kort: "Kort, årlig", faktura: "Faktura, 30 dagers betalingsfrist", avdrag: "Kvartalsvise avdrag" };
+
+        function visBekreft() {
+          var rader = [
+            ["Virksomhet", tilbud.navn],
+            ["Org.nr.", orgnrTekst(tilbud.orgnr)],
+          ];
+          var data = { orgnr: tilbud.orgnr, betaling: betaling };
+          if (kjop === "testing") {
+            $("b-tittel").textContent = "Utvidet testing for " + tilbud.navn;
+            $("b-merke").textContent = "Utvidet testing";
+            rader.push(["Omfang", tilbud.testing.eksporter + " eksporter, uten tidsgrense"]);
+            rader.push(["Godskrives", "Hele beløpet, på lisensen"]);
+            rader.push(["Pris, eks. mva", nok(tilbud.testing.pris), "sum-rad"]);
+            data.type = "testing";
+          } else {
+            $("b-tittel").textContent = "Lisens for " + tilbud.navn;
+            $("b-merke").textContent = "Bekreft";
+            rader.push(["Gjelder", tilbud.konsern ? "Hele konsernet" : "Virksomheten"]);
+            var sum = tilbud.pris;
+            if (dekker === "kunder") {
+              rader.push(["Egen lisens", nok(tilbud.pris)]);
+              kunder.forEach(function (k) {
+                rader.push([k.navn, nok(k.pris)]);
+              });
+              sum += kundesum();
+              data.type = "leverandor";
+              data.kunder = kunder.map(function (k) {
+                return k.orgnr;
+              });
+            } else {
+              data.type = "lisens";
+            }
+            rader.push(["Betaling", betaling === "avdrag" ? "Fire kvartalsvise betalinger på " + nok(tilbud.betaling.kvartal) : BETALING[betaling]]);
+            rader.push(["Pris per år, eks. mva", nok(sum), "sum-rad"]);
+            if (betaling === "faktura") {
+              data.epost = $("b-epost").value.trim();
+              data.referanse = $("b-ref").value.trim();
+              data.ehf = document.querySelector('[data-ehf][aria-checked="true"]').getAttribute("data-ehf") === "ja";
+              rader.push(["Faktura til", data.epost]);
+            }
+          }
+          var liste = $("b-liste");
+          liste.innerHTML = "";
+          rader.forEach(function (r) {
+            var rad = document.createElement("div");
+            if (r[2]) rad.className = r[2];
+            var dt = document.createElement("dt");
+            dt.textContent = r[0];
+            var dd = document.createElement("dd");
+            dd.textContent = r[1];
+            rad.appendChild(dt);
+            rad.appendChild(dd);
+            liste.appendChild(rad);
+          });
+          var faktura = betaling === "faktura";
+          $("b-mva").textContent = faktura ? "25 % mva legges til på fakturaen." : "25 % mva legges til i kassen.";
+          $("b-test").hidden = !tilbud.test || faktura;
+          $("b-ok").textContent = faktura ? "Send faktura" : "Gå til betaling";
+          $("b-ok").disabled = false;
+          feil("b-feil", "");
+          $("b-ok").onclick = function () {
+            var knapp = this;
+            opptatt(knapp, true);
+            api("kasse", data)
+              .then(function (svar) {
+                if (svar.adresse) {
+                  location.href = svar.adresse;
+                  return;
+                }
+                visFaktura(svar);
+              })
+              .catch(function (err) {
+                feil("b-feil", err.message);
+                opptatt(knapp, false);
+              });
+          };
+          gaaTil("s-bekreft");
+        }
+
+        function visFaktura(svar) {
+          var f = svar.faktura;
+          $("f-tittel").textContent = svar.navn;
+          $("f-tekst").textContent =
+            "Faktura" +
+            (f.nummer ? " " + f.nummer : "") +
+            " på " +
+            nok(f.belop) +
+            " inkl. mva er sendt til " +
+            svar.epost +
+            (f.forfall ? ", med forfall " + datoTekst(f.forfall) : "") +
+            ". Nøkkelen under gjelder fra i dag.";
+          nokkelBoks($("f-nokkel"), svar);
+          $("f-faktura").hidden = !f.adresse;
+          if (f.adresse) $("f-faktura").href = f.adresse;
+          historikk = [];
+          vis("s-ferdig");
+        }
+
         // ---------- Tilbake fra Stripe, eller fra «Avbryt» der ----------
 
         var ordre = q.get("ordre");
         if (ordre) {
-          $("v-port").hidden = true;
-          $("v-kvittering").hidden = false;
+          vis("s-kvittering");
           api("ordre?session=" + encodeURIComponent(ordre))
             .then(function (svar) {
               var hvem = svar.navn + " (org.nr " + orgnrTekst(svar.orgnr) + ")";
@@ -1894,8 +1759,8 @@
               feil("k-feil", err.message);
             });
         } else {
-          var start = renOrgnr(q.get("orgnr"));
-          if (gyldigOrgnr(start)) {
+          var start = String(q.get("orgnr") || "").replace(/\D/g, "");
+          if (KlartOrgfelt.gyldig(start)) {
             $("orgnr").value = orgnrTekst(start);
             slaaOpp(start);
           }
