@@ -722,11 +722,6 @@
   .pod-bar:hover b,.pod-bar:focus-visible b{transform:scale(1.15)}
   .pod-sp{display:flex;justify-content:space-between;margin-top:-3px}
   .pod-tid,.pod-tot{font:600 10px/1 "SF Mono",Menlo,monospace;color:var(--ink);opacity:.6;font-variant-numeric:tabular-nums;white-space:nowrap}
-  /* Panelene kan dras rundt av den som ser på (rekkefølgen huskes i en informasjonskapsel). Mus: dra; mobil: hold inne. */
-  .paneler .flytt-kan{cursor:grab}
-  .flyttes{position:fixed!important;z-index:3000;margin:0!important;pointer-events:none;box-shadow:0 24px 60px rgba(0,32,91,.35)!important;transform:rotate(-1deg) scale(1.02)!important;transition:none!important}
-  .flytt-plass{border:2px dashed rgba(255,255,255,.7);border-radius:22px;background:rgba(255,255,255,.12)}
-  html.flytter, html.flytter *{cursor:grabbing!important;user-select:none}
   /* Banken (SpareBank 1): samlet saldo og saldoen på hver konto. */
   .bank{display:flex;flex-direction:column;gap:8px;padding:14px 18px 16px}
   .bank[hidden]{display:none}
@@ -2704,77 +2699,6 @@ setInterval(tegn, 1000);
   addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') h.classList.add('mus-ned'); });
   addEventListener('pointerup', () => h.classList.remove('mus-ned'));
   document.addEventListener('mouseleave', () => h.classList.remove('mus-inne'));
-})();
-</script>
-<script>
-// Panelene kan flyttes: dra et panel (med mus; på mobil: hold inne et halvt sekund) til et nytt sted i en av de to
-// kolonnene. Rekkefølgen lagres i informasjonskapselen esbjug_paneler (ett år) og brukes neste gang siden åpnes.
-(() => {
-  const NAVN = ['naa', 'sted', 'gjor', 'bank', 'poster', 'sens', 'akse', 'oyet', 'pod'];
-  const kol = { v: document.querySelector('.venstre'), h: document.querySelector('.hoyre') };
-  if (!kol.v || !kol.h) return;
-  const nøkkel = el => NAVN.find(n => el.classList.contains(n));
-  const paneler = () => [...kol.v.children, ...kol.h.children].filter(nøkkel);
-  // Lagret rekkefølge først.
-  try {
-    const c = document.cookie.split('; ').find(x => x.startsWith('esbjug_paneler='));
-    const r = c && JSON.parse(decodeURIComponent(c.slice(15)));
-    if (r && r.v && r.h) for (const k of ['v', 'h']) for (const n of r[k]) { const el = paneler().find(p => nøkkel(p) === n); if (el) kol[k].append(el); }
-  } catch {}
-  const lagre = () => {
-    const r = { v: [...kol.v.children].map(nøkkel).filter(Boolean), h: [...kol.h.children].map(nøkkel).filter(Boolean) };
-    document.cookie = 'esbjug_paneler=' + encodeURIComponent(JSON.stringify(r)) + '; max-age=31536000; path=/; SameSite=Lax';
-  };
-  const IKKE = 'button,a,input,textarea,select,label,canvas,[role="slider"],.ak,.hp-o,.pod-bar,.maplibregl-map';
-  let drag = null, venter = null;
-  const start = (el, x, y) => {
-    const r = el.getBoundingClientRect();
-    const plass = document.createElement('div'); plass.className = 'flytt-plass'; plass.style.height = r.height + 'px';
-    el.after(plass);
-    document.body.append(el);   // ut av kolonnen mens det dras (kolonnene har transform, som forskyver position:fixed)
-    drag = { el, plass, dx: x - r.left, dy: y - r.top };
-    el.classList.add('flyttes'); el.style.width = r.width + 'px'; el.style.left = r.left + 'px'; el.style.top = r.top + 'px';
-    document.documentElement.classList.add('flytter');
-  };
-  const flytt = (x, y) => {
-    const d = drag; d.el.style.left = x - d.dx + 'px'; d.el.style.top = y - d.dy + 'px';
-    // Kolonnen nærmest pekeren, og plassen der pekeren er mellom panelene.
-    const k = [kol.v, kol.h].map(c => ({ c, r: c.getBoundingClientRect() })).sort((a, b) => Math.abs(x - (a.r.left + a.r.right) / 2) - Math.abs(x - (b.r.left + b.r.right) / 2))[0].c;
-    const andre = [...k.children].filter(e => e !== d.plass && e !== d.el && nøkkel(e) && !e.hidden);
-    const før = andre.find(e => { const r = e.getBoundingClientRect(); return y < r.top + r.height / 2; });
-    if (før) { if (d.plass.nextSibling !== før) k.insertBefore(d.plass, før); }
-    else if (k.lastElementChild !== d.plass) k.append(d.plass);
-  };
-  const slutt = () => {
-    const d = drag; if (!d) return; drag = null;
-    d.plass.replaceWith(d.el);
-    d.el.classList.remove('flyttes'); d.el.style.width = d.el.style.left = d.el.style.top = '';
-    document.documentElement.classList.remove('flytter');
-    lagre();
-    // Klikket som avslutter en flytting skal ikke også trykke på panelet (f.eks. bla i postene).
-    const svelg = e => { e.stopPropagation(); e.preventDefault(); };
-    addEventListener('click', svelg, { capture: true, once: true });
-    setTimeout(() => removeEventListener('click', svelg, true), 60);
-  };
-  for (const el of paneler()) el.classList.add('flytt-kan');
-  addEventListener('pointerdown', e => {
-    const el = e.target instanceof Element && e.target.closest('.flytt-kan');
-    if (!el || e.target.closest(IKKE) || e.button > 0) return;
-    const x0 = e.clientX, y0 = e.clientY;
-    venter = { el, x0, y0, touch: e.pointerType !== 'mouse', id: e.pointerId };
-    if (venter.touch) venter.tid = setTimeout(() => { if (venter) { start(venter.el, venter.x0, venter.y0); navigator.vibrate?.(15); } }, 450);
-  });
-  addEventListener('pointermove', e => {
-    if (drag) { flytt(e.clientX, e.clientY); return; }
-    if (!venter) return;
-    const langt = Math.hypot(e.clientX - venter.x0, e.clientY - venter.y0) > 7;
-    if (venter.touch) { if (langt) { clearTimeout(venter.tid); venter = null; } return; }
-    if (langt) { start(venter.el, venter.x0, venter.y0); venter = null; flytt(e.clientX, e.clientY); }
-  });
-  const opp = () => { if (venter) { clearTimeout(venter.tid); venter = null; } if (drag) slutt(); };
-  addEventListener('pointerup', opp); addEventListener('pointercancel', opp);
-  // Mens et panel dras med fingeren, skal ikke siden rulle.
-  addEventListener('touchmove', e => { if (drag) e.preventDefault(); }, { passive: false });
 })();
 </script>
 </body>
