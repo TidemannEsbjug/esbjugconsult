@@ -187,20 +187,21 @@
             <!-- Nedlasting: virksomheten først (orgfelt.js og skriptet nederst). Ingen pris her. -->
             <form class="orgport rise" data-orgport style="--d: 180ms" novalidate>
               <div data-orgport-sok>
-                <label for="orgport-topp">Skriv inn organisasjonsnummer eller navn for å laste ned</label>
+                <p class="orgport-gratis"><b>Prøv Klart gratis.</b> Ingen betaling, ingen registrering.</p>
+                <label class="skjult-tekst" for="orgport-topp">Virksomhetens organisasjonsnummer eller navn</label>
                 <div class="orgport-rad">
                   <div class="orgfelt">
-                    <input id="orgport-topp" type="text" autocomplete="off" spellcheck="false" placeholder="Organisasjonsnummer eller navn" maxlength="80" />
+                    <input id="orgport-topp" type="text" autocomplete="off" spellcheck="false" placeholder="Virksomhetens org.nr. eller navn" maxlength="80" />
                     <ul class="orgforslag" role="listbox" hidden></ul>
                   </div>
-                  <button class="btn" type="submit">Last ned</button>
+                  <button class="btn" type="submit">Last ned gratis</button>
                 </div>
                 <p class="orgport-feil" role="alert" hidden></p>
               </div>
               <div class="orgport-svar" data-orgport-svar hidden aria-live="polite">
                 <p class="orgport-ok">
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
-                  <span><b data-navn></b> er godkjent for Klart.</span>
+                  <span><b data-navn></b> er godkjent for en gratis prøve.</span>
                 </p>
                 <div class="get">
                   <a class="btn" href="/klart/last-ned/mac" download>Last ned for Mac</a>
@@ -873,20 +874,21 @@
         </p>
         <form class="orgport rise" data-orgport novalidate>
           <div data-orgport-sok>
-            <label for="orgport-bunn">Skriv inn organisasjonsnummer eller navn for å laste ned</label>
+            <p class="orgport-gratis"><b>Prøv Klart gratis.</b> Ingen betaling, ingen registrering.</p>
+            <label class="skjult-tekst" for="orgport-bunn">Virksomhetens organisasjonsnummer eller navn</label>
             <div class="orgport-rad">
               <div class="orgfelt">
-                <input id="orgport-bunn" type="text" autocomplete="off" spellcheck="false" placeholder="Organisasjonsnummer eller navn" maxlength="80" />
+                <input id="orgport-bunn" type="text" autocomplete="off" spellcheck="false" placeholder="Virksomhetens org.nr. eller navn" maxlength="80" />
                 <ul class="orgforslag" role="listbox" hidden></ul>
               </div>
-              <button class="btn" type="submit">Last ned</button>
+              <button class="btn" type="submit">Last ned gratis</button>
             </div>
             <p class="orgport-feil" role="alert" hidden></p>
           </div>
           <div class="orgport-svar" data-orgport-svar hidden aria-live="polite">
             <p class="orgport-ok">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
-              <span><b data-navn></b> er godkjent for Klart.</span>
+              <span><b data-navn></b> er godkjent for en gratis prøve.</span>
             </p>
             <div class="get">
               <a class="btn" href="/klart/last-ned/mac" download>Last ned for Mac</a>
@@ -970,7 +972,31 @@
       (function () {
         var skjemaer = document.querySelectorAll("[data-orgport]");
 
+        // I heroen: når de begynner å skrive, er de klare. Boksen over glir bort og feltet glir opp dit
+        // den sto, mens overskriften står stille (CSS: .scene-tekst.skriver og --loft).
+        var tekst = document.querySelector(".hero .scene-tekst");
+        var boks = tekst && tekst.querySelector(".lokal");
+        var toppskjema = tekst && tekst.querySelector("[data-orgport]");
+        var harSvar = false;
+
+        function maalLoft() {
+          // offsetTop regner ikke med transform, så målet blir det samme om feltet alt er løftet.
+          tekst.style.setProperty("--loft", boks.offsetTop - toppskjema.offsetTop + "px");
+        }
+
+        function skriver(ja) {
+          if (!tekst || !boks || !toppskjema) return;
+          if (ja) maalLoft();
+          tekst.classList.toggle("skriver", ja);
+        }
+
+        window.addEventListener("resize", function () {
+          if (tekst && tekst.classList.contains("skriver")) maalLoft();
+        });
+
         function visSvar(svar) {
+          harSvar = true;
+          skriver(true);
           skjemaer.forEach(function (s) {
             s.querySelector("[data-orgport-sok]").hidden = true;
             var boks = s.querySelector("[data-orgport-svar]");
@@ -982,6 +1008,7 @@
         }
 
         function nullstill() {
+          harSvar = false;
           skjemaer.forEach(function (s) {
             s.querySelector("[data-orgport-svar]").hidden = true;
             s.querySelector("[data-orgport-sok]").hidden = false;
@@ -994,9 +1021,21 @@
           var feilEl = skjema.querySelector(".orgport-feil");
           var felt = KlartOrgfelt(input, skjema.querySelector(".orgforslag"), sjekk);
 
-          function feil(tekst) {
-            feilEl.textContent = tekst || "";
-            feilEl.hidden = !tekst;
+          if (skjema === toppskjema) {
+            input.addEventListener("input", function () {
+              if (input.value.trim()) skriver(true);
+            });
+            // Tømmer de feltet og går videre uten å ha valgt noe, kommer boksen tilbake.
+            input.addEventListener("blur", function () {
+              setTimeout(function () {
+                if (!input.value.trim() && !harSvar && document.activeElement !== input) skriver(false);
+              }, 150);
+            });
+          }
+
+          function feil(melding) {
+            feilEl.textContent = melding || "";
+            feilEl.hidden = !melding;
           }
 
           function sjekk(o) {
@@ -1065,6 +1104,33 @@
         );
         reveal.forEach(function (el) {
           io.observe(el);
+        });
+      })();
+    </script>
+      <script>
+      // Nedlastingen er satt på pause (KLART_NEDLASTING i wrangler.jsonc). Knappene
+      // ser ut som vanlig, men et klikk viser «Kommer snart». Settes til false når
+      // den nye versjonen er ute.
+      (function () {
+        var PAUSE = true;
+        if (!PAUSE) return;
+        var lapp;
+        document.querySelectorAll('a[href^="/klart/last-ned/"]').forEach(function (a) {
+          a.addEventListener("click", function (e) {
+            e.preventDefault();
+            if (!lapp) {
+              lapp = document.createElement("div");
+              lapp.className = "kommer-lapp";
+              lapp.setAttribute("role", "status");
+              document.body.appendChild(lapp);
+            }
+            lapp.textContent = "Kommer snart. Den nye versjonen av Klart er rett rundt hjørnet.";
+            lapp.classList.add("synlig");
+            clearTimeout(lapp.t);
+            lapp.t = setTimeout(function () {
+              lapp.classList.remove("synlig");
+            }, 3200);
+          });
         });
       })();
     </script>

@@ -111,6 +111,16 @@ export async function handleNedlasting(request, env, url) {
   const hva = url.pathname.replace(/^\/(klart|GDPR)\/last-ned\//, "").replace(/\/$/, "");
   const fil = FILER[hva];
   if (!fil || !["GET", "HEAD"].includes(request.method)) return new Response("Finnes ikke.", { status: 404 });
+  // KLART_NEDLASTING = "pause" i wrangler.jsonc stenger nedlastingen, for eksempel
+  // mens en feil rettes. Gamle lenker får da en forklaring, ikke en gammel fil.
+  if (env.KLART_NEDLASTING === "pause") {
+    return new Response(
+      "<!doctype html><meta charset=utf-8><title>Klart</title>" +
+        "<p style='font:16px system-ui;max-width:36em;margin:4em auto'>Klart oppdateres. " +
+        "En ny versjon kommer straks. <a href='/klart/'>Tilbake til Klart</a></p>",
+      { status: 503, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "retry-after": "3600" } }
+    );
+  }
   const obj = await env.KLART_FILER.get(fil.key, { range: request.headers, onlyIf: request.headers });
   if (!obj) return new Response("Filen er ikke lastet opp ennå.", { status: 404 });
   const hoder = new Headers();
