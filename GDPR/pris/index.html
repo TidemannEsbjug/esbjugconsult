@@ -906,11 +906,11 @@
               </button>
               <button type="button" class="valg" data-betaling="faktura">
                 <strong>Betal med faktura</strong>
-                <span>Fra 51 ansatte</span>
+                <span data-faktura-grense>Fra 51 ansatte</span>
               </button>
               <button type="button" class="valg" data-betaling="avdrag">
                 <strong>Kvartalsvise avdrag</strong>
-                <span>For kvalifiserte virksomheter</span>
+                <span data-avdrag-grense>Opptil 50 ansatte</span>
               </button>
             </div>
             <p class="avdraglinje">Fire kvartalsvise betalinger på en lisens over 12 måneder.</p>
@@ -973,7 +973,7 @@
                 </button>
                 <button type="button" class="valg" data-lev-betaling="faktura">
                   <strong>Betal med faktura</strong>
-                  <span>Fra 51 ansatte</span>
+                  <span data-faktura-grense>Fra 51 ansatte</span>
                 </button>
               </div>
               <details class="lev-har">
@@ -1130,7 +1130,10 @@
           <li>Faktureres årlig. Fornyes automatisk, med påminnelse 14 dager før fornyelsen.</li>
           <li>Ved hver fornyelse kommer en ny signert lisensnøkkel på e-post. Appen trenger aldri å gå på nett.</li>
           <li>14 dager ekstra etter utløp.</li>
-          <li>Betal med kort, med faktura fra 51 ansatte, eller i kvartalsvise avdrag for kvalifiserte virksomheter.</li>
+          <li id="betalingsmaater">
+            Betal med kort, med faktura fra 51 ansatte, eller i kvartalsvise avdrag for virksomheter med opptil 50
+            ansatte.
+          </li>
           <li>EHF-faktura for offentlige kjøpere.</li>
           <li>Alle priser i NOK, eks. mva.</li>
         </ul>
@@ -1483,6 +1486,19 @@
           $("r-sektor").textContent = d.sektor ? "Priset for datatettheten i " + d.sektor + "." : "";
 
           var b = d.betaling;
+          // Grensene står i KLART_PRISER. Faktura er for de store, avdrag for de små.
+          document.querySelectorAll("[data-faktura-grense]").forEach(function (el) {
+            el.textContent = "Fra " + b.fakturaFra + " ansatte";
+          });
+          document.querySelectorAll("[data-avdrag-grense]").forEach(function (el) {
+            el.textContent = "Opptil " + b.avdragTil + " ansatte";
+          });
+          $("betalingsmaater").textContent =
+            "Betal med kort, med faktura fra " +
+            b.fakturaFra +
+            " ansatte, eller i kvartalsvise avdrag for virksomheter med opptil " +
+            b.avdragTil +
+            " ansatte.";
           var knapper = document.querySelectorAll("[data-betaling]");
           knapper.forEach(function (k) {
             k.disabled = !d.kjop || !b[k.getAttribute("data-betaling")];

@@ -62,13 +62,16 @@ export function sprintFor(priser, ansatte) {
   return t ? { trinn: t.navn, grunn: t.grunn, total: t.total } : null;
 }
 
-/** Hva virksomheten kan betale med. Kvartalsbeløpet er i øre, så det går opp. */
+/** Hva virksomheten kan betale med. Faktura er for de store, avdrag for de små som vil spre
+    kostnaden. Kvartalsbeløpet regnes i øre, så fire avdrag går opp i årsprisen. */
 export function betalingFor(priser, ansatte, pris) {
   return {
     kort: true,
-    faktura: ansatte >= (priser.fakturaFra ?? Infinity),
-    avdrag: ansatte >= (priser.avdragFra ?? Infinity),
+    faktura: priser.fakturaFra != null && ansatte >= priser.fakturaFra,
+    avdrag: priser.avdragTil != null && ansatte <= priser.avdragTil,
     kvartal: Math.round((pris * 100) / 4) / 100,
+    fakturaFra: priser.fakturaFra ?? null,
+    avdragTil: priser.avdragTil ?? null,
   };
 }
 

@@ -56,10 +56,12 @@ assert.equal(sprintFor(P, 250), null);
 assert.deepEqual(sprintFor(P, 251), { trinn: "251–1 000 ansatte", grunn: 50000, total: 250000 });
 assert.deepEqual(sprintFor(P, 5000), { trinn: "Over 1 000 ansatte", grunn: 80000, total: 400000 });
 
-// Betaling
-assert.deepEqual(betalingFor(P, 5, 15000), { kort: true, faktura: false, avdrag: false, kvartal: 3750 });
-assert.deepEqual(betalingFor(P, 11, 45000), { kort: true, faktura: false, avdrag: true, kvartal: 11250 });
-assert.deepEqual(betalingFor(P, 51, 120000), { kort: true, faktura: true, avdrag: true, kvartal: 30000 });
+// Betaling: avdrag for de små, faktura for de store
+const grenser = { fakturaFra: 51, avdragTil: 50 };
+assert.deepEqual(betalingFor(P, 0, 3000), { kort: true, faktura: false, avdrag: true, kvartal: 750, ...grenser });
+assert.deepEqual(betalingFor(P, 50, 45000), { kort: true, faktura: false, avdrag: true, kvartal: 11250, ...grenser });
+assert.deepEqual(betalingFor(P, 51, 120000), { kort: true, faktura: true, avdrag: false, kvartal: 30000, ...grenser });
+assert.deepEqual(betalingFor(P, 5000, 450000), { kort: true, faktura: true, avdrag: false, kvartal: 112500, ...grenser });
 
 // Enhetsregisteret
 assert.equal(aktiv({ konkurs: false }), true);

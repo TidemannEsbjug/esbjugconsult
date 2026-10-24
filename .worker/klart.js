@@ -744,7 +744,7 @@ async function kasse(request, env, url) {
   if (type === "testing") betaling = "kort";
   if (type === "leverandor" && betaling === "avdrag") return json({ feil: "Leverandørlisensen betales med kort eller faktura." }, 400);
   if (betaling === "faktura" && !kan.faktura) return json({ feil: `Faktura gjelder virksomheter fra ${p.fakturaFra} ansatte.` }, 400);
-  if (betaling === "avdrag" && !kan.avdrag) return json({ feil: "Kvartalsvis betaling gjelder ikke for denne virksomheten." }, 400);
+  if (betaling === "avdrag" && !kan.avdrag) return json({ feil: `Kvartalsvise avdrag gjelder virksomheter med opptil ${p.avdragTil} ansatte.` }, 400);
   const epost = epostFra(inn.epost);
   if (betaling === "faktura" && !epost) return json({ feil: "Skriv inn e-postadressen fakturaen skal sendes til." }, 400);
 
