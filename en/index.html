@@ -825,6 +825,9 @@
     .venstre,.hoyre{display:contents}
     .naa,.h-sokk{order:1}.sted{order:2}.gjor{order:3}.poster{order:4}.sens{order:5}.bank{order:6}.akse{order:7}.oyet{order:8}.pod{order:9}
   }
+  /* Ingen farget boks eller ramme når man trykker med fingeren (Android); tastaturet får fortsatt fokusrammen. */
+  *{-webkit-tap-highlight-color:transparent}
+  :focus:not(:focus-visible){outline:none}
 </style>
 </head>
 <body>
