@@ -1,8 +1,12 @@
 // Klart: kjøp og aktiveringskoder.
 //
-// Det finnes ingen prøveperiode lenger. Uten lisens er Klart en gratis
-// forhåndsvisning: alt skannes og vises, og tre rensede filer kan lagres.
-// Prøvekoder som alt er gitt ut, virker til de går ut.
+// Det finnes ingen prøveperiode lenger. Prøvekoder som alt er gitt ut, virker
+// til de går ut.
+//
+// Lisenser selges til bedrifter, ikke personer. Kjøperen skriver inn org.nr, og
+// firmanavnet hentes fra Enhetsregisteret i Brønnøysund (data.brreg.no). Lisensen
+// og koden bærer firmanavn og org.nr. Uten lisens kan appen lagre ti rensede
+// filer av hver filtype (src-tauri/src/aktivering.rs).
 //
 // Programmet Klart går aldri på nett. Knappene i appen åpner /klart/aktiver i
 // nettleseren, med maskinkoden i adressen. Siden kaller API-et her, og det som
@@ -12,7 +16,8 @@
 //
 //   GET  /klart/api/status       hva som er åpent: kjøp
 //   POST /klart/api/prove        410: erstattet av forhåndsvisningen i appen
-//   POST /klart/api/kjop         { maskin, epost? }  → adresse til Stripe Checkout
+//   GET  /klart/api/firma?orgnr=… → { orgnr, navn } fra Enhetsregisteret
+//   POST /klart/api/kjop         { maskin, orgnr, epost? } → adresse til Stripe Checkout
 //   GET  /klart/api/kvittering?session=cs_…          → koden etter betaling
 //   POST /klart/api/hent         { maskin, epost }   → ny kode til en betalt lisens
 //   POST /klart/api/stripe       Stripe-webhook
@@ -23,7 +28,7 @@
 // KLART_MVA ("auto" = Stripe Tax legger på mva).
 //
 // Ingen dokumenter, ingen innhold fra programmet, kommer hit. Bare maskinkoden,
-// som er en hash, og e-post og navn fra kjøpet.
+// som er en hash, og org.nr, firmanavn og e-post fra kjøpet.
 
 import { DurableObject } from "cloudflare:workers";
 
@@ -40,6 +45,7 @@ export async function handleKlart(request, env, url) {
   try {
     if (sti === "status" && request.method === "GET") return json(await status(env));
     if (sti === "prove" && request.method === "POST") return await prove(request, env);
+    if (sti === "firma" && request.method === "GET") return await firma(url);
     if (sti === "kjop" && request.method === "POST") return await kjop(request, env, url);
     if (sti === "kvittering" && request.method === "GET") return await kvittering(env, url);
     if (sti === "hent" && request.method === "POST") return await hent(request, env);
@@ -113,6 +119,41 @@ function maskinFra(verdi) {
   return MASKINKODE.test(m) ? m : null;
 }
 
+/** Norsk org.nr: ni sifre, kontrollsiffer med modulus 11. Samme sjekk som scripts/lag-lisens.mjs i Klart. */
+function orgnrFra(verdi) {
+  const o = String(verdi || "").replace(/\s/g, "");
+  if (!/^\d{9}$/.test(o)) return null;
+  const vekter = [3, 2, 7, 6, 5, 4, 3, 2];
+  const sum = vekter.reduce((s, v, i) => s + v * Number(o[i]), 0);
+  const k = 11 - (sum % 11);
+  return (k === 11 ? 0 : k) === Number(o[8]) ? o : null;
+}
+
+/** Firmaet bak et org.nr, fra Enhetsregisteret. { feil, kode } når det ikke kan kjøpe. */
+async function slaaOppFirma(orgnr) {
+  const svar = await fetch(`https://data.brreg.no/enhetsregisteret/api/enheter/${orgnr}`, {
+    headers: { accept: "application/json" },
+  });
+  if (svar.status === 404 || svar.status === 410) {
+    return { feil: "Fant ikke organisasjonsnummeret i Enhetsregisteret.", kode: 404 };
+  }
+  if (!svar.ok) throw new Error(`Enhetsregisteret: ${svar.status}`);
+  const enhet = await svar.json();
+  if (enhet.slettedato) return { feil: "Organisasjonsnummeret er slettet i Enhetsregisteret.", kode: 409 };
+  if (enhet.konkurs || enhet.underAvvikling || enhet.underTvangsavviklingEllerTvangsopplosning) {
+    return { feil: "Virksomheten er under avvikling eller konkurs, og kan ikke kjøpe lisens.", kode: 409 };
+  }
+  return { orgnr, navn: enhet.navn };
+}
+
+async function firma(url) {
+  const orgnr = orgnrFra(url.searchParams.get("orgnr"));
+  if (!orgnr) return json({ feil: "Organisasjonsnummeret må være ni sifre og gyldig." }, 400);
+  const f = await slaaOppFirma(orgnr);
+  if (f.feil) return json({ feil: f.feil }, f.kode);
+  return json(f);
+}
+
 function epostFra(verdi) {
   const e = String(verdi || "").trim().toLowerCase();
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) && e.length <= 200 ? e : null;
@@ -161,6 +202,7 @@ async function lagKode(env, lapp) {
       id: lapp.id,
       type: lapp.type,
       navn: lapp.navn,
+      orgnr: lapp.orgnr ?? null,
       epost: lapp.epost ?? null,
       maskin: lapp.maskin ?? null,
       plan: lapp.plan ?? null,
@@ -218,10 +260,15 @@ async function stripe(env, metode, sti, felt) {
 }
 
 async function kjop(request, env, url) {
-  const { maskin: rå, epost: råEpost } = await body(request);
+  const { maskin: rå, epost: råEpost, orgnr: råOrgnr } = await body(request);
   const maskin = maskinFra(rå);
   if (!maskin) return json({ feil: "Maskinkoden ser ikke riktig ut. Den står i lisensvinduet i Klart, øverst til høyre." }, 400);
+  const orgnr = orgnrFra(råOrgnr);
+  if (!orgnr) return json({ feil: "Lisenser selges til bedrifter. Skriv inn organisasjonsnummeret." }, 400);
   if (!(await status(env)).kjop) return json({ feil: "Kjøp åpner snart." }, 503);
+  // Navnet hentes her, ikke fra siden, så lisensen alltid står på det registrerte navnet.
+  const bedrift = await slaaOppFirma(orgnr);
+  if (bedrift.feil) return json({ feil: bedrift.feil }, bedrift.kode);
 
   const pris = await stripe(env, "GET", `prices/${env.STRIPE_PRICE_ID}`);
   const abonnement = Boolean(pris.recurring);
@@ -234,12 +281,18 @@ async function kjop(request, env, url) {
     cancel_url: `${side}?hva=kjop&maskin=${maskin}`,
     client_reference_id: maskin,
     "metadata[maskin]": maskin,
+    "metadata[orgnr]": orgnr,
+    "metadata[firma]": bedrift.navn,
     locale: "nb",
     allow_promotion_codes: "true",
     "tax_id_collection[enabled]": "true",
     billing_address_collection: "required",
   };
-  if (abonnement) felt["subscription_data[metadata][maskin]"] = maskin;
+  if (abonnement) {
+    felt["subscription_data[metadata][maskin]"] = maskin;
+    felt["subscription_data[metadata][orgnr]"] = orgnr;
+    felt["subscription_data[metadata][firma]"] = bedrift.navn;
+  }
   else felt["customer_creation"] = "always";
   if (env.KLART_MVA === "auto") felt["automatic_tax[enabled]"] = "true";
   const epost = epostFra(råEpost);
@@ -269,7 +322,9 @@ async function lisensFraOkt(env, okt) {
   return lager(env).lagreLisens({
     id: aboId || okt.id,
     epost: (kunde.email || okt.customer_email || "").toLowerCase(),
-    navn: kunde.name || kunde.email || "Klart-kunde",
+    // Lisensen står på firmaet fra Enhetsregisteret. Kjøp fra før org.nr kom, har bare kortnavnet.
+    navn: okt.metadata?.firma || kunde.name || kunde.email || "Klart-kunde",
+    orgnr: orgnrFra(okt.metadata?.orgnr),
     kunde: typeof okt.customer === "string" ? okt.customer : okt.customer?.id || null,
     utloper,
     maks: Number(env.KLART_MASKINER || 2),
@@ -290,6 +345,7 @@ async function kodeTilLisens(env, lisens, maskin) {
     id: nyId(),
     type: "lisens",
     navn: test ? `${lisens.navn} (test)` : lisens.navn,
+    orgnr: lisens.orgnr || null,
     epost: lisens.epost,
     maskin,
     plan: test ? "test" : lisens.plan || null,
@@ -305,7 +361,7 @@ async function kvittering(env, url) {
   const lisens = await lisensFraOkt(env, okt);
   if (!lisens) return json({ feil: "Betalingen er ikke fullført ennå. Last siden på nytt om litt." }, 409);
   const maskin = maskinFra(okt.metadata?.maskin || okt.client_reference_id);
-  return json({ kode: await kodeTilLisens(env, lisens, maskin), navn: lisens.navn, epost: lisens.epost, utloper: lisens.utloper });
+  return json({ kode: await kodeTilLisens(env, lisens, maskin), navn: lisens.navn, orgnr: lisens.orgnr, epost: lisens.epost, utloper: lisens.utloper });
 }
 
 async function hent(request, env) {
@@ -396,6 +452,9 @@ export class KlartLager extends DurableObject {
       id TEXT PRIMARY KEY, epost TEXT, navn TEXT, kunde TEXT, plan TEXT,
       utloper TEXT, maks INTEGER, status TEXT, opprettet TEXT)`);
     this.sql.exec(`CREATE INDEX IF NOT EXISTS lisenser_epost ON lisenser (epost)`);
+    // Org.nr kom til da lisensene ble knyttet til bedrifter. Lisenser fra før har det ikke.
+    const kolonner = this.sql.exec(`PRAGMA table_info(lisenser)`).toArray().map((k) => k.name);
+    if (!kolonner.includes("orgnr")) this.sql.exec(`ALTER TABLE lisenser ADD COLUMN orgnr TEXT`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS maskiner (
       lisens TEXT, maskin TEXT, lagt_til TEXT, PRIMARY KEY (lisens, maskin))`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS hendelser (id TEXT PRIMARY KEY, mottatt TEXT)`);
@@ -421,20 +480,22 @@ export class KlartLager extends DurableObject {
     const finnes = this.sql.exec(`SELECT * FROM lisenser WHERE id = ?`, l.id).toArray()[0];
     if (finnes) {
       this.sql.exec(
-        `UPDATE lisenser SET epost = ?, navn = ?, kunde = COALESCE(?, kunde), utloper = ?, status = 'aktiv' WHERE id = ?`,
+        `UPDATE lisenser SET epost = ?, navn = ?, orgnr = COALESCE(?, orgnr), kunde = COALESCE(?, kunde), utloper = ?, status = 'aktiv' WHERE id = ?`,
         l.epost,
         l.navn,
+        l.orgnr,
         l.kunde,
         l.utloper,
         l.id
       );
     } else {
       this.sql.exec(
-        `INSERT INTO lisenser (id, epost, navn, kunde, plan, utloper, maks, status, opprettet)
-         VALUES (?, ?, ?, ?, ?, ?, ?, 'aktiv', ?)`,
+        `INSERT INTO lisenser (id, epost, navn, orgnr, kunde, plan, utloper, maks, status, opprettet)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'aktiv', ?)`,
         l.id,
         l.epost,
         l.navn,
+        l.orgnr,
         l.kunde,
         null,
         l.utloper,
