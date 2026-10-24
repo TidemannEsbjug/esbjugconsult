@@ -108,6 +108,44 @@
             <rect x="9" y="31.1" width="10" height="2.4" rx="1.2" />
           </g>
         </symbol>
+
+        <!-- Mac Studio for skreddersydd oppsett. Egen tegning, ikke fra Apple Newsroom. Ligger her én
+             gang, så de to nedlastingsfeltene kan bruke den uten like id-er. -->
+        <linearGradient id="mac-front" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f3f5f8" />
+          <stop offset="0.55" stop-color="#e1e6ec" />
+          <stop offset="1" stop-color="#c4cbd4" />
+        </linearGradient>
+        <linearGradient id="mac-kant" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#6d7783" stop-opacity="0.28" />
+          <stop offset="0.08" stop-color="#6d7783" stop-opacity="0" />
+          <stop offset="0.92" stop-color="#6d7783" stop-opacity="0" />
+          <stop offset="1" stop-color="#6d7783" stop-opacity="0.32" />
+        </linearGradient>
+        <linearGradient id="mac-topp" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#e9edf2" />
+          <stop offset="1" stop-color="#fbfcfd" />
+        </linearGradient>
+        <radialGradient id="mac-skygge" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="#050d1f" stop-opacity="0.45" />
+          <stop offset="1" stop-color="#050d1f" stop-opacity="0" />
+        </radialGradient>
+        <symbol id="mac-studio" viewBox="60 80 440 240">
+          <ellipse cx="280" cy="292" rx="236" ry="26" fill="url(#mac-skygge)" />
+          <rect x="122" y="262" width="316" height="24" rx="9" fill="#8d96a1" />
+          <rect x="128" y="276" width="304" height="6" rx="3" fill="#6e7782" />
+          <path d="M96 150 L128 104 Q134 96 146 96 L414 96 Q426 96 432 104 L464 150 Z" fill="url(#mac-topp)" stroke="#d3d9e1" stroke-width="1.2" />
+          <path d="M96 150 H464 V252 Q464 270 446 270 H114 Q96 270 96 252 Z" fill="url(#mac-front)" />
+          <path d="M96 150 H464 V252 Q464 270 446 270 H114 Q96 270 96 252 Z" fill="url(#mac-kant)" />
+          <path d="M96 150.5 H464" stroke="#ffffff" stroke-width="1.6" />
+          <g fill="#2b3139">
+            <rect x="128" y="200" width="22" height="8" rx="4" />
+            <rect x="162" y="200" width="22" height="8" rx="4" />
+            <rect x="386" y="202" width="42" height="4" rx="2" />
+          </g>
+          <circle cx="114" cy="254" r="2.4" fill="#ffffff" />
+          <circle cx="114" cy="254" r="5" fill="#ffffff" opacity="0.25" />
+        </symbol>
       </defs>
     </svg>
 
@@ -198,21 +236,33 @@
                 </div>
                 <p class="orgport-feil" role="alert" hidden></p>
               </div>
+              <!-- Små: «godkjent» og knappene. Store: bredere, med navnet og gratis prøve til venstre og
+                   skreddersydd oppsett med Mac Studio til høyre (klassen «stor» på skjemaet). -->
               <div class="orgport-svar" data-orgport-svar hidden aria-live="polite">
-                <p class="orgport-ok">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
-                  <span><b data-navn></b> er godkjent for en gratis prøve.</span>
-                </p>
-                <div class="get">
-                  <a class="btn" href="/klart/last-ned/mac" download>Last ned for Mac</a>
-                  <a class="btn ghost" href="/klart/last-ned/windows" download>Last ned for Windows</a>
+                <div class="orgport-svar-grid">
+                  <div class="orgport-svar-hoved">
+                    <p class="orgport-ok" data-godkjent>
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+                      <span><b data-navn></b> er godkjent for en gratis prøve.</span>
+                    </p>
+                    <div class="orgport-firma" data-firma hidden>
+                      <p class="orgport-firmanavn" data-navn></p>
+                      <p class="orgport-firmatekst">Prøv Klart gratis på deres egne dokumenter. Ingen betaling, ingen registrering.</p>
+                    </div>
+                    <div class="get">
+                      <a class="btn" href="/klart/last-ned/mac" download>Last ned for Mac</a>
+                      <a class="btn ghost" href="/klart/last-ned/windows" download>Last ned for Windows</a>
+                    </div>
+                    <button type="button" class="orgport-endre" data-endre>Ikke deres virksomhet?</button>
+                  </div>
+                  <aside class="orgport-oppsett" data-stor hidden>
+                    <p class="orgport-merke">For store virksomheter</p>
+                    <h3>Skreddersydd oppsett</h3>
+                    <p>En større modell, finjustert på deres egne dokumenter og satt opp hos dere, på maskinvare dere eier.</p>
+                    <svg class="orgport-mac" role="img" aria-label="Mac Studio"><use href="#mac-studio" /></svg>
+                    <a class="btn" data-oppsett href="pris/">Les om skreddersydd oppsett</a>
+                  </aside>
                 </div>
-                <p class="orgport-stor" data-stor hidden>
-                  <b>For en virksomhet av deres størrelse</b> tilbyr vi også et skreddersydd oppsett: en større modell,
-                  finjustert på deres egne dokumenter og satt opp hos dere.
-                  <a data-oppsett href="pris/">Les om skreddersydd oppsett</a>
-                </p>
-                <button type="button" class="orgport-endre" data-endre>Ikke deres virksomhet?</button>
               </div>
             </form>
             <p class="fineprint rise" style="--d: 230ms">
@@ -886,20 +936,30 @@
             <p class="orgport-feil" role="alert" hidden></p>
           </div>
           <div class="orgport-svar" data-orgport-svar hidden aria-live="polite">
-            <p class="orgport-ok">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
-              <span><b data-navn></b> er godkjent for en gratis prøve.</span>
-            </p>
-            <div class="get">
-              <a class="btn" href="/klart/last-ned/mac" download>Last ned for Mac</a>
-              <a class="btn ghost" href="/klart/last-ned/windows" download>Last ned for Windows</a>
+            <div class="orgport-svar-grid">
+              <div class="orgport-svar-hoved">
+                <p class="orgport-ok" data-godkjent>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+                  <span><b data-navn></b> er godkjent for en gratis prøve.</span>
+                </p>
+                <div class="orgport-firma" data-firma hidden>
+                  <p class="orgport-firmanavn" data-navn></p>
+                  <p class="orgport-firmatekst">Prøv Klart gratis på deres egne dokumenter. Ingen betaling, ingen registrering.</p>
+                </div>
+                <div class="get">
+                  <a class="btn" href="/klart/last-ned/mac" download>Last ned for Mac</a>
+                  <a class="btn ghost" href="/klart/last-ned/windows" download>Last ned for Windows</a>
+                </div>
+                <button type="button" class="orgport-endre" data-endre>Ikke deres virksomhet?</button>
+              </div>
+              <aside class="orgport-oppsett" data-stor hidden>
+                <p class="orgport-merke">For store virksomheter</p>
+                <h3>Skreddersydd oppsett</h3>
+                <p>En større modell, finjustert på deres egne dokumenter og satt opp hos dere, på maskinvare dere eier.</p>
+                <svg class="orgport-mac" role="img" aria-label="Mac Studio"><use href="#mac-studio" /></svg>
+                <a class="btn" data-oppsett href="pris/">Les om skreddersydd oppsett</a>
+              </aside>
             </div>
-            <p class="orgport-stor" data-stor hidden>
-              <b>For en virksomhet av deres størrelse</b> tilbyr vi også et skreddersydd oppsett: en større modell,
-              finjustert på deres egne dokumenter og satt opp hos dere.
-              <a data-oppsett href="pris/">Les om skreddersydd oppsett</a>
-            </p>
-            <button type="button" class="orgport-endre" data-endre>Ikke deres virksomhet?</button>
           </div>
         </form>
         <p class="sub rise" style="margin-top: 18px">
@@ -998,9 +1058,15 @@
           harSvar = true;
           skriver(true);
           skjemaer.forEach(function (s) {
+            // De store er selvsagt godkjent. De får et bredere felt med skreddersydd oppsett ved siden av.
+            s.classList.toggle("stor", Boolean(svar.stor));
             s.querySelector("[data-orgport-sok]").hidden = true;
             var boks = s.querySelector("[data-orgport-svar]");
-            boks.querySelector("[data-navn]").textContent = svar.navn;
+            boks.querySelectorAll("[data-navn]").forEach(function (el) {
+              el.textContent = svar.navn;
+            });
+            boks.querySelector("[data-godkjent]").hidden = Boolean(svar.stor);
+            boks.querySelector("[data-firma]").hidden = !svar.stor;
             boks.querySelector("[data-stor]").hidden = !svar.stor;
             boks.querySelector("[data-oppsett]").href = "pris/?orgnr=" + svar.orgnr + "&vis=oppsett";
             boks.hidden = false;
@@ -1010,6 +1076,7 @@
         function nullstill() {
           harSvar = false;
           skjemaer.forEach(function (s) {
+            s.classList.remove("stor");
             s.querySelector("[data-orgport-svar]").hidden = true;
             s.querySelector("[data-orgport-sok]").hidden = false;
           });

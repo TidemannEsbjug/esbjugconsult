@@ -682,7 +682,7 @@ section {
 .hero .scene .lokal.in,
 .hero .scene .orgport.in,
 .hero .scene .orgport.in ~ .fineprint {
-  transition: opacity 420ms var(--ease), transform 520ms var(--ease), visibility 420ms;
+  transition: opacity 420ms var(--ease), transform 520ms var(--ease), visibility 420ms, width 420ms var(--ease);
   transition-delay: 0ms;
 }
 
@@ -711,6 +711,11 @@ section {
 
 .orgport-svar {
   text-align: center;
+}
+
+/* «hidden» skal vinne over display-reglene under (orgport-ok er inline-flex). */
+.orgport [hidden] {
+  display: none !important;
 }
 
 .orgport-ok {
@@ -745,26 +750,115 @@ section {
   margin-top: 18px;
 }
 
-.orgport-stor {
-  max-width: 48ch;
-  margin: 18px auto 0;
-  padding: 14px 18px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid var(--rule);
-  font-size: 14.5px;
-  line-height: 1.55;
-  color: var(--ink-2);
+/* Store virksomheter: feltet blir bredere, med navnet og gratis prøve til venstre og skreddersydd
+   oppsett med Mac Studio til høyre. Ingen «godkjent»; de er selvsagt godkjent. */
+.orgport.stor {
+  width: min(980px, 100%);
+}
+
+.orgport.stor .orgport-svar-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: stretch;
   text-align: left;
 }
 
-.orgport-stor b {
+.orgport.stor .orgport-svar-hoved {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(24px, 3vw, 36px);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: 0 2px 4px rgba(20, 30, 40, 0.05), 0 22px 54px rgba(20, 40, 70, 0.16);
+}
+
+.orgport.stor .orgport-svar .get {
+  justify-content: flex-start;
+  margin-top: 24px;
+}
+
+.orgport.stor .orgport-endre {
+  align-self: flex-start;
+  margin-top: 16px;
+}
+
+.orgport-firmanavn {
+  font-size: clamp(22px, 2.2vw, 30px);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
   color: var(--ink);
 }
 
-.orgport-stor a {
+.orgport-firmatekst {
+  margin-top: 10px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+.orgport-oppsett {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(24px, 3vw, 36px);
+  border-radius: 22px;
+  color: #fff;
+  text-align: left;
+  background: radial-gradient(120% 90% at 80% 70%, #2456e6 0%, transparent 60%), linear-gradient(160deg, #1a3fb0, #102a66);
+  box-shadow: 0 26px 56px -26px rgba(26, 63, 176, 0.85);
+}
+
+.orgport-merke {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.orgport-oppsett h3 {
+  margin-top: 10px;
+  font-size: clamp(24px, 2.4vw, 32px);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+
+.orgport-oppsett p:not(.orgport-merke) {
+  margin-top: 10px;
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.orgport-mac {
+  display: block;
+  width: 100%;
+  max-width: 340px;
+  aspect-ratio: 440 / 240;
+  margin: 18px auto 10px;
+}
+
+.orgport-oppsett .btn {
+  align-self: flex-start;
+  margin-top: auto;
   color: var(--signal-deep);
-  font-weight: 600;
+  background: #fff;
+  border-color: #fff;
+}
+
+.orgport-oppsett .btn:hover {
+  color: var(--signal-deep);
+  background: var(--signal-soft);
+  border-color: var(--signal-soft);
+}
+
+@media (max-width: 760px) {
+  .orgport.stor .orgport-svar-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .orgport-endre {
