@@ -564,6 +564,9 @@
   .h-forhånd iframe{width:1440px;height:900px;border:0;transform:scale(.3);transform-origin:0 0;pointer-events:none}
   /* Hele siden slik den var: den gamle versjonen fyller vinduet bak avspilleren, og byttes med en myk overgang. */
   .versjon-lag{position:fixed;inset:0;z-index:55;pointer-events:none}
+  /* Lasteanimasjonen fra forsiden, over hele vinduet mens siden fra et annet tidspunkt lastes */
+  .tid-venter{position:fixed;inset:0;z-index:57;opacity:0;visibility:hidden;transition:opacity .45s ease,visibility 0s .45s}
+  .tid-venter.på{opacity:1;visibility:visible;transition:opacity .2s ease}
   .versjon-lag:has(iframe.klar){background:#fff;pointer-events:auto}
   .versjon-lag[hidden]{display:none}
   .versjon-lag iframe{position:absolute;inset:0;width:100%;height:100%;border:0;opacity:0;transition:opacity .6s ease;pointer-events:none}
@@ -2312,6 +2315,24 @@ if (HUS) setTimeout(function lagAvspiller() {
   // vises dagens side med dataene fra T, aldri en hvit skjerm. Versjonsknappen slår det av og på.
   let sideDa = true, lagSha = null;
   const lag = document.createElement('div'); lag.className = 'versjon-lag'; lag.hidden = true; document.body.append(lag);
+  // Lasteanimasjonen når tiden flyttes: vises straks, og forsvinner når siden ved det nye tidspunktet har dataene sine
+  // (den gamle siden har kart-klar, eller ble laget før kartet fantes; høyst 8 s). Den står så lenge en ramme laster.
+  const venter = document.createElement('div'); venter.className = 'tid-venter kart-venter'; venter.setAttribute('aria-hidden', 'true');
+  venter.innerHTML = document.querySelector('.kart-venter').innerHTML; document.body.append(venter);
+  const visVenter = () => venter.classList.add('på');
+  const skjulVenter = () => { if (!lag.querySelector('iframe:not(.forh):not(.klar)')) venter.classList.remove('på'); };
+  const klarNår = (f, ferdig) => {
+    f.onload = () => {
+      const t0 = Date.now();
+      const sjekk = () => {
+        let d = null; try { d = f.contentDocument; } catch {}
+        const kv = d && d.querySelector('.kart-venter');
+        if (!d || !kv || d.documentElement.classList.contains('kart-klar') || Date.now() - t0 > 8000) setTimeout(ferdig, kv ? 500 : 150);
+        else setTimeout(sjekk, 100);
+      };
+      sjekk();
+    };
+  };
   // Rammen for en versjon: lastes med tidspunktet (t) og markeres når den er klar. Rammer som er lastet på forhånd
   // (forh) gjenbrukes når time-lapsen kommer til dem.
   const ramme = (v, t, forh) => {
@@ -2319,7 +2340,7 @@ if (HUS) setTimeout(function lagAvspiller() {
     if (!f) {
       f = document.createElement('iframe'); f.title = 'Siden slik den så ut'; f.dataset.sha = v.sha;
       f.src = '/versjon/' + v.sha + '/?ramme&t=' + Math.round(t); f.dataset.t = Math.round(t);
-      f.onload = () => { f.dataset.lastet = '1'; if (!f.classList.contains('forh')) f.classList.add('klar'); };
+      klarNår(f, () => { f.dataset.lastet = '1'; if (!f.classList.contains('forh')) { f.classList.add('klar'); skjulVenter(); } });
       lag.append(f);
     }
     f.classList.toggle('forh', !!forh);
@@ -2334,7 +2355,7 @@ if (HUS) setTimeout(function lagAvspiller() {
     lagSha = visVer.sha;
     const T = Tav(avsp.k), f = ramme(visVer, T, false);
     f.contentWindow?.postMessage({ avspT: T }, location.origin);
-    if (f.dataset.lastet) f.classList.add('klar');
+    if (f.dataset.lastet) f.classList.add('klar'); else visVenter();
     // Den forrige tones ut og fjernes; de som er lastet på forhånd til time-lapsen får stå.
     setTimeout(() => { for (const g of [...lag.children]) if (g !== f && !g.classList.contains('forh')) g.remove(); }, 650);
   };
@@ -2351,7 +2372,8 @@ if (HUS) setTimeout(function lagAvspiller() {
     if (gml.dataset.erstattes) return; gml.dataset.erstattes = '1';
     const f = document.createElement('iframe'); f.title = gml.title; f.dataset.sha = gml.dataset.sha; f.dataset.t = Math.round(T);
     f.src = '/versjon/' + f.dataset.sha + '/?ramme&t=' + Math.round(T);
-    f.onload = () => { f.dataset.lastet = '1'; f.classList.add('klar'); setTimeout(() => gml.remove(), 650); };
+    visVenter();
+    klarNår(f, () => { f.dataset.lastet = '1'; f.classList.add('klar'); skjulVenter(); setTimeout(() => gml.remove(), 650); });
     gml.dataset.sha = ''; lag.append(f);
   };
   // Time-lapse: endringene på siden én etter én (3 s hver), med tiden rett etter hver endring. De tre neste versjonene
@@ -2391,6 +2413,7 @@ if (HUS) setTimeout(function lagAvspiller() {
   // Dagen fra midnatt til midnatt (eller til nå).
   async function last(dag) {
     if (avsp && avsp.dag === dag) return;
+    visVenter(); setTimeout(skjulVenter, 900);
     const j = await (await fetch('/chat/historikk?dag=' + dag)).json();
     avsp = { dag, pts: j.trail || [], hr: j.hr || [], tele: j.tele || [], logg: j.logg || [], hopp: true, t0: j.start, t1: Math.min(j.slutt, Date.now()), k: 0, spiller: false, sist: 0, tung: 0, sted: tele.sted };
     avsp.med = avsp.pts.filter(Boolean);
@@ -2485,13 +2508,14 @@ if (HUS) setTimeout(function lagAvspiller() {
   // Hopp til et øyeblikk: last dagen, still tiden, fly kartet dit og spill videre i sanntid.
   async function til(o) {
     if (tl) tlStopp();
+    visVenter(); setTimeout(skjulVenter, 900);
     await last(dagNr.format(o.ts)); stopp();
     avsp.hopp = true; vis((o.ts - avsp.t0) / (avsp.t1 - avsp.t0));
     if (live) kart.easeTo({ center: [live.lon, live.lat], zoom: Math.max(kart.getZoom(), 16), duration: 900 });
     fortell(o.tekst);
     start();
   }
-  function gåLive() { setTimeout(hentOyet, 0); lag.hidden = true; lag.textContent = ''; lagSha = null; document.body.classList.remove('versjon-på'); document.body.classList.remove('replay-sover'); delete AK.iphone; delete AK.watch; bankNokkel = ''; kart.getSource('avsp-prikk')?.setData({ type: 'FeatureCollection', features: [] }); megMark.getElement().style.visibility = ''; document.body.classList.remove('i-replay'); avsp = null; window.__avsp = false; stopp(); trykket(null); kl2.textContent = '–'; fortell(''); sistSpor = ''; forste = true; hent(); }
+  function gåLive() { setTimeout(hentOyet, 0); lag.hidden = true; lag.textContent = ''; venter.classList.remove('på'); lagSha = null; document.body.classList.remove('versjon-på'); document.body.classList.remove('replay-sover'); delete AK.iphone; delete AK.watch; bankNokkel = ''; kart.getSource('avsp-prikk')?.setData({ type: 'FeatureCollection', features: [] }); megMark.getElement().style.visibility = ''; document.body.classList.remove('i-replay'); avsp = null; window.__avsp = false; stopp(); trykket(null); kl2.textContent = '–'; fortell(''); sistSpor = ''; forste = true; hent(); }
   spill.onclick = () => { if (tl) tlStopp(); if (!avsp) return; if (avsp.spiller) stopp(); else { if (avsp.k >= 1) avsp.k = 0; start(); } };
   // Farten: en egen glidebryter (som på YouTube) fra 1× til 60×, jevnt fordelt på en logaritmisk skala.
   const fartvalg = q('.h-fartvalg'), fs = q('.h-fs');
