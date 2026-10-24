@@ -14,20 +14,16 @@
       som ikke går på nett bør ikke selv hente noe. Det eneste skriptet er det
       lille under, som bytter mellom Mac og Windows og kopierer kommandoene.
       Uten skript vises begge, og alt kan fortsatt markeres og kopieres.
+
+      Ingenting under valget vises før man har trykket Mac eller Windows. En
+      lenke med #mac eller #windows har valgt på forhånd.
     -->
     <script>
       (function () {
         var rot = document.documentElement;
         var os = location.hash.slice(1);
-        if (os !== "mac" && os !== "windows") {
-          try { os = localStorage.getItem("klart-it-os"); } catch (e) { os = null; }
-        }
-        if (os !== "mac" && os !== "windows") {
-          var p = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || navigator.userAgent;
-          os = /win/i.test(p) ? "windows" : "mac";
-        }
         rot.classList.add("js");
-        rot.setAttribute("data-vis", os);
+        if (os === "mac" || os === "windows") rot.setAttribute("data-vis", os);
       })();
     </script>
     <style>
@@ -126,34 +122,49 @@
       section .beviser { color: var(--ink-3); }
       .beviser b { color: var(--ink-2); font-weight: 600; }
 
-      /* Velgeren øverst. Klistrer seg til toppen, så den er der når man scroller. */
-      .os-velger {
-        position: sticky;
-        top: 0;
-        z-index: 5;
+      /* Valget: to store kort med logo. Resten av siden venter til ett er trykket. */
+      .velg { margin: 34px 0 30px; text-align: center; }
+      .velg-tittel { display: block; font-size: clamp(23px, 4.4vw, 30px); letter-spacing: -0.02em; margin: 0 0 20px; }
+      .velg-kort { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px, 3vw, 20px); }
+      .velg-kort button {
+        position: relative;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: 12px;
-        flex-wrap: wrap;
-        background: var(--ground);
-        padding: 14px 0;
-        margin-bottom: 22px;
-        border-bottom: 1px solid var(--rule);
-      }
-      .os-velger span { font-size: 14.5px; color: var(--ink-2); }
-      .os-knapper { display: inline-flex; background: #dfe7f4; border-radius: 10px; padding: 3px; }
-      .os-knapper button {
-        font: 600 15px/1 var(--sans);
-        color: var(--ink-2);
-        background: none;
-        border: 0;
-        border-radius: 8px;
-        padding: 10px 18px;
+        gap: 10px;
+        font-family: var(--sans);
+        color: var(--ink);
+        background: var(--card);
+        border: 2px solid var(--rule);
+        border-radius: 18px;
+        padding: clamp(24px, 5vw, 38px) 12px clamp(20px, 4vw, 30px);
         cursor: pointer;
+        transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s, opacity 0.15s;
       }
-      .os-knapper button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgba(21, 32, 46, 0.14); }
-      .os-knapper button:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
-      html:not(.js) .os-velger { display: none; }
+      .velg-kort button:hover { border-color: #a9c0f2; box-shadow: 0 6px 20px rgba(36, 86, 230, 0.12); transform: translateY(-2px); }
+      .velg-kort button:focus-visible { outline: 3px solid var(--signal); outline-offset: 3px; }
+      .velg-kort svg { width: clamp(52px, 12vw, 80px); height: clamp(52px, 12vw, 80px); margin-bottom: 6px; }
+      .velg-kort .navn { font-size: clamp(22px, 4.6vw, 28px); font-weight: 700; letter-spacing: -0.01em; line-height: 1.1; }
+      .velg-kort .under { font-size: 14px; color: var(--ink-3); line-height: 1.3; }
+      .velg-kort button[aria-pressed="true"] { border-color: var(--signal); background: #f5f8ff; box-shadow: 0 6px 22px rgba(36, 86, 230, 0.16); }
+      .velg-kort button[aria-pressed="true"]::after {
+        content: "✓";
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--signal);
+        color: #fff;
+        font: 700 15px/26px var(--sans);
+      }
+      html[data-vis] .velg-kort button[aria-pressed="false"] { opacity: 0.55; }
+      html[data-vis] .velg-kort button[aria-pressed="false"]:hover { opacity: 1; }
+      .velg-hint { font-size: 14.5px; color: var(--ink-3); margin: 14px 0 0; }
+      html[data-vis] .velg-hint { display: none; }
+      html:not(.js) .velg { display: none; }
+      html.js:not([data-vis]) #innhold { display: none; }
 
       /* Hvert OS har sin blokk. Med skript vises bare den valgte. */
       html[data-vis="mac"] .os[data-os="windows"],
@@ -175,6 +186,7 @@
         padding: 18px 22px;
         margin-bottom: 18px;
       }
+      .start h3 { font-size: 17px; letter-spacing: -0.01em; margin: 0 0 10px; }
       .start p { color: var(--ink); margin: 0 0 8px; }
       .start p:last-child { margin-bottom: 0; }
       .start ol { margin: 0 0 10px; padding-left: 22px; }
@@ -256,16 +268,27 @@
         </p>
       </header>
 
-      <div class="os-velger">
-        <span>Kommandoer for</span>
-        <div class="os-knapper" role="group" aria-label="Velg operativsystem">
-          <button type="button" data-velg="mac" aria-pressed="false">Mac</button>
-          <button type="button" data-velg="windows" aria-pressed="false">Windows</button>
+      <div class="velg">
+        <h2 class="velg-tittel" id="velg-tittel">Hvilket system sjekker du?</h2>
+        <div class="velg-kort" role="group" aria-labelledby="velg-tittel">
+          <button type="button" data-velg="mac" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#1d1d1f" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
+            <span class="navn">Mac</span>
+            <span class="under">Kommandoer for Terminal</span>
+          </button>
+          <button type="button" data-velg="windows" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><g fill="#0078d4"><rect x="1" y="1" width="10.4" height="10.4" /><rect x="12.6" y="1" width="10.4" height="10.4" /><rect x="1" y="12.6" width="10.4" height="10.4" /><rect x="12.6" y="12.6" width="10.4" height="10.4" /></g></svg>
+            <span class="navn">Windows</span>
+            <span class="under">Kommandoer for PowerShell</span>
+          </button>
         </div>
+        <p class="velg-hint">Velg ett, så kommer sjekkene for det systemet.</p>
       </div>
 
+      <main id="innhold">
       <div class="start">
         <div class="os" data-os="mac" data-navn="Mac">
+          <h3>Slik gjør du på Mac</h3>
           <ol>
             <li>Åpne Terminal: trykk <kbd>⌘</kbd> + <kbd>mellomrom</kbd>, skriv <b>Terminal</b> og trykk <kbd>Enter</kbd>.</li>
             <li>Trykk <b>Kopier</b> ved en kommando under.</li>
@@ -274,6 +297,7 @@
           <p>Ingen av kommandoene endrer noe på maskinen. De leser bare.</p>
         </div>
         <div class="os" data-os="windows" data-navn="Windows">
+          <h3>Slik gjør du på Windows</h3>
           <ol>
             <li>Åpne PowerShell: trykk <kbd>Windows</kbd>-tasten, skriv <b>PowerShell</b> og trykk <kbd>Enter</kbd>.</li>
             <li>Trykk <b>Kopier</b> ved en kommando under.</li>
@@ -611,6 +635,7 @@ New-NetFirewallRule -DisplayName "Klart motor - blokker utgående" `
           over.
         </p>
       </div>
+      </main>
 
       <footer>
         Klart · lokal rensing av norske personopplysninger. Spørsmål om noe av
@@ -626,20 +651,27 @@ New-NetFirewallRule -DisplayName "Klart motor - blokker utgående" `
         var velgere = document.querySelectorAll("[data-velg]");
         var melding = document.getElementById("melding");
 
-        function vis(os, lagre) {
+        var innhold = document.getElementById("innhold");
+
+        function vis(os, klikket) {
+          var forste = !rot.hasAttribute("data-vis");
           rot.setAttribute("data-vis", os);
           for (var i = 0; i < velgere.length; i++) {
             velgere[i].setAttribute("aria-pressed", velgere[i].getAttribute("data-velg") === os ? "true" : "false");
           }
-          if (!lagre) return;
-          try { localStorage.setItem("klart-it-os", os); } catch (e) {}
+          if (!klikket) return;
           // Adressen får #mac eller #windows, så lenken kan sendes videre til riktig visning.
           try { history.replaceState(null, "", "#" + os); } catch (e) {}
+          // Første valg: dukker sjekkene opp under synsfeltet, rull dem fram så man ser at noe skjedde.
+          var topp = innhold.getBoundingClientRect().top;
+          if (forste && topp > window.innerHeight * 0.7) {
+            window.scrollBy({ top: topp - window.innerHeight * 0.3, behavior: "smooth" });
+          }
         }
         for (var i = 0; i < velgere.length; i++) {
           velgere[i].addEventListener("click", function () { vis(this.getAttribute("data-velg"), true); });
         }
-        vis(rot.getAttribute("data-vis"), false);
+        if (rot.hasAttribute("data-vis")) vis(rot.getAttribute("data-vis"), false);
 
         // Den gamle måten, for nettlesere og innebygde vinduer som nekter utklippstavle-API-et.
         function medMarkering(tekst) {
