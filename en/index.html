@@ -697,29 +697,31 @@
   .pod-l button:hover span:nth-child(2),.pod-l button[aria-pressed="true"] span:nth-child(2){color:#BA0C2F}
   .pod-l button[aria-pressed="true"] span:first-child{opacity:1;color:#BA0C2F}
   .pod-l button:focus-visible{outline:2px solid #BA0C2F;outline-offset:2px;border-radius:4px}
-  /* Spilleren: modulen beholder høyden. Overskriften forsvinner; øverst tilbake-pil og tittel, i midten en luftig
-     spill/pause-knapp (glass, tynn kant), nederst en tydelig spolelinje med håndtak og tiden på hver side. */
-  .pod-v{display:flex;flex-direction:column;justify-content:space-between;align-items:stretch;gap:6px;flex:1;min-height:0}
+  /* Spilleren (som Buzzsprout): modulen beholder høyden og overskriften forsvinner. Stor spill/pause til venstre; til
+     høyre tittel og dato, spolelinjen med håndtak og tiden under. Listeikonet oppe til høyre går tilbake til episodene. */
+  .pod-v{position:relative;display:flex;align-items:center;gap:16px;flex:1;min-height:0}
   .pod-v[hidden],.pod-l[hidden]{display:none}
   .pod.spiller>.s-t{display:none}
-  .pod-topp{display:flex;align-items:flex-start;gap:10px;min-width:0}
-  .pod-tilbake{all:unset;flex:none;cursor:pointer;width:26px;height:26px;margin:-2px 0 0 -6px;display:grid;place-items:center;border-radius:50%;font:400 22px/1 -apple-system,system-ui,sans-serif;color:rgba(0,32,91,.6)}
+  .pod.spiller{justify-content:center}
+  .pod-tilbake{all:unset;position:absolute;right:-8px;top:-4px;cursor:pointer;width:28px;height:28px;display:grid;place-items:center;border-radius:50%;color:rgba(0,32,91,.5)}
+  .pod-tilbake svg{width:16px;height:16px}
   .pod-tilbake:hover{color:#BA0C2F;background:rgba(0,32,91,.06)}
+  .pod-stor{all:unset;flex:none;width:64px;height:64px;border-radius:50%;display:grid;place-items:center;cursor:pointer;color:var(--ink);background:rgba(255,255,255,.4);border:1.5px solid rgba(0,32,91,.3);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:transform .15s,background .2s,border-color .2s}
+  .pod-stor:hover{transform:scale(1.05);background:rgba(255,255,255,.62);border-color:rgba(0,32,91,.5)}.pod-stor:active{transform:scale(.94)}
+  .pod-stor svg{width:26px;height:26px}
+  .pod-stor .pod-play{margin-left:3px}
+  .pod-stor .pod-pause,.pod.spiller-på .pod-stor .pod-play{display:none}
+  .pod.spiller-på .pod-stor .pod-pause{display:block}
+  .pod-hoyre{flex:1;min-width:0;display:flex;flex-direction:column;gap:9px;padding-right:22px}
   .pod-info{display:flex;flex-direction:column;gap:3px;min-width:0}
   .pod-tittel{font:italic 500 18px/1.15 var(--serif);color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .pod-dato{font:600 10px/1 "SF Mono",Menlo,monospace;letter-spacing:.06em;color:rgba(0,32,91,.55)}
-  .pod-stor{all:unset;align-self:center;flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;cursor:pointer;color:var(--ink);background:rgba(255,255,255,.38);border:1.5px solid rgba(0,32,91,.28);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:transform .15s,background .2s,border-color .2s}
-  .pod-stor:hover{transform:scale(1.06);background:rgba(255,255,255,.6);border-color:rgba(0,32,91,.5)}.pod-stor:active{transform:scale(.94)}
-  .pod-stor svg{width:20px;height:20px}
-  .pod-stor .pod-play{margin-left:2px}
-  .pod-stor .pod-pause,.pod.spiller-på .pod-stor .pod-play{display:none}
-  .pod.spiller-på .pod-stor .pod-pause{display:block}
-  .pod-sp{display:flex;align-items:center;gap:10px}
-  .pod-bar{flex:1;height:6px;border-radius:3px;background:rgba(0,32,91,.12);cursor:pointer;position:relative;outline:none}
+  .pod-bar{height:8px;border-radius:4px;background:rgba(0,32,91,.12);cursor:pointer;position:relative;outline:none}
   .pod-bar::before{content:"";position:absolute;inset:-9px 0}
-  .pod-bar i{display:block;height:100%;width:0;border-radius:3px;background:#BA0C2F}
-  .pod-bar b{position:absolute;top:50%;left:0;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#fff;border:2px solid #BA0C2F;box-shadow:0 2px 6px rgba(0,32,91,.25);transition:transform .15s}
-  .pod-bar:hover b,.pod-bar:focus-visible b{transform:scale(1.2)}
+  .pod-bar i{display:block;height:100%;width:0;border-radius:4px;background:#BA0C2F}
+  .pod-bar b{position:absolute;top:50%;left:0;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:#fff;border:2.5px solid #BA0C2F;box-shadow:0 2px 6px rgba(0,32,91,.25);transition:transform .15s}
+  .pod-bar:hover b,.pod-bar:focus-visible b{transform:scale(1.15)}
+  .pod-sp{display:flex;justify-content:space-between;margin-top:-3px}
   .pod-tid,.pod-tot{font:600 10px/1 "SF Mono",Menlo,monospace;color:var(--ink);opacity:.6;font-variant-numeric:tabular-nums;white-space:nowrap}
   /* Banken (SpareBank 1): samlet saldo og saldoen på hver konto. */
   .bank{display:flex;flex-direction:column;gap:8px;padding:14px 18px 16px}
@@ -874,9 +876,13 @@
     <a class="mono s-t" href="/podcast/">Podcast</a>
     <ol class="pod-l"></ol>
     <div class="pod-v" hidden>
-      <div class="pod-topp"><button type="button" class="pod-tilbake" aria-label="Back to the episodes">‹</button><div class="pod-info"><b class="pod-tittel"></b><span class="pod-dato"></span></div></div>
+      <button type="button" class="pod-tilbake" aria-label="Back to the episodes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg></button>
       <button type="button" class="pod-stor" aria-label="Play"><svg class="pod-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg><svg class="pod-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></svg></button>
-      <div class="pod-sp"><span class="pod-tid">0:00</span><div class="pod-bar" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i><b></b></div><span class="pod-tot">0:00</span></div>
+      <div class="pod-hoyre">
+        <div class="pod-info"><b class="pod-tittel"></b><span class="pod-dato"></span></div>
+        <div class="pod-bar" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i><b></b></div>
+        <div class="pod-sp"><span class="pod-tid">0:00</span><span class="pod-tot">0:00</span></div>
+      </div>
     </div>
   </section>
   </div>

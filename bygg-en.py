@@ -40,7 +40,7 @@ T = [
     ('<dd>Nettside og Markedsføring</dd>', '<dd>Website and Marketing</dd>'),
     ('<section class="bank gl" hidden aria-label="Banken">', '<section class="bank gl" hidden aria-label="Bank">'),
     ('aria-label="Spoling"', 'aria-label="Seek"'),
-    ('aria-label="Tilbake til episodene">‹</button>', 'aria-label="Back to the episodes">‹</button>'),
+    ('aria-label="Tilbake til episodene"><svg', 'aria-label="Back to the episodes"><svg'),
     ('<button type="button" class="pod-stor" aria-label="Spill av">', '<button type="button" class="pod-stor" aria-label="Play">'),
     ('<section class="pod gl" hidden aria-label="Podkast">\n    <a class="mono s-t" href="/podcast/">Podkast</a>', '<section class="pod gl" hidden aria-label="Podcast">\n    <a class="mono s-t" href="/podcast/">Podcast</a>'),
     ('<dt>Hva</dt>', '<dt>What</dt>'),
