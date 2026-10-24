@@ -291,6 +291,12 @@
     <script>
       (function () {
         var q = new URLSearchParams(location.search);
+        // «Kjøp lisens» i appen åpner denne siden med ?hva=kjop. Kjøpet skjer nå på prissiden, der
+        // lisensen gjelder hele virksomheten og prisen følger antall ansatte.
+        if (q.get("hva") === "kjop" && !q.get("session")) {
+          location.replace("/klart/pris/?from=upgrade");
+          return;
+        }
         var $ = function (id) {
           return document.getElementById(id);
         };
