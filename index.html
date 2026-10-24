@@ -562,6 +562,13 @@
   .h-forhånd{position:absolute;left:18px;bottom:calc(100% + 12px);z-index:70;width:432px;height:270px;border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 24px 60px rgba(0,20,60,.4);border:1px solid rgba(0,32,91,.15);animation:kalInn .25s ease}
   .h-forhånd[hidden]{display:none}
   .h-forhånd iframe{width:1440px;height:900px;border:0;transform:scale(.3);transform-origin:0 0;pointer-events:none}
+  /* Hele siden slik den var: den gamle versjonen fyller vinduet bak avspilleren, og byttes med en myk overgang. */
+  .versjon-lag{position:fixed;inset:0;z-index:55;background:#fff}
+  .versjon-lag[hidden]{display:none}
+  .versjon-lag iframe{position:absolute;inset:0;width:100%;height:100%;border:0;opacity:0;transition:opacity .6s ease}
+  .versjon-lag iframe.klar{opacity:1}
+  body.versjon-på #chat,body.versjon-på .ck{display:none}
+  .h-versjon[aria-pressed="true"] i{background:#fff;opacity:1}
   .versjon-stor{position:fixed;inset:0;z-index:2147483600;background:rgba(0,16,48,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:grid;place-items:center;animation:kalInn .25s ease}
   .versjon-stor iframe{width:min(1400px,94vw);height:min(860px,86vh);border:0;border-radius:18px;background:#fff;box-shadow:0 40px 100px rgba(0,0,0,.5)}
   .versjon-stor button{position:absolute;top:18px;right:22px;width:44px;height:44px;border-radius:50%;border:0;background:#fff;color:var(--ink);font:400 26px/1 -apple-system,system-ui,sans-serif;cursor:pointer}
@@ -2302,18 +2309,27 @@ if (HUS) setTimeout(function lagAvspiller() {
     q('.hv-melding').textContent = v ? v.melding : '';
     if (ny) { verBtn.classList.remove('ny'); void verBtn.offsetWidth; verBtn.classList.add('ny'); }
     if (!forh.hidden && v) forh.firstChild.src = '/versjon/' + v.sha + '/?ramme';
+    oppdaterLag();
   };
-  // Hold over: liten forhåndsvisning over modulen. Trykk: hele siden slik den var, i stort.
-  verBtn.addEventListener('mouseenter', () => { if (!visVer) return; forh.hidden = false; const src = '/versjon/' + visVer.sha + '/?ramme'; if (!forh.firstChild.src.endsWith(src)) forh.firstChild.src = src; });
+  // Hele siden bytter: er versjonen ved T eldre enn den nyeste, fyller den gamle siden vinduet bak avspilleren. Ny
+  // versjon lastes i en ny ramme som tones inn når den er klar, så skiftet er mykt. Versjonsknappen slår det av og på.
+  let sideDa = true, lagSha = null;
+  const lag = document.createElement('div'); lag.className = 'versjon-lag'; lag.hidden = true; document.body.append(lag);
+  const oppdaterLag = () => {
+    const gammel = sideDa && avsp && visVer && visVer !== versjoner[versjoner.length - 1];
+    verBtn.setAttribute('aria-pressed', !!(sideDa && visVer));
+    lag.hidden = !gammel; document.body.classList.toggle('versjon-på', !!gammel);
+    if (!gammel) { lagSha = null; lag.textContent = ''; return; }
+    if (lagSha === visVer.sha) return;
+    lagSha = visVer.sha;
+    const f = document.createElement('iframe'); f.title = 'Siden slik den så ut'; f.src = '/versjon/' + visVer.sha + '/?ramme';
+    f.onload = () => { f.classList.add('klar'); setTimeout(() => { for (const g of [...lag.children]) if (g !== f) g.remove(); }, 650); };
+    lag.append(f);
+  };
+  // Hold over: liten forhåndsvisning over modulen. Trykk: siden slik den var av/på.
+  verBtn.addEventListener('mouseenter', () => { if (!visVer || !lag.hidden) return; forh.hidden = false; const src = '/versjon/' + visVer.sha + '/?ramme'; if (!forh.firstChild.src.endsWith(src)) forh.firstChild.src = src; });
   verBtn.addEventListener('mouseleave', () => { forh.hidden = true; });
-  verBtn.addEventListener('click', () => {
-    if (!visVer) return; forh.hidden = true;
-    const o = document.createElement('div'); o.className = 'versjon-stor';
-    o.innerHTML = '<iframe title="Siden slik den så ut"></iframe><button type="button" aria-label="Lukk">×</button>';
-    o.firstChild.src = '/versjon/' + visVer.sha + '/'; document.body.append(o);
-    const lukk = () => { o.remove(); removeEventListener('keydown', esc); }, esc = e => { if (e.key === 'Escape') lukk(); };
-    o.querySelector('button').onclick = lukk; o.addEventListener('click', e => { if (e.target === o) lukk(); }); addEventListener('keydown', esc);
-  });
+  verBtn.addEventListener('click', () => { forh.hidden = true; sideDa = !sideDa; oppdaterLag(); });
   // Akselerometerpakkene på samme måte, i vinduer på 20 min.
   const finAks = T => {
     const f = avsp.finA;
@@ -2425,7 +2441,7 @@ if (HUS) setTimeout(function lagAvspiller() {
     fortell(o.tekst);
     start();
   }
-  function gåLive() { document.body.classList.remove('replay-sover'); delete AK.iphone; delete AK.watch; bankNokkel = ''; kart.getSource('avsp-prikk')?.setData({ type: 'FeatureCollection', features: [] }); megMark.getElement().style.visibility = ''; document.body.classList.remove('i-replay'); avsp = null; window.__avsp = false; stopp(); trykket(null); kl2.textContent = '–'; fortell(''); sistSpor = ''; forste = true; hent(); }
+  function gåLive() { lag.hidden = true; lag.textContent = ''; lagSha = null; document.body.classList.remove('versjon-på'); document.body.classList.remove('replay-sover'); delete AK.iphone; delete AK.watch; bankNokkel = ''; kart.getSource('avsp-prikk')?.setData({ type: 'FeatureCollection', features: [] }); megMark.getElement().style.visibility = ''; document.body.classList.remove('i-replay'); avsp = null; window.__avsp = false; stopp(); trykket(null); kl2.textContent = '–'; fortell(''); sistSpor = ''; forste = true; hent(); }
   spill.onclick = () => { if (!avsp) return; if (avsp.spiller) stopp(); else { if (avsp.k >= 1) avsp.k = 0; start(); } };
   // Farten: en egen glidebryter (som på YouTube) fra 1× til 60×, jevnt fordelt på en logaritmisk skala.
   const fartvalg = q('.h-fartvalg'), fs = q('.h-fs');
