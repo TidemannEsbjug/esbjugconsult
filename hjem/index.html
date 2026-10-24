@@ -1682,6 +1682,7 @@ const TX = EN ? {
 };
 const mobil = matchMedia('(pointer:coarse)').matches, still = matchMedia('(prefers-reduced-motion: reduce)').matches;
 let kart = null;   // MapLibre-kartet lages når første posisjon er kjent (leggKart)
+const ZOOM_UTE = matchMedia('(min-width:761px)').matches ? 10.5 : 14;   // standardzoom ute: PC 3,5 trinn lenger ut enn mobil
 const $ = q => document.querySelector(q);
 // Høstkartet: vektorkart fra OpenFreeMap (OpenStreetMap-data) med egne farger. Skogen i fem høstfarger fordelt på
 // skogområdene, park i gull, gress i oliven og gull, mørk varm bunn, dypblått vann og veier i rav. Uten WebGL: vanlig OSM.
@@ -1735,7 +1736,7 @@ function leggKart() {
   if (!stil) { visKart(); return; }
   stil.then(st => {
     const midt = live ? [live.lon, live.lat] : [10.7522, 59.9139];
-    kart = new maplibregl.Map({ container: 'kart', style: st, center: midt, zoom: live ? 14 : 12, attributionControl: { compact: true },
+    kart = new maplibregl.Map({ container: 'kart', style: st, center: midt, zoom: live ? ZOOM_UTE : ZOOM_UTE - 2, attributionControl: { compact: true },
       // /hjem/: hold ⌘ eller Ctrl og rull for å zoome (vanlig rulling ruller siden).
       dragRotate: false, pitchWithRotate: false, touchPitch: false, scrollZoom: HUS, fadeDuration: 0,
       pixelRatio: Math.min(devicePixelRatio || 1, 2),   // iPhonens 3× er ni ganger så mange piksler som 1×; 2× er skarpt nok og mye lettere
@@ -1864,8 +1865,8 @@ function tegn() {
   if (sporNokkel !== sistSpor) { sistSpor = sporNokkel; kart.getSource('spor').setData({ type: 'Feature', geometry: { type: 'MultiLineString', coordinates: spor.map(l => l.map(p => [p[1], p[0]])) } }); }
   megMark.setLngLat(lngLat); if (!megMark._map) megMark.addTo(kart);
   megMark.getElement().querySelector('.meg').classList.toggle('liten', !!hus);
-  // Hjemme zoomes kartet helt inn på huset; ute er det vanlig zoom.
-  const zoom = hus ? 18.6 : 14;
+  // Hjemme zoomes kartet helt inn på huset; ute er det vanlig zoom (på PC 3,5 trinn lenger ut enn på mobil).
+  const zoom = hus ? 18.6 : ZOOM_UTE;
   if (forste) { forste = false; varHjemme = !!hus; kart.jumpTo({ center: lngLat, zoom }); }
   else if (følg) { if (!avsp) kart.easeTo({ center: lngLat, duration: 900 }); }   // låst på prikken (avspillingen flytter kameraet selv)
   else if (holder || Date.now() - rort < TILBAKE) return;
