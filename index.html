@@ -665,11 +665,21 @@
   @keyframes ladeBar{from{background-position:100% 0}to{background-position:-50% 0}}
   @media (prefers-reduced-motion:reduce){.sv.lader b,.sv.lader .bar i{animation:none}}
   .sv.ny b{animation:svNy 1.2s ease}
-  .sv.maskin b::before{content:"";display:inline-block;width:8px;height:8px;margin-right:7px;vertical-align:2px;border-radius:50%;background:rgba(0,32,91,.25)}
-  .sv.maskin.på b::before{background:#16a34a;box-shadow:0 0 0 0 rgba(22,163,74,.5);animation:maskinPuls 2.4s ease-out infinite}
+  /* Maskinene: egen rad nederst, ikon i stedet for navn (navnet kommer frem ved hover, alltid synlig på berøringsskjerm). */
+  .sens .maskiner{grid-column:1/-1;display:grid;grid-template-columns:inherit;gap:inherit;padding-top:12px;border-top:1px solid rgba(0,32,91,.12)}
+  .sv.maskin .sl{display:flex;align-items:center;gap:6px;height:14px}
+  .sv.maskin .mi{flex:none;width:13px;height:13px;color:var(--ink);opacity:.75}
+  .sv.maskin .mn{opacity:0;transform:translateX(-4px);transition:opacity .2s,transform .2s}
+  .sv.maskin:hover .mn{opacity:1;transform:none}
+  @media (hover:none){.sv.maskin .mn{opacity:1;transform:none}}
+  .sv.maskin b{display:flex;align-items:center;gap:8px;overflow:visible}
+  .sv.maskin .mv{overflow:hidden;text-overflow:ellipsis}
+  .sv.maskin .mp{position:relative;flex:none;width:8px;height:8px;border-radius:50%;background:rgba(0,32,91,.25)}
+  .sv.maskin.på .mp{background:#16a34a}
+  .sv.maskin.på .mp::after{content:"";position:absolute;inset:0;border-radius:50%;background:#16a34a;animation:maskinPuls 2.4s ease-out infinite}
   .sv.maskin:not(.på) b{color:rgba(0,32,91,.45)}
-  @keyframes maskinPuls{0%{box-shadow:0 0 0 0 rgba(22,163,74,.5)}70%,100%{box-shadow:0 0 0 6px rgba(22,163,74,0)}}
-  @media (prefers-reduced-motion:reduce){.sv.maskin.på b::before{animation:none}}
+  @keyframes maskinPuls{0%{transform:scale(1);opacity:.5}70%,100%{transform:scale(2.4);opacity:0}}
+  @media (prefers-reduced-motion:reduce){.sv.maskin.på .mp::after{animation:none;opacity:0}}
   .sv{position:relative}
   .sv .fon,.sv .pil{position:absolute;right:0;top:0;transition:transform .9s cubic-bezier(.2,.8,.2,1)}
   .sv .fon{width:12px;height:20px;border:2px solid var(--ink);border-radius:3px;opacity:.75;transform-origin:50% 50%}
@@ -871,10 +881,12 @@
     <div class="sv" data-k="fyrb" hidden><span class="sl">iPhone</span><b>–</b><i class="bar"><i></i></i></div>
     <div class="sv" data-k="abat"><span class="sl">Android</span><b>–</b><i class="bar"><i></i></i></div>
     <div class="sv" data-k="wbat"><span class="sl">Apple Watch</span><b>–</b><i class="bar"><i></i></i></div>
-    <div class="sv maskin" data-k="starbase"><span class="sl">Starbase</span><b>–</b></div>
-    <div class="sv maskin" data-k="starship"><span class="sl">Starship</span><b>–</b></div>
-    <div class="sv maskin" data-k="falcon"><span class="sl">Falcon 9</span><b>–</b></div>
     <div class="sv" data-k="gatt"><span class="sl">Gått i dag</span><b>–</b></div>
+    <div class="maskiner">
+      <div class="sv maskin" data-k="starbase" title="Starbase"><span class="sl"><svg class="mi" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg><span class="mn">Starbase</span></span><b><i class="mp"></i><span class="mv">–</span></b></div>
+      <div class="sv maskin" data-k="starship" title="Starship"><span class="sl"><svg class="mi" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.2l7.4-1v7.2H3zM11.3 4.1L21 2.7v8.7h-9.7zM3 12.4h7.4v7.2L3 18.6zM11.3 12.4H21v8.9l-9.7-1.4z"/></svg><span class="mn">Starship</span></span><b><i class="mp"></i><span class="mv">–</span></b></div>
+      <div class="sv maskin" data-k="falcon" title="Falcon 9"><span class="sl"><svg class="mi" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.2l7.4-1v7.2H3zM11.3 4.1L21 2.7v8.7h-9.7zM3 12.4h7.4v7.2L3 18.6zM11.3 12.4H21v8.9l-9.7-1.4z"/></svg><span class="mn">Falcon 9</span></span><b><i class="mp"></i><span class="mv">–</span></b></div>
+    </div>
   </section>
   <section class="akse gl" aria-label="Akselerometeret i Apple Watch og iPhonen, live">
     <div class="ak"><div class="ak-h"><span class="sl">Apple Watch · akselerometer</span><span class="ak-m">20 Hz · g</span></div><canvas class="ak-c" data-k="watch"></canvas></div>
@@ -1774,8 +1786,10 @@ function tegn() {
   // Maskinene sier fra hvert minutt. Tre minutter uten livstegn er «Av»; «I bruk» når tastatur eller mus er rørt siste 2 min.
   for (const k of ['starbase', 'starship', 'falcon']) {
     const m = tele[k], på = !!m && nå - m.ts < 180e3, e = document.querySelector('.sv[data-k="' + k + '"]');
-    sett(k, !på ? TX.av : m.ledig != null && m.ledig < 120 ? TX.iBruk : TX.på);
-    if (e) e.classList.toggle('på', på);
+    if (!e) continue;
+    const v = !på ? TX.av : m.ledig != null && m.ledig < 120 ? TX.iBruk : TX.på, mv = e.querySelector('.mv');
+    if (mv.textContent !== v) mv.textContent = v;
+    e.classList.toggle('på', på);
   }
   const a = tele.android || {};
   sett('abat', a.bat != null ? a.bat + ' %' : null, a.bat, a.lader);
