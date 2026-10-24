@@ -698,12 +698,26 @@
   .pod-l button:hover span:nth-child(2),.pod-l button[aria-pressed="true"] span:nth-child(2){color:#BA0C2F}
   .pod-l button[aria-pressed="true"] span:first-child{opacity:1;color:#BA0C2F}
   .pod-l button:focus-visible{outline:2px solid #BA0C2F;outline-offset:2px;border-radius:4px}
-  .pod-sp{display:flex;align-items:center;gap:10px;padding-top:4px}
-  .pod-sp[hidden]{display:none}
+  /* Spilleren: modulen beholder høyden, og lista byttes med tilbake-knapp, stor spill/pause, tittel og spolelinje. */
+  .pod-v{display:flex;flex-direction:column;justify-content:space-between;gap:8px;flex:1;min-height:0}
+  .pod-v[hidden],.pod-l[hidden]{display:none}
+  .pod.spiller{justify-content:flex-start}
+  .pod-tilbake{all:unset;align-self:flex-start;cursor:pointer;font:600 11px/1 "SF Mono",Menlo,monospace;letter-spacing:.06em;color:rgba(0,32,91,.65);padding:2px 0}
+  .pod-tilbake:hover{color:#BA0C2F}
+  .pod-midt{display:flex;align-items:center;gap:14px;min-width:0}
+  .pod-stor{all:unset;flex:none;width:52px;height:52px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:0 6px 16px rgba(0,32,91,.25);transition:transform .15s}
+  .pod-stor:hover{transform:scale(1.06)}.pod-stor:active{transform:scale(.94)}
+  .pod-stor svg{width:24px;height:24px}
+  .pod-stor .pod-pause,.pod.spiller-på .pod-stor .pod-play{display:none}
+  .pod.spiller-på .pod-stor .pod-pause{display:block}
+  .pod-info{display:flex;flex-direction:column;gap:4px;min-width:0}
+  .pod-tittel{font:italic 500 18px/1.15 var(--serif);color:var(--ink);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .pod-dato{font:600 10px/1 "SF Mono",Menlo,monospace;letter-spacing:.06em;color:rgba(0,32,91,.55)}
+  .pod-sp{display:flex;align-items:center;gap:10px}
   .pod-bar{flex:1;height:4px;border-radius:2px;background:rgba(0,32,91,.12);cursor:pointer;position:relative;outline:none}
   .pod-bar::before{content:"";position:absolute;inset:-8px 0}
   .pod-bar i{display:block;height:100%;width:0;border-radius:2px;background:#BA0C2F}
-  .pod-tid{font:600 10px/1 "SF Mono",Menlo,monospace;color:var(--ink);opacity:.6;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .pod-tid,.pod-tot{font:600 10px/1 "SF Mono",Menlo,monospace;color:var(--ink);opacity:.6;font-variant-numeric:tabular-nums;white-space:nowrap}
   /* Banken (SpareBank 1): samlet saldo og saldoen på hver konto. */
   .bank{display:flex;flex-direction:column;gap:8px;padding:14px 18px 16px}
   .bank[hidden]{display:none}
@@ -856,7 +870,11 @@
   <section class="pod gl" hidden aria-label="Podkast">
     <a class="mono s-t" href="/podcast/">Podkast</a>
     <ol class="pod-l"></ol>
-    <div class="pod-sp" hidden><div class="pod-bar" role="slider" tabindex="0" aria-label="Spoling" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div><span class="pod-tid">0:00</span></div>
+    <div class="pod-v" hidden>
+      <button type="button" class="pod-tilbake" aria-label="Tilbake til episodene">‹ <span>Episoder</span></button>
+      <div class="pod-midt"><button type="button" class="pod-stor" aria-label="Spill av"><svg class="pod-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg><svg class="pod-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></svg></button><div class="pod-info"><b class="pod-tittel"></b><span class="pod-dato"></span></div></div>
+      <div class="pod-sp"><span class="pod-tid">0:00</span><div class="pod-bar" role="slider" tabindex="0" aria-label="Spoling" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div><span class="pod-tot">0:00</span></div>
+    </div>
   </section>
   </div>
   </div>
@@ -1998,36 +2016,51 @@ function nyeKast(ny) {
   knapp('tomat').querySelector('b').textContent = tall(ny.tomat);
   knapp('heia').querySelector('b').textContent = tall(ny.heia || 0);
 }
-// Podkasten: episodelista (podcast/episoder.json), nyeste først, med datoen. Trykk spiller episoden av her i modulen
-// (lyden fra /podcast/lyd/ep<n>.m4a); et nytt trykk på samme episode setter på pause. Spolelinjen viser og flytter tiden.
+// Podkasten: episodelista (podcast/episoder.json), nyeste først, med datoen. Trykk på en episode, så byttes lista med en
+// spiller i samme høyde: tilbake til episodene, stor spill/pause, tittel, dato og spolelinje. Lyden spiller videre om
+// man går tilbake til lista (episoden som spilles er merket der), og et trykk på den åpner spilleren igjen.
 {
-  const lyd = new Audio(); lyd.preload = 'none';
-  const sp = $('.pod-sp'), bar = $('.pod-bar'), fyll = bar.firstChild, tidEl = $('.pod-tid');
-  const podDato = new Intl.DateTimeFormat(TX.loc, { day: 'numeric', month: 'short' });
+  const pod = $('.pod'), lista = $('.pod-l'), vis = $('.pod-v'), lyd = new Audio(); lyd.preload = 'none';
+  const bar = $('.pod-bar'), fyll = bar.firstChild, tidEl = $('.pod-tid'), totEl = $('.pod-tot'), stor = $('.pod-stor');
+  const podDato = new Intl.DateTimeFormat(TX.loc, { day: 'numeric', month: 'short' }), langDato = new Intl.DateTimeFormat(TX.loc, { day: 'numeric', month: 'long', year: 'numeric' });
   const mmss = t => { t = Math.max(0, Math.floor(t || 0)); const h = Math.floor(t / 3600), m = Math.floor(t / 60) % 60, s = String(t % 60).padStart(2, '0'); return h ? h + ':' + String(m).padStart(2, '0') + ':' + s : m + ':' + s; };
-  let nå = null;
-  const merk = () => $('.pod-l').querySelectorAll('button').forEach(b => { const på = +b.dataset.n === nå && !lyd.paused; b.setAttribute('aria-pressed', på); b.firstChild.textContent = på ? '❚❚' : +b.dataset.n === nå ? '▶' : b.dataset.nr; });
-  lyd.addEventListener('timeupdate', () => { const p = lyd.duration ? lyd.currentTime / lyd.duration * 100 : 0; fyll.style.width = p + '%'; bar.setAttribute('aria-valuenow', Math.round(p)); tidEl.textContent = mmss(lyd.currentTime) + ' / ' + mmss(lyd.duration || (eps.find(e => e.n === nå)?.sek)); });
+  let nå = null, eps = [];
+  const merk = () => {
+    pod.classList.toggle('spiller-på', !lyd.paused);
+    stor.setAttribute('aria-label', lyd.paused ? (TX.loc.startsWith('en') ? 'Play' : 'Spill av') : 'Pause');
+    lista.querySelectorAll('button').forEach(b => { const på = +b.dataset.n === nå && !lyd.paused; b.setAttribute('aria-pressed', på); b.firstChild.textContent = på ? '❚❚' : +b.dataset.n === nå ? '▶' : b.dataset.nr; });
+  };
+  // Bytt mellom lista og spilleren uten at modulen endrer høyde.
+  const visSpiller = på => {
+    if (på && !pod.style.height) { pod.style.boxSizing = 'border-box'; pod.style.height = pod.getBoundingClientRect().height + 'px'; }
+    lista.hidden = på; vis.hidden = !på; pod.classList.toggle('spiller', på);
+    if (!på) pod.style.height = '';
+  };
+  lyd.addEventListener('timeupdate', () => { const p = lyd.duration ? lyd.currentTime / lyd.duration * 100 : 0; fyll.style.width = p + '%'; bar.setAttribute('aria-valuenow', Math.round(p)); tidEl.textContent = mmss(lyd.currentTime); totEl.textContent = mmss(lyd.duration || (eps.find(e => e.n === nå)?.sek)); });
   ['play', 'pause', 'ended'].forEach(ev => lyd.addEventListener(ev, merk));
   const spol = x => { const r = bar.getBoundingClientRect(); if (lyd.duration) lyd.currentTime = Math.max(0, Math.min(1, (x - r.left) / r.width)) * lyd.duration; };
   bar.addEventListener('pointerdown', e => { spol(e.clientX); bar.setPointerCapture(e.pointerId); });
   bar.addEventListener('pointermove', e => { if (e.buttons) spol(e.clientX); });
   bar.addEventListener('keydown', e => { const d = { ArrowLeft: -10, ArrowRight: 10 }[e.key]; if (d) { e.preventDefault(); lyd.currentTime += d; } });
-  let eps = [];
+  stor.addEventListener('click', () => { lyd.paused ? lyd.play().catch(() => {}) : lyd.pause(); });
+  $('.pod-tilbake').addEventListener('click', () => visSpiller(false));
   fetch('/podcast/episoder.json').then(r => r.json()).then(liste => {
     eps = liste;
-    $('.pod-l').replaceChildren(...eps.slice().sort((a, b) => b.n - a.n).map(e => {
+    lista.replaceChildren(...eps.slice().sort((a, b) => b.n - a.n).map(e => {
       const li = document.createElement('li'), b = document.createElement('button');
       b.type = 'button'; b.dataset.n = e.n; b.dataset.nr = String(e.n).padStart(2, '0'); b.setAttribute('aria-pressed', 'false');
       for (const t of [b.dataset.nr, e.tittel, e.dato ? podDato.format(new Date(e.dato + 'T12:00:00')) : '']) { const x = document.createElement('span'); x.textContent = t; b.append(x); }
       b.addEventListener('click', () => {
-        if (nå === e.n) { lyd.paused ? lyd.play() : lyd.pause(); return; }
+        visSpiller(true);
+        if (nå === e.n) return;
         nå = e.n; lyd.src = '/podcast/lyd/ep' + e.n + '.m4a'; lyd.play().catch(() => {});
-        sp.hidden = false; fyll.style.width = '0'; tidEl.textContent = '0:00 / ' + mmss(e.sek); merk();
+        $('.pod-tittel').textContent = e.tittel;
+        $('.pod-dato').textContent = (TX.loc.startsWith('en') ? 'Episode ' : 'Episode ') + e.n + (e.dato ? ' · ' + langDato.format(new Date(e.dato + 'T12:00:00')) : '');
+        fyll.style.width = '0'; tidEl.textContent = '0:00'; totEl.textContent = mmss(e.sek); merk();
       });
       li.append(b); return li;
     }));
-    $('.pod').hidden = !eps.length;
+    pod.hidden = !eps.length;
   }).catch(() => {});
 }
 // Banken: samlet saldo og saldoen på hver konto (kontonummeret bare med de fire siste sifrene).
@@ -2622,6 +2655,8 @@ setInterval(tegn, 1000);
     ['.lang', () => en ? 'Norsk' : 'English'],
     ['.pod-l button', el => el.getAttribute('aria-pressed') === 'true' ? 'Pause' : (en ? 'Play here' : 'Spill av her')],
     ['.pod-bar', () => en ? 'Seek' : 'Spol'],
+    ['.pod-stor', el => el.closest('.pod').classList.contains('spiller-på') ? 'Pause' : (en ? 'Play' : 'Spill av')],
+    ['.pod-tilbake', () => en ? 'Episodes' : 'Episodene'],
     ['.pod', () => en ? 'Podcast' : 'Podkast'],
     ['.ak', el => en ? 'See the movement' : 'Se bevegelsen'],
     ['.hp', el => { const b = tekst(el, '.hb-n'); return '♥ ' + (b && b !== '–' ? b + ' bpm · ' : '') + (en ? 'open' : 'åpne'); }],
