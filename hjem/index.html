@@ -566,8 +566,10 @@
   /* Hele siden slik den var: den gamle versjonen fyller vinduet bak avspilleren, og byttes med en myk overgang. */
   .versjon-lag{position:fixed;inset:0;z-index:55;background:#fff}
   .versjon-lag[hidden]{display:none}
-  .versjon-lag iframe{position:absolute;inset:0;width:100%;height:100%;border:0;opacity:0;transition:opacity .6s ease}
-  .versjon-lag iframe.klar{opacity:1}
+  .versjon-lag iframe{position:absolute;inset:0;width:100%;height:100%;border:0;opacity:0;transition:opacity .6s ease;pointer-events:none}
+  .versjon-lag iframe.klar{opacity:1;pointer-events:auto}
+  .versjon-lag iframe.forh{visibility:hidden}   /* lastes på forhånd til time-lapsen */
+  .hist .h-tl{margin-left:auto}
   body.versjon-på #chat,body.versjon-på .ck{display:none}
   .h-versjon[aria-pressed="true"] i{background:#fff;opacity:1}
   .versjon-stor{position:fixed;inset:0;z-index:2147483600;background:rgba(0,16,48,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:grid;place-items:center;animation:kalInn .25s ease}
@@ -2256,7 +2258,7 @@ if (HUS) setTimeout(function lagAvspiller() {
     + '<button type="button" class="h-ikon h-neste" aria-label="Dagen etter">›</button>'
     + '<button type="button" class="h-fart" aria-expanded="false" aria-label="Fart">1×</button><button type="button" class="h-lukk" aria-label="Avslutt replay">×</button></div>'
     + '<div class="h-kalender gl" hidden role="dialog" aria-label="Kalender"><div class="kal-topp"><button type="button" class="kal-forr" aria-label="Forrige måned">‹</button><b class="kal-mnd"></b><button type="button" class="kal-neste" aria-label="Neste måned">›</button></div><div class="kal-uke"></div><div class="kal-dager"></div><p class="kal-fot"></p></div>'
-    + '<div class="h-rad h-versjonrad"><button type="button" class="h-versjon" aria-label="Se siden slik den så ut"><i></i><span class="hv-t">–</span><span class="hv-n"></span></button><span class="hv-melding"></span></div>'
+    + '<div class="h-rad h-versjonrad"><button type="button" class="h-versjon" aria-label="Se siden slik den så ut"><i></i><span class="hv-t">–</span><span class="hv-n"></span></button><span class="hv-melding"></span><button type="button" class="h-tl" aria-pressed="false" title="Spill av endringene på siden, én etter én">Time-lapse</button></div>'
     + '<div class="h-forhånd" hidden><iframe title="Siden slik den så ut" loading="lazy"></iframe></div>'
     + '<div class="h-fartvalg gl" hidden><span class="h-fv">1×</span><input type="range" class="h-fs" min="0" max="100" value="0" aria-label="Fart fra 1× til 60×"><span class="h-fe"><span>1×</span><span>60×</span></span></div>';
   document.querySelector('.hero-i>.flyt').append(rad);
@@ -2275,8 +2277,8 @@ if (HUS) setTimeout(function lagAvspiller() {
   // Replay: avspilleren åpnes én time tilbake i dag, på pause. Et nytt trykk går tilbake til live.
   // Play-knappen ved flaggene åpner modulen (og lukker den igjen); toppen ellers uendret. × i modulen avslutter.
   const replay = åpne => { bar.hidden = !åpne; fartvalg.hidden = true; q('.h-kalender').hidden = true; document.body.classList.toggle('replay', åpne); if (åpne && !avsp) last(dagNr.format(Date.now())).then(() => vis(Math.max(0, 1 - 3600e3 / (avsp.t1 - avsp.t0)))); if (!åpne) { settFolg(false); gåLive(); } };
-  q('.kn-spol').onclick = () => replay(bar.hidden);
-  q('.h-lukk').onclick = () => replay(false);
+  q('.kn-spol').onclick = () => { if (tl) tlStopp(); replay(bar.hidden); };
+  q('.h-lukk').onclick = () => { if (tl) tlStopp(); replay(false); };
   // Sanntid som standard: ett sekund avspilling er ett sekund av dagen. 10× og 60× for å komme raskere fram.
   let fart = 1;
   // Rå puls (hver måling) hentes i vinduer rundt tiden som spilles, så pulsen slår som den gjorde.
@@ -2316,6 +2318,19 @@ if (HUS) setTimeout(function lagAvspiller() {
   // versjon lastes i en ny ramme som tones inn når den er klar, så skiftet er mykt. Versjonsknappen slår det av og på.
   let sideDa = true, lagSha = null;
   const lag = document.createElement('div'); lag.className = 'versjon-lag'; lag.hidden = true; document.body.append(lag);
+  // Rammen for en versjon: lastes med tidspunktet (t) og markeres når den er klar. Rammer som er lastet på forhånd
+  // (forh) gjenbrukes når time-lapsen kommer til dem.
+  const ramme = (v, t, forh) => {
+    let f = lag.querySelector('iframe[data-sha="' + v.sha + '"]');
+    if (!f) {
+      f = document.createElement('iframe'); f.title = 'Siden slik den så ut'; f.dataset.sha = v.sha;
+      f.src = '/versjon/' + v.sha + '/?ramme&t=' + Math.round(t);
+      f.onload = () => { f.dataset.lastet = '1'; if (!f.classList.contains('forh')) f.classList.add('klar'); };
+      lag.append(f);
+    }
+    f.classList.toggle('forh', !!forh);
+    return f;
+  };
   const oppdaterLag = () => {
     const gammel = sideDa && avsp && visVer && visVer !== versjoner[versjoner.length - 1];
     verBtn.setAttribute('aria-pressed', !!(sideDa && visVer));
@@ -2323,10 +2338,33 @@ if (HUS) setTimeout(function lagAvspiller() {
     if (!gammel) { lagSha = null; lag.textContent = ''; return; }
     if (lagSha === visVer.sha) return;
     lagSha = visVer.sha;
-    const f = document.createElement('iframe'); f.title = 'Siden slik den så ut'; f.src = '/versjon/' + visVer.sha + '/?ramme';
-    f.onload = () => { f.classList.add('klar'); setTimeout(() => { for (const g of [...lag.children]) if (g !== f) g.remove(); }, 650); };
-    lag.append(f);
+    const T = Tav(avsp.k), f = ramme(visVer, T, false);
+    f.contentWindow?.postMessage({ avspT: T }, location.origin);
+    if (f.dataset.lastet) f.classList.add('klar');
+    // Den forrige tones ut og fjernes; de som er lastet på forhånd til time-lapsen får stå.
+    setTimeout(() => { for (const g of [...lag.children]) if (g !== f && !g.classList.contains('forh')) g.remove(); }, 650);
   };
+  // Tiden går i rammen også: avspillerens T sendes dit ved hvert oppdatering av sidene.
+  const sendT = T => { for (const f of lag.querySelectorAll('iframe.klar')) f.contentWindow?.postMessage({ avspT: T }, location.origin); };
+  // Time-lapse: endringene på siden én etter én (3 s hver), med tiden rett etter hver endring. De tre neste versjonene
+  // lastes på forhånd, så skiftene er raske. Stopper ved siste versjon, eller når man spiller, spoler eller lukker.
+  let tl = null;
+  const tlKnapp = q('.h-tl');
+  const tlStopp = () => { clearTimeout(tl); tl = null; tlKnapp.setAttribute('aria-pressed', 'false'); for (const g of lag.querySelectorAll('iframe.forh')) g.remove(); };
+  const tlSteg = async i => {
+    if (i >= versjoner.length) { tlStopp(); return; }
+    const v = versjoner[i], T = v.ts + 30e3;
+    for (let n = i + 1; n <= i + 3 && n < versjoner.length - 1; n++) ramme(versjoner[n], versjoner[n].ts + 30e3, true);
+    stopp(); sideDa = true;
+    await last(dagNr.format(T)); avsp.hopp = true; vis((T - avsp.t0) / (avsp.t1 - avsp.t0));
+    tl = setTimeout(() => tlSteg(i + 1), 3000);
+  };
+  tlKnapp.addEventListener('click', () => {
+    if (tl) { tlStopp(); return; }
+    tlKnapp.setAttribute('aria-pressed', 'true');
+    const i = visVer ? Math.max(0, versjoner.indexOf(visVer)) : 0;
+    tlSteg(i >= versjoner.length - 1 ? 0 : i + 1);
+  });
   // Hold over: liten forhåndsvisning over modulen. Trykk: siden slik den var av/på.
   verBtn.addEventListener('mouseenter', () => { if (!visVer || !lag.hidden) return; forh.hidden = false; const src = '/versjon/' + visVer.sha + '/?ramme'; if (!forh.firstChild.src.endsWith(src)) forh.firstChild.src = src; });
   verBtn.addEventListener('mouseleave', () => { forh.hidden = true; });
@@ -2421,7 +2459,7 @@ if (HUS) setTimeout(function lagAvspiller() {
     settPoster(pst || nåNotater.filter(x => x.ts <= T));
     tegn(); tegnPuls(); tegnNaa();
     kl2.textContent = ukedag.format(T) + ' ' + klS.format(T);
-    visVersjon(T);
+    visVersjon(T); sendT(T);
     tid.value = Math.round(avsp.k * 10000);
   }
   function start() { avsp.spiller = true; spill.textContent = '❚❚'; avsp.sist = performance.now(); requestAnimationFrame(steg); }
@@ -2443,7 +2481,7 @@ if (HUS) setTimeout(function lagAvspiller() {
     start();
   }
   function gåLive() { lag.hidden = true; lag.textContent = ''; lagSha = null; document.body.classList.remove('versjon-på'); document.body.classList.remove('replay-sover'); delete AK.iphone; delete AK.watch; bankNokkel = ''; kart.getSource('avsp-prikk')?.setData({ type: 'FeatureCollection', features: [] }); megMark.getElement().style.visibility = ''; document.body.classList.remove('i-replay'); avsp = null; window.__avsp = false; stopp(); trykket(null); kl2.textContent = '–'; fortell(''); sistSpor = ''; forste = true; hent(); }
-  spill.onclick = () => { if (!avsp) return; if (avsp.spiller) stopp(); else { if (avsp.k >= 1) avsp.k = 0; start(); } };
+  spill.onclick = () => { if (tl) tlStopp(); if (!avsp) return; if (avsp.spiller) stopp(); else { if (avsp.k >= 1) avsp.k = 0; start(); } };
   // Farten: en egen glidebryter (som på YouTube) fra 1× til 60×, jevnt fordelt på en logaritmisk skala.
   const fartvalg = q('.h-fartvalg'), fs = q('.h-fs');
   q('.h-fart').onclick = e => { const åpne = fartvalg.hidden; fartvalg.hidden = !åpne; q('.h-kalender').hidden = true; e.currentTarget.setAttribute('aria-expanded', åpne); };
@@ -2504,7 +2542,7 @@ if (HUS) setTimeout(function lagAvspiller() {
       tegnKal();
     } catch {}
   };
-  tid.oninput = () => { if (avsp) { avsp.hopp = true; vis(tid.value / 10000); } };
+  tid.oninput = () => { if (tl) tlStopp(); if (avsp) { avsp.hopp = true; vis(tid.value / 10000); } };
   q('.h-sok').onsubmit = async e => {
     e.preventDefault();
     const inp = q('.h-sok input'), sp = inp.value.trim(); if (!sp) return;

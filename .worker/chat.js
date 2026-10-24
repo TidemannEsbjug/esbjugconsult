@@ -164,11 +164,11 @@ export async function handleChat(request, env, url) {
   }
 
   if (path === "/chat/status") {
-    return hub.fetch(new Request("https://hub/internal/status", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }));
+    return hub.fetch(new Request("https://hub/internal/status", { method: "POST", headers: { "x-role": "internal" }, body: JSON.stringify({ t: tid(url) }) }));
   }
 
   if (path === "/chat/spor") {
-    return hub.fetch(new Request("https://hub/internal/spor", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }));
+    return hub.fetch(new Request("https://hub/internal/spor", { method: "POST", headers: { "x-role": "internal" }, body: JSON.stringify({ t: tid(url) }) }));
   }
 
   if (path === "/chat/kast" && request.method === "POST") {
@@ -213,7 +213,7 @@ export async function handleChat(request, env, url) {
 
   if (path === "/chat/hr") {
     const r = ["time", "fin", "dag", "uke", "mnd"].includes(url.searchParams.get("r")) ? url.searchParams.get("r") : "dag";
-    return hub.fetch(new Request("https://hub/internal/hr", { method: "POST", headers: { "x-role": "internal" }, body: JSON.stringify({ r }) }));
+    return hub.fetch(new Request("https://hub/internal/hr", { method: "POST", headers: { "x-role": "internal" }, body: JSON.stringify({ r, t: tid(url) }) }));
   }
 
   // Bevegelseshistorikk for akselerometrene (iPhone og Apple Watch), som pulsen: siste time, i dag, 7 dager, 30 dager.
@@ -572,6 +572,9 @@ export function veiMedTid(shape, punkter) {
 // Adressen BankID-innloggingen hos SpareBank 1 sendes tilbake til (registrert på den personlige klienten).
 const SB1_TILBAKE = "https://esbjugconsult.com/bank/tilbake";
 
+// ?t= (ms): spor, puls og status slik de var på det tidspunktet (gamle versjoner av siden i avspillingen spør slik).
+const tid = (url) => { const t = Number(url.searchParams.get("t")); return Number.isFinite(t) && t > 1.7e12 && t < Date.now() - 5e3 ? t : null; };
+
 // Søk i avspillingen per adresse, siste minutt (per isolat; nok til å stoppe misbruk).
 let sokTeller = [];
 
@@ -734,6 +737,9 @@ export class ChatHub {
         const t = Number(this.sql.exec(`SELECT v FROM kv WHERE k=?`, `call:${b.vid}`).toArray()[0]?.v || 0);
         return t && Date.now() - t < 2 * 3600e3 && this.online(b.vid) ? new Response("ok") : new Response("no", { status: 403 });
       }
+      if (url.pathname === "/internal/status" && b.t) {
+        return Response.json(await this.statusVed(b.t), { headers: { "cache-control": "no-store" } });
+      }
       if (url.pathname === "/internal/status") {
         return Response.json({ status: this.status(), sovnet: this.sovnet(), owner: this.ownerOnline(), hr: this.liveHr() }, { headers: { "cache-control": "no-store" } });
       }
@@ -779,11 +785,17 @@ export class ChatHub {
       if (url.pathname === "/internal/plan") {
         return new Response(this.setting("plan") || "null", { headers: { "content-type": "application/json" } });
       }
+      if (url.pathname === "/internal/spor" && b.t) {
+        return Response.json(await this.sporVed(b.t), { headers: { "cache-control": "no-store" } });
+      }
       if (url.pathname === "/internal/spor") {
         return Response.json(this.spor(), { headers: { "cache-control": "no-store" } });
       }
       if (url.pathname === "/internal/bev") {
         return Response.json(this.bevRange(b.k, b.r), { headers: { "cache-control": "no-store" } });
+      }
+      if (url.pathname === "/internal/hr" && b.t) {
+        return Response.json(await this.hrVed(b.t), { headers: { "cache-control": "no-store" } });
       }
       if (url.pathname === "/internal/hr") {
         return Response.json(this.hrRange(b.r), { headers: { "cache-control": "no-store" } });
@@ -1646,6 +1658,66 @@ export class ChatHub {
     if (this.histMemo.size > 40) this.histMemo.clear();
     this.histMemo.set(dag, { at: Date.now(), v });
     return v;
+  }
+
+  // ---------- Siden slik den var (gamle versjoner i avspillingen spør med ?t=) ----------
+  // Én dags data, husket: i dag i 60 s, eldre dager så lenge de er blant de seks siste som er brukt.
+  async dagVed(t) {
+    const dag = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Oslo" }).format(t), nå = Date.now();
+    this.dagMemo = this.dagMemo instanceof Map ? this.dagMemo : new Map();
+    const m = this.dagMemo.get(dag);
+    if (m && (m.slutt < nå || nå - m.at < 60e3)) return m.d;
+    const start = osloMidnight(Date.parse(dag + "T12:00:00Z")), slutt = osloMidnight(start + 36 * 3600e3);
+    const d = start >= this.slettFor(nå) ? this.dagData(dag) : await this.arkivDag(dag);
+    if (this.dagMemo.size > 6) this.dagMemo.delete(this.dagMemo.keys().next().value);
+    this.dagMemo.set(dag, { at: nå, slutt, d });
+    return d;
+  }
+
+  // Siste verdi i loggen (gjor, status, notater, bank, kast, rom, sted) før t.
+  loggVed(d, t) {
+    const v = {};
+    for (const [ts, k, x] of d?.logg || []) { if (ts > t) break; v[k] = x; }
+    return v;
+  }
+
+  // Det /chat/spor ga på tidspunktet t: posisjon og spor fram til t, målingene, pulsen siste 5 min og loggen.
+  async sporVed(t) {
+    const d = await this.dagVed(t);
+    if (!d) return { now: t, live: null, trail: [], tele: {}, bev: [], puls: [], kast: { le: 0, tomat: 0, heia: 0 }, gjor: "", notater: [], rom: null, bank: null };
+    const pos = d.pos.filter((p) => p.ts <= t), p = pos[pos.length - 1];
+    const live = p ? { modus: "ekte", ts: p.ts, lat: p.lat, lon: p.lon, acc: p.acc, spd: p.spd, alt: p.alt, hdg: p.hdg, kjent: this.kjentSted(p.lat, p.lon) } : null;
+    const tele = {};
+    for (const [ts, kilde, x] of d.tele) { if (ts > t) break; tele[kilde] = { ...x, ts }; }
+    const l = this.loggVed(d, t), json = (x, f) => { try { return x ? JSON.parse(x) : f; } catch { return f; } };
+    if (l.sted) tele.sted = json(l.sted, undefined);
+    let notater = json(l.notater, null);
+    if (!notater) notater = this.notater(20).filter((n) => n.ts <= t);
+    return {
+      now: t, live, trail: this.sporFra(pos, d.veispor), tele, bev: [],
+      puls: d.hr.filter((h) => h[0] > t - 5 * 60e3 && h[0] <= t),
+      kast: json(l.kast, { le: 0, tomat: 0, heia: 0 }), gjor: l.gjor || "", notater, rom: l.rom || null, bank: json(l.bank, null),
+    };
+  }
+
+  // Pulsen i dag fram til t (snitt per minutt), og livepulsen om klokka sendte de siste 20 s før t.
+  async hrVed(t) {
+    const d = await this.dagVed(t), start = d ? d.start : osloMidnight(t), min = new Map();
+    let live = null;
+    for (const [ts, b] of d ? d.hr : []) {
+      if (ts > t) break;
+      const m = Math.floor((ts - start) / 60000), x = min.get(m) || [0, 0]; x[0] += b; x[1]++; min.set(m, x);
+      if (t - ts < 20e3) live = b;
+    }
+    const pts = [...min].map(([m, x]) => [m, Math.round(x[0] / x[1])]), v = pts.map((p) => p[1]);
+    return { r: "dag", start, now: t, step: 1, live, pts, beats: v.reduce((a, b) => a + b, 0), mins: v.length, lo: v.length ? Math.min(...v) : null, hi: v.length ? Math.max(...v) : null };
+  }
+
+  async statusVed(t) {
+    const d = await this.dagVed(t), l = this.loggVed(d, t);
+    let hr = null;
+    for (const [ts, b] of d ? d.hr : []) { if (ts > t) break; if (t - ts < 20e3) hr = b; }
+    return { status: l.status || "available", sovnet: null, owner: false, hr };
   }
 
   // Rå puls og akselerometerpakker i et vindu (høyst 30 min), fra databasen eller arkivet.

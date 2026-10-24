@@ -125,12 +125,15 @@ async function versjonSide(env, url, sha) {
   const tid = meta.ts ? new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(Number(meta.ts)) : "";
   const esc = (t) => String(t).replace(/[<>&"]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;" })[c]);
   const hode = `<meta name="robots" content="noindex, nofollow"><script>window.__versjon=1;window.WebSocket=function(){return{readyState:3,send(){},close(){},addEventListener(){}}};</script>`;
-  // I rammen (avspillingen på forsiden) vises verken samtykkebanneret eller chatten fra den gamle siden.
+  // I rammen (avspillingen på forsiden) vises verken samtykkebanneret eller chatten fra den gamle siden, og siden lever på
+  // avspillerens tid: klokka (Date) går fra ?t= og fra meldingene forsiden sender, og /chat/spor, /chat/hr og
+  // /chat/status hentes slik de var på det tidspunktet (?t= på forespørselen).
   const skjul = ramme ? `<style>.ck,#chat,.ch-b{display:none!important}</style>` : "";
+  const tidsreise = ramme ? `<script>(()=>{const RD=Date;let skew=0;const t0=+new URLSearchParams(location.search).get('t');if(t0)skew=t0-RD.now();class D extends RD{constructor(...a){if(a.length)super(...a);else super(RD.now()+skew)}static now(){return RD.now()+skew}}window.Date=D;const f0=window.fetch.bind(window);window.fetch=(u,o)=>{try{const x=new URL(u instanceof Request?u.url:u,location.href);if(skew&&x.origin===location.origin&&/^\/chat\/(spor|hr|status)$/.test(x.pathname)){x.searchParams.set('t',String(Math.round(RD.now()+skew)));u=x.toString()}}catch(e){}return f0(u,o)};addEventListener('message',e=>{if(e.origin===location.origin&&e.data&&typeof e.data.avspT==='number')skew=e.data.avspT-RD.now()})})();</script>` : "";
   const stripe = ramme ? "" : `<div style="position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:2147483647;max-width:calc(100vw - 24px);display:flex;gap:12px;align-items:center;padding:9px 14px;border-radius:999px;background:#00205B;color:#fff;font:600 13px/1.2 -apple-system,system-ui,sans-serif;box-shadow:0 10px 30px rgba(0,20,60,.35)"><span>Slik så siden ut ${esc(tid)}</span><span style="opacity:.6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40vw">${esc(meta.melding || "")}</span><a href="/" style="color:#fff;opacity:.85">Til i dag</a></div>`;
   const svar = new Response(obj.body, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=86400" } });
   return new HTMLRewriter()
-    .on("head", { element: (el) => { el.prepend(hode, { html: true }); if (skjul) el.append(skjul, { html: true }); } })
+    .on("head", { element: (el) => { el.prepend(hode + tidsreise, { html: true }); if (skjul) el.append(skjul, { html: true }); } })
     .on("body", { element: (el) => el.prepend(stripe, { html: true }) })
     .transform(svar);
 }
