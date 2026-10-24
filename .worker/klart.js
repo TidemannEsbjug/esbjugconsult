@@ -32,7 +32,13 @@
 //                                → adresse til Stripe Checkout, eller fakturaen og nøkkelen
 //   GET  /klart/api/ordre?session=cs_…   → nøkkelen etter betaling på prissiden
 //   POST /klart/api/kunder       { kode, kunder } → legger kunder til en tjenesteleverandørlisens
-//   POST /klart/api/sprint       kontaktskjemaet for sprinten
+//   POST /klart/api/sprint       kontaktskjemaet for sprinten (spørsmål før booking)
+//   GET  /klart/api/sprint/ledige        → ledige startdager for sprinten
+//   POST /klart/api/sprint/book          { orgnr, start, navn, epost, … } → Stripe Checkout for grunnhonoraret
+//   POST /klart/api/sprint/avbryt        { session } → slipper datoen når kunden går tilbake fra Stripe
+//   GET  /klart/api/sprint/kvittering?session=cs_…  → bookingen etter betaling
+//   GET  /klart/api/sprint/ics?session=cs_…         → kalenderfilen
+//   POST /klart/api/sprint/sperr         { fra, til } | { fjern } → sperrer dager (Bearer ADMIN_TOKEN)
 //   GET  /klart/api/utboks       e-postene som skal ut, og henvendelsene (Bearer ADMIN_TOKEN)
 //
 // Hemmeligheter (wrangler secret put): KLART_LISENSNOKKEL (PEM, PKCS#8, Ed25519),
@@ -86,6 +92,7 @@ export async function handleKlart(request, env, url) {
     if (sti === "ordre" && request.method === "GET") return await ordre(env, url);
     if (sti === "kunder" && request.method === "POST") return await leggTilKunder(request, env);
     if (sti === "sprint" && request.method === "POST") return await sprint(request, env);
+    if (sti.startsWith("sprint/")) return await sprintRute(request, env, url, sti.slice(7));
     if (sti === "utboks" && request.method === "GET") return await utboks(request, env);
     return json({ feil: "Finnes ikke." }, 404);
   } catch (err) {
@@ -677,8 +684,9 @@ async function pris(env, url) {
     // Et konsern betaler som et konsern: faktura og avdrag følger størrelsen på konsernet.
     betaling: betalingFor(p, g.v.ansatte, l.pris),
     testing: testet ? null : { pris: p.testing.pris, eksporter: p.testing.eksporter, apen: testmodus(env) || TESTING_I_APPEN },
-    // Stor nok for skreddersydd oppsett (sprinten). Prisen på den vises ikke; den tas i samtalen.
+    // Stor nok for skreddersydd oppsett (sprinten): prisen på den, åpent.
     stor: Boolean(sprintFor(p, l.ansatte)),
+    sprint: sprintTilbud(p, g),
     // Behandler trolig data for andre: da er det et eget steg i kassen.
     leverandorAktuell: leverandorAktuell(p, v),
     kjop: kjopApent(env),
@@ -1189,12 +1197,286 @@ async function sprint(request, env) {
   return json({ ok: true });
 }
 
+// --- Sprinten: betal grunnhonoraret og book startdatoen ----------------------------
+//
+// Egen enkel kalender i lageret, ingen ekstern tjeneste. Kunden velger en startdag (mandag–fredag,
+// tidligst SPRINT_VARSEL dager fram), og sprinten sperrer SPRINT_DAGER sammenhengende dager. Datoen
+// holdes mens kunden er i Stripe Checkout (økten varer 31 minutter), og blir booket når betalingen er
+// gjennom (siden eller webhooken, det som kommer først). Tidsrom eieren ikke kan, sperres med
+// POST /klart/api/sprint/sperr { fra, til } og fjernes med { fjern: id } (Bearer ADMIN_TOKEN).
+
+const SPRINT_DAGER = 10;
+const SPRINT_VARSEL = 14;
+const SPRINT_HORISONT = 180;
+const SPRINT_OKT_MIN = 31;
+const PRODUKT_SPRINT = "klart_sprint";
+const ISO_DAG = /^\d{4}-\d{2}-\d{2}$/;
+
+function ukedag(iso) {
+  return new Date(`${iso}T00:00:00Z`).getUTCDay();
+}
+
+function sprintSlutt(start) {
+  return omDager(SPRINT_DAGER - 1, Date.parse(`${start}T00:00:00Z`));
+}
+
+/** Ledige startdager: hverdager fra SPRINT_VARSEL til SPRINT_HORISONT dager fram, der hele sprinten er fri. */
+async function ledigeStarter(env) {
+  const fra = omDager(SPRINT_VARSEL);
+  const til = omDager(SPRINT_HORISONT);
+  const opptatt = await lager(env).sprintOpptatt(fra, sprintSlutt(til), new Date().toISOString());
+  const ledige = [];
+  for (let d = SPRINT_VARSEL; d <= SPRINT_HORISONT; d++) {
+    const start = omDager(d);
+    const dag = ukedag(start);
+    if (dag === 0 || dag === 6) continue;
+    const slutt = sprintSlutt(start);
+    if (!opptatt.some((r) => r.start <= slutt && r.slutt >= start)) ledige.push(start);
+  }
+  return ledige;
+}
+
+/** Sprinten for virksomheten, eller null hvis den er for liten. Samme ansatte som prisen telles på. */
+function sprintTilbud(p, g) {
+  const s = sprintFor(p, telteAnsatte(p, g.v));
+  return s ? { trinn: s.trinn, grunn: s.grunn, total: s.total, dager: SPRINT_DAGER } : null;
+}
+
+async function sprintRute(request, env, url, del) {
+  if (del === "ledige" && request.method === "GET") return json({ dager: SPRINT_DAGER, ledige: await ledigeStarter(env) });
+  if (del === "book" && request.method === "POST") return await sprintBook(request, env, url);
+  if (del === "avbryt" && request.method === "POST") return await sprintAvbryt(request, env);
+  if (del === "kvittering" && request.method === "GET") return await sprintKvittering(env, url);
+  if (del === "ics" && request.method === "GET") return await sprintIcsSvar(env, url);
+  if (del === "sperr" && request.method === "POST") return await sprintSperr(request, env);
+  return json({ feil: "Finnes ikke." }, 404);
+}
+
+async function sprintBook(request, env, url) {
+  const p = priser(env);
+  if (!p || !kjopApent(env)) return json({ feil: "Booking er ikke åpnet ennå." }, 503);
+  const inn = await body(request);
+  if (inn.nettside) return json({ feil: "Noe gikk galt." }, 400);
+  const navn = tekstFra(inn.navn, 120);
+  const epost = epostFra(inn.epost);
+  const orgnr = orgnrFra(inn.orgnr);
+  const start = ISO_DAG.test(inn.start || "") ? inn.start : null;
+  if (!orgnr) return json({ feil: "Skriv inn et gyldig organisasjonsnummer." }, 400);
+  if (!navn || !epost) return json({ feil: "Skriv inn navn og e-post." }, 400);
+  if (!start) return json({ feil: "Velg en startdato." }, 400);
+  const o = await slaaOppVirksomhet(orgnr);
+  if (o.feil) return json({ feil: o.feil }, o.kode);
+  if (o.underenhet) return json({ feil: underenhetTekst(o) }, 409);
+  const v = o.virksomhet;
+  const g = grunnlag(p, o);
+  const s = sprintTilbud(p, g);
+  if (!s) return json({ feil: "Sprinten gjelder større virksomheter." }, 400);
+  if (!(await ledigeStarter(env)).includes(start)) return json({ feil: "Den datoen er ikke ledig lenger. Velg en annen." }, 409);
+
+  const slutt = sprintSlutt(start);
+  const utloper = Math.floor(Date.now() / 1000) + SPRINT_OKT_MIN * 60;
+  const data = { navn, epost, telefon: tekstFra(inn.telefon, 40), melding: tekstFra(inn.melding, 3000), firma: v.navn, ...s };
+  // Holdt litt lenger enn økten, så en betaling i siste sekund ikke mister datoen.
+  const id = await lager(env).holdSprint(start, slutt, new Date((utloper + 120) * 1000).toISOString(), orgnr, data);
+  if (!id) return json({ feil: "Den datoen ble nettopp tatt. Velg en annen." }, 409);
+
+  try {
+    const l = lisenspris(p, g.v, g.regnskap);
+    const meta = {
+      orgnr: v.orgnr,
+      company_name: v.navn,
+      tier: prisgrunnlag(l, g),
+      sector: l.sektor ? l.sektor.id : "",
+      employees_at_purchase: String(v.ansatte),
+      document_workers: String(l.ansatte),
+      value_factor: l.faktor.toFixed(2),
+      accounts_year: g.regnskap ? g.regnskap.aar : "",
+      scope: g.konsern ? "konsern" : "virksomhet",
+      sprint: String(id),
+      sprint_start: start,
+      sprint_end: slutt,
+      sprint_tier: s.trinn,
+      sprint_total: String(s.total),
+    };
+    // En kunde som alt har lisens, beholder sin Stripe-kunde som den er.
+    const finnes = await lager(env).kundeFor(v.orgnr);
+    const kunde = finnes ? { id: finnes } : await stripeKunde(env, v, { ...meta, license_type: "sprint" }, { epost });
+    const mva = await mvaSats(env);
+    const side = sideFor(url);
+    const beskrivelse =
+      `Grunnhonorar for Klart-sprint hos ${v.navn} (org.nr ${orgnrTekst(v.orgnr)}), ${datoTekst(start)}–${datoTekst(slutt)}. ` +
+      `Totalt ${kroner(s.total)} eks. mva når suksesskriteriene er nådd; grunnhonoraret trekkes fra.`;
+    const felt = {
+      mode: "payment",
+      customer: kunde.id,
+      locale: "nb",
+      success_url: `${side}?sprint={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${side}?orgnr=${v.orgnr}&vis=oppsett&avbrutt=1`,
+      client_reference_id: v.orgnr,
+      expires_at: String(utloper),
+      "line_items[0][price_data][currency]": "nok",
+      "line_items[0][price_data][product]": await produkt(env, PRODUKT_SPRINT, "Klart – grunnhonorar for sprint", { klart: "sprint" }),
+      "line_items[0][price_data][unit_amount]": String(s.grunn * 100),
+      "line_items[0][quantity]": "1",
+      "line_items[0][tax_rates][0]": mva,
+      "payment_intent_data[description]": beskrivelse,
+      "invoice_creation[enabled]": "true",
+    };
+    const oppsett = await betalingsoppsett(env);
+    if (oppsett) felt.payment_method_configuration = oppsett;
+    leggPaa(felt, "metadata", meta);
+    leggPaa(felt, "payment_intent_data[metadata]", meta);
+    leggPaa(felt, "invoice_creation[invoice_data][metadata]", meta);
+    const okt = await stripe(env, "POST", "checkout/sessions", felt);
+    await lager(env).sprintOkt(id, okt.id);
+    return json({ adresse: okt.url, okt: okt.id });
+  } catch (err) {
+    await lager(env).slippSprint(id);
+    throw err;
+  }
+}
+
+/** Kunden trykket tilbake i Stripe: økten avsluttes og datoen slippes med en gang. */
+async function sprintAvbryt(request, env) {
+  const id = String((await body(request)).session || "");
+  if (!/^cs_(test|live)_[A-Za-z0-9]+$/.test(id)) return json({ ok: true });
+  const okt = await stripeFinn(env, `checkout/sessions/${id}`);
+  if (okt?.metadata?.sprint && okt.status === "open") {
+    await stripe(env, "POST", `checkout/sessions/${id}/expire`).catch(() => null);
+    await lager(env).slippOkt(id);
+  }
+  return json({ ok: true });
+}
+
+/** Etter betaling: datoen er booket, og begge får bekreftelse med kalenderfil én gang. */
+async function sprintBetalt(env, okt) {
+  if (okt.status !== "complete" || okt.payment_status !== "paid") return null;
+  const epost = (okt.customer_details?.email || okt.customer_email || "").toLowerCase();
+  const r = await lager(env).betalSprint(okt.id, epost);
+  if (!r) return null;
+  if (r.ny) {
+    const d = r.rad.data;
+    const ics = sprintIcs(r.rad);
+    const vedlegg = [{ filename: "klart-sprint.ics", content: base64(ics) }];
+    const tid = `${datoTekst(r.rad.start)}–${datoTekst(r.rad.slutt)}`;
+    const mottaker = d.epost || epost;
+    await sendEpost(env, {
+      til: mottaker,
+      emne: `Klart-sprint booket: ${tid}`,
+      tekst: [
+        `Hei ${d.navn},`,
+        "",
+        `Sprinten hos ${d.firma} er booket ${tid} (${SPRINT_DAGER} dager). Grunnhonoraret på ${kroner(d.grunn)} eks. mva er betalt.`,
+        `Når suksesskriteriene er nådd, gjelder hele beløpet på ${kroner(d.total)} eks. mva, og grunnhonoraret trekkes fra.`,
+        "",
+        "Vi tar kontakt for å avtale suksesskriteriene skriftlig før dag én. Kalenderfilen ligger vedlagt.",
+        "",
+        "Hilsen Esbjug Consult",
+      ].join("\n"),
+      vedlegg,
+    });
+    await sendEpost(env, {
+      til: EIER,
+      svarTil: mottaker,
+      emne: `Klart: sprint booket hos ${d.firma}, ${tid}`,
+      tekst: [
+        `${d.navn} <${mottaker}>${d.telefon ? `, ${d.telefon}` : ""}`,
+        `${d.firma}, org.nr ${orgnrTekst(r.rad.orgnr)}, ${d.trinn}`,
+        `Grunnhonorar betalt: ${kroner(d.grunn)} eks. mva. Totalt: ${kroner(d.total)} eks. mva.`,
+        `Stripe: ${okt.id}`,
+        "",
+        d.melding || "(ingen melding)",
+      ].join("\n"),
+      vedlegg,
+    });
+  }
+  return r.rad;
+}
+
+async function sprintKvittering(env, url) {
+  const id = url.searchParams.get("session") || "";
+  if (!/^cs_(test|live)_[A-Za-z0-9]+$/.test(id)) return json({ feil: "Fant ikke bookingen." }, 400);
+  const okt = await stripe(env, "GET", `checkout/sessions/${id}`);
+  if (!okt.metadata?.sprint) return json({ feil: "Fant ikke bookingen." }, 404);
+  const rad = await sprintBetalt(env, okt);
+  if (!rad) return json({ feil: "Betalingen er ikke fullført ennå. Last siden på nytt om litt." }, 409);
+  return json({
+    navn: rad.data.firma,
+    orgnr: rad.orgnr,
+    start: rad.start,
+    slutt: rad.slutt,
+    grunn: rad.data.grunn,
+    total: rad.data.total,
+    epost: rad.epost || rad.data.epost,
+  });
+}
+
+function base64(tekst) {
+  let bin = "";
+  for (const b of new TextEncoder().encode(tekst)) bin += String.fromCharCode(b);
+  return btoa(bin);
+}
+
+function icsDag(iso) {
+  return iso.replace(/-/g, "");
+}
+
+function sprintIcs(rad) {
+  const tekst = (t) => String(t).replace(/[\;,]/g, (c) => `\\${c}`).replace(/\n/g, "\\n");
+  return [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Esbjug Consult//Klart//NO",
+    "METHOD:PUBLISH",
+    "BEGIN:VEVENT",
+    `UID:klart-sprint-${rad.id}@esbjugconsult.com`,
+    `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").slice(0, 15)}Z`,
+    `DTSTART;VALUE=DATE:${icsDag(rad.start)}`,
+    `DTEND;VALUE=DATE:${icsDag(omDager(1, Date.parse(`${rad.slutt}T00:00:00Z`)))}`,
+    `SUMMARY:${tekst(`Klart-sprint hos ${rad.data.firma}`)}`,
+    `DESCRIPTION:${tekst(`Sprint med Esbjug Consult, ${SPRINT_DAGER} dager. Kontakt: ${EIER}`)}`,
+    "END:VEVENT",
+    "END:VCALENDAR",
+    "",
+  ].join("\r\n");
+}
+
+async function sprintIcsSvar(env, url) {
+  const id = url.searchParams.get("session") || "";
+  const rad = /^cs_(test|live)_[A-Za-z0-9]+$/.test(id) ? await lager(env).sprintForOkt(id) : null;
+  if (!rad || rad.status !== "betalt") return json({ feil: "Fant ikke bookingen." }, 404);
+  return new Response(sprintIcs(rad), {
+    headers: {
+      "content-type": "text/calendar; charset=utf-8",
+      "content-disposition": 'attachment; filename="klart-sprint.ics"',
+      "cache-control": "no-store",
+    },
+  });
+}
+
+/** Eieren sperrer dager i kalenderen ({ fra, til }), eller fjerner en sperring ({ fjern: id }). */
+async function sprintSperr(request, env) {
+  const hode = request.headers.get("authorization") || "";
+  const ventet = `Bearer ${env.ADMIN_TOKEN || ""}`;
+  if (!env.ADMIN_TOKEN || hode.length !== ventet.length || !likt(hode, ventet)) return json({ feil: "Ikke tilgang." }, 401);
+  const inn = await body(request);
+  if (inn.fjern) {
+    await lager(env).fjernSperring(Number(inn.fjern));
+  } else {
+    if (!ISO_DAG.test(inn.fra || "") || !ISO_DAG.test(inn.til || "") || inn.til < inn.fra) {
+      return json({ feil: "fra og til må være datoer (ÅÅÅÅ-MM-DD), og til kan ikke være før fra." }, 400);
+    }
+    await lager(env).sperrSprint(inn.fra, inn.til, tekstFra(inn.notat, 200));
+  }
+  return json({ sprinter: await lager(env).sprinter() });
+}
+
 async function utboks(request, env) {
   const hode = request.headers.get("authorization") || "";
   const ventet = `Bearer ${env.ADMIN_TOKEN || ""}`;
   if (!env.ADMIN_TOKEN || hode.length !== ventet.length || !likt(hode, ventet)) return json({ feil: "Ikke tilgang." }, 401);
   const l = lager(env);
-  return json({ eposter: await l.utboks(), henvendelser: await l.henvendelser() });
+  return json({ eposter: await l.utboks(), henvendelser: await l.henvendelser(), sprinter: await l.sprinter() });
 }
 
 // --- Fornyelse ------------------------------------------------------------------
@@ -1312,7 +1594,7 @@ async function betalingFeilet(env, faktura) {
 // --- E-post -------------------------------------------------------------------
 
 /** Alt som skal ut, havner i utboksen i lageret. Med RESEND_API_KEY og KLART_EPOST_FRA sendes det også. */
-async function sendEpost(env, { til, emne, tekst, svarTil }) {
+async function sendEpost(env, { til, emne, tekst, svarTil, vedlegg }) {
   const id = await lager(env).iUtboks(til, emne, tekst);
   if (!env.RESEND_API_KEY || !env.KLART_EPOST_FRA) return;
   const svar = await fetch("https://api.resend.com/emails", {
@@ -1322,7 +1604,14 @@ async function sendEpost(env, { til, emne, tekst, svarTil }) {
       "content-type": "application/json",
       "idempotency-key": `klart-utboks-${id}`,
     },
-    body: JSON.stringify({ from: env.KLART_EPOST_FRA, to: [til], subject: emne, text: tekst, reply_to: svarTil || EIER }),
+    body: JSON.stringify({
+      from: env.KLART_EPOST_FRA,
+      to: [til],
+      subject: emne,
+      text: tekst,
+      reply_to: svarTil || EIER,
+      ...(vedlegg ? { attachments: vedlegg } : {}),
+    }),
   });
   if (svar.ok) await lager(env).sendt(id);
   else console.error("klart epost", svar.status, await svar.text());
@@ -1371,9 +1660,13 @@ async function webhook(request, env) {
   switch (hendelse.type) {
     case "checkout.session.completed":
     case "checkout.session.async_payment_succeeded":
-      // Kjøp fra prissiden har license_type. De gamle, maskinbundne kjøpene har det ikke.
-      if (obj.metadata?.license_type) await ordreFullfort(env, obj);
+      // Kjøp fra prissiden har license_type, sprinten har sprint. De gamle, maskinbundne kjøpene har ingen av dem.
+      if (obj.metadata?.sprint) await sprintBetalt(env, obj);
+      else if (obj.metadata?.license_type) await ordreFullfort(env, obj);
       else await lisensFraOkt(env, obj);
+      break;
+    case "checkout.session.expired":
+      if (obj.metadata?.sprint) await lager(env).slippOkt(obj.id);
       break;
     case "invoice.paid": {
       const aboId = aboFra(obj);
@@ -1442,6 +1735,91 @@ export class KlartLager extends DurableObject {
       id INTEGER PRIMARY KEY AUTOINCREMENT, til TEXT, emne TEXT, tekst TEXT, laget TEXT, sendt TEXT)`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS henvendelser (
       id INTEGER PRIMARY KEY AUTOINCREMENT, hva TEXT, data TEXT, laget TEXT)`);
+    // Sprintkalenderen: status «holdt» (i Stripe nå, til holdt_til), «betalt» eller «sperret» (eieren kan ikke).
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS sprinter (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, start TEXT, slutt TEXT, status TEXT, holdt_til TEXT,
+      okt TEXT, orgnr TEXT, epost TEXT, data TEXT, laget TEXT, betalt TEXT)`);
+  }
+
+  /** Sprinter og sperringer som overlapper fra–til. Holdte datoer bare til de går ut. */
+  sprintOpptatt(fra, til, na) {
+    return this.sql
+      .exec(
+        `SELECT id, start, slutt FROM sprinter WHERE start <= ? AND slutt >= ?
+         AND (status IN ('betalt', 'sperret') OR (status = 'holdt' AND holdt_til > ?))`,
+        til,
+        fra,
+        na
+      )
+      .toArray();
+  }
+
+  /** Holder datoen hvis hele sprinten er fri. Sjekk og innsetting i samme kall, så to kan ikke få samme dag. */
+  holdSprint(start, slutt, holdtTil, orgnr, data) {
+    if (this.sprintOpptatt(start, slutt, new Date().toISOString()).length) return null;
+    return this.sql
+      .exec(
+        `INSERT INTO sprinter (start, slutt, status, holdt_til, orgnr, data, laget) VALUES (?, ?, 'holdt', ?, ?, ?, ?) RETURNING id`,
+        start,
+        slutt,
+        holdtTil,
+        orgnr,
+        JSON.stringify(data),
+        new Date().toISOString()
+      )
+      .one().id;
+  }
+
+  sprintOkt(id, okt) {
+    this.sql.exec(`UPDATE sprinter SET okt = ? WHERE id = ?`, okt, id);
+  }
+
+  slippSprint(id) {
+    this.sql.exec(`DELETE FROM sprinter WHERE id = ? AND status = 'holdt'`, id);
+  }
+
+  slippOkt(okt) {
+    this.sql.exec(`DELETE FROM sprinter WHERE okt = ? AND status = 'holdt'`, okt);
+  }
+
+  sprintForOkt(okt) {
+    const r = this.sql.exec(`SELECT * FROM sprinter WHERE okt = ?`, okt).toArray()[0];
+    return r ? { ...r, data: JSON.parse(r.data || "{}") } : null;
+  }
+
+  /** Booker datoen for en betalt økt. «ny» er true bare første gang, så bekreftelsen sendes én gang. */
+  betalSprint(okt, epost) {
+    const r = this.sprintForOkt(okt);
+    if (!r) return null;
+    if (r.status === "betalt") return { rad: r, ny: false };
+    this.sql.exec(
+      `UPDATE sprinter SET status = 'betalt', epost = ?, betalt = ? WHERE id = ?`,
+      epost || null,
+      new Date().toISOString(),
+      r.id
+    );
+    return { rad: this.sprintForOkt(okt), ny: true };
+  }
+
+  sperrSprint(fra, til, notat) {
+    this.sql.exec(
+      `INSERT INTO sprinter (start, slutt, status, data, laget) VALUES (?, ?, 'sperret', ?, ?)`,
+      fra,
+      til,
+      JSON.stringify({ notat }),
+      new Date().toISOString()
+    );
+  }
+
+  fjernSperring(id) {
+    this.sql.exec(`DELETE FROM sprinter WHERE id = ? AND status = 'sperret'`, id);
+  }
+
+  sprinter() {
+    return this.sql
+      .exec(`SELECT * FROM sprinter WHERE status != 'holdt' OR holdt_til > ? ORDER BY start`, new Date().toISOString())
+      .toArray()
+      .map((r) => ({ ...r, data: JSON.parse(r.data || "{}") }));
   }
 
   kundeFor(orgnr) {

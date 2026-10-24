@@ -604,6 +604,104 @@
         color: var(--ink-3);
         text-align: center;
       }
+      /* Sprinten: prisen og kalenderen */
+      .sprint-pris {
+        margin-top: 20px;
+        padding: 16px 18px;
+        border-radius: 14px;
+        background: var(--signal-soft);
+      }
+      .sprint-pris .pristall {
+        margin: 4px 0 8px !important;
+        font-size: clamp(30px, 4.4vw, 44px) !important;
+      }
+      .sprint-pris p {
+        font-size: 15px;
+        color: var(--ink-2);
+      }
+      .sprint-pris b {
+        color: var(--ink);
+      }
+      .kalender {
+        margin-top: 6px;
+        padding: 14px;
+        border: 1px solid var(--rule);
+        border-radius: 14px;
+        background: #fff;
+      }
+      .kal-topp {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        font-weight: 600;
+        text-transform: capitalize;
+      }
+      .kal-topp button {
+        width: 34px;
+        height: 34px;
+        border: 1px solid var(--rule);
+        border-radius: 10px;
+        background: #fff;
+        font: inherit;
+        cursor: pointer;
+      }
+      .kal-topp button:disabled {
+        opacity: 0.35;
+        cursor: default;
+      }
+      .kal-dager {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 4px;
+        text-align: center;
+      }
+      .kal-dager .uke {
+        font-family: var(--mono);
+        font-size: 10.5px;
+        color: var(--ink-3);
+        padding-bottom: 4px;
+      }
+      .kal-dager button,
+      .kal-dager span.dag {
+        height: 36px;
+        border-radius: 9px;
+        font: inherit;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .kal-dager span.dag {
+        color: var(--ink-4, #a7b0bd);
+      }
+      .kal-dager button {
+        border: 1px solid var(--signal-lit);
+        background: #fff;
+        color: var(--signal-deep);
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .kal-dager button:hover {
+        background: var(--signal-soft);
+      }
+      .kal-dager .i-sprint {
+        background: var(--signal-soft);
+        color: var(--signal-deep);
+      }
+      .kal-dager button[aria-pressed="true"] {
+        background: var(--signal);
+        border-color: var(--signal);
+        color: #fff;
+      }
+      .valgt-tid {
+        margin-top: 10px;
+        font-size: 14.5px;
+        color: var(--ink-2);
+      }
+      .valgt-tid b {
+        color: var(--ink);
+      }
       .kortpris {
         margin-top: 14px;
         font-size: 30px;
@@ -792,7 +890,7 @@
             </div>
           </div>
 
-          <!-- Skreddersydd oppsett: hva det er, og en samtale. Ingen pris her; den tas i samtalen. -->
+          <!-- Skreddersydd oppsett: hva det er, prisen åpent, og «Betal og book» (startdato + grunnhonorar i Stripe). -->
           <div class="steg" id="s-oppsett" hidden>
             <button type="button" class="tilbake" data-tilbake>← Tilbake</button>
             <div class="oppsett-grid">
@@ -803,10 +901,15 @@
                   En større modell, finjustert på deres ekte data, på maskinvare dere eier. Opptil 10 sammenhengende
                   kalenderdager, og sprinten slutter den dagen suksesskriteriene er nådd.
                 </p>
+                <div class="sprint-pris" id="sp-pris" hidden>
+                  <p class="merke" id="sp-trinn"></p>
+                  <p class="pristall" id="sp-total"></p>
+                  <p>Grunnhonorar <b id="sp-grunn"></b> eks. mva, betales ved booking og trekkes fra beløpet.</p>
+                </div>
                 <ul class="vilkar" style="margin-top: 18px">
                   <li>På stedet, under taushetserklæring og databehandleravtale</li>
                   <li>Suksesskriteriene avtales skriftlig før dag én</li>
-                  <li>Et grunnhonorar betales på forhånd</li>
+                  <li>Grunnhonoraret betales når dere booker</li>
                   <li>Kriteriene er nådd: hele beløpet gjelder, og grunnhonoraret trekkes fra</li>
                   <li>Kriteriene er ikke nådd: dere betaler bare grunnhonoraret</li>
                 </ul>
@@ -862,7 +965,47 @@
                   </svg>
                   <figcaption>Mac Studio, illustrasjon</figcaption>
                 </figure>
-                <form class="skjema" id="samtale-skjema" novalidate>
+                <form class="skjema" id="book-skjema" novalidate>
+                  <div>
+                    <span class="etikett" id="kal-etikett">Velg startdato</span>
+                    <div class="kalender" aria-labelledby="kal-etikett">
+                      <div class="kal-topp">
+                        <button type="button" id="kal-forrige" aria-label="Forrige måned">‹</button>
+                        <span id="kal-maaned"></span>
+                        <button type="button" id="kal-neste" aria-label="Neste måned">›</button>
+                      </div>
+                      <div class="kal-dager" id="kal-dager"></div>
+                    </div>
+                    <p class="valgt-tid" id="kal-valgt">Laster ledige datoer …</p>
+                  </div>
+                  <div>
+                    <label for="bk-navn">Navn</label>
+                    <input id="bk-navn" type="text" autocomplete="name" maxlength="120" />
+                  </div>
+                  <div>
+                    <label for="bk-epost">E-post</label>
+                    <input id="bk-epost" type="email" autocomplete="email" />
+                  </div>
+                  <div>
+                    <label for="bk-tlf">Telefon (valgfritt)</label>
+                    <input id="bk-tlf" type="tel" autocomplete="tel" maxlength="40" />
+                  </div>
+                  <div>
+                    <label for="bk-melding">Hva vil dere oppnå? (valgfritt)</label>
+                    <textarea id="bk-melding" rows="3" maxlength="3000"></textarea>
+                  </div>
+                  <div class="skjult-felt" aria-hidden="true">
+                    <label for="bk-nettside">Nettside</label>
+                    <input id="bk-nettside" type="text" tabindex="-1" autocomplete="off" />
+                  </div>
+                  <p class="feil" id="bk-feil" role="alert" hidden></p>
+                  <button type="submit" class="btn" id="bk-knapp">Betal og book</button>
+                  <p class="smaa" id="bk-info">Betaling med kort i Stripe. Datoen holdes i 30 minutter mens dere betaler.</p>
+                </form>
+                <p class="ekstra">
+                  <button type="button" class="lenke" id="til-samtale">Spørsmål først? Send oss en melding.</button>
+                </p>
+                <form class="skjema" id="samtale-skjema" novalidate hidden>
                   <div>
                     <label for="sa-navn">Navn</label>
                     <input id="sa-navn" type="text" autocomplete="name" maxlength="120" />
@@ -884,11 +1027,11 @@
                     <input id="sa-nettside" type="text" tabindex="-1" autocomplete="off" />
                   </div>
                   <p class="feil" id="sa-feil" role="alert" hidden></p>
-                  <button type="submit" class="btn">Book en samtale</button>
+                  <button type="submit" class="btn">Send</button>
                 </form>
                 <div id="samtale-ferdig" hidden>
                   <p class="merke ok" style="margin-top: 18px">Sendt</p>
-                  <p class="tekst">Takk. Vi tar kontakt på e-postadressen dere oppga, og foreslår et tidspunkt.</p>
+                  <p class="tekst">Takk. Vi svarer på e-postadressen dere oppga.</p>
                 </div>
               </div>
             </div>
@@ -1034,6 +1177,9 @@
             <h1 id="k-tittel">Takk for kjøpet</h1>
             <p class="ingress" id="k-tekst">Vi henter lisensnøkkelen.</p>
             <div id="k-nokkel"></div>
+            <div class="knapper" id="k-ics-rad" hidden>
+              <a class="btn ghost" id="k-ics" href="#">Legg i kalenderen</a>
+            </div>
             <p class="feil" id="k-feil" role="alert" hidden></p>
             <p class="ekstra"><a class="lenke" href="./">Tilbake til prisen</a></p>
           </div>
@@ -1155,6 +1301,8 @@
           var ny = new URLSearchParams(location.search);
           ny.delete("ordre");
           ny.delete("vis");
+          ny.delete("sprint");
+          ny.delete("avbrutt");
           if (orgnr) ny.set("orgnr", orgnr);
           else ny.delete("orgnr");
           var s = ny.toString();
@@ -1191,6 +1339,7 @@
           $("kort").classList.toggle("bred", bredde === "bred");
           $("kort").classList.toggle("middels", bredde === "middels");
           tegnStegrad(steg);
+          if (steg === "s-oppsett") lastLedige();
           var overskrift = el.querySelector("h2[tabindex], h1");
           if (overskrift && steg !== "s-port") overskrift.focus({ preventScroll: true });
           if ($("port").getBoundingClientRect().top < 0) $("port").scrollIntoView({ behavior: "smooth" });
@@ -1361,6 +1510,7 @@
           $("til-dekker").hidden = d.leverandorAktuell;
           $("til-testing").hidden = !d.testing;
           $("r-oppsett").hidden = !d.stor;
+          visSprintPris(d);
           if (d.testing) {
             $("t-pris").textContent = nok(d.testing.pris);
             var t = $("t-vilkar");
@@ -1423,7 +1573,178 @@
           gaaTil("s-testing");
         });
 
-        // ---------- Skreddersydd oppsett: samtale ----------
+        // ---------- Skreddersydd oppsett: prisen og «Betal og book» ----------
+
+        var ledige = null; // ledige startdager (ÅÅÅÅ-MM-DD) fra /klart/api/sprint/ledige
+        var sprintDager = 10;
+        var valgtStart = null;
+        var kalMaaned = null; // første dag i måneden som vises
+
+        function iso(d) {
+          return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+        }
+        function fraIso(t) {
+          var d = t.split("-");
+          return new Date(+d[0], +d[1] - 1, +d[2]);
+        }
+        function leggTilDager(t, n) {
+          var d = fraIso(t);
+          d.setDate(d.getDate() + n);
+          return iso(d);
+        }
+        function maanedFra(t) {
+          var d = fraIso(t);
+          return new Date(d.getFullYear(), d.getMonth(), 1);
+        }
+
+        function visSprintPris(d) {
+          var s = d.sprint;
+          $("sp-pris").hidden = !s;
+          if (!s) return;
+          sprintDager = s.dager;
+          $("sp-trinn").textContent = "Pris · " + s.trinn;
+          $("sp-total").innerHTML = "";
+          $("sp-total").appendChild(document.createTextNode(nok(s.total) + " "));
+          var eks = document.createElement("span");
+          eks.textContent = "eks. mva, når kriteriene er nådd";
+          $("sp-total").appendChild(eks);
+          $("sp-grunn").textContent = nok(s.grunn);
+          $("bk-knapp").disabled = !d.kjop;
+          $("bk-knapp").textContent = d.kjop ? "Betal " + nok(s.grunn * 1.25) + " og book" : "Booking åpner snart";
+          $("bk-info").textContent =
+            "Grunnhonoraret inkl. 25 % mva. Betaling med kort i Stripe. Datoen holdes i 30 minutter mens dere betaler.";
+        }
+
+        function lastLedige() {
+          return api("sprint/ledige")
+            .then(function (svar) {
+              sprintDager = svar.dager;
+              ledige = new Set(svar.ledige);
+              if (valgtStart && !ledige.has(valgtStart)) valgtStart = null;
+              if (!kalMaaned) kalMaaned = svar.ledige.length ? maanedFra(svar.ledige[0]) : new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+              tegnKalender();
+            })
+            .catch(function (err) {
+              $("kal-valgt").textContent = err.message;
+            });
+        }
+
+        function tegnKalender() {
+          var rute = $("kal-dager");
+          rute.innerHTML = "";
+          ["ma", "ti", "on", "to", "fr", "lø", "sø"].forEach(function (u) {
+            var el = document.createElement("span");
+            el.className = "uke";
+            el.textContent = u;
+            rute.appendChild(el);
+          });
+          var aar = kalMaaned.getFullYear();
+          var mnd = kalMaaned.getMonth();
+          $("kal-maaned").textContent = kalMaaned.toLocaleDateString("nb-NO", { month: "long", year: "numeric" });
+          for (var i = 0; i < (kalMaaned.getDay() + 6) % 7; i++) rute.appendChild(document.createElement("span"));
+          var sluttValgt = valgtStart ? leggTilDager(valgtStart, sprintDager - 1) : null;
+          var antall = new Date(aar, mnd + 1, 0).getDate();
+          for (var dag = 1; dag <= antall; dag++) {
+            var t = iso(new Date(aar, mnd, dag));
+            var el;
+            if (ledige.has(t)) {
+              el = document.createElement("button");
+              el.type = "button";
+              el.setAttribute("aria-pressed", t === valgtStart ? "true" : "false");
+              el.setAttribute("aria-label", datoTekst(t));
+              el.addEventListener(
+                "click",
+                (function (start) {
+                  return function () {
+                    valgtStart = start;
+                    feil("bk-feil", "");
+                    tegnKalender();
+                  };
+                })(t)
+              );
+            } else {
+              el = document.createElement("span");
+              el.className = "dag";
+            }
+            if (valgtStart && t > valgtStart && t <= sluttValgt) el.classList.add("i-sprint");
+            el.textContent = dag;
+            rute.appendChild(el);
+          }
+          var liste = Array.from(ledige).sort();
+          $("kal-forrige").disabled = !liste.length || kalMaaned <= maanedFra(liste[0]);
+          $("kal-neste").disabled = !liste.length || kalMaaned >= maanedFra(liste[liste.length - 1]);
+          var v = $("kal-valgt");
+          v.innerHTML = "";
+          if (!liste.length) {
+            v.textContent = "Ingen ledige datoer akkurat nå. Send oss en melding, så finner vi en tid.";
+          } else if (valgtStart) {
+            v.appendChild(document.createTextNode("Sprinten: "));
+            var b = document.createElement("b");
+            b.textContent = datoTekst(valgtStart) + " – " + datoTekst(sluttValgt);
+            v.appendChild(b);
+            v.appendChild(document.createTextNode(" (" + sprintDager + " dager)"));
+          } else {
+            v.textContent = "Velg en ledig dag. Sprinten varer " + sprintDager + " dager fra startdagen.";
+          }
+        }
+
+        $("kal-forrige").addEventListener("click", function () {
+          kalMaaned = new Date(kalMaaned.getFullYear(), kalMaaned.getMonth() - 1, 1);
+          tegnKalender();
+        });
+        $("kal-neste").addEventListener("click", function () {
+          kalMaaned = new Date(kalMaaned.getFullYear(), kalMaaned.getMonth() + 1, 1);
+          tegnKalender();
+        });
+
+        $("book-skjema").addEventListener("submit", function (e) {
+          e.preventDefault();
+          var data = {
+            orgnr: tilbud ? tilbud.orgnr : null,
+            start: valgtStart,
+            navn: $("bk-navn").value.trim(),
+            epost: $("bk-epost").value.trim(),
+            telefon: $("bk-tlf").value.trim(),
+            melding: $("bk-melding").value.trim(),
+            nettside: $("bk-nettside").value,
+          };
+          if (!data.start) return feil("bk-feil", "Velg en startdato.");
+          if (!data.navn || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.epost)) return feil("bk-feil", "Skriv inn navn og e-post.");
+          feil("bk-feil", "");
+          opptatt($("bk-knapp"), true);
+          api("sprint/book", data)
+            .then(function (svar) {
+              try {
+                sessionStorage.setItem("klart-sprint-okt", svar.okt);
+              } catch (err) {}
+              location.href = svar.adresse;
+            })
+            .catch(function (err) {
+              feil("bk-feil", err.message);
+              opptatt($("bk-knapp"), false);
+              lastLedige();
+            });
+        });
+
+        $("til-samtale").addEventListener("click", function () {
+          $("samtale-skjema").hidden = !$("samtale-skjema").hidden;
+        });
+
+        // Tilbake fra Stripe uten å betale: økten avsluttes, og datoen blir ledig igjen med en gang.
+        if (q.get("avbrutt")) {
+          var avbruttOkt = null;
+          try {
+            avbruttOkt = sessionStorage.getItem("klart-sprint-okt");
+            sessionStorage.removeItem("klart-sprint-okt");
+          } catch (err) {}
+          if (avbruttOkt) {
+            api("sprint/avbryt", { session: avbruttOkt }).finally(function () {
+              if (!$("s-oppsett").hidden) lastLedige();
+            });
+          }
+        }
+
+        // ---------- Skreddersydd oppsett: spørsmål først ----------
 
         $("samtale-skjema").addEventListener("submit", function (e) {
           e.preventDefault();
@@ -1740,7 +2061,26 @@
         // ---------- Tilbake fra Stripe, eller fra «Avbryt» der ----------
 
         var ordre = q.get("ordre");
-        if (ordre) {
+        var sprintOkt = q.get("sprint");
+        if (sprintOkt) {
+          vis("s-kvittering");
+          $("k-tittel").textContent = "Sprinten er booket";
+          $("k-tekst").textContent = "Vi henter bookingen.";
+          api("sprint/kvittering?session=" + encodeURIComponent(sprintOkt))
+            .then(function (svar) {
+              $("k-tekst").textContent =
+                "Sprinten hos " + svar.navn + " (org.nr " + orgnrTekst(svar.orgnr) + ") er booket " +
+                datoTekst(svar.start) + " – " + datoTekst(svar.slutt) + ". Grunnhonoraret på " + nok(svar.grunn) +
+                " eks. mva er betalt. Bekreftelsen er sendt til " + svar.epost +
+                ". Vi tar kontakt for å avtale suksesskriteriene skriftlig før dag én.";
+              $("k-ics").href = "/klart/api/sprint/ics?session=" + encodeURIComponent(sprintOkt);
+              $("k-ics-rad").hidden = false;
+            })
+            .catch(function (err) {
+              $("k-tekst").textContent = "";
+              feil("k-feil", err.message);
+            });
+        } else if (ordre) {
           vis("s-kvittering");
           api("ordre?session=" + encodeURIComponent(ordre))
             .then(function (svar) {
