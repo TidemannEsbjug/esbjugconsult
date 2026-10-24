@@ -688,7 +688,6 @@
   /* Podkast: episodene, nyeste først, med datoen de ble laget. Trykk spiller av her i modulen, med en tynn spolelinje. */
   .pod{display:flex;flex-direction:column;gap:6px;padding:12px 18px 13px}
   .pod[hidden]{display:none}
-  .pod a.s-t{color:rgba(0,32,91,.7);text-decoration:none}
   .pod-l{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
   .pod-l button{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:baseline;gap:10px;padding:5px 0;color:var(--ink);cursor:pointer;border-top:1px solid rgba(0,32,91,.08)}
   .pod-l li:first-child button{border-top:0}
@@ -707,9 +706,9 @@
   .pod-tilbake{all:unset;position:absolute;right:-8px;top:-4px;cursor:pointer;width:28px;height:28px;display:grid;place-items:center;border-radius:50%;color:rgba(0,32,91,.5)}
   .pod-tilbake svg{width:16px;height:16px}
   .pod-tilbake:hover{color:#BA0C2F;background:rgba(0,32,91,.06)}
-  .pod-stor{all:unset;flex:none;width:64px;height:64px;border-radius:50%;display:grid;place-items:center;cursor:pointer;color:var(--ink);background:rgba(255,255,255,.4);border:1.5px solid rgba(0,32,91,.3);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:transform .15s,background .2s,border-color .2s}
+  .pod-stor{all:unset;flex:none;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;cursor:pointer;color:var(--ink);background:rgba(255,255,255,.4);border:1.5px solid rgba(0,32,91,.3);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:transform .15s,background .2s,border-color .2s}
   .pod-stor:hover{transform:scale(1.05);background:rgba(255,255,255,.62);border-color:rgba(0,32,91,.5)}.pod-stor:active{transform:scale(.94)}
-  .pod-stor svg{width:26px;height:26px}
+  .pod-stor svg{width:22px;height:22px}
   .pod-stor .pod-play{margin-left:3px}
   .pod-stor .pod-pause,.pod.spiller-på .pod-stor .pod-play{display:none}
   .pod.spiller-på .pod-stor .pod-pause{display:block}
@@ -717,13 +716,18 @@
   .pod-info{display:flex;flex-direction:column;gap:3px;min-width:0}
   .pod-tittel{font:italic 500 18px/1.15 var(--serif);color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .pod-dato{font:600 10px/1 "SF Mono",Menlo,monospace;letter-spacing:.06em;color:rgba(0,32,91,.55)}
-  .pod-bar{height:8px;border-radius:4px;background:rgba(0,32,91,.12);cursor:pointer;position:relative;outline:none}
+  .pod-bar{height:12px;border-radius:6px;background:rgba(0,32,91,.14);box-shadow:inset 0 1px 2px rgba(0,32,91,.12);cursor:pointer;position:relative;outline:none}
   .pod-bar::before{content:"";position:absolute;inset:-9px 0}
-  .pod-bar i{display:block;height:100%;width:0;border-radius:4px;background:#BA0C2F}
-  .pod-bar b{position:absolute;top:50%;left:0;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:#fff;border:2.5px solid #BA0C2F;box-shadow:0 2px 6px rgba(0,32,91,.25);transition:transform .15s}
+  .pod-bar i{display:block;height:100%;width:0;min-width:12px;border-radius:6px;background:var(--ink)}
+  .pod-bar b{position:absolute;top:50%;left:0;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;background:#fff;border:3px solid var(--ink);box-shadow:0 3px 10px rgba(0,32,91,.3);transition:transform .15s}
   .pod-bar:hover b,.pod-bar:focus-visible b{transform:scale(1.15)}
   .pod-sp{display:flex;justify-content:space-between;margin-top:-3px}
   .pod-tid,.pod-tot{font:600 10px/1 "SF Mono",Menlo,monospace;color:var(--ink);opacity:.6;font-variant-numeric:tabular-nums;white-space:nowrap}
+  /* Panelene kan dras rundt av den som ser på (rekkefølgen huskes i en informasjonskapsel). Mus: dra; mobil: hold inne. */
+  .paneler .flytt-kan{cursor:grab}
+  .flyttes{position:fixed!important;z-index:3000;margin:0!important;pointer-events:none;box-shadow:0 24px 60px rgba(0,32,91,.35)!important;transform:rotate(-1deg) scale(1.02)!important;transition:none!important}
+  .flytt-plass{border:2px dashed rgba(255,255,255,.7);border-radius:22px;background:rgba(255,255,255,.12)}
+  html.flytter, html.flytter *{cursor:grabbing!important;user-select:none}
   /* Banken (SpareBank 1): samlet saldo og saldoen på hver konto. */
   .bank{display:flex;flex-direction:column;gap:8px;padding:14px 18px 16px}
   .bank[hidden]{display:none}
@@ -874,7 +878,7 @@
     </div>
   </section>
   <section class="pod gl" hidden aria-label="Podkast">
-    <a class="mono s-t" href="/podcast/">Podkast</a>
+    <span class="mono s-t">Podkast</span>
     <ol class="pod-l"></ol>
     <div class="pod-v" hidden>
       <button type="button" class="pod-tilbake" aria-label="Tilbake til episodene"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg></button>
@@ -2701,6 +2705,77 @@ setInterval(tegn, 1000);
   addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') h.classList.add('mus-ned'); });
   addEventListener('pointerup', () => h.classList.remove('mus-ned'));
   document.addEventListener('mouseleave', () => h.classList.remove('mus-inne'));
+})();
+</script>
+<script>
+// Panelene kan flyttes: dra et panel (med mus; på mobil: hold inne et halvt sekund) til et nytt sted i en av de to
+// kolonnene. Rekkefølgen lagres i informasjonskapselen esbjug_paneler (ett år) og brukes neste gang siden åpnes.
+(() => {
+  const NAVN = ['naa', 'sted', 'gjor', 'bank', 'poster', 'sens', 'akse', 'oyet', 'pod'];
+  const kol = { v: document.querySelector('.venstre'), h: document.querySelector('.hoyre') };
+  if (!kol.v || !kol.h) return;
+  const nøkkel = el => NAVN.find(n => el.classList.contains(n));
+  const paneler = () => [...kol.v.children, ...kol.h.children].filter(nøkkel);
+  // Lagret rekkefølge først.
+  try {
+    const c = document.cookie.split('; ').find(x => x.startsWith('esbjug_paneler='));
+    const r = c && JSON.parse(decodeURIComponent(c.slice(15)));
+    if (r && r.v && r.h) for (const k of ['v', 'h']) for (const n of r[k]) { const el = paneler().find(p => nøkkel(p) === n); if (el) kol[k].append(el); }
+  } catch {}
+  const lagre = () => {
+    const r = { v: [...kol.v.children].map(nøkkel).filter(Boolean), h: [...kol.h.children].map(nøkkel).filter(Boolean) };
+    document.cookie = 'esbjug_paneler=' + encodeURIComponent(JSON.stringify(r)) + '; max-age=31536000; path=/; SameSite=Lax';
+  };
+  const IKKE = 'button,a,input,textarea,select,label,canvas,[role="slider"],.ak,.hp-o,.pod-bar,.maplibregl-map';
+  let drag = null, venter = null;
+  const start = (el, x, y) => {
+    const r = el.getBoundingClientRect();
+    const plass = document.createElement('div'); plass.className = 'flytt-plass'; plass.style.height = r.height + 'px';
+    el.after(plass);
+    document.body.append(el);   // ut av kolonnen mens det dras (kolonnene har transform, som forskyver position:fixed)
+    drag = { el, plass, dx: x - r.left, dy: y - r.top };
+    el.classList.add('flyttes'); el.style.width = r.width + 'px'; el.style.left = r.left + 'px'; el.style.top = r.top + 'px';
+    document.documentElement.classList.add('flytter');
+  };
+  const flytt = (x, y) => {
+    const d = drag; d.el.style.left = x - d.dx + 'px'; d.el.style.top = y - d.dy + 'px';
+    // Kolonnen nærmest pekeren, og plassen der pekeren er mellom panelene.
+    const k = [kol.v, kol.h].map(c => ({ c, r: c.getBoundingClientRect() })).sort((a, b) => Math.abs(x - (a.r.left + a.r.right) / 2) - Math.abs(x - (b.r.left + b.r.right) / 2))[0].c;
+    const andre = [...k.children].filter(e => e !== d.plass && e !== d.el && nøkkel(e) && !e.hidden);
+    const før = andre.find(e => { const r = e.getBoundingClientRect(); return y < r.top + r.height / 2; });
+    if (før) { if (d.plass.nextSibling !== før) k.insertBefore(d.plass, før); }
+    else if (k.lastElementChild !== d.plass) k.append(d.plass);
+  };
+  const slutt = () => {
+    const d = drag; if (!d) return; drag = null;
+    d.plass.replaceWith(d.el);
+    d.el.classList.remove('flyttes'); d.el.style.width = d.el.style.left = d.el.style.top = '';
+    document.documentElement.classList.remove('flytter');
+    lagre();
+    // Klikket som avslutter en flytting skal ikke også trykke på panelet (f.eks. bla i postene).
+    const svelg = e => { e.stopPropagation(); e.preventDefault(); };
+    addEventListener('click', svelg, { capture: true, once: true });
+    setTimeout(() => removeEventListener('click', svelg, true), 60);
+  };
+  for (const el of paneler()) el.classList.add('flytt-kan');
+  addEventListener('pointerdown', e => {
+    const el = e.target instanceof Element && e.target.closest('.flytt-kan');
+    if (!el || e.target.closest(IKKE) || e.button > 0) return;
+    const x0 = e.clientX, y0 = e.clientY;
+    venter = { el, x0, y0, touch: e.pointerType !== 'mouse', id: e.pointerId };
+    if (venter.touch) venter.tid = setTimeout(() => { if (venter) { start(venter.el, venter.x0, venter.y0); navigator.vibrate?.(15); } }, 450);
+  });
+  addEventListener('pointermove', e => {
+    if (drag) { flytt(e.clientX, e.clientY); return; }
+    if (!venter) return;
+    const langt = Math.hypot(e.clientX - venter.x0, e.clientY - venter.y0) > 7;
+    if (venter.touch) { if (langt) { clearTimeout(venter.tid); venter = null; } return; }
+    if (langt) { start(venter.el, venter.x0, venter.y0); venter = null; flytt(e.clientX, e.clientY); }
+  });
+  const opp = () => { if (venter) { clearTimeout(venter.tid); venter = null; } if (drag) slutt(); };
+  addEventListener('pointerup', opp); addEventListener('pointercancel', opp);
+  // Mens et panel dras med fingeren, skal ikke siden rulle.
+  addEventListener('touchmove', e => { if (drag) e.preventDefault(); }, { passive: false });
 })();
 </script>
 </body>
