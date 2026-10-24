@@ -564,7 +564,8 @@
   .h-forhånd[hidden]{display:none}
   .h-forhånd iframe{width:1440px;height:900px;border:0;transform:scale(.3);transform-origin:0 0;pointer-events:none}
   /* Hele siden slik den var: den gamle versjonen fyller vinduet bak avspilleren, og byttes med en myk overgang. */
-  .versjon-lag{position:fixed;inset:0;z-index:55;background:#fff}
+  .versjon-lag{position:fixed;inset:0;z-index:55;pointer-events:none}
+  .versjon-lag:has(iframe.klar){background:#fff;pointer-events:auto}
   .versjon-lag[hidden]{display:none}
   .versjon-lag iframe{position:absolute;inset:0;width:100%;height:100%;border:0;opacity:0;transition:opacity .6s ease;pointer-events:none}
   .versjon-lag iframe.klar{opacity:1;pointer-events:auto}
@@ -2307,8 +2308,9 @@ if (HUS) setTimeout(function lagAvspiller() {
     if (!forh.hidden && v) forh.firstChild.src = '/versjon/' + v.sha + '/?ramme';
     oppdaterLag();
   };
-  // Hele siden bytter: er versjonen ved T eldre enn den nyeste, fyller den gamle siden vinduet bak avspilleren. Ny
-  // versjon lastes i en ny ramme som tones inn når den er klar, så skiftet er mykt. Versjonsknappen slår det av og på.
+  // Hele siden bytter med tiden: er versjonen ved T eldre enn den nyeste, fyller den gamle siden vinduet bak avspilleren,
+  // med pulsen, posisjonen og alt annet fra T. Ny versjon lastes i en ny ramme som tones inn når den er klar; til da
+  // vises dagens side med dataene fra T, aldri en hvit skjerm. Versjonsknappen slår det av og på.
   let sideDa = true, lagSha = null;
   const lag = document.createElement('div'); lag.className = 'versjon-lag'; lag.hidden = true; document.body.append(lag);
   // Rammen for en versjon: lastes med tidspunktet (t) og markeres når den er klar. Rammer som er lastet på forhånd
@@ -2317,7 +2319,7 @@ if (HUS) setTimeout(function lagAvspiller() {
     let f = lag.querySelector('iframe[data-sha="' + v.sha + '"]');
     if (!f) {
       f = document.createElement('iframe'); f.title = 'Siden slik den så ut'; f.dataset.sha = v.sha;
-      f.src = '/versjon/' + v.sha + '/?ramme&t=' + Math.round(t);
+      f.src = '/versjon/' + v.sha + '/?ramme&t=' + Math.round(t); f.dataset.t = Math.round(t);
       f.onload = () => { f.dataset.lastet = '1'; if (!f.classList.contains('forh')) f.classList.add('klar'); };
       lag.append(f);
     }
@@ -2338,7 +2340,21 @@ if (HUS) setTimeout(function lagAvspiller() {
     setTimeout(() => { for (const g of [...lag.children]) if (g !== f && !g.classList.contains('forh')) g.remove(); }, 650);
   };
   // Tiden går i rammen også: avspillerens T sendes dit ved hvert oppdatering av sidene.
-  const sendT = T => { for (const f of lag.querySelectorAll('iframe.klar')) f.contentWindow?.postMessage({ avspT: T }, location.origin); };
+  // Hopper tiden (søk, kalender, spoling), lastes rammen på nytt fra det nye tidspunktet, så alt i den gamle siden er fra da.
+  const sendT = T => {
+    for (const f of lag.querySelectorAll('iframe:not(.forh)')) {
+      if (Math.abs(T - (+f.dataset.t || T)) > 90e3) { lastPaNytt(f, T); continue; }
+      f.dataset.t = Math.round(T);
+      f.contentWindow?.postMessage({ avspT: T }, location.origin);
+    }
+  };
+  const lastPaNytt = (gml, T) => {
+    if (gml.dataset.erstattes) return; gml.dataset.erstattes = '1';
+    const f = document.createElement('iframe'); f.title = gml.title; f.dataset.sha = gml.dataset.sha; f.dataset.t = Math.round(T);
+    f.src = '/versjon/' + f.dataset.sha + '/?ramme&t=' + Math.round(T);
+    f.onload = () => { f.dataset.lastet = '1'; f.classList.add('klar'); setTimeout(() => gml.remove(), 650); };
+    gml.dataset.sha = ''; lag.append(f);
+  };
   // Time-lapse: endringene på siden én etter én (3 s hver), med tiden rett etter hver endring. De tre neste versjonene
   // lastes på forhånd, så skiftene er raske. Stopper ved siste versjon, eller når man spiller, spoler eller lukker.
   let tl = null;
@@ -2356,7 +2372,7 @@ if (HUS) setTimeout(function lagAvspiller() {
     if (tl) { tlStopp(); return; }
     tlKnapp.setAttribute('aria-pressed', 'true');
     const i = visVer ? Math.max(0, versjoner.indexOf(visVer)) : 0;
-    tlSteg(i >= versjoner.length - 1 ? 0 : i + 1);
+    tlSteg(i >= versjoner.length - 2 ? 0 : i + 1);   // står den på slutten, begynner den fra første versjon
   });
   // Hold over: liten forhåndsvisning over modulen. Trykk: siden slik den var av/på.
   verBtn.addEventListener('mouseenter', () => { if (!visVer || !lag.hidden) return; forh.hidden = false; const src = '/versjon/' + visVer.sha + '/?ramme'; if (!forh.firstChild.src.endsWith(src)) forh.firstChild.src = src; });
@@ -2469,6 +2485,7 @@ if (HUS) setTimeout(function lagAvspiller() {
   }
   // Hopp til et øyeblikk: last dagen, still tiden, fly kartet dit og spill videre i sanntid.
   async function til(o) {
+    if (tl) tlStopp();
     await last(dagNr.format(o.ts)); stopp();
     avsp.hopp = true; vis((o.ts - avsp.t0) / (avsp.t1 - avsp.t0));
     if (live) kart.easeTo({ center: [live.lon, live.lat], zoom: Math.max(kart.getZoom(), 16), duration: 900 });
