@@ -1738,3 +1738,77 @@ footer {
     transform: none;
   }
 }
+
+/* Store skjermer (1920 × 1080 og opp), alt under heroen: innholdet holder seg
+   innenfor --innhold i stedet for å fylle bredden, og teksten er litt større.
+   Står sist så den slår grunnreglene over. */
+@media (min-width: 1500px) {
+  :root {
+    --innhold: 1360px;
+  }
+
+  section:not(.hero),
+  .readout,
+  footer {
+    padding-left: max(var(--gut), calc((100% - var(--innhold)) / 2));
+    padding-right: max(var(--gut), calc((100% - var(--innhold)) / 2));
+  }
+
+  .hero > .window {
+    max-width: var(--innhold);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  body {
+    font-size: 18px;
+  }
+
+  .slug {
+    font-size: 12.5px;
+  }
+
+  .title {
+    font-size: clamp(42px, 2.7vw, 56px);
+  }
+
+  .sub {
+    font-size: 19px;
+  }
+
+  .readout b {
+    font-size: clamp(46px, 2.9vw, 58px);
+  }
+
+  .readout span {
+    font-size: 15.5px;
+  }
+
+  .cards h3 {
+    font-size: 23px;
+  }
+
+  .cards p,
+  .step p,
+  .legal p,
+  .spec dt,
+  .spec dd {
+    font-size: 17px;
+  }
+
+  .step h3 {
+    font-size: 28px;
+  }
+
+  .reg b {
+    font-size: 18px;
+  }
+
+  .reg span:last-child {
+    font-size: 15.5px;
+  }
+
+  .spec dt {
+    font-size: 12px;
+  }
+}
