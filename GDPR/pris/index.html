@@ -904,14 +904,14 @@
                 <div class="sprint-pris" id="sp-pris" hidden>
                   <p class="merke" id="sp-trinn"></p>
                   <p class="pristall" id="sp-total"></p>
-                  <p>Grunnhonorar <b id="sp-grunn"></b> eks. mva, betales ved booking og trekkes fra beløpet.</p>
+                  <p>Grunnhonoraret på <b id="sp-grunn"></b> eks. mva betales ved booking og beholdes. Resten, <b id="sp-rest"></b>, faktureres bare hvis suksesskriteriene er nådd. Ellers faller den bort.</p>
                 </div>
                 <ul class="vilkar" style="margin-top: 18px">
                   <li>På stedet, under taushetserklæring og databehandleravtale</li>
                   <li>Suksesskriteriene avtales skriftlig før dag én</li>
-                  <li>Grunnhonoraret betales når dere booker</li>
-                  <li>Kriteriene er nådd: hele beløpet gjelder, og grunnhonoraret trekkes fra</li>
-                  <li>Kriteriene er ikke nådd: dere betaler bare grunnhonoraret</li>
+                  <li>Grunnhonoraret betales ved booking og beholdes</li>
+                  <li>Kriteriene er nådd: resten av beløpet faktureres</li>
+                  <li>Kriteriene er ikke nådd: resten faller bort, og dere betaler bare grunnhonoraret</li>
                 </ul>
                 <p class="tekst">
                   <b>Dere stiller med</b> en Mac Studio i toppkonfigurasjon, med minst 128 GB samlet minne, kjøpt av dere
@@ -1609,6 +1609,7 @@
           eks.textContent = "eks. mva, når kriteriene er nådd";
           $("sp-total").appendChild(eks);
           $("sp-grunn").textContent = nok(s.grunn);
+          $("sp-rest").textContent = nok(s.total - s.grunn);
           $("bk-knapp").disabled = !d.kjop;
           $("bk-knapp").textContent = d.kjop ? "Betal " + nok(s.grunn * 1.25) + " og book" : "Booking åpner snart";
           $("bk-info").textContent =
@@ -2071,7 +2072,7 @@
               $("k-tekst").textContent =
                 "Sprinten hos " + svar.navn + " (org.nr " + orgnrTekst(svar.orgnr) + ") er booket " +
                 datoTekst(svar.start) + " – " + datoTekst(svar.slutt) + ". Grunnhonoraret på " + nok(svar.grunn) +
-                " eks. mva er betalt. Bekreftelsen er sendt til " + svar.epost +
+                " eks. mva er betalt og beholdes. Resten faktureres bare hvis suksesskriteriene er nådd. Bekreftelsen er sendt til " + svar.epost +
                 ". Vi tar kontakt for å avtale suksesskriteriene skriftlig før dag én.";
               $("k-ics").href = "/klart/api/sprint/ics?session=" + encodeURIComponent(sprintOkt);
               $("k-ics-rad").hidden = false;

@@ -1305,7 +1305,7 @@ async function sprintBook(request, env, url) {
     const side = sideFor(url);
     const beskrivelse =
       `Grunnhonorar for Klart-sprint hos ${v.navn} (org.nr ${orgnrTekst(v.orgnr)}), ${datoTekst(start)}–${datoTekst(slutt)}. ` +
-      `Totalt ${kroner(s.total)} eks. mva når suksesskriteriene er nådd; grunnhonoraret trekkes fra.`;
+      `Grunnhonoraret beholdes. Resten (${kroner(s.total - s.grunn)} eks. mva) faktureres bare hvis suksesskriteriene er nådd, ellers faller den bort.`;
     const felt = {
       mode: "payment",
       customer: kunde.id,
@@ -1366,8 +1366,8 @@ async function sprintBetalt(env, okt) {
       tekst: [
         `Hei ${d.navn},`,
         "",
-        `Sprinten hos ${d.firma} er booket ${tid} (${SPRINT_DAGER} dager). Grunnhonoraret på ${kroner(d.grunn)} eks. mva er betalt.`,
-        `Når suksesskriteriene er nådd, gjelder hele beløpet på ${kroner(d.total)} eks. mva, og grunnhonoraret trekkes fra.`,
+        `Sprinten hos ${d.firma} er booket ${tid} (${SPRINT_DAGER} dager). Grunnhonoraret på ${kroner(d.grunn)} eks. mva er betalt og beholdes.`,
+        `Resten, ${kroner(d.total - d.grunn)} eks. mva, faktureres bare hvis suksesskriteriene er nådd. Ellers faller den bort.`,
         "",
         "Vi tar kontakt for å avtale suksesskriteriene skriftlig før dag én. Kalenderfilen ligger vedlagt.",
         "",
@@ -1382,7 +1382,7 @@ async function sprintBetalt(env, okt) {
       tekst: [
         `${d.navn} <${mottaker}>${d.telefon ? `, ${d.telefon}` : ""}`,
         `${d.firma}, org.nr ${orgnrTekst(r.rad.orgnr)}, ${d.trinn}`,
-        `Grunnhonorar betalt: ${kroner(d.grunn)} eks. mva. Totalt: ${kroner(d.total)} eks. mva.`,
+        `Grunnhonorar betalt (beholdes): ${kroner(d.grunn)} eks. mva. Resten ved nådde kriterier: ${kroner(d.total - d.grunn)} eks. mva.`,
         `Stripe: ${okt.id}`,
         "",
         d.melding || "(ingen melding)",
