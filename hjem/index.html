@@ -715,29 +715,29 @@
   .pod-l button:focus-visible{outline:2px solid #BA0C2F;outline-offset:2px;border-radius:4px}
   /* Spilleren (som Buzzsprout): modulen beholder høyden og overskriften forsvinner. Stor spill/pause til venstre; til
      høyre tittel og dato, spolelinjen med håndtak og tiden under. Listeikonet oppe til høyre går tilbake til episodene. */
-  .pod-v{position:relative;display:flex;align-items:center;gap:16px;flex:1;min-height:0}
+  .pod-v{position:relative;display:flex;align-items:center;gap:22px;flex:1;min-height:0;padding:4px 2px}
   .pod-v[hidden],.pod-l[hidden]{display:none}
   .pod.spiller>.s-t{display:none}
   .pod.spiller{justify-content:center}
   .pod-tilbake{all:unset;position:absolute;right:-8px;top:-4px;cursor:pointer;width:28px;height:28px;display:grid;place-items:center;border-radius:50%;color:rgba(0,32,91,.5)}
   .pod-tilbake svg{width:16px;height:16px}
   .pod-tilbake:hover{color:#BA0C2F;background:rgba(0,32,91,.06)}
-  .pod-stor{all:unset;flex:none;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;cursor:pointer;color:var(--ink);background:rgba(255,255,255,.4);border:1.5px solid rgba(0,32,91,.3);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:transform .15s,background .2s,border-color .2s}
-  .pod-stor:hover{transform:scale(1.05);background:rgba(255,255,255,.62);border-color:rgba(0,32,91,.5)}.pod-stor:active{transform:scale(.94)}
-  .pod-stor svg{width:22px;height:22px}
-  .pod-stor .pod-play{margin-left:3px}
+  .pod-stor{all:unset;flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;cursor:pointer;color:var(--ink);background:transparent;border:1.5px solid rgba(0,32,91,.35);transition:transform .15s,background .2s,border-color .2s}
+  .pod-stor:hover{background:rgba(0,32,91,.06);border-color:rgba(0,32,91,.6)}.pod-stor:active{transform:scale(.94)}
+  .pod-stor svg{width:18px;height:18px}
+  .pod-stor .pod-play{margin-left:2px}
   .pod-stor .pod-pause,.pod.spiller-på .pod-stor .pod-play{display:none}
   .pod.spiller-på .pod-stor .pod-pause{display:block}
-  .pod-hoyre{flex:1;min-width:0;display:flex;flex-direction:column;gap:9px;padding-right:22px}
+  .pod-hoyre{flex:1;min-width:0;display:flex;flex-direction:column;gap:14px;padding-right:26px}
   .pod-info{display:flex;flex-direction:column;gap:3px;min-width:0}
   .pod-tittel{font:italic 500 18px/1.15 var(--serif);color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .pod-dato{font:600 10px/1 "SF Mono",Menlo,monospace;letter-spacing:.06em;color:rgba(0,32,91,.55)}
-  .pod-bar{height:12px;border-radius:6px;background:rgba(0,32,91,.14);box-shadow:inset 0 1px 2px rgba(0,32,91,.12);cursor:pointer;position:relative;outline:none}
+  .pod-bar{height:6px;border-radius:3px;background:rgba(0,32,91,.14);cursor:pointer;position:relative;outline:none}
   .pod-bar::before{content:"";position:absolute;inset:-9px 0}
-  .pod-bar i{display:block;height:100%;width:0;min-width:12px;border-radius:6px;background:var(--ink)}
-  .pod-bar b{position:absolute;top:50%;left:0;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;background:#fff;border:3px solid var(--ink);box-shadow:0 3px 10px rgba(0,32,91,.3);transition:transform .15s}
-  .pod-bar:hover b,.pod-bar:focus-visible b{transform:scale(1.15)}
-  .pod-sp{display:flex;justify-content:space-between;margin-top:-3px}
+  .pod-bar i{display:block;height:100%;width:0;border-radius:3px;background:var(--ink)}
+  .pod-bar b{position:absolute;top:50%;left:0;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--ink);box-shadow:0 0 0 3px rgba(255,255,255,.75);transition:transform .15s}
+  .pod-bar:hover b,.pod-bar:focus-visible b{transform:scale(1.25)}
+  .pod-sp{display:flex;justify-content:space-between;margin-top:-6px}
   .pod-tid,.pod-tot{font:600 10px/1 "SF Mono",Menlo,monospace;color:var(--ink);opacity:.6;font-variant-numeric:tabular-nums;white-space:nowrap}
   /* Banken (SpareBank 1): samlet saldo og saldoen på hver konto. */
   .bank{display:flex;flex-direction:column;gap:8px;padding:14px 18px 16px}
