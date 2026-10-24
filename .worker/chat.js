@@ -198,6 +198,9 @@ export async function handleChat(request, env, url) {
       body: JSON.stringify({ kilde: navn, d: { ledig: Number.isFinite(ledig) && ledig >= 0 ? Math.round(ledig) : null } }) }));
   }
 
+  if (path === "/chat/oyet" && tid(url)) {
+    return hub.fetch(new Request("https://hub/internal/oyet-ved", { method: "POST", headers: { "x-role": "internal" }, body: JSON.stringify({ t: tid(url) }) }));
+  }
   if (path === "/chat/oyet") {
     const key = new Request("https://esbjugconsult.com/chat/oyet?steder=dubai-kp-lombok");
     const hit = await caches.default.match(key);
@@ -763,6 +766,10 @@ export class ChatHub {
       }
       if (url.pathname === "/internal/versjoner") {
         return new Response(this.setting("versjoner") || "[]", { headers: { "content-type": "application/json" } });
+      }
+      if (url.pathname === "/internal/oyet-ved") {
+        const d = await this.dagVed(b.t), l = this.loggVed(d, b.t);
+        return new Response(l.oyet || "[]", { headers: { "content-type": "application/json", "cache-control": "no-store" } });
       }
       if (url.pathname === "/internal/dager") {
         return Response.json(await this.dager());
@@ -2019,7 +2026,7 @@ export class ChatHub {
   dagData(dag) {
     const start = osloMidnight(Date.parse(dag + "T12:00:00Z")), slutt = osloMidnight(start + 36 * 3600e3);
     const q = (sql) => this.sql.exec(sql, start, slutt).toArray();
-    const LOGG = ["gjor", "status", "notater", "bank", "kast", "besok", "rom", "sted"];
+    const LOGG = ["gjor", "status", "notater", "bank", "kast", "besok", "rom", "sted", "oyet"];
     return {
       dag, start, slutt,
       pos: q(`SELECT ts, lat, lon, acc, spd, alt, hdg FROM pos WHERE ts >= ? AND ts < ? ORDER BY ts`),
@@ -2032,6 +2039,15 @@ export class ChatHub {
       veispor: this.sql.exec(`SELECT fra, til, kost, geom FROM veispor WHERE til >= ? AND fra < ? ORDER BY fra`, start, slutt).toArray(),
       banktrans: q(`SELECT id, konto, tid, belop, tekst FROM banktrans WHERE tid >= ? AND tid < ? ORDER BY tid`),
     };
+  }
+
+  // Været i «Øyet mot» (Dubai, Koh Phangan, Lombok) logges hvert kvarter, så avspillingen kan vise været den gang.
+  async oyetLogg() {
+    const r = await fetch("https://api.open-meteo.com/v1/forecast?latitude=25.2,9.73,-8.58&longitude=55.27,100.01,116.12&current=temperature_2m,weather_code,is_day");
+    if (!r.ok) return;
+    const j = await r.json();
+    const steder = (Array.isArray(j) ? j : [j]).map((x) => ({ t: Math.round(x.current?.temperature_2m), kode: x.current?.weather_code, dag: !!x.current?.is_day }));
+    this.loggFor("oyet", JSON.stringify(steder));
   }
 
   // Versjonshistorikken: hver commit som endret forsiden (index.html) i det offentlige repoet hentes fra GitHub og lagres
@@ -2187,6 +2203,7 @@ export class ChatHub {
     await this.bankOppdater().catch(() => {});
     await this.arkiver().catch(() => {});
     await this.versjonerOppdater().catch(() => {});
+    await this.oyetLogg().catch(() => {});
     await this.ctx.storage.setAlarm(nextQuarter(now + 1000));
   }
 

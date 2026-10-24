@@ -2449,6 +2449,8 @@ if (HUS) setTimeout(function lagAvspiller() {
     visBank(bk);
     try { const kk = da.kast ? JSON.parse(da.kast) : null; if (kk) for (const k of ['tomat', 'heia']) if (kk[k] != null) knapp(k).querySelector('b').textContent = tall(kk[k]); } catch {}
     rom = da.rom ?? null;
+    let oy = null; try { oy = da.oyet ? JSON.parse(da.oyet) : null; } catch {}
+    if (da.oyet !== avsp.oyetSist) { avsp.oyetSist = da.oyet; visOyet(oy); }
     // Akselerometrene: de rå pakkene fram til T (hentes i vinduer). Spoler man bakover, begynner kurvene på nytt.
     if (T < (avsp.sistT || 0) - 2000) { delete AK.iphone; delete AK.watch; }
     avsp.sistT = T;
@@ -2479,7 +2481,7 @@ if (HUS) setTimeout(function lagAvspiller() {
     fortell(o.tekst);
     start();
   }
-  function gåLive() { lag.hidden = true; lag.textContent = ''; lagSha = null; document.body.classList.remove('versjon-på'); document.body.classList.remove('replay-sover'); delete AK.iphone; delete AK.watch; bankNokkel = ''; kart.getSource('avsp-prikk')?.setData({ type: 'FeatureCollection', features: [] }); megMark.getElement().style.visibility = ''; document.body.classList.remove('i-replay'); avsp = null; window.__avsp = false; stopp(); trykket(null); kl2.textContent = '–'; fortell(''); sistSpor = ''; forste = true; hent(); }
+  function gåLive() { setTimeout(hentOyet, 0); lag.hidden = true; lag.textContent = ''; lagSha = null; document.body.classList.remove('versjon-på'); document.body.classList.remove('replay-sover'); delete AK.iphone; delete AK.watch; bankNokkel = ''; kart.getSource('avsp-prikk')?.setData({ type: 'FeatureCollection', features: [] }); megMark.getElement().style.visibility = ''; document.body.classList.remove('i-replay'); avsp = null; window.__avsp = false; stopp(); trykket(null); kl2.textContent = '–'; fortell(''); sistSpor = ''; forste = true; hent(); }
   spill.onclick = () => { if (tl) tlStopp(); if (!avsp) return; if (avsp.spiller) stopp(); else { if (avsp.k >= 1) avsp.k = 0; start(); } };
   // Farten: en egen glidebryter (som på YouTube) fra 1× til 60×, jevnt fordelt på en logaritmisk skala.
   const fartvalg = q('.h-fartvalg'), fs = q('.h-fs');
@@ -2705,15 +2707,17 @@ function tegnOyet() {
     r.querySelector('.oy-k').textContent = f.format(Date.now() + skew);
   });
 }
+// Været i de tre byene (fra /chat/oyet, eller fra loggen under avspilling). Uten data: tomt.
+function visOyet(v) {
+  document.querySelectorAll('.oy').forEach((r, n) => {
+    const x = v && v[n];
+    if (!x || !Number.isFinite(x.t)) { r.querySelector('.oy-i').innerHTML = ''; r.querySelector('.oy-v').textContent = '–'; return; }
+    r.querySelector('.oy-i').innerHTML = IKON[VAER(x.kode, x.dag)]; r.querySelector('.oy-v').textContent = x.t + '°';
+  });
+}
 async function hentOyet() {
-  try {
-    const v = await (await fetch('/chat/oyet?steder=dubai-kp-lombok')).json();   // rekkefølgen i adressen, så nettleserens mellomlager ikke blander gammel rekkefølge
-    document.querySelectorAll('.oy').forEach((r, n) => {
-      const x = v[n]; if (!x || !Number.isFinite(x.t)) return;
-      const k = VAER(x.kode, x.dag);
-      r.querySelector('.oy-i').innerHTML = IKON[k]; r.querySelector('.oy-v').textContent = x.t + '°';
-    });
-  } catch {}
+  if (window.__avsp) return;   // under avspilling viser loggen været den gang
+  try { visOyet(await (await fetch('/chat/oyet?steder=dubai-kp-lombok')).json()); } catch {}   // rekkefølgen i adressen, så nettleserens mellomlager ikke blander gammel rekkefølge
 }
 tegnOyet(); setInterval(tegnOyet, 1000); hentOyet(); setInterval(hentOyet, 15 * 60e3);
 // Bevegelsesoversikten: trykk på et akselerometer for historikken (i dag med hver måling, 7 dager, 30 dager), som pulsen.
