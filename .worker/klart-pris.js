@@ -15,6 +15,16 @@
 //    samme. Ankerpunktene står i «kurve».
 // 3. Hva de tjener. Driftsresultat + lønn per ansatt fra Regnskapsregisteret, mot en referanse. Et
 //    advokatfirma som tjener 2,6 mill. per ansatt betaler mer enn et som tjener 1 mill. «verdiskaping».
+//
+// Og tre ting til:
+//
+// - Konsern. Et morselskap med konsernregnskap prises på hele konsernet (ansatte anslått fra lønnen i
+//   konsernet), og lisensen gjelder hele konsernet. Ellers koster Norwegian Air Shuttle ASA det samme som
+//   212 kontoransatte, og AF Gruppen ASA (0 ansatte) som Solo. «konsern».
+// - Kundedata. Bransjer som selger til forbrukere, har kundedata i forhold til omsetningen, ikke de
+//   ansatte. Der er prisen den høyeste av det de ansatte gir og det omsetningen gir. «kundedata».
+// - Påslag for bransjer med mye eller følsom data (luftfart: pass og helseopplysninger), på sluttprisen.
+//   «sektorer».
 
 /** Norsk org.nr: ni sifre, MOD11 med vektene 3 2 7 6 5 4 3 2. Rest 11 gir 0, rest 10 er ugyldig. */
 export function orgnrFra(verdi) {
@@ -34,30 +44,47 @@ export function lesPriser(tekst) {
   if (!tekst) return null;
   if (lest && lest.tekst === tekst) return lest.priser;
   const p = typeof tekst === "string" ? JSON.parse(tekst) : tekst;
-  const punkter = p.kurve?.punkter;
-  const stigende =
-    Array.isArray(punkter) &&
-    punkter.length >= 2 &&
-    punkter.every(([x, y], i) => x > 0 && y > 0 && (i === 0 || (x > punkter[i - 1][0] && y > punkter[i - 1][1])));
-  if (!Number.isFinite(p.kurve?.solo) || !stigende) {
+  if (!Number.isFinite(p.kurve?.solo) || !stigende(p.kurve?.punkter)) {
     throw new Error("KLART_PRISER: kurve.solo og minst to stigende kurve.punkter [ansatte, pris] trengs");
+  }
+  if (p.kundedata && (!stigende(p.kundedata.punkter) || !Array.isArray(p.kundedata.nace))) {
+    throw new Error("KLART_PRISER: kundedata trenger nace og minst to stigende punkter [omsetning, pris]");
   }
   lest = { tekst, priser: p };
   return p;
 }
 
-/** Prisen for n talte ansatte, før justering. Mellom ankerpunktene går den som en rett linje i log-log
-    (samme prosent dyrere for hver prosent flere ansatte), og etter det siste fortsetter den med den siste
-    stigningen, uten tak. Uten talte ansatte er prisen kurve.solo. */
-export function kurvepris(priser, n) {
-  const { solo, punkter } = priser.kurve;
-  if (n <= 0) return solo;
-  if (n <= punkter[0][0]) return punkter[0][1];
-  let i = punkter.findIndex(([x]) => x >= n);
+function stigende(punkter) {
+  return (
+    Array.isArray(punkter) &&
+    punkter.length >= 2 &&
+    punkter.every(([x, y], i) => x > 0 && y > 0 && (i === 0 || (x > punkter[i - 1][0] && y > punkter[i - 1][1])))
+  );
+}
+
+/** Mellom punktene en rett linje i log-log (samme prosent mer for hver prosent mer), og etter det siste
+    videre med den siste stigningen, uten tak. Før det første: første verdi. */
+function loglog(punkter, x) {
+  if (x <= punkter[0][0]) return punkter[0][1];
+  let i = punkter.findIndex(([px]) => px >= x);
   if (i === -1) i = punkter.length - 1;
   const [x0, y0] = punkter[i - 1];
   const [x1, y1] = punkter[i];
-  return y0 * Math.exp((Math.log(n / x0) / Math.log(x1 / x0)) * Math.log(y1 / y0));
+  return y0 * Math.exp((Math.log(x / x0) / Math.log(x1 / x0)) * Math.log(y1 / y0));
+}
+
+/** Prisen for n talte ansatte, før justering. Uten talte ansatte er prisen kurve.solo. */
+export function kurvepris(priser, n) {
+  return n <= 0 ? priser.kurve.solo : loglog(priser.kurve.punkter, n);
+}
+
+/** Det omsetningen gir for en bransje som selger til forbrukere (kundedata.nace), ellers 0. Under det
+    første punktet (50 mill.) gir den ingenting, så en vanlig butikk merker det ikke. */
+export function kundedataPris(priser, v, regnskap) {
+  const k = priser.kundedata;
+  if (!k || !regnskap || !(regnskap.inntekt >= k.punkter[0][0])) return 0;
+  if (!k.nace.some((n) => String(v.naering || "").startsWith(n))) return 0;
+  return loglog(k.punkter, regnskap.inntekt);
 }
 
 /** Pene priser: hele hundre under 10 000, hele fem hundre under 100 000, ellers hele tusen. */
@@ -66,19 +93,31 @@ export function rund(pris) {
   return Math.round(pris / steg) * steg;
 }
 
-/** Siste årsregnskap fra Regnskapsregisteret, hvis det kan brukes: selskapets eget (ikke konsernets), i
-    NOK, med inntekter og lønn. Equinor fører i USD, og noen leverer tomme regnskap; da er svaret null,
-    og prisen justeres ikke. */
-export function regnskapFra(liste) {
+/** Siste årsregnskap av typen (SELSKAP eller KONSERN) fra Regnskapsregisteret, hvis det kan brukes: i NOK,
+    med inntekter og lønn. Equinor fører i USD, og noen leverer tomme regnskap; da er svaret null, og
+    prisen justeres ikke. */
+export function regnskapFra(liste, type = "SELSKAP") {
   if (!Array.isArray(liste)) return null;
   const s = liste
-    .filter((r) => r.regnskapstype === "SELSKAP" && r.valuta === "NOK")
+    .filter((r) => r.regnskapstype === type && r.valuta === "NOK")
     .sort((a, b) => String(b.regnskapsperiode?.tilDato).localeCompare(String(a.regnskapsperiode?.tilDato)))[0];
   const d = s?.resultatregnskapResultat?.driftsresultat;
   const inntekt = d?.driftsinntekter?.sumDriftsinntekter ?? 0;
   const lonn = d?.driftskostnad?.loennskostnad ?? 0;
   if (inntekt <= 0 || lonn <= 0) return null;
   return { aar: String(s.regnskapsperiode.tilDato).slice(0, 4), inntekt, lonn, drift: d.driftsresultat ?? 0 };
+}
+
+/** Det prisen regnes på, fra hele listen i Regnskapsregisteret. Et morselskap med brukbart konsernregnskap
+    prises på konsernet: ansatte anslått som lønnen i konsernet delt på konsern.lonnPerAnsatt (eller de
+    registrerte, om det er flere), og konsernets tall. Ellers virksomheten selv og dens eget regnskap. */
+export function grunnlagFra(priser, v, liste) {
+  const konsern = regnskapFra(liste, "KONSERN");
+  const perAnsatt = priser.konsern?.lonnPerAnsatt;
+  if (konsern && perAnsatt) {
+    return { v: { ...v, ansatte: Math.max(v.ansatte, Math.round(konsern.lonn / perAnsatt)) }, regnskap: konsern, konsern: true };
+  }
+  return { v, regnskap: regnskapFra(liste, "SELSKAP"), konsern: false };
 }
 
 /** Hva virksomheten tjener per registrerte ansatt, mot referansen: (driftsresultat + lønn) / ansatte.
@@ -129,18 +168,21 @@ export function telteAnsatte(priser, v) {
   return Math.ceil(Math.round(v.ansatte * andelFor(priser, v) * 1e6) / 1e6);
 }
 
-/** Årsprisen for virksomhetens egen lisens, i hele kroner eks. mva. Sektoren er med bare når den endrer
-    prisen. «regnskap» er fra regnskapFra, eller null. */
+/** Årsprisen for lisensen, i hele kroner eks. mva: det høyeste av det de ansatte gir (kurven, justert
+    for hva de tjener) og det kundedataene gir, ganger påslaget for bransjen. «v» og «regnskap» er fra
+    grunnlagFra (eller regnskapFra), og regnskap kan være null. */
 export function lisenspris(priser, v, regnskap = null) {
   const ansatte = telteAnsatte(priser, v);
+  const faktor = verdifaktor(priser, v.ansatte, regnskap);
+  const fraAnsatte = kurvepris(priser, ansatte) * faktor;
+  const fraKunder = kundedataPris(priser, v, regnskap);
   const s = sektorFor(priser, v.naering);
   const sektor = s && typeof s.faktor === "number" ? s.faktor : 1;
-  const faktor = verdifaktor(priser, v.ansatte, regnskap);
-  let pris = rund(kurvepris(priser, ansatte) * sektor * faktor);
+  let pris = rund(Math.max(fraAnsatte, fraKunder) * sektor);
   // Aldri mer enn en liten del av omsetningen (1 %), og aldri under Solo.
   const andel = priser.verdiskaping?.maksAndelAvInntekt;
   if (regnskap && andel) pris = Math.min(pris, rund(regnskap.inntekt * andel));
-  return { ansatte, faktor, sektor: sektor !== 1 ? s : null, pris: Math.max(priser.kurve.solo, pris) };
+  return { ansatte, faktor, kundedata: fraKunder > fraAnsatte, sektor: sektor !== 1 ? s : null, pris: Math.max(priser.kurve.solo, pris) };
 }
 
 /** Prisen en tjenesteleverandør betaler per år for én kunde, ut fra kundens egen størrelse og regnskap. */

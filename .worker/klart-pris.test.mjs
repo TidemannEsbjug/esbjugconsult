@@ -11,6 +11,8 @@ import {
   telteAnsatte,
   verdifaktor,
   regnskapFra,
+  grunnlagFra,
+  kundedataPris,
   fornyetBelop,
   sprintFor,
   betalingFor,
@@ -99,6 +101,41 @@ assert.equal(regnskapFra([r("SELSKAP", "2023-12-31", "NOK", 80000, 5000), r("SEL
 assert.equal(regnskapFra([r("SELSKAP", "2025-12-31", "NOK", -341829, 0)]), null);
 assert.equal(regnskapFra(null), null);
 assert.equal(regnskapFra([]), null);
+
+// Konsern: et morselskap med konsernregnskap prises på hele konsernet
+const selskap = (t) => r("SELSKAP", "2025-12-31", "NOK", t.inntekt, t.lonn, t.drift);
+const konsern = (t) => r("KONSERN", "2025-12-31", "NOK", t.inntekt, t.lonn, t.drift);
+const norwegianKonsern = { inntekt: 37646e6, lonn: 8645e6, drift: 3732e6 };
+const norwegian = v(212, "51.100", "ASA");
+const ng = grunnlagFra(P, norwegian, [selskap({ inntekt: 872e6, lonn: 328e6, drift: -392e6 }), konsern(norwegianKonsern)]);
+assert.equal(ng.konsern, true);
+assert.equal(ng.v.ansatte, 9606); // 8 645 mill. i lønn / 900 000
+assert.equal(ng.regnskap.inntekt, 37646e6);
+// Uten konsernregnskap (eller bare i USD): selskapet selv
+const eg = grunnlagFra(P, v(47, "69.100"), [selskap({ inntekt: 15e7, lonn: 8e7, drift: 3e7 }), r("KONSERN", "2025-12-31", "USD", 1e9, 1e8)]);
+assert.equal(eg.konsern, false);
+assert.equal(eg.v.ansatte, 47);
+// Registrerte ansatte vinner om de er flere enn anslaget
+assert.equal(grunnlagFra(P, v(5000), [konsern({ inntekt: 1e9, lonn: 9e8, drift: 0 })]).v.ansatte, 5000);
+
+// Kundedata: forbrukerbransjer etter omsetning, under 50 mill. ingenting
+assert.equal(kundedataPris(P, v(313, "47.400"), { inntekt: 49e6, lonn: 1, drift: 0 }), 0);
+assert.equal(rund(kundedataPris(P, v(313, "47.400"), { inntekt: 5.6e9, lonn: 1, drift: 0 })), 265000);
+assert.equal(kundedataPris(P, v(47, "69.100"), { inntekt: 5.6e9, lonn: 1, drift: 0 }), 0); // advokat selger ikke til forbrukere
+assert.equal(kundedataPris(P, v(313, "47.400"), null), 0);
+// En nettbutikk med få ansatte og stor omsetning prises etter kundene
+const nettbutikk = lisenspris(P, v(313, "47.400"), { aar: "2025", inntekt: 5.6e9, lonn: 313 * 1.2e6, drift: 0 });
+assert.equal(nettbutikk.kundedata, true);
+assert.equal(nettbutikk.pris, 265000);
+
+// Norwegian: konsernet, luftfart 30 %, kundedata, påslag 1,5 på sluttprisen
+const nl = lisenspris(P, ng.v, ng.regnskap);
+assert.equal(nl.ansatte, 2882); // 9 606 × 0,3
+assert.equal(nl.kundedata, true);
+assert.equal(nl.sektor.id, "luftfart");
+assert.equal(nl.pris, 1040000);
+// Fraktflyging (51.2) får andelen, men ikke påslaget eller kundedata
+assert.equal(lisenspris(P, v(100, "51.210")).sektor, null);
 
 // Fornyelse: opp med høyst 25 %, ned så mye den skal
 assert.equal(fornyetBelop(P, 4500000, 7000000), 5625000);

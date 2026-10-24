@@ -208,10 +208,6 @@
       .pristall:focus {
         outline: none;
       }
-      .sektor {
-        font-size: 15px;
-        color: var(--ink-2);
-      }
       .resultat-endre {
         margin-top: 6px;
       }
@@ -885,12 +881,11 @@
           <div id="v-pris" hidden>
             <p class="bekreftet" id="r-hvem"></p>
             <h2 class="pristall" id="r-pris" tabindex="-1"></h2>
-            <p class="sektor" id="r-sektor" hidden></p>
             <p class="resultat-endre">
               <button type="button" class="lenke" id="endre">Ikke deres virksomhet? Endre organisasjonsnummer.</button>
             </p>
             <ul class="inkludert" aria-label="Inkludert">
-              <li>Alle brukere og enheter i virksomheten</li>
+              <li id="r-alle">Alle brukere og enheter i virksomheten</li>
               <li>Word, PDF, PowerPoint og andre vanlige formater, ubegrenset eksport</li>
               <li>Kjører helt uten nett, så filene forlater aldri maskinen</li>
               <li>Konsekvent pseudonymisering på tvers av filer: Person 1 forblir Person 1</li>
@@ -898,7 +893,7 @@
               <li>Filene beholder originalformatet og utformingen</li>
               <li>Hver eksport åpnes på nytt og kontrolleres før den leveres</li>
             </ul>
-            <p class="omfang">Dekker virksomhetens egne data.</p>
+            <p class="omfang" id="r-omfang">Dekker virksomhetens egne data.</p>
             <div class="betaling" id="betaling">
               <button type="button" class="valg hoved" data-betaling="kort">
                 <strong>Betal med kort</strong>
@@ -1475,15 +1470,16 @@
           navn.textContent = d.navn;
           $("r-hvem").appendChild(navn);
           $("r-hvem").appendChild(
-            document.createTextNode(" · Org.nr. " + orgnrTekst(d.orgnr) + " · " + ansatteTekst(d.ansatte))
+            document.createTextNode(" · Org.nr. " + orgnrTekst(d.orgnr) + " · " + (d.konsern ? "konsern" : ansatteTekst(d.ansatte)))
           );
           $("r-pris").innerHTML = "";
           $("r-pris").appendChild(document.createTextNode(nok(d.pris) + " "));
           var per = document.createElement("span");
           per.textContent = "per år, eks. mva";
           $("r-pris").appendChild(per);
-          $("r-sektor").hidden = !d.sektor;
-          $("r-sektor").textContent = d.sektor ? "Priset for datatettheten i " + d.sektor + "." : "";
+          // Et morselskap med konsernregnskap er priset på hele konsernet, og lisensen gjelder hele konsernet.
+          $("r-alle").textContent = "Alle brukere og enheter i " + (d.konsern ? "hele konsernet" : "virksomheten");
+          $("r-omfang").textContent = d.konsern ? "Dekker egne data i hele konsernet." : "Dekker virksomhetens egne data.";
 
           var b = d.betaling;
           // Grensene står i KLART_PRISER. Faktura er for de store, avdrag for de små.
@@ -1572,9 +1568,8 @@
             var rader = [
               ["Virksomhet", tilbud.navn],
               ["Org.nr.", orgnrTekst(tilbud.orgnr)],
-              ["Registrerte ansatte", tall.format(tilbud.ansatte)],
+              tilbud.konsern ? ["Gjelder", "Hele konsernet"] : ["Registrerte ansatte", tall.format(tilbud.ansatte)],
             ];
-            if (tilbud.sektor) rader.push(["Bransje", "Priset for datatettheten i " + tilbud.sektor]);
             if (betaling === "avdrag") {
               rader.push(["Betaling", "Fire kvartalsvise betalinger på " + nok(tilbud.betaling.kvartal)]);
               rader.push(["Binding", "12 måneder"]);
@@ -1729,7 +1724,7 @@
             var hvem = document.createElement("span");
             hvem.textContent = k.navn;
             var detaljer = document.createElement("small");
-            detaljer.textContent = "Org.nr. " + orgnrTekst(k.orgnr) + " · " + ansatteTekst(k.ansatte);
+            detaljer.textContent = "Org.nr. " + orgnrTekst(k.orgnr) + " · " + (k.konsern ? "konsern" : ansatteTekst(k.ansatte));
             hvem.appendChild(detaljer);
             var belop = document.createElement("span");
             belop.className = "belop";
