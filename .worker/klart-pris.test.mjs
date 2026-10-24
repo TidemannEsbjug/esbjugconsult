@@ -6,7 +6,12 @@ import {
   lesPriser,
   lisenspris,
   kundepris,
+  kurvepris,
+  rund,
   telteAnsatte,
+  verdifaktor,
+  regnskapFra,
+  fornyetBelop,
   sprintFor,
   betalingFor,
   sektorFor,
@@ -16,6 +21,9 @@ import {
 
 const P = lesPriser(readFileSync(new URL("../../verktoy/klart-priser.json", import.meta.url), "utf8"));
 const v = (ansatte, naering = "62.010", form = "AS") => ({ ansatte, naering, form });
+const pris = (n, kode) => lisenspris(P, v(n, kode)).pris;
+// Et regnskap der driftsresultat + lønn per ansatt er «perAnsatt».
+const regnskap = (ansatte, perAnsatt, inntekt = 1e12) => ({ aar: "2025", inntekt, lonn: perAnsatt * ansatte, drift: 0 });
 
 // MOD11
 assert.equal(orgnrFra("923 609 016"), "923609016");
@@ -23,35 +31,80 @@ assert.equal(orgnrFra("923609017"), null);
 assert.equal(orgnrFra("12345678"), null);
 assert.equal(orgnrFra("974760673"), "974760673");
 
-// Trinn ved grensene, i en bransje der alle teller
-const pris = (n, kode) => lisenspris(P, v(n, kode)).pris;
+// Kurven: ankerpunktene treffes, og ingen trinn mellom dem
 assert.equal(pris(0), 3000);
-assert.equal(pris(1), 6000);
-assert.equal(pris(3), 6000);
-assert.equal(pris(4), 15000);
-assert.equal(pris(10), 15000);
-assert.equal(pris(11), 45000);
-assert.equal(pris(50), 45000);
-assert.equal(pris(51), 120000);
-assert.equal(pris(250), 120000);
-assert.equal(pris(251), 250000);
-assert.equal(pris(1000), 250000);
-assert.equal(pris(1001), 450000);
-assert.equal(pris(21231, "06.100"), 450000);
+assert.equal(pris(1), 5000);
+assert.equal(pris(2), 6000);
+assert.equal(pris(6), 15000);
+assert.equal(pris(23), 45000);
+assert.equal(pris(113), 120000);
+assert.equal(pris(500), 250000);
+assert.equal(pris(2000), 450000);
+assert.equal(pris(10), 23000);
+assert.equal(pris(11), 24500); // i trinnene var 10 → 15 000 og 11 → 45 000
+assert.equal(pris(47), 70000);
+assert.equal(pris(50), 72500);
+assert.equal(pris(51), 73500); // i trinnene var 51 → 120 000
+assert.equal(pris(21231, "06.100"), 1225000); // ingen tak over det siste punktet
+let forrige = 0;
+for (let n = 0; n <= 6000; n++) {
+  const k = kurvepris(P, n);
+  assert.ok(k >= forrige, `kurven synker ved ${n}`);
+  forrige = k;
+}
+assert.equal(rund(8412), 8400);
+assert.equal(rund(24612), 24500);
+assert.equal(rund(101934), 102000);
 
 // De som jobber med dokumenter: andelen per bransje, rundet opp
 assert.equal(telteAnsatte(P, v(144, "43.223")), 22); // ventilasjon: 144 × 0,15
-assert.equal(pris(144, "43.223"), 45000);
+assert.equal(pris(144, "43.223"), 43500);
 assert.equal(telteAnsatte(P, v(100, "43.220")), 15); // ikke 16 (flyttall)
 assert.equal(telteAnsatte(P, v(1, "43.220")), 1); // én ansatt er ikke Solo
-assert.equal(telteAnsatte(P, v(0, "43.220")), 0);
-assert.equal(pris(5358, "78.200"), 250000); // utleie av arbeidskraft: vikarene er de ansatte
+assert.equal(telteAnsatte(P, v(5358, "78.200")), 268); // utleie av arbeidskraft
 assert.equal(telteAnsatte(P, v(40, "78.100")), 40); // rekruttering teller fullt (lengste prefiks)
-assert.equal(pris(290, "69.100"), 250000); // advokatfirma teller fullt
-assert.equal(telteAnsatte(P, v(30, "95.310")), 5); // bilverksted
-assert.equal(lisenspris(P, v(1143, "84.110", "KOMM")).pris, 250000); // kommune: 1143 × 0,4
-assert.equal(lisenspris(P, v(600, "84.240", "ORGL")).pris, 250000); // statlig etat teller fullt
-assert.equal(lisenspris(P, v(3273, "84.110", "KOMM")).pris, 450000);
+assert.equal(telteAnsatte(P, v(1143, "84.110", "KOMM")), 458); // kommune: 1143 × 0,4
+assert.equal(telteAnsatte(P, v(600, "84.240", "ORGL")), 600); // statlig etat teller fullt
+
+// Hva de tjener: (driftsresultat + lønn) per ansatt mot 1,2 mill., kvadratrot, mellom 0,8 og 2,0
+assert.equal(verdifaktor(P, 10, null), 1);
+assert.equal(verdifaktor(P, 0, regnskap(0, 5e6)), 1);
+assert.equal(verdifaktor(P, 10, regnskap(10, 1.2e6)), 1);
+assert.equal(verdifaktor(P, 10, regnskap(10, 4.8e6)), 2);
+assert.equal(verdifaktor(P, 10, regnskap(10, 20e6)), 2);
+assert.equal(verdifaktor(P, 10, regnskap(10, 0.3e6)), 0.8);
+assert.equal(verdifaktor(P, 10, { aar: "2025", inntekt: 1e6, lonn: 1e5, drift: -5e6 }), 0.8);
+// Harris Advokatfirma, 47 ansatte, regnskapet for 2023
+const harris = { aar: "2023", inntekt: 149942046, lonn: 82240735, drift: 37543559 };
+assert.equal(lisenspris(P, v(47, "69.100"), harris).pris, 102000);
+// Aldri mer enn 1 % av omsetningen, og aldri under Solo
+assert.equal(lisenspris(P, v(50), regnskap(50, 1.2e6, 3e6)).pris, 30000);
+assert.equal(lisenspris(P, v(5), regnskap(5, 1.2e6, 1e5)).pris, 3000);
+
+// Regnskapsregisteret: selskapets siste regnskap i NOK, med inntekt og lønn. Ellers null.
+const r = (type, til, valuta, inntekt, lonn, drift = 0) => ({
+  regnskapstype: type,
+  valuta,
+  regnskapsperiode: { tilDato: til },
+  resultatregnskapResultat: {
+    driftsresultat: { driftsresultat: drift, driftsinntekter: { sumDriftsinntekter: inntekt }, driftskostnad: { loennskostnad: lonn } },
+  },
+});
+assert.deepEqual(
+  regnskapFra([r("SELSKAP", "2023-12-31", "NOK", 100, 50, 10), r("SELSKAP", "2024-12-31", "NOK", 200, 80, 20), r("KONSERN", "2025-12-31", "NOK", 900, 400)]),
+  { aar: "2024", inntekt: 200, lonn: 80, drift: 20 }
+);
+assert.equal(regnskapFra([r("SELSKAP", "2025-12-31", "USD", 7e10, 5e9)]), null); // Equinor fører i USD
+assert.equal(regnskapFra([r("SELSKAP", "2023-12-31", "NOK", 80000, 5000), r("SELSKAP", "2025-12-31", "NOK", 0, 0)]), null); // tomt siste år
+assert.equal(regnskapFra([r("SELSKAP", "2025-12-31", "NOK", -341829, 0)]), null);
+assert.equal(regnskapFra(null), null);
+assert.equal(regnskapFra([]), null);
+
+// Fornyelse: opp med høyst 25 %, ned så mye den skal
+assert.equal(fornyetBelop(P, 4500000, 7000000), 5625000);
+assert.equal(fornyetBelop(P, 4500000, 5000000), 5000000);
+assert.equal(fornyetBelop(P, 4500000, 3000000), 3000000);
+assert.equal(fornyetBelop({ ...P, fornyelseMaksOkning: undefined }, 4500000, 7000000), 7000000);
 
 // Sektor: med faktor 1.0 vises den ikke. Med en annen faktor endrer den prisen.
 assert.equal(sektorFor(P, "69.100").id, "juridisk");
@@ -61,14 +114,14 @@ assert.equal(sektorFor(P, "64.110").id, "finans");
 assert.equal(sektorFor(P, "64.323"), null); // egeninvesteringsselskaper er ikke finans her
 assert.equal(sektorFor(P, "64.220"), null); // holdingselskaper heller ikke
 assert.equal(sektorFor(P, null), null);
-assert.equal(lisenspris(P, v(20, "69.100")).sektor, null);
-const hoyere = { ...P, sektorer: P.sektorer.map((s) => (s.id === "juridisk" ? { ...s, faktor: 1.25 } : s)) };
-assert.equal(lisenspris(hoyere, v(20, "69.100")).pris, 56250);
-assert.equal(lisenspris(hoyere, v(20, "69.100")).sektor.navn, "juridisk sektor");
+assert.equal(lisenspris(P, v(23, "69.100")).sektor, null);
+const hoyere = { ...P, sektorer: P.sektorer.map((s) => (s.id === "juridisk" ? { ...s, faktor: 1.2 } : s)) };
+assert.equal(lisenspris(hoyere, v(23, "69.100")).pris, 54000); // 45 000 × 1,2
+assert.equal(lisenspris(hoyere, v(23, "69.100")).sektor.navn, "juridisk sektor");
 
-// Tjenesteleverandør per kunde: kundens egen pris, med andelen, ganger faktoren
-assert.equal(kundepris(P, v(20)), 135000);
-assert.equal(kundepris(P, v(144, "43.223")), 135000);
+// Tjenesteleverandør per kunde: kundens egen pris, med andel og regnskap, ganger faktoren
+assert.equal(kundepris(P, v(23)), 135000);
+assert.equal(kundepris(P, v(47, "69.100"), harris), 306000);
 
 // Sprint bare fra 251 talte ansatte
 assert.equal(sprintFor(P, 250), null);
@@ -78,9 +131,12 @@ assert.deepEqual(sprintFor(P, 5000), { trinn: "Over 1 000 ansatte", grunn: 80000
 // Betaling: avdrag for de små, faktura for de store, etter registrerte ansatte
 const grenser = { fakturaFra: 51, avdragTil: 50 };
 assert.deepEqual(betalingFor(P, 0, 3000), { kort: true, faktura: false, avdrag: true, kvartal: 750, ...grenser });
-assert.deepEqual(betalingFor(P, 50, 45000), { kort: true, faktura: false, avdrag: true, kvartal: 11250, ...grenser });
-assert.deepEqual(betalingFor(P, 51, 120000), { kort: true, faktura: true, avdrag: false, kvartal: 30000, ...grenser });
-assert.deepEqual(betalingFor(P, 144, 45000), { kort: true, faktura: true, avdrag: false, kvartal: 11250, ...grenser });
+assert.deepEqual(betalingFor(P, 50, 72500), { kort: true, faktura: false, avdrag: true, kvartal: 18125, ...grenser });
+assert.deepEqual(betalingFor(P, 51, 73500), { kort: true, faktura: true, avdrag: false, kvartal: 18375, ...grenser });
+
+// Ugyldig kurve stoppes
+assert.throws(() => lesPriser(JSON.stringify({ kurve: { solo: 3000, punkter: [[1, 5000], [1, 6000]] } })));
+assert.throws(() => lesPriser(JSON.stringify({ kurve: { solo: 3000, punkter: [[1, 5000], [2, 4000]] } })));
 
 // Enhetsregisteret
 assert.equal(aktiv({ konkurs: false }), true);

@@ -52,6 +52,8 @@ import {
   betalingFor,
   aktiv,
   virksomhetFra,
+  regnskapFra,
+  fornyetBelop,
 } from "./klart-pris.js";
 
 const NADE_DAGER = 14; // lisensen varer så mange dager etter at perioden er betalt til
@@ -537,10 +539,27 @@ async function brreg(sti, fersk = false) {
   throw new Error(`Enhetsregisteret ${sti}: ${svar.status}`);
 }
 
-/** { virksomhet } når org.nr er aktivt, { underenhet, overordnet } for en underenhet, ellers { feil, kode }. */
+/** Siste brukbare årsregnskap fra Regnskapsregisteret (se regnskapFra), eller null. Svarer ikke registeret,
+    prises virksomheten uten justering i stedet for at kjøpet stopper. */
+async function regnskapFor(orgnr, fersk = false) {
+  try {
+    const svar = await fetch(`https://data.brreg.no/regnskapsregisteret/regnskap/${orgnr}`, {
+      headers: { accept: "application/json" },
+      // Regnskapene kommer én gang i året, så et døgn i hurtigbufferen er nok.
+      cf: fersk ? { cacheTtl: 0 } : { cacheEverything: true, cacheTtlByStatus: { "200-299": 86400, 404: 86400, "500-599": 0 } },
+    });
+    return svar.ok ? regnskapFra(await svar.json()) : null;
+  } catch (err) {
+    console.error("klart regnskap", orgnr, err.message);
+    return null;
+  }
+}
+
+/** { virksomhet, regnskap } når org.nr er aktivt, { underenhet, overordnet } for en underenhet, ellers
+    { feil, kode }. Regnskapet hentes samtidig, så prisen kan justeres for hva virksomheten tjener. */
 async function slaaOppVirksomhet(orgnr, fersk = false) {
-  const e = await brreg(`enheter/${orgnr}`, fersk);
-  if (e.status === 200) return aktiv(e.data) ? { virksomhet: virksomhetFra(e.data) } : { feil: IKKE_AKTIV, kode: 409 };
+  const [e, regnskap] = await Promise.all([brreg(`enheter/${orgnr}`, fersk), regnskapFor(orgnr, fersk)]);
+  if (e.status === 200) return aktiv(e.data) ? { virksomhet: virksomhetFra(e.data), regnskap } : { feil: IKKE_AKTIV, kode: 409 };
   if (e.status === 410) return { feil: IKKE_AKTIV, kode: 410 };
   const u = await brreg(`underenheter/${orgnr}`, fersk);
   if (u.status === 200 && u.data.overordnetEnhet && !u.data.slettedato) {
@@ -553,6 +572,11 @@ async function slaaOppVirksomhet(orgnr, fersk = false) {
     }
   }
   return { feil: IKKE_AKTIV, kode: 404 };
+}
+
+/** Hva prisen bygger på, for metadata i Stripe (vises ikke for kunden). */
+function prisgrunnlag(l, regnskap) {
+  return `${l.ansatte} talte ansatte, faktor ${l.faktor.toFixed(2)}${regnskap ? ` (regnskap ${regnskap.aar})` : " (uten regnskap)"}`;
 }
 
 function underenhetTekst(o) {
@@ -572,9 +596,9 @@ async function pris(env, url) {
   const v = o.virksomhet;
   // En tjenesteleverandør slår opp en kunde: bare prisen per år for den kunden.
   if (url.searchParams.get("som") === "kunde") {
-    return json({ orgnr: v.orgnr, navn: v.navn, ansatte: v.ansatte, pris: kundepris(p, v) });
+    return json({ orgnr: v.orgnr, navn: v.navn, ansatte: v.ansatte, pris: kundepris(p, v, o.regnskap) });
   }
-  const l = lisenspris(p, v);
+  const l = lisenspris(p, v, o.regnskap);
   const testet = await lager(env).harTestet(v.orgnr);
   // Trinnet og antallet som telles, sendes ikke ut. Siden viser bare prisen.
   return json({
@@ -670,7 +694,17 @@ async function stripeKunde(env, v, meta, { epost, referanse, ehf } = {}) {
     id = (await stripe(env, "GET", `customers/search?query=${q}&limit=1`)).data[0]?.id || null;
   }
   const felt = { name: v.navn, "preferred_locales[0]": "nb" };
-  leggPaa(felt, "metadata", { orgnr: v.orgnr, company_name: v.navn, tier: meta.tier, sector: meta.sector, employees_at_purchase: meta.employees_at_purchase, document_workers: meta.document_workers, license_type: meta.license_type });
+  leggPaa(felt, "metadata", {
+    orgnr: v.orgnr,
+    company_name: v.navn,
+    tier: meta.tier,
+    sector: meta.sector,
+    employees_at_purchase: meta.employees_at_purchase,
+    document_workers: meta.document_workers,
+    value_factor: meta.value_factor,
+    accounts_year: meta.accounts_year,
+    license_type: meta.license_type,
+  });
   if (v.adresse) {
     felt["address[line1]"] = v.adresse.linjer[0] || "";
     felt["address[line2]"] = v.adresse.linjer.slice(1).join(", ");
@@ -713,7 +747,7 @@ async function kunderFra(env, p, lev, liste, har = []) {
       `Klart – tjenesteleverandør for ${kv.navn} (org.nr ${orgnrTekst(kv.orgnr)})`,
       { klart: "leverandor", leverandor: lev.orgnr, kunde: kv.orgnr }
     );
-    linjer.push({ produkt: id, belop: kundepris(p, kv) * 100, kunde: kv });
+    linjer.push({ produkt: id, belop: kundepris(p, kv, o.regnskap) * 100, kunde: kv });
   }
   return { linjer };
 }
@@ -739,7 +773,7 @@ async function kasse(request, env, url) {
   if (o.feil) return json({ feil: o.feil }, o.kode);
   if (o.underenhet) return json({ feil: underenhetTekst(o) }, 409);
   const v = o.virksomhet;
-  const l = lisenspris(p, v);
+  const l = lisenspris(p, v, o.regnskap);
   const kan = betalingFor(p, v.ansatte, l.pris);
   if (type === "testing") betaling = "kort";
   if (type === "leverandor" && betaling === "avdrag") return json({ feil: "Leverandørlisensen betales med kort eller faktura." }, 400);
@@ -759,7 +793,7 @@ async function kasse(request, env, url) {
     const belop = betaling === "avdrag" ? Math.round((l.pris * 100) / 4) : l.pris * 100;
     linjer = [{ produkt: await produkt(env, PRODUKT_LISENS, "Klart – lisens for virksomheten", { klart: "lisens" }), belop }];
     beskrivelse =
-      `Klart for ${v.navn} (org.nr ${orgnrTekst(v.orgnr)}), ${l.trinn.navn}. Alle brukere og enheter, virksomhetens egne data.` +
+      `Klart for ${v.navn} (org.nr ${orgnrTekst(v.orgnr)}). Alle brukere og enheter, virksomhetens egne data.` +
       (betaling === "avdrag" ? " Fire kvartalsvise betalinger på en lisens over 12 måneder." : "");
   } else {
     const k = await kunderFra(env, p, v, inn.kunder);
@@ -771,10 +805,12 @@ async function kasse(request, env, url) {
   const meta = {
     orgnr: v.orgnr,
     company_name: v.navn,
-    tier: l.trinn.navn,
+    tier: prisgrunnlag(l, o.regnskap),
     sector: l.sektor ? l.sektor.id : "",
     employees_at_purchase: String(v.ansatte),
     document_workers: String(l.ansatte),
+    value_factor: l.faktor.toFixed(2),
+    accounts_year: o.regnskap ? o.regnskap.aar : "",
     license_type: type,
     betaling,
   };
@@ -1109,8 +1145,10 @@ async function fornyelsesvarsel(env, faktura) {
       continue;
     }
     const v = o.virksomhet;
-    let belop = (leverandor ? kundepris(p, v) : lisenspris(p, v).pris) * 100;
+    let belop = (leverandor ? kundepris(p, v, o.regnskap) : lisenspris(p, v, o.regnskap).pris) * 100;
     if (m.betaling === "avdrag") belop = Math.round(belop / 4);
+    // Regnskapet endrer seg hvert år. Prisen kan gå ned så mye den skal, men opp med høyst 25 % per fornyelse.
+    belop = fornyetBelop(p, item.price.unit_amount, belop);
     etter += belop;
     if (belop !== item.price.unit_amount) {
       await stripe(env, "POST", `subscription_items/${item.id}`, {
@@ -1123,12 +1161,14 @@ async function fornyelsesvarsel(env, faktura) {
       });
     }
     if (!leverandor) {
-      const l = lisenspris(p, v);
+      const l = lisenspris(p, v, o.regnskap);
       const ny = {
-        tier: l.trinn.navn,
+        tier: prisgrunnlag(l, o.regnskap),
         sector: l.sektor ? l.sektor.id : "",
         employees_at_renewal: String(v.ansatte),
         document_workers: String(l.ansatte),
+        value_factor: l.faktor.toFixed(2),
+        accounts_year: o.regnskap ? o.regnskap.aar : "",
       };
       const felt = {};
       leggPaa(felt, "metadata", ny);
@@ -1153,7 +1193,7 @@ async function fornyelsesvarsel(env, faktura) {
       "",
       etter === foer
         ? `Prisen er uendret: ${kroner(perAar(etter))} per år, eks. mva.`
-        : `Ny pris fra fornyelsen: ${kroner(perAar(etter))} per år, eks. mva (i dag ${kroner(perAar(foer))}). Prisen følger antall ansatte registrert i Brønnøysundregistrene.`,
+        : `Ny pris fra fornyelsen: ${kroner(perAar(etter))} per år, eks. mva (i dag ${kroner(perAar(foer))}). Prisen følger det som er registrert om virksomheten i Brønnøysundregistrene.`,
       "",
       "Når fornyelsen er betalt, kommer en ny lisensnøkkel på e-post.",
       "",
