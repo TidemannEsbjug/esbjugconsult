@@ -6,13 +6,30 @@
     <title>Klart — til IT-avdelingen</title>
     <meta
       name="description"
-      content="Fem kommandoer som avgjør om Klart kan snakke med nett. Med fasit, og med det hver enkelt sjekk faktisk beviser."
+      content="Fem sjekker som avgjør om Klart kan snakke med nett, for Mac og Windows. Med kommandoer du kopierer med ett trykk, fasit, og det hver enkelt sjekk faktisk beviser."
     />
     <meta name="robots" content="noindex" />
     <!--
-      Én fil. Ingen skript, ingen skrifter, ingen bilder utenfra. En side om
-      et program som ikke går på nett bør ikke selv hente noe.
+      Én fil. Ingen skrifter, bilder eller skript utenfra. En side om et program
+      som ikke går på nett bør ikke selv hente noe. Det eneste skriptet er det
+      lille under, som bytter mellom Mac og Windows og kopierer kommandoene.
+      Uten skript vises begge, og alt kan fortsatt markeres og kopieres.
     -->
+    <script>
+      (function () {
+        var rot = document.documentElement;
+        var os = location.hash.slice(1);
+        if (os !== "mac" && os !== "windows") {
+          try { os = localStorage.getItem("klart-it-os"); } catch (e) { os = null; }
+        }
+        if (os !== "mac" && os !== "windows") {
+          var p = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || navigator.userAgent;
+          os = /win/i.test(p) ? "windows" : "mac";
+        }
+        rot.classList.add("js");
+        rot.setAttribute("data-vis", os);
+      })();
+    </script>
     <style>
       :root {
         --ink: #15202e;
@@ -35,8 +52,8 @@
         font: 16.5px/1.62 var(--sans);
         -webkit-font-smoothing: antialiased;
       }
-      .wrap { max-width: 760px; margin: 0 auto; padding: clamp(28px, 6vw, 76px) clamp(20px, 5vw, 40px) 96px; }
-      header { border-bottom: 1px solid var(--rule); padding-bottom: 28px; margin-bottom: 40px; }
+      .wrap { max-width: 760px; margin: 0 auto; padding: clamp(28px, 6vw, 76px) clamp(16px, 5vw, 40px) 96px; }
+      header { padding-bottom: 14px; }
       .kicker {
         font: 500 12px/1 var(--mono);
         letter-spacing: 0.09em;
@@ -69,8 +86,7 @@
         padding: 24px 26px;
         margin-bottom: 18px;
       }
-      section > p { color: var(--ink-2); margin: 0 0 16px; }
-      section > p:last-child { margin-bottom: 0; }
+      section p, .os p { color: var(--ink-2); margin: 0 0 16px; }
       pre {
         background: #16233a;
         color: #e8eef8;
@@ -78,15 +94,15 @@
         padding: 14px 16px;
         overflow-x: auto;
         font: 13.5px/1.62 var(--mono);
-        margin: 0 0 14px;
+        margin: 0;
       }
-      pre .c { color: #93a4bd; }
       code:not(pre code) {
         font: 0.9em var(--mono);
         background: #eef3fb;
         border: 1px solid var(--rule);
         border-radius: 5px;
         padding: 1px 5px;
+        overflow-wrap: anywhere;
       }
       .fasit {
         border-left: 3px solid var(--ok);
@@ -103,12 +119,100 @@
       .advarsel b { color: var(--flag); }
       .beviser {
         font-size: 14.5px;
-        color: var(--ink-3);
         border-top: 1px dashed var(--rule);
-        margin: 16px 0 0;
+        margin: 16px 0 0 !important;
         padding-top: 13px;
       }
+      section .beviser { color: var(--ink-3); }
       .beviser b { color: var(--ink-2); font-weight: 600; }
+
+      /* Velgeren øverst. Klistrer seg til toppen, så den er der når man scroller. */
+      .os-velger {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        background: var(--ground);
+        padding: 14px 0;
+        margin-bottom: 22px;
+        border-bottom: 1px solid var(--rule);
+      }
+      .os-velger span { font-size: 14.5px; color: var(--ink-2); }
+      .os-knapper { display: inline-flex; background: #dfe7f4; border-radius: 10px; padding: 3px; }
+      .os-knapper button {
+        font: 600 15px/1 var(--sans);
+        color: var(--ink-2);
+        background: none;
+        border: 0;
+        border-radius: 8px;
+        padding: 10px 18px;
+        cursor: pointer;
+      }
+      .os-knapper button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgba(21, 32, 46, 0.14); }
+      .os-knapper button:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+      html:not(.js) .os-velger { display: none; }
+
+      /* Hvert OS har sin blokk. Med skript vises bare den valgte. */
+      html[data-vis="mac"] .os[data-os="windows"],
+      html[data-vis="windows"] .os[data-os="mac"] { display: none; }
+      html:not(.js) .os::before {
+        content: attr(data-navn);
+        display: block;
+        font: 600 12px/1 var(--mono);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--signal);
+        margin: 18px 0 10px;
+      }
+
+      .start {
+        background: #e2ebfd;
+        border: 1px solid #c9d8f7;
+        border-radius: 12px;
+        padding: 18px 22px;
+        margin-bottom: 18px;
+      }
+      .start p { color: var(--ink); margin: 0 0 8px; }
+      .start p:last-child { margin-bottom: 0; }
+      .start ol { margin: 0 0 10px; padding-left: 22px; }
+      .start li { margin-bottom: 4px; }
+      kbd {
+        font: 600 0.86em var(--sans);
+        background: var(--card);
+        border: 1px solid #c9d8f7;
+        border-bottom-width: 2px;
+        border-radius: 5px;
+        padding: 1px 6px;
+        white-space: nowrap;
+      }
+
+      /* En kommando: en list med hvor den skal limes inn og kopierknappen, så koden. */
+      .cmd { margin: 0 0 8px; background: #16233a; border-radius: 8px; overflow: hidden; }
+      .cmd pre { background: none; border-radius: 0; }
+      .cmd-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 8px 0 16px; }
+      .cmd-bar span { font: 500 11.5px/1.3 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: #93a4bd; }
+      /* Lange linjer brytes i stedet for å rulle. Bare visuelt: det som kopieres er uendret. */
+      .js .cmd pre { padding-top: 6px; white-space: pre-wrap; overflow-wrap: anywhere; cursor: pointer; }
+      .kopier {
+        flex: none;
+        font: 600 13px/1 var(--sans);
+        color: #e8eef8;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 6px;
+        padding: 8px 12px;
+        cursor: pointer;
+      }
+      .kopier:hover { background: rgba(255, 255, 255, 0.18); }
+      .kopier:focus-visible { outline: 2px solid #8fb0ff; outline-offset: 2px; }
+      .kopier.kopiert { background: var(--ok); border-color: var(--ok); color: #fff; }
+      html:not(.js) .kopier { display: none; }
+      .gjor { font-size: 14.5px; margin: 0 0 16px !important; }
+      .gjor b { color: var(--ink); font-weight: 600; }
+
       .slutt {
         background: #16233a;
         color: #fff;
@@ -116,21 +220,34 @@
         padding: 30px 32px;
         margin-top: 34px;
       }
-      .slutt p { margin: 0 0 12px; color: #ccd8ea; }
+      .slutt p, .slutt .os p { margin: 0 0 12px; color: #ccd8ea; }
       .slutt strong { color: #fff; font-size: 19px; display: block; margin-bottom: 10px; line-height: 1.4; }
-      .slutt p:last-child { margin-bottom: 0; }
+      .slutt b { color: #fff; }
+      .slutt .cmd { background: #0d1626; }
+      .slutt .os > .cmd:last-child { margin-bottom: 18px; }
+      .slutt .gjor b { color: #fff; }
+      .slutt code:not(pre code) { background: #0d1626; border-color: #2b3c58; color: #e8eef8; }
+      .slutt .fasit { color: #fff; }
+      .slutt .fasit b { color: #5fd3a8; }
+      html:not(.js) .slutt .os::before { color: #8fb0ff; }
       table { border-collapse: collapse; width: 100%; font-size: 15px; }
       td, th { text-align: left; padding: 7px 10px 7px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
       th { font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-3); font-weight: 600; }
       td:first-child { font-family: var(--mono); font-size: 13.5px; white-space: nowrap; padding-right: 22px; }
       footer { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--rule); color: var(--ink-3); font-size: 14.5px; }
+      .skjult { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+      @media (max-width: 560px) {
+        section, .start { padding: 20px 18px; }
+        .slutt { padding: 24px 20px; }
+        td:first-child { white-space: normal; overflow-wrap: anywhere; }
+      }
     </style>
   </head>
   <body>
     <div class="wrap">
       <header>
         <p class="kicker">Klart · til IT-avdelingen</p>
-        <h1>Fem kommandoer, og hva hver av dem faktisk beviser</h1>
+        <h1>Fem sjekker, og hva hver av dem faktisk beviser</h1>
         <p class="lead">
           Klart renser dokumenter lokalt. Motoren og språkmodellen ligger i
           installasjonsfilen, og ingenting lastes ned. Du skal slippe å tro på
@@ -139,17 +256,69 @@
         </p>
       </header>
 
+      <div class="os-velger">
+        <span>Kommandoer for</span>
+        <div class="os-knapper" role="group" aria-label="Velg operativsystem">
+          <button type="button" data-velg="mac" aria-pressed="false">Mac</button>
+          <button type="button" data-velg="windows" aria-pressed="false">Windows</button>
+        </div>
+      </div>
+
+      <div class="start">
+        <div class="os" data-os="mac" data-navn="Mac">
+          <ol>
+            <li>Åpne Terminal: trykk <kbd>⌘</kbd> + <kbd>mellomrom</kbd>, skriv <b>Terminal</b> og trykk <kbd>Enter</kbd>.</li>
+            <li>Trykk <b>Kopier</b> ved en kommando under.</li>
+            <li>Lim inn i Terminal med <kbd>⌘</kbd> + <kbd>V</kbd> og trykk <kbd>Enter</kbd>.</li>
+          </ol>
+          <p>Ingen av kommandoene endrer noe på maskinen. De leser bare.</p>
+        </div>
+        <div class="os" data-os="windows" data-navn="Windows">
+          <ol>
+            <li>Åpne PowerShell: trykk <kbd>Windows</kbd>-tasten, skriv <b>PowerShell</b> og trykk <kbd>Enter</kbd>.</li>
+            <li>Trykk <b>Kopier</b> ved en kommando under.</li>
+            <li>Lim inn med <kbd>Ctrl</kbd> + <kbd>V</kbd> (eller høyreklikk i vinduet) og trykk <kbd>Enter</kbd>.</li>
+          </ol>
+          <p>
+            Alt unntatt brannmurreglene nederst leser bare. Kommandoene går ut
+            fra at Klart er installert med filen fra nettsiden, som legger
+            programmet i brukerens egen mappe:
+            <code>C:\Users\&lt;bruker&gt;\AppData\Local\Klart</code>.
+          </p>
+        </div>
+      </div>
+
       <section>
         <h2><span class="n">1</span> Er dette vår fil?</h2>
         <p>
           Vi publiserer SHA-256 for hver utgivelse, samme sted som nedlastingen.
           Får du et annet tall, er filen ikke vår.
         </p>
-        <pre><span class="c"># macOS</span>
-shasum -a 256 Klart.dmg
-
-<span class="c"># Windows</span>
-Get-FileHash .\Klart.msi</pre>
+        <div class="os" data-os="mac" data-navn="Mac">
+          <div class="cmd"><pre>shasum -a 256 ~/Downloads/Klart-for-Mac-*.dmg</pre></div>
+          <p class="gjor">
+            <b>Hva den gjør:</b> regner ut SHA-256 for installasjonsfilen i
+            Nedlastinger. Ligger filen et annet sted, skriv
+            <code>shasum -a 256 </code> med mellomrom etter, og dra filen inn i
+            Terminal-vinduet.
+          </p>
+          <div class="fasit">
+            <b>Fasit:</b> den lange rekken med tall og bokstaver først på linjen
+            er lik den vi har publisert.
+          </div>
+        </div>
+        <div class="os" data-os="windows" data-navn="Windows">
+          <div class="cmd"><pre>Get-FileHash "$HOME\Downloads\Klart-for-Windows-*.exe"</pre></div>
+          <p class="gjor">
+            <b>Hva den gjør:</b> regner ut SHA-256 for installasjonsfilen i
+            Nedlastinger. Ligger filen et annet sted, bytt ut stien mellom
+            anførselstegnene.
+          </p>
+          <div class="fasit">
+            <b>Fasit:</b> tallet i kolonnen <code>Hash</code> er likt det vi har
+            publisert. Windows skriver det med store bokstaver; det er samme tall.
+          </div>
+        </div>
         <p class="beviser">
           <b>Beviser:</b> at filen er den vi ga ut. Ikke noe mer — en sjekksum
           sier ingenting om hva programmet gjør.
@@ -158,24 +327,46 @@ Get-FileHash .\Klart.msi</pre>
 
       <section>
         <h2><span class="n">2</span> Er den signert av oss, og urørt?</h2>
-        <pre>codesign -dv --verbose=4 /Applications/Klart.app
-spctl -a -vv /Applications/Klart.app</pre>
-        <div class="fasit">
-          <b>Fasit:</b> vår Team ID, og <code>accepted</code> fra spctl.
+        <div class="os" data-os="mac" data-navn="Mac">
+          <div class="cmd"><pre>codesign -dv --verbose=4 /Applications/Klart.app</pre></div>
+          <p class="gjor"><b>Hva den gjør:</b> viser hvem som har signert appen.</p>
+          <div class="cmd"><pre>spctl -a -vv /Applications/Klart.app</pre></div>
+          <p class="gjor"><b>Hva den gjør:</b> spør Gatekeeper om macOS godtar appen slik den ligger på disken nå.</p>
+          <div class="fasit">
+            <b>Fasit:</b> <code>TeamIdentifier=N5BKVM258S</code> fra codesign, og
+            <code>accepted</code> med <code>source=Notarized Developer ID</code> fra spctl.
+          </div>
+          <p>Sjekk gjerne motoren inni pakken også — den er en egen kjørbar fil:</p>
+          <div class="cmd"><pre>codesign -dv --verbose=2 /Applications/Klart.app/Contents/Resources/bundled/engine/llama-server</pre></div>
+          <p class="gjor"><b>Hva den gjør:</b> det samme som den første, for motoren.</p>
+          <div class="fasit"><b>Fasit:</b> samme <code>TeamIdentifier=N5BKVM258S</code> som appen.</div>
+          <p>
+            Motoren er llama.cpp, bygget av Ollama-prosjektet. Ollama selv — den
+            som er en HTTP-server med et registerklientledd — er ikke med i
+            pakken; det er bare llama.cpp-serveren og modellfilen. Ved signering
+            skrives hele pakken om med vår Team ID, motoren inkludert. Viser den
+            en annen ID, er pakken ikke signert ferdig — si fra, så er det vår
+            feil, ikke deres.
+          </p>
         </div>
-        <p>
-          Sjekk gjerne motoren inni pakken også — den er en egen kjørbar fil:
-        </p>
-        <pre>codesign -dv --verbose=2 \
-  /Applications/Klart.app/Contents/Resources/bundled/engine/llama-server</pre>
-        <p>
-          Motoren er llama.cpp, bygget av Ollama-prosjektet. Ollama selv — den
-          som er en HTTP-server med et registerklientledd — er ikke med i
-          pakken; det er bare llama.cpp-serveren og modellfilen. Ved signering
-          skrives hele pakken om med vår Team ID, motoren inkludert, så dette
-          skal vise samme ID som appen. Gjør den ikke det, er pakken ikke
-          signert ferdig — si fra, så er det vår feil, ikke deres.
-        </p>
+        <div class="os" data-os="windows" data-navn="Windows">
+          <div class="advarsel">
+            <b>Windows-versjonen er ikke signert ennå.</b> Til den er det, svarer
+            kommandoene under <code>NotSigned</code>, og da er sjekksummen i
+            punkt 1 det som knytter filen til oss.
+          </div>
+          <div class="cmd"><pre>Get-AuthenticodeSignature "$HOME\Downloads\Klart-for-Windows-*.exe" | Format-List Status, SignerCertificate</pre></div>
+          <p class="gjor"><b>Hva den gjør:</b> leser Authenticode-signaturen på installasjonsfilen.</p>
+          <div class="cmd"><pre>Get-ChildItem "$env:LOCALAPPDATA\Klart" -Recurse -Include *.exe, *.dll | Get-AuthenticodeSignature | Format-Table Status, Path -AutoSize</pre></div>
+          <p class="gjor">
+            <b>Hva den gjør:</b> sjekker signaturen på hver kjørbar fil i den
+            installerte appen, én linje per fil.
+          </p>
+          <div class="fasit">
+            <b>Fasit, når den er signert:</b> <code>Valid</code> på hver linje, og
+            vårt navn i <code>SignerCertificate</code>.
+          </div>
+        </div>
         <p class="beviser">
           <b>Beviser:</b> at koden er vår og ikke endret etterpå. Dette er
           testen mot en ombygd kopi. En «hacket versjon» med en socket i seg er
@@ -187,55 +378,105 @@ spctl -a -vv /Applications/Klart.app</pre>
 
       <section>
         <h2><span class="n">3</span> Har den lov til å bruke nett?</h2>
-        <pre>codesign -d --entitlements - --xml /Applications/Klart.app | plutil -p -</pre>
-        <div class="fasit">
-          <b>Fasit:</b> verken
-          <code>com.apple.security.network.client</code> eller
-          <code>com.apple.security.network.server</code> skal stå der.
+        <div class="os" data-os="mac" data-navn="Mac">
+          <div class="cmd"><pre>codesign -d --entitlements - --xml /Applications/Klart.app | plutil -p -</pre></div>
+          <p class="gjor"><b>Hva den gjør:</b> lister rettighetene (entitlements) appen er signert med.</p>
+          <div class="fasit">
+            <b>Fasit:</b> verken
+            <code>com.apple.security.network.client</code> eller
+            <code>com.apple.security.network.server</code> skal stå der.
+          </div>
+          <div class="advarsel">
+            <b>Men les dette:</b> disse to rettighetene håndheves bare når
+            <code>com.apple.security.app-sandbox</code> er slått på. Er den ikke
+            det, er fraværet av dem bare metadata — en app med Hardened Runtime og
+            null rettigheter kan fint åpne en forbindelse ut. Vi sier det heller
+            enn å la dere oppdage det selv.
+          </div>
+          <p>
+            Står <code>app-sandbox</code> der: da nekter kjernen utgående TCP, også
+            til maskinen selv, og punkt 3 er en ekte sperre. Står den ikke der: se
+            punkt 4 og 5, og sett deres egen regel.
+          </p>
+          <p class="beviser">
+            <b>Beviser:</b> med app-sandbox — at nett er avskrudd i kjernen. Uten
+            app-sandbox — ingenting alene.
+          </p>
         </div>
-        <div class="advarsel">
-          <b>Men les dette:</b> disse to rettighetene håndheves bare når
-          <code>com.apple.security.app-sandbox</code> er slått på. Er den ikke
-          det, er fraværet av dem bare metadata — en app med Hardened Runtime og
-          null rettigheter kan fint åpne en forbindelse ut. Vi sier det heller
-          enn å la dere oppdage det selv.
+        <div class="os" data-os="windows" data-navn="Windows">
+          <p>
+            Windows har ingen tilsvarende rettighet for vanlige
+            skrivebordsprogrammer. Et program installert med en .exe ber ikke om
+            lov til nett — det har det. Derfor er det ingen kommando her.
+          </p>
+          <p>
+            Sperren på Windows er brannmurregelen nederst på siden, og beviset
+            for at programmet er stille er punkt 4.
+          </p>
+          <p class="beviser">
+            <b>Beviser:</b> ingenting på Windows. Det er grunnen til at vi ber
+            dere sette regelen.
+          </p>
         </div>
-        <p>
-          Står <code>app-sandbox</code> der: da nekter kjernen utgående TCP, også
-          til maskinen selv, og punkt 3 er en ekte sperre. Står den ikke der: se
-          punkt 4 og 5, og sett deres egen regel.
-        </p>
-        <p class="beviser">
-          <b>Beviser:</b> med app-sandbox — at nett er avskrudd i kjernen. Uten
-          app-sandbox — ingenting alene.
-        </p>
       </section>
 
       <section>
         <h2><span class="n">4</span> Snakker den likevel?</h2>
         <p>
-          Kjør en rensing på en mappe, og se etter mens den står på. Motoren er
-          en egen prosess, så sjekk begge.
+          Start en rensing på en mappe, og kjør kommandoen mens den står på.
+          Motoren er en egen prosess, så kommandoen sjekker begge.
         </p>
-        <pre><span class="c"># finn prosessene</span>
-pgrep -x Klart; pgrep -x llama-server
-
-<span class="c"># nett-socketer for hver av dem — merk -a, den binder filtrene sammen</span>
-lsof -nP -a -i -p &lt;pid&gt;</pre>
-        <div class="fasit">
-          <b>Fasit: ingen rader.</b> Hverken appen eller motoren har en eneste
-          TCP- eller UDP-socket. Motoren lytter på en filsocket i brukerens egen
-          midlertidige mappe — <code>no.klart.app-motor.sock</code> — og en
-          AF_UNIX-socket kan ikke adressere noe utenfor maskinen.
+        <div class="os" data-os="mac" data-navn="Mac">
+          <div class="cmd"><pre>pgrep -lx 'klart|llama-server'; lsof -nP -a -i -c klart -c llama-server</pre></div>
+          <p class="gjor">
+            <b>Hva den gjør:</b> første del viser at Klart og motoren kjører, med
+            prosessnummer. Andre del lister alle nett-socketer, TCP og UDP, som de
+            to prosessene har åpne.
+          </p>
+          <div class="fasit">
+            <b>Fasit:</b> to linjer, <code>klart</code> og
+            <code>llama-server</code> med hvert sitt prosessnummer — og
+            <b>ingenting etter dem</b>. Hverken appen eller motoren har en eneste
+            TCP- eller UDP-socket. Motoren lytter på en filsocket i brukerens egen
+            midlertidige mappe — <code>no.klart.app-motor.sock</code> — og en
+            AF_UNIX-socket kan ikke adressere noe utenfor maskinen.
+          </div>
+          <p>
+            Ser du bare <code>klart</code>, er motoren ikke startet ennå. Start en
+            rensing og kjør kommandoen igjen mens den går.
+          </p>
+          <div class="advarsel">
+            <b>Pass på flagget <code>-a</code>.</b> Uten det tolker lsof
+            <code>-i</code> og <code>-c</code> som «eller», og du får hele
+            maskinens trafikk i listen — nettleseren, Dropbox, alt. Det ser
+            dramatisk ut og har ingenting med Klart å gjøre. Med
+            <code>-a</code> får du null rader.
+          </div>
+          <p>LuLu eller Little Snitch ved siden av gir samme svar, hvis dere heller vil se det slik.</p>
         </div>
-        <div class="advarsel">
-          <b>Pass på flagget <code>-a</code>.</b> Uten det tolker lsof
-          <code>-i</code> og <code>-p</code> som «eller», og du får hele
-          maskinens trafikk i listen — nettleseren, Dropbox, alt. Det ser
-          dramatisk ut og har ingenting med Klart å gjøre. Med
-          <code>-a</code> får du null rader.
+        <div class="os" data-os="windows" data-navn="Windows">
+          <div class="cmd"><pre>Get-Process klart, llama-server -ErrorAction SilentlyContinue |
+ForEach-Object {
+  "$($_.ProcessName) kjører (prosess $($_.Id))"
+  Get-NetTCPConnection -OwningProcess $_.Id -ErrorAction SilentlyContinue
+  Get-NetUDPEndpoint -OwningProcess $_.Id -ErrorAction SilentlyContinue
+}</pre></div>
+          <p class="gjor">
+            <b>Hva den gjør:</b> finner Klart og motoren, skriver ut at de kjører,
+            og lister hver TCP-forbindelse og UDP-port de har åpen.
+          </p>
+          <div class="fasit">
+            <b>Fasit:</b> bare linjene som sier <code>klart kjører</code> (og
+            <code>llama-server kjører</code> når motoren går) — <b>ingen tabeller
+            med adresser og porter</b>.
+          </div>
+          <p>
+            Kommer det ingen linjer i det hele tatt, kjører ikke Klart. Start
+            appen og en rensing, og kjør kommandoen igjen. Ressursovervåking
+            (<code>resmon</code>), fanen Nettverk, gir samme svar hvis dere heller
+            vil se det slik.
+          </p>
         </div>
-        <p>LuLu eller Little Snitch ved siden av gir samme svar, hvis dere heller vil se det slik.</p>
         <p class="beviser">
           <b>Beviser:</b> at programmet slik det kjører hos dere ikke har en vei
           ut. Dette er den sjekken vi selv stoler mest på.
@@ -256,8 +497,17 @@ lsof -nP -a -i -p &lt;pid&gt;</pre>
           Det er CSP-en i tabellen under som stenger den døra, og punkt 4 som
           viser at den er stengt.
         </p>
-        <pre><span class="c"># i kildekoden, mot den grafen som faktisk bygges</span>
-cd src-tauri &amp;&amp; cargo tree -e normal | grep -E 'reqwest|hyper|rustls|native-tls|openssl'</pre>
+        <div class="os" data-os="mac" data-navn="Mac">
+          <div class="cmd" data-hvor="Terminal, i kildekoden"><pre>cd src-tauri &amp;&amp; cargo tree -e normal | grep -E 'reqwest|hyper|rustls|native-tls|openssl'</pre></div>
+        </div>
+        <div class="os" data-os="windows" data-navn="Windows">
+          <div class="cmd" data-hvor="PowerShell, i kildekoden"><pre>cd src-tauri; cargo tree -e normal | Select-String 'reqwest|hyper|rustls|native-tls|openssl'</pre></div>
+        </div>
+        <p class="gjor">
+          <b>Hva den gjør:</b> kjøres i mappen med kildekoden. Lister alle
+          avhengighetene som faktisk bygges inn, og leter etter HTTP- og
+          TLS-biblioteker blant dem.
+        </p>
         <div class="fasit"><b>Fasit:</b> ingen treff.</div>
         <table>
           <tr>
@@ -305,10 +555,49 @@ cd src-tauri &amp;&amp; cargo tree -e normal | grep -E 'reqwest|hyper|rustls|nat
         <p>Programmet virker like godt. Det er hele poenget med å bygge det slik.</p>
         <p>
           <b>Ta med begge to.</b> Motoren er en egen kjørbar fil, ikke en tråd
-          inne i appen, og en regel som bare nevner Klart slipper den forbi:
+          inne i appen, og en regel som bare nevner Klart slipper den forbi.
         </p>
-        <pre style="background: #0d1626; margin-top: 4px">/Applications/Klart.app/Contents/MacOS/Klart
-/Applications/Klart.app/Contents/Resources/bundled/engine/llama-server</pre>
+        <div class="os" data-os="mac" data-navn="Mac">
+          <p>
+            Brannmuren som følger med macOS stopper bare innkommende trafikk.
+            Legg inn begge stiene i en regel i MDM-ens nettverksfilter, eller i
+            LuLu eller Little Snitch:
+          </p>
+          <div class="cmd" data-hvor="Sti til appen"><pre>/Applications/Klart.app/Contents/MacOS/klart</pre></div>
+          
+          <div class="cmd" data-hvor="Sti til motoren"><pre>/Applications/Klart.app/Contents/Resources/bundled/engine/llama-server</pre></div>
+        </div>
+        <div class="os" data-os="windows" data-navn="Windows">
+          <p>
+            Åpne PowerShell som administrator: høyreklikk PowerShell i
+            Start-menyen og velg <b>Kjør som administrator</b>. Gjør det logget
+            inn som brukeren som har Klart, så peker stiene riktig.
+          </p>
+          <div class="cmd" data-hvor="PowerShell som administrator"><pre>New-NetFirewallRule -DisplayName "Klart - blokker utgående" `
+  -Direction Outbound -Action Block -Profile Any `
+  -Program "$env:LOCALAPPDATA\Klart\klart.exe"
+
+New-NetFirewallRule -DisplayName "Klart motor - blokker utgående" `
+  -Direction Outbound -Action Block -Profile Any `
+  -Program "$env:LOCALAPPDATA\Klart\bundled\engine\llama-server.exe"</pre></div>
+          <p class="gjor">
+            <b>Hva den gjør:</b> legger inn to regler i Windows-brannmuren som
+            blokkerer all utgående trafikk fra appen og fra motoren, på alle
+            nettverksprofiler.
+          </p>
+          <div class="cmd"><pre>Get-NetFirewallRule -DisplayName "Klart*" | Get-NetFirewallApplicationFilter</pre></div>
+          <p class="gjor"><b>Hva den gjør:</b> viser reglene som ligger inne, med stien hver av dem gjelder.</p>
+          <div class="fasit">
+            <b>Fasit:</b> to oppføringer, én med <code>klart.exe</code> og én med
+            <code>llama-server.exe</code>.
+          </div>
+          <p>
+            Bruker dere en egen administratorkonto, bytt
+            <code>$env:LOCALAPPDATA</code> med brukerens egen sti,
+            <code>C:\Users\&lt;bruker&gt;\AppData\Local</code>. Via Intune: lag de
+            samme to reglene i en brannmurpolicy under Endpoint security.
+          </p>
+        </div>
         <p>
           Motoren er llama.cpp. Den er bygget som en HTTP-server — det er slik
           llama.cpp er laget — og vi kjører den derfor på en filsocket i stedet
@@ -319,8 +608,7 @@ cd src-tauri &amp;&amp; cargo tree -e normal | grep -E 'reqwest|hyper|rustls|nat
         </p>
         <p>
           Når regelen er deres, trenger dere ikke ta vårt ord for noe av det
-          over. På Windows kan installasjonsfilen sette regelen selv — men vi
-          anbefaler at dere pusher deres egen, av samme grunn.
+          over.
         </p>
       </div>
 
@@ -330,5 +618,98 @@ cd src-tauri &amp;&amp; cargo tree -e normal | grep -E 'reqwest|hyper|rustls|nat
         gjennom det.
       </footer>
     </div>
+    <p class="skjult" role="status" aria-live="polite" id="melding"></p>
+
+    <script>
+      (function () {
+        var rot = document.documentElement;
+        var velgere = document.querySelectorAll("[data-velg]");
+        var melding = document.getElementById("melding");
+
+        function vis(os, lagre) {
+          rot.setAttribute("data-vis", os);
+          for (var i = 0; i < velgere.length; i++) {
+            velgere[i].setAttribute("aria-pressed", velgere[i].getAttribute("data-velg") === os ? "true" : "false");
+          }
+          if (!lagre) return;
+          try { localStorage.setItem("klart-it-os", os); } catch (e) {}
+          // Adressen får #mac eller #windows, så lenken kan sendes videre til riktig visning.
+          try { history.replaceState(null, "", "#" + os); } catch (e) {}
+        }
+        for (var i = 0; i < velgere.length; i++) {
+          velgere[i].addEventListener("click", function () { vis(this.getAttribute("data-velg"), true); });
+        }
+        vis(rot.getAttribute("data-vis"), false);
+
+        // Den gamle måten, for nettlesere og innebygde vinduer som nekter utklippstavle-API-et.
+        function medMarkering(tekst) {
+          var felt = document.createElement("textarea");
+          felt.value = tekst;
+          felt.setAttribute("readonly", "");
+          felt.style.position = "fixed";
+          felt.style.opacity = "0";
+          document.body.appendChild(felt);
+          felt.select();
+          var gikk = false;
+          try { gikk = document.execCommand("copy"); } catch (e) {}
+          document.body.removeChild(felt);
+          return gikk;
+        }
+
+        function tilUtklipp(tekst) {
+          var api = navigator.clipboard && window.isSecureContext
+            ? navigator.clipboard.writeText(tekst)
+            : Promise.reject();
+          return api.catch(function () {
+            if (!medMarkering(tekst)) throw new Error("kopiering nektet");
+          });
+        }
+
+        function kopier(blokk) {
+          var knapp = blokk.querySelector(".kopier");
+          var tekst = blokk.querySelector("pre").textContent.replace(/\s+$/, "");
+          tilUtklipp(tekst).then(
+            function () {
+              knapp.textContent = "Kopiert ✓";
+              knapp.classList.add("kopiert");
+              melding.textContent = "Kommandoen er kopiert. Lim den inn og trykk Enter.";
+            },
+            function () {
+              knapp.textContent = "Marker selv";
+              melding.textContent = "Kunne ikke kopiere. Marker kommandoen og kopier den selv.";
+            }
+          );
+          clearTimeout(knapp._tid);
+          knapp._tid = setTimeout(function () {
+            knapp.textContent = "Kopier";
+            knapp.classList.remove("kopiert");
+          }, 2200);
+        }
+
+        var blokker = document.querySelectorAll(".cmd");
+        for (var j = 0; j < blokker.length; j++) {
+          (function (blokk) {
+            var knapp = document.createElement("button");
+            knapp.type = "button";
+            knapp.className = "kopier";
+            knapp.textContent = "Kopier";
+            knapp.setAttribute("aria-label", "Kopier kommandoen");
+            knapp.addEventListener("click", function () { kopier(blokk); });
+            var bar = document.createElement("div");
+            bar.className = "cmd-bar";
+            var hvor = document.createElement("span");
+            hvor.textContent = blokk.getAttribute("data-hvor") || (blokk.closest('.os[data-os="windows"]') ? "PowerShell" : "Terminal");
+            bar.appendChild(hvor);
+            bar.appendChild(knapp);
+            blokk.insertBefore(bar, blokk.firstChild);
+            // Et trykk på selve koden kopierer også, men ikke når noen har markert tekst selv.
+            blokk.querySelector("pre").addEventListener("click", function () {
+              var valgt = window.getSelection && String(window.getSelection());
+              if (!valgt) kopier(blokk);
+            });
+          })(blokker[j]);
+        }
+      })();
+    </script>
   </body>
 </html>
