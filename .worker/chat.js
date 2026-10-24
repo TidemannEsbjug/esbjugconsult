@@ -86,6 +86,12 @@ export async function handleChat(request, env, url) {
     return new Response(r.body, { status: r.status, headers: { "content-type": "application/json", "cache-control": "public, max-age=60" } });
   }
 
+  // Versjonene av forsiden (fra GitHub), eldste først: sha, tidspunkt, melding og størrelse. Til avspillingens time-lapse.
+  if (path === "/chat/versjoner") {
+    const r = await hub.fetch(new Request("https://hub/internal/versjoner", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }));
+    return new Response(r.body, { status: r.status, headers: { "content-type": "application/json", "cache-control": "public, max-age=120" } });
+  }
+
   // Kalenderen i avspillingen: hvor mange timer hver dag har opptak (posisjon, puls eller målinger), fra databasen og arkivet.
   if (path === "/chat/historikk/dager") {
     const r = await hub.fetch(new Request("https://hub/internal/dager", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }));
@@ -749,6 +755,9 @@ export class ChatHub {
         if (b.k === "heia") this.heiaVarsel(decodeURIComponent(request.headers.get("x-by") || ""));
         return Response.json(this.kast());
       }
+      if (url.pathname === "/internal/versjoner") {
+        return new Response(this.setting("versjoner") || "[]", { headers: { "content-type": "application/json" } });
+      }
       if (url.pathname === "/internal/dager") {
         return Response.json(await this.dager());
       }
@@ -1040,6 +1049,9 @@ export class ChatHub {
       this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('sb1state', ?)`, JSON.stringify({ state, til: Date.now() + 15 * 60e3 }));
       const q = new URLSearchParams({ finInst: this.env.SB1_FININST, client_id: this.env.SB1_CLIENT_ID, state, redirect_uri: SB1_TILBAKE, response_type: "code" });
       return Response.json({ url: "https://api.sparebank1.no/oauth/authorize?" + q });
+    }
+    if (url.pathname === "/chat/admin/versjoner/hent" && request.method === "POST") {
+      return Response.json({ antall: await this.versjonerOppdater() });
     }
     if (url.pathname === "/chat/admin/bank/hent" && request.method === "POST") {
       return Response.json(await this.bankOppdater(true));
@@ -1950,6 +1962,32 @@ export class ChatHub {
     };
   }
 
+  // Versjonshistorikken: hver commit som endret forsiden (index.html) i det offentlige repoet hentes fra GitHub og lagres
+  // i R2 (versjoner/<sha>.html), med tidspunkt og melding. Lista ligger i kv 'versjoner'. Høyst 30 nye per runde.
+  async versjonerOppdater() {
+    const liste = JSON.parse(this.setting("versjoner") || "[]"), har = new Set(liste.map((v) => v.sha));
+    const gh = { headers: { "User-Agent": "esbjugconsult.com", Accept: "application/vnd.github+json" } };
+    const nye = [];
+    for (let side = 1; side <= 10; side++) {
+      const r = await fetch(`https://api.github.com/repos/TidemannEsbjug/esbjugconsult/commits?path=index.html&per_page=100&page=${side}`, gh);
+      if (!r.ok) break;
+      const c = await r.json();
+      for (const x of c) if (!har.has(x.sha)) nye.push({ sha: x.sha, ts: Date.parse(x.commit.committer.date), melding: (x.commit.message || "").split("\n")[0].slice(0, 200) });
+      if (c.length < 100 || (c.length && har.has(c[c.length - 1].sha))) break;   // resten er hentet fra før
+    }
+    nye.sort((a, b) => a.ts - b.ts);
+    for (const v of nye.slice(0, 30)) {
+      const r = await fetch(`https://raw.githubusercontent.com/TidemannEsbjug/esbjugconsult/${v.sha}/index.html`);
+      if (!r.ok) continue;
+      const html = await r.text();
+      await this.env.FILES.put(`versjoner/${v.sha}.html`, html, { httpMetadata: { contentType: "text/html; charset=utf-8" }, customMetadata: { ts: String(v.ts), melding: v.melding } });
+      liste.push({ ...v, lengde: html.length });
+    }
+    liste.sort((a, b) => a.ts - b.ts);
+    this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('versjoner', ?)`, JSON.stringify(liste));
+    return liste.length;
+  }
+
   // Timer med opptak per Oslo-dag: hver time med posisjon, puls eller målinger teller (0–24). Arkiverte dager har tallet
   // i arkivets metadata. Huskes i 2 min.
   async dager() {
@@ -2076,6 +2114,7 @@ export class ChatHub {
     await this.matchNye().catch(() => {});   // også når telefonen ikke sender (resten av en tur)
     await this.bankOppdater().catch(() => {});
     await this.arkiver().catch(() => {});
+    await this.versjonerOppdater().catch(() => {});
     await this.ctx.storage.setAlarm(nextQuarter(now + 1000));
   }
 

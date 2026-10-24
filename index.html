@@ -546,6 +546,26 @@
   .h-sok input{flex:1;min-width:0;border:1.5px solid rgba(0,32,91,.14);border-radius:16px;padding:14px 18px;background:rgba(255,255,255,.8);font:500 16px -apple-system,system-ui,sans-serif;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
   .h-sok input:focus{border-color:var(--ink);box-shadow:0 0 0 4px rgba(0,32,91,.1)}
   .h-svar{margin:-4px 6px 0;font:italic 500 15px/1.35 var(--serif);color:var(--ink)}
+  /* Time-lapse av selve siden: versjonen som gjaldt på tidspunktet (en endring = en commit), merker på tidslinjen for
+     hver endring den dagen, forhåndsvisning når man holder over, og hele siden i stort ved trykk. */
+  .h-tidsone{position:relative;flex:1 1 160px;min-width:90px;display:flex;align-items:center}
+  .h-tidsone .h-tid{flex:1;min-width:0}
+  .h-merker{position:absolute;left:8px;right:8px;top:-7px;height:6px;pointer-events:none}
+  .h-merker i{position:absolute;top:0;width:2px;height:6px;margin-left:-1px;border-radius:1px;background:rgba(0,32,91,.45)}
+  .h-versjonrad{gap:10px;margin-top:-2px}
+  .hist .h-versjon{display:inline-flex;align-items:center;gap:8px;padding:7px 12px 7px 10px;background:rgba(0,32,91,.06);font:600 12px/1 "SF Mono",Menlo,monospace}
+  .h-versjon i{width:8px;height:8px;border-radius:2px;background:var(--ink);opacity:.7}
+  .h-versjon .hv-n{opacity:.5}
+  .h-versjon.ny{animation:versjonNy 1s ease}
+  @keyframes versjonNy{0%{box-shadow:0 0 0 0 rgba(0,32,91,.5);background:var(--ink);color:#fff}100%{box-shadow:0 0 0 10px rgba(0,32,91,0)}}
+  .hv-melding{flex:1;min-width:0;font:italic 500 13px/1.25 var(--serif);color:rgba(0,32,91,.75);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .h-forhånd{position:absolute;left:18px;bottom:calc(100% + 12px);z-index:70;width:432px;height:270px;border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 24px 60px rgba(0,20,60,.4);border:1px solid rgba(0,32,91,.15);animation:kalInn .25s ease}
+  .h-forhånd[hidden]{display:none}
+  .h-forhånd iframe{width:1440px;height:900px;border:0;transform:scale(.3);transform-origin:0 0;pointer-events:none}
+  .versjon-stor{position:fixed;inset:0;z-index:2147483600;background:rgba(0,16,48,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:grid;place-items:center;animation:kalInn .25s ease}
+  .versjon-stor iframe{width:min(1400px,94vw);height:min(860px,86vh);border:0;border-radius:18px;background:#fff;box-shadow:0 40px 100px rgba(0,0,0,.5)}
+  .versjon-stor button{position:absolute;top:18px;right:22px;width:44px;height:44px;border-radius:50%;border:0;background:#fff;color:var(--ink);font:400 26px/1 -apple-system,system-ui,sans-serif;cursor:pointer}
+  @media (max-width:760px){.h-forhånd{display:none!important}.hv-melding{display:none}}
   /* Kalenderen (Wayback), i blått: mørkeblått kort over modulen, dagene i lyseblått etter hvor mange timer som er spilt
      inn, dagen som spilles hvit, i dag med ring. */
   .hist .h-kalender{position:absolute;right:70px;bottom:calc(100% + 12px);z-index:70;width:360px;padding:18px 18px 14px;border-radius:24px;background:linear-gradient(160deg,#0b2a6b,#00205B 60%,#001640);box-shadow:0 30px 70px rgba(0,20,60,.45),inset 0 1px 0 rgba(255,255,255,.12);display:flex;flex-direction:column;gap:10px;animation:kalInn .3s cubic-bezier(.2,.8,.2,1)}
@@ -819,7 +839,7 @@
     .hist{bottom:12px;padding:12px;border-radius:22px;gap:10px}
     .hist .h-kontroll{flex-wrap:wrap;justify-content:space-between;gap:10px 6px}
     .hist .h-spill{order:-2}
-    .hist .h-tid{flex:1 1 calc(100% - 64px);order:-1;min-width:0}
+    .hist .h-tidsone{flex:1 1 calc(100% - 64px);order:-1;min-width:0}
     .hist .h-kl{min-width:0;font-size:12px;margin-right:auto}
     .hist .h-ikon,.hist .h-lukk{width:34px;height:34px}
     .hist .h-fart{min-width:44px;padding:8px 8px}
@@ -2222,12 +2242,14 @@ if (HUS) setTimeout(function lagAvspiller() {
   bar.className = 'hist gl'; bar.hidden = true; bar.setAttribute('aria-label', 'Replay');
   // Modulen nede på midten: spørrefeltet øverst, kontrollene under, × til slutt (avslutter replay).
   bar.innerHTML = '<form class="h-sok"><input type="search" placeholder="Spør: hvor var han i går kl. 14? sist han hadde 111 i puls?" aria-label="Spør om historikken" maxlength="200"></form><p class="h-svar" hidden></p>'
-    + '<div class="h-rad h-kontroll"><button type="button" class="h-spill" aria-label="Spill av">▶</button><input type="range" class="h-tid" min="0" max="10000" value="0" aria-label="Tid"><span class="h-kl">–</span>'
+    + '<div class="h-rad h-kontroll"><button type="button" class="h-spill" aria-label="Spill av">▶</button><span class="h-tidsone"><span class="h-merker" aria-hidden="true"></span><input type="range" class="h-tid" min="0" max="10000" value="0" aria-label="Tid"></span><span class="h-kl">–</span>'
     + '<button type="button" class="h-ikon h-forr" aria-label="Dagen før">‹</button>'
     + '<button type="button" class="h-ikon h-kal" aria-label="Velg dato" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></button>'
     + '<button type="button" class="h-ikon h-neste" aria-label="Dagen etter">›</button>'
     + '<button type="button" class="h-fart" aria-expanded="false" aria-label="Fart">1×</button><button type="button" class="h-lukk" aria-label="Avslutt replay">×</button></div>'
     + '<div class="h-kalender gl" hidden role="dialog" aria-label="Kalender"><div class="kal-topp"><button type="button" class="kal-forr" aria-label="Forrige måned">‹</button><b class="kal-mnd"></b><button type="button" class="kal-neste" aria-label="Neste måned">›</button></div><div class="kal-uke"></div><div class="kal-dager"></div><p class="kal-fot"></p></div>'
+    + '<div class="h-rad h-versjonrad"><button type="button" class="h-versjon" aria-label="Se siden slik den så ut"><i></i><span class="hv-t">–</span><span class="hv-n"></span></button><span class="hv-melding"></span></div>'
+    + '<div class="h-forhånd" hidden><iframe title="Siden slik den så ut" loading="lazy"></iframe></div>'
     + '<div class="h-fartvalg gl" hidden><span class="h-fv">1×</span><input type="range" class="h-fs" min="0" max="100" value="0" aria-label="Fart fra 1× til 60×"><span class="h-fe"><span>1×</span><span>60×</span></span></div>';
   document.querySelector('.hero-i>.flyt').append(rad);
   document.body.append(bar);
@@ -2260,6 +2282,38 @@ if (HUS) setTimeout(function lagAvspiller() {
     }
     return f && T >= f.fra && T <= f.til ? f.pts : null;
   };
+  // Versjonene av siden (GET /chat/versjoner): hvilken som gjaldt ved T, merker for dagens endringer, forhåndsvisning.
+  let versjoner = [], visVer = null;
+  const verBtn = q('.h-versjon'), forh = q('.h-forhånd'), verDato = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  fetch('/chat/versjoner').then(r => r.json()).then(v => { versjoner = v; if (avsp) { merkVersjoner(); visVersjon(Tav(avsp.k)); } }).catch(() => {});
+  const merkVersjoner = () => {
+    const m = q('.h-merker'); m.textContent = '';
+    if (!avsp) return;
+    for (const v of versjoner) if (v.ts >= avsp.t0 && v.ts <= avsp.t1) { const i = document.createElement('i'); i.style.left = ((v.ts - avsp.t0) / (avsp.t1 - avsp.t0) * 100).toFixed(2) + '%'; i.title = verDato.format(v.ts) + ' · ' + v.melding; m.append(i); }
+  };
+  const visVersjon = T => {
+    let i = -1; for (let n = 0; n < versjoner.length && versjoner[n].ts <= T; n++) i = n;
+    const v = versjoner[i] || null;
+    if (v === visVer) return;
+    const ny = visVer && v && avsp && avsp.spiller;
+    visVer = v;
+    q('.hv-t').textContent = v ? (TX.loc.startsWith('en') ? 'Site ' : 'Siden ') + verDato.format(v.ts) : (TX.loc.startsWith('en') ? 'Before the first version' : 'Før første versjon');
+    q('.hv-n').textContent = v ? (i + 1) + '/' + versjoner.length : '';
+    q('.hv-melding').textContent = v ? v.melding : '';
+    if (ny) { verBtn.classList.remove('ny'); void verBtn.offsetWidth; verBtn.classList.add('ny'); }
+    if (!forh.hidden && v) forh.firstChild.src = '/versjon/' + v.sha + '/?ramme';
+  };
+  // Hold over: liten forhåndsvisning over modulen. Trykk: hele siden slik den var, i stort.
+  verBtn.addEventListener('mouseenter', () => { if (!visVer) return; forh.hidden = false; const src = '/versjon/' + visVer.sha + '/?ramme'; if (!forh.firstChild.src.endsWith(src)) forh.firstChild.src = src; });
+  verBtn.addEventListener('mouseleave', () => { forh.hidden = true; });
+  verBtn.addEventListener('click', () => {
+    if (!visVer) return; forh.hidden = true;
+    const o = document.createElement('div'); o.className = 'versjon-stor';
+    o.innerHTML = '<iframe title="Siden slik den så ut"></iframe><button type="button" aria-label="Lukk">×</button>';
+    o.firstChild.src = '/versjon/' + visVer.sha + '/'; document.body.append(o);
+    const lukk = () => { o.remove(); removeEventListener('keydown', esc); }, esc = e => { if (e.key === 'Escape') lukk(); };
+    o.querySelector('button').onclick = lukk; o.addEventListener('click', e => { if (e.target === o) lukk(); }); addEventListener('keydown', esc);
+  });
   // Akselerometerpakkene på samme måte, i vinduer på 20 min.
   const finAks = T => {
     const f = avsp.finA;
@@ -2278,7 +2332,7 @@ if (HUS) setTimeout(function lagAvspiller() {
     avsp = { dag, pts: j.trail || [], hr: j.hr || [], tele: j.tele || [], logg: j.logg || [], hopp: true, t0: j.start, t1: Math.min(j.slutt, Date.now()), k: 0, spiller: false, sist: 0, tung: 0, sted: tele.sted };
     avsp.med = avsp.pts.filter(Boolean);
     window.__avsp = true; document.body.classList.add('i-replay');
-    trykket(dag);
+    trykket(dag); merkVersjoner(); visVer = undefined;
   }
   const Tav = k => avsp.t0 + k * (avsp.t1 - avsp.t0);
   // Midnatt i Oslo for en dato (YYYY-MM-DD): UTC-midnatt minus Oslos forskyvning den dagen.
@@ -2350,6 +2404,7 @@ if (HUS) setTimeout(function lagAvspiller() {
     settPoster(pst || nåNotater.filter(x => x.ts <= T));
     tegn(); tegnPuls(); tegnNaa();
     kl2.textContent = ukedag.format(T) + ' ' + klS.format(T);
+    visVersjon(T);
     tid.value = Math.round(avsp.k * 10000);
   }
   function start() { avsp.spiller = true; spill.textContent = '❚❚'; avsp.sist = performance.now(); requestAnimationFrame(steg); }

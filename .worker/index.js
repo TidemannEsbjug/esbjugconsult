@@ -17,7 +17,10 @@ export default {
       return Response.redirect(url.toString(), 301);
     }
     if (url.pathname.startsWith("/chat/")) return handleChat(request, env, url);
-    if (url.pathname === "/bank/tilbake") return handleChat(request, env, url);   // SpareBank 1 sin BankID-innlogging kommer tilbake hit
+    if (url.pathname === "/bank/tilbake") return handleChat(request, env, url);
+    // Siden slik den så ut ved en tidligere versjon (lagret i R2 fra GitHub, se versjonerOppdater i chat.js).
+    const ver = url.pathname.match(/^\/versjon\/([0-9a-f]{40})\/?$/);
+    if (ver) return versjonSide(env, url, ver[1]);   // SpareBank 1 sin BankID-innlogging kommer tilbake hit
     // Podcastepisodene ligger i R2 (FILES, nøkkel podcast/<fil>), ikke i dette offentlige repoet.
     if (url.pathname.startsWith("/podcast/lyd/")) return podcastLyd(request, env, url.pathname.slice("/podcast/lyd/".length));
     // /podcast/ og hver episode på /podcast/<n>/ er samme side, med episodelista og riktig tittel for deling satt inn.
@@ -110,4 +113,22 @@ async function podcastSide(env, url, ep) {
   hoder.delete("etag");
   hoder.set("cache-control", "no-cache");
   return rw.transform(new Response(svar.body, { status: 200, headers: hoder }));
+}
+
+// En gammel versjon av forsiden. Den kobler seg ikke til chatten (ingen WebSocket, så ingen besøksvarsel), er skjult for
+// søkemotorer, og får en stripe øverst med når den er fra (ikke i ?ramme, som er forhåndsvisningen i avspillingen).
+async function versjonSide(env, url, sha) {
+  const obj = await env.FILES.get(`versjoner/${sha}.html`);
+  if (!obj) return new Response("Fant ikke den versjonen", { status: 404 });
+  const meta = obj.customMetadata || {};
+  const ramme = url.searchParams.has("ramme");
+  const tid = meta.ts ? new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(Number(meta.ts)) : "";
+  const esc = (t) => String(t).replace(/[<>&"]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;" })[c]);
+  const hode = `<meta name="robots" content="noindex, nofollow"><script>window.__versjon=1;window.WebSocket=function(){return{readyState:3,send(){},close(){},addEventListener(){}}};</script>`;
+  const stripe = ramme ? "" : `<div style="position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:2147483647;max-width:calc(100vw - 24px);display:flex;gap:12px;align-items:center;padding:9px 14px;border-radius:999px;background:#00205B;color:#fff;font:600 13px/1.2 -apple-system,system-ui,sans-serif;box-shadow:0 10px 30px rgba(0,20,60,.35)"><span>Slik så siden ut ${esc(tid)}</span><span style="opacity:.6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40vw">${esc(meta.melding || "")}</span><a href="/" style="color:#fff;opacity:.85">Til i dag</a></div>`;
+  const svar = new Response(obj.body, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=86400" } });
+  return new HTMLRewriter()
+    .on("head", { element: (el) => el.prepend(hode, { html: true }) })
+    .on("body", { element: (el) => el.prepend(stripe, { html: true }) })
+    .transform(svar);
 }
