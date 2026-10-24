@@ -572,20 +572,20 @@ async function pris(env, url) {
   const v = o.virksomhet;
   // En tjenesteleverandør slår opp en kunde: bare prisen per år for den kunden.
   if (url.searchParams.get("som") === "kunde") {
-    return json({ orgnr: v.orgnr, navn: v.navn, ansatte: v.ansatte, pris: kundepris(p, v.ansatte, v.naering) });
+    return json({ orgnr: v.orgnr, navn: v.navn, ansatte: v.ansatte, pris: kundepris(p, v) });
   }
-  const l = lisenspris(p, v.ansatte, v.naering);
+  const l = lisenspris(p, v);
   const testet = await lager(env).harTestet(v.orgnr);
+  // Trinnet og antallet som telles, sendes ikke ut. Siden viser bare prisen.
   return json({
     orgnr: v.orgnr,
     navn: v.navn,
     ansatte: v.ansatte,
-    trinn: l.trinn.navn,
     sektor: l.sektor ? l.sektor.navn : null,
     pris: l.pris,
     betaling: betalingFor(p, v.ansatte, l.pris),
     testing: testet ? null : { pris: p.testing.pris, eksporter: p.testing.eksporter, apen: testmodus(env) || TESTING_I_APPEN },
-    sprint: sprintFor(p, v.ansatte),
+    sprint: sprintFor(p, l.ansatte),
     kjop: kjopApent(env),
     test: testmodus(env),
   });
@@ -670,7 +670,7 @@ async function stripeKunde(env, v, meta, { epost, referanse, ehf } = {}) {
     id = (await stripe(env, "GET", `customers/search?query=${q}&limit=1`)).data[0]?.id || null;
   }
   const felt = { name: v.navn, "preferred_locales[0]": "nb" };
-  leggPaa(felt, "metadata", { orgnr: v.orgnr, company_name: v.navn, tier: meta.tier, sector: meta.sector, employees_at_purchase: meta.employees_at_purchase, license_type: meta.license_type });
+  leggPaa(felt, "metadata", { orgnr: v.orgnr, company_name: v.navn, tier: meta.tier, sector: meta.sector, employees_at_purchase: meta.employees_at_purchase, document_workers: meta.document_workers, license_type: meta.license_type });
   if (v.adresse) {
     felt["address[line1]"] = v.adresse.linjer[0] || "";
     felt["address[line2]"] = v.adresse.linjer.slice(1).join(", ");
@@ -713,7 +713,7 @@ async function kunderFra(env, p, lev, liste, har = []) {
       `Klart – tjenesteleverandør for ${kv.navn} (org.nr ${orgnrTekst(kv.orgnr)})`,
       { klart: "leverandor", leverandor: lev.orgnr, kunde: kv.orgnr }
     );
-    linjer.push({ produkt: id, belop: kundepris(p, kv.ansatte, kv.naering) * 100, kunde: kv });
+    linjer.push({ produkt: id, belop: kundepris(p, kv) * 100, kunde: kv });
   }
   return { linjer };
 }
@@ -739,7 +739,7 @@ async function kasse(request, env, url) {
   if (o.feil) return json({ feil: o.feil }, o.kode);
   if (o.underenhet) return json({ feil: underenhetTekst(o) }, 409);
   const v = o.virksomhet;
-  const l = lisenspris(p, v.ansatte, v.naering);
+  const l = lisenspris(p, v);
   const kan = betalingFor(p, v.ansatte, l.pris);
   if (type === "testing") betaling = "kort";
   if (type === "leverandor" && betaling === "avdrag") return json({ feil: "Leverandørlisensen betales med kort eller faktura." }, 400);
@@ -774,6 +774,7 @@ async function kasse(request, env, url) {
     tier: l.trinn.navn,
     sector: l.sektor ? l.sektor.id : "",
     employees_at_purchase: String(v.ansatte),
+    document_workers: String(l.ansatte),
     license_type: type,
     betaling,
   };
@@ -1108,7 +1109,7 @@ async function fornyelsesvarsel(env, faktura) {
       continue;
     }
     const v = o.virksomhet;
-    let belop = (leverandor ? kundepris(p, v.ansatte, v.naering) : lisenspris(p, v.ansatte, v.naering).pris) * 100;
+    let belop = (leverandor ? kundepris(p, v) : lisenspris(p, v).pris) * 100;
     if (m.betaling === "avdrag") belop = Math.round(belop / 4);
     etter += belop;
     if (belop !== item.price.unit_amount) {
@@ -1122,8 +1123,13 @@ async function fornyelsesvarsel(env, faktura) {
       });
     }
     if (!leverandor) {
-      const l = lisenspris(p, v.ansatte, v.naering);
-      const ny = { tier: l.trinn.navn, sector: l.sektor ? l.sektor.id : "", employees_at_renewal: String(v.ansatte) };
+      const l = lisenspris(p, v);
+      const ny = {
+        tier: l.trinn.navn,
+        sector: l.sektor ? l.sektor.id : "",
+        employees_at_renewal: String(v.ansatte),
+        document_workers: String(l.ansatte),
+      };
       const felt = {};
       leggPaa(felt, "metadata", ny);
       await stripe(env, "POST", `subscriptions/${abo.id}`, felt);

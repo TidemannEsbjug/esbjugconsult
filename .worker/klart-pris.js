@@ -4,6 +4,11 @@
 // Tallene står ikke her. Repoet er offentlig, og trinnene og påslaget for tjenesteleverandører skal
 // aldri vises som en tabell. De kommer fra hemmeligheten KLART_PRISER (JSON). Kilden er
 // verktoy/klart-priser.json i det private repoet, og verktoy/klart-priser.sh sender den til Cloudflare.
+//
+// Størrelsen er ikke alle ansatte, men de som jobber med dokumenter. Et rørleggerfirma med 144 ansatte
+// har kanskje 20 på kontoret; i et advokatfirma jobber alle med personopplysninger. «andeler» i
+// KLART_PRISER gir andelen per bransje (næringskode, lengste prefiks vinner) eller per organisasjonsform
+// (kommuner teller lærere og pleiere). Bransjer som ikke står der, teller fullt. Siden viser bare prisen.
 
 /** Norsk org.nr: ni sifre, MOD11 med vektene 3 2 7 6 5 4 3 2. Rest 11 gir 0, rest 10 er ugyldig. */
 export function orgnrFra(verdi) {
@@ -41,20 +46,47 @@ export function sektorFor(priser, naeringskode) {
   return (priser.sektorer || []).find((s) => s.nace.some((n) => kode.startsWith(n))) || null;
 }
 
+/** Andelen av de ansatte som jobber med dokumenter. Organisasjonsform går foran næringskode. */
+export function andelFor(priser, v) {
+  const regler = priser.andeler || [];
+  const form = regler.find((r) => r.former && r.former.includes(v.form));
+  if (form) return form.andel;
+  const kode = String(v.naering || "");
+  let funnet = null;
+  let lengde = -1;
+  for (const r of regler) {
+    for (const n of r.nace || []) {
+      if (kode.startsWith(n) && n.length > lengde) {
+        funnet = r;
+        lengde = n.length;
+      }
+    }
+  }
+  return funnet ? funnet.andel : 1;
+}
+
+/** De ansatte som telles: andelen av de registrerte, rundet opp, så bare en virksomhet uten ansatte blir Solo. */
+export function telteAnsatte(priser, v) {
+  // Avrundet først, så 100 × 0,15 blir 15 og ikke 16 (flyttall).
+  return Math.ceil(Math.round(v.ansatte * andelFor(priser, v) * 1e6) / 1e6);
+}
+
 /** Årsprisen for virksomhetens egen lisens, i hele kroner eks. mva. Sektoren er med bare når den endrer prisen. */
-export function lisenspris(priser, ansatte, naeringskode) {
+export function lisenspris(priser, v) {
+  const ansatte = telteAnsatte(priser, v);
   const trinn = trinnFor(priser, ansatte);
-  const s = sektorFor(priser, naeringskode);
+  const s = sektorFor(priser, v.naering);
   const faktor = s && typeof s.faktor === "number" ? s.faktor : 1;
-  return { trinn, sektor: faktor !== 1 ? s : null, pris: Math.round(trinn.pris * faktor) };
+  return { ansatte, trinn, sektor: faktor !== 1 ? s : null, pris: Math.round(trinn.pris * faktor) };
 }
 
 /** Prisen en tjenesteleverandør betaler per år for én kunde. */
-export function kundepris(priser, ansatte, naeringskode) {
-  return lisenspris(priser, ansatte, naeringskode).pris * (priser.leverandorFaktor || 1);
+export function kundepris(priser, v) {
+  return lisenspris(priser, v).pris * (priser.leverandorFaktor || 1);
 }
 
-/** Sprinten hos virksomheter fra «fra» ansatte og opp, med trinnet som gjelder. Ellers null. */
+/** Sprinten hos virksomheter fra «fra» ansatte og opp, med trinnet som gjelder. Ellers null.
+    Får de talte ansatte: sprinten handler om hvor mye dokumentarbeid det er. */
 export function sprintFor(priser, ansatte) {
   const s = priser.sprint;
   if (!s || ansatte < s.fra) return null;
@@ -63,7 +95,9 @@ export function sprintFor(priser, ansatte) {
 }
 
 /** Hva virksomheten kan betale med. Faktura er for de store, avdrag for de små som vil spre
-    kostnaden. Kvartalsbeløpet regnes i øre, så fire avdrag går opp i årsprisen. */
+    kostnaden. Får de registrerte ansatte, ikke de talte: et rørleggerfirma med 144 ansatte har
+    regnskapsavdeling og råd, selv om prisen er satt etter kontorfolket. Kvartalsbeløpet regnes i
+    øre, så fire avdrag går opp i årsprisen. */
 export function betalingFor(priser, ansatte, pris) {
   return {
     kort: true,
