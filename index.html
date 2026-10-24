@@ -564,6 +564,13 @@
   .h-forhånd iframe{width:1440px;height:900px;border:0;transform:scale(.3);transform-origin:0 0;pointer-events:none}
   /* Hele siden slik den var: den gamle versjonen fyller vinduet bak avspilleren, og byttes med en myk overgang. */
   .versjon-lag{position:fixed;inset:0;z-index:55;pointer-events:none}
+  /* Lasteanimasjonen (blå) over hele vinduet et kort øyeblikk når tiden flyttes */
+  .tid-venter{position:fixed;inset:0;z-index:57;opacity:0;visibility:hidden;transition:opacity .25s ease,visibility 0s .25s}
+  .tid-venter.på{opacity:1;visibility:visible;transition:opacity .12s ease}
+  /* Før første versjon fantes ikke nettsiden */
+  .ingen-side{position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:10px;background:radial-gradient(60% 50% at 50% 50%,#0b2f70,#00163f);color:#f6e7d2;text-align:center;pointer-events:auto}
+  .ingen-side b{font:italic 400 clamp(26px,3vw,40px)/1.1 var(--serif)}
+  .ingen-side span{font:500 10.5px/1 "SF Mono",Menlo,monospace;letter-spacing:.24em;text-transform:uppercase;color:rgba(246,231,210,.5)}
   .versjon-lag:has(iframe.klar){background:#fff;pointer-events:auto}
   .versjon-lag[hidden]{display:none}
   .versjon-lag iframe{position:absolute;inset:0;width:100%;height:100%;border:0;opacity:0;transition:opacity .6s ease;pointer-events:none}
@@ -850,6 +857,12 @@
     .hist .h-fartvalg{right:8px}
     .h-sok input{font-size:16px;padding:12px 14px}
   }
+  /* Smal modul mellom panelene på PC: tidslinjen på egen rad, knappene under */
+  .hist.smal .h-kontroll{flex-wrap:wrap;justify-content:space-between;gap:10px 6px}
+  .hist.smal .h-spill{order:-2}
+  .hist.smal .h-tidsone{flex:1 1 calc(100% - 64px);order:-1;min-width:0}
+  .hist.smal .h-kl{min-width:0;margin-right:auto}
+  .hist .h-kontroll button{flex-shrink:0}
   /* Egen peker (bare mus/styreflate, bare i hero; resten av siden har vanlig peker): et tynt siktekors, som i en
      kikkert. En lapp ved siden av sier hva modulen under viser (koordinatene over kartet, pulsen, saldoen …). Over noe klikkbart åpner korset seg og blir rødt; ved trykk strammes det. I tekstfelt: vanlig markør. */
   @media (hover:hover) and (pointer:fine){
@@ -1681,7 +1694,7 @@ const TX = EN ? {
 };
 const mobil = matchMedia('(pointer:coarse)').matches, still = matchMedia('(prefers-reduced-motion: reduce)').matches;
 let kart = null;   // MapLibre-kartet lages når første posisjon er kjent (leggKart)
-const ZOOM_UTE = matchMedia('(min-width:761px)').matches ? 10.5 : 14;   // standardzoom ute: PC 3,5 trinn lenger ut enn mobil
+const PC = matchMedia('(min-width:761px)').matches, ZOOM_UTE = PC ? 15.1 : 14, ZOOM_HUS = PC ? 15.1 : 18.6;   // standardzoom: på PC den samme ute og hjemme
 const $ = q => document.querySelector(q);
 // Høstkartet: vektorkart fra OpenFreeMap (OpenStreetMap-data) med egne farger. Skogen i fem høstfarger fordelt på
 // skogområdene, park i gull, gress i oliven og gull, mørk varm bunn, dypblått vann og veier i rav. Uten WebGL: vanlig OSM.
@@ -1865,7 +1878,7 @@ function tegn() {
   megMark.setLngLat(lngLat); if (!megMark._map) megMark.addTo(kart);
   megMark.getElement().querySelector('.meg').classList.toggle('liten', !!hus);
   // Hjemme zoomes kartet helt inn på huset; ute er det vanlig zoom (på PC 3,5 trinn lenger ut enn på mobil).
-  const zoom = hus ? 18.6 : ZOOM_UTE;
+  const zoom = hus ? ZOOM_HUS : ZOOM_UTE;
   if (forste) { forste = false; varHjemme = !!hus; kart.jumpTo({ center: lngLat, zoom }); }
   else if (følg) { if (!avsp) kart.easeTo({ center: lngLat, duration: 900 }); }   // låst på prikken (avspillingen flytter kameraet selv)
   else if (holder || Date.now() - rort < TILBAKE) return;
@@ -2270,7 +2283,18 @@ if (HUS) setTimeout(function lagAvspiller() {
   kart.on('dragstart', () => { if (følg) settFolg(false); });
   // Replay: avspilleren åpnes én time tilbake i dag, på pause. Et nytt trykk går tilbake til live.
   // Play-knappen ved flaggene åpner modulen (og lukker den igjen); toppen ellers uendret. × i modulen avslutter.
-  const replay = åpne => { bar.hidden = !åpne; fartvalg.hidden = true; q('.h-kalender').hidden = true; document.body.classList.toggle('replay', åpne); if (åpne && !avsp) last(dagNr.format(Date.now())).then(() => vis(Math.max(0, 1 - 3600e3 / (avsp.t1 - avsp.t0)))); if (!åpne) { settFolg(false); gåLive(); } };
+  // På PC står modulen i rommet mellom panelene til venstre og høyre, så den ikke legger seg over dem.
+  const plassHist = () => {
+    bar.style.left = bar.style.width = ''; bar.classList.remove('smal');
+    if (innerWidth <= 760 || bar.hidden) return;
+    const v = document.querySelector('.venstre')?.getBoundingClientRect(), h = document.querySelector('.hoyre')?.getBoundingClientRect();
+    if (!v || !h || !v.width || !h.width) return;
+    const a = v.right + 20, b = h.left - 20;
+    if (b - a < 380) return;
+    bar.style.left = ((a + b) / 2) + 'px'; bar.style.width = Math.min(860, b - a) + 'px'; bar.classList.toggle('smal', b - a < 640);
+  };
+  addEventListener('resize', plassHist);
+  const replay = åpne => { bar.hidden = !åpne; plassHist(); fartvalg.hidden = true; q('.h-kalender').hidden = true; document.body.classList.toggle('replay', åpne); if (åpne && !avsp) last(dagNr.format(Date.now())).then(() => vis(Math.max(0, 1 - 3600e3 / (avsp.t1 - avsp.t0)))); if (!åpne) { settFolg(false); gåLive(); } };
   q('.kn-spol').onclick = () => { if (tl) tlStopp(); replay(bar.hidden); };
   q('.h-lukk').onclick = () => { if (tl) tlStopp(); replay(false); };
   // Sanntid som standard: ett sekund avspilling er ett sekund av dagen. 10× og 60× for å komme raskere fram.
@@ -2313,9 +2337,24 @@ if (HUS) setTimeout(function lagAvspiller() {
   // vises dagens side med dataene fra T, aldri en hvit skjerm. Versjonsknappen slår det av og på.
   let sideDa = true, lagSha = null;
   const lag = document.createElement('div'); lag.className = 'versjon-lag'; lag.hidden = true; document.body.append(lag);
-  // Ingen lasteanimasjon når tiden flyttes: den nye siden tones inn så snart den er lastet, og fyller seg med det som kommer.
-  const visVenter = () => {}, skjulVenter = () => {};
-  const klarNår = (f, ferdig) => { f.onload = ferdig; };
+  // Lasteanimasjonen når tiden flyttes: vises straks og forsvinner så snart siden ved det nye tidspunktet har kartet sitt
+  // (høyst 3 s). Står ingen ramme og laster, går den bort etter et kort blikk.
+  const venter = document.createElement('div'); venter.className = 'tid-venter kart-venter'; venter.setAttribute('aria-hidden', 'true');
+  venter.innerHTML = document.querySelector('.kart-venter').innerHTML; document.body.append(venter);
+  const visVenter = () => venter.classList.add('på');
+  const skjulVenter = () => { if (!lag.querySelector('iframe:not(.forh):not(.klar)')) venter.classList.remove('på'); };
+  const kortVenter = () => { visVenter(); setTimeout(skjulVenter, 450); };
+  const klarNår = (f, ferdig) => {
+    f.onload = () => {
+      const t0 = Date.now();
+      const sjekk = () => {
+        let d = null; try { d = f.contentDocument; } catch {}
+        if (!d || !d.getElementById('kart') || d.documentElement.classList.contains('data-klar') || Date.now() - t0 > 1500) setTimeout(ferdig, 150);
+        else setTimeout(sjekk, 80);
+      };
+      sjekk();
+    };
+  };
   // Rammen for en versjon: lastes med tidspunktet (t) og markeres når den er klar. Rammer som er lastet på forhånd
   // (forh) gjenbrukes når time-lapsen kommer til dem.
   const ramme = (v, t, forh) => {
@@ -2332,6 +2371,15 @@ if (HUS) setTimeout(function lagAvspiller() {
   const oppdaterLag = () => {
     const gammel = sideDa && avsp && visVer && visVer !== versjoner[versjoner.length - 1];
     verBtn.setAttribute('aria-pressed', !!(sideDa && visVer));
+    if (sideDa && avsp && !visVer && versjoner.length) {
+      if (lagSha !== 'ingen') {
+        const en = TX.loc.startsWith('en'), d0 = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(versjoner[0].ts);
+        lag.innerHTML = '<div class="ingen-side"><b>' + (en ? 'The website did not exist yet' : 'Nettsiden fantes ikke ennå') + '</b><span>' + (en ? 'First version ' : 'Første versjon ') + d0 + '</span></div>';
+        lagSha = 'ingen';
+      }
+      lag.hidden = false; document.body.classList.add('versjon-på'); return;
+    }
+    if (lagSha === 'ingen') { lag.textContent = ''; lagSha = null; }
     lag.hidden = !gammel; document.body.classList.toggle('versjon-på', !!gammel);
     if (!gammel) { lagSha = null; lag.textContent = ''; return; }
     if (lagSha === visVer.sha) return;
@@ -2396,6 +2444,7 @@ if (HUS) setTimeout(function lagAvspiller() {
   // Dagen fra midnatt til midnatt (eller til nå).
   async function last(dag) {
     if (avsp && avsp.dag === dag) return;
+    kortVenter();
     const j = await (await fetch('/chat/historikk?dag=' + dag)).json();
     avsp = { dag, pts: j.trail || [], hr: j.hr || [], tele: j.tele || [], logg: j.logg || [], hopp: true, t0: j.start, t1: Math.min(j.slutt, Date.now()), k: 0, spiller: false, sist: 0, tung: 0, sted: tele.sted };
     avsp.med = avsp.pts.filter(Boolean);
@@ -2490,13 +2539,14 @@ if (HUS) setTimeout(function lagAvspiller() {
   // Hopp til et øyeblikk: last dagen, still tiden, fly kartet dit og spill videre i sanntid.
   async function til(o) {
     if (tl) tlStopp();
+    kortVenter();
     await last(dagNr.format(o.ts)); stopp();
     avsp.hopp = true; vis((o.ts - avsp.t0) / (avsp.t1 - avsp.t0));
     if (live) kart.easeTo({ center: [live.lon, live.lat], zoom: Math.max(kart.getZoom(), 16), duration: 900 });
     fortell(o.tekst);
     start();
   }
-  function gåLive() { setTimeout(hentOyet, 0); lag.hidden = true; lag.textContent = ''; lagSha = null; document.body.classList.remove('versjon-på'); document.body.classList.remove('replay-sover'); delete AK.iphone; delete AK.watch; bankNokkel = ''; kart.getSource('avsp-prikk')?.setData({ type: 'FeatureCollection', features: [] }); megMark.getElement().style.visibility = ''; document.body.classList.remove('i-replay'); avsp = null; window.__avsp = false; stopp(); trykket(null); kl2.textContent = '–'; fortell(''); sistSpor = ''; forste = true; hent(); }
+  function gåLive() { setTimeout(hentOyet, 0); lag.hidden = true; lag.textContent = ''; venter.classList.remove('på'); lagSha = null; document.body.classList.remove('versjon-på'); document.body.classList.remove('replay-sover'); delete AK.iphone; delete AK.watch; bankNokkel = ''; kart.getSource('avsp-prikk')?.setData({ type: 'FeatureCollection', features: [] }); megMark.getElement().style.visibility = ''; document.body.classList.remove('i-replay'); avsp = null; window.__avsp = false; stopp(); trykket(null); kl2.textContent = '–'; fortell(''); sistSpor = ''; forste = true; hent(); }
   spill.onclick = () => { if (tl) tlStopp(); if (!avsp) return; if (avsp.spiller) stopp(); else { if (avsp.k >= 1) avsp.k = 0; start(); } };
   // Farten: en egen glidebryter (som på YouTube) fra 1× til 60×, jevnt fordelt på en logaritmisk skala.
   const fartvalg = q('.h-fartvalg'), fs = q('.h-fs');
@@ -2553,7 +2603,9 @@ if (HUS) setTimeout(function lagAvspiller() {
     const d = valgtDag || maxDag; visMnd = [+d.slice(0, 4), +d.slice(5, 7) - 1]; tegnKal();
     try {
       const j = await (await fetch('/chat/historikk/dager')).json();
-      opptak = j.dager || {}; if (j.først) minDag = j.først; maxDag = dagNr.format(Date.now());
+      opptak = j.dager || {}; if (j.først) minDag = j.først;
+      if (versjoner.length) { const før = dagNr.format(versjoner[0].ts - 864e5); if (før < minDag) minDag = før; }
+      maxDag = dagNr.format(Date.now());
       q('.kal-fot').textContent = j.først ? (TX.loc.startsWith('en') ? 'Recording since ' : 'Spilt inn siden ') + fotDato.format(Date.parse(j.først + 'T12:00:00Z')) : '';
       tegnKal();
     } catch {}

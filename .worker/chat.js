@@ -501,6 +501,21 @@ export function osloMidnight(ts) {
 export function tidspunkt(q, nå) {
   const t = q.toLowerCase();
   const m = t.match(/\bkl(?:\.|okk(?:a|en))?\s*(\d{1,2})(?:[:.](\d{2}))?/) || t.match(/\b(\d{1,2})[:.](\d{2})\b/);
+  // En bestemt dato («27. september», «27/9»): hvilken som helst dag bakover, kl. 12 hvis klokkeslettet mangler.
+  const MND = ["januar", "februar", "mars", "april", "mai", "juni", "juli", "august", "september", "oktober", "november", "desember"];
+  const dm = t.match(/\b(\d{1,2})\.?\s*(januar|februar|mars|april|mai|juni|juli|august|september|oktober|november|desember)/) || t.match(/\b(\d{1,2})\/(\d{1,2})\b/);
+  if (dm) {
+    const d = +dm[1], mo = isNaN(+dm[2]) ? MND.indexOf(dm[2]) : +dm[2] - 1;
+    if (d < 1 || d > 31 || mo < 0 || mo > 11) return null;
+    const h = m ? +m[1] : 12, mi = m ? +(m[2] || 0) : 0;
+    if (h > 23 || mi > 59) return null;
+    let år = +new Intl.DateTimeFormat("en", { timeZone: "Europe/Oslo", year: "numeric" }).format(nå);
+    let ts = osloMidnight(Date.UTC(år, mo, d, 12)) + (h * 60 + mi) * 60e3;
+    if (ts > nå) ts = osloMidnight(Date.UTC(år - 1, mo, d, 12)) + (h * 60 + mi) * 60e3;
+    const navn = new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", weekday: "long", day: "numeric", month: "long" }).format(ts);
+    const kl = new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", hour: "2-digit", minute: "2-digit" }).format(ts);
+    return { id: "tid", type: "tid", ts, tekst: `Her var han ${navn} kl. ${kl}` };
+  }
   if (!m) return null;
   const h = +m[1], mi = +(m[2] || 0);
   if (h > 23 || mi > 59) return null;
@@ -975,7 +990,7 @@ export class ChatHub {
       const l = this.sporLive();
       if (!l || typeof navn !== "string" || !navn.trim() || navn.length > 80) return new Response("Bad request", { status: 400 });
       const steder = this.steder().filter((x) => x.navn !== navn.trim());
-      steder.push({ navn: navn.trim(), lat: l.lat, lon: l.lon, r: Number.isFinite(r) ? Math.min(2000, Math.max(30, r)) : 150 });
+      steder.push({ navn: navn.trim(), lat: l.lat, lon: l.lon, r: Number.isFinite(r) ? Math.min(2000, Math.max(30, r)) : 150, fra: Date.now() });
       this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('steder', ?)`, JSON.stringify(steder));
       return Response.json({ ok: true, steder: steder.map((x) => x.navn) });
     }
@@ -1504,8 +1519,9 @@ export class ChatHub {
   }
 
   // The named place he is at, if any (only the name goes out, never the stored coordinates).
-  kjentSted(lat, lon) {
-    for (const x of this.steder()) if (Math.hypot((lat - x.lat) * 111.2e3, (lon - x.lon) * 111.2e3 * Math.cos(lat * Math.PI / 180)) <= x.r) return x.navn;
+  // t: i avspillingen gjelder et sted bare fra det ble lagt inn (steder fra før «fra» fantes: kjente steder kom 22.10. 19:53).
+  kjentSted(lat, lon, t = Date.now()) {
+    for (const x of this.steder()) if ((x.fra || 1792691580000) <= t && Math.hypot((lat - x.lat) * 111.2e3, (lon - x.lon) * 111.2e3 * Math.cos(lat * Math.PI / 180)) <= x.r) return x.navn;
     return null;
   }
 
@@ -1693,7 +1709,7 @@ export class ChatHub {
     const d = await this.dagVed(t);
     if (!d) return { now: t, live: null, trail: [], tele: {}, bev: [], puls: [], kast: { le: 0, tomat: 0, heia: 0 }, gjor: "", notater: [], rom: null, bank: null };
     const pos = d.pos.filter((p) => p.ts <= t), p = pos[pos.length - 1];
-    const live = p ? { modus: "ekte", ts: p.ts, lat: p.lat, lon: p.lon, acc: p.acc, spd: p.spd, alt: p.alt, hdg: p.hdg, kjent: this.kjentSted(p.lat, p.lon) } : null;
+    const live = p ? { modus: "ekte", ts: p.ts, lat: p.lat, lon: p.lon, acc: p.acc, spd: p.spd, alt: p.alt, hdg: p.hdg, kjent: this.kjentSted(p.lat, p.lon, p.ts) } : null;
     const tele = {};
     for (const [ts, kilde, x] of d.tele) { if (ts > t) break; tele[kilde] = { ...x, ts }; }
     const l = this.loggVed(d, t), json = (x, f) => { try { return x ? JSON.parse(x) : f; } catch { return f; } };
@@ -1724,7 +1740,11 @@ export class ChatHub {
     const d = await this.dagVed(t), l = this.loggVed(d, t);
     let hr = null;
     for (const [ts, b] of d ? d.hr : []) { if (ts > t) break; if (t - ts < 20e3) hr = b; }
-    return { status: l.status || "available", sovnet: null, owner: false, hr };
+    // Når han la seg: siste skifte til «Sover» før t (samme dag; ellers vet vi det ikke).
+    let sovnet = null, før = null;
+    const igår = l.status === "sleeping" ? await this.dagVed(t - 864e5).catch(() => null) : null;
+    for (const [ts, k, x] of [...(igår?.logg || []), ...(d?.logg || [])]) { if (ts > t) break; if (k !== "status") continue; if (x === "sleeping" && før !== "sleeping" && før !== null) sovnet = ts; if (x !== "sleeping") sovnet = null; før = x; }
+    return { status: l.status || "available", sovnet: l.status === "sleeping" ? sovnet : null, owner: false, hr };
   }
 
   // Rå puls og akselerometerpakker i et vindu (høyst 30 min), fra databasen eller arkivet.
