@@ -276,8 +276,6 @@ T_NY = [
     ('<span class="mono s-t">Holder på med</span>', '<span class="mono s-t">Right now</span>'),
     ('aria-label="Alt iPhonen og Apple Watch måler"', 'aria-label="Everything his iPhone and Apple Watch measure"'),
     ('<span class="sl">Gått i dag</span>', '<span class="sl">Walked today</span>'),
-    ('<span class="sl">I ørene</span>', '<span class="sl">In his ears</span>'),
-    ('<span class="sl">Nett</span>', '<span class="sl">Network</span>'),
     ('aria-label="Akselerometeret i Apple Watch og iPhonen, live"', 'aria-label="The accelerometers in his Apple Watch and iPhone, live"'),
     ('<span class="sl">Apple Watch · akselerometer</span>', '<span class="sl">Apple Watch · accelerometer</span>'),
     ('<span class="sl">iPhone · akselerometer</span>', '<span class="sl">iPhone · accelerometer</span>'),

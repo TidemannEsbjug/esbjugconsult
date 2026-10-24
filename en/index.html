@@ -665,6 +665,11 @@
   @keyframes ladeBar{from{background-position:100% 0}to{background-position:-50% 0}}
   @media (prefers-reduced-motion:reduce){.sv.lader b,.sv.lader .bar i{animation:none}}
   .sv.ny b{animation:svNy 1.2s ease}
+  .sv.maskin b::before{content:"";display:inline-block;width:8px;height:8px;margin-right:7px;vertical-align:2px;border-radius:50%;background:rgba(0,32,91,.25)}
+  .sv.maskin.på b::before{background:#16a34a;box-shadow:0 0 0 0 rgba(22,163,74,.5);animation:maskinPuls 2.4s ease-out infinite}
+  .sv.maskin:not(.på) b{color:rgba(0,32,91,.45)}
+  @keyframes maskinPuls{0%{box-shadow:0 0 0 0 rgba(22,163,74,.5)}70%,100%{box-shadow:0 0 0 6px rgba(22,163,74,0)}}
+  @media (prefers-reduced-motion:reduce){.sv.maskin.på b::before{animation:none}}
   .sv{position:relative}
   .sv .fon,.sv .pil{position:absolute;right:0;top:0;transition:transform .9s cubic-bezier(.2,.8,.2,1)}
   .sv .fon{width:12px;height:20px;border:2px solid var(--ink);border-radius:3px;opacity:.75;transform-origin:50% 50%}
@@ -866,9 +871,10 @@
     <div class="sv" data-k="fyrb" hidden><span class="sl">iPhone</span><b>–</b><i class="bar"><i></i></i></div>
     <div class="sv" data-k="abat"><span class="sl">Android</span><b>–</b><i class="bar"><i></i></i></div>
     <div class="sv" data-k="wbat"><span class="sl">Apple Watch</span><b>–</b><i class="bar"><i></i></i></div>
+    <div class="sv maskin" data-k="starbase"><span class="sl">Starbase</span><b>–</b></div>
+    <div class="sv maskin" data-k="starship"><span class="sl">Starship</span><b>–</b></div>
+    <div class="sv maskin" data-k="falcon"><span class="sl">Falcon 9</span><b>–</b></div>
     <div class="sv" data-k="gatt"><span class="sl">Walked today</span><b>–</b></div>
-    <div class="sv" data-k="lyd"><span class="sl">In his ears</span><b>–</b></div>
-    <div class="sv" data-k="nett"><span class="sl">Network</span><b>–</b></div>
   </section>
   <section class="akse gl" aria-label="The accelerometers in his Apple Watch and iPhone, live">
     <div class="ak"><div class="ak-h"><span class="sl">Apple Watch · accelerometer</span><span class="ak-m">20 Hz · g</span></div><canvas class="ak-c" data-k="watch"></canvas></div>
@@ -1608,7 +1614,7 @@ raf=requestAnimationFrame(draw);
 const EN = document.documentElement.lang === 'en';
 const TX = EN ? {
   loc: 'en-GB', ingenPos: 'No position yet', venter: 'Waiting', sistSett: 'Last seen ', siden: ' ago', live: 'Live · ', t: ' h ', jorda: 'Somewhere on Earth',
-  kjent: { 'hjemme hos moren sin': 'Tidemann is at his mother’s' }, ingen: 'None', mobil: 'Mobile data', utenNett: 'Offline', visKart: 'Show the map', visPanel: 'Show the panels', rom: 'Room: ',
+  kjent: { 'hjemme hos moren sin': 'Tidemann is at his mother’s' }, ingen: 'None', på: 'On', av: 'Off', iBruk: 'In use', visKart: 'Show the map', visPanel: 'Show the panels', rom: 'Room: ',
   gjor: { jobber: 'Working', trener: 'Training' }, komma: '.',
   taper: ['LOSER!', 'Loser.', 'What a loser', 'Total loser', 'Mega loser', 'Ultra loser', 'Loser-in-chief', 'King of losers', 'Loser of the year', 'Loser (again)', 'Loser, loser, loser', 'LOOOOSER', 'LOSER™', 'The world’s biggest loser', 'Tiny loser'],
   heiaHold: 'Click to fire!', oppdatert: 'updated ',
@@ -1616,7 +1622,7 @@ const TX = EN ? {
   treff: ['SPLAT!', 'Hit!', 'Right in the face', 'Bingo!', 'BAM!', 'Bullseye', 'Ouch!', 'Splosh', 'Jackpot', 'Got him!'],
 } : {
   loc: 'nb-NO', ingenPos: 'Ingen posisjon ennå', venter: 'Venter', sistSett: 'Sist sett ', siden: ' siden', live: 'Live · ', t: ' t ', jorda: 'Et sted på jorda',
-  kjent: {}, ingen: 'Ingen', mobil: 'Mobildata', utenNett: 'Uten nett', visKart: 'Vis kartet', visPanel: 'Vis panelene', rom: 'Rom: ',
+  kjent: {}, ingen: 'Ingen', på: 'På', av: 'Av', iBruk: 'I bruk', visKart: 'Vis kartet', visPanel: 'Vis panelene', rom: 'Rom: ',
   gjor: { jobber: 'Jobber', trener: 'Trener' }, komma: ',',
   taper: ['TAPER!', 'Taper.', 'Tapern!', 'Taperen!', 'TAAAAPER', 'Din taper', 'For en taper', 'Supertaper', 'Megataper', 'Ultrataper',
     'Tapersjef', 'Taperkonge', 'Årets taper', 'Taper (igjen)', 'Taper-Tidemann', 'Taper, taper, taper', 'Taperen fra Frogn', 'TAPER™', 'Verdens største taper', 'Liten taper'],
@@ -1765,8 +1771,12 @@ function tegn() {
   sett('wbat', w.bat != null ? w.bat + ' %' : null, w.bat, w.lader);
   sett('gatt', i.meter != null ? (i.meter / 1000).toFixed(1).replace('.', TX.komma) + ' km' : trail.length ? (km(trail) / 1000).toFixed(1).replace('.', TX.komma) + ' km' : null);
   // Bare typen, ikke merkenavnet: earbuds, headset eller ingen.
-  sett('lyd', i.lyd == null ? null : /^(høyttaler|telefonen)$/.test(i.lyd) ? TX.ingen : /pods|buds|pop|ear|fit|dots/i.test(i.lyd) ? 'Earbuds' : 'Headset');
-  sett('nett', i.nett === 'Wi-Fi' ? 'Wi-Fi' : i.nett === 'mobil' || i.nett === 'mobilnett' ? TX.mobil : i.nett === 'ingen' ? TX.utenNett : i.nett);
+  // Maskinene sier fra hvert minutt. Tre minutter uten livstegn er «Av»; «I bruk» når tastatur eller mus er rørt siste 2 min.
+  for (const k of ['starbase', 'starship', 'falcon']) {
+    const m = tele[k], på = !!m && nå - m.ts < 180e3, e = document.querySelector('.sv[data-k="' + k + '"]');
+    sett(k, !på ? TX.av : m.ledig != null && m.ledig < 120 ? TX.iBruk : TX.på);
+    if (e) e.classList.toggle('på', på);
+  }
   const a = tele.android || {};
   sett('abat', a.bat != null ? a.bat + ' %' : null, a.bat, a.lader);
   // De to gamle iPhonene i huset (fyrene) heter bare «iPhone»; de vises når de har sendt batteriet.

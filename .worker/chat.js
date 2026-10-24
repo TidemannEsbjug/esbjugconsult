@@ -33,6 +33,7 @@
 //   POST /chat/admin/plan         {ts, rom: [...]}    the house plan from the LiDAR scan (2D, metres); public at GET /chat/plan
 //   POST /chat/kast               {k: "le" | "tomat"} a visitor laughs or throws a tomato at the map card (shared counters)
 //   POST /chat/android            {bat, lader}        the owner's Android phone reports its battery (its own key, ANDROID_TOKEN)
+//   POST /chat/maskin             {navn, ledig}       a computer says it is on, every minute (starbase, starship, falcon; key MASKIN_TOKEN)
 //   GET  /chat/oyet                               weather now in Dubai, Koh Phangan and Lombok (Open-Meteo, cached 15 min)
 //   GET  /chat/spor                               the public map: live position, today's trail, place name and the readings
 //   GET  /chat/hr                                 today's heart rate from the owner's Apple Watch (Oslo day, per minute) + live bpm
@@ -179,6 +180,16 @@ export async function handleChat(request, env, url) {
     if (!Number.isFinite(bat) || bat < 0 || bat > 100) return new Response("Bad request", { status: 400 });
     return hub.fetch(new Request("https://hub/chat/admin/tele", { method: "POST", headers: { "x-role": "owner" },
       body: JSON.stringify({ kilde: "android", d: { bat: Math.round(bat), lader: !!lader } }) }));
+  }
+
+  // The computers: Starbase (Mac), Starship and Falcon 9 (Windows). Only «I am on» and seconds since the last
+  // keyboard/mouse input (ledig), never what was typed. The page shows «Av» when one has been quiet for a few minutes.
+  if (path === "/chat/maskin" && request.method === "POST") {
+    if (!env.MASKIN_TOKEN || request.headers.get("Authorization") !== `Bearer ${env.MASKIN_TOKEN}`) return new Response("Unauthorized", { status: 401 });
+    const { navn, ledig } = await request.json().catch(() => ({}));
+    if (!["starbase", "starship", "falcon"].includes(navn)) return new Response("Bad request", { status: 400 });
+    return hub.fetch(new Request("https://hub/chat/admin/tele", { method: "POST", headers: { "x-role": "owner" },
+      body: JSON.stringify({ kilde: navn, d: { ledig: Number.isFinite(ledig) && ledig >= 0 ? Math.round(ledig) : null } }) }));
   }
 
   if (path === "/chat/oyet") {
@@ -971,7 +982,7 @@ export class ChatHub {
       if (ny.ts - (this.teleLogg[kilde] || 0) >= 60e3) {
         this.teleLogg[kilde] = ny.ts;
         const d = {};
-        for (const k of ["bat", "lader", "meter", "skritt", "etasjer", "lyd", "nett", "bevegelse", "haand", "aktivitet", "trykk"]) if (ny[k] !== undefined) d[k] = ny[k];
+        for (const k of ["bat", "lader", "meter", "skritt", "etasjer", "lyd", "nett", "bevegelse", "haand", "aktivitet", "trykk", "ledig"]) if (ny[k] !== undefined) d[k] = ny[k];
         this.sql.exec(`INSERT OR REPLACE INTO telelogg (kilde, ts, d) VALUES (?, ?, ?)`, kilde, ny.ts, JSON.stringify(d));
         if (ny.ts - (this.teleLoggPruned || 0) > 3600e3) { this.teleLoggPruned = ny.ts; this.sql.exec(`DELETE FROM telelogg WHERE ts < ?`, this.slettFor(ny.ts)); }
       }
