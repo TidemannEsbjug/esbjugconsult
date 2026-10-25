@@ -3068,7 +3068,7 @@ setInterval(tegn, 1000);
 // /stripped/: the sections on PC, in one lane. One wheel gesture (or trackpad swipe) or one arrow key moves exactly one screen; the trackpad's
 // coasting after a swipe is ignored until the wheel has been quiet for 160 ms. A card taller than the screen scrolls inside
 // first. Typing in the chat is left alone.
-(()=>{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+(()=>{if(!matchMedia('(min-width:761px) and (hover:hover)').matches||matchMedia('(prefers-reduced-motion: reduce)').matches)return;   // phones scroll normally
   const kort=[document.querySelector('.hero'),...document.querySelectorAll('.kortside')].filter(Boolean);if(kort.length<2)return;
   const h=document.documentElement;h.classList.add('dekk','dekk-start');scrollTo(0,0);
   const plasser=()=>kort.forEach((k,m)=>{k.style.transform='translateY('+(m-i)*100+'%)'});
