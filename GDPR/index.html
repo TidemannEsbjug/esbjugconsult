@@ -222,7 +222,7 @@
                 </span>
               </p>
             </div>
-            <!-- Nedlasting: virksomheten først (orgfelt.js og skriptet nederst). Ingen pris her. -->
+            <!-- Nedlasting: virksomheten først (orgfelt.js og skriptet nederst). Etter oppslaget: gratis prøve og hva lisensen koster etterpå. -->
             <form class="orgport rise" data-orgport style="--d: 180ms" novalidate>
               <div data-orgport-sok>
                 <p class="orgport-gratis"><b>Gratis for virksomheter.</b> Ingen betaling, ingen registrering.</p>
@@ -243,11 +243,19 @@
                   <div class="orgport-svar-hoved">
                     <p class="orgport-ok" data-godkjent>
                       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
-                      <span><b data-navn></b> er godkjent for en gratis prøve.</span>
+                      <span><b data-navn></b> er godkjent.</span>
                     </p>
                     <div class="orgport-firma" data-firma hidden>
                       <p class="orgport-firmanavn" data-navn></p>
-                      <p class="orgport-firmatekst">Prøv Klart gratis på deres egne dokumenter. Ingen betaling, ingen registrering.</p>
+                    </div>
+                    <!-- Prøven og hva lisensen koster etterpå, med en gang etter oppslaget. Ingen sperre: knappene står som før. -->
+                    <div class="orgport-prove">
+                      <p class="orgport-prove-tittel">Gratis prøve. Ingen betaling nå.</p>
+                      <p>Hele Klart, ikke en demo. Dere kan lagre 10 rensede filer av hver filtype: Word, Excel, PowerPoint, PDF, e-post, tekst og bilder.</p>
+                      <p class="orgport-pris" data-pris hidden>
+                        Kjøper dere lisens etter prøven: <b data-prisbelop></b> for <span data-prishvem></span>.
+                        <a data-prislenke href="pris/">Se hva som er med →</a>
+                      </p>
                     </div>
                     <div class="get">
                       <a class="btn" href="/klart/last-ned/mac" download>Last ned for Mac</a>
@@ -940,11 +948,19 @@
               <div class="orgport-svar-hoved">
                 <p class="orgport-ok" data-godkjent>
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
-                  <span><b data-navn></b> er godkjent for en gratis prøve.</span>
+                  <span><b data-navn></b> er godkjent.</span>
                 </p>
                 <div class="orgport-firma" data-firma hidden>
                   <p class="orgport-firmanavn" data-navn></p>
-                  <p class="orgport-firmatekst">Prøv Klart gratis på deres egne dokumenter. Ingen betaling, ingen registrering.</p>
+                </div>
+                <!-- Prøven og hva lisensen koster etterpå, med en gang etter oppslaget. Ingen sperre: knappene står som før. -->
+                <div class="orgport-prove">
+                  <p class="orgport-prove-tittel">Gratis prøve. Ingen betaling nå.</p>
+                  <p>Hele Klart, ikke en demo. Dere kan lagre 10 rensede filer av hver filtype: Word, Excel, PowerPoint, PDF, e-post, tekst og bilder.</p>
+                  <p class="orgport-pris" data-pris hidden>
+                    Kjøper dere lisens etter prøven: <b data-prisbelop></b> for <span data-prishvem></span>.
+                    <a data-prislenke href="pris/">Se hva som er med →</a>
+                  </p>
                 </div>
                 <div class="get">
                   <a class="btn" href="/klart/last-ned/mac" download>Last ned for Mac</a>
@@ -1026,9 +1042,9 @@
     </script>
     <script src="orgfelt.js"></script>
     <script>
-      // Nedlasting: virksomheten først. Små og store får «godkjent» og knappene; de store får også høre
-      // om skreddersydd oppsett. Ingen pris her (GET /klart/api/sjekk gir den ikke). Begge feltene på
-      // siden viser samme svar.
+      // Nedlasting: virksomheten først. Små og store får «godkjent», at prøven er gratis og hele programmet,
+      // hva lisensen koster for dem hvis de kjøper etterpå (GET /klart/api/sjekk gir prisen), og knappene;
+      // de store får også høre om skreddersydd oppsett. Begge feltene på siden viser samme svar.
       (function () {
         var skjemaer = document.querySelectorAll("[data-orgport]");
 
@@ -1069,6 +1085,14 @@
             boks.querySelector("[data-firma]").hidden = !svar.stor;
             boks.querySelector("[data-stor]").hidden = !svar.stor;
             boks.querySelector("[data-oppsett]").href = "pris/?orgnr=" + svar.orgnr + "&vis=oppsett";
+            var pris = boks.querySelector("[data-pris]");
+            pris.hidden = !svar.pris;
+            if (svar.pris) {
+              boks.querySelector("[data-prisbelop]").textContent =
+                new Intl.NumberFormat("nb-NO").format(svar.pris) + " kr per år eks. mva";
+              boks.querySelector("[data-prishvem]").textContent = svar.konsern ? svar.navn + " og hele konsernet" : svar.navn;
+              boks.querySelector("[data-prislenke]").href = "pris/?orgnr=" + svar.orgnr;
+            }
             boks.hidden = false;
           });
         }

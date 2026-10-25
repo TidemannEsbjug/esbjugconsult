@@ -25,8 +25,8 @@
 // Prissiden (/klart/pris/) selger lisenser for hele virksomheten, priset fra antall ansatte:
 //
 //   GET  /klart/api/sok?q=…               → opptil seks virksomheter som passer navnet (forslag i feltet)
-//   GET  /klart/api/sjekk?orgnr=…         → virksomheten, og om den er stor nok for skreddersydd oppsett.
-//                                           Uten pris: forsiden viser den aldri ved nedlasting.
+//   GET  /klart/api/sjekk?orgnr=…         → virksomheten, om den er stor nok for skreddersydd oppsett, og
+//                                           lisensprisen etter prøven (forsiden viser den ved nedlasting).
 //   GET  /klart/api/pris?orgnr=…[&som=kunde]  → virksomheten, prisen og hvordan den kan betale
 //   POST /klart/api/kasse        { type, orgnr, betaling, kunder?, epost?, referanse?, ehf? }
 //                                → adresse til Stripe Checkout, eller fakturaen og nøkkelen
@@ -641,7 +641,8 @@ async function sok(url) {
   return json({ treff });
 }
 
-/** Nedlasting på forsiden: virksomheten finnes og er aktiv, og om den er stor. Aldri pris. */
+/** Nedlasting på forsiden: virksomheten finnes og er aktiv, om den er stor, og hva lisensen koster hvis
+    de kjøper etter prøven (samme pris som prissiden). */
 async function sjekk(env, url) {
   const p = priser(env);
   const orgnr = orgnrFra(url.searchParams.get("orgnr"));
@@ -655,6 +656,7 @@ async function sjekk(env, url) {
     navn: o.virksomhet.navn,
     stor: Boolean(g && sprintFor(p, telteAnsatte(p, g.v))),
     konsern: Boolean(g?.konsern),
+    pris: g ? lisenspris(p, g.v, g.regnskap).pris : null,
   });
 }
 
