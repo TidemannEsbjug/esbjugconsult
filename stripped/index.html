@@ -894,6 +894,10 @@
   /* Ingen farget boks eller ramme når man trykker med fingeren (Android); tastaturet får fortsatt fokusrammen. */
   *{-webkit-tap-highlight-color:transparent}
   :focus:not(:focus-visible){outline:none}
+  /* /stripped/: hidden here instead of deleted, because the scripts write to these elements. No map (leggKart returns),
+     so the blue loading background stays, without the dot and the text. Left: date/clock and posts. Right: pulse,
+     iPhone, Android, Apple Watch and the accelerometer lines. */
+  #kart,.kartknapp,.kv-prikk,.kv-i,.sted,.gjor,.bank,.oyet,.pod,.sens .sv[data-k=fyra],.sens .sv[data-k=fyrb],.sens .sv[data-k=gatt],.sens .maskiner{display:none!important}
 </style>
 </head>
 <body>
@@ -1744,6 +1748,7 @@ let kartLagt = false, megMark = null, sistSpor = '';
 const visKart = () => document.documentElement.classList.add('kart-klar');
 const SPOR = ['spor-glod', 'spor-midt', 'spor-kjerne', 'spor-strom'];
 function leggKart() {
+  return;   // /stripped/: no map; the blue loading background (.kart-venter) stays as the background
   if (kartLagt) return; kartLagt = true;
   setTimeout(visKart, 7000);   // uansett etter 7 s
   if (!stil) { visKart(); return; }
@@ -2183,7 +2188,7 @@ const GJOR = TX.gjor;
 // Huset hos moren hans, skannet med LiDAR i appen (GET /chat/plan). Bare på testsiden /hjem/ inntil videre.
 // plan.geo plasserer skanningen i kartet: et punkt (x, z) i skanningen dreies th radianer, og blir meter øst
 // (u + tx) og nord (−v + ty) fra geo.lat/lon. Tilpasset husets omriss i kartdataene (OpenStreetMap).
-const HUS = location.pathname.startsWith('/hjem') || location.pathname.startsWith('/stripped');   // /stripped/ is a working copy of /hjem/
+const HUS = false;   // /stripped/: no house mode and no replay
 let plan = null;
 const hentPlan = async () => { try { plan = await (await fetch('/chat/plan')).json(); } catch {} };
 if (HUS) { hentPlan(); setInterval(hentPlan, 10 * 60e3); }
