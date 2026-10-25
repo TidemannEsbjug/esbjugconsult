@@ -2443,6 +2443,49 @@ mark.mute {
   }
 }
 
+/* «Spolt fram»: står over vinduet mens skanningen og skrivingen går fort.
+   Sidens egen skrift og en mørk tekstlinje, så det ikke ser ut som en del av appen. */
+.ka-spol {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: max-content;
+  max-width: calc(100% - 24px);
+  margin: 0;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: rgba(21, 32, 46, 0.86);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.4;
+  letter-spacing: 0;
+  box-shadow: 0 8px 24px -10px rgba(21, 32, 46, 0.6);
+  opacity: 0;
+  transform: translate(-50%, 6px);
+  transition: opacity 350ms ease, transform 350ms ease;
+  pointer-events: none;
+}
+
+.ka-spol svg {
+  flex: none;
+  width: 18px;
+  height: 11px;
+  fill: #6f9bf5;
+}
+
+.ka[data-scene="skann"] .ka-spol,
+.ka[data-scene="skriver"] .ka-spol {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
 /* Smalere vinduer: som appen under 980 px, bare det viktigste. */
 @media (max-width: 1100px) {
   .ka-review {
