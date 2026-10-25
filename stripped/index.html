@@ -927,6 +927,7 @@
   html.dekk,html.dekk body{overflow:hidden;height:100%}
   .dekk .hero,.dekk .kortside{position:fixed;inset:0;height:100svh;min-height:0;transition:transform .95s cubic-bezier(.65,0,.25,1);will-change:transform}
   .dekk .hero,.dekk .kortside{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+  .dekk-start .hero,.dekk-start .kortside{transition:none!important}
   @media (prefers-reduced-motion:reduce){.dekk .hero,.dekk .kortside{transition:none}}
   /* Flags as rectangles with slightly rounded corners, the knob and the box around them rounded the same way, no white edge. */
   .lang .lf{width:38px;height:24px}
@@ -3047,12 +3048,12 @@ setInterval(tegn, 1000);
 // first. Typing in the chat is left alone.
 (()=>{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   const kort=[document.querySelector('.hero'),...document.querySelectorAll('.kortside')].filter(Boolean);if(kort.length<2)return;
-  const h=document.documentElement;h.classList.add('dekk');scrollTo(0,0);
+  const h=document.documentElement;h.classList.add('dekk','dekk-start');scrollTo(0,0);
   const plasser=()=>kort.forEach((k,m)=>{k.style.transform='translateY('+(m-i)*100+'%)'});
   let i=0,laastTil=0,sist=0,brukt=false;
   const vis=n=>{n=Math.max(0,Math.min(kort.length-1,n));if(n===i)return;const fram=n>i;i=n;laastTil=performance.now()+950;
     if(fram)kort[i].scrollTop=0;plasser()};
-  plasser();
+  plasser();requestAnimationFrame(()=>requestAnimationFrame(()=>h.classList.remove('dekk-start')));   // first placement without sliding
   const kanRulle=(dy)=>{const k=kort[i];if(k.scrollHeight<=k.clientHeight+2)return false;return dy>0?k.scrollTop+k.clientHeight<k.scrollHeight-2:k.scrollTop>2};
   addEventListener('wheel',e=>{if(e.target.closest&&e.target.closest('#chat'))return;const nå=performance.now(),pause=nå-sist;sist=nå;
     if(pause>160)brukt=false;if(kanRulle(e.deltaY))return;e.preventDefault();
