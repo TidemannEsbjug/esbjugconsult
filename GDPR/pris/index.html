@@ -694,6 +694,39 @@
         border-color: var(--signal);
         color: #fff;
       }
+      .tilbudvalg {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 10px;
+        margin-top: 16px;
+      }
+      .tilbudvalg button {
+        padding: 12px 14px;
+        border: 1px solid var(--rule);
+        border-radius: 12px;
+        background: #fff;
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+      }
+      .tilbudvalg button b {
+        display: block;
+        font-size: 15px;
+      }
+      .tilbudvalg button span {
+        font-size: 13.5px;
+        color: var(--ink-2);
+      }
+      .tilbudvalg button[aria-checked="true"] {
+        border-color: var(--signal);
+        box-shadow: 0 0 0 1px var(--signal);
+        background: var(--signal-soft);
+      }
+      .kal-dager button.forespurt {
+        border-style: dashed;
+        color: var(--ink-2);
+        font-weight: 500;
+      }
       .valgt-tid {
         margin-top: 10px;
         font-size: 14.5px;
@@ -895,77 +928,138 @@
             <button type="button" class="tilbake" data-tilbake>← Tilbake</button>
             <div class="oppsett-grid">
               <div>
-                <p class="merke">Skreddersydd oppsett</p>
-                <h2 tabindex="-1">En sprint hos dere</h2>
-                <p class="ingress">
-                  En større modell, finjustert på deres ekte data, på maskinvare dere eier. Opptil 10 sammenhengende
-                  kalenderdager, og sprinten slutter den dagen suksesskriteriet er nådd.
-                </p>
-                <p class="tekst">
-                  Klart virker godt på dokumentene vi har testet det på. Men hver virksomhet har sine egne dokumenter,
-                  maler, fagsystemer og måter å skrive på. I sprinten tilpasser og trener vi en modell på akkurat deres
-                  dokumenter. Går Klart glipp av noe i fasiten, retter vi det i den modellen til kriteriet er nådd.
-                </p>
-                <p class="tekst">
-                  <b>Hvorfor en egen, større modell:</b> Modellen som følger med Klart, er bevisst liten, så den kan kjøre
-                  på en vanlig jobb-PC, og den er allerede justert så langt den kan. En modell for én virksomhet kan være
-                  større, trent på deres dokumenter og kjøre på eget utstyr.
-                </p>
-                <div class="sprint-pris" id="sp-pris" hidden>
-                  <p class="merke" id="sp-trinn"></p>
-                  <p class="pristall" id="sp-total"></p>
-                  <p>Grunnhonoraret på <b id="sp-grunn"></b> eks. mva betales ved booking og beholdes. Resten, <b id="sp-rest"></b>, faktureres bare hvis suksesskriteriet er nådd. Ellers faller den bort.</p>
+                <p class="merke" id="op-merke">Oppsett hos dere</p>
+                <h2 tabindex="-1" id="op-tittel">En sprint hos dere</h2>
+                <div class="tilbudvalg" id="op-valg" role="radiogroup" aria-label="Velg tilbud" hidden></div>
+
+                <!-- Oppsettsdag: fast pris, ingen egen modell, ingen suksesskriterier -->
+                <div data-blokk="oppsett" hidden>
+                  <p class="ingress">
+                    Én dag, på stedet eller via fjerntilgang. Vi setter opp Klart hos dere og går gjennom det på deres egne
+                    dokumenter.
+                  </p>
+                  <div class="sprint-pris">
+                    <p class="merke" data-felt="trinn"></p>
+                    <p class="pristall"><b data-felt="fast"></b> <span>eks. mva, fast pris</span></p>
+                    <p>Betales ved booking.</p>
+                  </div>
+                  <h3 class="vilkar-tittel">Dagen</h3>
+                  <ul class="vilkar">
+                    <li>Klart installeres på en maskin dere har klar</li>
+                    <li>
+                      Tilgang internt settes opp med deres IT: de som trenger det, kobler seg til maskinen med fjerntilgang.
+                      Klart selv kobler seg ikke til noe nett
+                    </li>
+                    <li>Opplæring</li>
+                    <li>Klart kjøres på et utvalg av deres egne dokumenter, som vi går gjennom sammen</li>
+                    <li>Ingen egen modell og ingen suksesskriterier</li>
+                  </ul>
+                  <h3 class="vilkar-tittel">Før dagen</h3>
+                  <p class="tekst">
+                    Dere får en sjekkliste: maskinen, en kontakt i IT, tilgangene og testdokumentene. Er ikke det klart,
+                    flyttes dagen.
+                  </p>
+                  <h3 class="vilkar-tittel">Vilkår</h3>
+                  <ul class="vilkar">
+                    <li>Mer enn én dag faktureres per time</li>
+                    <li>Datoen kan i sjeldne tilfeller flyttes etter avtale. Da får dere 10 % avslag</li>
+                    <li>Booker dere en kort sprint innen tre måneder etter oppsettsdagen, trekkes oppsettsdagen fra</li>
+                  </ul>
+                  <p class="tekst"><b>Faktureres separat:</b> den årlige lisensen.</p>
                 </div>
-                <ul class="vilkar" style="margin-top: 18px">
-                  <li>På stedet, under taushetserklæring og databehandleravtale</li>
-                  <li>Fasiten og hva som skal bort, avtales skriftlig før dag én</li>
-                  <li>Grunnhonoraret betales ved booking og beholdes</li>
-                  <li>Kriteriet er nådd: resten av beløpet faktureres</li>
-                  <li>Kriteriet er ikke nådd innen sprinten er over: resten faller bort, og dere betaler bare grunnhonoraret</li>
-                </ul>
-                <h3 class="vilkar-tittel">Suksesskriteriet</h3>
-                <p class="tekst">Det testes i runder på deres egne dokumenter, uten noen fast grense for hvor mange.</p>
-                <ul class="vilkar">
-                  <li>
-                    <b>Én runde</b> er 100 tilfeldige dokumenter fra deres egne arkiver, eller høyst 1 000 sider, så store
-                    saksmapper ikke blir en hel runde alene. Dere merker fasiten med Klarts forslag som utgangspunkt. Hva som
-                    skal bort, avtales før vi begynner.
-                  </li>
-                  <li>
-                    Går Klart glipp av noe i en runde, retter vi modellen, og de dokumentene blir treningsmateriale. Så tas
-                    100 nye.
-                  </li>
-                  <li>
-                    <b>Kriteriet er nådd</b> når en ny runde blir 100 % ren på første forsøk, målt på Klart alene: alle
-                    direkte identifikatorer (fødselsnummer, D-nummer, kontonummer og de andre som avtales) og alt annet
-                    avtalt er borte, og ingen gjenkjennelige personer er igjen.
-                  </li>
-                  <li>Kriteriet må nås innenfor sprintens 10 dager. Nås det ikke, faller resten av honoraret bort.</li>
-                </ul>
-                <p class="tekst">
-                  Kriteriet gjelder rundene vi tester, ikke alle dokumenter, og er ingen garanti for dem. Dere leser og
-                  kontrollerer kopiene selv, som under <a class="lenke" href="/klart/#ansvar">Ansvar</a>. Det er ikke en del
-                  av kriteriet.
-                </p>
-                <h3 class="vilkar-tittel">Leveranse: tilgang internt</h3>
-                <p class="tekst">
-                  Klart kjører lokalt på én maskin hos dere. De som trenger det internt, kobler seg til den maskinen med
-                  fjerntilgang, med de tilgangene dere gir, satt opp sammen med deres IT. Klart selv kobler seg fortsatt ikke
-                  til noe nett. Fjerntilgangen er deres eget oppsett, ikke en del av Klart. Dette er en leveranse, ikke en del
-                  av suksesskriteriet.
-                </p>
-                <p class="tekst">
-                  <b>Dere stiller med</b> en Mac Studio i toppkonfigurasjon, med minst 128 GB samlet minne, kjøpt av dere
-                  og deres å beholde, og Claude-abonnementer og API-kostnader for sprinten.
-                </p>
-                <p class="tekst"><b>Faktureres separat:</b> den årlige lisensen.</p>
-                <p class="tekst">
-                  <b>Eierskap:</b> Dataene deres og alt som lages, er deres. Programvaren, arkitekturen og generelle
-                  forbedringer forblir hos <span class="selger-navn">[Selskap]</span> og kan gå inn i kjerneproduktet.
-                </p>
+
+                <!-- Kort sprint (5 dager) og sprint (10 dager): grunnhonorar, egen modell og suksesskriteriet -->
+                <div data-blokk="sprint" hidden>
+                  <p class="ingress">
+                    En egen modell, finjustert på deres ekte data, på maskinvare dere eier. Opptil
+                    <span data-felt="dager"></span> sammenhengende kalenderdager, og sprinten slutter den dagen
+                    suksesskriteriet er nådd.
+                  </p>
+                  <p class="tekst">
+                    Klart virker godt på dokumentene vi har testet det på. Men hver virksomhet har sine egne dokumenter,
+                    maler, fagsystemer og måter å skrive på. I sprinten tilpasser og trener vi en modell på akkurat deres
+                    dokumenter. Går Klart glipp av noe i fasiten, retter vi det i den modellen til kriteriet er nådd.
+                  </p>
+                  <p class="tekst">
+                    <b>Hvorfor en egen, større modell:</b> Modellen som følger med Klart, er bevisst liten, så den kan kjøre
+                    på en vanlig jobb-PC, og den er allerede justert så langt den kan. En modell for én virksomhet kan være
+                    større, trent på deres dokumenter og kjøre på eget utstyr.
+                  </p>
+                  <div class="sprint-pris" id="sp-pris">
+                    <p class="merke" data-felt="trinn"></p>
+                    <p class="pristall"><b data-felt="total"></b> <span>eks. mva, når kriteriet er nådd</span></p>
+                    <p>
+                      Grunnhonoraret på <b data-felt="grunn"></b> eks. mva betales ved booking og beholdes. Resten,
+                      <b data-felt="rest"></b>, faktureres bare hvis suksesskriteriet er nådd. Ellers faller den bort.
+                    </p>
+                  </div>
+                  <ul class="vilkar" style="margin-top: 18px">
+                    <li>På stedet, under taushetserklæring og databehandleravtale</li>
+                    <li data-kun="kort">Dag 1 er oppsettsdagen, og den er inkludert</li>
+                    <li>Fasiten og hva som skal bort, avtales skriftlig før dag én</li>
+                    <li>Grunnhonoraret betales ved booking og beholdes</li>
+                    <li>Kriteriet er nådd: resten av beløpet faktureres</li>
+                    <li>Kriteriet er ikke nådd innen sprinten er over: resten faller bort, og dere betaler bare grunnhonoraret</li>
+                    <li data-kun="kort">
+                      Nås ikke kriteriet innen 5 dager, kan sprinten utvides til 10 dager mot at dere betaler differansen
+                      opp til <span data-felt="utvidet"></span> eks. mva
+                    </li>
+                    <li data-kun="kort">Hadde dere oppsettsdag de siste tre månedene, trekkes den fra</li>
+                  </ul>
+                  <h3 class="vilkar-tittel">Suksesskriteriet</h3>
+                  <p class="tekst">Det testes i runder på deres egne dokumenter, uten noen fast grense for hvor mange.</p>
+                  <ul class="vilkar">
+                    <li>
+                      <b>Én runde</b> er 100 tilfeldige dokumenter fra deres egne arkiver, eller høyst 1 000 sider, så store
+                      saksmapper ikke blir en hel runde alene. Dere merker fasiten med Klarts forslag som utgangspunkt. Hva
+                      som skal bort, avtales før vi begynner.
+                    </li>
+                    <li>
+                      Går Klart glipp av noe i en runde, retter vi modellen, og de dokumentene blir treningsmateriale. Så tas
+                      100 nye.
+                    </li>
+                    <li>
+                      <b>Kriteriet er nådd</b> når en ny runde blir 100 % ren på første forsøk, målt på Klart alene: alle
+                      direkte identifikatorer (fødselsnummer, D-nummer, kontonummer og de andre som avtales) og alt annet
+                      avtalt er borte, og ingen gjenkjennelige personer er igjen.
+                    </li>
+                    <li>
+                      Kriteriet må nås innenfor sprintens <span data-felt="dager"></span>. Nås det ikke, faller resten av
+                      honoraret bort.
+                    </li>
+                  </ul>
+                  <p class="tekst">
+                    Kriteriet gjelder rundene vi tester, ikke alle dokumenter, og er ingen garanti for dem. Dere leser og
+                    kontrollerer kopiene selv, som under <a class="lenke" href="/klart/#ansvar">Ansvar</a>. Det er ikke en
+                    del av kriteriet.
+                  </p>
+                  <h3 class="vilkar-tittel">Leveranse: tilgang internt</h3>
+                  <p class="tekst">
+                    Klart kjører lokalt på én maskin hos dere. De som trenger det internt, kobler seg til den maskinen med
+                    fjerntilgang, med de tilgangene dere gir, satt opp sammen med deres IT. Klart selv kobler seg fortsatt
+                    ikke til noe nett. Fjerntilgangen er deres eget oppsett, ikke en del av Klart. Dette er en leveranse,
+                    ikke en del av suksesskriteriet.
+                  </p>
+                  <h3 class="vilkar-tittel">Dere stiller med</h3>
+                  <ul class="vilkar">
+                    <li data-kun="sprint">
+                      En Mac Studio i toppkonfigurasjon, med minst 128 GB samlet minne, kjøpt av dere og deres å beholde
+                    </li>
+                    <li data-kun="kort">En Mac Studio med minst 64 GB samlet minne, kjøpt av dere og deres å beholde</li>
+                    <li>Claude-abonnementer og API-kostnader for sprinten</li>
+                    <li>En fagperson som merker hver runde med Klarts forslag som utgangspunkt. Regn med 4–8 timer per runde</li>
+                    <li>En kontakt i IT</li>
+                  </ul>
+                  <p class="tekst">Alle filtypene Klart støtter, er med. Ingen pris per dokumenttype.</p>
+                  <p class="tekst"><b>Faktureres separat:</b> den årlige lisensen.</p>
+                  <p class="tekst">
+                    <b>Eierskap:</b> Dataene deres og alt som lages, er deres. Programvaren, arkitekturen og generelle
+                    forbedringer forblir hos <span class="selger-navn">[Selskap]</span> og kan gå inn i kjerneproduktet.
+                  </p>
+                </div>
               </div>
               <div>
-                <figure class="mac">
+                <figure class="mac" id="op-mac">
                   <!-- Egen tegning. Ikke bilder fra Apple Newsroom. Byttes gjerne med et eget foto. -->
                   <svg viewBox="0 0 560 340" role="img" aria-label="Mac Studio">
                     <defs>
@@ -1008,7 +1102,7 @@
                 </figure>
                 <form class="skjema" id="book-skjema" novalidate>
                   <div>
-                    <span class="etikett" id="kal-etikett">Velg startdato</span>
+                    <span class="etikett" id="kal-etikett">Velg dato</span>
                     <div class="kalender" aria-labelledby="kal-etikett">
                       <div class="kal-topp">
                         <button type="button" id="kal-forrige" aria-label="Forrige måned">‹</button>
@@ -1614,12 +1708,14 @@
           gaaTil("s-testing");
         });
 
-        // ---------- Skreddersydd oppsett: prisen og «Betal og book» ----------
+        // ---------- Oppsett og sprint: tilbudene, prisen og «Betal og book» ----------
 
+        var valgtTilbud = null; // ett av tilbud.sprint: { id: oppsett|kort|sprint, dager, fast | grunn+total }
         var ledige = null; // ledige startdager (ÅÅÅÅ-MM-DD) fra /klart/api/sprint/ledige
-        var sprintDager = 10;
+        var forespurte = null; // startdager som blir en forespørsel (en oppsettsdag ligger i perioden)
         var valgtStart = null;
         var kalMaaned = null; // første dag i måneden som vises
+        var NAVN = { oppsett: "Oppsettsdag", kort: "Kort sprint", sprint: "Sprint" };
 
         function iso(d) {
           return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
@@ -1637,33 +1733,105 @@
           var d = fraIso(t);
           return new Date(d.getFullYear(), d.getMonth(), 1);
         }
+        function dagerTekst(n) {
+          return n === 1 ? "1 dag" : n + " dager";
+        }
+        function forskudd(t) {
+          return t.fast != null ? t.fast : t.grunn;
+        }
 
+        // Kortet ved siden av lisensprisen, og valgene på siden for oppsett og sprint.
         function visSprintPris(d) {
-          var s = d.sprint;
-          $("sp-pris").hidden = !s;
-          if (!s) return;
-          sprintDager = s.dager;
-          $("sp-trinn").textContent = "Pris · " + s.trinn;
-          $("sp-total").innerHTML = "";
-          $("sp-total").appendChild(document.createTextNode(nok(s.total) + " "));
-          var eks = document.createElement("span");
-          eks.textContent = "eks. mva, når kriteriet er nådd";
-          $("sp-total").appendChild(eks);
-          $("sp-grunn").textContent = nok(s.grunn);
-          $("sp-rest").textContent = nok(s.total - s.grunn);
-          $("bk-knapp").disabled = !d.kjop;
-          $("bk-knapp").textContent = d.kjop ? "Betal " + nok(s.grunn * 1.25) + " og book" : "Booking åpner snart";
-          $("bk-info").textContent =
-            "Grunnhonoraret inkl. 25 % mva. Betaling med kort i Stripe. Datoen holdes i 30 minutter mens dere betaler.";
+          var liste = d.sprint || [];
+          var sprinten = liste.find(function (t) {
+            return t.id !== "oppsett";
+          });
+          $("r-oppsett").querySelector("h3").textContent = sprinten ? "Skreddersydd oppsett" : "Oppsettsdag";
+          $("r-oppsett").querySelector("p:not(.merke)").textContent = sprinten
+            ? "En egen modell, finjustert på deres egne dokumenter og satt opp hos dere, på maskinvare dere eier."
+            : "Vi setter opp Klart hos dere på én dag, med tilgang internt og opplæring. " + nok(liste.length ? liste[0].fast : 0) + " eks. mva.";
+          $("r-oppsett").querySelector("svg").style.display = sprinten ? "" : "none";
+
+          var valg = $("op-valg");
+          valg.innerHTML = "";
+          valg.hidden = liste.length < 2;
+          liste.forEach(function (t) {
+            var b = document.createElement("button");
+            b.type = "button";
+            b.setAttribute("role", "radio");
+            b.setAttribute("data-tilbud", t.id);
+            var navn = document.createElement("b");
+            navn.textContent = NAVN[t.id] + (t.id === "oppsett" ? "" : ", " + dagerTekst(t.dager));
+            var pris = document.createElement("span");
+            pris.textContent = nok(t.fast != null ? t.fast : t.total) + " eks. mva";
+            b.appendChild(navn);
+            b.appendChild(pris);
+            b.addEventListener("click", function () {
+              velgTilbud(t);
+              lastLedige();
+            });
+            valg.appendChild(b);
+          });
+          // Har de flere valg, står den største først.
+          if (liste.length) velgTilbud(sprinten || liste[0]);
+        }
+
+        function velgTilbud(t) {
+          valgtTilbud = t;
+          valgtStart = null;
+          kalMaaned = null;
+          velgEn($("op-valg"), "data-tilbud", t.id);
+          var oppsett = t.id === "oppsett";
+          $("op-tittel").textContent = oppsett ? "Oppsettsdag hos dere" : t.id === "kort" ? "En kort sprint hos dere" : "En sprint hos dere";
+          $("op-merke").textContent = oppsett ? "Oppsettsdag" : "Skreddersydd oppsett";
+          document.querySelectorAll("#s-oppsett [data-blokk]").forEach(function (el) {
+            el.hidden = el.getAttribute("data-blokk") !== (oppsett ? "oppsett" : "sprint");
+          });
+          document.querySelectorAll("#s-oppsett [data-kun]").forEach(function (el) {
+            el.hidden = el.getAttribute("data-kun") !== t.id;
+          });
+          var felt = {
+            trinn: "Pris · " + t.trinn,
+            fast: t.fast != null ? nok(t.fast) : "",
+            total: t.total != null ? nok(t.total) : "",
+            grunn: t.grunn != null ? nok(t.grunn) : "",
+            rest: t.total != null ? nok(t.total - t.grunn) : "",
+            dager: dagerTekst(t.dager),
+            utvidet: t.utvidetTotal ? nok(t.utvidetTotal) : "",
+          };
+          document.querySelectorAll("#s-oppsett [data-felt]").forEach(function (el) {
+            el.textContent = felt[el.getAttribute("data-felt")];
+          });
+          $("op-mac").hidden = oppsett;
+          $("kal-etikett").textContent = oppsett ? "Velg dag" : "Velg startdato";
+          $("kal-valgt").textContent = "Laster ledige datoer …";
+          oppdaterKnapp();
+        }
+
+        function oppdaterKnapp() {
+          var t = valgtTilbud;
+          if (!t) return;
+          var kjop = tilbud && tilbud.kjop;
+          var foresp = valgtStart && forespurte && forespurte.has(valgtStart);
+          $("bk-knapp").disabled = !kjop;
+          $("bk-knapp").textContent = !kjop ? "Booking åpner snart" : foresp ? "Send forespørsel" : "Betal " + nok(forskudd(t) * 1.25) + " og book";
+          $("bk-info").textContent = foresp
+            ? "Det ligger en oppsettsdag i perioden, som vi flytter først. Dere betaler ingenting nå; vi sender en betalingslenke når datoene er bekreftet."
+            : (t.id === "oppsett" ? "Prisen" : "Grunnhonoraret") +
+              " inkl. 25 % mva. Betaling med kort i Stripe. Datoen holdes i 30 minutter mens dere betaler.";
         }
 
         function lastLedige() {
-          return api("sprint/ledige")
+          if (!valgtTilbud) return Promise.resolve();
+          var id = valgtTilbud.id;
+          return api("sprint/ledige?tilbud=" + id)
             .then(function (svar) {
-              sprintDager = svar.dager;
+              if (!valgtTilbud || valgtTilbud.id !== id) return;
               ledige = new Set(svar.ledige);
-              if (valgtStart && !ledige.has(valgtStart)) valgtStart = null;
-              if (!kalMaaned) kalMaaned = svar.ledige.length ? maanedFra(svar.ledige[0]) : new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+              forespurte = new Set(svar.forespurt || []);
+              if (valgtStart && !ledige.has(valgtStart) && !forespurte.has(valgtStart)) valgtStart = null;
+              var alle = svar.ledige.concat(svar.forespurt || []).sort();
+              if (!kalMaaned) kalMaaned = alle.length ? maanedFra(alle[0]) : new Date(new Date().getFullYear(), new Date().getMonth(), 1);
               tegnKalender();
             })
             .catch(function (err) {
@@ -1672,6 +1840,7 @@
         }
 
         function tegnKalender() {
+          var dager = valgtTilbud.dager;
           var rute = $("kal-dager");
           rute.innerHTML = "";
           ["ma", "ti", "on", "to", "fr", "lø", "sø"].forEach(function (u) {
@@ -1684,16 +1853,17 @@
           var mnd = kalMaaned.getMonth();
           $("kal-maaned").textContent = kalMaaned.toLocaleDateString("nb-NO", { month: "long", year: "numeric" });
           for (var i = 0; i < (kalMaaned.getDay() + 6) % 7; i++) rute.appendChild(document.createElement("span"));
-          var sluttValgt = valgtStart ? leggTilDager(valgtStart, sprintDager - 1) : null;
+          var sluttValgt = valgtStart ? leggTilDager(valgtStart, dager - 1) : null;
           var antall = new Date(aar, mnd + 1, 0).getDate();
           for (var dag = 1; dag <= antall; dag++) {
             var t = iso(new Date(aar, mnd, dag));
             var el;
-            if (ledige.has(t)) {
+            if (ledige.has(t) || forespurte.has(t)) {
               el = document.createElement("button");
               el.type = "button";
+              if (forespurte.has(t)) el.className = "forespurt";
               el.setAttribute("aria-pressed", t === valgtStart ? "true" : "false");
-              el.setAttribute("aria-label", datoTekst(t));
+              el.setAttribute("aria-label", datoTekst(t) + (forespurte.has(t) ? ", som forespørsel" : ""));
               el.addEventListener(
                 "click",
                 (function (start) {
@@ -1712,22 +1882,29 @@
             el.textContent = dag;
             rute.appendChild(el);
           }
-          var liste = Array.from(ledige).sort();
+          var liste = Array.from(ledige).concat(Array.from(forespurte)).sort();
           $("kal-forrige").disabled = !liste.length || kalMaaned <= maanedFra(liste[0]);
           $("kal-neste").disabled = !liste.length || kalMaaned >= maanedFra(liste[liste.length - 1]);
           var v = $("kal-valgt");
           v.innerHTML = "";
+          var hva = NAVN[valgtTilbud.id];
           if (!liste.length) {
             v.textContent = "Ingen ledige datoer akkurat nå. Send oss en melding, så finner vi en tid.";
           } else if (valgtStart) {
-            v.appendChild(document.createTextNode("Sprinten: "));
+            v.appendChild(document.createTextNode(hva + ": "));
             var b = document.createElement("b");
-            b.textContent = datoTekst(valgtStart) + " – " + datoTekst(sluttValgt);
+            b.textContent = dager === 1 ? datoTekst(valgtStart) : datoTekst(valgtStart) + " – " + datoTekst(sluttValgt);
             v.appendChild(b);
-            v.appendChild(document.createTextNode(" (" + sprintDager + " dager)"));
+            if (dager > 1) v.appendChild(document.createTextNode(" (" + dagerTekst(dager) + ")"));
+            if (forespurte.has(valgtStart)) v.appendChild(document.createTextNode(". Blir en forespørsel."));
           } else {
-            v.textContent = "Velg en ledig dag. Sprinten varer " + sprintDager + " dager fra startdagen.";
+            v.textContent =
+              dager === 1
+                ? "Velg en ledig dag."
+                : "Velg en ledig dag. " + (valgtTilbud.id === "kort" ? "Den korte sprinten" : "Sprinten") + " varer " + dagerTekst(dager) + " fra startdagen." +
+                  (forespurte.size ? " Stiplede dager blir en forespørsel." : "");
           }
+          oppdaterKnapp();
         }
 
         $("kal-forrige").addEventListener("click", function () {
@@ -1743,6 +1920,7 @@
           e.preventDefault();
           var data = {
             orgnr: tilbud ? tilbud.orgnr : null,
+            tilbud: valgtTilbud ? valgtTilbud.id : null,
             start: valgtStart,
             navn: $("bk-navn").value.trim(),
             epost: $("bk-epost").value.trim(),
@@ -1750,12 +1928,21 @@
             melding: $("bk-melding").value.trim(),
             nettside: $("bk-nettside").value,
           };
-          if (!data.start) return feil("bk-feil", "Velg en startdato.");
+          if (!data.start) return feil("bk-feil", "Velg en dato.");
           if (!data.navn || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.epost)) return feil("bk-feil", "Skriv inn navn og e-post.");
           feil("bk-feil", "");
           opptatt($("bk-knapp"), true);
           api("sprint/book", data)
             .then(function (svar) {
+              if (svar.forespurt) {
+                $("book-skjema").hidden = true;
+                $("samtale-ferdig").hidden = false;
+                $("samtale-ferdig").querySelector(".merke").textContent = "Forespørsel sendt";
+                $("samtale-ferdig").querySelector(".tekst").textContent =
+                  "Vi flytter oppsettsdagen som ligger i perioden, og sender en betalingslenke til " + data.epost +
+                  " når " + datoTekst(svar.start) + " – " + datoTekst(svar.slutt) + " er bekreftet. Ingenting er betalt ennå.";
+                return;
+              }
               try {
                 sessionStorage.setItem("klart-sprint-okt", svar.okt);
               } catch (err) {}
@@ -2106,15 +2293,24 @@
         var sprintOkt = q.get("sprint");
         if (sprintOkt) {
           vis("s-kvittering");
-          $("k-tittel").textContent = "Sprinten er booket";
+          $("k-tittel").textContent = "Booket";
           $("k-tekst").textContent = "Vi henter bookingen.";
           api("sprint/kvittering?session=" + encodeURIComponent(sprintOkt))
             .then(function (svar) {
-              $("k-tekst").textContent =
-                "Sprinten hos " + svar.navn + " (org.nr " + orgnrTekst(svar.orgnr) + ") er booket " +
-                datoTekst(svar.start) + " – " + datoTekst(svar.slutt) + ". Grunnhonoraret på " + nok(svar.grunn) +
-                " eks. mva er betalt og beholdes. Resten faktureres bare hvis suksesskriteriet er nådd. Bekreftelsen er sendt til " + svar.epost +
-                ". Vi tar kontakt for å avtale fasiten og hva som skal bort, skriftlig før dag én.";
+              var hvem = svar.navn + " (org.nr " + orgnrTekst(svar.orgnr) + ")";
+              if (svar.tilbud === "oppsett") {
+                $("k-tittel").textContent = "Oppsettsdagen er booket";
+                $("k-tekst").textContent =
+                  "Oppsettsdagen hos " + hvem + " er booket " + datoTekst(svar.start) + ". " + nok(svar.fast) +
+                  " eks. mva er betalt. Bekreftelsen er sendt til " + svar.epost + ". Vi sender sjekklisten før dagen.";
+              } else {
+                $("k-tittel").textContent = svar.tilbud === "kort" ? "Den korte sprinten er booket" : "Sprinten er booket";
+                $("k-tekst").textContent =
+                  (svar.tilbud === "kort" ? "Den korte sprinten" : "Sprinten") + " hos " + hvem + " er booket " +
+                  datoTekst(svar.start) + " – " + datoTekst(svar.slutt) + ". Grunnhonoraret på " + nok(svar.grunn) +
+                  " eks. mva er betalt og beholdes. Resten faktureres bare hvis suksesskriteriet er nådd. Bekreftelsen er sendt til " + svar.epost +
+                  ". Vi tar kontakt for å avtale fasiten og hva som skal bort, skriftlig før dag én.";
+              }
               $("k-ics").href = "/klart/api/sprint/ics?session=" + encodeURIComponent(sprintOkt);
               $("k-ics-rad").hidden = false;
             })

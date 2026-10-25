@@ -15,6 +15,7 @@ import {
   kundedataPris,
   fornyetBelop,
   sprintFor,
+  sprintTilbudFor,
   betalingFor,
   sektorFor,
   aktiv,
@@ -160,10 +161,22 @@ assert.equal(lisenspris(hoyere, v(23, "69.100")).sektor.navn, "juridisk sektor")
 assert.equal(kundepris(P, v(23)), 135000);
 assert.equal(kundepris(P, v(47, "69.100"), harris), 306000);
 
-// Sprint bare fra 251 talte ansatte
-assert.equal(sprintFor(P, 250), null);
-assert.deepEqual(sprintFor(P, 251), { trinn: "251–1 000 ansatte", grunn: 50000, total: 250000 });
-assert.deepEqual(sprintFor(P, 5000), { trinn: "Over 1 000 ansatte", grunn: 80000, total: 400000 });
+// Oppsett og sprint etter talte ansatte: ingenting til 50, oppsettsdag fra 51, kort sprint i tillegg fra 151, full fra 251
+const ider = (n) => sprintTilbudFor(P, n).map((t) => t.id);
+assert.deepEqual(ider(50), []);
+assert.deepEqual(ider(51), ["oppsett"]);
+assert.deepEqual(ider(151), ["oppsett", "kort"]);
+assert.deepEqual(ider(250), ["oppsett", "kort"]);
+assert.deepEqual(ider(251), ["sprint"]);
+assert.equal(sprintFor(P, 150), null);
+assert.deepEqual(sprintTilbudFor(P, 200)[0], { id: "oppsett", navn: "Oppsettsdag", trinn: "51–250 ansatte", dager: 1, fast: 35000 });
+assert.deepEqual(sprintFor(P, 200), { id: "kort", navn: "Kort sprint", trinn: "151–250 ansatte", dager: 5, grunn: 30000, total: 125000, utvidetTotal: 250000 });
+assert.deepEqual(sprintFor(P, 251), { id: "sprint", navn: "Sprint", trinn: "251–1\u00a0000 ansatte", dager: 10, grunn: 50000, total: 250000 });
+assert.deepEqual(sprintFor(P, 5000), { id: "sprint", navn: "Sprint", trinn: "Over 1\u00a0000 ansatte", dager: 10, grunn: 80000, total: 400000 });
+// Den gamle formen i KLART_PRISER virker fortsatt
+const gammel = { sprint: { fra: 251, trinn: [{ til: 1000, navn: "x", grunn: 50000, total: 250000 }, { til: null, navn: "y", grunn: 80000, total: 400000 }] } };
+assert.equal(sprintFor(gammel, 5000).total, 400000);
+assert.equal(sprintFor(gammel, 250), null);
 
 // Betaling: avdrag for de små, faktura for de store, etter registrerte ansatte
 const grenser = { fakturaFra: 51, avdragTil: 50 };

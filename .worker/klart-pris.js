@@ -197,13 +197,43 @@ export function leverandorAktuell(priser, v) {
   return (priser.leverandorBransjer || []).some((n) => kode.startsWith(n));
 }
 
-/** Sprinten hos virksomheter fra «fra» ansatte og opp, med trinnet som gjelder. Ellers null.
-    Får de talte ansatte: sprinten handler om hvor mye dokumentarbeid det er. */
-export function sprintFor(priser, ansatte) {
+/** Oppsettsdag og sprinter: tilbudene som gjelder for så mange ansatte, i rekkefølge (tom liste for de små).
+    Får de talte ansatte: oppsett og sprint handler om hvor mye dokumentarbeid det er.
+    KLART_PRISER.sprint.tilbud: [{ id: "oppsett"|"kort"|"sprint", navn, fra, til, dager, fast | grunn+total }].
+    Den gamle formen ({ fra, trinn: [{ til, navn, grunn, total }] }) leses som sprinter på 10 dager. */
+export function sprintTilbudFor(priser, ansatte) {
   const s = priser.sprint;
-  if (!s || ansatte < s.fra) return null;
-  const t = s.trinn.find((x) => x.til === null || ansatte <= x.til);
-  return t ? { trinn: t.navn, grunn: t.grunn, total: t.total } : null;
+  if (!s) return [];
+  let liste = s.tilbud;
+  if (!liste) {
+    let fra = s.fra;
+    liste = (s.trinn || []).map((t) => {
+      const x = { id: "sprint", navn: "Sprint", fra, til: t.til, dager: 10, grunn: t.grunn, total: t.total };
+      fra = t.til === null ? null : t.til + 1;
+      return x;
+    });
+  }
+  // En kort sprint kan utvides til en full; prisen den da går opp til, er den laveste fulle sprinten.
+  const full = liste.filter((t) => t.id === "sprint").map((t) => t.total).sort((x, y) => x - y)[0] ?? null;
+  return liste
+    .filter((t) => ansatte >= t.fra && (t.til === null || ansatte <= t.til))
+    .map((t) => ({
+      id: t.id,
+      navn: t.navn,
+      trinn: t.til === null ? `Over ${tusen(t.fra - 1)} ansatte` : `${tusen(t.fra)}–${tusen(t.til)} ansatte`,
+      dager: t.dager,
+      ...(t.fast != null ? { fast: t.fast } : { grunn: t.grunn, total: t.total }),
+      ...(t.id === "kort" && full ? { utvidetTotal: full } : {}),
+    }));
+}
+
+/** Sprinten (kort eller full) for så mange ansatte, eller null. Forsiden viser skreddersydd oppsett da. */
+export function sprintFor(priser, ansatte) {
+  return sprintTilbudFor(priser, ansatte).find((t) => t.id !== "oppsett") || null;
+}
+
+function tusen(n) {
+  return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "\u00a0");
 }
 
 /** Hva virksomheten kan betale med. Faktura er for de store, avdrag for de små som vil spre
