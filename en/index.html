@@ -893,6 +893,9 @@
   /* Ingen farget boks eller ramme når man trykker med fingeren (Android); tastaturet får fortsatt fokusrammen. */
   *{-webkit-tap-highlight-color:transparent}
   :focus:not(:focus-visible){outline:none}
+  /* Språkvelgeren: ingen indre kant, og det tomme teller-feltet tas ut, så flaggene står med like mye luft på begge sider. */
+  .topp .lang{border:0}
+  .topp .st:not(:has(.st-i:not([hidden]))){display:none}
 </style>
 </head>
 <body>
