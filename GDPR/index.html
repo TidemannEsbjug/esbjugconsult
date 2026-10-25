@@ -325,148 +325,215 @@
           </p>
         </div>
 
-        <!-- Programvindu -->
-        <figure class="window rise">
-          <div class="titlebar">
-            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-            <span class="name">Klart — kundesaker</span>
-            <span class="os-tag">gjennomgang</span>
-          </div>
+        <!-- Programvindu: en kopi av Klart slik appen ser ut (src/styles.css og App.tsx i appen),
+             som spiller av flyten: velg mappe, velg filer, skanning, gjennomgang og ferdig.
+             Uten JS, eller med redusert bevegelse, står den stille på gjennomgangen. -->
+        <figure class="ka rise" data-scene="gjennom">
+          <div class="ka-app" data-fase="gjennomgang" aria-hidden="true">
+            <header class="ka-chrome">
+              <span class="ka-lys"><i></i><i></i><i></i></span>
+              <div class="ka-brand">
+                <span class="ka-mark">Klart</span>
+                <span class="ka-av">av Tidemann Esbjug</span>
+              </div>
+              <div class="ka-høyre">
+                <div class="ka-pulse"><i class="ka-dot on"></i><span data-ka="motor"></span></div>
+                <span class="ka-lisens">Gratis prøve · Lisens for bedrifter</span>
+                <span class="ka-lenke ka-liten">Sikkerhetskopier</span>
+                <span class="ka-lenke ka-liten">Vilkår</span>
+              </div>
+            </header>
 
-          <div class="appbar">
-            <div class="brand">
-              <b>Klart</b>
-              <span>før dokumentene deles</span>
-            </div>
-            <p class="pulse">
-              <i aria-hidden="true"></i> Alt kjører på denne maskinen
-            </p>
-          </div>
+            <div class="ka-stage">
+              <!-- Velkommen -->
+              <div class="ka-scene ka-s-start">
+                <div class="ka-fløy">
+                  <svg viewBox="0 0 64 64"><path d="M8 20h18l5 5h25v27H8z" /><path d="M8 28h48" /></svg>
+                  <h4>Mappe</h4>
+                  <p>Rens mange dokumenter på en gang. Du ser filene og velger metode før noe blir lest.</p>
+                  <span class="ka-btn" data-ka="velg">Velg mappe…</span>
+                </div>
+                <div class="ka-fløy">
+                  <svg viewBox="0 0 64 64"><path d="M18 8h20l14 14v34H18z" /><path d="M38 8v14h14" /><path d="M26 36h20M26 44h14" /></svg>
+                  <h4>Dokument</h4>
+                  <p>Åpne ett dokument, se gjennom treffene og bestem selv før det skrives.</p>
+                  <span class="ka-btn ghost">Velg dokument…</span>
+                </div>
+              </div>
 
-          <div class="workspace">
-            <div class="pane">
-              <h3>Filer</h3>
-              <ul class="files">
-                <li class="on">
-                  <span class="fn"
-                    ><svg><use href="#i-pdf" /></svg
-                    ><span>02-vedtak-statsforvalter.pdf</span></span
-                  >
-                  <span class="meta">11 treff</span>
-                </li>
-                <li>
-                  <span class="fn"
-                    ><svg><use href="#i-word" /></svg
-                    ><span>01-arbeidsavtale-acme.docx</span></span
-                  >
-                  <span class="meta">7 treff</span>
-                </li>
-                <li>
-                  <span class="fn"
-                    ><svg><use href="#i-mail" /></svg
-                    ><span>03-epost-trad.eml</span></span
-                  >
-                  <span class="meta">5 treff</span>
-                </li>
-                <li>
-                  <span class="fn"
-                    ><svg><use href="#i-excel" /></svg
-                    ><span>08-kundeliste.xlsx</span></span
-                  >
-                  <span class="meta">3 treff</span>
-                </li>
-                <li>
-                  <span class="fn"
-                    ><svg><use href="#i-ppt" /></svg
-                    ><span>09-statusmote.pptx</span></span
-                  >
-                  <span class="meta">1 treff</span>
-                </li>
-                <li>
-                  <span class="fn"
-                    ><svg><use href="#i-text" /></svg
-                    ><span>07-saksnotat.txt</span></span
-                  >
-                  <span class="meta">0 treff</span>
-                </li>
-              </ul>
-            </div>
-
-            <div class="pane">
-              <div class="sheet-wrap">
-                <article class="sheet">
-                  <div class="docket">
-                    <span>02-vedtak-statsforvalter.pdf</span>
-                    <span>blir på denne maskinen</span>
+              <!-- Mappe valgt: filene til venstre, metoden til høyre -->
+              <div class="ka-scene ka-s-forbered">
+                <div class="ka-forbered-topp">
+                  <div>
+                    <h4>kundesaker</h4>
+                    <p class="ka-sti">/Users/kari/Dokumenter/kundesaker</p>
                   </div>
-                  <p class="head">Vedtak om vergemål</p>
-                  <p>
-                    Vergehaver: <mark>Kari Nordmann</mark>, fnr
-                    <mark class="flag">110779 41012</mark>, bosatt
-                    <mark>Glenneveien 272, 0550 Oslo</mark>.
-                  </p>
-                  <p>
-                    Verge: <mark>Lars Hansen</mark>, Advokatfirmaet Nordlys AS.
-                    Kontakt <mark class="mute">lars.hansen@advokat.no</mark>.
-                  </p>
-                  <p>
-                    Vergehaver er diagnostisert med
-                    <mark class="flag">depresjon</mark>. Utbetaling skjer til
-                    konto <mark class="flag">1503 42 17886</mark>.
-                  </p>
-                </article>
-              </div>
-            </div>
-
-            <div class="pane hits">
-              <h3>Dette byttes ut</h3>
-              <div class="hit-tools">
-                <span class="chipbtn">Bytt ut alle</span>
-                <span class="chipbtn">Behold alle</span>
-              </div>
-
-              <div class="hit-group">
-                <h4>Fødselsnummer <span>1</span></h4>
-                <div class="hit on">
-                  <span class="val">110779 41012</span>
-                  <span class="sub"
-                    ><b>[FØDSELSNUMMER_1]</b><span>modulus 11</span></span
-                  >
+                  <div class="ka-lenker">
+                    <span class="ka-lenke">Bytt mappe</span>
+                    <span class="ka-lenke">Tilbake</span>
+                  </div>
+                </div>
+                <div class="ka-forbered-kropp">
+                  <div class="ka-kort ka-filvalg">
+                    <div class="ka-kort-topp">
+                      <h5>Filer <span>6 av 6 valgt</span></h5>
+                      <div class="ka-lenker">
+                        <span class="ka-lenke">Alle</span>
+                        <span class="ka-lenke">Ingen</span>
+                      </div>
+                    </div>
+                    <div class="ka-filsøk">
+                      <span class="ka-søk">Søk i filene</span>
+                      <span class="ka-boks-linje"><i class="ka-boks"></i>Søk i innholdet</span>
+                    </div>
+                    <ul>
+                      <li><i class="ka-boks på"></i><span class="ka-filnavn">01-arbeidsavtale-acme.docx</span><span class="ka-filstr">48 kB</span></li>
+                      <li><i class="ka-boks på"></i><span class="ka-filnavn">02-vedtak-statsforvalter.pdf</span><span class="ka-filstr">212 kB</span></li>
+                      <li><i class="ka-boks på"></i><span class="ka-filnavn">03-epost-trad.eml</span><span class="ka-filstr">31 kB</span></li>
+                      <li><i class="ka-boks på"></i><span class="ka-filnavn">07-saksnotat.txt</span><span class="ka-filstr">6 kB</span></li>
+                      <li><i class="ka-boks på"></i><span class="ka-filnavn">08-kundeliste.xlsx</span><span class="ka-filstr">64 kB</span></li>
+                      <li><i class="ka-boks på"></i><span class="ka-filnavn">09-statusmote.pptx</span><span class="ka-filstr">1.2 MB</span></li>
+                    </ul>
+                    <p class="ka-filvalg-hint">Dra over filene for å krysse av flere. Shift-klikk velger alt imellom.</p>
+                  </div>
+                  <div class="ka-kort ka-metode">
+                    <h5>Metode</h5>
+                    <div class="ka-metode-valg">
+                      <span class="på"><strong>Full rens</strong><span>Alt appen kjenner igjen blir fjernet.</span></span>
+                      <span><strong>Egendefinert</strong><span>Velg selv hva som skal vekk.</span></span>
+                    </div>
+                    <div class="ka-felt-bunn">
+                      <span class="ka-boks-linje"><i class="ka-boks på"></i>Sikkerhetskopi i Klart før skanningen</span>
+                      <span class="ka-btn stor" data-ka="rens">Rens 6 filer</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div class="hit-group">
-                <h4>Helse / art. 9 <span>1</span></h4>
-                <div class="hit">
-                  <span class="val">depresjon</span>
-                  <span class="sub"><b>[HELSE_1]</b><span>byttes ut</span></span>
+              <!-- Skanner -->
+              <div class="ka-scene ka-s-skann">
+                <ol class="ka-scan-steg">
+                  <li data-ka="steg1"><i>1</i><span>Rask gjennomgang</span></li>
+                  <li data-ka="steg2"><i>2</i><span>Grundig lesing med lokal AI</span></li>
+                </ol>
+                <h4 data-ka="skanntittel">Går gjennom mappen</h4>
+                <p class="ka-scan-forklaring" data-ka="forklaring">Hver fil sjekkes mot norske regler. Etterpå leser den lokale AI-en filene grundig.</p>
+                <div class="ka-scan-board">
+                  <div><b data-ka="ferdige">0 / 6</b><span data-ka="ferdigetekst">filer sjekket</span></div>
+                  <div><b data-ka="treff">0</b><span>treff så langt</span></div>
+                  <div><b data-ka="brukt">0 s</b><span>brukt</span></div>
+                  <div><b data-ka="igjen">Regner ut …</b><span data-ka="igjentekst">igjen av steg 1</span></div>
+                </div>
+                <p class="ka-scan-now" data-ka="nå"></p>
+                <div class="ka-meter"><i data-ka="meter"></i></div>
+                <div class="ka-filelist" data-ka="rader">
+                  <div><span class="ka-name">01-arbeidsavtale-acme.docx</span><span class="ka-stat">I kø</span></div>
+                  <div><span class="ka-name">02-vedtak-statsforvalter.pdf</span><span class="ka-stat">I kø</span></div>
+                  <div><span class="ka-name">03-epost-trad.eml</span><span class="ka-stat">I kø</span></div>
+                  <div><span class="ka-name">07-saksnotat.txt</span><span class="ka-stat">I kø</span></div>
+                  <div><span class="ka-name">08-kundeliste.xlsx</span><span class="ka-stat">I kø</span></div>
+                  <div><span class="ka-name">09-statusmote.pptx</span><span class="ka-stat">I kø</span></div>
                 </div>
               </div>
 
-              <div class="hit-group">
-                <h4>Person <span>2</span></h4>
-                <div class="hit">
-                  <span class="val">Kari Nordmann</span>
-                  <span class="sub"><b>[PERSON_1]</b><span>4 filer</span></span>
+              <!-- Gjennomgang -->
+              <div class="ka-scene ka-s-gjennom">
+                <div class="ka-review">
+                  <div class="ka-col ka-tree">
+                    <h5>Filer</h5>
+                    <span class="ka-tre"><span class="ka-fn">01-arbeidsavtale-acme.docx</span><span class="ka-meta">7 treff · 48 kB</span></span>
+                    <span class="ka-tre på"><span class="ka-fn">02-vedtak-statsforvalter.pdf</span><span class="ka-meta">11 treff · 212 kB</span></span>
+                    <span class="ka-tre"><span class="ka-fn">03-epost-trad.eml</span><span class="ka-meta">5 treff · 31 kB</span></span>
+                    <span class="ka-tre"><span class="ka-fn">07-saksnotat.txt</span><span class="ka-meta">0 treff · 6 kB</span></span>
+                    <span class="ka-tre"><span class="ka-fn">08-kundeliste.xlsx</span><span class="ka-meta">3 treff · 64 kB</span></span>
+                    <span class="ka-tre"><span class="ka-fn">09-statusmote.pptx</span><span class="ka-meta">1 treff · 1.2 MB</span></span>
+                  </div>
+                  <div class="ka-col ka-midt">
+                    <div class="ka-sheet-wrap">
+                      <article class="ka-sheet">
+                        <i class="ka-sveip"></i>
+                        <div class="ka-docket">
+                          <span>02-vedtak-statsforvalter.pdf</span>
+                          <span class="ka-docket-toggle" data-ka="vis">Vis sladdet</span>
+                        </div>
+<pre class="ka-tekst">Vedtak om vergemål
+Saksnr. 2024/18442-SF
+
+Vergehaver: <mark class="gilt lit"><span class="o">Kari Nordmann</span><span class="t">[PERSON_1]</span></mark>, fnr. <mark class="seal lit"><span class="o">110779 41012</span><span class="t">[FØDSELSNUMMER_1]</span></mark>
+Adresse: <mark class="gilt" data-ka="adresse"><span class="o">Glenneveien 272, 0550 Oslo</span><span class="t">[ADRESSE_1]</span></mark>
+
+Verge: <mark class="gilt lit"><span class="o">Lars Hansen</span><span class="t">[PERSON_2]</span></mark>, Advokatfirmaet Nordlys AS
+E-post: <mark class="ink lit"><span class="o">lars.hansen@advokat.no</span><span class="t">[E-POST_1]</span></mark>
+
+Vergehaver er diagnostisert med <mark class="seal lit"><span class="o">depresjon</span><span class="t">[HELSE_1]</span></mark> og har behov for bistand i økonomiske saker. Utbetalinger skjer til konto <mark class="seal lit"><span class="o">1503 42 17886</span><span class="t">[KONTONR_1]</span></mark>.</pre>
+                      </article>
+                    </div>
+                  </div>
+                  <div class="ka-col ka-findings">
+                    <h5>Rett</h5>
+                    <div class="ka-revisjon">
+                      <span class="ka-textarea">Tredje Person 2 er By</span>
+                      <span class="ka-btn stor av">Rett</span>
+                    </div>
+                    <div class="ka-valg">
+                      <span class="på">Navn</span>
+                      <span class="på">Fødselsnummer</span>
+                      <span class="på">Telefon og e-post</span>
+                      <span class="på">Helse</span>
+                      <span class="på">Konto</span>
+                      <span class="på">Hemmeligheter</span>
+                      <span data-ka="sted">Adresse og sted</span>
+                      <span>Datoer</span>
+                      <span>Yrke og relasjon</span>
+                      <span>Alder</span>
+                      <span>Arbeidsplass</span>
+                      <span>Saksnummer</span>
+                    </div>
+                    <ul class="ka-merker">
+                      <li><code>[FØDSELSNUMMER_1]</code><span>×1</span></li>
+                      <li><code>[HELSE_1]</code><span>×1</span></li>
+                      <li><code>[KONTONR_1]</code><span>×1</span></li>
+                      <li><code>[PERSON_1]</code><span>×1</span></li>
+                      <li><code>[PERSON_2]</code><span>×1</span></li>
+                      <li><code>[E-POST_1]</code><span>×1</span></li>
+                      <li data-ka="adressemerke" hidden><code>[ADRESSE_1]</code><span>×1</span></li>
+                    </ul>
+                  </div>
                 </div>
-                <div class="hit">
-                  <span class="val">Lars Hansen</span>
-                  <span class="sub"><b>[PERSON_2]</b><span>2 filer</span></span>
+                <div class="ka-bar">
+                  <span class="ka-stats" data-ka="stats"><b>6</b> filer · <b>24</b> av 27 byttes ut</span>
+                  <span class="ka-actions">
+                    <span class="ka-btn ghost">Tilbake</span>
+                    <span class="ka-btn" data-ka="lag">Lag rensede kopier nå</span>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Skriver kopier -->
+              <div class="ka-scene ka-s-skriver">
+                <h4>Skriver kopier</h4>
+                <p class="ka-scan-now deep" data-ka="skrivenotat">Lager rensede kopier ved siden av originalene…</p>
+              </div>
+
+              <!-- Ferdig -->
+              <div class="ka-scene ka-s-ferdig">
+                <h4>Ferdig</h4>
+                <p>6 filer. Originalene er urørt.</p>
+                <p class="ka-behold"><strong>Behold originalene.</strong> De rensede kopiene mangler opplysninger med vilje.</p>
+                <p class="ka-path">/Users/kari/Dokumenter/kundesaker-klar</p>
+                <div class="ka-actions">
+                  <span class="ka-btn stor">Åpne mappe</span>
+                  <span class="ka-btn ghost stor">Rett</span>
+                  <span class="ka-btn ghost stor">Ny mappe</span>
                 </div>
               </div>
             </div>
           </div>
-
-          <div class="statusline">
-            <span><b>6</b> filer · <b>23</b> av 27 byttes ut</span>
-            <span class="actions">
-              <span class="chipbtn">Tilbake</span>
-              <span class="btn sm">Lag renset kopi</span>
-            </span>
-          </div>
-          <figcaption hidden>
-            Gjennomgangen i Klart: filliste, dokument med markerte funn, og
-            lista over hva som byttes ut.
+          <span class="ka-peker" aria-hidden="true"></span>
+          <figcaption class="skjult-tekst">
+            Slik virker Klart: velg en mappe og filene, Klart sjekker dem mot norske regler og
+            leser dem grundig med lokal AI, du ser over funnene og velger hva som skal vekk,
+            og Klart skriver rensede kopier ved siden av originalene.
           </figcaption>
         </figure>
       </section>
@@ -1223,6 +1290,319 @@
             }, 3200);
           });
         });
+      })();
+    </script>
+    <script>
+      // Programvinduet spiller av flyten i Klart. Går bare når vinduet er på skjermen.
+      (function () {
+        var ka = document.querySelector(".ka");
+        if (!ka) return;
+        if (
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        )
+          return;
+
+        function $(key) {
+          return ka.querySelector('[data-ka="' + key + '"]');
+        }
+        function each(list, fn) {
+          Array.prototype.forEach.call(list, fn);
+        }
+
+        var peker = ka.querySelector(".ka-peker");
+        var sheet = ka.querySelector(".ka-sheet");
+        var rader = $("rader").children;
+        var adresse = $("adresse");
+        // Adressen er av som standard i appen («Adresse og sted»), så den lyser først når den slås på.
+        var merker = Array.prototype.filter.call(
+          ka.querySelectorAll(".ka-tekst mark"),
+          function (m) {
+            return m !== adresse;
+          }
+        );
+        var filer = [
+          "01-arbeidsavtale-acme.docx",
+          "02-vedtak-statsforvalter.pdf",
+          "03-epost-trad.eml",
+          "07-saksnotat.txt",
+          "08-kundeliste.xlsx",
+          "09-statusmote.pptx"
+        ];
+        // Reglene finner det meste i steg 1. Den lokale AI-en finner resten i steg 2.
+        var regler = [5, 8, 4, 0, 3, 0];
+        var totalt = [7, 11, 5, 0, 3, 1];
+        var treff = 0;
+        var sekunder = 0;
+
+        function treffTekst(n) {
+          return n === 1 ? "1 treff" : n + " treff";
+        }
+        function varighet(s) {
+          if (s < 60) return s + " s";
+          var rest = s % 60;
+          return Math.floor(s / 60) + " min" + (rest ? " " + rest + " s" : "");
+        }
+        function scene(navn) {
+          ka.setAttribute("data-scene", navn);
+        }
+        function tekst(key, verdi) {
+          $(key).textContent = verdi;
+        }
+        function rad(i, klasse, verdi) {
+          rader[i].className = klasse;
+          rader[i].lastChild.textContent = verdi;
+        }
+        function nå(verdi, dyp) {
+          tekst("nå", verdi);
+          $("nå").className = "ka-scan-now" + (dyp ? " deep" : "");
+        }
+        function framdrift(n, s) {
+          tekst("ferdige", n + " / 6");
+          $("meter").style.width = (n / 6) * 100 + "%";
+          sekunder += s;
+          tekst("brukt", varighet(sekunder));
+        }
+        function steg(el, klasse, tall) {
+          el.className = klasse;
+          el.firstChild.textContent = tall;
+        }
+
+        function pek(el) {
+          var r = el.getBoundingClientRect();
+          var f = ka.getBoundingClientRect();
+          if (!r.width) return skjulPeker();
+          var x = r.left - f.left + r.width * 0.6;
+          var y = r.top - f.top + r.height * 0.55;
+          if (!peker.classList.contains("på")) {
+            peker.style.transition = "none";
+            peker.style.transform =
+              "translate(" + (x + 90) + "px," + (y + 110) + "px)";
+            peker.offsetWidth;
+            peker.style.transition = "";
+            peker.classList.add("på");
+          }
+          peker.style.transform = "translate(" + x + "px," + y + "px)";
+        }
+        function skjulPeker() {
+          peker.classList.remove("på");
+        }
+        function klikk(el) {
+          el.classList.add("trykk");
+          peker.classList.remove("klikk");
+          peker.offsetWidth;
+          peker.classList.add("klikk");
+          setTimeout(function () {
+            el.classList.remove("trykk");
+          }, 180);
+        }
+
+        function nullstill() {
+          scene("start");
+          skjulPeker();
+          treff = 0;
+          sekunder = 0;
+          tekst("motor", "");
+          steg($("steg1"), "aktiv", "1");
+          steg($("steg2"), "", "2");
+          tekst("skanntittel", "Går gjennom mappen");
+          tekst(
+            "forklaring",
+            "Hver fil sjekkes mot norske regler. Etterpå leser den lokale AI-en filene grundig."
+          );
+          tekst("ferdigetekst", "filer sjekket");
+          tekst("treff", "0");
+          tekst("igjen", "Regner ut …");
+          tekst("igjentekst", "igjen av steg 1");
+          nå("", false);
+          framdrift(0, 0);
+          each(rader, function (_, i) {
+            rad(i, "venter", "I kø");
+          });
+          sheet.classList.remove("leser");
+          each(ka.querySelectorAll(".ka-tekst mark"), function (m) {
+            m.classList.remove("lit", "sladd");
+          });
+          $("sted").classList.remove("på");
+          $("adressemerke").hidden = true;
+          tekst("vis", "Vis sladdet");
+          $("stats").innerHTML = "<b>6</b> filer · <b>24</b> av 27 byttes ut";
+          tekst("skrivenotat", "Lager rensede kopier ved siden av originalene…");
+        }
+
+        // Tidslinjen: hvert steg står med ventetid etter forrige steg.
+        var tidslinje = [];
+        var t = 0;
+        function etter(dt, fn) {
+          t += dt;
+          tidslinje.push([t, fn]);
+        }
+
+        etter(0, nullstill);
+        etter(900, function () {
+          pek($("velg"));
+        });
+        etter(950, function () {
+          klikk($("velg"));
+        });
+        etter(400, function () {
+          skjulPeker();
+          scene("forbered");
+        });
+        etter(1300, function () {
+          pek($("rens"));
+        });
+        etter(950, function () {
+          klikk($("rens"));
+        });
+        etter(400, function () {
+          skjulPeker();
+          scene("skann");
+          tekst("motor", "Modell");
+        });
+
+        each(rader, function (_, i) {
+          etter(i ? 0 : 450, function () {
+            rad(i, "jobber", "Sjekker mot norske regler");
+            nå("Nå: " + filer[i] + " — sjekker mot norske regler", false);
+          });
+          etter(380, function () {
+            treff += regler[i];
+            tekst("treff", treff);
+            rad(i, "sjekket", treffTekst(regler[i]) + " · venter på grundig lesing");
+            if (i === 1) tekst("igjen", "ca. 8 s");
+            framdrift(i + 1, 2);
+          });
+        });
+
+        etter(500, function () {
+          steg($("steg1"), "ferdig", "✓");
+          steg($("steg2"), "aktiv", "2");
+          tekst("skanntittel", "Leser grundig");
+          tekst(
+            "forklaring",
+            "Den lokale AI-en leser filene på nytt og finner det reglene ikke fanger. Den kjører på denne maskinen og bruker mye prosessorkraft, så maskinen kan være treg til den er ferdig."
+          );
+          tekst("ferdigetekst", "filer lest grundig");
+          tekst("igjentekst", "igjen av steg 2");
+          tekst("igjen", "ca. 54 s");
+          tekst("ferdige", "0 / 6");
+          $("meter").style.width = "0%";
+        });
+
+        each(rader, function (_, i) {
+          etter(i ? 0 : 350, function () {
+            rad(i, "jobber", "Leser grundig");
+            nå("Nå: " + filer[i] + " — leses grundig. Kan ta et minutt.", true);
+          });
+          etter(560, function () {
+            treff += totalt[i] - regler[i];
+            tekst("treff", treff);
+            tekst("igjen", i < 5 ? "ca. " + (45 - i * 9) + " s" : "—");
+            rad(i, "ok", "Ferdig · " + treffTekst(totalt[i]));
+            framdrift(i + 1, 9);
+          });
+        });
+
+        etter(650, function () {
+          scene("gjennom");
+          tekst("motor", "");
+        });
+        etter(450, function () {
+          sheet.classList.add("leser");
+        });
+        each(merker, function (m) {
+          etter(190, function () {
+            m.classList.add("lit");
+          });
+        });
+        etter(700, function () {
+          pek($("sted"));
+        });
+        etter(950, function () {
+          klikk($("sted"));
+          $("sted").classList.add("på");
+          adresse.classList.add("lit");
+          $("adressemerke").hidden = false;
+          $("stats").innerHTML = "<b>6</b> filer · <b>27</b> av 27 byttes ut";
+        });
+        etter(900, function () {
+          pek($("vis"));
+        });
+        etter(950, function () {
+          klikk($("vis"));
+          tekst("vis", "Vis original");
+        });
+        each(ka.querySelectorAll(".ka-tekst mark"), function (m) {
+          etter(140, function () {
+            m.classList.add("sladd");
+          });
+        });
+        etter(1400, function () {
+          pek($("lag"));
+        });
+        etter(950, function () {
+          klikk($("lag"));
+        });
+        etter(400, function () {
+          skjulPeker();
+          scene("skriver");
+        });
+        each(filer, function (fil) {
+          etter(330, function () {
+            tekst("skrivenotat", "Skriver " + fil);
+          });
+        });
+        etter(400, function () {
+          scene("ferdig");
+        });
+        etter(3600, function () {});
+
+        // Klokken går bare mens vinduet er på skjermen og fanen er åpen.
+        var klokke = 0;
+        var neste = 0;
+        var sist = 0;
+        var timer = null;
+        var synlig = false;
+
+        function tikk() {
+          var nå = Date.now();
+          klokke += Math.min(nå - sist, 100);
+          sist = nå;
+          while (neste < tidslinje.length && tidslinje[neste][0] <= klokke) {
+            tidslinje[neste++][1]();
+          }
+          if (neste >= tidslinje.length) {
+            klokke = 0;
+            neste = 0;
+          }
+        }
+        function synk() {
+          var går = synlig && !document.hidden;
+          if (går === !!timer) return;
+          if (går) {
+            sist = Date.now();
+            timer = setInterval(tikk, 50);
+          } else {
+            clearInterval(timer);
+            timer = null;
+          }
+        }
+
+        nullstill();
+        if ("IntersectionObserver" in window) {
+          new IntersectionObserver(
+            function (entries) {
+              synlig = entries[0].isIntersecting;
+              synk();
+            },
+            { threshold: 0.25 }
+          ).observe(ka);
+        } else {
+          synlig = true;
+          synk();
+        }
+        document.addEventListener("visibilitychange", synk);
       })();
     </script>
   </body>

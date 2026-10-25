@@ -1374,6 +1374,1236 @@ mark.mute {
 }
 
 /* --------------------------------------------------------------------------
+   Programvinduet: Klart slik appen ser ut. Verdiene er hentet fra appens
+   src/styles.css (lyst sølvtema, vinterfjellet bak). Alt er prefikset med
+   ka- så det ikke krasjer med sidens egne .sheet, .hit, mark og .btn.
+   Uten JS står data-scene på «gjennom», og den scenen er synlig.
+   -------------------------------------------------------------------------- */
+
+.ka {
+  --k-bg: #e8ebef;
+  --k-surface: #ffffff;
+  --k-surface-2: #f5f6f8;
+  --k-surface-3: #eceff2;
+  --k-ink: #1a1f25;
+  --k-ink-2: #48525c;
+  --k-ink-3: #66717b;
+  --k-line: rgba(24, 34, 44, 0.1);
+  --k-line-strong: rgba(24, 34, 44, 0.2);
+  --k-accent: #2d5f8b;
+  --k-accent-soft: rgba(45, 95, 139, 0.09);
+  --k-accent-line: rgba(45, 95, 139, 0.45);
+  --k-chosen: #dde9f4;
+  --k-chosen-ink: #13314c;
+  --k-chosen-line: #5d8bb3;
+  --k-warn: #8f6210;
+  --k-ok: #357253;
+  --k-radius: 10px;
+  --k-radius-sm: 7px;
+  --k-shadow-sm: 0 1px 2px rgba(20, 30, 40, 0.06), 0 1px 1px rgba(20, 30, 40, 0.04);
+  --k-shadow: 0 1px 2px rgba(20, 30, 40, 0.05), 0 8px 24px rgba(20, 30, 40, 0.08);
+  --k-shadow-lg: 0 2px 4px rgba(20, 30, 40, 0.05), 0 18px 48px rgba(20, 30, 40, 0.12);
+  --k-display: "Schibsted Grotesk", "Avenir Next", sans-serif;
+  --k-serif: "Literata", "Iowan Old Style", serif;
+  --k-mono: "IBM Plex Mono", "SF Mono", ui-monospace, monospace;
+
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(20, 30, 40, 0.14);
+  box-shadow: 0 2px 6px rgba(27, 33, 35, 0.06), 0 40px 80px -40px rgba(27, 33, 35, 0.45);
+  text-align: left;
+  color: var(--k-ink);
+  font-family: var(--k-display);
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: -0.008em;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: default;
+}
+
+.hero .ka {
+  margin-top: clamp(56px, 7vw, 96px);
+}
+
+/* Uten spesifisitet, så klassene under alltid vinner. */
+:where(.ka) :where(h4, h5, p, ul, ol, pre) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Vinterfjellet bak alt, som i appen. */
+.ka-app {
+  display: flex;
+  flex-direction: column;
+  background: url("assets/klart-vinter.jpg") center 40% / cover no-repeat, var(--k-bg);
+}
+
+.ka-chrome {
+  flex-shrink: 0;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 24px 0 92px;
+  position: relative;
+  border-bottom: 1px solid var(--k-line);
+  background: rgba(250, 251, 252, 0.7);
+  -webkit-backdrop-filter: saturate(1.4) blur(18px);
+  backdrop-filter: saturate(1.4) blur(18px);
+}
+
+.ka-lys {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  display: flex;
+  gap: 8px;
+  transform: translateY(-50%);
+}
+
+.ka-lys i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ff5f57;
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.12);
+}
+
+.ka-lys i + i {
+  background: #febc2e;
+}
+
+.ka-lys i + i + i {
+  background: #28c840;
+}
+
+.ka-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+.ka-mark {
+  font-family: var(--k-serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 19px;
+  letter-spacing: -0.02em;
+}
+
+.ka-av {
+  padding-left: 10px;
+  border-left: 1px solid var(--k-line-strong);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--k-ink-3);
+}
+
+.ka-høyre {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  white-space: nowrap;
+}
+
+.ka-pulse {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--k-mono);
+  font-size: 12px;
+  color: var(--k-ink-2);
+}
+
+.ka-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--k-ok);
+  box-shadow: 0 0 0 4px rgba(53, 114, 83, 0.15);
+}
+
+.ka:not([data-scene="skann"]) .ka-pulse {
+  visibility: hidden;
+}
+
+.ka-lisens {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--k-accent-soft);
+  border: 1px solid rgba(45, 95, 139, 0.2);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--k-accent);
+}
+
+.ka-lenke {
+  font-size: 13px;
+  color: var(--k-accent);
+}
+
+.ka-lenke.ka-liten {
+  font-size: 12px;
+  color: var(--k-ink-3);
+}
+
+.ka-lenker {
+  display: flex;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+/* Scenene. Sløret legges over vinterbildet når appen jobber, som i appen. */
+.ka-stage {
+  position: relative;
+  height: 600px;
+  overflow: hidden;
+  background: rgba(238, 241, 244, 0.9);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  transition: background 500ms ease;
+}
+
+.ka[data-scene="start"] .ka-stage,
+.ka[data-scene="forbered"] .ka-stage {
+  background: linear-gradient(180deg, rgba(240, 243, 246, 0) 40%, rgba(240, 243, 246, 0.35));
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.ka-scene {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 400ms ease, visibility 0s 400ms;
+}
+
+.ka[data-scene="start"] .ka-s-start,
+.ka[data-scene="forbered"] .ka-s-forbered,
+.ka[data-scene="skann"] .ka-s-skann,
+.ka[data-scene="gjennom"] .ka-s-gjennom,
+.ka[data-scene="skriver"] .ka-s-skriver,
+.ka[data-scene="ferdig"] .ka-s-ferdig {
+  z-index: 1;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 400ms ease;
+}
+
+/* Knapper */
+.ka-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  padding: 0 16px;
+  border-radius: var(--k-radius-sm);
+  background: var(--k-accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+  box-shadow: var(--k-shadow-sm);
+  transition: background 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+}
+
+.ka-btn.ghost {
+  background: var(--k-surface);
+  color: var(--k-ink);
+  border: 1px solid var(--k-line-strong);
+}
+
+.ka-btn.stor {
+  height: 40px;
+  padding: 0 20px;
+  font-size: 14px;
+}
+
+.ka-btn.av {
+  opacity: 0.45;
+}
+
+.ka .trykk {
+  transform: scale(0.96);
+  background: #25537a;
+}
+
+.ka .ka-btn.ghost.trykk {
+  background: var(--k-surface);
+}
+
+/* Avkrysningsboksene (native i appen, med accent-color). */
+.ka-boks {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid #8d969f;
+  background: #fff;
+}
+
+.ka-boks.på {
+  border-color: var(--k-accent);
+  background: var(--k-accent)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M3.2 7.3l2.4 2.4 5.2-5.4' fill='none' stroke='%23fff' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    center / 12px no-repeat;
+}
+
+.ka-boks-linje {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--k-ink-2);
+  white-space: nowrap;
+}
+
+/* 1 · Velkommen */
+.ka-s-start {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 400px));
+  justify-content: center;
+  align-content: center;
+  column-gap: clamp(32px, 9vw, 120px);
+  padding: 32px;
+}
+
+.ka-fløy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 300px;
+  padding: 36px 36px 32px;
+  background: rgba(255, 255, 255, 0.78);
+  -webkit-backdrop-filter: saturate(1.3) blur(20px);
+  backdrop-filter: saturate(1.3) blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 14px;
+  box-shadow: var(--k-shadow);
+}
+
+.ka-fløy svg {
+  width: 40px;
+  height: 40px;
+  fill: none;
+  stroke: var(--k-accent);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ka-fløy h4 {
+  margin: 16px 0 6px;
+  font-family: var(--k-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 30px;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.ka-fløy p {
+  flex: 1;
+  margin-bottom: 22px;
+  font-size: 14px;
+  color: var(--k-ink-2);
+}
+
+/* 2 · Mappe valgt */
+.ka-s-forbered {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 22px 28px 24px;
+}
+
+.ka-forbered-topp {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ka-forbered-topp h4 {
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
+  font-family: var(--k-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 24px;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.ka-sti {
+  margin-top: 2px;
+  font-family: var(--k-mono);
+  font-size: 11px;
+  color: var(--k-ink-2);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ka-forbered-kropp {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 16px;
+}
+
+.ka-kort {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.86);
+  -webkit-backdrop-filter: saturate(1.3) blur(20px);
+  backdrop-filter: saturate(1.3) blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  box-shadow: var(--k-shadow-sm);
+}
+
+.ka h5 {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--k-ink-3);
+}
+
+.ka h5 span {
+  margin-left: 8px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.ka-kort-topp {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--k-line);
+}
+
+.ka-kort-topp .ka-lenke {
+  font-size: 12.5px;
+}
+
+.ka-filsøk {
+  display: flex;
+  align-items: center;
+  gap: 6px 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--k-line);
+}
+
+.ka-søk {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 10px;
+  font-size: 13px;
+  color: #9aa2aa;
+  background: var(--k-surface-2);
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-radius-sm);
+}
+
+.ka-filvalg ul {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  padding: 4px 6px 6px;
+}
+
+.ka-filvalg li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: var(--k-radius-sm);
+}
+
+.ka-filnavn {
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ka-filstr {
+  font-family: var(--k-mono);
+  font-size: 11px;
+  color: var(--k-ink-3);
+}
+
+.ka-filvalg-hint {
+  padding: 8px 16px 10px;
+  border-top: 1px solid var(--k-line);
+  font-size: 11.5px;
+  color: var(--k-ink-3);
+}
+
+.ka-metode {
+  gap: 12px;
+  padding: 14px 16px 16px;
+}
+
+.ka-metode-valg {
+  display: grid;
+  gap: 8px;
+}
+
+.ka-metode-valg > span {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid var(--k-line-strong);
+  border-radius: var(--k-radius-sm);
+  background: var(--k-surface);
+}
+
+.ka-metode-valg > span.på {
+  background: var(--k-chosen);
+  border-color: var(--k-chosen-line);
+  box-shadow: inset 0 0 0 1px var(--k-chosen-line);
+  color: var(--k-chosen-ink);
+}
+
+.ka-metode-valg strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ka-metode-valg span span {
+  font-size: 12.5px;
+  color: var(--k-ink-2);
+}
+
+.ka-felt-bunn {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+/* 3 · Skanner */
+.ka-s-skann {
+  display: flex;
+  flex-direction: column;
+  padding: 28px 36px;
+}
+
+.ka-scan-steg {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 22px !important;
+}
+
+.ka-scan-steg li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 6px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--k-line);
+  background: var(--k-surface);
+  font-size: 13px;
+  color: var(--k-ink-3);
+  white-space: nowrap;
+  transition: box-shadow 200ms ease, border-color 200ms ease;
+}
+
+.ka-scan-steg i {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--k-surface-3);
+  color: var(--k-ink-3);
+}
+
+.ka-scan-steg li.aktiv {
+  color: var(--k-ink);
+  border-color: var(--k-accent-line);
+  box-shadow: 0 0 0 3px var(--k-accent-soft);
+}
+
+.ka-scan-steg li.aktiv i {
+  background: var(--k-accent);
+  color: #fff;
+}
+
+.ka-scan-steg li.ferdig {
+  color: var(--k-ink-2);
+}
+
+.ka-scan-steg li.ferdig i {
+  background: var(--k-ok);
+  color: #fff;
+}
+
+.ka-s-skann h4,
+.ka-s-skriver h4 {
+  margin-bottom: 6px;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.ka-scan-forklaring {
+  max-width: 62ch;
+  margin-bottom: 20px !important;
+  font-size: 14px;
+  color: var(--k-ink-2);
+}
+
+.ka-scan-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.ka-scan-board div {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  background: var(--k-surface);
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-radius);
+  box-shadow: var(--k-shadow-sm);
+}
+
+.ka-scan-board b {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+
+.ka-scan-board span {
+  font-size: 12px;
+  color: var(--k-ink-3);
+}
+
+.ka-scan-now {
+  min-height: 21px;
+  margin-bottom: 16px !important;
+  font-size: 14px;
+  color: var(--k-ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ka-scan-now.deep {
+  color: var(--k-accent);
+}
+
+.ka-meter {
+  flex: none;
+  height: 6px;
+  margin-bottom: 18px;
+  border-radius: 999px;
+  background: var(--k-surface-3);
+  overflow: hidden;
+}
+
+.ka-meter i {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--k-accent);
+  transition: width 200ms ease;
+}
+
+.ka-filelist {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  padding: 4px 16px;
+  background: var(--k-surface);
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-radius);
+}
+
+.ka-filelist div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--k-line);
+  font-size: 13px;
+}
+
+.ka-filelist div:last-child {
+  border-bottom: 0;
+}
+
+.ka-filelist .venter {
+  opacity: 0.5;
+}
+
+.ka-name {
+  font-family: var(--k-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ka-stat {
+  color: var(--k-ink-3);
+  white-space: nowrap;
+}
+
+.ka-filelist .jobber .ka-stat {
+  color: var(--k-accent);
+}
+
+.ka-filelist .sjekket .ka-stat {
+  color: var(--k-ink-2);
+}
+
+.ka-filelist .ok .ka-stat {
+  color: var(--k-ok);
+}
+
+/* 4 · Gjennomgang */
+.ka-s-gjennom {
+  display: flex;
+  flex-direction: column;
+}
+
+.ka-review {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr) 360px;
+}
+
+.ka-col {
+  min-height: 0;
+  overflow: hidden;
+  border-right: 1px solid var(--k-line);
+}
+
+.ka-col:last-child {
+  border-right: 0;
+}
+
+.ka-tree,
+.ka-findings {
+  background: var(--k-surface-2);
+}
+
+.ka-col h5 {
+  padding: 16px 16px 10px;
+}
+
+.ka-tre {
+  display: grid;
+  gap: 2px;
+  margin: 0 8px 2px;
+  padding: 8px 10px;
+  border-radius: var(--k-radius-sm);
+}
+
+.ka-tre.på {
+  background: var(--k-chosen);
+  color: var(--k-chosen-ink);
+}
+
+.ka-fn {
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ka-meta {
+  font-family: var(--k-mono);
+  font-size: 11px;
+  color: var(--k-ink-3);
+}
+
+.ka-tre.på .ka-meta {
+  color: var(--k-ink-2);
+}
+
+.ka-sheet-wrap {
+  height: 100%;
+  padding: 28px 36px 0;
+  background: var(--k-bg);
+}
+
+.ka-sheet {
+  position: relative;
+  min-height: calc(100% + 8px);
+  padding: 44px 52px 60px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--k-line);
+  border-radius: 6px;
+  box-shadow: var(--k-shadow-lg);
+}
+
+.ka-docket {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+  font-family: var(--k-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--k-ink-3);
+}
+
+.ka-docket-toggle {
+  flex: none;
+  color: var(--k-accent);
+}
+
+.ka-tekst {
+  font-family: var(--k-serif);
+  font-size: 15px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Markeringene: understrek i fargen til typen, som i appen. */
+.ka mark {
+  margin: 0;
+  padding: 0 1px;
+  border-radius: 2px;
+  background: transparent;
+  color: inherit;
+  transition: box-shadow 300ms ease;
+}
+
+.ka mark.lit.seal {
+  box-shadow: inset 0 -0.45em 0 rgba(178, 63, 40, 0.24);
+}
+
+.ka mark.lit.gilt {
+  box-shadow: inset 0 -0.45em 0 rgba(214, 165, 60, 0.42);
+}
+
+.ka mark.lit.ink {
+  box-shadow: inset 0 -0.45em 0 rgba(45, 95, 139, 0.24);
+}
+
+/* Sladdet visning: alle merkene i gult, som TokenTekst i appen. */
+.ka mark.lit.sladd {
+  box-shadow: inset 0 -0.45em 0 rgba(214, 165, 60, 0.42);
+}
+
+.ka mark .t {
+  display: none;
+}
+
+.ka mark.sladd .o {
+  display: none;
+}
+
+.ka mark.sladd .t {
+  display: inline;
+  animation: ka-inn 380ms ease;
+}
+
+@keyframes ka-inn {
+  from {
+    opacity: 0;
+  }
+}
+
+.ka-sveip {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -90px;
+  height: 90px;
+  background: linear-gradient(180deg, rgba(45, 95, 139, 0), rgba(45, 95, 139, 0.07), rgba(45, 95, 139, 0));
+  pointer-events: none;
+}
+
+.ka-sheet.leser .ka-sveip {
+  animation: ka-sveip 1.6s ease-in-out forwards;
+}
+
+@keyframes ka-sveip {
+  to {
+    top: 100%;
+  }
+}
+
+.ka-revisjon {
+  display: grid;
+  gap: 8px;
+  padding: 0 16px 14px;
+}
+
+.ka-textarea {
+  min-height: 5.5em;
+  padding: 12px 14px;
+  font-size: 16px;
+  color: #9aa2aa;
+  background: var(--k-surface);
+  border: 1px solid var(--k-line-strong);
+  border-radius: var(--k-radius-sm);
+}
+
+.ka-valg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 16px 14px;
+}
+
+.ka-valg span {
+  padding: 9px 14px;
+  border: 1px solid var(--k-line-strong);
+  border-radius: 999px;
+  background: var(--k-surface);
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  transition: background 200ms ease, border-color 200ms ease, transform 140ms ease;
+}
+
+.ka-valg span.på {
+  background: var(--k-chosen);
+  color: var(--k-chosen-ink);
+  border-color: var(--k-chosen-line);
+}
+
+.ka-merker {
+  display: grid;
+  gap: 4px;
+  padding: 0 16px 14px !important;
+}
+
+.ka-merker li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--k-ink-2);
+}
+
+.ka-merker li[hidden] {
+  display: none;
+}
+
+.ka-merker code {
+  font-family: var(--k-mono);
+  font-size: 11px;
+  color: var(--k-ink);
+}
+
+.ka-bar {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px 16px;
+  border-top: 1px solid var(--k-line);
+  background: rgba(250, 251, 252, 0.85);
+}
+
+.ka-stats {
+  font-family: var(--k-mono);
+  font-size: 12px;
+  color: var(--k-ink-3);
+  white-space: nowrap;
+}
+
+.ka-stats b {
+  font-weight: 500;
+  color: var(--k-ink);
+}
+
+.ka-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* 5 · Skriver og ferdig */
+.ka-s-skriver,
+.ka-s-ferdig {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px 56px;
+}
+
+.ka-s-ferdig h4 {
+  margin-bottom: 12px;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.ka-s-ferdig > p {
+  max-width: 48ch;
+  color: var(--k-ink-2);
+}
+
+.ka-behold {
+  margin-top: 4px !important;
+  padding: 10px 12px;
+  border-left: 3px solid var(--k-warn);
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: var(--k-radius-sm);
+}
+
+.ka-behold strong {
+  color: var(--k-ink);
+}
+
+.ka-path {
+  align-self: flex-start;
+  margin: 22px 0 28px !important;
+  padding: 10px 14px;
+  font-family: var(--k-mono);
+  font-size: 13px;
+  color: var(--k-ink) !important;
+  background: var(--k-surface);
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-radius-sm);
+}
+
+.ka-s-ferdig .ka-actions {
+  gap: 12px;
+}
+
+/* Pekeren: macOS-pilen. */
+.ka-peker {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 5;
+  width: 17px;
+  height: 25px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 17 25'%3E%3Cpath d='M1.5 1.5v18.6l4.6-4.4 3.1 7.3 3.2-1.4-3-7.1h6.3z' fill='%23111' stroke='%23fff' stroke-width='1.4' stroke-linejoin='round'/%3E%3C/svg%3E")
+    no-repeat;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 850ms cubic-bezier(0.3, 0.7, 0.3, 1), opacity 300ms ease;
+}
+
+.ka-peker.på {
+  opacity: 1;
+}
+
+.ka-peker::before {
+  content: "";
+  position: absolute;
+  left: -9px;
+  top: -9px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(45, 95, 139, 0.35);
+  opacity: 0;
+}
+
+.ka-peker.klikk::before {
+  animation: ka-klikk 450ms ease-out;
+}
+
+@keyframes ka-klikk {
+  from {
+    opacity: 1;
+    transform: scale(0.3);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.7);
+  }
+}
+
+/* Smalere vinduer: som appen under 980 px, bare det viktigste. */
+@media (max-width: 1100px) {
+  .ka-review {
+    grid-template-columns: 200px minmax(0, 1fr) 300px;
+  }
+
+  .ka-forbered-kropp {
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+
+  .ka-lenke.ka-liten {
+    display: none;
+  }
+
+  .ka-sheet {
+    padding: 36px 36px 48px;
+  }
+
+  .ka-sheet-wrap {
+    padding: 24px 24px 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .ka-stage {
+    height: 560px;
+  }
+
+  .ka-review {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ka-tree,
+  .ka-findings,
+  .ka-lisens,
+  .ka-av {
+    display: none;
+  }
+
+  .ka-forbered-kropp {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
+  .ka-metode-valg,
+  .ka-metode > h5 {
+    display: none;
+  }
+
+  .ka-scan-board {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .ka-chrome {
+    padding-left: 76px;
+    padding-right: 14px;
+  }
+
+  .ka-lys {
+    left: 14px;
+    gap: 6px;
+  }
+
+  .ka-stage {
+    height: 540px;
+  }
+
+  .ka-s-start {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 20px;
+  }
+
+  .ka-s-start .ka-fløy + .ka-fløy,
+  .ka-scan-forklaring,
+  .ka-filvalg-hint,
+  .ka-filsøk .ka-boks-linje,
+  .ka-bar .ka-btn.ghost {
+    display: none;
+  }
+
+  .ka-fløy {
+    min-height: 0;
+    padding: 28px 24px 24px;
+  }
+
+  .ka-s-forbered,
+  .ka-s-skann {
+    padding: 18px 16px;
+  }
+
+  .ka-forbered-topp .ka-lenker {
+    display: none;
+  }
+
+  .ka-scan-steg {
+    flex-wrap: wrap;
+  }
+
+  .ka-scan-board div {
+    padding: 10px 12px;
+  }
+
+  .ka-filelist div {
+    font-size: 12px;
+  }
+
+  .ka-sheet-wrap {
+    padding: 14px 14px 0;
+  }
+
+  .ka-sheet {
+    padding: 22px 20px 32px;
+  }
+
+  .ka-tekst {
+    font-size: 14px;
+  }
+
+  .ka-docket span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ka-bar {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  .ka-bar .ka-actions,
+  .ka-bar .ka-btn {
+    flex: 1 1 100%;
+  }
+
+  .ka-s-skriver,
+  .ka-s-ferdig {
+    padding: 28px 20px;
+  }
+
+  .ka-s-ferdig h4 {
+    font-size: 26px;
+  }
+
+  .ka-path {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+  }
+
+  .ka-s-ferdig .ka-actions {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+/* --------------------------------------------------------------------------
    Nøkkeltall
    -------------------------------------------------------------------------- */
 
