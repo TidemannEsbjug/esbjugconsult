@@ -733,7 +733,7 @@
   .akse{display:flex;flex-direction:column;gap:10px;padding:14px 18px 14px}
   .ak-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
   .ak-m{font:600 9.5px/1 "SF Mono",Menlo,monospace;letter-spacing:.1em;color:rgba(0,32,91,.5)}
-  .ak-m i{font-style:normal;font-weight:800}.kx{color:#e0233c}.ky{color:#d68a00}.kz{color:#2563eb}
+  .ak-m i{font-style:normal;font-weight:800}.kx{color:#FF6A3D}.ky{color:#D6246E}.kz{color:#0E9AA7}
   /* Podkast: episodene, nyeste først, med datoen de ble laget. Trykk spiller av her i modulen, med en tynn spolelinje. */
   .pod{display:flex;flex-direction:column;gap:6px;padding:12px 18px 13px}
   .pod[hidden]{display:none}
@@ -900,6 +900,8 @@
   #kart,.kartknapp,.kv-prikk,.kv-i,.sted,.gjor,.bank,.oyet,.pod,.sens .sv[data-k=fyra],.sens .sv[data-k=fyrb],.sens .sv[data-k=gatt]{display:none!important}
   /* Language selector: no inner border, and the empty counter area is left out so the flags sit with equal space on both sides. */
   .topp .lang{border:0}
+  /* Pulse, devices and the accelerometer live in the left column; the right side is empty. */
+  @media (min-width:1100px){.venstre{width:min(440px,100%)}.venstre .sens{grid-template-columns:repeat(3,minmax(0,1fr))}}
   .topp .st:not(:has(.st-i:not([hidden]))){display:none}
 </style>
 </head>
@@ -930,8 +932,6 @@
     <ul class="bk-kontoer"></ul>
   </section>
   <section class="poster" hidden aria-live="polite" aria-label="Poster fra Tidemann. Trykk for neste." role="button" tabindex="0"></section>
-  </div>
-  <div class="hoyre">
   <section class="sens gl" aria-label="Alt iPhonen og Apple Watch måler">
     <div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Puls i dag"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg><svg class="hk" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true"><path class="hk-l" d=""/><circle class="hk-p" r="3" cx="-9" cy="-9"/></svg></span></button><span class="st-l"><span class="hp-on">Live fra Apple Watch</span><span class="hp-av">Ikke live akkurat nå</span></span></div><span class="hk-x" aria-hidden="true"><span>5 min</span><span>nå</span></span>
     <div class="sv" data-k="ibat"><span class="sl">iPhone</span><b>–</b><i class="bar"><i></i></i></div>
@@ -950,6 +950,8 @@
     <div class="ak"><div class="ak-h"><span class="sl">Apple Watch · akselerometer</span><span class="ak-m">20 Hz · g</span></div><canvas class="ak-c" data-k="watch"></canvas></div>
     <div class="ak"><div class="ak-h"><span class="sl">iPhone · akselerometer</span><span class="ak-m"><i class="kx">x</i> <i class="ky">y</i> <i class="kz">z</i></span></div><canvas class="ak-c" data-k="iphone"></canvas></div>
   </section>
+  </div>
+  <div class="hoyre">
   <section class="oyet gl" aria-label="Øyet mot">
     <span class="mono s-t">Øyet mot</span>
     <div class="oy-rad">
@@ -1931,7 +1933,7 @@ function oskilloskop() {
     const a = AK[c.dataset.k]; if (!a) continue;
     const pts = a.s.filter(p => p[0] > nå - VIN && p[0] <= nå);
     if (pts.length < 2) continue;
-    [['#e0233c', 1], ['#d68a00', 2], ['#2563eb', 3]].forEach(([farge, i]) => {
+    [['#FF6A3D', 1], ['#D6246E', 2], ['#0E9AA7', 3]].forEach(([farge, i]) => {
       x.strokeStyle = farge; x.lineWidth = tynn ? 1.2 : 1.6; x.lineJoin = 'round'; x.beginPath();
       pts.forEach((p, n) => { const px = W - (nå - p[0]) / VIN * W, py = Y(Math.max(-2, Math.min(2, p[i]))); n ? x.lineTo(px, py) : x.moveTo(px, py); });
       x.stroke();
