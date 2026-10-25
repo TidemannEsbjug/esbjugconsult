@@ -908,14 +908,14 @@
   .arb-t{color:#fff}
   .arb-t h2{margin:0 0 .45em;font:500 clamp(34px,3.4vw,54px)/1.04 var(--serif);letter-spacing:-.025em;text-wrap:balance}
   .arb-t p{margin:0 0 .9em;font:400 clamp(16px,1.15vw,18px)/1.55 var(--serif);color:rgba(255,255,255,.86);max-width:44em}
-  .arb .akse{display:flex;flex-direction:column;gap:30px;padding:0;margin-top:clamp(6px,1vw,16px)}
-  .arb .akse .ak+.ak{max-height:none;opacity:1;overflow:visible}
-  .arb .akse .ak-c{height:clamp(110px,15vh,170px);margin-top:12px}
-  .arb .akse .ak-m{opacity:1;color:rgba(255,255,255,.45)}
-  .arb .akse .ak-h .sl{color:rgba(255,255,255,.55)}
-  .arb .ak:hover{background:none}
-  .arb .kz{text-shadow:none}
-  @media (max-width:760px){.arb-i{grid-template-columns:1fr}}
+  /* The movement as two quiet vertical threads (Apple Watch and iPhone), as tall as the text. Newest at the top, fading out
+     at both ends. Not a measurement, just the motion: each axis minus its own average, smoothed. */
+  .arb-i{align-items:stretch}
+  .vk-m{justify-self:center;display:flex;gap:clamp(28px,3.5vw,56px);min-height:320px}
+  .vk-k{display:flex;flex-direction:column;align-items:center;gap:14px}
+  .vk{flex:1;display:block;width:76px;min-height:0;-webkit-mask-image:linear-gradient(transparent,#000 10%,#000 72%,transparent);mask-image:linear-gradient(transparent,#000 10%,#000 72%,transparent)}
+  .vk-k span{font:600 9.5px/1 "SF Mono",Menlo,monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.38)}
+  @media (max-width:760px){.arb-i{grid-template-columns:1fr}.vk-m{min-height:0;height:260px}}
   /* Flags as rectangles with slightly rounded corners, the knob and the box around them rounded the same way, no white edge. */
   .lang .lf{width:38px;height:24px}
   .lang-k{width:38px;height:24px}
@@ -1030,10 +1030,10 @@
       <p>Da oppstår et asymmetrisk rom mellom hva noe koster, hva det bør koste, og hva det kan koste hvis man lager det selv.</p>
       <p>Arbitrasje har alltid handlet om en midlertidig skjevhet som kan utnyttes før markedet justerer seg. Denne også.</p>
     </article>
-  <section class="akse" aria-label="Akselerometeret i Apple Watch og iPhonen, live">
-      <div class="ak"><div class="ak-h"><span class="sl">Apple Watch · akselerometer</span><span class="ak-m">20 Hz · g</span></div><canvas class="ak-c" data-k="watch"></canvas></div>
-      <div class="ak"><div class="ak-h"><span class="sl">iPhone · akselerometer</span><span class="ak-m"><i class="kx">x</i> <i class="ky">y</i> <i class="kz">z</i></span></div><canvas class="ak-c" data-k="iphone"></canvas></div>
-  </section>
+      <aside class="vk-m" aria-label="Bevegelse fra Apple Watch og iPhone, live">
+        <div class="vk-k"><canvas class="vk" data-k="watch"></canvas><span>Watch</span></div>
+        <div class="vk-k"><canvas class="vk" data-k="iphone"></canvas><span>iPhone</span></div>
+      </aside>
   </div>
 </section>
 <main>
@@ -2005,6 +2005,33 @@ function oskilloskop() {
   }
 }
 requestAnimationFrame(oskilloskop);
+// /stripped/: the vertical threads in the section below the hero. Same samples as the oscilloscope (AK), drawn top-down
+// over 24 s: each axis is centred on its own average (so gravity disappears) and smoothed, three thin lines side by side.
+function vertikal() {
+  requestAnimationFrame(vertikal);
+  if (!akseSynlig || document.hidden) return;
+  const nå = Date.now() + skew - FORS, d = Math.min(devicePixelRatio || 1, 2), WIN = 24000;
+  for (const c of document.querySelectorAll('.vk')) {
+    const W = c.clientWidth, H = c.clientHeight;
+    if (!W || !H) continue;
+    if (c.width !== Math.round(W * d) || c.height !== Math.round(H * d)) { c.width = Math.round(W * d); c.height = Math.round(H * d); }
+    const x = c.getContext('2d'); x.setTransform(d, 0, 0, d, 0, 0); x.clearRect(0, 0, W, H);
+    x.strokeStyle = 'rgba(255,255,255,.07)'; x.lineWidth = 1; x.beginPath(); x.moveTo(W / 2, 0); x.lineTo(W / 2, H); x.stroke();
+    const a = AK[c.dataset.k], pts = a ? a.s.filter(p => p[0] > nå - WIN && p[0] <= nå) : [];
+    if (pts.length < 2) continue;
+    [['#6E98FF', 1, -.2], ['#C9D2DE', 2, 0], ['#FFFFFF', 3, .2]].forEach(([farge, i, off]) => {
+      let m = 0; for (const p of pts) m += p[i]; m /= pts.length;
+      x.strokeStyle = farge; x.globalAlpha = .6; x.lineWidth = 1; x.lineJoin = 'round'; x.beginPath();
+      let sm = 0;
+      pts.forEach((p, n) => { sm = n ? sm * .7 + (p[i] - m) * .3 : p[i] - m;
+        const py = (nå - p[0]) / WIN * H, px = W / 2 + off * W + Math.max(-1, Math.min(1, sm * 1.6)) * W * .18;
+        n ? x.lineTo(px, py) : x.moveTo(px, py); });
+      x.stroke();
+    });
+    x.globalAlpha = 1;
+  }
+}
+requestAnimationFrame(vertikal);
 // Pulsen siste 5 minutter: hver måling er et punkt, siste punkt er nå. Skalaen følger tallene (minst 20 slag høy).
 let puls = [];
 function tegnPuls() {
