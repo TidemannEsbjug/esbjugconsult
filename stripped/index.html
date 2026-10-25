@@ -900,12 +900,14 @@
   #kart,.kartknapp,.kv-prikk,.kv-i,.sted,.gjor,.bank,.pod,.akse,.sens .sv[data-k=fyra],.sens .sv[data-k=fyrb],.sens .sv[data-k=gatt]{display:none!important}
   /* Language selector: no inner border, and the empty counter area is left out so the flags sit with equal space on both sides. */
   .topp .lang{border:0}
-  /* Pill-shaped flags in a pill-shaped knob, without the white edge around each flag. */
+  /* Flags as rectangles with slightly rounded corners, the knob and the box around them rounded the same way, no white edge. */
   .lang .lf{width:38px;height:24px}
   .lang-k{width:38px;height:24px}
   .lang.en .lang-k,.lang.gaar .lang-k{transform:translateX(40px)}
   .lang.en.gaar .lang-k{transform:none}
-  .lang .lf svg{width:26px;height:15px;border-radius:999px;box-shadow:none}
+  .lang .lf svg{width:26px;height:16px;border-radius:3px;box-shadow:none}
+  .lang,.lang-k{border-radius:8px}
+  .hero-i .topp{border-radius:13px}
   /* The flag sits at the top of the left column and moves with it. */
   .venstre>.flyt{align-self:flex-start}
   .kom .venstre>.flyt>.topp{animation:byggV 1.1s cubic-bezier(.7,0,.15,1) both}
