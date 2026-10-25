@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#00163f">
+<title>Adelig · Esbjug Consult</title>
+<meta name="description" content="Om å vise alt, om hva pengene egentlig skal kjøpe, og om hvorfor det kan være tungt å være den blideste i rommet.">
+<meta property="og:title" content="Adelig · Esbjug Consult">
+<meta property="og:description" content="Om å vise alt, om hva pengene egentlig skal kjøpe, og om hvorfor det kan være tungt å være den blideste i rommet.">
+<meta property="og:image" content="https://esbjugconsult.com/blogg/media/ep4-1200.webp">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2300205B'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%23BA0C2F' stroke='%23fff' stroke-width='3'/%3E%3C/svg%3E">
+<style>
+  @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces.woff2) format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+  @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces-italic.woff2) format("woff2");font-weight:100 900;font-style:italic;font-display:swap}
+  :root{--serif:"Fraunces",Georgia,"Times New Roman",serif;--mono:"SF Mono",Menlo,monospace;--g:clamp(16px,6vw,96px)}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#00163f;color:#fff}
+  body{min-height:100svh;background:radial-gradient(60% 50% at 50% 30%,#0b2f70,#00163f) fixed;font:400 clamp(17px,1.2vw,19px)/1.6 var(--serif);-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+  .side{max-width:760px;margin:0 auto;padding:clamp(28px,6vh,72px) var(--g) clamp(80px,14vh,160px)}
+  .topp{display:flex;justify-content:space-between;align-items:center;gap:12px;font:600 10.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+  .topp a{text-decoration:none}.topp a:hover{color:#fff}
+  .merk{margin:28px 0 0;padding:12px 16px;border:1px solid rgba(255,255,255,.16);border-radius:12px;font:500 13px/1.45 var(--mono);letter-spacing:.02em;color:rgba(255,255,255,.7)}
+  h1{margin:26px 0 .35em;font:500 clamp(34px,4.6vw,58px)/1.04 var(--serif);letter-spacing:-.025em;text-wrap:balance}
+  .dato{font:500 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+  /* Avspilleren: episoden kan spilles rett her, eller åpnes i podkastspilleren. */
+  .spiller{margin:24px 0 0;display:flex;align-items:center;gap:16px;padding:14px 18px 14px 14px;border-radius:18px;background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.14);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+  .sp-k{flex:none;width:48px;height:48px;border-radius:50%;border:1.5px solid rgba(255,255,255,.7);background:none;color:#fff;display:grid;place-items:center;cursor:pointer;padding:0}
+  .sp-k svg{width:18px;height:18px}.sp-k .pa{display:none}.spiller-pa .sp-k .pl{display:none}.spiller-pa .sp-k .pa{display:block}
+  .sp-i{flex:1;min-width:0;display:flex;flex-direction:column;gap:9px}
+  .sp-t{display:flex;justify-content:space-between;gap:10px;font:600 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+  .sp-t a{text-decoration:none;white-space:nowrap}.sp-t a:hover{color:#fff}
+  .sp-b{position:relative;height:16px;cursor:pointer;touch-action:none}
+  .sp-b::before{content:"";position:absolute;left:0;right:0;top:7px;height:2px;border-radius:2px;background:rgba(255,255,255,.2)}
+  .sp-b i{position:absolute;left:0;top:7px;height:2px;border-radius:2px;background:#fff;width:0}
+  .sp-b b{position:absolute;top:3px;left:0;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:#fff}
+  @media (max-width:520px){.sp-t{flex-direction:column;gap:7px}}
+  .strip{display:block;width:100%;height:auto;aspect-ratio:4/1;margin:30px 0 8px;border-radius:16px;box-shadow:0 18px 50px rgba(0,8,30,.45)}
+  h2{margin:2em 0 .5em;font:500 clamp(24px,2.4vw,32px)/1.15 var(--serif);letter-spacing:-.015em}
+  p{margin:0 0 1em;color:rgba(255,255,255,.88)}
+  .ingress{font-size:1.15em;color:#fff;margin-top:1.4em}
+  .slutt{margin-top:3em;padding-top:1.4em;border-top:1px solid rgba(255,255,255,.14);font:500 12px/1.6 var(--mono);letter-spacing:.06em;color:rgba(255,255,255,.55)}
+  .liste{list-style:none;margin:36px 0 0;padding:0;display:flex;flex-direction:column;gap:18px}
+  .liste a{display:grid;gap:12px;text-decoration:none;padding:16px;border-radius:18px;background:linear-gradient(135deg,rgba(255,255,255,.1),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.12)}
+  .liste img{width:100%;height:auto;aspect-ratio:4/1;border-radius:10px;display:block}
+  .liste b{font:500 clamp(22px,2.2vw,28px)/1.15 var(--serif)}
+  .liste span{color:rgba(255,255,255,.75)}
+</style>
+</head>
+<body>
+<main class="side">
+  <div class="topp"><a href="/blogg/">← Blogg</a><span class="dato">24. oktober 2026</span></div>
+  <p class="merk">Dette innlegget er skrevet av Claude Code ut fra episoden, ikke av meg. Hovedpoengene er hentet fra transkripsjonen.</p>
+  <h1>Adelig</h1>
+  <div class="spiller" data-lyd="/podcast/lyd/ep4.m4a" data-sek="3397">
+    <button class="sp-k" type="button" aria-label="Spill av episode 4"><svg class="pl" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg><svg class="pa" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg></button>
+    <div class="sp-i">
+      <div class="sp-t"><span>Episode 4 · <span class="sp-tid">0:00</span> / 56:37</span><a href="/podcast/4/">Åpne i podkasten ↗</a></div>
+      <div class="sp-b" role="slider" tabindex="0" aria-label="Spoling" aria-valuemin="0" aria-valuemax="3397" aria-valuenow="0"><i></i><b></b></div>
+    </div>
+    <audio preload="none" playsinline></audio>
+  </div>
+  <img class="strip" src="/blogg/media/ep4-1200.webp" srcset="/blogg/media/ep4-1200.webp 1200w, /blogg/media/ep4.webp 2176w" sizes="(max-width:760px) 100vw, 760px" width="2176" height="544" alt="Et stille torg i en gammel by om natten, der en hund følger et svakt lysende spor over brosteinen og folk hilser høflig i de opplyste vinduene">
+  <p class="ingress">Om å vise alt, om hva pengene egentlig skal kjøpe, og om hvorfor det kan være tungt å være den blideste i rommet.</p>
+  <h2>Å vise alt</h2>
+  <p>Folk trodde ikke på Tidemann når han sa at han står opp klokka tre og tar bussen før halv fem. Så nå filmer han morgenen. Og når han sier at kontoen står i minus, vil han at det skal stemme med det folk ser.</p>
+  <p>Det er et spor av virkeligheten han prøver å lage. Skjuler han en del av den, blir ikke sporet riktig.</p>
+  <h2>Hva pengene skal kjøpe</h2>
+  <p>Han spurte seg selv hvorfor han egentlig vil tjene penger. Svaret var ikke biler eller ting. Det var et ord som nesten kom ut feil: adelig. Ikke titler, men det man gjerne finner der inngangsbilletten er høy: oppmerksomhet, høflighet, og folk som har hverandre i minne.</p>
+  <p>Kvaliteten på menneskene rundt ham er ti tusen ganger viktigere enn noe han kan kjøpe. Og fordi han ofrer mye moro for å prøve å være til nytte, er det tungt å havne blant folk som ikke er vennlige.</p>
+  <h2>Prisen for å være ordentlig</h2>
+  <p>Å oppføre seg moralsk koster, og prisen er at du krever respekt tilbake. Alle har mørkere sider som heller vil utnytte noen enn å lage noe der begge vinner. Til de skjønner hvor mye glede det er i det.</p>
+  <p>Uten fiender trenger du ikke forsvare deg. Da kan du spille angrep hele tiden. Som Warren Buffett skal ha sagt: hvis de kriminelle bare visste hvor mye penger det er i å være et godt menneske.</p>
+  <h2>En hund på sporet</h2>
+  <p>Underbevisstheten hans gjør ting før han forstår hvorfor. Den begynte å vekke ham midt på natta lenge før han skjønte at den forberedte ham på tidsforskjellen i Thailand.</p>
+  <p>Han ser på den som en hund som har snust opp noe. Jobben hans er å gi hunden mat, vann, trim og ro, og miljøer der folk er snille mot den. Det siste er det vanskeligste.</p>
+  <h2>Den blideste i rommet</h2>
+  <p>Han er født med god hjernekjemi. Når andre får triste tanker, får han morsomme. Men det å være den gladeste i rommet er også en byrde. Folk speiler hverandre, og den som er rolig og glad, blir lagt merke til.</p>
+  <p>Han kunne brukt energien på hver person han møter på bussen. I stedet har han valgt å bruke den på programvare som kan gjøre livet litt bedre for mange flere. Det betyr at han av og til ser ned i mobilen når noen prøver å fange blikket hans.</p>
+  <h2>Billig for de som trenger det</h2>
+  <p>Athena, alarmappen for familier, er priset så lavt at han tjener rundt én krone og tjue øre per familie. Den koster mer i Sveits og mindre i land med svakere økonomi. Klart priser han etter hvor nyttig det er for store bedrifter. Der er han full markedsøkonom.</p>
+  <p>Det hadde vært enklere å ta én pris for alle. Men å gjøre det rette er en del av grunnen til at han har det godt inni seg.</p>
+  <h2>Lysende rektangler</h2>
+  <p>Biologien vår er laget for små grupper, der noen var sterkest og noen var penest i bygda. Nå ser alle opp til de samme stjernene på skjermen, og ingen ser opp til hverandre. Som trettenåring la han ut en pianovideo, før han så en fireåring som spilte ti ganger bedre.</p>
+  <p>Han leser ikke nyheter og følger ikke populærkulturen. Det er ikke fordi han er bedre enn noen, men fordi han bare kan holde så mye i hodet samtidig, og vil bruke plassen på det han bygger.</p>
+  <h2>En del av en plan</h2>
+  <p>Mye av det han gjør, kan se tilfeldig ut. Men det er en del av en lengre plan, og en intuisjon som bygger mot noe. Den vil gi mening etter hvert.</p>
+  <p class="slutt">Fra episode 4 av podkasten, «Adelig». <a href="/podcast/4/">Hør hele episoden</a>.</p>
+</main>
+<script>
+// Avspilleren øverst: play/pause, tiden, og spoling ved å trykke eller dra i linja (piltaster: 10 s).
+document.querySelectorAll('.spiller').forEach(sp=>{const a=sp.querySelector('audio'),k=sp.querySelector('.sp-k'),b=sp.querySelector('.sp-b'),tid=sp.querySelector('.sp-tid'),len=+sp.dataset.sek;
+  const fmt=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
+  const vis=()=>{const t=a.currentTime||0,p=Math.min(1,t/(a.duration||len));b.querySelector('i').style.width=p*100+'%';b.querySelector('b').style.left=p*100+'%';tid.textContent=fmt(t);b.setAttribute('aria-valuenow',Math.round(t))};
+  const last=()=>{if(!a.src)a.src=sp.dataset.lyd};
+  k.addEventListener('click',()=>{last();a.paused?a.play():a.pause()});
+  a.addEventListener('play',()=>sp.classList.add('spiller-pa'));a.addEventListener('pause',()=>sp.classList.remove('spiller-pa'));a.addEventListener('timeupdate',vis);
+  const til=e=>{const r=b.getBoundingClientRect(),p=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));last();
+    const sett=()=>{a.currentTime=p*(a.duration||len);vis()};a.readyState?sett():a.addEventListener('loadedmetadata',sett,{once:true});if(a.paused)a.play()};
+  let dra=false;b.addEventListener('pointerdown',e=>{dra=true;b.setPointerCapture(e.pointerId);til(e)});b.addEventListener('pointermove',e=>{if(dra)til(e)});b.addEventListener('pointerup',()=>dra=false);
+  b.addEventListener('keydown',e=>{const d={ArrowRight:10,ArrowLeft:-10}[e.key];if(!d)return;e.preventDefault();last();a.currentTime=Math.max(0,(a.currentTime||0)+d);vis()})});
+</script>
+</body>
+</html>

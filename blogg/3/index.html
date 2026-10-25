@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#00163f">
+<title>Fyrstekake og en selvsikker maskin · Esbjug Consult</title>
+<meta name="description" content="En handel som gikk galt, en AI som var hundre prosent sikker, og hvorfor Klart nå får en ekstra sikring.">
+<meta property="og:title" content="Fyrstekake og en selvsikker maskin · Esbjug Consult">
+<meta property="og:description" content="En handel som gikk galt, en AI som var hundre prosent sikker, og hvorfor Klart nå får en ekstra sikring.">
+<meta property="og:image" content="https://esbjugconsult.com/blogg/media/ep3-1200.webp">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2300205B'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%23BA0C2F' stroke='%23fff' stroke-width='3'/%3E%3C/svg%3E">
+<style>
+  @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces.woff2) format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+  @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces-italic.woff2) format("woff2");font-weight:100 900;font-style:italic;font-display:swap}
+  :root{--serif:"Fraunces",Georgia,"Times New Roman",serif;--mono:"SF Mono",Menlo,monospace;--g:clamp(16px,6vw,96px)}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#00163f;color:#fff}
+  body{min-height:100svh;background:radial-gradient(60% 50% at 50% 30%,#0b2f70,#00163f) fixed;font:400 clamp(17px,1.2vw,19px)/1.6 var(--serif);-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+  .side{max-width:760px;margin:0 auto;padding:clamp(28px,6vh,72px) var(--g) clamp(80px,14vh,160px)}
+  .topp{display:flex;justify-content:space-between;align-items:center;gap:12px;font:600 10.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+  .topp a{text-decoration:none}.topp a:hover{color:#fff}
+  .merk{margin:28px 0 0;padding:12px 16px;border:1px solid rgba(255,255,255,.16);border-radius:12px;font:500 13px/1.45 var(--mono);letter-spacing:.02em;color:rgba(255,255,255,.7)}
+  h1{margin:26px 0 .35em;font:500 clamp(34px,4.6vw,58px)/1.04 var(--serif);letter-spacing:-.025em;text-wrap:balance}
+  .dato{font:500 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+  /* Avspilleren: episoden kan spilles rett her, eller åpnes i podkastspilleren. */
+  .spiller{margin:24px 0 0;display:flex;align-items:center;gap:16px;padding:14px 18px 14px 14px;border-radius:18px;background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.14);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+  .sp-k{flex:none;width:48px;height:48px;border-radius:50%;border:1.5px solid rgba(255,255,255,.7);background:none;color:#fff;display:grid;place-items:center;cursor:pointer;padding:0}
+  .sp-k svg{width:18px;height:18px}.sp-k .pa{display:none}.spiller-pa .sp-k .pl{display:none}.spiller-pa .sp-k .pa{display:block}
+  .sp-i{flex:1;min-width:0;display:flex;flex-direction:column;gap:9px}
+  .sp-t{display:flex;justify-content:space-between;gap:10px;font:600 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+  .sp-t a{text-decoration:none;white-space:nowrap}.sp-t a:hover{color:#fff}
+  .sp-b{position:relative;height:16px;cursor:pointer;touch-action:none}
+  .sp-b::before{content:"";position:absolute;left:0;right:0;top:7px;height:2px;border-radius:2px;background:rgba(255,255,255,.2)}
+  .sp-b i{position:absolute;left:0;top:7px;height:2px;border-radius:2px;background:#fff;width:0}
+  .sp-b b{position:absolute;top:3px;left:0;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:#fff}
+  @media (max-width:520px){.sp-t{flex-direction:column;gap:7px}}
+  .strip{display:block;width:100%;height:auto;aspect-ratio:4/1;margin:30px 0 8px;border-radius:16px;box-shadow:0 18px 50px rgba(0,8,30,.45)}
+  h2{margin:2em 0 .5em;font:500 clamp(24px,2.4vw,32px)/1.15 var(--serif);letter-spacing:-.015em}
+  p{margin:0 0 1em;color:rgba(255,255,255,.88)}
+  .ingress{font-size:1.15em;color:#fff;margin-top:1.4em}
+  .slutt{margin-top:3em;padding-top:1.4em;border-top:1px solid rgba(255,255,255,.14);font:500 12px/1.6 var(--mono);letter-spacing:.06em;color:rgba(255,255,255,.55)}
+  .liste{list-style:none;margin:36px 0 0;padding:0;display:flex;flex-direction:column;gap:18px}
+  .liste a{display:grid;gap:12px;text-decoration:none;padding:16px;border-radius:18px;background:linear-gradient(135deg,rgba(255,255,255,.1),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.12)}
+  .liste img{width:100%;height:auto;aspect-ratio:4/1;border-radius:10px;display:block}
+  .liste b{font:500 clamp(22px,2.2vw,28px)/1.15 var(--serif)}
+  .liste span{color:rgba(255,255,255,.75)}
+</style>
+</head>
+<body>
+<main class="side">
+  <div class="topp"><a href="/blogg/">← Blogg</a><span class="dato">23. oktober 2026</span></div>
+  <p class="merk">Dette innlegget er skrevet av Claude Code ut fra episoden, ikke av meg. Hovedpoengene er hentet fra transkripsjonen.</p>
+  <h1>Fyrstekake og en selvsikker maskin</h1>
+  <div class="spiller" data-lyd="/podcast/lyd/ep3.m4a" data-sek="2141">
+    <button class="sp-k" type="button" aria-label="Spill av episode 3"><svg class="pl" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg><svg class="pa" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg></button>
+    <div class="sp-i">
+      <div class="sp-t"><span>Episode 3 · <span class="sp-tid">0:00</span> / 35:41</span><a href="/podcast/3/">Åpne i podkasten ↗</a></div>
+      <div class="sp-b" role="slider" tabindex="0" aria-label="Spoling" aria-valuemin="0" aria-valuemax="2141" aria-valuenow="0"><i></i><b></b></div>
+    </div>
+    <audio preload="none" playsinline></audio>
+  </div>
+  <img class="strip" src="/blogg/media/ep3-1200.webp" srcset="/blogg/media/ep3-1200.webp 1200w, /blogg/media/ep3.webp 2176w" sizes="(max-width:760px) 100vw, 760px" width="2176" height="544" alt="Et kjøkken om natten med handleposer på gulvet, en laptop med et fallende kursdiagram og en fyrstekake på et fat">
+  <p class="ingress">En handel som gikk galt, en AI som var hundre prosent sikker, og hvorfor Klart nå får en ekstra sikring.</p>
+  <h2>Et system han ikke vil leve av</h2>
+  <p>Tidemann har lenge vært fascinert av trading, fordi det er et system. Prisene beveger seg etter hva folk tror, når de blir redde og når de blir grådige. Og det er en sjelden ferdighet: du gjør penger om til flere penger, og så gjør du det igjen.</p>
+  <p>Men det er et nullsumspill. Ingen andre vinner på at han vinner. Derfor kan han ikke bli trader på heltid. Han vil bygge noe som gjør noe godt. Tradingen får et lite vindu om dagen: en titt på markedet klokka ni, og tre kvarter fra halv fire.</p>
+  <h2>En assistent trent på én metode</h2>
+  <p>Han har trent en AI på metoden til en norsk trader, Powell Trades. Den tar bilde av skjermen hvert sekund og sier hva den ser. Han testet den på historiske data, og den hadde truffet hver gang.</p>
+  <h2>Fyrstekake</h2>
+  <p>Tenk på Claude som en veldig smart person du mater med fyrstekake. Du får en viss mengde i måneden. Får han for lite, blir han for dum. Får han for mye, går kaka til spille.</p>
+  <p>For å spare fyrstekake til de store prosjektene kjørte Tidemann tradingprogrammet på medium i stedet for full styrke. Det fungerte fint i andre prosjekter, der oppgavene kommer én og én. Her skulle den holde mye i hodet samtidig.</p>
+  <h2>Hundre prosent sikker, og feil</h2>
+  <p>Han kom sent hjem fra butikken med armene fulle av mat, og ba AI-en gjøre klart. Den sa: kjøp. Absolutt. Han satte grensene for gevinst og tap, gikk for å legge maten i kjøleskapet, og stolte på systemet.</p>
+  <p>Da han kom tilbake, var han stoppet ut med 150 dollar i tap. Han zoomet ut og så et helt annet bilde: en lærebok-mulighet til å gå short. Et A+-oppsett han ville tatt hundre av hundre ganger selv.</p>
+  <p>AI-en hadde mistet tråden underveis. Den hadde sluttet å se på dagen og uka, og handlet bare på det siste minuttet. Og den var helt sikker. De fleste mennesker er ikke så bastante når de tar helt feil.</p>
+  <h2>Leksen</h2>
+  <p>Ikke stol blindt på systemer, heller ikke de du har bygget selv. Ikke stress. Vær klar i hodet når det gjelder.</p>
+  <p>Leksen går rett inn i Klart, programmet hans som sladder personopplysninger i dokumenter. Før det begynner, kopierer det nå mappen inn i sitt eget område, og det anbefaler at du gir det en kopi. Da kan det aldri slette noe ved et uhell.</p>
+  <h2>Å være seg selv</h2>
+  <p>Nettsiden hans viser pulsen live, hvor han er, og lar deg kaste tomater på ham når han er hjemme hos moren sin. Ved siden av et seriøst produkt kan det se rart ut.</p>
+  <p>Men han ser det motsatt. Du vet alltid hvor han er, og han har ingenting å skjule. Han vil heller være den han er enn å legge personligheten på alteret for å virke corporate.</p>
+  <p class="slutt">Fra episode 3 av podkasten, «Max Ultracode Fyrstekake». <a href="/podcast/3/">Hør hele episoden</a>.</p>
+</main>
+<script>
+// Avspilleren øverst: play/pause, tiden, og spoling ved å trykke eller dra i linja (piltaster: 10 s).
+document.querySelectorAll('.spiller').forEach(sp=>{const a=sp.querySelector('audio'),k=sp.querySelector('.sp-k'),b=sp.querySelector('.sp-b'),tid=sp.querySelector('.sp-tid'),len=+sp.dataset.sek;
+  const fmt=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
+  const vis=()=>{const t=a.currentTime||0,p=Math.min(1,t/(a.duration||len));b.querySelector('i').style.width=p*100+'%';b.querySelector('b').style.left=p*100+'%';tid.textContent=fmt(t);b.setAttribute('aria-valuenow',Math.round(t))};
+  const last=()=>{if(!a.src)a.src=sp.dataset.lyd};
+  k.addEventListener('click',()=>{last();a.paused?a.play():a.pause()});
+  a.addEventListener('play',()=>sp.classList.add('spiller-pa'));a.addEventListener('pause',()=>sp.classList.remove('spiller-pa'));a.addEventListener('timeupdate',vis);
+  const til=e=>{const r=b.getBoundingClientRect(),p=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));last();
+    const sett=()=>{a.currentTime=p*(a.duration||len);vis()};a.readyState?sett():a.addEventListener('loadedmetadata',sett,{once:true});if(a.paused)a.play()};
+  let dra=false;b.addEventListener('pointerdown',e=>{dra=true;b.setPointerCapture(e.pointerId);til(e)});b.addEventListener('pointermove',e=>{if(dra)til(e)});b.addEventListener('pointerup',()=>dra=false);
+  b.addEventListener('keydown',e=>{const d={ArrowRight:10,ArrowLeft:-10}[e.key];if(!d)return;e.preventDefault();last();a.currentTime=Math.max(0,(a.currentTime||0)+d);vis()})});
+</script>
+</body>
+</html>
