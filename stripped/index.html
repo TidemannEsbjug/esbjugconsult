@@ -920,13 +920,20 @@
   .vk-tip{position:absolute;left:50%;top:38%;transform:translate(-50%,6px);white-space:nowrap;padding:7px 11px;border-radius:9px;background:rgba(0,22,63,.78);border:1px solid rgba(255,255,255,.14);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);font:600 10px/1 "SF Mono",Menlo,monospace;letter-spacing:.08em;color:rgba(255,255,255,.85);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
   .vk-k:hover .vk-tip{opacity:1;transform:translate(-50%,0)}
   @media (max-width:760px){.arb-i{grid-template-columns:1fr}.vk-m{min-height:0;height:260px}}
-  /* The next section comes as a card: you scroll freely, the hero stays put (sticky) and recedes a little (smaller and
-     darker), while the section slides up over it with rounded corners and a shadow. --p (0 to 1, set on <html> by the
-     script at the bottom) is how far the card has come up. */
+  /* Cards (.hero, then each .kortside). On PC there is no free scrolling: a scroll, swipe on the trackpad or the arrow keys
+     go straight to the next or previous card in one movement (html.dekk, set by the script at the bottom). The card
+     slides up over the one before, which recedes (smaller, darker, rounded). On phones the page is taller than the screen,
+     so there the card is just a rounded panel in the normal flow. */
   .arb{z-index:3;min-height:100svh;box-sizing:border-box;padding-top:clamp(40px,9vh,110px);border-radius:28px 28px 0 0;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 -30px 80px rgba(0,8,30,.55)}
-  .arb-i{opacity:calc(.25 + var(--p,0)*.75);transform:translateY(calc((1 - var(--p,0))*40px))}
-  @media (min-width:761px){.hero{position:sticky;top:0;transform-origin:50% 35%;transform:scale(calc(1 - var(--p,0)*.06));filter:brightness(calc(1 - var(--p,0)*.5));border-radius:calc(var(--p,0)*28px)}}
-  @media (prefers-reduced-motion:reduce){.hero{transform:none!important;filter:none!important}.arb-i{opacity:1;transform:none}}
+  html.dekk,html.dekk body{overflow:hidden;height:100%}
+  .dekk .hero{height:100svh;min-height:0}
+  .dekk .hero,.dekk .kortside{transition:transform .9s cubic-bezier(.7,0,.2,1),filter .9s cubic-bezier(.7,0,.2,1),border-radius .9s}
+  .dekk .kortside{position:fixed;inset:0;overflow-y:auto;overscroll-behavior:contain;transform:translateY(103%)}
+  .dekk .kortside.inne{transform:none}
+  .dekk .bak{transform:scale(.94)!important;filter:brightness(.45);border-radius:28px}
+  .dekk .kortside .arb-i{opacity:0;transform:translateY(36px);transition:opacity .6s ease .35s,transform .9s cubic-bezier(.2,.8,.2,1) .2s}
+  .dekk .kortside.inne .arb-i{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){.dekk .hero,.dekk .kortside,.dekk .kortside .arb-i{transition:none}}
   /* Flags as rectangles with slightly rounded corners, the knob and the box around them rounded the same way, no white edge. */
   .lang .lf{width:38px;height:24px}
   .lang-k{width:38px;height:24px}
@@ -1031,7 +1038,7 @@
   </div>
   </div>
 </header>
-<section class="arb" aria-label="Arbitrasje">
+<section class="arb kortside" aria-label="Økonomisk asymmetri">
   <div class="arb-i">
     <article class="arb-t">
       <h2>Økonomisk asymmetri</h2>
@@ -3041,10 +3048,23 @@ setInterval(tegn, 1000);
   juster();[300,900,1600].forEach(t=>setTimeout(juster,t))})();
 </script>
 <script>
-// /stripped/: how far the card (.arb) has come up over the hero, 0 to 1, as --p on <html>. Once per frame while scrolling.
-(()=>{const a=document.querySelector('.arb');if(!a)return;let r=0;
-  const sett=()=>{r=0;document.documentElement.style.setProperty('--p',Math.max(0,Math.min(1,1-a.getBoundingClientRect().top/innerHeight)).toFixed(3))};
-  addEventListener('scroll',()=>{if(!r)r=requestAnimationFrame(sett)},{passive:true});addEventListener('resize',sett);sett()})();
+// /stripped/: the cards on PC. One wheel gesture (or trackpad swipe) or one arrow key moves exactly one card; the trackpad's
+// coasting after a swipe is ignored until the wheel has been quiet for 160 ms. A card taller than the screen scrolls inside
+// first. Typing in the chat is left alone.
+(()=>{if(!matchMedia('(min-width:761px) and (hover:hover)').matches||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const kort=[document.querySelector('.hero'),...document.querySelectorAll('.kortside')].filter(Boolean);if(kort.length<2)return;
+  const h=document.documentElement;h.classList.add('dekk');scrollTo(0,0);kort.forEach((k,n)=>{if(n)k.style.zIndex=3+n});
+  let i=0,laastTil=0,sist=0,brukt=false;
+  const vis=n=>{n=Math.max(0,Math.min(kort.length-1,n));if(n===i)return;i=n;laastTil=performance.now()+950;
+    kort.forEach((k,m)=>{k.classList.toggle('inne',m<=i);k.classList.toggle('bak',m<i)})};
+  const kanRulle=(dy)=>{const k=kort[i];if(!i||k.scrollHeight<=k.clientHeight+2)return false;return dy>0?k.scrollTop+k.clientHeight<k.scrollHeight-2:k.scrollTop>2};
+  addEventListener('wheel',e=>{if(e.target.closest&&e.target.closest('#chat'))return;const nå=performance.now(),pause=nå-sist;sist=nå;
+    if(pause>160)brukt=false;if(kanRulle(e.deltaY))return;e.preventDefault();
+    if(brukt||nå<laastTil||Math.abs(e.deltaY)<6)return;brukt=true;vis(i+(e.deltaY>0?1:-1))},{passive:false});
+  addEventListener('keydown',e=>{if(e.target.closest&&e.target.closest('textarea,input,select,[contenteditable]'))return;
+    const v={ArrowDown:1,PageDown:1,' ':1,ArrowUp:-1,PageUp:-1}[e.key];if(!v||e.metaKey||e.ctrlKey||e.altKey)return;
+    if(kanRulle(v))return;e.preventDefault();if(performance.now()<laastTil)return;vis(i+v)});
+})();
 </script>
 </body>
 </html>
