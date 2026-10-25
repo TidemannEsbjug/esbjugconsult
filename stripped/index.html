@@ -920,6 +920,10 @@
   .vk-tip{position:absolute;left:50%;top:38%;transform:translate(-50%,6px);white-space:nowrap;padding:7px 11px;border-radius:9px;background:rgba(0,22,63,.78);border:1px solid rgba(255,255,255,.14);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);font:600 10px/1 "SF Mono",Menlo,monospace;letter-spacing:.08em;color:rgba(255,255,255,.85);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
   .vk-k:hover .vk-tip{opacity:1;transform:translate(-50%,0)}
   @media (max-width:760px){.arb-i{grid-template-columns:1fr}.vk-m{min-height:0;height:260px}}
+  /* Full width (the badger): one column, the strip across the whole width and the text in two columns on PC. */
+  .bred .arb-i{grid-template-columns:1fr}
+  .bred .arb-t p{max-width:none}
+  @media (min-width:761px){.bred .arb-t{column-count:2;column-gap:clamp(32px,4vw,64px)}.bred .arb-t h2,.bred .arb-t .strip{column-span:all}.bred .arb-t p{break-inside:avoid}}
   /* Sections (.hero, then each .kortside) in one lane. On PC there is no free scrolling: a scroll gesture or the arrow keys
      move the whole lane exactly one screen, so you go straight to the next section without half states (html.dekk, the
      script at the bottom sets each section's offset). No overlap, no darkening, no edge between them. */
@@ -1048,11 +1052,11 @@
       </aside>
   </div>
 </section>
-<section class="arb kortside" aria-label="Oppstrøms">
+<section class="arb kortside bred" aria-label="Oppstrøms">
   <div class="arb-i">
     <article class="arb-t">
       <h2>Grevlingen gikk oppstrøms</h2>
-      <img class="strip" src="/stripped/media/oppstroms-1200.webp" srcset="/stripped/media/oppstroms-1200.webp 1200w, /stripped/media/oppstroms.webp 2176w" sizes="(max-width:760px) 100vw, 720px" width="2176" height="544" loading="lazy" alt="Høyt oppe ved elva om natten: en grevling legger salatkasser på små flåter med lykter, som driver nedover mot landsbyen">
+      <img class="strip" src="/stripped/media/oppstroms-1200.webp" srcset="/stripped/media/oppstroms-1200.webp 1200w, /stripped/media/oppstroms.webp 2176w" width="2176" height="544" loading="lazy" sizes="(max-width:760px) 100vw, 1240px" alt="Høyt oppe ved elva om natten: en grevling legger salatkasser på små flåter med lykter, som driver nedover mot landsbyen">
       <p>Haren ble rik på salaten. Han bar den over broen så lenge prisene var forskjellige, og en stund var det nok.</p>
       <p>Grevlingen lurte heller på hvorfor salaten var billig i utgangspunktet. Han fulgte elva og så at det lå skygge over det billige torget også, bare litt mindre.</p>
       <p>Lenger opp, der fjellet ikke rakk, var det sol hele dagen. Der begynte han å dyrke. Salaten sendte han ned med elva, og den var framme før haren rakk å krysse broen.</p>
