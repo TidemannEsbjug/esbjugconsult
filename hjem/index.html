@@ -1862,17 +1862,16 @@ function tegn() {
   const sub = fart || (HUS && rom && !gammel ? TX.rom + rom : null);
   $('.s-sub').textContent = sub || '';
   $('.s-sub').hidden = !sub;
-  // Hjemme (bare /hjem/): huset tegnes i kartet, prikken står midt i rommet han er i (eller midt i huset), og
-  // GPS-sporet inne i og rundt huset tas bort, for innendørs er GPS bare krusedull. Sporet fra veien går inn til prikken.
+  // Hjemme (bare /hjem/): prikken står midt i rommet han er i (eller midt i huset), og GPS-sporet på og rundt tomta
+  // tas bort, for innendørs er GPS bare krusedull. Sporet slutter der det går inn på tomta, og prikken kobles ikke til det.
   const hus = husNå();
   const pos = hus ? [hus.pos[1], hus.pos[0]] : [live.lat, live.lon];
   let spor = linjer(trail);
-  if (HUS && plan && plan.geo && plan.geo.buss) spor = tomtSpor(spor, !!hus);
-  if (spor.length) spor[spor.length - 1].push(pos); else spor = [[pos]];
+  if (HUS && plan && plan.geo && plan.geo.buss) spor = tomtSpor(spor);
+  if (spor.length && !hus) spor[spor.length - 1].push(pos); else if (!spor.length) spor = [[pos]];
   stier = spor;
   if (!kart || !kart.getSource('spor')) return;
   const lngLat = [pos[1], pos[0]];
-  husIKart(hus);
   // Sporet sendes bare til kartet når det har endret seg (tegn() går hvert sekund).
   const sporNokkel = trail.length + ':' + (trail[trail.length - 1]?.[2] || 0) + ':' + pos;
   if (sporNokkel !== sistSpor) { sistSpor = sporNokkel; kart.getSource('spor').setData({ type: 'Feature', geometry: { type: 'MultiLineString', coordinates: spor.map(l => l.map(p => [p[1], p[0]])) } }); }
@@ -2186,54 +2185,28 @@ const GJOR = TX.gjor;
 // (u + tx) og nord (−v + ty) fra geo.lat/lon. Tilpasset husets omriss i kartdataene (OpenStreetMap).
 const HUS = location.pathname.startsWith('/hjem');
 let plan = null;
-const hentPlan = async () => { try { plan = await (await fetch('/chat/plan')).json(); husTegnet = ''; } catch {} };
+const hentPlan = async () => { try { plan = await (await fetch('/chat/plan')).json(); } catch {} };
 if (HUS) { hentPlan(); setInterval(hentPlan, 10 * 60e3); }
 const geoPkt = (x, z) => {
   const g = plan.geo, c = Math.cos(g.th), s = Math.sin(g.th), u = x * c - z * s, v = x * s + z * c;
   return [g.lon + (u + g.tx) / (111320 * Math.cos(g.lat * Math.PI / 180)), g.lat + (-v + g.ty) / 110574];
 };
-// Stien fra busstoppet til døra, slik han tegnet den (plan.geo.buss og .vei). Først forenkles den til noen få
-// knekkpunkter (Douglas–Peucker, 4 m), så rundes hjørnene av med Chaikin, så den blir et par myke svinger.
-const forenkle = (p, tol) => {
-  if (p.length < 3) return p;
-  const K = 111320 * Math.cos(p[0][1] * Math.PI / 180), m = q => [q[0] * K, q[1] * 110574], [a, b] = [m(p[0]), m(p[p.length - 1])];
-  let maks = 0, i = 0;
-  for (let k = 1; k < p.length - 1; k++) {
-    const c = m(p[k]), dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1, d = Math.abs(dy * (c[0] - a[0]) - dx * (c[1] - a[1])) / l;
-    if (d > maks) { maks = d; i = k; }
-  }
-  return maks > tol ? [...forenkle(p.slice(0, i + 1), tol).slice(0, -1), ...forenkle(p.slice(i), tol)] : [p[0], p[p.length - 1]];
-};
-let stiMemo = null;
-const sti = () => {
-  if (stiMemo && stiMemo.ts === plan.ts) return stiMemo.p;
-  let p = forenkle([...(plan.geo.buss ? [plan.geo.buss] : []), ...(plan.geo.vei || [])], 4);
-  for (let n = 0; n < 5 && p.length > 2; n++) {
-    const q = [p[0]];
-    for (let i = 0; i < p.length - 1; i++) { const [a, b] = [p[i], p[i + 1]]; q.push([a[0] * .75 + b[0] * .25, a[1] * .75 + b[1] * .25], [a[0] * .25 + b[0] * .75, a[1] * .25 + b[1] * .75]); }
-    q.push(p[p.length - 1]); p = q;
-  }
-  p = p.length ? p : [geoPkt(0, 0)];
-  stiMemo = { ts: plan.ts, p };
-  return p;
-};
 // Tomta: under 40 m fra huset, eller nærmere huset enn busstoppet (og over 35 m fra busstoppet) innen 120 m. GPS her
-// inne teller ikke (hus og hage gir bare krusedull). Ved busstoppet og på veien teller GPS-en som vanlig. Går sporet inn på tomta, følger det stien fra busstoppet til døra; går det ut, følger det stien tilbake.
-// Hjemme går sporet til slutt fra døra til prikken i huset.
+// inne teller ikke (hus og hage gir bare krusedull). Ved busstoppet og på veien teller GPS-en som vanlig. Sporet brytes
+// der det går inn på tomta og starter igjen der det går ut. Huset og stien fra busstoppet tegnes ikke lenger.
 let husMidtMemo = null;
 const husMidt = () => { if (husMidtMemo && husMidtMemo.ts === plan.ts) return husMidtMemo.p; const g = geoPkt(...midt(plan.rom.flatMap(x => x.gulv))); husMidtMemo = { ts: plan.ts, p: [g[1], g[0]] }; return husMidtMemo.p; };
 const påTomta = q => {
   const h = dist(q, husMidt()), b = dist(q, [plan.geo.buss[1], plan.geo.buss[0]]);
   return h < 40 || (h < 120 && b > 35 && h < b);
 };
-function tomtSpor(linjer, hjemme) {
-  const vei = sti().map(v => [v[1], v[0]]), tilbake = [...vei].reverse(), ut = [];
+function tomtSpor(linjer) {
+  const ut = [];
   for (const l of linjer) {
-    let cur = [], inne = false;
+    let cur = [];
     for (const q of l) {
-      if (påTomta(q)) { if (!inne && cur.length) cur.push(...vei); inne = true; continue; }
-      if (inne) cur.push(...tilbake);
-      inne = false; cur.push(q);
+      if (påTomta(q)) { if (cur.length) ut.push(cur); cur = []; continue; }
+      cur.push(q);
     }
     if (cur.length) ut.push(cur);
   }
@@ -2667,41 +2640,7 @@ function husNå() {
   const alle = plan.rom.flatMap(x => x.gulv), senter = geoPkt(...midt(alle));
   // ?etasje=2 viser andre etasje mens vi tester (før fyrene vet hvor han er).
   const valgt = +new URLSearchParams(location.search).get('etasje') - 1;
-  return { r, etg: r ? etasje(r) : valgt > 0 ? valgt : 0, pos: r && r.gulv.length ? geoPkt(...midt(r.gulv)) : senter, senter, sti: sti() };
-}
-// Bare etasjen han er i, enkelt: gulvene som én lys flate, tynne vegger, rommet hans svakt rødt. Zoomer man langt
-// inn, står rommets navn ved prikken. Tegnes på nytt bare når noe endres.
-let husTegnet = '';
-function husIKart(hus) {
-  if (!HUS || !kart.isStyleLoaded()) return;
-  const nokkel = hus ? (plan.ts + ':' + hus.etg + ':' + (hus.r ? hus.r.navn : '')) : '';
-  if (nokkel === husTegnet) return;
-  husTegnet = nokkel;
-  const f = [];
-  if (hus) {
-    for (const x of plan.rom) {
-      if (etasje(x) !== hus.etg) continue;
-      if (x.gulv.length > 2) f.push({ type: 'Feature', properties: { t: 'gulv', her: x === hus.r }, geometry: { type: 'Polygon', coordinates: [[...x.gulv, x.gulv[0]].map(p => geoPkt(...p))] } });
-      for (const v of x.vegger) f.push({ type: 'Feature', properties: { t: 'vegg' }, geometry: { type: 'LineString', coordinates: [geoPkt(v[0], v[1]), geoPkt(v[2], v[3])] } });
-    }
-    if (hus.r) f.push({ type: 'Feature', properties: { t: 'navn', navn: hus.r.navn }, geometry: { type: 'Point', coordinates: hus.pos } });
-    if (hus.sti.length > 1) f.push({ type: 'Feature', properties: { t: 'sti' }, geometry: { type: 'LineString', coordinates: hus.sti } });
-    if (plan.geo.buss) f.push({ type: 'Feature', properties: { t: 'buss' }, geometry: { type: 'Point', coordinates: plan.geo.buss } });
-  }
-  const data = { type: 'FeatureCollection', features: f };
-  if (kart.getSource('hus')) { kart.getSource('hus').setData(data); return; }
-  kart.addSource('hus', { type: 'geojson', data });
-  const før = kart.getLayer('spor-glod') ? 'spor-glod' : undefined;
-  kart.addLayer({ id: 'hus-gulv', type: 'fill', source: 'hus', filter: ['==', ['get', 't'], 'gulv'], paint: { 'fill-color': ['case', ['get', 'her'], '#6b2a2c', '#3d3631'] } }, før);   // tette farger: rom som overlapper blir ikke mørkere
-  kart.addLayer({ id: 'hus-vegg', type: 'line', source: 'hus', filter: ['==', ['get', 't'], 'vegg'], layout: { 'line-cap': 'round' }, paint: { 'line-color': '#fffaf0', 'line-opacity': .75, 'line-width': ['interpolate', ['linear'], ['zoom'], 17, .6, 21, 2.2] } }, før);
-  // Stien: korte streker med mellomrom, som en sti på et turkart. Busstoppet er en liten rund prikk.
-  kart.addLayer({ id: 'hus-sti', type: 'line', source: 'hus', filter: ['==', ['get', 't'], 'sti'], layout: { 'line-cap': 'round', 'line-join': 'round' },
-    paint: { 'line-color': '#fffaf0', 'line-opacity': .9, 'line-width': ['interpolate', ['linear'], ['zoom'], 16, 1.5, 21, 4], 'line-dasharray': [1.6, 2.2] } }, før);
-  kart.addLayer({ id: 'hus-buss', type: 'circle', source: 'hus', filter: ['==', ['get', 't'], 'buss'],
-    paint: { 'circle-radius': ['interpolate', ['linear'], ['zoom'], 16, 3.5, 21, 8], 'circle-color': '#BA0C2F', 'circle-stroke-color': '#fffaf0', 'circle-stroke-width': 1.8 } });
-  kart.addLayer({ id: 'hus-navn', type: 'symbol', source: 'hus', minzoom: 19.5, filter: ['==', ['get', 't'], 'navn'],
-    layout: { 'text-field': ['get', 'navn'], 'text-font': ['Noto Sans Italic'], 'text-size': 13, 'text-offset': [0, 1.3], 'text-anchor': 'top' },
-    paint: { 'text-color': '#fffaf0', 'text-halo-color': 'rgba(0,0,0,.55)', 'text-halo-width': 1.4 } });
+  return { r, etg: r ? etasje(r) : valgt > 0 ? valgt : 0, pos: r && r.gulv.length ? geoPkt(...midt(r.gulv)) : senter, senter };
 }
 function gjor(v) { const e = $('.gjor'); e.hidden = !GJOR[v]; if (GJOR[v]) $('.g-navn').textContent = GJOR[v]; }
 const kl = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', hour: '2-digit', minute: '2-digit' }), dag = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', day: 'numeric', month: 'long' }), dagNr = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Oslo' });
