@@ -1211,6 +1211,12 @@ const SPRINT_HORISONT = 180;
 const SPRINT_OKT_MIN = 31;
 const PRODUKT_SPRINT = "klart_sprint";
 const ISO_DAG = /^\d{4}-\d{2}-\d{2}$/;
+// Samme kriterier som på prissiden (/klart/pris/), i Stripe og e-postene.
+const SPRINT_KRITERIER =
+  "Suksesskriteriene måles på Klart alene, før noe menneske har sett på kopiene, mot en fasit: et tilfeldig utvalg av " +
+  "egne dokumenter som merkes i fellesskap ved oppstart. 1: 100 % av de direkte identifikatorene i fasiten er borte " +
+  "(fødselsnummer, D-nummer, kontonummer og de andre som avtales). 2: 100 % av dokumentene i fasiten har ingen " +
+  "gjenkjennelige personer igjen. Kriteriene gjelder det avtalte utvalget, ikke alle dokumenter.";
 
 function ukedag(iso) {
   return new Date(`${iso}T00:00:00Z`).getUTCDay();
@@ -1305,7 +1311,7 @@ async function sprintBook(request, env, url) {
     const side = sideFor(url);
     const beskrivelse =
       `Grunnhonorar for Klart-sprint hos ${v.navn} (org.nr ${orgnrTekst(v.orgnr)}), ${datoTekst(start)}–${datoTekst(slutt)}. ` +
-      `Grunnhonoraret beholdes. Resten (${kroner(s.total - s.grunn)} eks. mva) faktureres bare hvis suksesskriteriene er nådd, ellers faller den bort.`;
+      `Grunnhonoraret beholdes. Resten (${kroner(s.total - s.grunn)} eks. mva) faktureres bare hvis suksesskriteriene er nådd, ellers faller den bort. ${SPRINT_KRITERIER}`;
     const felt = {
       mode: "payment",
       customer: kunde.id,
@@ -1369,7 +1375,10 @@ async function sprintBetalt(env, okt) {
         `Sprinten hos ${d.firma} er booket ${tid} (${SPRINT_DAGER} dager). Grunnhonoraret på ${kroner(d.grunn)} eks. mva er betalt og beholdes.`,
         `Resten, ${kroner(d.total - d.grunn)} eks. mva, faktureres bare hvis suksesskriteriene er nådd. Ellers faller den bort.`,
         "",
-        "Vi tar kontakt for å avtale suksesskriteriene skriftlig før dag én. Kalenderfilen ligger vedlagt.",
+        "",
+        SPRINT_KRITERIER,
+        "",
+        "Vi tar kontakt for å avtale fasiten og hva som skal bort, skriftlig før dag én. Kalenderfilen ligger vedlagt.",
         "",
         "Hilsen Esbjug Consult",
       ].join("\n"),
