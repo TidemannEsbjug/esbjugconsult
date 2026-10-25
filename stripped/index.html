@@ -733,7 +733,7 @@
   .akse{display:flex;flex-direction:column;gap:10px;padding:14px 18px 14px}
   .ak-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
   .ak-m{font:600 9.5px/1 "SF Mono",Menlo,monospace;letter-spacing:.1em;color:rgba(0,32,91,.5)}
-  .ak-m i{font-style:normal;font-weight:800}.kx{color:#FF6A3D}.ky{color:#D6246E}.kz{color:#0E9AA7}
+  .ak-m i{font-style:normal;font-weight:800}.kx{color:#2F6BFF}.ky{color:#9AA6B4}.kz{color:#fff;text-shadow:0 0 2px rgba(0,32,91,.6)}
   /* Podkast: episodene, nyeste først, med datoen de ble laget. Trykk spiller av her i modulen, med en tynn spolelinje. */
   .pod{display:flex;flex-direction:column;gap:6px;padding:12px 18px 13px}
   .pod[hidden]{display:none}
@@ -900,6 +900,9 @@
   #kart,.kartknapp,.kv-prikk,.kv-i,.sted,.gjor,.bank,.oyet,.pod,.sens .sv[data-k=fyra],.sens .sv[data-k=fyrb],.sens .sv[data-k=gatt]{display:none!important}
   /* Language selector: no inner border, and the empty counter area is left out so the flags sit with equal space on both sides. */
   .topp .lang{border:0}
+  /* Posts: one card, no stack behind it, and the same glass as the other cards. */
+  .post{background:linear-gradient(135deg,rgba(255,255,255,.72),rgba(255,255,255,.5));-webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5);border:1px solid rgba(255,255,255,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(255,255,255,.25),0 14px 40px rgba(0,32,91,.18)}
+  .post[data-l="1"],.post[data-l="2"]{opacity:0}
   /* Pulse, devices and the accelerometer live in the left column; the right side is empty. */
   @media (min-width:1100px){.venstre{width:min(440px,100%)}.venstre .sens{grid-template-columns:repeat(3,minmax(0,1fr))}}
   .topp .st:not(:has(.st-i:not([hidden]))){display:none}
@@ -1933,11 +1936,14 @@ function oskilloskop() {
     const a = AK[c.dataset.k]; if (!a) continue;
     const pts = a.s.filter(p => p[0] > nå - VIN && p[0] <= nå);
     if (pts.length < 2) continue;
-    [['#FF6A3D', 1], ['#D6246E', 2], ['#0E9AA7', 3]].forEach(([farge, i]) => {
+    // Blue, silver and white; a faint dark shadow keeps silver and white visible on the light glass.
+    x.shadowColor = 'rgba(0,32,91,.45)'; x.shadowBlur = 2;
+    [['#2F6BFF', 1], ['#B8C2CE', 2], ['#FFFFFF', 3]].forEach(([farge, i]) => {
       x.strokeStyle = farge; x.lineWidth = tynn ? 1.2 : 1.6; x.lineJoin = 'round'; x.beginPath();
       pts.forEach((p, n) => { const px = W - (nå - p[0]) / VIN * W, py = Y(Math.max(-2, Math.min(2, p[i]))); n ? x.lineTo(px, py) : x.moveTo(px, py); });
       x.stroke();
     });
+    x.shadowBlur = 0;
   }
 }
 requestAnimationFrame(oskilloskop);
@@ -2658,7 +2664,7 @@ const kl = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', hour: '2-d
 // på plass. Høyden følger det øverste kortet (de bakre får samme høyde, så bare kantene stikker ut).
 let nåNotater = [];   // postene slik de er nå (avspillingen viser dem som var skrevet før tiden den står på)
 let poster = [], kort = [], toppPost = 0, posterNokkel = '';
-const KANT = 14;
+const KANT = 0;   // /stripped/: no stack edges below the card
 const naturlig = c => { const h = c.style.height; c.style.height = 'auto'; const x = c.offsetHeight; c.style.height = h; return x; };
 function postLag(unntak) {
   const n = kort.length;
