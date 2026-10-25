@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Esbjug Consult</title>
 <meta name="description" content="Code and design have gone through a revolution that must not be overlooked.">
 <script>history.scrollRestoration="manual"</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
-<meta name="theme-color" content="#cfe4f6">
+<meta name="theme-color" content="#00163f">
 <link rel="alternate" hreflang="nb" href="https://esbjugconsult.com/">
 <link rel="alternate" hreflang="en" href="https://esbjugconsult.com/en/">
 <script>document.documentElement.classList.add("js");if(/[?&]speil=1/.test(location.search))document.documentElement.classList.add("speil","vis")</script>
@@ -732,7 +732,7 @@
   .akse{display:flex;flex-direction:column;gap:10px;padding:14px 18px 14px}
   .ak-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
   .ak-m{font:600 9.5px/1 "SF Mono",Menlo,monospace;letter-spacing:.1em;color:rgba(0,32,91,.5)}
-  .ak-m i{font-style:normal;font-weight:800}.kx{color:#e0233c}.ky{color:#d68a00}.kz{color:#2563eb}
+  .ak-m i{font-style:normal;font-weight:800}.kx{color:#2F6BFF}.ky{color:#9AA6B4}.kz{color:#fff;text-shadow:0 0 2px rgba(0,32,91,.6)}
   /* Podkast: episodene, nyeste først, med datoen de ble laget. Trykk spiller av her i modulen, med en tynn spolelinje. */
   .pod{display:flex;flex-direction:column;gap:6px;padding:12px 18px 13px}
   .pod[hidden]{display:none}
@@ -893,8 +893,76 @@
   /* Ingen farget boks eller ramme når man trykker med fingeren (Android); tastaturet får fortsatt fokusrammen. */
   *{-webkit-tap-highlight-color:transparent}
   :focus:not(:focus-visible){outline:none}
-  /* Språkvelgeren: ingen indre kant, og det tomme teller-feltet tas ut, så flaggene står med like mye luft på begge sider. */
+  /* hidden here instead of deleted, because the scripts write to these elements. No map (leggKart returns),
+     so the blue loading background stays, without the dot and the text. Left: date/clock and posts. Right: pulse,
+     iPhone, Android, Apple Watch, the machines and the accelerometer lines. */
+  #kart,.kartknapp,.kv-prikk,.kv-i,.sted,.gjor,.bank,.pod,.sens .sv[data-k=fyra],.sens .sv[data-k=fyrb],.sens .sv[data-k=gatt]{display:none!important}
+  /* Language selector: no inner border, and the empty counter area is left out so the flags sit with equal space on both sides. */
   .topp .lang{border:0}
+  /* The chat is hidden for now (the script still runs, so visits and the pulse work as before). */
+  #chat{display:none!important}
+  /* Below the hero: the old content is hidden (the scripts still look for parts of it). In its place a section in the same
+     blue gradient as the background: text on the left, a tall and quiet accelerometer (Apple Watch and iPhone) on the right. */
+  main>.intro,main>.rv,canvas#c{display:none!important}
+  .arb{position:relative;background:radial-gradient(60% 50% at 50% 50%,#0b2f70,#00163f);padding:clamp(8px,3vh,40px) var(--g) clamp(64px,12vh,140px)}
+  .arb-i{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:clamp(32px,6vw,110px);align-items:start}
+  .arb-t{color:#fff}
+  .arb-t h2{margin:0 0 .45em;font:500 clamp(34px,3.4vw,54px)/1.04 var(--serif);letter-spacing:-.025em;text-wrap:balance}
+  .arb-t p{margin:0 0 .9em;font:400 clamp(16px,1.15vw,18px)/1.55 var(--serif);color:rgba(255,255,255,.86);max-width:44em}
+  /* The movement as two quiet vertical threads (Apple Watch and iPhone), as tall as the text. Newest at the top, fading out
+     at both ends. Not a measurement, just the motion: each axis minus its own average, smoothed. */
+  .arb-i{align-items:stretch}
+  .vk-m{justify-self:center;display:flex;gap:clamp(28px,3.5vw,56px);min-height:320px}
+  .vk-k{display:flex;flex-direction:column;align-items:center;gap:14px}
+  .vk{flex:1;display:block;width:76px;min-height:0;-webkit-mask-image:linear-gradient(transparent,#000 10%,#000 72%,transparent);mask-image:linear-gradient(transparent,#000 10%,#000 72%,transparent)}
+  .vk-k{position:relative}
+  .vk-n{display:inline-flex;align-items:center;gap:6px;font:600 9.5px/1 "SF Mono",Menlo,monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+  .vk-n svg{width:11px;height:11px;color:#fff;margin-top:-2px}
+  .vk-tip{position:absolute;left:50%;top:38%;transform:translate(-50%,6px);white-space:nowrap;padding:7px 11px;border-radius:9px;background:rgba(0,22,63,.78);border:1px solid rgba(255,255,255,.14);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);font:600 10px/1 "SF Mono",Menlo,monospace;letter-spacing:.08em;color:rgba(255,255,255,.85);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
+  .vk-k:hover .vk-tip{opacity:1;transform:translate(-50%,0)}
+  @media (max-width:760px){.arb-i{grid-template-columns:1fr}.vk-m{min-height:0;height:260px}.arb{padding-top:22px!important}.hero-i{padding-bottom:8px}.arb.kortside{min-height:0;padding-bottom:48px}.vk-m{display:none}.stor.kortside{min-height:0;padding:56px var(--g) max(200px,28svh)!important}}
+  /* Full width (the badger): one column, the strip across the whole width and the text in two columns on PC. */
+  .bred .arb-i{grid-template-columns:1fr}
+  /* A section with only one big line, centred on the screen. */
+  .stor{display:grid;place-items:center;padding:0 var(--g)}
+  .stor-t{margin:0;color:#fff;font:500 clamp(32px,4.6vw,76px)/1.05 var(--serif);letter-spacing:-.035em;text-align:center;text-wrap:balance}
+  .bred .arb-t p{max-width:none}
+  @media (min-width:761px){.bred .arb-t{column-count:2;column-gap:clamp(32px,4vw,64px)}.bred .arb-t h2,.bred .arb-t .strip{column-span:all}.bred .arb-t p{break-inside:avoid}}
+  /* Sections (.hero, then each .kortside) in one lane. On PC there is no free scrolling: a scroll gesture or the arrow keys
+     move the whole lane exactly one screen, so you go straight to the next section without half states (html.dekk, the
+     script at the bottom sets each section's offset). No overlap, no darkening, no edge between them. */
+  .arb{min-height:100svh;box-sizing:border-box;padding-top:clamp(40px,9vh,110px)}
+  html.dekk,html.dekk body{overflow:hidden;height:100%}
+  .dekk .hero,.dekk .kortside{position:fixed;inset:0;height:100svh;min-height:0;transition:transform .95s cubic-bezier(.65,0,.25,1);will-change:transform}
+  .dekk .hero,.dekk .kortside{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+  .dekk-start .hero,.dekk-start .kortside{transition:none!important}
+  @media (prefers-reduced-motion:reduce){.dekk .hero,.dekk .kortside{transition:none}}
+  /* Flags as rectangles with slightly rounded corners, the knob and the box around them rounded the same way, no white edge. */
+  .lang .lf{width:38px;height:24px}
+  .lang-k{width:38px;height:24px}
+  .lang.en .lang-k,.lang.gaar .lang-k{transform:translateX(40px)}
+  .lang.en.gaar .lang-k{transform:none}
+  .lang .lf svg{width:26px;height:16px;border-radius:3px;box-shadow:none}
+  .lang,.lang-k{border-radius:8px}
+  .hero-i .topp{border-radius:13px}
+  /* The flag sits at the top of the left column and moves with it. */
+  .venstre>.flyt{align-self:flex-start}
+  .kom .venstre>.flyt>.topp{animation:byggV 1.1s cubic-bezier(.7,0,.15,1) both}
+  /* Experiment: a short story on the right side, white on the blue background. */
+  /* New direction: the right column is gone as a column; the story sits centred in the open space next to the cards. */
+  @media (min-width:761px){.paneler{align-items:stretch}.venstre{align-self:center;margin-bottom:6vh}.hoyre{flex:1;width:auto;margin-left:0;display:flex;align-items:flex-start;justify-content:flex-start}}
+  .fortelling{color:#fff;pointer-events:auto;padding:0 clamp(16px,3vw,48px) 0 clamp(24px,5vw,96px);max-width:860px;text-align:left}
+  .fortelling h1{margin:0 0 .45em;font:500 clamp(34px,3.4vw,54px)/1.04 var(--serif);letter-spacing:-.025em;text-wrap:balance}
+  /* Mobile: the notch and the edges are the same blue, and the story lines up with the left edge of the cards. */
+  html,body{background:#00163f}
+  @media (max-width:760px){.fortelling{padding:0 0 8px;order:1}}
+  .strip{display:block;width:100%;height:auto;aspect-ratio:4/1;margin:4px 0 24px;border-radius:16px;box-shadow:0 18px 50px rgba(0,8,30,.45)}   /* after the flag and the date card (both order 0/1, earlier in the page) */
+  .fortelling p{margin:0 0 .9em;font:400 clamp(16px,1.15vw,18px)/1.55 var(--serif);color:rgba(255,255,255,.86);max-width:44em}
+  /* Posts: one card, no stack behind it, and the same glass as the other cards. */
+  .post{background:linear-gradient(135deg,rgba(255,255,255,.72),rgba(255,255,255,.5));-webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5);border:1px solid rgba(255,255,255,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(255,255,255,.25),0 14px 40px rgba(0,32,91,.18)}
+  .post[data-l="1"],.post[data-l="2"]{opacity:0}
+  /* Pulse, devices and the accelerometer live in the left column; the right side is empty. */
+  @media (min-width:1100px){.venstre{width:min(440px,100%)}.venstre .sens{grid-template-columns:repeat(3,minmax(0,1fr))}}
   .topp .st:not(:has(.st-i:not([hidden]))){display:none}
 </style>
 </head>
@@ -903,11 +971,11 @@
 <header class="hero">
   <div class="kart-venter" aria-hidden="true"><span class="kv-prikk"></span><div class="kv-i"><b>Esbjug Consult</b><span class="kv-t">finding Tidemann …</span></div></div><div id="kart" aria-label="Map: where Tidemann is now"></div>
   <div class="hero-i">
-  <div class="flyt"><button type="button" class="kartknapp gl" aria-label="Show the map" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="kk-kart" d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/><path class="kk-x" d="M6 6l12 12M18 6 6 18"/></svg></button><div class="topp gl"><a class="lang en" href="/" hreflang="nb" aria-label="Language: English. Switch to Norwegian"><span class="lang-k" aria-hidden="true"></span><span class="lf no" aria-hidden="true"><svg viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span class="lf gb" aria-hidden="true"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg></span></a>
-  <div class="st"><div class="st-i tl-a" hidden data-av data-l="here now"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">here now</span><span class="tl-deg" aria-hidden="true">+1 · that's you</span></div></div><div class="st-i tl-b" hidden data-av data-l="unique visitors" data-ny="+1 · you are no. {n}" data-er="You are no. {n}" data-var="You were no. {n}"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unique visitors</span><span class="tl-deg" aria-hidden="true">+1 · that's you</span></div></div><span class="tl-sr"></span></div>
-  </div></div>
   <div class="paneler">
   <div class="venstre">
+  <div class="flyt"><button type="button" class="kartknapp gl" aria-label="Show the map" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="kk-kart" d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/><path class="kk-x" d="M6 6l12 12M18 6 6 18"/></svg></button><div class="topp gl"><a class="lang en" href="/" hreflang="nb" aria-label="Language: English. Switch to Norwegian"><span class="lang-k" aria-hidden="true"></span><span class="lf no" aria-hidden="true"><svg preserveAspectRatio="xMidYMid slice" viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span class="lf gb" aria-hidden="true"><svg preserveAspectRatio="xMidYMid slice" viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg></span></a>
+  <div class="st"><div class="st-i tl-a" hidden data-av data-l="here now"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">here now</span><span class="tl-deg" aria-hidden="true">+1 · that's you</span></div></div><div class="st-i tl-b" hidden data-av data-l="unique visitors" data-ny="+1 · you are no. {n}" data-er="You are no. {n}" data-var="You were no. {n}"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unique visitors</span><span class="tl-deg" aria-hidden="true">+1 · that's you</span></div></div><span class="tl-sr"></span></div>
+  </div></div>
   <p class="naa gl" aria-live="off"><span class="naa-d">&nbsp;</span><b class="naa-k">&nbsp;</b></p>
   <section class="sted gl" aria-live="polite">
     <span class="mono s-t"><i class="s-dot"></i><span class="s-live">Live</span></span>
@@ -925,10 +993,8 @@
     <ul class="bk-kontoer"></ul>
   </section>
   <section class="poster" hidden aria-live="polite" aria-label="Poster fra Tidemann. Trykk for neste." role="button" tabindex="0"></section>
-  </div>
-  <div class="hoyre">
   <section class="sens gl" aria-label="Everything his iPhone and Apple Watch measure">
-    <div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Heart rate today"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg><svg class="hk" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true"><path class="hk-l" d=""/><circle class="hk-p" r="3" cx="-9" cy="-9"/></svg></span></button><span class="st-l"><span class="hp-on">Live from Apple Watch</span><span class="hp-av">Not live right now</span></span></div><span class="hk-x" aria-hidden="true"><span>5 min</span><span>nå</span></span>
+    <div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Heart rate today"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg><svg class="hk" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true"><path class="hk-l" d=""/><circle class="hk-p" r="3" cx="-9" cy="-9"/></svg></span></button><span class="st-l"><span class="hp-on">Live from Apple Watch</span><span class="hp-av">Not live right now</span></span></div><span class="hk-x" aria-hidden="true"><span>5 min</span><span>now</span></span>
     <div class="sv" data-k="ibat"><span class="sl">iPhone</span><b>–</b><i class="bar"><i></i></i></div>
     <div class="sv" data-k="fyra" hidden><span class="sl">iPhone</span><b>–</b><i class="bar"><i></i></i></div>
     <div class="sv" data-k="fyrb" hidden><span class="sl">iPhone</span><b>–</b><i class="bar"><i></i></i></div>
@@ -941,10 +1007,6 @@
       <div class="sv maskin" data-k="falcon" title="Falcon 9"><span class="sl"><svg class="mi" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.2l7.4-1v7.2H3zM11.3 4.1L21 2.7v8.7h-9.7zM3 12.4h7.4v7.2L3 18.6zM11.3 12.4H21v8.9l-9.7-1.4z"/></svg><span class="mn">Falcon 9</span></span><b><i class="mp"></i><span class="mv">–</span></b></div>
     </div>
   </section>
-  <section class="akse gl" aria-label="The accelerometers in his Apple Watch and iPhone, live">
-    <div class="ak"><div class="ak-h"><span class="sl">Apple Watch · accelerometer</span><span class="ak-m">20 Hz · g</span></div><canvas class="ak-c" data-k="watch"></canvas></div>
-    <div class="ak"><div class="ak-h"><span class="sl">iPhone · accelerometer</span><span class="ak-m"><i class="kx">x</i> <i class="ky">y</i> <i class="kz">z</i></span></div><canvas class="ak-c" data-k="iphone"></canvas></div>
-  </section>
   <section class="oyet gl" aria-label="Eyes on">
     <span class="mono s-t">Eyes on</span>
     <div class="oy-rad">
@@ -952,6 +1014,15 @@
       <div class="oy" data-tz="Asia/Bangkok"><span class="oy-n">Koh Phangan</span><svg class="oy-i" viewBox="0 0 48 48" aria-hidden="true"></svg><b class="oy-v">–</b><span class="oy-k">–</span></div>
       <div class="oy" data-tz="Asia/Makassar"><span class="oy-n">Lombok</span><svg class="oy-i" viewBox="0 0 48 48" aria-hidden="true"></svg><b class="oy-v">–</b><span class="oy-k">–</span></div>
     </div>
+  </section>
+  </div>
+  <div class="hoyre">
+  <section class="fortelling">
+    <h1>The tortoise who didn't know what arbitrage was</h1>
+    <img class="strip" src="/media/historie/skilpadde-1200.webp" srcset="/media/historie/skilpadde-1200.webp 1200w, /media/historie/skilpadde.webp 2400w" sizes="(max-width:760px) 100vw, 860px" width="2400" height="600" alt="The tortoise walks through the forest at night with a lettuce on his back, while the hare stands at a market stall in the distance">
+    <p>Every morning the tortoise bought a lettuce at the market by the river, for three kroner. Then he walked all day through the forest to the market on the other side, where the same lettuce cost twelve.</p>
+    <p>There he sat down and ate it.</p>
+    <p>The hare saw it one Tuesday, did a little maths and was rich by Friday. The tortoise still has no idea. He just thinks the lettuce tastes better after a long walk.</p>
   </section>
   <section class="pod gl" hidden aria-label="Podcast">
     <span class="mono s-t">Podcast</span>
@@ -970,6 +1041,35 @@
   </div>
   </div>
 </header>
+<section class="arb kortside" aria-label="Economic asymmetry">
+  <div class="arb-i">
+    <article class="arb-t">
+      <h2>Economic asymmetry</h2>
+      <img class="strip" src="/media/historie/arbitrasje-1200.webp?v=2" srcset="/media/historie/arbitrasje-1200.webp?v=2 1200w, /media/historie/arbitrasje.webp?v=2 2176w" sizes="(max-width:760px) 100vw, 720px" width="2176" height="544" loading="lazy" alt="A river at dusk: the village on one side lies in the light, the other in the shadow of a great mountain">
+      <p>The market on the other side lies right below the mountain. The sun comes over the top at eleven and is gone again before two.</p>
+      <p>The lettuce there grows thin and pale, and anyone who wants one pays twelve kroner. By the river it has sun until late in the afternoon, grows green and thick, and costs three.</p>
+      <p>Every afternoon the shadow of the mountain slides in over the market, stall by stall, all the way down to the water.</p>
+    </article>
+      <aside class="vk-m" aria-label="Live accelerometer from Apple Watch">
+        <div class="vk-k"><canvas class="vk" data-k="watch"></canvas><span class="vk-n"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg>Watch</span><span class="vk-tip" aria-hidden="true">Live accelerometer from Apple Watch</span></div>
+      </aside>
+  </div>
+</section>
+<section class="arb kortside bred" aria-label="The badger went where the sun was">
+  <div class="arb-i">
+    <article class="arb-t">
+      <h2>The badger went where the sun was</h2>
+      <img class="strip" src="/media/historie/oppstroms-1200.webp" srcset="/media/historie/oppstroms-1200.webp 1200w, /media/historie/oppstroms.webp 2176w" width="2176" height="544" loading="lazy" sizes="(max-width:760px) 100vw, 1240px" alt="High up by the river at night: a badger loads crates of lettuce onto small rafts with lanterns, drifting down towards the village">
+      <p>The badger had watched the shadow slide over the market many times. One morning he walked along the river to see where it ended.</p>
+      <p>At the market where the lettuce cost three kroner, he stayed until well into the day. The shadow came there too, just later.</p>
+      <p>He walked on upstream, past the last house, to a place the mountain could not reach. There the sun shone from morning to evening, and there he planted his first lettuce.</p>
+      <p>In autumn his crates floated down the river, to both markets.</p>
+    </article>
+  </div>
+</section>
+<section class="arb kortside stor" aria-label="I'm wading up the river, give me a moment…">
+  <p class="stor-t">I'm wading up the river, give me a moment…</p>
+</section>
 <main>
   <div class="intro">
   <div class="mono k"><span>&gt; Tidemann Esbjug</span><span>07.10.2026</span><!-- Skjult inntil videre: <a class="kl" href="/login/">Customer login &rarr;</a> --></div>
@@ -1746,6 +1846,7 @@ let kartLagt = false, megMark = null, sistSpor = '';
 const visKart = () => document.documentElement.classList.add('kart-klar');
 const SPOR = ['spor-glod', 'spor-midt', 'spor-kjerne', 'spor-strom'];
 function leggKart() {
+  return;   // no map; the blue loading background (.kart-venter) stays as the background
   if (kartLagt) return; kartLagt = true;
   setTimeout(visKart, 7000);   // uansett etter 7 s
   if (!stil) { visKart(); return; }
@@ -1864,17 +1965,16 @@ function tegn() {
   const sub = fart || (HUS && rom && !gammel ? TX.rom + rom : null);
   $('.s-sub').textContent = sub || '';
   $('.s-sub').hidden = !sub;
-  // Hjemme (bare /hjem/): huset tegnes i kartet, prikken står midt i rommet han er i (eller midt i huset), og
-  // GPS-sporet inne i og rundt huset tas bort, for innendørs er GPS bare krusedull. Sporet fra veien går inn til prikken.
+  // Hjemme (bare /hjem/): prikken står midt i rommet han er i (eller midt i huset), og GPS-sporet på og rundt tomta
+  // tas bort, for innendørs er GPS bare krusedull. Sporet slutter der det går inn på tomta, og prikken kobles ikke til det.
   const hus = husNå();
   const pos = hus ? [hus.pos[1], hus.pos[0]] : [live.lat, live.lon];
   let spor = linjer(trail);
-  if (HUS && plan && plan.geo && plan.geo.buss) spor = tomtSpor(spor, !!hus);
-  if (spor.length) spor[spor.length - 1].push(pos); else spor = [[pos]];
+  if (HUS && plan && plan.geo && plan.geo.buss) spor = tomtSpor(spor);
+  if (spor.length && !hus) spor[spor.length - 1].push(pos); else if (!spor.length) spor = [[pos]];
   stier = spor;
   if (!kart || !kart.getSource('spor')) return;
   const lngLat = [pos[1], pos[0]];
-  husIKart(hus);
   // Sporet sendes bare til kartet når det har endret seg (tegn() går hvert sekund).
   const sporNokkel = trail.length + ':' + (trail[trail.length - 1]?.[2] || 0) + ':' + pos;
   if (sporNokkel !== sistSpor) { sistSpor = sporNokkel; kart.getSource('spor').setData({ type: 'Feature', geometry: { type: 'MultiLineString', coordinates: spor.map(l => l.map(p => [p[1], p[0]])) } }); }
@@ -1895,6 +1995,8 @@ function tegn() {
 }
 const hero = $('.hero');
 let synlig = true; new IntersectionObserver(e => { synlig = e[0].isIntersecting; }).observe(hero);
+// the accelerometer lives in the section below the hero, so it draws while that section is in view too.
+let akseSynlig = false; { const arb = document.querySelector('.arb'); if (arb) new IntersectionObserver(e => { akseSynlig = e[0].isIntersecting; }).observe(arb); }
 // Akselerometrene: pakkene (20 målinger i sekundet, hver 5. s) spilles av jevnt, 7 s bak sanntid, så det ser live ut.
 const RATE = 50, FORS = 7000, VIN = 10000, AK = {};
 function inn(k, t) {
@@ -1908,7 +2010,7 @@ function inn(k, t) {
 }
 function oskilloskop() {
   requestAnimationFrame(oskilloskop);
-  if (!synlig || document.documentElement.classList.contains('kartmodus')) return;   // skjult i kartmodus
+  if (!(synlig || akseSynlig) || document.documentElement.classList.contains('kartmodus')) return;   // skjult i kartmodus
   const nå = Date.now() + skew - FORS, d = devicePixelRatio || 1;
   for (const c of document.querySelectorAll('.ak-c')) {
     const W = c.clientWidth, H = c.clientHeight;
@@ -1917,23 +2019,67 @@ function oskilloskop() {
     const x = c.getContext('2d'); x.setTransform(d, 0, 0, d, 0, 0); x.clearRect(0, 0, W, H);
     const tynn = H < 30, Y = g => H / 2 - g / 2 * (H / 2 - (tynn ? 1 : 3));   // ±2 g
     if (!tynn) {   // rutenett og tall bare når panelet er foldet ut
-      x.strokeStyle = 'rgba(0,32,91,.12)'; x.lineWidth = 1; x.setLineDash([2, 3]);
+      x.strokeStyle = 'rgba(255,255,255,.1)'; x.lineWidth = 1; x.setLineDash([2, 3]);
       for (const g of [-1, 1]) { x.beginPath(); x.moveTo(0, Y(g)); x.lineTo(W, Y(g)); x.stroke(); }
       x.setLineDash([]);
-      x.fillStyle = 'rgba(0,32,91,.4)'; x.font = '600 8px "SF Mono",Menlo,monospace'; x.fillText('+1', 2, Y(1) - 2); x.fillText('−1', 2, Y(-1) - 2);
+      x.fillStyle = 'rgba(255,255,255,.35)'; x.font = '600 8px "SF Mono",Menlo,monospace'; x.fillText('+1', 2, Y(1) - 2); x.fillText('−1', 2, Y(-1) - 2);
     }
-    x.strokeStyle = 'rgba(0,32,91,' + (tynn ? .12 : .25) + ')'; x.lineWidth = 1; x.beginPath(); x.moveTo(0, Y(0)); x.lineTo(W, Y(0)); x.stroke();
+    x.strokeStyle = 'rgba(255,255,255,' + (tynn ? .12 : .2) + ')'; x.lineWidth = 1; x.beginPath(); x.moveTo(0, Y(0)); x.lineTo(W, Y(0)); x.stroke();
     const a = AK[c.dataset.k]; if (!a) continue;
     const pts = a.s.filter(p => p[0] > nå - VIN && p[0] <= nå);
     if (pts.length < 2) continue;
-    [['#e0233c', 1], ['#d68a00', 2], ['#2563eb', 3]].forEach(([farge, i]) => {
+    // Blue, silver and white; a faint dark shadow keeps silver and white visible on the light glass.
+    x.shadowColor = 'rgba(0,32,91,.45)'; x.shadowBlur = 2;
+    [['#2F6BFF', 1], ['#B8C2CE', 2], ['#FFFFFF', 3]].forEach(([farge, i]) => {
       x.strokeStyle = farge; x.lineWidth = tynn ? 1.2 : 1.6; x.lineJoin = 'round'; x.beginPath();
       pts.forEach((p, n) => { const px = W - (nå - p[0]) / VIN * W, py = Y(Math.max(-2, Math.min(2, p[i]))); n ? x.lineTo(px, py) : x.moveTo(px, py); });
       x.stroke();
     });
+    x.shadowBlur = 0;
   }
 }
 requestAnimationFrame(oskilloskop);
+// the Apple Watch thread in the section below the hero. Drawn top-down over 24 s on a fixed 50 ms grid, so it
+// never stutters: where there are real samples (AK.watch) they are used; in gaps (and while waiting for the watch) the
+// motion is emulated from the recent level and spread, blending in from the last real value and out towards the next.
+function vertikal() {
+  requestAnimationFrame(vertikal);
+  if (!akseSynlig || document.hidden) return;
+  const c = document.querySelector('.vk'); if (!c) return;
+  const W = c.clientWidth, H = c.clientHeight; if (!W || !H) return;
+  const d = Math.min(devicePixelRatio || 1, 2), WIN = 24000, STEG = 50;
+  if (c.width !== Math.round(W * d) || c.height !== Math.round(H * d)) { c.width = Math.round(W * d); c.height = Math.round(H * d); }
+  const x = c.getContext('2d'); x.setTransform(d, 0, 0, d, 0, 0); x.clearRect(0, 0, W, H);
+  const nå = Date.now() + skew - FORS, fra = nå - WIN;
+  const ekte = ((AK.watch || {}).s || []).filter(p => p[0] > fra - 3000 && p[0] <= nå + 3000);
+  // Level and spread per axis from the real samples (fallbacks give a calm idle thread).
+  const snitt = [0, 0, 0, 0], spr = [0, .025, .025, .025];
+  if (ekte.length > 8) for (const i of [1, 2, 3]) { let m = 0, v = 0; for (const p of ekte) m += p[i]; m /= ekte.length; for (const p of ekte) v += (p[i] - m) ** 2; snitt[i] = m; spr[i] = Math.max(.015, Math.min(.25, Math.sqrt(v / ekte.length))); }
+  const hash = n => { const s = Math.sin(n * 12.9898) * 43758.5453; return s - Math.floor(s); };
+  const emu = (t, i) => snitt[i] + spr[i] * (.7 * Math.sin(t / (520 + i * 170) + i * 2.1) + .45 * Math.sin(t / (1630 + i * 410) + i) + .35 * (hash(Math.floor(t / STEG) + i * 7919) - .5));
+  const verdi = (t, k, i) => {   // k: index of the first real sample after t
+    const før = ekte[k - 1], etter = ekte[k];
+    if (før && t - før[0] < 160 && (!etter || etter[0] - t < 160)) return etter && etter[0] - t < t - før[0] ? etter[i] : før[i];
+    const e = emu(t, i), u = før ? Math.min(1, (t - før[0]) / 700) : 1, v = etter ? Math.min(1, (etter[0] - t) / 700) : 1;
+    const inn = før ? før[i] + (e - før[i]) * u : e;
+    return etter ? etter[i] + (inn - etter[i]) * v : inn;
+  };
+  x.strokeStyle = 'rgba(255,255,255,.07)'; x.lineWidth = 1; x.beginPath(); x.moveTo(W / 2, 0); x.lineTo(W / 2, H); x.stroke();
+  [['#6E98FF', 1, -.2], ['#C9D2DE', 2, 0], ['#FFFFFF', 3, .2]].forEach(([farge, i, off]) => {
+    x.strokeStyle = farge; x.globalAlpha = .6; x.lineWidth = 1; x.lineJoin = 'round'; x.beginPath();
+    let sm = null, k = 0;
+    for (let t = Math.ceil(fra / STEG) * STEG; t <= nå; t += STEG) {
+      while (k < ekte.length && ekte[k][0] <= t) k++;
+      const g = verdi(t, k, i) - snitt[i];
+      sm = sm === null ? g : sm * .7 + g * .3;
+      const py = (nå - t) / WIN * H, px = W / 2 + off * W + Math.max(-1, Math.min(1, sm * 1.6)) * W * .18;
+      t === Math.ceil(fra / STEG) * STEG ? x.moveTo(px, py) : x.lineTo(px, py);
+    }
+    x.stroke();
+  });
+  x.globalAlpha = 1;
+}
+requestAnimationFrame(vertikal);
 // Pulsen siste 5 minutter: hver måling er et punkt, siste punkt er nå. Skalaen følger tallene (minst 20 slag høy).
 let puls = [];
 function tegnPuls() {
@@ -2186,56 +2332,30 @@ const GJOR = TX.gjor;
 // Huset hos moren hans, skannet med LiDAR i appen (GET /chat/plan). Bare på testsiden /hjem/ inntil videre.
 // plan.geo plasserer skanningen i kartet: et punkt (x, z) i skanningen dreies th radianer, og blir meter øst
 // (u + tx) og nord (−v + ty) fra geo.lat/lon. Tilpasset husets omriss i kartdataene (OpenStreetMap).
-const HUS = location.pathname.startsWith('/hjem');
+const HUS = false;   // no house mode and no replay
 let plan = null;
-const hentPlan = async () => { try { plan = await (await fetch('/chat/plan')).json(); husTegnet = ''; } catch {} };
+const hentPlan = async () => { try { plan = await (await fetch('/chat/plan')).json(); } catch {} };
 if (HUS) { hentPlan(); setInterval(hentPlan, 10 * 60e3); }
 const geoPkt = (x, z) => {
   const g = plan.geo, c = Math.cos(g.th), s = Math.sin(g.th), u = x * c - z * s, v = x * s + z * c;
   return [g.lon + (u + g.tx) / (111320 * Math.cos(g.lat * Math.PI / 180)), g.lat + (-v + g.ty) / 110574];
 };
-// Stien fra busstoppet til døra, slik han tegnet den (plan.geo.buss og .vei). Først forenkles den til noen få
-// knekkpunkter (Douglas–Peucker, 4 m), så rundes hjørnene av med Chaikin, så den blir et par myke svinger.
-const forenkle = (p, tol) => {
-  if (p.length < 3) return p;
-  const K = 111320 * Math.cos(p[0][1] * Math.PI / 180), m = q => [q[0] * K, q[1] * 110574], [a, b] = [m(p[0]), m(p[p.length - 1])];
-  let maks = 0, i = 0;
-  for (let k = 1; k < p.length - 1; k++) {
-    const c = m(p[k]), dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1, d = Math.abs(dy * (c[0] - a[0]) - dx * (c[1] - a[1])) / l;
-    if (d > maks) { maks = d; i = k; }
-  }
-  return maks > tol ? [...forenkle(p.slice(0, i + 1), tol).slice(0, -1), ...forenkle(p.slice(i), tol)] : [p[0], p[p.length - 1]];
-};
-let stiMemo = null;
-const sti = () => {
-  if (stiMemo && stiMemo.ts === plan.ts) return stiMemo.p;
-  let p = forenkle([...(plan.geo.buss ? [plan.geo.buss] : []), ...(plan.geo.vei || [])], 4);
-  for (let n = 0; n < 5 && p.length > 2; n++) {
-    const q = [p[0]];
-    for (let i = 0; i < p.length - 1; i++) { const [a, b] = [p[i], p[i + 1]]; q.push([a[0] * .75 + b[0] * .25, a[1] * .75 + b[1] * .25], [a[0] * .25 + b[0] * .75, a[1] * .25 + b[1] * .75]); }
-    q.push(p[p.length - 1]); p = q;
-  }
-  p = p.length ? p : [geoPkt(0, 0)];
-  stiMemo = { ts: plan.ts, p };
-  return p;
-};
 // Tomta: under 40 m fra huset, eller nærmere huset enn busstoppet (og over 35 m fra busstoppet) innen 120 m. GPS her
-// inne teller ikke (hus og hage gir bare krusedull). Ved busstoppet og på veien teller GPS-en som vanlig. Går sporet inn på tomta, følger det stien fra busstoppet til døra; går det ut, følger det stien tilbake.
-// Hjemme går sporet til slutt fra døra til prikken i huset.
+// inne teller ikke (hus og hage gir bare krusedull). Ved busstoppet og på veien teller GPS-en som vanlig. Sporet brytes
+// der det går inn på tomta og starter igjen der det går ut. Huset og stien fra busstoppet tegnes ikke lenger.
 let husMidtMemo = null;
 const husMidt = () => { if (husMidtMemo && husMidtMemo.ts === plan.ts) return husMidtMemo.p; const g = geoPkt(...midt(plan.rom.flatMap(x => x.gulv))); husMidtMemo = { ts: plan.ts, p: [g[1], g[0]] }; return husMidtMemo.p; };
 const påTomta = q => {
   const h = dist(q, husMidt()), b = dist(q, [plan.geo.buss[1], plan.geo.buss[0]]);
   return h < 40 || (h < 120 && b > 35 && h < b);
 };
-function tomtSpor(linjer, hjemme) {
-  const vei = sti().map(v => [v[1], v[0]]), tilbake = [...vei].reverse(), ut = [];
+function tomtSpor(linjer) {
+  const ut = [];
   for (const l of linjer) {
-    let cur = [], inne = false;
+    let cur = [];
     for (const q of l) {
-      if (påTomta(q)) { if (!inne && cur.length) cur.push(...vei); inne = true; continue; }
-      if (inne) cur.push(...tilbake);
-      inne = false; cur.push(q);
+      if (påTomta(q)) { if (cur.length) ut.push(cur); cur = []; continue; }
+      cur.push(q);
     }
     if (cur.length) ut.push(cur);
   }
@@ -2669,41 +2789,7 @@ function husNå() {
   const alle = plan.rom.flatMap(x => x.gulv), senter = geoPkt(...midt(alle));
   // ?etasje=2 viser andre etasje mens vi tester (før fyrene vet hvor han er).
   const valgt = +new URLSearchParams(location.search).get('etasje') - 1;
-  return { r, etg: r ? etasje(r) : valgt > 0 ? valgt : 0, pos: r && r.gulv.length ? geoPkt(...midt(r.gulv)) : senter, senter, sti: sti() };
-}
-// Bare etasjen han er i, enkelt: gulvene som én lys flate, tynne vegger, rommet hans svakt rødt. Zoomer man langt
-// inn, står rommets navn ved prikken. Tegnes på nytt bare når noe endres.
-let husTegnet = '';
-function husIKart(hus) {
-  if (!HUS || !kart.isStyleLoaded()) return;
-  const nokkel = hus ? (plan.ts + ':' + hus.etg + ':' + (hus.r ? hus.r.navn : '')) : '';
-  if (nokkel === husTegnet) return;
-  husTegnet = nokkel;
-  const f = [];
-  if (hus) {
-    for (const x of plan.rom) {
-      if (etasje(x) !== hus.etg) continue;
-      if (x.gulv.length > 2) f.push({ type: 'Feature', properties: { t: 'gulv', her: x === hus.r }, geometry: { type: 'Polygon', coordinates: [[...x.gulv, x.gulv[0]].map(p => geoPkt(...p))] } });
-      for (const v of x.vegger) f.push({ type: 'Feature', properties: { t: 'vegg' }, geometry: { type: 'LineString', coordinates: [geoPkt(v[0], v[1]), geoPkt(v[2], v[3])] } });
-    }
-    if (hus.r) f.push({ type: 'Feature', properties: { t: 'navn', navn: hus.r.navn }, geometry: { type: 'Point', coordinates: hus.pos } });
-    if (hus.sti.length > 1) f.push({ type: 'Feature', properties: { t: 'sti' }, geometry: { type: 'LineString', coordinates: hus.sti } });
-    if (plan.geo.buss) f.push({ type: 'Feature', properties: { t: 'buss' }, geometry: { type: 'Point', coordinates: plan.geo.buss } });
-  }
-  const data = { type: 'FeatureCollection', features: f };
-  if (kart.getSource('hus')) { kart.getSource('hus').setData(data); return; }
-  kart.addSource('hus', { type: 'geojson', data });
-  const før = kart.getLayer('spor-glod') ? 'spor-glod' : undefined;
-  kart.addLayer({ id: 'hus-gulv', type: 'fill', source: 'hus', filter: ['==', ['get', 't'], 'gulv'], paint: { 'fill-color': ['case', ['get', 'her'], '#6b2a2c', '#3d3631'] } }, før);   // tette farger: rom som overlapper blir ikke mørkere
-  kart.addLayer({ id: 'hus-vegg', type: 'line', source: 'hus', filter: ['==', ['get', 't'], 'vegg'], layout: { 'line-cap': 'round' }, paint: { 'line-color': '#fffaf0', 'line-opacity': .75, 'line-width': ['interpolate', ['linear'], ['zoom'], 17, .6, 21, 2.2] } }, før);
-  // Stien: korte streker med mellomrom, som en sti på et turkart. Busstoppet er en liten rund prikk.
-  kart.addLayer({ id: 'hus-sti', type: 'line', source: 'hus', filter: ['==', ['get', 't'], 'sti'], layout: { 'line-cap': 'round', 'line-join': 'round' },
-    paint: { 'line-color': '#fffaf0', 'line-opacity': .9, 'line-width': ['interpolate', ['linear'], ['zoom'], 16, 1.5, 21, 4], 'line-dasharray': [1.6, 2.2] } }, før);
-  kart.addLayer({ id: 'hus-buss', type: 'circle', source: 'hus', filter: ['==', ['get', 't'], 'buss'],
-    paint: { 'circle-radius': ['interpolate', ['linear'], ['zoom'], 16, 3.5, 21, 8], 'circle-color': '#BA0C2F', 'circle-stroke-color': '#fffaf0', 'circle-stroke-width': 1.8 } });
-  kart.addLayer({ id: 'hus-navn', type: 'symbol', source: 'hus', minzoom: 19.5, filter: ['==', ['get', 't'], 'navn'],
-    layout: { 'text-field': ['get', 'navn'], 'text-font': ['Noto Sans Italic'], 'text-size': 13, 'text-offset': [0, 1.3], 'text-anchor': 'top' },
-    paint: { 'text-color': '#fffaf0', 'text-halo-color': 'rgba(0,0,0,.55)', 'text-halo-width': 1.4 } });
+  return { r, etg: r ? etasje(r) : valgt > 0 ? valgt : 0, pos: r && r.gulv.length ? geoPkt(...midt(r.gulv)) : senter, senter };
 }
 function gjor(v) { const e = $('.gjor'); e.hidden = !GJOR[v]; if (GJOR[v]) $('.g-navn').textContent = GJOR[v]; }
 const kl = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', hour: '2-digit', minute: '2-digit' }), dag = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', day: 'numeric', month: 'long' }), dagNr = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Oslo' });
@@ -2711,7 +2797,7 @@ const kl = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', hour: '2-d
 // på plass. Høyden følger det øverste kortet (de bakre får samme høyde, så bare kantene stikker ut).
 let nåNotater = [];   // postene slik de er nå (avspillingen viser dem som var skrevet før tiden den står på)
 let poster = [], kort = [], toppPost = 0, posterNokkel = '';
-const KANT = 14;
+const KANT = 0;   // no stack edges below the card
 const naturlig = c => { const h = c.style.height; c.style.height = 'auto'; const x = c.offsetHeight; c.style.height = h; return x; };
 function postLag(unntak) {
   const n = kort.length;
@@ -2968,6 +3054,42 @@ setInterval(tegn, 1000);
   addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') h.classList.add('mus-ned'); });
   addEventListener('pointerup', () => h.classList.remove('mus-ned'));
   document.addEventListener('mouseleave', () => h.classList.remove('mus-inne'));
+})();
+</script>
+<script>
+// the top of the story heading lines up with the top of the date card in the left column (PC only).
+(()=>{const f=document.querySelector('.fortelling'),n=document.querySelector('.naa');if(!f||!n)return;
+  const juster=()=>{if(innerWidth<761){f.style.marginTop='';return}f.style.marginTop='0px';
+    f.style.marginTop=Math.max(0,n.getBoundingClientRect().top-f.querySelector('h1').getBoundingClientRect().top)+'px'};
+  addEventListener('resize',juster);new ResizeObserver(juster).observe(document.querySelector('.venstre'));
+  juster();[300,900,1600].forEach(t=>setTimeout(juster,t))})();
+</script>
+<script>
+// the sections on PC, in one lane. One wheel gesture (or trackpad swipe) or one arrow key moves exactly one screen; the trackpad's
+// coasting after a swipe is ignored until the wheel has been quiet for 160 ms. A card taller than the screen scrolls inside
+// first. Typing in the chat is left alone.
+(()=>{if(!matchMedia('(min-width:761px) and (hover:hover)').matches||matchMedia('(prefers-reduced-motion: reduce)').matches)return;   // phones scroll normally
+  const kort=[document.querySelector('.hero'),...document.querySelectorAll('.kortside')].filter(Boolean);if(kort.length<2)return;
+  const h=document.documentElement;h.classList.add('dekk','dekk-start');scrollTo(0,0);
+  const plasser=()=>kort.forEach((k,m)=>{k.style.transform='translateY('+(m-i)*100+'%)'});
+  let i=0,laastTil=0,sist=0,brukt=false;
+  const vis=n=>{n=Math.max(0,Math.min(kort.length-1,n));if(n===i)return;const fram=n>i;i=n;laastTil=performance.now()+950;
+    if(fram)kort[i].scrollTop=0;plasser()};
+  plasser();requestAnimationFrame(()=>requestAnimationFrame(()=>h.classList.remove('dekk-start')));   // first placement without sliding
+  const kanRulle=(dy)=>{const k=kort[i];if(k.scrollHeight<=k.clientHeight+2)return false;return dy>0?k.scrollTop+k.clientHeight<k.scrollHeight-2:k.scrollTop>2};
+  addEventListener('wheel',e=>{if(e.target.closest&&e.target.closest('#chat'))return;const nå=performance.now(),pause=nå-sist;sist=nå;
+    if(pause>160)brukt=false;if(kanRulle(e.deltaY))return;e.preventDefault();
+    if(brukt||nå<laastTil||Math.abs(e.deltaY)<6)return;brukt=true;vis(i+(e.deltaY>0?1:-1))},{passive:false});
+  addEventListener('keydown',e=>{if(e.target.closest&&e.target.closest('textarea,input,select,[contenteditable]'))return;
+    const v={ArrowDown:1,PageDown:1,' ':1,ArrowUp:-1,PageUp:-1}[e.key];if(!v||e.metaKey||e.ctrlKey||e.altKey)return;
+    if(kanRulle(v))return;e.preventDefault();if(performance.now()<laastTil)return;vis(i+v)});
+  // Phones: a card taller than the screen scrolls inside first; a swipe past its top or bottom goes to the previous or next card.
+  let ty=null,opp=false,ned=false;
+  addEventListener('touchstart',e=>{if(e.touches.length!==1||(e.target.closest&&e.target.closest('#chat,.hpp')))return ty=null;
+    ty=e.touches[0].clientY;const k=kort[i];opp=k.scrollTop>2;ned=k.scrollTop+k.clientHeight<k.scrollHeight-2},{passive:true});
+  addEventListener('touchmove',e=>{if(ty===null)return;const dy=ty-e.touches[0].clientY;if((dy>0&&!ned)||(dy<0&&!opp))e.preventDefault()},{passive:false});
+  addEventListener('touchend',e=>{if(ty===null)return;const dy=ty-e.changedTouches[0].clientY;ty=null;
+    if(Math.abs(dy)<45||performance.now()<laastTil)return;if(dy>0&&!ned)vis(i+1);else if(dy<0&&!opp)vis(i-1)},{passive:true});
 })();
 </script>
 </body>

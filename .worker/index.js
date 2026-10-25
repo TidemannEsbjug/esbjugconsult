@@ -53,6 +53,11 @@ export default {
       url.pathname = "/";
       return Response.redirect(url.toString(), 301);
     }
+    // /stripped/ var arbeidskopien av historien om skilpadden og grevlingen; den er forsiden fra 25.10.2026.
+    if (url.pathname === "/stripped" || url.pathname.startsWith("/stripped/")) {
+      url.pathname = "/";
+      return Response.redirect(url.toString(), 301);
+    }
     if (url.pathname === "/ny" || url.pathname.startsWith("/ny/")) {
       url.pathname = url.pathname.startsWith("/ny/en") ? "/en/" : "/";
       return Response.redirect(url.toString(), 301);
