@@ -264,27 +264,6 @@ T = [
 
 # V2 (forsiden fra 7.10.2026) har egne tekster. V1-tekstene den har byttet ut hoppes over.
 T_NY = [
-    # Forsiden fra 25.10.2026: historien om skilpadden, fjellet og grevlingen.
-    ('Skilpadden som ikke visste hva arbitrasje var', "The tortoise who didn't know what arbitrage was"),
-    ('Hver morgen kjøpte skilpadden en salat på torget ved elva, for tre kroner. Så gikk han hele dagen gjennom skogen til torget på den andre siden, der den samme salaten kostet tolv.', 'Every morning the tortoise bought a lettuce at the market by the river, for three kroner. Then he walked all day through the forest to the market on the other side, where the same lettuce cost twelve.'),
-    ('Der satte han seg ned og spiste den.', 'There he sat down and ate it.'),
-    ('Haren så det en tirsdag, regnet litt på det og var rik innen fredag. Skilpadden har fortsatt ingen anelse. Han synes bare salaten smaker bedre etter en lang tur.', 'The hare saw it one Tuesday, did a little maths and was rich by Friday. The tortoise still has no idea. He just thinks the lettuce tastes better after a long walk.'),
-    ('alt="Skilpadden går gjennom skogen om natten med en salat på ryggen, mens haren står ved en torgbod i det fjerne"', 'alt="The tortoise walks through the forest at night with a lettuce on his back, while the hare stands at a market stall in the distance"'),
-    ('Økonomisk asymmetri', 'Economic asymmetry'),
-    ('Torget på den andre siden ligger rett under fjellet. Sola kommer over toppen ved elleve og er borte igjen før to.', 'The market on the other side lies right below the mountain. The sun comes over the top at eleven and is gone again before two.'),
-    ('Salaten der blir tynn og blek, og den som vil ha en, betaler tolv kroner. Ved elva har den sol til langt på ettermiddag, står grønn og tett og koster tre.', 'The lettuce there grows thin and pale, and anyone who wants one pays twelve kroner. By the river it has sun until late in the afternoon, grows green and thick, and costs three.'),
-    ('Hver ettermiddag glir skyggen fra fjellet inn over torget, bod for bod, helt ned til vannet.', 'Every afternoon the shadow of the mountain slides in over the market, stall by stall, all the way down to the water.'),
-    ('alt="En elv i skumringen: landsbyen på den ene siden ligger i lyset, den andre i skyggen av et stort fjell"', 'alt="A river at dusk: the village on one side lies in the light, the other in the shadow of a great mountain"'),
-    ('aria-label="Live akselerometer fra Apple Watch"', 'aria-label="Live accelerometer from Apple Watch"'),
-    ('>Live akselerometer fra Apple Watch<', '>Live accelerometer from Apple Watch<'),
-    ('Grevlingen gikk dit sola var', 'The badger went where the sun was'),
-    ('Grevlingen hadde sett skyggen gli over torget mange ganger. En morgen gikk han langs elva for å se hvor den sluttet.', 'The badger had watched the shadow slide over the market many times. One morning he walked along the river to see where it ended.'),
-    ('Ved torget der salaten kostet tre kroner, ble han stående til utpå dagen. Skyggen kom dit også, bare senere.', 'At the market where the lettuce cost three kroner, he stayed until well into the day. The shadow came there too, just later.'),
-    ('Han fortsatte oppover, forbi det siste huset, til et sted fjellet ikke rakk. Der sto sola på fra morgen til kveld, og der satte han den første salaten.', 'He walked on upstream, past the last house, to a place the mountain could not reach. There the sun shone from morning to evening, and there he planted his first lettuce.'),
-    ('Om høsten fløt kassene hans ned med elva, til begge torgene.', 'In autumn his crates floated down the river, to both markets.'),
-    ('alt="Høyt oppe ved elva om natten: en grevling legger salatkasser på små flåter med lykter, som driver nedover mot landsbyen"', 'alt="High up by the river at night: a badger loads crates of lettuce onto small rafts with lanterns, drifting down towards the village"'),
-    ('Jeg vader oppover i elva, gi meg et øyeblikk…', "I'm wading up the river, give me a moment…"),
-    ('<span>5 min</span><span>nå</span>', '<span>5 min</span><span>now</span>'),
     ('<b>Tidemann sover</b><span>Opp klokken 04:00. Skriv gjerne, så svarer jeg når jeg er våken.</span>',
      '<b>Tidemann is asleep</b><span>Up at 04:00. Feel free to write, and I\'ll reply when I\'m awake.</span>'),
     # Kartet i heroen (fra 22.10.2026): HTML-en. Teksten i kartskriptet velger selv språk etter <html lang>.
@@ -297,6 +276,9 @@ T_NY = [
     ('<span class="mono s-t">Holder på med</span>', '<span class="mono s-t">Right now</span>'),
     ('aria-label="Alt iPhonen og Apple Watch måler"', 'aria-label="Everything his iPhone and Apple Watch measure"'),
     ('<span class="sl">Gått i dag</span>', '<span class="sl">Walked today</span>'),
+    ('aria-label="Akselerometeret i Apple Watch og iPhonen, live"', 'aria-label="The accelerometers in his Apple Watch and iPhone, live"'),
+    ('<span class="sl">Apple Watch · akselerometer</span>', '<span class="sl">Apple Watch · accelerometer</span>'),
+    ('<span class="sl">iPhone · akselerometer</span>', '<span class="sl">iPhone · accelerometer</span>'),
     ('<section class="oyet gl" aria-label="Øyet mot">\n    <span class="mono s-t">Øyet mot</span>', '<section class="oyet gl" aria-label="Eyes on">\n    <span class="mono s-t">Eyes on</span>'),
     ('alt="To mobiltelefoner side om side, i blått og hvitt"', 'alt="Two phones side by side, in blue and white"'),
     ('alt="Hengelås i blått og hvitt"', 'alt="A padlock in blue and white"'),
