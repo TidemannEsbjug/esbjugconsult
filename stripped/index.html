@@ -914,8 +914,19 @@
   .vk-m{justify-self:center;display:flex;gap:clamp(28px,3.5vw,56px);min-height:320px}
   .vk-k{display:flex;flex-direction:column;align-items:center;gap:14px}
   .vk{flex:1;display:block;width:76px;min-height:0;-webkit-mask-image:linear-gradient(transparent,#000 10%,#000 72%,transparent);mask-image:linear-gradient(transparent,#000 10%,#000 72%,transparent)}
-  .vk-k span{font:600 9.5px/1 "SF Mono",Menlo,monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.38)}
+  .vk-k{position:relative}
+  .vk-n{display:inline-flex;align-items:center;gap:6px;font:600 9.5px/1 "SF Mono",Menlo,monospace;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+  .vk-n svg{width:11px;height:11px;color:#fff;margin-top:-2px}
+  .vk-tip{position:absolute;left:50%;top:38%;transform:translate(-50%,6px);white-space:nowrap;padding:7px 11px;border-radius:9px;background:rgba(0,22,63,.78);border:1px solid rgba(255,255,255,.14);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);font:600 10px/1 "SF Mono",Menlo,monospace;letter-spacing:.08em;color:rgba(255,255,255,.85);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
+  .vk-k:hover .vk-tip{opacity:1;transform:translate(-50%,0)}
   @media (max-width:760px){.arb-i{grid-template-columns:1fr}.vk-m{min-height:0;height:260px}}
+  /* One section per screen: a scroll goes straight to the next section (snap) instead of scrolling freely. On phones the
+     sections are taller than the screen, so there it only snaps when close (proximity) and you can still read through. */
+  html{scroll-snap-type:y mandatory}
+  .hero,.arb{scroll-snap-align:start;scroll-snap-stop:always}
+  .arb{min-height:100svh;box-sizing:border-box;padding-top:clamp(40px,9vh,110px)}
+  @media (max-width:760px){html{scroll-snap-type:y proximity}}
+  @media (prefers-reduced-motion:reduce){html{scroll-snap-type:none}}
   /* Flags as rectangles with slightly rounded corners, the knob and the box around them rounded the same way, no white edge. */
   .lang .lf{width:38px;height:24px}
   .lang-k{width:38px;height:24px}
@@ -1023,16 +1034,15 @@
 <section class="arb" aria-label="Arbitrasje">
   <div class="arb-i">
     <article class="arb-t">
-      <h2>En skjevhet som sprer seg</h2>
+      <h2>Økonomisk asymmetri</h2>
       <img class="strip" src="/stripped/media/arbitrasje-1200.webp" srcset="/stripped/media/arbitrasje-1200.webp 1200w, /stripped/media/arbitrasje.webp 2176w" sizes="(max-width:760px) 100vw, 720px" width="2176" height="544" loading="lazy" alt="En elv om natten: på den ene siden en tung, gammel markedshall med høye prisskilt, på den andre en liten arbeidsbenk i lyset fra en lykt">
-      <p>Det dette egentlig handler om, er økonomisk asymmetri. Arbitrasje er bare det tydeligste eksempelet: et midlertidig gap mellom to priser på det samme, som kan utnyttes før markedet justerer seg.</p>
-      <p>Mye av det vi kjøper i dag er priset etter gamle forutsetninger, om hva det koster å skrive koden, tegne sidene og holde det i live. AI flytter de forutsetningene. Gapet mellom hva noe koster, hva det bør koste og hva det kan koste hvis man lager det selv, står åpent en stund.</p>
-      <p>Og det stopper ikke ved kode. Skjevheten sprer seg utover alt AI rører: tekst, design, analyse, film, rådgivning.</p>
-      <p>Illustrasjonene i denne artikkelen er laget med AI. For noen år siden hadde de vært en egen post i budsjettet.</p>
+      <p>Husker du skilpadden? Salaten kostet tre kroner på det ene torget og tolv på det andre. Det er arbitrasje: den samme tingen, to priser, og et lite mellomrom man kan gå gjennom før noen andre oppdager det.</p>
+      <p>Akkurat nå finnes det et sånt mellomrom i nesten alt. Mange nettsider, apper og kampanjer er fortsatt priset som om de må lages på den gamle måten, med mange folk og mange uker. Med AI kan mye av det samme lages på en brøkdel av tiden.</p>
+      <p>Og det gjelder ikke bare kode. Det gjelder tekst, design, film og analyse, nesten alt AI kommer i nærheten av.</p>
+      <p>Bildene i denne artikkelen er også laget med AI. For noen år siden hadde de tatt en illustratør en uke.</p>
     </article>
-      <aside class="vk-m" aria-label="Bevegelse fra Apple Watch og iPhone, live">
-        <div class="vk-k"><canvas class="vk" data-k="watch"></canvas><span>Watch</span></div>
-        <div class="vk-k"><canvas class="vk" data-k="iphone"></canvas><span>iPhone</span></div>
+      <aside class="vk-m" aria-label="Live akselerometer fra Apple Watch">
+        <div class="vk-k"><canvas class="vk" data-k="watch"></canvas><span class="vk-n"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg>Watch</span><span class="vk-tip" aria-hidden="true">Live akselerometer fra Apple Watch</span></div>
       </aside>
   </div>
 </section>
@@ -2005,31 +2015,45 @@ function oskilloskop() {
   }
 }
 requestAnimationFrame(oskilloskop);
-// /stripped/: the vertical threads in the section below the hero. Same samples as the oscilloscope (AK), drawn top-down
-// over 24 s: each axis is centred on its own average (so gravity disappears) and smoothed, three thin lines side by side.
+// /stripped/: the Apple Watch thread in the section below the hero. Drawn top-down over 24 s on a fixed 50 ms grid, so it
+// never stutters: where there are real samples (AK.watch) they are used; in gaps (and while waiting for the watch) the
+// motion is emulated from the recent level and spread, blending in from the last real value and out towards the next.
 function vertikal() {
   requestAnimationFrame(vertikal);
   if (!akseSynlig || document.hidden) return;
-  const nå = Date.now() + skew - FORS, d = Math.min(devicePixelRatio || 1, 2), WIN = 24000;
-  for (const c of document.querySelectorAll('.vk')) {
-    const W = c.clientWidth, H = c.clientHeight;
-    if (!W || !H) continue;
-    if (c.width !== Math.round(W * d) || c.height !== Math.round(H * d)) { c.width = Math.round(W * d); c.height = Math.round(H * d); }
-    const x = c.getContext('2d'); x.setTransform(d, 0, 0, d, 0, 0); x.clearRect(0, 0, W, H);
-    x.strokeStyle = 'rgba(255,255,255,.07)'; x.lineWidth = 1; x.beginPath(); x.moveTo(W / 2, 0); x.lineTo(W / 2, H); x.stroke();
-    const a = AK[c.dataset.k], pts = a ? a.s.filter(p => p[0] > nå - WIN && p[0] <= nå) : [];
-    if (pts.length < 2) continue;
-    [['#6E98FF', 1, -.2], ['#C9D2DE', 2, 0], ['#FFFFFF', 3, .2]].forEach(([farge, i, off]) => {
-      let m = 0; for (const p of pts) m += p[i]; m /= pts.length;
-      x.strokeStyle = farge; x.globalAlpha = .6; x.lineWidth = 1; x.lineJoin = 'round'; x.beginPath();
-      let sm = 0;
-      pts.forEach((p, n) => { sm = n ? sm * .7 + (p[i] - m) * .3 : p[i] - m;
-        const py = (nå - p[0]) / WIN * H, px = W / 2 + off * W + Math.max(-1, Math.min(1, sm * 1.6)) * W * .18;
-        n ? x.lineTo(px, py) : x.moveTo(px, py); });
-      x.stroke();
-    });
-    x.globalAlpha = 1;
-  }
+  const c = document.querySelector('.vk'); if (!c) return;
+  const W = c.clientWidth, H = c.clientHeight; if (!W || !H) return;
+  const d = Math.min(devicePixelRatio || 1, 2), WIN = 24000, STEG = 50;
+  if (c.width !== Math.round(W * d) || c.height !== Math.round(H * d)) { c.width = Math.round(W * d); c.height = Math.round(H * d); }
+  const x = c.getContext('2d'); x.setTransform(d, 0, 0, d, 0, 0); x.clearRect(0, 0, W, H);
+  const nå = Date.now() + skew - FORS, fra = nå - WIN;
+  const ekte = ((AK.watch || {}).s || []).filter(p => p[0] > fra - 3000 && p[0] <= nå + 3000);
+  // Level and spread per axis from the real samples (fallbacks give a calm idle thread).
+  const snitt = [0, 0, 0, 0], spr = [0, .025, .025, .025];
+  if (ekte.length > 8) for (const i of [1, 2, 3]) { let m = 0, v = 0; for (const p of ekte) m += p[i]; m /= ekte.length; for (const p of ekte) v += (p[i] - m) ** 2; snitt[i] = m; spr[i] = Math.max(.015, Math.min(.25, Math.sqrt(v / ekte.length))); }
+  const hash = n => { const s = Math.sin(n * 12.9898) * 43758.5453; return s - Math.floor(s); };
+  const emu = (t, i) => snitt[i] + spr[i] * (.7 * Math.sin(t / (520 + i * 170) + i * 2.1) + .45 * Math.sin(t / (1630 + i * 410) + i) + .35 * (hash(Math.floor(t / STEG) + i * 7919) - .5));
+  const verdi = (t, k, i) => {   // k: index of the first real sample after t
+    const før = ekte[k - 1], etter = ekte[k];
+    if (før && t - før[0] < 160 && (!etter || etter[0] - t < 160)) return etter && etter[0] - t < t - før[0] ? etter[i] : før[i];
+    const e = emu(t, i), u = før ? Math.min(1, (t - før[0]) / 700) : 1, v = etter ? Math.min(1, (etter[0] - t) / 700) : 1;
+    const inn = før ? før[i] + (e - før[i]) * u : e;
+    return etter ? etter[i] + (inn - etter[i]) * v : inn;
+  };
+  x.strokeStyle = 'rgba(255,255,255,.07)'; x.lineWidth = 1; x.beginPath(); x.moveTo(W / 2, 0); x.lineTo(W / 2, H); x.stroke();
+  [['#6E98FF', 1, -.2], ['#C9D2DE', 2, 0], ['#FFFFFF', 3, .2]].forEach(([farge, i, off]) => {
+    x.strokeStyle = farge; x.globalAlpha = .6; x.lineWidth = 1; x.lineJoin = 'round'; x.beginPath();
+    let sm = null, k = 0;
+    for (let t = Math.ceil(fra / STEG) * STEG; t <= nå; t += STEG) {
+      while (k < ekte.length && ekte[k][0] <= t) k++;
+      const g = verdi(t, k, i) - snitt[i];
+      sm = sm === null ? g : sm * .7 + g * .3;
+      const py = (nå - t) / WIN * H, px = W / 2 + off * W + Math.max(-1, Math.min(1, sm * 1.6)) * W * .18;
+      t === Math.ceil(fra / STEG) * STEG ? x.moveTo(px, py) : x.lineTo(px, py);
+    }
+    x.stroke();
+  });
+  x.globalAlpha = 1;
 }
 requestAnimationFrame(vertikal);
 // Pulsen siste 5 minutter: hver måling er et punkt, siste punkt er nå. Skalaen følger tallene (minst 20 slag høy).
