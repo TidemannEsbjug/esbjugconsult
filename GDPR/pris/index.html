@@ -899,12 +899,12 @@
                 <h2 tabindex="-1">En sprint hos dere</h2>
                 <p class="ingress">
                   En større modell, finjustert på deres ekte data, på maskinvare dere eier. Opptil 10 sammenhengende
-                  kalenderdager, og sprinten slutter den dagen suksesskriteriene er nådd.
+                  kalenderdager, og sprinten slutter den dagen suksesskriteriet er nådd.
                 </p>
                 <p class="tekst">
                   Klart virker godt på dokumentene vi har testet det på. Men hver virksomhet har sine egne dokumenter,
                   maler, fagsystemer og måter å skrive på. I sprinten tilpasser og trener vi en modell på akkurat deres
-                  dokumenter. Går Klart glipp av noe i fasiten, retter vi det i den modellen til kriteriene er nådd.
+                  dokumenter. Går Klart glipp av noe i fasiten, retter vi det i den modellen til kriteriet er nådd.
                 </p>
                 <p class="tekst">
                   <b>Hvorfor en egen, større modell:</b> Modellen som følger med Klart, er bevisst liten, så den kan kjøre
@@ -914,32 +914,45 @@
                 <div class="sprint-pris" id="sp-pris" hidden>
                   <p class="merke" id="sp-trinn"></p>
                   <p class="pristall" id="sp-total"></p>
-                  <p>Grunnhonoraret på <b id="sp-grunn"></b> eks. mva betales ved booking og beholdes. Resten, <b id="sp-rest"></b>, faktureres bare hvis suksesskriteriene er nådd. Ellers faller den bort.</p>
+                  <p>Grunnhonoraret på <b id="sp-grunn"></b> eks. mva betales ved booking og beholdes. Resten, <b id="sp-rest"></b>, faktureres bare hvis suksesskriteriet er nådd. Ellers faller den bort.</p>
                 </div>
                 <ul class="vilkar" style="margin-top: 18px">
                   <li>På stedet, under taushetserklæring og databehandleravtale</li>
                   <li>Fasiten og hva som skal bort, avtales skriftlig før dag én</li>
                   <li>Grunnhonoraret betales ved booking og beholdes</li>
-                  <li>Kriteriene er nådd: resten av beløpet faktureres</li>
-                  <li>Kriteriene er ikke nådd: resten faller bort, og dere betaler bare grunnhonoraret</li>
+                  <li>Kriteriet er nådd: resten av beløpet faktureres</li>
+                  <li>Kriteriet er ikke nådd innen sprinten er over: resten faller bort, og dere betaler bare grunnhonoraret</li>
                 </ul>
-                <h3 class="vilkar-tittel">Suksesskriteriene</h3>
-                <p class="tekst">Alt måles på Klart alene, før noe menneske har sett på kopiene.</p>
+                <h3 class="vilkar-tittel">Suksesskriteriet</h3>
+                <p class="tekst">Det testes i runder på deres egne dokumenter, uten noen fast grense for hvor mange.</p>
                 <ul class="vilkar">
                   <li>
-                    <b>Fasit ved oppstart:</b> et tilfeldig utvalg av deres egne dokumenter, for eksempel 300, fordelt på
-                    filtypene og avdelingene dere faktisk har, merkes i fellesskap. Hva som skal bort, avtales før vi begynner.
+                    <b>Én runde</b> er 100 tilfeldige dokumenter fra deres egne arkiver, eller høyst 1 000 sider, så store
+                    saksmapper ikke blir en hel runde alene. Dere merker fasiten med Klarts forslag som utgangspunkt. Hva som
+                    skal bort, avtales før vi begynner.
                   </li>
                   <li>
-                    <b>Kriterium 1:</b> 100 % av de direkte identifikatorene i fasiten er borte: fødselsnummer, D-nummer,
-                    kontonummer og de andre som avtales.
+                    Går Klart glipp av noe i en runde, retter vi modellen, og de dokumentene blir treningsmateriale. Så tas
+                    100 nye.
                   </li>
-                  <li><b>Kriterium 2:</b> 100 % av dokumentene i fasiten har ingen gjenkjennelige personer igjen.</li>
+                  <li>
+                    <b>Kriteriet er nådd</b> når en ny runde blir 100 % ren på første forsøk, målt på Klart alene: alle
+                    direkte identifikatorer (fødselsnummer, D-nummer, kontonummer og de andre som avtales) og alt annet
+                    avtalt er borte, og ingen gjenkjennelige personer er igjen.
+                  </li>
+                  <li>Kriteriet må nås innenfor sprintens 10 dager. Nås det ikke, faller resten av honoraret bort.</li>
                 </ul>
                 <p class="tekst">
-                  Kriteriene gjelder utvalget vi har avtalt, ikke alle dokumenter, og er ingen garanti for dem. Dere leser og
+                  Kriteriet gjelder rundene vi tester, ikke alle dokumenter, og er ingen garanti for dem. Dere leser og
                   kontrollerer kopiene selv, som under <a class="lenke" href="/klart/#ansvar">Ansvar</a>. Det er ikke en del
-                  av kriteriene.
+                  av kriteriet.
+                </p>
+                <h3 class="vilkar-tittel">Leveranse: tilgang internt</h3>
+                <p class="tekst">
+                  Klart kjører lokalt på én maskin hos dere. De som trenger det internt, kobler seg til den maskinen med
+                  fjerntilgang, med de tilgangene dere gir, satt opp sammen med deres IT. Klart selv kobler seg fortsatt ikke
+                  til noe nett. Fjerntilgangen er deres eget oppsett, ikke en del av Klart. Dette er en leveranse, ikke en del
+                  av suksesskriteriet.
                 </p>
                 <p class="tekst">
                   <b>Dere stiller med</b> en Mac Studio i toppkonfigurasjon, med minst 128 GB samlet minne, kjøpt av dere
@@ -1634,7 +1647,7 @@
           $("sp-total").innerHTML = "";
           $("sp-total").appendChild(document.createTextNode(nok(s.total) + " "));
           var eks = document.createElement("span");
-          eks.textContent = "eks. mva, når kriteriene er nådd";
+          eks.textContent = "eks. mva, når kriteriet er nådd";
           $("sp-total").appendChild(eks);
           $("sp-grunn").textContent = nok(s.grunn);
           $("sp-rest").textContent = nok(s.total - s.grunn);
@@ -2100,7 +2113,7 @@
               $("k-tekst").textContent =
                 "Sprinten hos " + svar.navn + " (org.nr " + orgnrTekst(svar.orgnr) + ") er booket " +
                 datoTekst(svar.start) + " – " + datoTekst(svar.slutt) + ". Grunnhonoraret på " + nok(svar.grunn) +
-                " eks. mva er betalt og beholdes. Resten faktureres bare hvis suksesskriteriene er nådd. Bekreftelsen er sendt til " + svar.epost +
+                " eks. mva er betalt og beholdes. Resten faktureres bare hvis suksesskriteriet er nådd. Bekreftelsen er sendt til " + svar.epost +
                 ". Vi tar kontakt for å avtale fasiten og hva som skal bort, skriftlig før dag én.";
               $("k-ics").href = "/klart/api/sprint/ics?session=" + encodeURIComponent(sprintOkt);
               $("k-ics-rad").hidden = false;

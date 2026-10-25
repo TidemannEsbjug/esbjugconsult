@@ -1213,10 +1213,12 @@ const PRODUKT_SPRINT = "klart_sprint";
 const ISO_DAG = /^\d{4}-\d{2}-\d{2}$/;
 // Samme kriterier som på prissiden (/klart/pris/), i Stripe og e-postene.
 const SPRINT_KRITERIER =
-  "Suksesskriteriene måles på Klart alene, før noe menneske har sett på kopiene, mot en fasit: et tilfeldig utvalg av " +
-  "egne dokumenter som merkes i fellesskap ved oppstart. 1: 100 % av de direkte identifikatorene i fasiten er borte " +
-  "(fødselsnummer, D-nummer, kontonummer og de andre som avtales). 2: 100 % av dokumentene i fasiten har ingen " +
-  "gjenkjennelige personer igjen. Kriteriene gjelder det avtalte utvalget, ikke alle dokumenter.";
+  "Suksesskriteriet: det testes i runder på 100 tilfeldige dokumenter fra egne arkiver (eller høyst 1 000 sider), " +
+  "med fasit merket av kunden med Klarts forslag som utgangspunkt. Går Klart glipp av noe, rettes modellen, og " +
+  "dokumentene blir treningsmateriale; så tas 100 nye. Kriteriet er nådd når en ny runde blir 100 % ren på første " +
+  "forsøk, målt på Klart alene: alle direkte identifikatorer og alt annet avtalt borte, og ingen gjenkjennelige " +
+  "personer igjen. Det må nås innenfor sprinten; ellers faller resten av honoraret bort. Kriteriet gjelder rundene " +
+  "som testes, ikke alle dokumenter.";
 
 function ukedag(iso) {
   return new Date(`${iso}T00:00:00Z`).getUTCDay();
@@ -1311,7 +1313,7 @@ async function sprintBook(request, env, url) {
     const side = sideFor(url);
     const beskrivelse =
       `Grunnhonorar for Klart-sprint hos ${v.navn} (org.nr ${orgnrTekst(v.orgnr)}), ${datoTekst(start)}–${datoTekst(slutt)}. ` +
-      `Grunnhonoraret beholdes. Resten (${kroner(s.total - s.grunn)} eks. mva) faktureres bare hvis suksesskriteriene er nådd, ellers faller den bort. ${SPRINT_KRITERIER}`;
+      `Grunnhonoraret beholdes. Resten (${kroner(s.total - s.grunn)} eks. mva) faktureres bare hvis suksesskriteriet er nådd, ellers faller den bort. ${SPRINT_KRITERIER}`;
     const felt = {
       mode: "payment",
       customer: kunde.id,
@@ -1373,7 +1375,7 @@ async function sprintBetalt(env, okt) {
         `Hei ${d.navn},`,
         "",
         `Sprinten hos ${d.firma} er booket ${tid} (${SPRINT_DAGER} dager). Grunnhonoraret på ${kroner(d.grunn)} eks. mva er betalt og beholdes.`,
-        `Resten, ${kroner(d.total - d.grunn)} eks. mva, faktureres bare hvis suksesskriteriene er nådd. Ellers faller den bort.`,
+        `Resten, ${kroner(d.total - d.grunn)} eks. mva, faktureres bare hvis suksesskriteriet er nådd. Ellers faller den bort.`,
         "",
         "",
         SPRINT_KRITERIER,
@@ -1391,7 +1393,7 @@ async function sprintBetalt(env, okt) {
       tekst: [
         `${d.navn} <${mottaker}>${d.telefon ? `, ${d.telefon}` : ""}`,
         `${d.firma}, org.nr ${orgnrTekst(r.rad.orgnr)}, ${d.trinn}`,
-        `Grunnhonorar betalt (beholdes): ${kroner(d.grunn)} eks. mva. Resten ved nådde kriterier: ${kroner(d.total - d.grunn)} eks. mva.`,
+        `Grunnhonorar betalt (beholdes): ${kroner(d.grunn)} eks. mva. Resten ved nådd kriterium: ${kroner(d.total - d.grunn)} eks. mva.`,
         `Stripe: ${okt.id}`,
         "",
         d.melding || "(ingen melding)",
