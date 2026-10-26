@@ -601,14 +601,6 @@ export function nextQuarter(ts) {
   return Math.floor(ts / 900e3) * 900e3 + 900e3;
 }
 
-// What the automatic status should change to, or null for no change.
-export function autoStatus({ hour, minute, status, autoSlept, active }) {
-  const night = hour >= 21 || hour < 4;
-  if (night) return status !== "sleeping" && !active ? "sleeping" : null;
-  // Daytime: wake up at 04:00 (any «sleeping»), and later only undo a night-time automatic sleep.
-  if (status === "sleeping" && ((hour === 4 && minute < 15) || autoSlept)) return "available";
-  return null;
-}
 
 export class ChatHub {
   constructor(ctx, env) {
@@ -961,7 +953,6 @@ export class ChatHub {
         this.sql.exec(`DELETE FROM hr WHERE ts < ?`, this.slettFor(now));
       }
       this.toVisitors({ t: "hr", bpm: v });
-      if (v) this.vaakneAvPuls(now, v);
       return Response.json({ ok: true });
     }
     // Positions from the owner's iPhone: stored raw (35 days), and the public version goes straight to every open page.
@@ -2140,21 +2131,6 @@ export class ChatHub {
     return this.status() === "sleeping" ? Number(this.setting("sovnet") || 0) || null : null;
   }
 
-  // Han sover ikke med klokka på. Står det «Sover» (lagt seg for over 10 min siden) og klokka sender puls som
-  // beveger seg (minst 8 målinger siste 2 min, minst 3 slag mellom laveste og høyeste), er han våken: «Jobber».
-  vaakneAvPuls(now, bpm) {
-    this.pulsVindu = (this.pulsVindu || []).filter((x) => now - x.ts < 120e3);
-    this.pulsVindu.push({ ts: now, bpm });
-    if (this.status() !== "sleeping" || now - (this.sovnet() || now) < 10 * 60e3) return;
-    const b = this.pulsVindu.map((x) => x.bpm);
-    if (b.length < 8 || Math.max(...b) - Math.min(...b) < 3) return;
-    this.sql.exec(`DELETE FROM kv WHERE k='autoSlept'`);
-    this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('gjor', 'jobber')`);
-    this.toOwners({ t: "gjor", v: "jobber" });
-    this.loggFor("gjor", "jobber");
-    this.setStatus("available");
-  }
-
   touchOwner() {
     this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('ownerActive', ?)`, String(Date.now()));
   }
@@ -2192,9 +2168,9 @@ export class ChatHub {
     this.toOwners({ t: "ringend", id: c.id, vid, why });
   }
 
-  // ---------- automatic night status ----------
-  // Every quarter hour (Oslo time): from 21:00 to 04:00 the status becomes «sleeping» unless the owner is using
-  // the app or used it in the last 30 minutes; at 04:00 it goes back to «available».
+  // ---------- quarter-hour jobs ----------
+  // The status is never changed automatically (no «sleeping» at night, no «available» at 04:00, no waking on the
+  // pulse): only the owner sets it, from the app.
 
   async ensureAlarm() {
     if ((await this.ctx.storage.getAlarm()) == null) await this.ctx.storage.setAlarm(nextQuarter(Date.now()));
@@ -2208,17 +2184,7 @@ export class ChatHub {
       this.visPruned = now;
       this.sql.exec(`DELETE FROM visitors WHERE last_seen < ? AND vid NOT IN (SELECT DISTINCT vid FROM messages) AND vid NOT IN (SELECT DISTINCT vid FROM sessions)`, now - 7 * 864e5);
     }
-    const { hour, minute } = osloTime(now);
-    // Klokka med puls teller som aktiv (han sover uten den), ellers ville natta og pulsen vippet statusen fram og tilbake.
-    const active = this.ownerOnline() || now - Number(this.setting("ownerActive") || 0) < 30 * 60e3 || !!this.liveHr();
-    const next = autoStatus({ hour, minute, status: this.status(), autoSlept: this.setting("autoSlept") === "1", active });
-    if (next === "sleeping") {
-      this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('autoSlept', '1')`);
-      this.setStatus("sleeping");
-    } else if (next === "available") {
-      this.sql.exec(`DELETE FROM kv WHERE k='autoSlept'`);
-      this.setStatus("available");
-    }
+    if (this.setting("autoSlept")) this.sql.exec(`DELETE FROM kv WHERE k='autoSlept'`);   // left over from the old automatic night status
     await this.matchNye().catch(() => {});   // også når telefonen ikke sender (resten av en tur)
     await this.bankOppdater().catch(() => {});
     await this.arkiver().catch(() => {});
