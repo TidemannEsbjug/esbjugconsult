@@ -3542,15 +3542,13 @@ footer {
   margin-bottom: clamp(36px, 4.5vw, 60px);
 }
 
-/* Tre løfter i stedet for tallene */
+/* To løfter i stedet for tallene */
 .nk-lofter {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 24px);
   max-width: 1240px;
   margin: 0 var(--gut);
-  border-radius: 18px;
-  background: var(--card);
-  box-shadow: var(--shadow);
 }
 
 @media (min-width: 1400px) {
@@ -3560,11 +3558,35 @@ footer {
 }
 
 .nk-lofte {
-  padding: clamp(26px, 3vw, 38px) clamp(22px, 2.6vw, 36px);
+  position: relative;
+  overflow: hidden;
+  padding: clamp(28px, 3.4vw, 48px);
+  border-radius: 22px;
+  border: 1px solid rgba(36, 86, 230, 0.08);
+  background: linear-gradient(160deg, #ffffff 30%, #f2f6fd);
+  box-shadow: 0 1px 2px rgba(21, 32, 46, 0.04), 0 24px 48px -30px rgba(26, 63, 176, 0.3);
 }
 
-.nk-lofte + .nk-lofte {
-  border-left: 1px solid var(--rule-2);
+/* Snøkrystallen fra ikonet som et svakt vannmerke i hjørnet. */
+.nk-lofte::after {
+  content: "";
+  position: absolute;
+  right: -40px;
+  bottom: -40px;
+  width: 200px;
+  height: 200px;
+  background: url("media/klart-ikon.png") center / contain no-repeat;
+  opacity: 0.07;
+  pointer-events: none;
+}
+
+.nk-lofte-ikon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--signal-soft);
 }
 
 .nk-lofte svg,
@@ -3579,57 +3601,220 @@ footer {
 }
 
 .nk-lofte h3 {
-  margin: 16px 0 6px;
-  font-size: 18px;
+  margin: 22px 0 8px;
+  font-size: clamp(22px, 2.2vw, 28px);
   font-weight: 700;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.022em;
 }
 
 .nk-lofte p {
-  font-size: 15px;
+  max-width: 40ch;
+  font-size: 16.5px;
   color: var(--ink-2);
 }
 
-.nk-lofte a {
-  color: var(--signal);
+.nk-lofte-lenke {
+  display: inline-block;
+  margin-top: 16px;
   font-weight: 600;
+  color: var(--signal);
 }
 
-/* Problemet */
-.nk-problem {
-  display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-  gap: clamp(32px, 6vw, 96px);
+.nk-lofte-lenke span {
+  display: inline-block;
+  transition: transform 200ms var(--ease);
+}
+
+.nk-lofte-lenke:hover span {
+  transform: translateX(4px);
+}
+
+/* Utsagnet: stor tekst, venstrestilt */
+.nk-utsagn {
+  padding-top: clamp(110px, 14vw, 200px);
+  padding-bottom: clamp(48px, 6vw, 90px);
+}
+
+/* «Personopplysningene» er ett langt ord: størrelsen følger skjermbredden, og orddeling er reserven. */
+.nk-utsagn h2 {
+  margin: 22px 0 0;
+  font-size: clamp(25px, 7.4vw, 104px);
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+}
+
+.nk-utsagn h2 span {
+  display: block;
+  background: linear-gradient(96deg, var(--signal) 8%, var(--signal-lit) 92%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.nk-utsagn-tekst {
+  max-width: 52ch;
+  margin-top: clamp(28px, 3vw, 40px) !important;
+  font-size: clamp(17px, 1.45vw, 21px);
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+/* Setningen som renses mens man scroller */
+.nk-scene {
+  position: relative;
+  padding: 0;
+  background: linear-gradient(180deg, var(--ground), #f7f9fd 18%, #f7f9fd 82%, var(--ground));
+}
+
+/* Lang nok til å scrolle gjennom, bare når skriptet går (klassen settes der). */
+.nk-scene.aktiv {
+  height: 290vh;
+}
+
+.nk-scene.aktiv .nk-scene-fast {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  display: flex;
   align-items: center;
 }
 
+.nk-scene-inner {
+  position: relative;
+  width: 100%;
+  max-width: calc(1240px + 2 * var(--gut));
+  margin: 0 auto;
+  padding: clamp(90px, 10vh, 120px) var(--gut) clamp(48px, 8vh, 80px);
+}
+
+.nk-setning {
+  max-width: 24ch;
+  margin: 24px 0 0;
+  font-family: var(--serif);
+  font-size: clamp(32px, 5.4vw, 84px);
+  font-weight: 400;
+  line-height: 1.16;
+  letter-spacing: -0.022em;
+  color: var(--ink);
+}
+
+.nk-opp {
+  border-radius: 0.08em;
+  transition: box-shadow 450ms var(--ease), background 450ms var(--ease);
+}
+
+.nk-opp.funnet.gul {
+  box-shadow: inset 0 -0.36em 0 rgba(214, 165, 60, 0.45);
+}
+
+.nk-opp.funnet.rød {
+  box-shadow: inset 0 -0.36em 0 rgba(178, 63, 40, 0.3);
+}
+
+.nk-opp.funnet.blå {
+  box-shadow: inset 0 -0.36em 0 rgba(45, 95, 139, 0.28);
+}
+
+.nk-opp .t {
+  display: none;
+}
+
+/* Merket og tegnet etter står alltid på samme linje. */
+.nk-hel {
+  white-space: nowrap;
+}
+
+.nk-opp.byttet,
+.nk-opp.byttet.funnet {
+  box-shadow: none;
+}
+
+.nk-opp.byttet .o {
+  display: none;
+}
+
+/* Merket: et mørkt merke i monospace, som en stempling midt i teksten. */
+.nk-opp.byttet .t {
+  display: inline-block;
+  padding: 0.3em 0.6em 0.26em;
+  border-radius: 0.42em;
+  background: var(--nk-natt);
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 0.42em;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  vertical-align: 0.42em;
+  box-shadow: 0 0.4em 1em -0.4em rgba(13, 26, 46, 0.6);
+  animation: nk-stempel 420ms var(--ease);
+}
+
+@keyframes nk-stempel {
+  from {
+    opacity: 0;
+    transform: translateY(0.3em) scale(0.92);
+  }
+}
+
+.nk-scene-bunn {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px clamp(24px, 4vw, 64px);
+  align-items: baseline;
+  margin-top: clamp(32px, 5vh, 56px);
+}
+
+.nk-teller {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+.nk-teller b {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.nk-scene-tekst {
+  max-width: 54ch;
+  font-size: 16px;
+  color: var(--ink-2);
+}
+
+/* Fremdriften: et tynt spor under teksten. */
+.nk-scene-spor {
+  display: block;
+  height: 2px;
+  margin-top: 22px;
+  border-radius: 2px;
+  background: var(--rule);
+  overflow: hidden;
+}
+
+.nk-scene-spor i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--signal), var(--signal-lit));
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.nk-scene:not(.aktiv) .nk-scene-spor {
+  display: none;
+}
+
 /* Samme innholdsbredde i alle seksjonene: 1240 px, med sidens marg rundt. */
-.nk-problem,
+.nk-utsagn,
 .nk-bruk,
 .nk-ansvar {
   max-width: calc(1240px + 2 * var(--gut));
   margin: 0 auto;
-}
-
-.nk-bilde {
-  margin: 0;
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: 0 30px 60px -36px rgba(13, 26, 46, 0.45);
-}
-
-.nk-bilde img {
-  display: block;
-  width: 100%;
-  aspect-ratio: 3 / 2;
-  object-fit: cover;
-}
-
-.nk-tekst p:not(.nk-merke) {
-  max-width: 50ch;
-  margin-bottom: 14px;
-  font-size: 17px;
-  color: var(--ink-2);
 }
 
 /* Bruksområder */
@@ -4112,16 +4297,18 @@ footer {
 
 @media (max-width: 900px) {
   .nk-lofter,
-  .nk-problem,
   .nk-norsk-inner,
   .nk-ansvar-liste,
   .nk-bunn-topp {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .nk-lofte + .nk-lofte {
-    border-left: 0;
-    border-top: 1px solid var(--rule-2);
+  .nk-scene.aktiv {
+    height: 240vh;
+  }
+
+  .nk-scene-bunn {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .nk-bruksliste {
