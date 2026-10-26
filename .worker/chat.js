@@ -134,6 +134,17 @@ export async function handleChat(request, env, url) {
       const r = await (await hub.fetch(new Request("https://hub/internal/verdi", { method: "POST", headers: { "x-role": "internal" }, body: JSON.stringify(vv) }))).json();
       return Response.json({ funnet: r, sikkerhet: r ? 1 : null });
     }
+    // Et sted («når var han i Frognerparken», «første gang han var på Aker brygge»): stedet slås opp i OpenStreetMap,
+    // og hele posisjonshistorikken søkes etter når han var der.
+    const ss = stedSok(q);
+    if (ss) {
+      const geo = await geokod(ss.navn);
+      if (geo) {
+        const r = await (await hub.fetch(new Request("https://hub/internal/sted", { method: "POST", headers: { "x-role": "internal" }, body: JSON.stringify({ ...geo, forst: ss.forst }) }))).json();
+        if (r) return Response.json({ funnet: r, sikkerhet: 1 });
+        return Response.json({ funnet: null, melding: `Han har ikke vært ved ${geo.navn} siden opptakene startet.` });
+      }
+    }
     const ob = await (await hub.fetch(new Request("https://hub/internal/oyeblikk", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }))).json();
     if (!ob.length) return Response.json({ funnet: null });
     if (!env.JEV || !env.INTERN_KEY) return new Response("Jev er ikke koblet til", { status: 503 });
@@ -548,6 +559,35 @@ export function tidspunkt(q, nå) {
   return { id: "tid", type: "tid", ts, tekst: `Her var han ${navn} kl. ${kl}` };
 }
 
+// «Når var han i Frognerparken», «første gang han var på Aker brygge»: stedsnavnet etter i/på/ved/til.
+export function stedSok(q) {
+  const t = q.toLowerCase().trim().replace(/[?!.]+$/, "");
+  if (!/\b(når|sist|først|første|hvor lenge|var han|kom han|dro han)\b/.test(t)) return null;
+  const m = t.match(/\b(?:var|kom|dro|gikk|reiste|syklet|kjørte)\s+(?:han\s+)?(?:sist\s+|først\s+)?(?:i|på|ved|til|innom|forbi|rundt)\s+(.{2,60})$/)
+    || t.match(/\b(?:i|på|ved)\s+(.{2,60})$/);
+  if (!m) return null;
+  const navn = m[1].replace(/\s+(sist|sist gang|først|i det siste|noen gang)$/, "").trim();
+  if (!navn || /^(går|dag|morgen|kveld|natt|forgårs|helgen|mandag|tirsdag|onsdag|torsdag|fredag|lørdag|søndag|\d)/.test(navn) || /puls|batteri|bpm|prosent/.test(t)) return null;
+  return { navn, forst: /først|første/.test(t) };
+}
+
+// Stedsnavn → område, fra OpenStreetMap (Nominatim). Oslo-området først, ellers Norge, ellers hele verden.
+// Svaret mellomlagres i en uke (Nominatim tillater høyst ett oppslag i sekundet).
+export async function geokod(navn) {
+  const nokkel = new Request("https://geo.cache/" + encodeURIComponent(navn));
+  const c = caches.default, lagret = await c.match(nokkel);
+  if (lagret) return lagret.json();
+  const hent = async (ekstra) => {
+    const r = await fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&accept-language=nb&q=" + encodeURIComponent(navn) + ekstra,
+      { headers: { "User-Agent": "EsbjugConsult/1.0 (+https://esbjugconsult.com)" } });
+    return r.ok ? (await r.json())[0] : null;
+  };
+  const x = (await hent("&countrycodes=no&viewbox=10.4,60.1,11.2,59.6&bounded=1")) || (await hent("&countrycodes=no")) || (await hent(""));
+  const geo = x ? { navn: x.name || navn, lat: +x.lat, lon: +x.lon, boks: x.boundingbox.map(Number) } : null;
+  await c.put(nokkel, new Response(JSON.stringify(geo), { headers: { "content-type": "application/json", "cache-control": "max-age=604800" } }));
+  return geo;
+}
+
 // «Sist han hadde 111 i puls», «puls på 95», «når hadde iPhonen 20 %»: hvilken måling og hvilken verdi.
 export function verdiSok(q) {
   const t = q.toLowerCase(), forst = /først|første/.test(t);
@@ -802,6 +842,9 @@ export class ChatHub {
       }
       if (url.pathname === "/internal/hr-raa" || url.pathname === "/internal/aks-raa") {
         return Response.json(await this.vindu(url.pathname === "/internal/aks-raa" ? "aks" : "hr", b.fra, b.til), { headers: { "cache-control": "public, max-age=30" } });
+      }
+      if (url.pathname === "/internal/sted") {
+        return Response.json(await this.stedFinn(b));
       }
       if (url.pathname === "/internal/verdi") {
         return Response.json(this.verdi(b));
@@ -1863,6 +1906,36 @@ export class ChatHub {
       pl = r.lat; po = r.lon; pt = r.ts;
     }
     return trail;
+  }
+
+  // Når han var ved et sted, i hele historikken: siste (eller første) besøk, med når han kom og hvor lenge han var der.
+  // Et område (park, bydel) er boksen fra OpenStreetMap med 30 m ekstra; et punkt (kafé, adresse) er 120 m rundt det.
+  async stedFinn({ navn, lat, lon, boks, forst }) {
+    const [s, n, w, e] = boks, mLat = 111200, mLon = 111200 * Math.cos(lat * Math.PI / 180);
+    const liten = (n - s) * mLat < 150 && (e - w) * mLon < 150;
+    const inne = liten
+      ? (p) => Math.hypot((p.lat - lat) * mLat, (p.lon - lon) * mLon) <= 120
+      : (p) => p.lat >= s - 30 / mLat && p.lat <= n + 30 / mLat && p.lon >= w - 30 / mLon && p.lon <= e + 30 / mLon;
+    const dager = Object.keys((await this.dager()).dager).sort();
+    if (!forst) dager.reverse();
+    for (const dag of dager) {
+      const d = await this.dagVed(Date.parse(dag + "T12:00:00Z"));
+      const pos = (d?.pos || []).map((p) => Array.isArray(p) ? { ts: p[0], lat: p[1], lon: p[2] } : p);
+      // Besøkene den dagen: punkter inne i området, med under 10 min mellom.
+      const besok = [];
+      for (const p of pos) {
+        if (!inne(p)) continue;
+        const b = besok[besok.length - 1];
+        if (b && p.ts - b.til < 10 * 60e3) b.til = p.ts; else besok.push({ fra: p.ts, til: p.ts });
+      }
+      if (!besok.length) continue;
+      const v = forst ? besok[0] : besok[besok.length - 1];
+      const dagN = new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", weekday: "long", day: "numeric", month: "numeric" }).format(v.fra);
+      const kl = new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", hour: "2-digit", minute: "2-digit" }).format(v.fra);
+      const min = Math.round((v.til - v.fra) / 60e3);
+      return { id: "sted", type: "sted", ts: v.fra, tekst: `${forst ? "Første gang" : "Sist"} ved ${navn}: ${dagN} kl. ${kl}` + (min >= 2 ? ` (${min} min)` : "") };
+    }
+    return null;
   }
 
   // Siste (eller første) gang en verdi ble målt de siste sju dagene. Finnes ikke akkurat den, brukes den nærmeste.

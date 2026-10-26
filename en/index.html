@@ -537,7 +537,11 @@
   .hist button[aria-pressed="true"],.hist button[aria-expanded="true"]{background:var(--ink);color:#fff}
   .hist .h-spill{width:40px;height:40px;padding:0;font-size:15px;background:transparent;border:1.5px solid rgba(0,32,91,.35)}
   .hist .h-ikon{width:36px;height:36px;padding:0;display:inline-grid;place-items:center;border-radius:50%;font:500 20px/1 -apple-system,system-ui,sans-serif;position:relative}
-  .hist .h-kal svg{width:18px;height:18px}
+  .hist .h-kal svg,.hist .h-paneler svg{width:18px;height:18px}
+  .h-paneler .hp-strek{display:none}
+  .h-paneler[aria-pressed="true"] .hp-strek{display:inline}
+  /* Panelene skjult i replay (knappen med øyet): bare kartet og modulen */
+  body.uten-paneler .paneler{opacity:0;pointer-events:none;transition:opacity .3s ease}
   .hist .h-lukk{width:36px;height:36px;padding:0;font:400 22px/1 -apple-system,system-ui,sans-serif;margin-left:4px}
   .hist .h-tid{flex:1 1 160px;min-width:90px;accent-color:var(--ink);height:22px}
   .hist .h-kl{font:600 13px "SF Mono",Menlo,monospace;color:var(--ink);min-width:12ch;text-align:center}
@@ -2263,6 +2267,7 @@ if (HUS) setTimeout(function lagAvspiller() {
     + '<button type="button" class="h-ikon h-forr" aria-label="Dagen før">‹</button>'
     + '<button type="button" class="h-ikon h-kal" aria-label="Velg dato" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></button>'
     + '<button type="button" class="h-ikon h-neste" aria-label="Dagen etter">›</button>'
+    + '<button type="button" class="h-ikon h-paneler" aria-pressed="false" aria-label="Skjul panelene" title="Skjul panelene"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="hp-oye" d="M2.5 12s3.5-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"/><circle class="hp-oye" cx="12" cy="12" r="2.8"/><path class="hp-strek" d="M4 4l16 16"/></svg></button>'
     + '<button type="button" class="h-fart" aria-expanded="false" aria-label="Fart">1×</button><button type="button" class="h-lukk" aria-label="Avslutt replay">×</button></div>'
     + '<div class="h-kalender gl" hidden role="dialog" aria-label="Kalender"><div class="kal-topp"><button type="button" class="kal-forr" aria-label="Forrige måned">‹</button><b class="kal-mnd"></b><button type="button" class="kal-neste" aria-label="Neste måned">›</button></div><div class="kal-uke"></div><div class="kal-dager"></div><p class="kal-fot"></p></div>'
     + '<div class="h-rad h-versjonrad"><button type="button" class="h-versjon" aria-label="Se siden slik den så ut"><i></i><span class="hv-t">–</span><span class="hv-n"></span></button><span class="hv-melding"></span><button type="button" class="h-tl" aria-pressed="false" title="Spill av endringene på siden, én etter én">Time-lapse</button></div>'
@@ -2394,7 +2399,7 @@ if (HUS) setTimeout(function lagAvspiller() {
   // Tiden går i rammen også: avspillerens T sendes dit ved hvert oppdatering av sidene.
   // Hopper tiden (søk, kalender, spoling), henter rammen dataene fra det nye tidspunktet med en gang (uten å laste på nytt).
   const sendT = T => {
-    for (const f of lag.querySelectorAll('iframe:not(.forh)')) { f.dataset.t = Math.round(T); f.contentWindow?.postMessage({ avspT: T, aktiv: true }, location.origin); }
+    for (const f of lag.querySelectorAll('iframe:not(.forh)')) { f.dataset.t = Math.round(T); f.contentWindow?.postMessage({ avspT: T, aktiv: true, paneler: !utenPaneler }, location.origin); }
     forvarmRammer(T);
   };
   // Versjonene rundt T lastes på forhånd i skjulte rammer (som ikke henter data før de vises), så skiftene er øyeblikkelige.
@@ -2575,10 +2580,17 @@ if (HUS) setTimeout(function lagAvspiller() {
     fortell(o.tekst);
     start();
   }
-  function gåLive() { lag.hidden = true; lag.textContent = ''; venter.classList.remove('på'); lagSha = null; document.body.classList.remove('versjon-på'); document.body.classList.remove('replay-sover'); delete AK.iphone; delete AK.watch; bankNokkel = ''; kart.getSource('avsp-prikk')?.setData({ type: 'FeatureCollection', features: [] }); megMark.getElement().style.visibility = ''; document.body.classList.remove('i-replay'); avsp = null; window.__avsp = false; stopp(); trykket(null); kl2.textContent = '–'; fortell(''); sistSpor = ''; forste = true; hent(); }
+  function gåLive() { utenPaneler = false; document.body.classList.remove('uten-paneler'); q('.h-paneler').setAttribute('aria-pressed', 'false'); lag.hidden = true; lag.textContent = ''; venter.classList.remove('på'); lagSha = null; document.body.classList.remove('versjon-på'); document.body.classList.remove('replay-sover'); delete AK.iphone; delete AK.watch; bankNokkel = ''; kart.getSource('avsp-prikk')?.setData({ type: 'FeatureCollection', features: [] }); megMark.getElement().style.visibility = ''; document.body.classList.remove('i-replay'); avsp = null; window.__avsp = false; stopp(); trykket(null); kl2.textContent = '–'; fortell(''); sistSpor = ''; forste = true; hent(); }
   spill.onclick = () => { if (tl) tlStopp(); if (!avsp) return; if (avsp.spiller) stopp(); else { if (avsp.k >= 1) avsp.k = 0; start(); } };
   // Farten: en egen glidebryter (som på YouTube) fra 1× til 60×, jevnt fordelt på en logaritmisk skala.
   const fartvalg = q('.h-fartvalg'), fs = q('.h-fs');
+  // Skjul panelene (også i gamle versjoner av siden, som får beskjed i rammen).
+  let utenPaneler = false;
+  q('.h-paneler').onclick = e => {
+    utenPaneler = !utenPaneler; document.body.classList.toggle('uten-paneler', utenPaneler);
+    e.currentTarget.setAttribute('aria-pressed', utenPaneler); e.currentTarget.setAttribute('aria-label', utenPaneler ? 'Vis panelene' : 'Skjul panelene'); e.currentTarget.title = e.currentTarget.getAttribute('aria-label');
+    for (const f of lag.querySelectorAll('iframe')) f.contentWindow?.postMessage({ paneler: !utenPaneler }, location.origin);
+  };
   q('.h-fart').onclick = e => { const åpne = fartvalg.hidden; fartvalg.hidden = !åpne; q('.h-kalender').hidden = true; e.currentTarget.setAttribute('aria-expanded', åpne); };
   fs.oninput = () => {
     const f = Math.pow(60, fs.value / 100);
