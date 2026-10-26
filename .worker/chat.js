@@ -1149,7 +1149,7 @@ export class ChatHub {
       if (ny.ts - (this.teleLogg[kilde] || 0) >= 60e3) {
         this.teleLogg[kilde] = ny.ts;
         const d = {};
-        for (const k of ["bat", "lader", "meter", "skritt", "etasjer", "lyd", "nett", "bevegelse", "haand", "aktivitet", "trykk", "ledig"]) if (ny[k] !== undefined) d[k] = ny[k];
+        for (const k of ["bat", "lader", "meter", "skritt", "etasjer", "lyd", "nett", "bevegelse", "haand", "aktivitet", "trykk", "ledig", "flaske", "harflaske", "pult", "stilling", "plagg", "farge", "hodetelefoner"]) if (ny[k] !== undefined) d[k] = ny[k];
         this.sql.exec(`INSERT OR REPLACE INTO telelogg (kilde, ts, d) VALUES (?, ?, ?)`, kilde, ny.ts, JSON.stringify(d));
         if (ny.ts - (this.teleLoggPruned || 0) > 3600e3) { this.teleLoggPruned = ny.ts; this.sql.exec(`DELETE FROM telelogg WHERE ts < ?`, this.slettFor(ny.ts)); }
       }

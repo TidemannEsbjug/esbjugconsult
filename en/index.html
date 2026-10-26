@@ -970,6 +970,11 @@
   .bank.utg[hidden],.utg li[hidden]{display:none}
   /* Aktive AI-abonnementer: logo og navn, to kolonner, dyrest først */
   .abo{display:flex;flex-direction:column;gap:10px;padding:14px 18px 16px}
+  /* Pulten (kameraet): flasken med blå strek, plagget over hele bredden */
+  .pultk[hidden]{display:none}
+  .pultk .pk-t{grid-column:1/-1}
+  .pultk .pk-plagg{grid-column:1/-1}
+  .pultk [data-k="pflaske"] .bar i{background:#3b82f6}
   .abo-l{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 16px}
   .abo-l li{display:flex;align-items:center;gap:9px;min-width:0;font:italic 500 15px/1.2 var(--serif);color:var(--ink)}
   .abo-l li span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1026,6 +1031,14 @@
       <div class="sv maskin" data-k="starship" title="Starship"><span class="sl"><svg class="mi" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.2l7.4-1v7.2H3zM11.3 4.1L21 2.7v8.7h-9.7zM3 12.4h7.4v7.2L3 18.6zM11.3 12.4H21v8.9l-9.7-1.4z"/></svg><span class="mn">Starship</span></span><b><i class="mp"></i><span class="mv">–</span></b></div>
       <div class="sv maskin" data-k="falcon" title="Falcon 9"><span class="sl"><svg class="mi" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.2l7.4-1v7.2H3zM11.3 4.1L21 2.7v8.7h-9.7zM3 12.4h7.4v7.2L3 18.6zM11.3 12.4H21v8.9l-9.7-1.4z"/></svg><span class="mn">Falcon 9</span></span><b><i class="mp"></i><span class="mv">–</span></b></div>
     </div>
+  </section>
+  <!-- Pulten, sett av kameraet i Esbjug Fyr (iPhone 8 Plus, kilde fyrb). Bare på /monitor foreløpig. -->
+  <section class="sens pultk gl" hidden aria-label="Pulten, sett av kameraet">
+    <span class="mono s-t pk-t">Pulten · kamera</span>
+    <div class="sv" data-k="pflaske"><span class="sl">Flaske</span><b>–</b><i class="bar"><i></i></i></div>
+    <div class="sv" data-k="pstilling"><span class="sl">Ved pulten</span><b>–</b></div>
+    <div class="sv" data-k="phode"><span class="sl">Hodetelefoner</span><b>–</b></div>
+    <div class="sv pk-plagg" data-k="pplagg"><span class="sl">Har på seg</span><b>–</b></div>
   </section>
   <!-- Aktive AI-abonnementer, dyrest først. Legg til eller fjern linjer her. -->
   <section class="abo gl" aria-label="Active AI subscriptions">
@@ -1909,6 +1922,20 @@ const km = pts => { let d = 0; for (let i = 1; i < pts.length; i++) if (pts[i] &
 const linjer = pts => { const ut = [[]]; for (const p of pts) { if (!p) { if (ut[ut.length - 1].length) ut.push([]); } else ut[ut.length - 1].push([p[0], p[1]]); } return ut.filter(l => l.length); };
 const tid = ms => { const s = Math.max(0, Math.round(ms / 1000)); return s < 60 ? s + ' s' : s < 3600 ? Math.round(s / 60) + ' min' : Math.floor(s / 3600) + TX.t + Math.round(s % 3600 / 60) + ' min'; };
 const tall = n => Math.round(n).toLocaleString(TX.loc);
+// /monitor: pulten sett av kameraet (flaske, ved pulten, sitter eller står, plagget og hodetelefoner).
+const MONITOR = location.pathname.startsWith('/monitor');
+const FARGE = { svart: 'Svart', hvit: 'Hvit', graa: 'Grå', blaa: 'Blå', roed: 'Rød', groenn: 'Grønn', gul: 'Gul', brun: 'Brun', oransje: 'Oransje', rosa: 'Rosa', lilla: 'Lilla' };
+const PLAGG = { tskjorte: 't-skjorte', genser: 'genser', annet: 'klær' };
+function visPult(t) {
+  const kort = document.querySelector('.pultk'); if (!kort) return;
+  const har = t && ('flaske' in t || 'stilling' in t || 'pult' in t);
+  kort.hidden = !har; if (!har) return;
+  sett('pflaske', t.flaske != null ? t.flaske + ' %' : null, t.flaske ?? 0);
+  sett('pstilling', t.stilling === 'sitter' ? 'Sitter' : t.stilling === 'staar' ? 'Står' : t.stilling === 'borte' || (t.pult != null && t.pult < .5) ? 'Borte' : null);
+  sett('phode', t.hodetelefoner != null ? (t.hodetelefoner >= .5 ? 'På' : 'Av') : null);
+  const f = FARGE[t.farge], pl = PLAGG[t.plagg];
+  sett('pplagg', !t.plagg || t.plagg === 'borte' ? null : pl ? (f ? f + ' ' + pl : pl[0].toUpperCase() + pl.slice(1)) : null);
+}
 const sett = (k, v, pct, kl) => {
   const e = document.querySelector('.sv[data-k="' + k + '"]'); if (!e) return;
   const b = e.querySelector('b'), ny = v == null ? '–' : String(v);
@@ -1936,6 +1963,7 @@ function tegn() {
   // De to gamle iPhonene i huset (fyrene) heter bare «iPhone»; de vises når de har sendt batteriet.
   for (const f of ['fyra', 'fyrb']) { const t = tele[f], e = document.querySelector('.sv[data-k="' + f + '"]'); if (e) e.hidden = !t; if (t) sett(f, t.bat != null ? t.bat + ' %' : null, t.bat, t.lader); }
   for (const k of ['iphone', 'watch']) inn(k, tele[k]);
+  if (MONITOR) visPult(tele.fyrb || tele.fyra);
   if (!live) { $('.s-navn').textContent = TX.ingenPos; $('.s-live').textContent = TX.venter; document.body.classList.add('gammel'); return; }
   // Posisjonen kommer bare når han flytter seg; telefonen sender ellers hvert 5. s, så den teller som livstegn.
   const alder = nå - Math.max(live.ts, i.ts || 0), gammel = alder > 10 * 60e3;
