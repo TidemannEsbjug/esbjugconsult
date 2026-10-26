@@ -25,6 +25,10 @@
 //   GET  /chat/status                             the owner's status (available/meeting/sleeping) + whether the app is open
 //   POST /chat/admin/pos          {pts:[{ts,lat,lon,acc,spd,alt,hdg}]}  the owner's iPhone reports where he is (live, in the background)
 //   POST /chat/admin/tele         {kilde, d}          latest readings from the owner's iPhone/watch (battery, steps, pressure …)
+//   GET  /chat/admin/kamera?kilde=                    beacon camera settings (modus, front/back, zoom, preview)
+//   POST /chat/admin/kamera       {kilde, …}          save those settings (kv kamera:<kilde>)
+//   POST /chat/admin/kamera/bilde?kilde=              latest preview JPEG, memory only, only while visning is on (max 300 kB)
+//   GET  /chat/admin/kamera/bilde?kilde=              that JPEG, 404 when older than 10 s
 //   POST /chat/admin/sted-her     {navn, r}           name the place he is at now (e.g. «hjemme hos moren sin»), radius r m
 //   POST /chat/admin/fyr          {nr, navn, trykk}   a beacon phone in the house: its air pressure (hPa)
 //   POST /chat/admin/rom          {b, trykk, laer?}   what the iPhone hears from each beacon; learn a room or guess it
@@ -43,6 +47,26 @@
 //   GET  /chat/admin/session?sid=                 one recording's events, for replay in the app
 //
 // Location is Cloudflare's IP lookup (city/region/country/lat/lon), never the browser's GPS.
+
+// Samlet kontor-bilde. «vann» (utjevnet) tas fra flaske-kameraet når det har målt de siste 2 min,
+// ellers fra pult-kameraet. Person, plagg og hodetelefoner tas fra pult-kameraet. Forsiden bruker samme regel.
+function kontorAv(kilder, nå) {
+  const liste = (kilder || []).filter((x) => x && /^fyr[a-z]$/.test(x.kilde) && (x.modus === "pult" || x.modus === "flaske"));
+  if (!liste.length) return null;
+  const flaske = liste.filter((x) => x.modus === "flaske" && typeof x.flaskeTs === "number" && nå - x.flaskeTs < 120e3)
+    .sort((a, b) => b.flaskeTs - a.flaskeTs)[0];
+  const pult = liste.filter((x) => x.modus === "pult").sort((a, b) => (b.ts || 0) - (a.ts || 0))[0];
+  const f = flaske || pult;
+  if (!f) return null;
+  const d = { ts: nå };
+  if (pult) for (const k of ["pult", "stilling", "plagg", "farge", "hodetelefoner"]) if (pult[k] !== undefined) d[k] = pult[k];
+  if ("flaske" in f) d.flaske = f.flaske;
+  if (f.harflaske !== undefined) d.harflaske = f.harflaske;
+  if (f.vann !== undefined) d.vann = f.vann;
+  if (typeof f.flaskeTs === "number") d.flaskeTs = f.flaskeTs;
+  d.flaskeFra = f.kilde;
+  return d;
+}
 
 const MAX_TEXT = 2000;
 const REACTIONS = ["❤️", "👍", "😂", "😮", "😢", "🙏"];
@@ -775,6 +799,7 @@ export class ChatHub {
     }
     this.hrSaved = 0;
     this.hrPruned = 0;
+    this.kamerabilde = {}; // siste forhåndsvisning per fyr: { bytes, ts }. Bare minnet, aldri R2 eller logg.
     this.jwt = null;
     this.pushLog = [];          // times of recent pushes (global cap)
     this.pushLast = new Map();  // vid -> last push time
@@ -1118,6 +1143,60 @@ export class ChatHub {
       }
       return Response.json({ ok: true, lagt });
     }
+    // Kameraet på et fyr. Innstillingene ligger i kv. Bildet ligger bare i minnet, og bare mens noen ser på.
+    if (url.pathname === "/chat/admin/kamera" && request.method === "GET") {
+      const kilde = url.searchParams.get("kilde") || "";
+      if (!/^fyr[a-z]$/.test(kilde)) return new Response("Bad request", { status: 400 });
+      return Response.json(this.kameraLes(kilde), { headers: { "cache-control": "no-store" } });
+    }
+    if (url.pathname === "/chat/admin/kamera" && request.method === "POST") {
+      const b = await request.json().catch(() => ({}));
+      const kilde = b.kilde || "";
+      if (!/^fyr[a-z]$/.test(kilde)) return new Response("Bad request", { status: 400 });
+      const s = this.kameraRaw(kilde);
+      if (b.modus === "pult" || b.modus === "flaske") s.modus = b.modus;
+      if (b.kamera === "bak" || b.kamera === "foran") s.kamera = b.kamera;
+      if (typeof b.zoom === "number" && Number.isFinite(b.zoom)) s.zoom = Math.round(Math.min(5, Math.max(1, b.zoom)) * 10) / 10;
+      if (typeof b.visning === "boolean") {
+        s.visning = b.visning;
+        if (b.visning) s.sett = Date.now();
+      }
+      this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, `kamera:${kilde}`, JSON.stringify(s));
+      return Response.json(this.kameraLes(kilde));
+    }
+    if (url.pathname === "/chat/admin/kamera/bilde" && request.method === "POST") {
+      const kilde = url.searchParams.get("kilde") || "";
+      if (!/^fyr[a-z]$/.test(kilde)) return new Response("Bad request", { status: 400 });
+      const s = this.kameraRaw(kilde);
+      if (!s.visning || Date.now() - (s.sett || 0) > 30e3) {
+        if (s.visning) {
+          s.visning = false;
+          this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, `kamera:${kilde}`, JSON.stringify(s));
+        }
+        return new Response("Visning er av", { status: 409 });
+      }
+      const n = Number(request.headers.get("Content-Length") || 0);
+      if (n > 300 * 1024) return new Response("For stort", { status: 413 });
+      const buf = new Uint8Array(await request.arrayBuffer());
+      if (!buf.length) return new Response("Tomt bilde", { status: 400 });
+      if (buf.length > 300 * 1024) return new Response("For stort", { status: 413 });
+      if (buf[0] !== 0xff || buf[1] !== 0xd8) return new Response("Ikke JPEG", { status: 400 });
+      if (!this.kamerabilde) this.kamerabilde = {};
+      this.kamerabilde[kilde] = { bytes: buf, ts: Date.now() };
+      return Response.json({ ok: true });
+    }
+    if (url.pathname === "/chat/admin/kamera/bilde" && request.method === "GET") {
+      const kilde = url.searchParams.get("kilde") || "";
+      if (!/^fyr[a-z]$/.test(kilde)) return new Response("Bad request", { status: 400 });
+      const s = this.kameraRaw(kilde);
+      if (!s.sett || Date.now() - s.sett > 5e3) {
+        s.sett = Date.now();
+        this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, `kamera:${kilde}`, JSON.stringify(s));
+      }
+      const b = (this.kamerabilde || {})[kilde];
+      if (!b || Date.now() - b.ts > 10e3) return new Response("Ingen ferskt bilde", { status: 404 });
+      return new Response(b.bytes, { headers: { "content-type": "image/jpeg", "cache-control": "no-store" } });
+    }
     // Readings from the owner's devices: {kilde: "iphone" | "watch", d: {bat, lader, skritt, trykk, …}}. Only the latest
     // per device is kept; every open page gets it at once.
     if (url.pathname === "/chat/admin/tele" && request.method === "POST") {
@@ -1125,6 +1204,9 @@ export class ChatHub {
       if (!/^[a-z]{2,12}$/.test(kilde || "") || !d || typeof d !== "object" || JSON.stringify(d).length > 8000) return new Response("Bad request", { status: 400 });
       const ren = {};
       for (const [k, v] of Object.entries(d)) if (/^[a-zA-Z]{1,20}$/.test(k) && (typeof v === "number" || typeof v === "boolean" || (typeof v === "string" && v.length <= 80) || v === null)) ren[k] = v;
+      if (ren.modus !== "pult" && ren.modus !== "flaske") delete ren.modus;
+      delete ren.flaskeTs; // tiden settes her, så telefonen ikke kan gjøre en gammel måling fersk
+      if ("flaske" in ren) ren.flaskeTs = Date.now();
       // The accelerometer: "x,y,z;…" in hundredths of a g at 20 Hz, a packet every 5 s.
       if (typeof d.acc === "string" && d.acc.length <= 6000 && /^[-\d,;]*$/.test(d.acc)) ren.acc = d.acc;
       // Vannflasken (kameraet i fyr-appen): vannet kan bare gå ned til flasken fylles. «vann» følger medianen av de fem siste
@@ -1148,6 +1230,7 @@ export class ChatHub {
       const gml = this.sql.exec(`SELECT v FROM kv WHERE k=?`, `tele:${kilde}`).toArray()[0];
       const ny = { ...(gml ? JSON.parse(gml.v) : {}), ...ren, ts: Date.now() };
       this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, `tele:${kilde}`, JSON.stringify(ny));
+      if (/^fyr[a-z]$/.test(kilde) && ["flaske", "harflaske", "modus", "pult", "stilling", "plagg", "farge", "hodetelefoner"].some((k) => k in ren)) this.kontorOppdater();
       {
         const v = kilde === "iphone" ? ren.bevegelse : kilde === "watch" ? ren.haand : undefined;
         if (typeof v === "number" && v >= 0 && v < 20) {
@@ -1167,7 +1250,7 @@ export class ChatHub {
       if (ny.ts - (this.teleLogg[kilde] || 0) >= 60e3) {
         this.teleLogg[kilde] = ny.ts;
         const d = {};
-        for (const k of ["bat", "lader", "meter", "skritt", "etasjer", "lyd", "nett", "bevegelse", "haand", "aktivitet", "trykk", "ledig", "snakker", "ordIdag", "flaske", "vann", "harflaske", "pult", "stilling", "plagg", "farge", "hodetelefoner"]) if (ny[k] !== undefined) d[k] = ny[k];
+        for (const k of ["bat", "lader", "meter", "skritt", "etasjer", "lyd", "nett", "bevegelse", "haand", "aktivitet", "trykk", "ledig", "snakker", "ordIdag", "flaske", "vann", "harflaske", "pult", "stilling", "plagg", "farge", "hodetelefoner", "modus", "flaskeTs"]) if (ny[k] !== undefined) d[k] = ny[k];
         this.sql.exec(`INSERT OR REPLACE INTO telelogg (kilde, ts, d) VALUES (?, ?, ?)`, kilde, ny.ts, JSON.stringify(d));
         if (ny.ts - (this.teleLoggPruned || 0) > 3600e3) { this.teleLoggPruned = ny.ts; this.sql.exec(`DELETE FROM telelogg WHERE ts < ?`, this.slettFor(ny.ts)); }
       }
@@ -1789,6 +1872,40 @@ export class ChatHub {
       try { out[r.k === "sted" ? "sted" : r.k.slice(5)] = JSON.parse(r.v); } catch {}
     }
     return out;
+  }
+
+  // fyra ser på flasken, de andre fyrene på pulten, til noen endrer det.
+  kameraRaw(kilde) {
+    const s = { modus: kilde === "fyra" ? "flaske" : "pult", kamera: "bak", zoom: 1, visning: false, sett: 0 };
+    const r = this.sql.exec(`SELECT v FROM kv WHERE k=?`, `kamera:${kilde}`).toArray()[0];
+    if (!r) return s;
+    try {
+      const j = JSON.parse(r.v);
+      if (j.modus === "pult" || j.modus === "flaske") s.modus = j.modus;
+      if (j.kamera === "bak" || j.kamera === "foran") s.kamera = j.kamera;
+      if (typeof j.zoom === "number" && j.zoom >= 1 && j.zoom <= 5) s.zoom = Math.round(j.zoom * 10) / 10;
+      if (typeof j.visning === "boolean") s.visning = j.visning;
+      if (typeof j.sett === "number") s.sett = j.sett;
+    } catch {}
+    return s;
+  }
+
+  kameraLes(kilde) {
+    const { modus, kamera, zoom, visning } = this.kameraRaw(kilde);
+    return { modus, kamera, zoom, visning };
+  }
+
+  // Skriver tele:kontor på nytt fra det fyrene sist sendte. Forsiden regner det samme selv, så kortet
+  // skifter når flaskemålingen blir eldre enn 2 min uten å vente på neste post.
+  kontorOppdater() {
+    const nå = Date.now();
+    const kilder = this.sql.exec(`SELECT k, v FROM kv WHERE k LIKE 'tele:fyr%'`).toArray().flatMap((r) => {
+      try { return [{ kilde: r.k.slice(5), ...JSON.parse(r.v) }]; } catch { return []; }
+    });
+    const d = kontorAv(kilder, nå);
+    if (!d) return;
+    this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('tele:kontor', ?)`, JSON.stringify(d));
+    this.toVisitors({ t: "tele", kilde: "kontor", d });
   }
 
   // Høyden over fyr 1 i meter, fra forskjellen i lufttrykk (ca. 8,4 m per hPa). Været endrer begge likt.
