@@ -781,15 +781,6 @@
   .bank li span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
   .bank li b{font-weight:650;font-variant-numeric:tabular-nums;white-space:nowrap}
   .bk-kontoer li span:first-child{opacity:.75}
-  /* Øyet mot: tre steder ved siden av hverandre, hvert med et tydelig værikon, grader, ordet, stedet og klokka der. */
-  .oyet{display:flex;flex-direction:column;gap:10px;padding:14px 18px 16px}
-  .oy-rad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-  .oy{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;min-width:0}
-  .oy+.oy{border-left:1px solid rgba(0,32,91,.1)}
-  .oy-i{width:46px;height:46px;margin:6px 0 4px;overflow:visible}
-  .oy-v{font:640 24px/1 var(--serif);letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums}
-  .oy-n{font:italic 400 15px/1.15 var(--serif);color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-  .oy-k{font:500 11px/1 "SF Mono",Menlo,monospace;letter-spacing:.04em;color:rgba(0,32,91,.5);font-variant-numeric:tabular-nums}
   .ak{cursor:pointer;border-radius:10px;transition:background .2s}
   .ak:hover{background:rgba(0,32,91,.04)}
   .bvp .hpp-n{font-variant-numeric:tabular-nums}
@@ -888,7 +879,7 @@
   /* Mobil: kolonnene slås sammen til én, og banken står rett under pulsen og enhetene (Apple Watch live). */
   @media (max-width:760px){
     .venstre,.hoyre{display:contents}
-    .naa,.h-sokk{order:1}.sted{order:2}.gjor{order:3}.poster{order:4}.sens{order:5}.bank{order:6}.akse{order:7}.oyet{order:8}.pod{order:9}
+    .naa,.h-sokk{order:1}.sted{order:2}.gjor{order:3}.poster{order:4}.sens{order:5}.bank{order:6}.akse{order:7}.pod{order:8}
   }
   /* Ingen farget boks eller ramme når man trykker med fingeren (Android); tastaturet får fortsatt fokusrammen. */
   *{-webkit-tap-highlight-color:transparent}
@@ -955,14 +946,6 @@
   <section class="akse gl" aria-label="Akselerometeret i Apple Watch og iPhonen, live">
     <div class="ak"><div class="ak-h"><span class="sl">Apple Watch · akselerometer</span><span class="ak-m">20 Hz · g</span></div><canvas class="ak-c" data-k="watch"></canvas></div>
     <div class="ak"><div class="ak-h"><span class="sl">iPhone · akselerometer</span><span class="ak-m"><i class="kx">x</i> <i class="ky">y</i> <i class="kz">z</i></span></div><canvas class="ak-c" data-k="iphone"></canvas></div>
-  </section>
-  <section class="oyet gl" aria-label="Øyet mot">
-    <span class="mono s-t">Øyet mot</span>
-    <div class="oy-rad">
-      <div class="oy" data-tz="Asia/Dubai"><span class="oy-n">Dubai</span><svg class="oy-i" viewBox="0 0 48 48" aria-hidden="true"></svg><b class="oy-v">–</b><span class="oy-k">–</span></div>
-      <div class="oy" data-tz="Asia/Bangkok"><span class="oy-n">Koh Phangan</span><svg class="oy-i" viewBox="0 0 48 48" aria-hidden="true"></svg><b class="oy-v">–</b><span class="oy-k">–</span></div>
-      <div class="oy" data-tz="Asia/Makassar"><span class="oy-n">Lombok</span><svg class="oy-i" viewBox="0 0 48 48" aria-hidden="true"></svg><b class="oy-v">–</b><span class="oy-k">–</span></div>
-    </div>
   </section>
   <section class="pod gl" hidden aria-label="Podkast">
     <span class="mono s-t">Podkast</span>
@@ -2560,8 +2543,6 @@ if (HUS) setTimeout(function lagAvspiller() {
     visBank(bk);
     try { const kk = da.kast ? JSON.parse(da.kast) : null; if (kk) for (const k of ['tomat', 'heia']) if (kk[k] != null) knapp(k).querySelector('b').textContent = tall(kk[k]); } catch {}
     rom = da.rom ?? null;
-    let oy = null; try { oy = da.oyet ? JSON.parse(da.oyet) : null; } catch {}
-    if (da.oyet !== avsp.oyetSist) { avsp.oyetSist = da.oyet; visOyet(oy); }
     // Akselerometrene: de rå pakkene fram til T (hentes i vinduer). Spoler man bakover, begynner kurvene på nytt.
     if (T < (avsp.sistT || 0) - 2000) { delete AK.iphone; delete AK.watch; }
     avsp.sistT = T;
@@ -2594,7 +2575,7 @@ if (HUS) setTimeout(function lagAvspiller() {
     fortell(o.tekst);
     start();
   }
-  function gåLive() { setTimeout(hentOyet, 0); lag.hidden = true; lag.textContent = ''; venter.classList.remove('på'); lagSha = null; document.body.classList.remove('versjon-på'); document.body.classList.remove('replay-sover'); delete AK.iphone; delete AK.watch; bankNokkel = ''; kart.getSource('avsp-prikk')?.setData({ type: 'FeatureCollection', features: [] }); megMark.getElement().style.visibility = ''; document.body.classList.remove('i-replay'); avsp = null; window.__avsp = false; stopp(); trykket(null); kl2.textContent = '–'; fortell(''); sistSpor = ''; forste = true; hent(); }
+  function gåLive() { lag.hidden = true; lag.textContent = ''; venter.classList.remove('på'); lagSha = null; document.body.classList.remove('versjon-på'); document.body.classList.remove('replay-sover'); delete AK.iphone; delete AK.watch; bankNokkel = ''; kart.getSource('avsp-prikk')?.setData({ type: 'FeatureCollection', features: [] }); megMark.getElement().style.visibility = ''; document.body.classList.remove('i-replay'); avsp = null; window.__avsp = false; stopp(); trykket(null); kl2.textContent = '–'; fortell(''); sistSpor = ''; forste = true; hent(); }
   spill.onclick = () => { if (tl) tlStopp(); if (!avsp) return; if (avsp.spiller) stopp(); else { if (avsp.k >= 1) avsp.k = 0; start(); } };
   // Farten: en egen glidebryter (som på YouTube) fra 1× til 60×, jevnt fordelt på en logaritmisk skala.
   const fartvalg = q('.h-fartvalg'), fs = q('.h-fs');
@@ -2802,39 +2783,6 @@ const naaD = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', weekday:
 const naaK = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', hour: '2-digit', minute: '2-digit', second: '2-digit' });
 function tegnNaa() { const t = Date.now() + skew, d = naaD.format(t); $('.naa-d').textContent = d[0].toUpperCase() + d.slice(1); $('.naa-k').textContent = naaK.format(t).replace(/\./g, ':'); }
 tegnNaa(); setInterval(tegnNaa, 1000);
-// Øyet mot: været fra /chat/oyet (hvert 15. min) som tydelige ikoner, klokkeslettet regnes her og går hvert sekund.
-const SOL = '<g stroke="#f59e0b" stroke-width="3" stroke-linecap="round"><path d="M24 4v5M24 39v5M4 24h5M39 24h5M9.9 9.9l3.5 3.5M34.6 34.6l3.5 3.5M9.9 38.1l3.5-3.5M34.6 13.4l3.5-3.5"/></g><circle cx="24" cy="24" r="9" fill="#fbbf24"/>';
-const MANE = '<path d="M30 8a16 16 0 1 0 10 26A13 13 0 0 1 30 8z" fill="#fcd34d"/>';
-const SKY = (x = 0, y = 0, f = '#a8b4c4') => `<path transform="translate(${x} ${y})" d="M14 36h22a8 8 0 0 0 0-16 11 11 0 0 0-21-2A8 8 0 0 0 14 36z" fill="${f}"/>`;
-const IKON = {
-  sol: SOL, klart: MANE,
-  delvis: '<g transform="translate(-5 -6) scale(.8)">' + SOL + '</g>' + SKY(2, 6, '#c3ccd8'),
-  sky: SKY(0, 2), take: SKY(0, -4) + '<path d="M10 38h28M14 43h20" stroke="#a8b4c4" stroke-width="3" stroke-linecap="round"/>',
-  regn: SKY(0, -4) + '<path d="M16 37l-3 7M25 37l-3 7M34 37l-3 7" stroke="#2563eb" stroke-width="3" stroke-linecap="round"/>',
-  sno: SKY(0, -4) + '<g fill="#93c5fd"><circle cx="15" cy="40" r="2.5"/><circle cx="24" cy="43" r="2.5"/><circle cx="33" cy="40" r="2.5"/></g>',
-  torden: SKY(0, -5, '#7c8798') + '<path d="M25 30l-6 10h6l-3 8 9-12h-6l3-6z" fill="#facc15"/>',
-};
-const VAER = (k, dag) => k === 0 ? (dag ? 'sol' : 'klart') : k <= 2 ? (dag ? 'delvis' : 'klart') : k === 3 ? 'sky' : k <= 48 ? 'take' : k <= 67 || (k >= 80 && k <= 82) ? 'regn' : k <= 86 ? 'sno' : 'torden';
-const oyKl = {};
-function tegnOyet() {
-  document.querySelectorAll('.oy').forEach(r => {
-    const tz = r.dataset.tz, f = oyKl[tz] || (oyKl[tz] = new Intl.DateTimeFormat(TX.loc, { timeZone: tz, hour: '2-digit', minute: '2-digit' }));
-    r.querySelector('.oy-k').textContent = f.format(Date.now() + skew);
-  });
-}
-// Været i de tre byene (fra /chat/oyet, eller fra loggen under avspilling). Uten data: tomt.
-function visOyet(v) {
-  document.querySelectorAll('.oy').forEach((r, n) => {
-    const x = v && v[n];
-    if (!x || !Number.isFinite(x.t)) { r.querySelector('.oy-i').innerHTML = ''; r.querySelector('.oy-v').textContent = '–'; return; }
-    r.querySelector('.oy-i').innerHTML = IKON[VAER(x.kode, x.dag)]; r.querySelector('.oy-v').textContent = x.t + '°';
-  });
-}
-async function hentOyet() {
-  if (window.__avsp) return;   // under avspilling viser loggen været den gang
-  try { visOyet(await (await fetch('/chat/oyet?steder=dubai-kp-lombok')).json()); } catch {}   // rekkefølgen i adressen, så nettleserens mellomlager ikke blander gammel rekkefølge
-}
-tegnOyet(); setInterval(tegnOyet, 1000); hentOyet(); setInterval(hentOyet, 15 * 60e3);
 // Bevegelsesoversikten: trykk på et akselerometer for historikken (i dag med hver måling, 7 dager, 30 dager), som pulsen.
 const bvp = $('.bvp'), bvS = bvp.querySelector('.bvp-c svg'), bvC = bvp.querySelector('.bvp-c'), bvT = bvp.querySelector('.hpp-t');
 let bvK = 'iphone', bvR = 'fin', bvD = null, bvI = null, bvHent = 0;
@@ -2928,7 +2876,7 @@ setInterval(tegn, 1000);
 <script>
 // Egen peker: siktekorset står nøyaktig der pekeren er, bare i hero (resten av siden og chatten har vanlig peker).
 // Lappen ved siden av sier hva modulen under viser: koordinatene over kartet (kartet legger seg i window.__kart),
-// pulsen, saldoen, klokka i byene i «Øyet mot» og så videre. Bare med mus/styreflate.
+// pulsen, saldoen og så videre. Bare med mus/styreflate.
 (() => {
   if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
   const h = document.documentElement, k = document.createElement('div');
@@ -2954,8 +2902,6 @@ setInterval(tegn, 1000);
     ['.hp', el => { const b = tekst(el, '.hb-n'); return '♥ ' + (b && b !== '–' ? b + ' bpm · ' : '') + (en ? 'open' : 'åpne'); }],
     ['.sens', () => en ? 'Live from his devices' : 'Live fra enhetene hans'],
     ['.bank', el => (en ? 'Balance ' : 'Saldo ') + tekst(el, '.bk-sum')],
-    ['.oy', el => tekst(el, '.oy-n') + ' · ' + tekst(el, '.oy-k')],
-    ['.oyet', () => en ? 'Eyes on' : 'Øyet mot'],
     ['.poster', () => en ? 'Next post' : 'Neste post'],
     ['.gjor', el => tekst(el, '.g-navn')],
     ['.sted', () => en ? 'Live position' : 'Live posisjon'],

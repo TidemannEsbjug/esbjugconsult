@@ -782,15 +782,6 @@
   .bank li span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
   .bank li b{font-weight:650;font-variant-numeric:tabular-nums;white-space:nowrap}
   .bk-kontoer li span:first-child{opacity:.75}
-  /* Øyet mot: tre steder ved siden av hverandre, hvert med et tydelig værikon, grader, ordet, stedet og klokka der. */
-  .oyet{display:flex;flex-direction:column;gap:10px;padding:14px 18px 16px}
-  .oy-rad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-  .oy{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;min-width:0}
-  .oy+.oy{border-left:1px solid rgba(0,32,91,.1)}
-  .oy-i{width:46px;height:46px;margin:6px 0 4px;overflow:visible}
-  .oy-v{font:640 24px/1 var(--serif);letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums}
-  .oy-n{font:italic 400 15px/1.15 var(--serif);color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-  .oy-k{font:500 11px/1 "SF Mono",Menlo,monospace;letter-spacing:.04em;color:rgba(0,32,91,.5);font-variant-numeric:tabular-nums}
   .ak{cursor:pointer;border-radius:10px;transition:background .2s}
   .ak:hover{background:rgba(0,32,91,.04)}
   .bvp .hpp-n{font-variant-numeric:tabular-nums}
@@ -889,11 +880,17 @@
   /* Mobil: kolonnene slås sammen til én, og banken står rett under pulsen og enhetene (Apple Watch live). */
   @media (max-width:760px){
     .venstre,.hoyre{display:contents}
-    .naa,.h-sokk{order:1}.sted{order:2}.gjor{order:3}.poster{order:4}.sens{order:5}.bank{order:6}.akse{order:7}.oyet{order:8}.pod{order:9}
+    .naa,.h-sokk{order:1}.sted{order:2}.gjor{order:3}.poster{order:4}.sens{order:5}.bank{order:6}.akse{order:7}.pod{order:8}
   }
   /* Ingen farget boks eller ramme når man trykker med fingeren (Android); tastaturet får fortsatt fokusrammen. */
   *{-webkit-tap-highlight-color:transparent}
   :focus:not(:focus-visible){outline:none}
+  /* Språkvelgeren: ingen indre kant, og det tomme teller-feltet tas ut, så flaggene står med like mye luft på begge sider. */
+  .topp .lang{border:0}
+  .topp .st:not(:has(.st-i:not([hidden]))){display:none}
+  /* «Kast tomat» og «Si heia» er tatt bort (skriptet setter fortsatt .k-tomat, så knappene skjules her). */
+  .kast{display:none!important}
+  .utg li i{font-style:normal;opacity:.55;margin-left:6px;font-size:12px}
 </style>
 </head>
 <body>
@@ -922,6 +919,14 @@
     <b class="bk-sum">–</b>
     <ul class="bk-kontoer"></ul>
   </section>
+  <!-- Kostnader: det jeg bruker penger på, nyeste øverst, i hele kroner. Legg til nye linjer her. -->
+  <section class="bank utg gl" aria-label="Kostnader">
+    <span class="mono s-t"><span>Kostnader</span></span>
+    <ul class="ut-liste">
+      <li><span>Cloudflare <i>25. okt · 11:30</i></span><b>−47 kr</b></li>
+      <li><span>Claude Max 20 <i>25. okt · 10:47</i></span><b>−2&nbsp;299 kr</b></li>
+    </ul>
+  </section>
   <section class="poster" hidden aria-live="polite" aria-label="Poster fra Tidemann. Trykk for neste." role="button" tabindex="0"></section>
   </div>
   <div class="hoyre">
@@ -942,14 +947,6 @@
   <section class="akse gl" aria-label="Akselerometeret i Apple Watch og iPhonen, live">
     <div class="ak"><div class="ak-h"><span class="sl">Apple Watch · akselerometer</span><span class="ak-m">20 Hz · g</span></div><canvas class="ak-c" data-k="watch"></canvas></div>
     <div class="ak"><div class="ak-h"><span class="sl">iPhone · akselerometer</span><span class="ak-m"><i class="kx">x</i> <i class="ky">y</i> <i class="kz">z</i></span></div><canvas class="ak-c" data-k="iphone"></canvas></div>
-  </section>
-  <section class="oyet gl" aria-label="Øyet mot">
-    <span class="mono s-t">Øyet mot</span>
-    <div class="oy-rad">
-      <div class="oy" data-tz="Asia/Dubai"><span class="oy-n">Dubai</span><svg class="oy-i" viewBox="0 0 48 48" aria-hidden="true"></svg><b class="oy-v">–</b><span class="oy-k">–</span></div>
-      <div class="oy" data-tz="Asia/Bangkok"><span class="oy-n">Koh Phangan</span><svg class="oy-i" viewBox="0 0 48 48" aria-hidden="true"></svg><b class="oy-v">–</b><span class="oy-k">–</span></div>
-      <div class="oy" data-tz="Asia/Makassar"><span class="oy-n">Lombok</span><svg class="oy-i" viewBox="0 0 48 48" aria-hidden="true"></svg><b class="oy-v">–</b><span class="oy-k">–</span></div>
-    </div>
   </section>
   <section class="pod gl" hidden aria-label="Podkast">
     <span class="mono s-t">Podkast</span>
@@ -1854,24 +1851,26 @@ function tegn() {
   document.body.classList.toggle('gammel', gammel);
   // Under avspilling: tiden som spilles, ikke «Live».
   $('.s-live').textContent = avsp ? 'Replay · ' + kl.format(nå) : gammel ? TX.sistSett + tid(alder) + TX.siden : TX.live + tid(alder) + TX.siden;
-  $('.s-navn').classList.toggle('kjent', !!live.kjent);
+  $('.s-navn').classList.remove('kjent');
   $('.k-tomat').hidden = live.kjent !== 'hjemme hos moren sin';   // tomater bare hjemme hos moren hans; heia overalt
-  $('.s-navn').textContent = live.kjent ? (TX.kjent[live.kjent] || 'Tidemann er ' + live.kjent) : st && st.by ? [st.strok, st.by].filter(Boolean).join(', ') + (st.kode && st.kode !== 'NO' ? ', ' + st.land : '') : TX.jorda;
+  // Vanlig stedsnavn (strøk og by) også på kjente steder; kjente steder som «hjemme hos moren sin» vises ikke lenger.
+  $('.s-navn').textContent = st && st.by ? [st.strok, st.by].filter(Boolean).join(', ') + (st.kode && st.kode !== 'NO' ? ', ' + st.land : '') : TX.jorda;
   const fart = live.spd != null && live.spd >= .8 && !gammel && i.aktivitet !== 'står stille' ? Math.round(live.spd * 3.6) + ' km/t' : null;   // GPS-støy gir litt fart også når han står stille
   // Rommet hjemme, fra fyrene i huset (se /chat/admin/rom). Navnene står slik han skrev dem.
   const sub = fart || (HUS && rom && !gammel ? TX.rom + rom : null);
   $('.s-sub').textContent = sub || '';
   $('.s-sub').hidden = !sub;
-  // Hjemme (bare /hjem/): prikken står midt i rommet han er i (eller midt i huset), og GPS-sporet på og rundt tomta
-  // tas bort, for innendørs er GPS bare krusedull. Sporet slutter der det går inn på tomta, og prikken kobles ikke til det.
+  // Hjemme (bare /hjem/): huset tegnes i kartet, prikken står midt i rommet han er i (eller midt i huset), og
+  // GPS-sporet inne i og rundt huset tas bort, for innendørs er GPS bare krusedull. Sporet fra veien går inn til prikken.
   const hus = husNå();
   const pos = hus ? [hus.pos[1], hus.pos[0]] : [live.lat, live.lon];
   let spor = linjer(trail);
-  if (HUS && plan && plan.geo && plan.geo.buss) spor = tomtSpor(spor);
-  if (spor.length && !hus) spor[spor.length - 1].push(pos); else if (!spor.length) spor = [[pos]];
+  if (HUS && plan && plan.geo && plan.geo.buss) spor = tomtSpor(spor, !!hus);
+  if (spor.length) spor[spor.length - 1].push(pos); else spor = [[pos]];
   stier = spor;
   if (!kart || !kart.getSource('spor')) return;
   const lngLat = [pos[1], pos[0]];
+  husIKart(hus);
   // Sporet sendes bare til kartet når det har endret seg (tegn() går hvert sekund).
   const sporNokkel = trail.length + ':' + (trail[trail.length - 1]?.[2] || 0) + ':' + pos;
   if (sporNokkel !== sistSpor) { sistSpor = sporNokkel; kart.getSource('spor').setData({ type: 'Feature', geometry: { type: 'MultiLineString', coordinates: spor.map(l => l.map(p => [p[1], p[0]])) } }); }
@@ -2168,12 +2167,14 @@ function nyeKast(ny) {
 const kr = new Intl.NumberFormat(TX.loc, { maximumFractionDigits: 0 });
 let bankNokkel = '';
 function visBank(b) {
-  const e = $('.bank'); e.hidden = !b || !b.kontoer || !b.kontoer.length;
+  // Skatt og MVA-konto vises ikke i lista (resten gjør det).
+  const SKJULT = /skatt|mva/i, vis = b && b.kontoer ? b.kontoer.filter(k => !SKJULT.test(k.navn)) : [];
+  const e = $('.bank'); e.hidden = !vis.length;
   if (e.hidden || b.ts === bankNokkel) return;
   bankNokkel = b.ts;
-  $('.bk-sum').textContent = kr.format(b.sum) + ' kr';
+  $('.bk-sum').textContent = kr.format(b.sum) + ' kr';   // totalen er alltid alle kontoene, også de som ikke vises
   $('.bk-t').textContent = TX.oppdatert + kl.format(b.ts);
-  $('.bk-kontoer').replaceChildren(...b.kontoer.map(k => {
+  $('.bk-kontoer').replaceChildren(...vis.map(k => {
     const l = document.createElement('li'), x = document.createElement('span'), y = document.createElement('b');
     x.textContent = k.navn + (k.nr ? ' ··' + k.nr : ''); y.textContent = kr.format(k.disp ?? k.saldo) + ' kr'; l.append(x, y); return l;   // disponibelt, som i nettbanken
   }));
@@ -2185,28 +2186,54 @@ const GJOR = TX.gjor;
 // (u + tx) og nord (−v + ty) fra geo.lat/lon. Tilpasset husets omriss i kartdataene (OpenStreetMap).
 const HUS = location.pathname.startsWith('/hjem');
 let plan = null;
-const hentPlan = async () => { try { plan = await (await fetch('/chat/plan')).json(); } catch {} };
+const hentPlan = async () => { try { plan = await (await fetch('/chat/plan')).json(); husTegnet = ''; } catch {} };
 if (HUS) { hentPlan(); setInterval(hentPlan, 10 * 60e3); }
 const geoPkt = (x, z) => {
   const g = plan.geo, c = Math.cos(g.th), s = Math.sin(g.th), u = x * c - z * s, v = x * s + z * c;
   return [g.lon + (u + g.tx) / (111320 * Math.cos(g.lat * Math.PI / 180)), g.lat + (-v + g.ty) / 110574];
 };
+// Stien fra busstoppet til døra, slik han tegnet den (plan.geo.buss og .vei). Først forenkles den til noen få
+// knekkpunkter (Douglas–Peucker, 4 m), så rundes hjørnene av med Chaikin, så den blir et par myke svinger.
+const forenkle = (p, tol) => {
+  if (p.length < 3) return p;
+  const K = 111320 * Math.cos(p[0][1] * Math.PI / 180), m = q => [q[0] * K, q[1] * 110574], [a, b] = [m(p[0]), m(p[p.length - 1])];
+  let maks = 0, i = 0;
+  for (let k = 1; k < p.length - 1; k++) {
+    const c = m(p[k]), dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1, d = Math.abs(dy * (c[0] - a[0]) - dx * (c[1] - a[1])) / l;
+    if (d > maks) { maks = d; i = k; }
+  }
+  return maks > tol ? [...forenkle(p.slice(0, i + 1), tol).slice(0, -1), ...forenkle(p.slice(i), tol)] : [p[0], p[p.length - 1]];
+};
+let stiMemo = null;
+const sti = () => {
+  if (stiMemo && stiMemo.ts === plan.ts) return stiMemo.p;
+  let p = forenkle([...(plan.geo.buss ? [plan.geo.buss] : []), ...(plan.geo.vei || [])], 4);
+  for (let n = 0; n < 5 && p.length > 2; n++) {
+    const q = [p[0]];
+    for (let i = 0; i < p.length - 1; i++) { const [a, b] = [p[i], p[i + 1]]; q.push([a[0] * .75 + b[0] * .25, a[1] * .75 + b[1] * .25], [a[0] * .25 + b[0] * .75, a[1] * .25 + b[1] * .75]); }
+    q.push(p[p.length - 1]); p = q;
+  }
+  p = p.length ? p : [geoPkt(0, 0)];
+  stiMemo = { ts: plan.ts, p };
+  return p;
+};
 // Tomta: under 40 m fra huset, eller nærmere huset enn busstoppet (og over 35 m fra busstoppet) innen 120 m. GPS her
-// inne teller ikke (hus og hage gir bare krusedull). Ved busstoppet og på veien teller GPS-en som vanlig. Sporet brytes
-// der det går inn på tomta og starter igjen der det går ut. Huset og stien fra busstoppet tegnes ikke lenger.
+// inne teller ikke (hus og hage gir bare krusedull). Ved busstoppet og på veien teller GPS-en som vanlig. Går sporet inn på tomta, følger det stien fra busstoppet til døra; går det ut, følger det stien tilbake.
+// Hjemme går sporet til slutt fra døra til prikken i huset.
 let husMidtMemo = null;
 const husMidt = () => { if (husMidtMemo && husMidtMemo.ts === plan.ts) return husMidtMemo.p; const g = geoPkt(...midt(plan.rom.flatMap(x => x.gulv))); husMidtMemo = { ts: plan.ts, p: [g[1], g[0]] }; return husMidtMemo.p; };
 const påTomta = q => {
   const h = dist(q, husMidt()), b = dist(q, [plan.geo.buss[1], plan.geo.buss[0]]);
   return h < 40 || (h < 120 && b > 35 && h < b);
 };
-function tomtSpor(linjer) {
-  const ut = [];
+function tomtSpor(linjer, hjemme) {
+  const vei = sti().map(v => [v[1], v[0]]), tilbake = [...vei].reverse(), ut = [];
   for (const l of linjer) {
-    let cur = [];
+    let cur = [], inne = false;
     for (const q of l) {
-      if (påTomta(q)) { if (cur.length) ut.push(cur); cur = []; continue; }
-      cur.push(q);
+      if (påTomta(q)) { if (!inne && cur.length) cur.push(...vei); inne = true; continue; }
+      if (inne) cur.push(...tilbake);
+      inne = false; cur.push(q);
     }
     if (cur.length) ut.push(cur);
   }
@@ -2517,8 +2544,6 @@ if (HUS) setTimeout(function lagAvspiller() {
     visBank(bk);
     try { const kk = da.kast ? JSON.parse(da.kast) : null; if (kk) for (const k of ['tomat', 'heia']) if (kk[k] != null) knapp(k).querySelector('b').textContent = tall(kk[k]); } catch {}
     rom = da.rom ?? null;
-    let oy = null; try { oy = da.oyet ? JSON.parse(da.oyet) : null; } catch {}
-    if (da.oyet !== avsp.oyetSist) { avsp.oyetSist = da.oyet; visOyet(oy); }
     // Akselerometrene: de rå pakkene fram til T (hentes i vinduer). Spoler man bakover, begynner kurvene på nytt.
     if (T < (avsp.sistT || 0) - 2000) { delete AK.iphone; delete AK.watch; }
     avsp.sistT = T;
@@ -2551,7 +2576,7 @@ if (HUS) setTimeout(function lagAvspiller() {
     fortell(o.tekst);
     start();
   }
-  function gåLive() { setTimeout(hentOyet, 0); lag.hidden = true; lag.textContent = ''; venter.classList.remove('på'); lagSha = null; document.body.classList.remove('versjon-på'); document.body.classList.remove('replay-sover'); delete AK.iphone; delete AK.watch; bankNokkel = ''; kart.getSource('avsp-prikk')?.setData({ type: 'FeatureCollection', features: [] }); megMark.getElement().style.visibility = ''; document.body.classList.remove('i-replay'); avsp = null; window.__avsp = false; stopp(); trykket(null); kl2.textContent = '–'; fortell(''); sistSpor = ''; forste = true; hent(); }
+  function gåLive() { lag.hidden = true; lag.textContent = ''; venter.classList.remove('på'); lagSha = null; document.body.classList.remove('versjon-på'); document.body.classList.remove('replay-sover'); delete AK.iphone; delete AK.watch; bankNokkel = ''; kart.getSource('avsp-prikk')?.setData({ type: 'FeatureCollection', features: [] }); megMark.getElement().style.visibility = ''; document.body.classList.remove('i-replay'); avsp = null; window.__avsp = false; stopp(); trykket(null); kl2.textContent = '–'; fortell(''); sistSpor = ''; forste = true; hent(); }
   spill.onclick = () => { if (tl) tlStopp(); if (!avsp) return; if (avsp.spiller) stopp(); else { if (avsp.k >= 1) avsp.k = 0; start(); } };
   // Farten: en egen glidebryter (som på YouTube) fra 1× til 60×, jevnt fordelt på en logaritmisk skala.
   const fartvalg = q('.h-fartvalg'), fs = q('.h-fs');
@@ -2640,7 +2665,41 @@ function husNå() {
   const alle = plan.rom.flatMap(x => x.gulv), senter = geoPkt(...midt(alle));
   // ?etasje=2 viser andre etasje mens vi tester (før fyrene vet hvor han er).
   const valgt = +new URLSearchParams(location.search).get('etasje') - 1;
-  return { r, etg: r ? etasje(r) : valgt > 0 ? valgt : 0, pos: r && r.gulv.length ? geoPkt(...midt(r.gulv)) : senter, senter };
+  return { r, etg: r ? etasje(r) : valgt > 0 ? valgt : 0, pos: r && r.gulv.length ? geoPkt(...midt(r.gulv)) : senter, senter, sti: sti() };
+}
+// Bare etasjen han er i, enkelt: gulvene som én lys flate, tynne vegger, rommet hans svakt rødt. Zoomer man langt
+// inn, står rommets navn ved prikken. Tegnes på nytt bare når noe endres.
+let husTegnet = '';
+function husIKart(hus) {
+  if (!HUS || !kart.isStyleLoaded()) return;
+  const nokkel = hus ? (plan.ts + ':' + hus.etg + ':' + (hus.r ? hus.r.navn : '')) : '';
+  if (nokkel === husTegnet) return;
+  husTegnet = nokkel;
+  const f = [];
+  if (hus) {
+    for (const x of plan.rom) {
+      if (etasje(x) !== hus.etg) continue;
+      if (x.gulv.length > 2) f.push({ type: 'Feature', properties: { t: 'gulv', her: x === hus.r }, geometry: { type: 'Polygon', coordinates: [[...x.gulv, x.gulv[0]].map(p => geoPkt(...p))] } });
+      for (const v of x.vegger) f.push({ type: 'Feature', properties: { t: 'vegg' }, geometry: { type: 'LineString', coordinates: [geoPkt(v[0], v[1]), geoPkt(v[2], v[3])] } });
+    }
+    if (hus.r) f.push({ type: 'Feature', properties: { t: 'navn', navn: hus.r.navn }, geometry: { type: 'Point', coordinates: hus.pos } });
+    if (hus.sti.length > 1) f.push({ type: 'Feature', properties: { t: 'sti' }, geometry: { type: 'LineString', coordinates: hus.sti } });
+    if (plan.geo.buss) f.push({ type: 'Feature', properties: { t: 'buss' }, geometry: { type: 'Point', coordinates: plan.geo.buss } });
+  }
+  const data = { type: 'FeatureCollection', features: f };
+  if (kart.getSource('hus')) { kart.getSource('hus').setData(data); return; }
+  kart.addSource('hus', { type: 'geojson', data });
+  const før = kart.getLayer('spor-glod') ? 'spor-glod' : undefined;
+  kart.addLayer({ id: 'hus-gulv', type: 'fill', source: 'hus', filter: ['==', ['get', 't'], 'gulv'], paint: { 'fill-color': ['case', ['get', 'her'], '#6b2a2c', '#3d3631'] } }, før);   // tette farger: rom som overlapper blir ikke mørkere
+  kart.addLayer({ id: 'hus-vegg', type: 'line', source: 'hus', filter: ['==', ['get', 't'], 'vegg'], layout: { 'line-cap': 'round' }, paint: { 'line-color': '#fffaf0', 'line-opacity': .75, 'line-width': ['interpolate', ['linear'], ['zoom'], 17, .6, 21, 2.2] } }, før);
+  // Stien: korte streker med mellomrom, som en sti på et turkart. Busstoppet er en liten rund prikk.
+  kart.addLayer({ id: 'hus-sti', type: 'line', source: 'hus', filter: ['==', ['get', 't'], 'sti'], layout: { 'line-cap': 'round', 'line-join': 'round' },
+    paint: { 'line-color': '#fffaf0', 'line-opacity': .9, 'line-width': ['interpolate', ['linear'], ['zoom'], 16, 1.5, 21, 4], 'line-dasharray': [1.6, 2.2] } }, før);
+  kart.addLayer({ id: 'hus-buss', type: 'circle', source: 'hus', filter: ['==', ['get', 't'], 'buss'],
+    paint: { 'circle-radius': ['interpolate', ['linear'], ['zoom'], 16, 3.5, 21, 8], 'circle-color': '#BA0C2F', 'circle-stroke-color': '#fffaf0', 'circle-stroke-width': 1.8 } });
+  kart.addLayer({ id: 'hus-navn', type: 'symbol', source: 'hus', minzoom: 19.5, filter: ['==', ['get', 't'], 'navn'],
+    layout: { 'text-field': ['get', 'navn'], 'text-font': ['Noto Sans Italic'], 'text-size': 13, 'text-offset': [0, 1.3], 'text-anchor': 'top' },
+    paint: { 'text-color': '#fffaf0', 'text-halo-color': 'rgba(0,0,0,.55)', 'text-halo-width': 1.4 } });
 }
 function gjor(v) { const e = $('.gjor'); e.hidden = !GJOR[v]; if (GJOR[v]) $('.g-navn').textContent = GJOR[v]; }
 const kl = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', hour: '2-digit', minute: '2-digit' }), dag = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', day: 'numeric', month: 'long' }), dagNr = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Oslo' });
@@ -2725,39 +2784,6 @@ const naaD = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', weekday:
 const naaK = new Intl.DateTimeFormat(TX.loc, { timeZone: 'Europe/Oslo', hour: '2-digit', minute: '2-digit', second: '2-digit' });
 function tegnNaa() { const t = Date.now() + skew, d = naaD.format(t); $('.naa-d').textContent = d[0].toUpperCase() + d.slice(1); $('.naa-k').textContent = naaK.format(t).replace(/\./g, ':'); }
 tegnNaa(); setInterval(tegnNaa, 1000);
-// Øyet mot: været fra /chat/oyet (hvert 15. min) som tydelige ikoner, klokkeslettet regnes her og går hvert sekund.
-const SOL = '<g stroke="#f59e0b" stroke-width="3" stroke-linecap="round"><path d="M24 4v5M24 39v5M4 24h5M39 24h5M9.9 9.9l3.5 3.5M34.6 34.6l3.5 3.5M9.9 38.1l3.5-3.5M34.6 13.4l3.5-3.5"/></g><circle cx="24" cy="24" r="9" fill="#fbbf24"/>';
-const MANE = '<path d="M30 8a16 16 0 1 0 10 26A13 13 0 0 1 30 8z" fill="#fcd34d"/>';
-const SKY = (x = 0, y = 0, f = '#a8b4c4') => `<path transform="translate(${x} ${y})" d="M14 36h22a8 8 0 0 0 0-16 11 11 0 0 0-21-2A8 8 0 0 0 14 36z" fill="${f}"/>`;
-const IKON = {
-  sol: SOL, klart: MANE,
-  delvis: '<g transform="translate(-5 -6) scale(.8)">' + SOL + '</g>' + SKY(2, 6, '#c3ccd8'),
-  sky: SKY(0, 2), take: SKY(0, -4) + '<path d="M10 38h28M14 43h20" stroke="#a8b4c4" stroke-width="3" stroke-linecap="round"/>',
-  regn: SKY(0, -4) + '<path d="M16 37l-3 7M25 37l-3 7M34 37l-3 7" stroke="#2563eb" stroke-width="3" stroke-linecap="round"/>',
-  sno: SKY(0, -4) + '<g fill="#93c5fd"><circle cx="15" cy="40" r="2.5"/><circle cx="24" cy="43" r="2.5"/><circle cx="33" cy="40" r="2.5"/></g>',
-  torden: SKY(0, -5, '#7c8798') + '<path d="M25 30l-6 10h6l-3 8 9-12h-6l3-6z" fill="#facc15"/>',
-};
-const VAER = (k, dag) => k === 0 ? (dag ? 'sol' : 'klart') : k <= 2 ? (dag ? 'delvis' : 'klart') : k === 3 ? 'sky' : k <= 48 ? 'take' : k <= 67 || (k >= 80 && k <= 82) ? 'regn' : k <= 86 ? 'sno' : 'torden';
-const oyKl = {};
-function tegnOyet() {
-  document.querySelectorAll('.oy').forEach(r => {
-    const tz = r.dataset.tz, f = oyKl[tz] || (oyKl[tz] = new Intl.DateTimeFormat(TX.loc, { timeZone: tz, hour: '2-digit', minute: '2-digit' }));
-    r.querySelector('.oy-k').textContent = f.format(Date.now() + skew);
-  });
-}
-// Været i de tre byene (fra /chat/oyet, eller fra loggen under avspilling). Uten data: tomt.
-function visOyet(v) {
-  document.querySelectorAll('.oy').forEach((r, n) => {
-    const x = v && v[n];
-    if (!x || !Number.isFinite(x.t)) { r.querySelector('.oy-i').innerHTML = ''; r.querySelector('.oy-v').textContent = '–'; return; }
-    r.querySelector('.oy-i').innerHTML = IKON[VAER(x.kode, x.dag)]; r.querySelector('.oy-v').textContent = x.t + '°';
-  });
-}
-async function hentOyet() {
-  if (window.__avsp) return;   // under avspilling viser loggen været den gang
-  try { visOyet(await (await fetch('/chat/oyet?steder=dubai-kp-lombok')).json()); } catch {}   // rekkefølgen i adressen, så nettleserens mellomlager ikke blander gammel rekkefølge
-}
-tegnOyet(); setInterval(tegnOyet, 1000); hentOyet(); setInterval(hentOyet, 15 * 60e3);
 // Bevegelsesoversikten: trykk på et akselerometer for historikken (i dag med hver måling, 7 dager, 30 dager), som pulsen.
 const bvp = $('.bvp'), bvS = bvp.querySelector('.bvp-c svg'), bvC = bvp.querySelector('.bvp-c'), bvT = bvp.querySelector('.hpp-t');
 let bvK = 'iphone', bvR = 'fin', bvD = null, bvI = null, bvHent = 0;
@@ -2851,7 +2877,7 @@ setInterval(tegn, 1000);
 <script>
 // Egen peker: siktekorset står nøyaktig der pekeren er, bare i hero (resten av siden og chatten har vanlig peker).
 // Lappen ved siden av sier hva modulen under viser: koordinatene over kartet (kartet legger seg i window.__kart),
-// pulsen, saldoen, klokka i byene i «Øyet mot» og så videre. Bare med mus/styreflate.
+// pulsen, saldoen og så videre. Bare med mus/styreflate.
 (() => {
   if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
   const h = document.documentElement, k = document.createElement('div');
@@ -2877,8 +2903,6 @@ setInterval(tegn, 1000);
     ['.hp', el => { const b = tekst(el, '.hb-n'); return '♥ ' + (b && b !== '–' ? b + ' bpm · ' : '') + (en ? 'open' : 'åpne'); }],
     ['.sens', () => en ? 'Live from his devices' : 'Live fra enhetene hans'],
     ['.bank', el => (en ? 'Balance ' : 'Saldo ') + tekst(el, '.bk-sum')],
-    ['.oy', el => tekst(el, '.oy-n') + ' · ' + tekst(el, '.oy-k')],
-    ['.oyet', () => en ? 'Eyes on' : 'Øyet mot'],
     ['.poster', () => en ? 'Next post' : 'Neste post'],
     ['.gjor', el => tekst(el, '.g-navn')],
     ['.sted', () => en ? 'Live position' : 'Live posisjon'],
