@@ -590,8 +590,8 @@ export function tidspunkt(q, nå) {
 export function bankSok(q) {
   const t = q.toLowerCase(), forst = /først|første/.test(t);
   if (/\b(minus|overtrukket|negativ|i rødt)/.test(t) && /konto|bank|saldo|penger|minus/.test(t)) return { hva: "minus", forst };
-  if (/\b(brukte|brukt|betalte|handlet|kjøpte|tok ut)\b/.test(t) && /penger|kroner|kr\b|noe|brukte|betalte|handlet|kjøpte/.test(t)) return { hva: "brukt", forst };
-  if (/(fikk|kom|satte inn|mottok).{0,20}(penger|lønn|kroner)|penger inn|lønn/.test(t)) return { hva: "inn", forst };
+  if (/\b(brukte|brukt|betalte|handlet|kjøpte|tok ut|spent|spend|paid|bought)\b/.test(t)) return { hva: "brukt", forst };
+  if (/(fikk|kom|satte inn|mottok).{0,20}(penger|lønn|kroner|betalt)|penger inn|lønn|tjen(te|t|er)\b|inntekt|innbetal|\b(make|made|earn(ed)?|got paid|received)\b/.test(t)) return { hva: "inn", forst };
   if (/(saldo|konto|bank|penger)/.test(t) && /\b(mest|høyest|størst)/.test(t)) return { hva: "hoy" };
   if (/(saldo|konto|bank|penger)/.test(t) && /\b(minst|lavest)/.test(t)) return { hva: "lav" };
   return null;
