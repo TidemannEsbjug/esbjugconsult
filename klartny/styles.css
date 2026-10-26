@@ -4022,13 +4022,11 @@ footer {
   color: var(--ink-3);
 }
 
-/* Norske felt: natt, med snøkrystallen */
+/* Norske felt: dagslys, med snøkrystallen */
 .nk-norsk {
   position: relative;
   overflow: hidden;
-  background: radial-gradient(1000px 600px at 85% 30%, rgba(111, 155, 245, 0.16), transparent 70%),
-    linear-gradient(180deg, var(--nk-natt), var(--nk-natt-2));
-  color: #dfe8f5;
+  background: linear-gradient(180deg, var(--ground), #ffffff 45%, var(--ground));
 }
 
 .nk-norsk-inner {
@@ -4040,18 +4038,10 @@ footer {
   margin: 0 auto;
 }
 
-.nk-norsk .nk-merke {
-  color: #93b4ff;
-}
-
-.nk-norsk .nk-tittel {
-  color: #fff;
-}
-
 .nk-norsk-tekst > p:not(.nk-merke) {
   max-width: 54ch;
   font-size: 17px;
-  color: #b8c6da;
+  color: var(--ink-2);
 }
 
 .nk-felt {
@@ -4063,31 +4053,35 @@ footer {
 
 .nk-felt div {
   padding: 14px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid var(--nk-sølv);
 }
 
+/* Merket med gul understrek, som de rensede merkene i appen. */
 .nk-felt dt {
+  display: inline-block;
+  padding: 0 2px;
   font-family: var(--mono);
   font-size: 12.5px;
-  color: #f0d491;
+  color: var(--ink);
+  box-shadow: inset 0 -0.45em 0 var(--nk-gul);
 }
 
 .nk-felt dd {
-  margin: 4px 0 0;
+  margin: 6px 0 0;
   font-size: 15px;
-  color: #c9d6e8;
+  color: var(--ink-2);
 }
 
 .nk-norsk .nk-ogsa {
   font-size: 15px !important;
-  color: #93a4bd !important;
+  color: var(--ink-3) !important;
 }
 
 .nk-krystall {
   margin: 0;
   border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 30px 60px -36px rgba(13, 26, 46, 0.35);
 }
 
 .nk-krystall img {
@@ -4104,7 +4098,7 @@ footer {
   align-items: center;
   min-height: clamp(600px, 78vh, 820px);
   overflow: hidden;
-  background: var(--nk-natt);
+  background: var(--ground);
 }
 
 .nk-lokal-bilde {
@@ -4125,7 +4119,7 @@ footer {
   -webkit-backdrop-filter: saturate(1.3) blur(18px);
   backdrop-filter: saturate(1.3) blur(18px);
   border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 30px 70px -30px rgba(13, 26, 46, 0.6);
+  box-shadow: 0 30px 70px -30px rgba(13, 26, 46, 0.35);
 }
 
 .nk-lokal-kort .nk-tittel {
@@ -4190,29 +4184,14 @@ footer {
   color: var(--ink);
 }
 
-/* Prøv Klart: fjellet bak, ikonet over */
+/* Prøv Klart. Siden slutter på fjellet, med bunnteksten på snøen. */
 .download.nk-prov {
-  padding-top: 0;
+  padding-bottom: 0;
   background: var(--ground);
 }
 
 .download.nk-prov::before {
   display: none;
-}
-
-.nk-prov-bilde {
-  display: block;
-  width: calc(100% + 2 * var(--gut));
-  margin: 0 calc(-1 * var(--gut));
-  height: clamp(240px, 32vw, 460px);
-  object-fit: cover;
-  object-position: center 60%;
-  -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent);
-  mask-image: linear-gradient(180deg, #000 55%, transparent);
-}
-
-.nk-prov-innhold {
-  margin-top: clamp(-120px, -8vw, -60px);
 }
 
 .nk-ikon {
@@ -4243,11 +4222,39 @@ footer {
   font-weight: 600;
 }
 
-/* Bunnen */
-.nk-bunn {
-  padding: clamp(40px, 5vw, 64px) var(--gut);
-  background: var(--ground-2);
-  border-top: 1px solid var(--rule);
+/* Slutten: fjellet over hele bredden, navnet og lenkene på snøen i forgrunnen */
+/* Sidens generelle footer-regel (marg, bakgrunn, strek) skal ikke gjelde her. */
+.nk-slutt {
+  margin: clamp(64px, 8vw, 120px) calc(-1 * var(--gut)) 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  text-align: left;
+}
+
+.nk-slutt-bilde {
+  display: block;
+  width: 100%;
+  height: clamp(460px, 46vw, 760px);
+  object-fit: cover;
+  object-position: center 40%;
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 24%);
+  mask-image: linear-gradient(180deg, transparent, #000 24%);
+}
+
+.nk-slutt-tekst {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: clamp(40px, 6vw, 96px) var(--gut) clamp(26px, 3vw, 40px);
+  background: linear-gradient(180deg, rgba(248, 250, 253, 0), rgba(248, 250, 253, 0.78) 38%, rgba(248, 250, 253, 0.92));
+}
+
+.nk-slutt-tekst > * {
+  max-width: 1240px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .nk-bunn-topp {
@@ -4392,5 +4399,11 @@ footer {
   .nk-ikon {
     width: 88px;
     height: 88px;
+  }
+
+  /* Høyere fjellbilde på telefon, så toppene står fritt over bunnteksten. */
+  .nk-slutt-bilde {
+    height: 680px;
+    object-position: 42% 30%;
   }
 }
