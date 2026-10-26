@@ -624,6 +624,7 @@
     .tid-venter.apning:not(.start) .tv-beta{top:calc(30% + 82px)}
     /* Minimer: håndtaket øverst på modulen; minimert er det bare spill, klokka og håndtaket */
     .hist .h-min{all:unset;position:absolute;top:0;left:50%;transform:translateX(-50%);width:64px;height:16px;display:grid;place-items:center;cursor:pointer}
+    .hist .h-min,.hist .h-min:hover{background:none!important}
     .hist .h-min i{display:block;width:36px;height:4px;border-radius:2px;background:rgba(0,32,91,.28)}
     .hist:not(.mini){padding-top:20px}
     body.replay-start .hist .h-min{display:none}
@@ -904,7 +905,7 @@
   @media (max-width:760px){.kartknapp{display:flex}}
   @media (prefers-reduced-motion:reduce){.spor-strom,.meg::before,.meg::after,.s-dot{animation:none}}
   /* Mobil: luft mellom podkast-kortet og bunnen av kartet (der zoomknappene og kildene står), mindre luft over budskapet */
-  @media (max-width:760px){.hero-i{padding-bottom:72px}.intro{padding-top:56px}}
+  @media (max-width:760px){.hero-i{padding-bottom:72px}.intro{padding-top:56px}#jobber>h2{margin-top:64px}}
   /* Mobil: hele episodelista i podkasten, ikke den kompakte raden */
   @media (max-width:760px){.pod-kort{display:none}.pod:not(.apen):not(.spiller) .pod-l{display:flex}}
   /* Replay på mobil: modulen nederst over hele bredden; tidslinjen alene på sin rad, knappene under. */
@@ -2353,7 +2354,7 @@ if (HUS) setTimeout(function lagAvspiller() {
   const bar = document.createElement('section');
   bar.className = 'hist gl'; bar.hidden = true; bar.setAttribute('aria-label', 'Replay');
   // Modulen nede på midten: spørrefeltet øverst, kontrollene under, × til slutt (avslutter replay).
-  bar.innerHTML = '<button type="button" class="h-min" aria-label="' + (TX.loc.startsWith('en') ? 'Minimise' : 'Minimer') + '" aria-expanded="true"><i></i></button><form class="h-sok"><input type="search" placeholder="Spør: hvor var han i går kl. 14? sist han hadde 111 i puls?" aria-label="Spør om historikken" maxlength="200"></form><p class="h-svar" hidden></p>'
+  bar.innerHTML = '<button type="button" class="h-min" aria-label="' + (TX.loc.startsWith('en') ? 'Minimise' : 'Minimer') + '"><i></i></button><form class="h-sok"><input type="search" placeholder="Spør: hvor var han i går kl. 14? sist han hadde 111 i puls?" aria-label="Spør om historikken" maxlength="200"></form><p class="h-svar" hidden></p>'
     + '<div class="h-rad h-kontroll"><button type="button" class="h-spill" aria-label="Spill av">▶</button><span class="h-tidsone"><span class="h-merker" aria-hidden="true"></span><input type="range" class="h-tid" min="0" max="10000" value="0" aria-label="Tid"></span><span class="h-kl">–</span>'
     + '<button type="button" class="h-ikon h-forr" aria-label="Dagen før">‹</button>'
     + '<button type="button" class="h-ikon h-kal" aria-label="Velg dato" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span class="h-kal-t">' + (TX.loc.startsWith('en') ? 'Pick a date' : 'Velg dato') + '</span></button>'
@@ -2714,7 +2715,7 @@ if (HUS) setTimeout(function lagAvspiller() {
     for (const f of lag.querySelectorAll('iframe')) f.contentWindow?.postMessage({ paneler: !utenPaneler }, location.origin);
   };
   q('.h-min').onclick = e => {
-    const mini = bar.classList.toggle('mini'); e.currentTarget.setAttribute('aria-expanded', !mini);
+    const mini = bar.classList.toggle('mini');
     e.currentTarget.setAttribute('aria-label', TX.loc.startsWith('en') ? (mini ? 'Expand' : 'Minimise') : (mini ? 'Vis hele' : 'Minimer'));
     fartvalg.hidden = true; q('.h-kalender').hidden = true;
   };
