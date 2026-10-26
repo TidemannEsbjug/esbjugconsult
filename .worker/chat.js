@@ -505,8 +505,18 @@ export function osloMidnight(ts) {
 
 // «Hvor var han i går klokken 14:30», «i dag kl. 9», «tirsdag 18.15»: dag (i dag, i går, i forgårs eller en
 // ukedag de siste sju dagene) og klokkeslett. Uten dag og med et klokkeslett som ikke har vært ennå i dag: i går.
+// Tallord etter «klokken» («klokken fjorten» → 14), så tale-til-tekst virker.
+const TALLORD = ["null", "ett", "to", "tre", "fire", "fem", "seks", "sju", "åtte", "ni", "ti", "elleve", "tolv", "tretten", "fjorten", "femten", "seksten", "sytten", "atten", "nitten", "tjue", "tjueen", "tjueto", "tjuetre"];
+// Veggklokka i Oslo på dagen som begynner ved midnatt m: også dagene sommertiden begynner eller slutter (23 eller 25 timer).
+function osloKl(m, h, mi) {
+  let ts = m + (h * 60 + mi) * 60e3;
+  const o = osloTime(ts), avvik = (o.hour * 60 + o.minute) - (h * 60 + mi);
+  if (avvik && Math.abs(avvik) <= 120) ts -= avvik * 60e3;
+  return ts;
+}
+
 export function tidspunkt(q, nå) {
-  const t = q.toLowerCase();
+  const t = q.toLowerCase().replace(/\b(kl\.?|klokk(?:a|en))\s+([a-zæøå]+)/g, (x, k, ord) => { const i = TALLORD.indexOf(ord === "en" || ord === "ei" ? "ett" : ord === "syv" ? "sju" : ord); return i >= 0 ? k + " " + i : x; });
   const m = t.match(/\bkl(?:\.|okk(?:a|en))?\s*(\d{1,2})(?:[:.](\d{2}))?/) || t.match(/\b(\d{1,2})[:.](\d{2})\b/);
   // En bestemt dato («27. september», «27/9»): hvilken som helst dag bakover, kl. 12 hvis klokkeslettet mangler.
   const MND = ["januar", "februar", "mars", "april", "mai", "juni", "juli", "august", "september", "oktober", "november", "desember"];
@@ -517,8 +527,8 @@ export function tidspunkt(q, nå) {
     const h = m ? +m[1] : 12, mi = m ? +(m[2] || 0) : 0;
     if (h > 23 || mi > 59) return null;
     let år = +new Intl.DateTimeFormat("en", { timeZone: "Europe/Oslo", year: "numeric" }).format(nå);
-    let ts = osloMidnight(Date.UTC(år, mo, d, 12)) + (h * 60 + mi) * 60e3;
-    if (ts > nå) ts = osloMidnight(Date.UTC(år - 1, mo, d, 12)) + (h * 60 + mi) * 60e3;
+    let ts = osloKl(osloMidnight(Date.UTC(år, mo, d, 12)), h, mi);
+    if (ts > nå) ts = osloKl(osloMidnight(Date.UTC(år - 1, mo, d, 12)), h, mi);
     const navn = new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", weekday: "long", day: "numeric", month: "long" }).format(ts);
     const kl = new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", hour: "2-digit", minute: "2-digit" }).format(ts);
     return { id: "tid", type: "tid", ts, tekst: `Her var han ${navn} kl. ${kl}` };
@@ -530,7 +540,7 @@ export function tidspunkt(q, nå) {
   const idag = UKE.indexOf(new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", weekday: "long" }).format(nå));
   let siden = /forgårs/.test(t) ? 2 : /i\s*går/.test(t) ? 1 : /i\s*dag/.test(t) ? 0 : null;
   if (siden == null) { const i = UKE.findIndex((d) => t.includes(d)); if (i >= 0) siden = (idag - i + 7) % 7; }
-  let ts = osloMidnight(nå - (siden || 0) * 864e5) + (h * 60 + mi) * 60e3;
+  let ts = osloKl(osloMidnight(nå - (siden || 0) * 864e5), h, mi);
   if (ts > nå && siden == null) ts -= 864e5;
   if (ts > nå || ts < nå - 7 * 864e5) return null;
   const navn = new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", weekday: "long", day: "numeric", month: "numeric" }).format(ts);
