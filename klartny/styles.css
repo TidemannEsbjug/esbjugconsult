@@ -4184,14 +4184,30 @@ footer {
   color: var(--ink);
 }
 
-/* Prøv Klart. Siden slutter på fjellet, med bunnteksten på snøen. */
+/* Prøv Klart: fjellet over, ikonet over kanten, og bunnteksten nederst i samme seksjon. */
 .download.nk-prov {
+  padding-top: 0;
   padding-bottom: 0;
   background: var(--ground);
 }
 
 .download.nk-prov::before {
   display: none;
+}
+
+.nk-prov-bilde {
+  display: block;
+  width: calc(100% + 2 * var(--gut));
+  margin: 0 calc(-1 * var(--gut));
+  height: clamp(240px, 32vw, 460px);
+  object-fit: cover;
+  object-position: center 60%;
+  -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent);
+  mask-image: linear-gradient(180deg, #000 55%, transparent);
+}
+
+.nk-prov-innhold {
+  margin-top: clamp(-120px, -8vw, -60px);
 }
 
 .nk-ikon {
@@ -4222,39 +4238,15 @@ footer {
   font-weight: 600;
 }
 
-/* Slutten: fjellet over hele bredden, navnet og lenkene på snøen i forgrunnen */
-/* Sidens generelle footer-regel (marg, bakgrunn, strek) skal ikke gjelde her. */
+/* Bunnteksten: nederst i «Prøv Klart», på samme bakgrunn, skilt med en tynn sølvstrek. */
 .nk-slutt {
-  margin: clamp(64px, 8vw, 120px) calc(-1 * var(--gut)) 0;
-  padding: 0;
+  max-width: 1240px;
+  margin: clamp(48px, 6vw, 88px) auto 0;
+  padding: clamp(28px, 3vw, 40px) 0 clamp(32px, 4vw, 56px);
   background: none;
   border: 0;
+  border-top: 1px solid var(--nk-sølv);
   text-align: left;
-}
-
-.nk-slutt-bilde {
-  display: block;
-  width: 100%;
-  height: clamp(460px, 46vw, 760px);
-  object-fit: cover;
-  object-position: center 40%;
-  -webkit-mask-image: linear-gradient(180deg, transparent, #000 24%);
-  mask-image: linear-gradient(180deg, transparent, #000 24%);
-}
-
-.nk-slutt-tekst {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: clamp(40px, 6vw, 96px) var(--gut) clamp(26px, 3vw, 40px);
-  background: linear-gradient(180deg, rgba(248, 250, 253, 0), rgba(248, 250, 253, 0.78) 38%, rgba(248, 250, 253, 0.92));
-}
-
-.nk-slutt-tekst > * {
-  max-width: 1240px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .nk-bunn-topp {
@@ -4401,9 +4393,4 @@ footer {
     height: 88px;
   }
 
-  /* Høyere fjellbilde på telefon, så toppene står fritt over bunnteksten. */
-  .nk-slutt-bilde {
-    height: 680px;
-    object-position: 42% 30%;
-  }
 }
