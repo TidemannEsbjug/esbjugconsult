@@ -524,6 +524,8 @@
   .kn-folgfelt svg{width:18px;height:18px;display:block;margin:auto}
   .kn-folgfelt button[aria-pressed="true"]{background:#00205B;color:#fff}
   .kn button[aria-pressed="true"]{background:var(--ink);color:#fff}
+  /* PC: replay-knappen som en pille like høy som flaggene, så den ikke skyver panelene ned */
+  @media (min-width:761px){.kn button{width:56px;height:36px;border-radius:999px}.kn svg{width:16px;height:16px}}
   /* Replay: én modul nede på midten (nederste fjerdedel), toppen er uendret. Øverst et stort spørrefelt, under det
      spill/pause, tidslinjen, tiden, dag tilbake/kalender/dag fram, fart og × som avslutter. Kalender og fart åpner over. */
   body.i-replay .natt-lag{opacity:0;visibility:hidden}
@@ -771,6 +773,21 @@
      høyre tittel og dato, spolelinjen med håndtak og tiden under. Listeikonet oppe til høyre går tilbake til episodene. */
   .pod-v{position:relative;display:flex;align-items:center;gap:22px;flex:1;min-height:0;padding:4px 2px}
   .pod-v[hidden],.pod-l[hidden]{display:none}
+  /* Kompakt: bare siste episode med play; pilen viser alle */
+  .pod:not(.apen) .pod-l{display:none}
+  .pod.spiller .pod-kort{display:none}
+  .pod-kort{display:flex;align-items:center;gap:12px;min-width:0}
+  .pod-siste{all:unset;flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;cursor:pointer;color:var(--ink);border:1.5px solid rgba(0,32,91,.35)}
+  .pod-siste:hover{background:rgba(0,32,91,.06);border-color:rgba(0,32,91,.6)}
+  .pod-siste svg{width:14px;height:14px;margin-left:2px}
+  .pod-sinfo{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+  .pod-stittel{font:italic 500 16px/1.2 var(--serif);color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pod-sdato{font:600 10px/1 "SF Mono",Menlo,monospace;letter-spacing:.06em;color:rgba(0,32,91,.55)}
+  .pod-alle{all:unset;flex:none;display:inline-flex;align-items:center;gap:4px;cursor:pointer;padding:6px 8px;border-radius:999px;font:600 10px/1 "SF Mono",Menlo,monospace;color:rgba(0,32,91,.6)}
+  .pod-alle:hover{background:rgba(0,32,91,.06);color:var(--ink)}
+  .pod-alle svg{width:14px;height:14px;transition:transform .2s}
+  .pod.apen .pod-alle svg{transform:rotate(180deg)}
+  .pod.apen .pod-l{margin-top:4px}
   .pod.spiller>.s-t{display:none}
   .pod.spiller{justify-content:center}
   .pod-tilbake{all:unset;position:absolute;right:-8px;top:-4px;cursor:pointer;width:28px;height:28px;display:grid;place-items:center;border-radius:50%;color:rgba(0,32,91,.5)}
@@ -903,7 +920,7 @@
   /* Mobil: kolonnene slås sammen til én, og banken står rett under pulsen og enhetene (Apple Watch live). */
   @media (max-width:760px){
     .venstre,.hoyre{display:contents}
-    .naa,.h-sokk{order:1}.sted{order:2}.gjor{order:3}.poster{order:4}.sens{order:5}.bank{order:6}.akse{order:7}.pod{order:8}
+    .naa,.h-sokk{order:1}.sted{order:2}.gjor{order:3}.poster{order:4}.sens{order:5}.abo{order:5}.bank{order:6}.akse{order:7}.pod{order:8}
   }
   /* Ingen farget boks eller ramme når man trykker med fingeren (Android); tastaturet får fortsatt fokusrammen. */
   *{-webkit-tap-highlight-color:transparent}
@@ -915,6 +932,12 @@
   .kast{display:none!important}
   .utg li i{font-style:normal;opacity:.55;margin-left:6px;font-size:12px}
   .bank.utg[hidden],.utg li[hidden]{display:none}
+  /* Aktive AI-abonnementer: logo og navn, to kolonner, dyrest først */
+  .abo{display:flex;flex-direction:column;gap:10px;padding:14px 18px 16px}
+  .abo-l{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 16px}
+  .abo-l li{display:flex;align-items:center;gap:9px;min-width:0;font:italic 500 15px/1.2 var(--serif);color:var(--ink)}
+  .abo-l li span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .abo-i{flex:none;width:17px;height:17px;color:var(--ink);opacity:.8}
 </style>
 </head>
 <body>
@@ -968,12 +991,18 @@
       <div class="sv maskin" data-k="falcon" title="Falcon 9"><span class="sl"><svg class="mi" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.2l7.4-1v7.2H3zM11.3 4.1L21 2.7v8.7h-9.7zM3 12.4h7.4v7.2L3 18.6zM11.3 12.4H21v8.9l-9.7-1.4z"/></svg><span class="mn">Falcon 9</span></span><b><i class="mp"></i><span class="mv">–</span></b></div>
     </div>
   </section>
+  <!-- Aktive AI-abonnementer, dyrest først. Legg til eller fjern linjer her. -->
+  <section class="abo gl" aria-label="Aktive AI-abonnementer">
+    <span class="mono s-t">Aktive AI-abonnementer</span>
+    <ol class="abo-l"><li><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><g stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 12V3.5M12 12l6-6M12 12h8.5M12 12l6.2 5.8M12 12v8.5M12 12l-6 6M12 12H3.5M12 12L5.8 5.8M12 12l3.3-7.9M12 12l-7.9 3.3"/></g></svg><span>Claude Max 20</span></li><li><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><g stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 12V3.5M12 12l6-6M12 12h8.5M12 12l6.2 5.8M12 12v8.5M12 12l-6 6M12 12H3.5M12 12L5.8 5.8M12 12l3.3-7.9M12 12l-7.9 3.3"/></g></svg><span>Claude Max 5</span></li><li><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 4h3.4v6.6L14.6 4H19l-6.6 7.2L19.4 20h-4.5l-4.7-6.2-1.8 1.9V20H5z"/></svg><span>Kling</span></li><li><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="7.2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M4.2 19.8L19.8 4.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span>SuperGrok</span></li><li><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11 3.5L4.5 16H11zM12.5 6l6 10h-6z"/><path d="M3 17.6h18l-2.2 3H5.2z"/></svg><span>Midjourney</span></li><li><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="7" y="4" width="3.4" height="16" rx=".6"/><rect x="13.6" y="4" width="3.4" height="16" rx=".6"/></svg><span>ElevenLabs</span></li><li><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3" y="10" width="2.6" height="4" rx="1.3"/><rect x="7.1" y="6.5" width="2.6" height="11" rx="1.3"/><rect x="11.2" y="3.5" width="2.6" height="17" rx="1.3"/><rect x="15.3" y="7.5" width="2.6" height="9" rx="1.3"/><rect x="19.4" y="10.5" width="2.6" height="3" rx="1.3"/></svg><span>Suno</span></li></ol>
+  </section>
   <section class="akse gl" aria-label="Akselerometeret i Apple Watch og iPhonen, live">
     <div class="ak"><div class="ak-h"><span class="sl">Apple Watch · akselerometer</span><span class="ak-m">20 Hz · g</span></div><canvas class="ak-c" data-k="watch"></canvas></div>
     <div class="ak"><div class="ak-h"><span class="sl">iPhone · akselerometer</span><span class="ak-m"><i class="kx">x</i> <i class="ky">y</i> <i class="kz">z</i></span></div><canvas class="ak-c" data-k="iphone"></canvas></div>
   </section>
   <section class="pod gl" hidden aria-label="Podkast">
     <span class="mono s-t">Podkast</span>
+    <div class="pod-kort"><button type="button" class="pod-siste" aria-label="Spill av siste episode"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg></button><span class="pod-sinfo"><b class="pod-stittel"></b><span class="pod-sdato"></span></span><button type="button" class="pod-alle" aria-expanded="false" aria-label="Alle episoder"><span class="pod-antall"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></div>
     <ol class="pod-l"></ol>
     <div class="pod-v" hidden>
       <button type="button" class="pod-tilbake" aria-label="Tilbake til episodene"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg></button>
@@ -2155,7 +2184,7 @@ function nyeKast(ny) {
   };
   // Bytt mellom lista og spilleren uten at modulen endrer høyde.
   const visSpiller = på => {
-    if (på && !pod.style.height) { pod.style.boxSizing = 'border-box'; pod.style.height = pod.getBoundingClientRect().height + 'px'; }
+    if (på && pod.classList.contains('apen') && !pod.style.height) { pod.style.boxSizing = 'border-box'; pod.style.height = pod.getBoundingClientRect().height + 'px'; }
     lista.hidden = på; vis.hidden = !på; pod.classList.toggle('spiller', på);
     if (!på) pod.style.height = '';
   };
@@ -2185,7 +2214,16 @@ function nyeKast(ny) {
       li.append(b); return li;
     }));
     pod.hidden = !eps.length;
+    // Kompakt visning: siste episode med play, og pilen som åpner hele lista.
+    const siste = eps.reduce((a, b) => (b.n > a.n ? b : a), eps[0]);
+    if (siste) {
+      $('.pod-stittel').textContent = siste.tittel;
+      $('.pod-sdato').textContent = 'Episode ' + siste.n + (siste.dato ? ' · ' + podDato.format(new Date(siste.dato + 'T12:00:00')) : '');
+      $('.pod-antall').textContent = eps.length;
+    }
   }).catch(() => {});
+  $('.pod-siste').addEventListener('click', () => lista.querySelector('button')?.click());
+  $('.pod-alle').addEventListener('click', e => { const åpen = pod.classList.toggle('apen'); e.currentTarget.setAttribute('aria-expanded', åpen); });
 }
 // Banken: samlet saldo og saldoen på hver konto (kontonummeret bare med de fire siste sifrene).
 const kr = new Intl.NumberFormat(TX.loc, { maximumFractionDigits: 0 });

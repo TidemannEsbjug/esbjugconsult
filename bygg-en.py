@@ -267,6 +267,11 @@ T_NY = [
     # Kostnader under banken.
     ('aria-label="Kostnader"', 'aria-label="Costs"'),
     ('<span>Kostnader</span>', '<span>Costs</span>'),
+    # Aktive AI-abonnementer og den kompakte podkasten.
+    ('aria-label="Aktive AI-abonnementer"', 'aria-label="Active AI subscriptions"'),
+    ('<span class="mono s-t">Aktive AI-abonnementer</span>', '<span class="mono s-t">Active AI subscriptions</span>'),
+    ('aria-label="Spill av siste episode"', 'aria-label="Play the latest episode"'),
+    ('aria-label="Alle episoder"', 'aria-label="All episodes"'),
     ('<i>25. okt · 11:30</i>', '<i>25 Oct · 11:30</i>'),
     ('<i>25. okt · 10:47</i>', '<i>25 Oct · 10:47</i>'),
     ('<b>Tidemann sover</b><span>Opp klokken 04:00. Skriv gjerne, så svarer jeg når jeg er våken.</span>',
