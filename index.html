@@ -1885,7 +1885,7 @@ let stromSteg = 0;
 let beveger = false, rullet = 0;
 addEventListener('scroll', () => { rullet = Date.now(); }, { passive: true });
 function strom() { kart.on('movestart', () => { beveger = true; }); kart.on('moveend', () => { beveger = false; });
-  setInterval(() => { if (!kart || !synlig || beveger || document.hidden || Date.now() - rullet < 400) return; stromSteg = (stromSteg + 1) % STEG.length; kart.setPaintProperty('spor-strom', 'line-dasharray', STEG[stromSteg]); }, 90); }
+  setInterval(() => { if (!kart || !synlig || beveger || document.hidden || Date.now() - rullet < 400) return; stromSteg = (stromSteg + 2) % STEG.length; kart.setPaintProperty('spor-strom', 'line-dasharray', STEG[stromSteg]); }, 180); }   // samme fart, annethvert steg: halvparten så mange nye kartbilder
 // Lasteprikken står der posisjonsprikken kommer: midt på den synlige skjermen (se marg()).
 { const h = document.getElementById('kart').clientHeight, y = Math.min(h / 2, innerHeight / 2);
   document.querySelector('.kv-prikk').style.top = y + 'px'; document.querySelector('.kv-i').style.top = (y + 34) + 'px'; }
