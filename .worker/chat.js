@@ -1139,6 +1139,12 @@ export class ChatHub {
         this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, k, JSON.stringify({ niva, siste }));
         if (niva != null) ren.vann = niva;
       }
+      // Mikrofonen (verktoy/lyd): nye ord hvert sekund summeres til ord i dag (Oslo-døgnet). Bare antallet, aldri ordene.
+      if (typeof ren.ord === "number" && ren.ord >= 0 && ren.ord < 1000) {
+        const k = `ord:${kilde}:${osloDay(Date.now())}`, n = Number(this.sql.exec(`SELECT v FROM kv WHERE k=?`, k).toArray()[0]?.v || 0) + ren.ord;
+        this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, k, String(n));
+        ren.ordIdag = n;
+      }
       const gml = this.sql.exec(`SELECT v FROM kv WHERE k=?`, `tele:${kilde}`).toArray()[0];
       const ny = { ...(gml ? JSON.parse(gml.v) : {}), ...ren, ts: Date.now() };
       this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, `tele:${kilde}`, JSON.stringify(ny));
@@ -1161,7 +1167,7 @@ export class ChatHub {
       if (ny.ts - (this.teleLogg[kilde] || 0) >= 60e3) {
         this.teleLogg[kilde] = ny.ts;
         const d = {};
-        for (const k of ["bat", "lader", "meter", "skritt", "etasjer", "lyd", "nett", "bevegelse", "haand", "aktivitet", "trykk", "ledig", "flaske", "vann", "harflaske", "pult", "stilling", "plagg", "farge", "hodetelefoner"]) if (ny[k] !== undefined) d[k] = ny[k];
+        for (const k of ["bat", "lader", "meter", "skritt", "etasjer", "lyd", "nett", "bevegelse", "haand", "aktivitet", "trykk", "ledig", "snakker", "ordIdag", "flaske", "vann", "harflaske", "pult", "stilling", "plagg", "farge", "hodetelefoner"]) if (ny[k] !== undefined) d[k] = ny[k];
         this.sql.exec(`INSERT OR REPLACE INTO telelogg (kilde, ts, d) VALUES (?, ?, ?)`, kilde, ny.ts, JSON.stringify(d));
         if (ny.ts - (this.teleLoggPruned || 0) > 3600e3) { this.teleLoggPruned = ny.ts; this.sql.exec(`DELETE FROM telelogg WHERE ts < ?`, this.slettFor(ny.ts)); }
       }
