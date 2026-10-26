@@ -1127,6 +1127,18 @@ export class ChatHub {
       for (const [k, v] of Object.entries(d)) if (/^[a-zA-Z]{1,20}$/.test(k) && (typeof v === "number" || typeof v === "boolean" || (typeof v === "string" && v.length <= 80) || v === null)) ren[k] = v;
       // The accelerometer: "x,y,z;…" in hundredths of a g at 20 Hz, a packet every 5 s.
       if (typeof d.acc === "string" && d.acc.length <= 6000 && /^[-\d,;]*$/.test(d.acc)) ren.acc = d.acc;
+      // Vannflasken (kameraet i fyr-appen): vannet kan bare gå ned til flasken fylles. «vann» følger medianen av de fem siste
+      // målingene nedover og står stille ellers; bare når minst fire av de fem er 25 poeng over, er flasken fylt og nivået går opp.
+      if (typeof ren.flaske === "number" && ren.flaske >= 0 && ren.flaske <= 100) {
+        const k = `vann:${kilde}`, f = JSON.parse(this.sql.exec(`SELECT v FROM kv WHERE k=?`, k).toArray()[0]?.v || "{}");
+        const siste = [...(f.siste || []), ren.flaske].slice(-5), med = [...siste].sort((a, b) => a - b)[Math.floor(siste.length / 2)];
+        let niva = f.niva;
+        if (niva == null) { if (siste.length >= 3) niva = med; }
+        else if (siste.length >= 5 && siste.filter((x) => x >= niva + 25).length >= 4) niva = [...siste.filter((x) => x >= niva + 25)].sort((a, b) => a - b)[Math.floor(siste.filter((x) => x >= niva + 25).length / 2)];
+        else if (med < niva) niva = med;
+        this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, k, JSON.stringify({ niva, siste }));
+        if (niva != null) ren.vann = niva;
+      }
       const gml = this.sql.exec(`SELECT v FROM kv WHERE k=?`, `tele:${kilde}`).toArray()[0];
       const ny = { ...(gml ? JSON.parse(gml.v) : {}), ...ren, ts: Date.now() };
       this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, `tele:${kilde}`, JSON.stringify(ny));
@@ -1149,7 +1161,7 @@ export class ChatHub {
       if (ny.ts - (this.teleLogg[kilde] || 0) >= 60e3) {
         this.teleLogg[kilde] = ny.ts;
         const d = {};
-        for (const k of ["bat", "lader", "meter", "skritt", "etasjer", "lyd", "nett", "bevegelse", "haand", "aktivitet", "trykk", "ledig", "flaske", "harflaske", "pult", "stilling", "plagg", "farge", "hodetelefoner"]) if (ny[k] !== undefined) d[k] = ny[k];
+        for (const k of ["bat", "lader", "meter", "skritt", "etasjer", "lyd", "nett", "bevegelse", "haand", "aktivitet", "trykk", "ledig", "flaske", "vann", "harflaske", "pult", "stilling", "plagg", "farge", "hodetelefoner"]) if (ny[k] !== undefined) d[k] = ny[k];
         this.sql.exec(`INSERT OR REPLACE INTO telelogg (kilde, ts, d) VALUES (?, ?, ?)`, kilde, ny.ts, JSON.stringify(d));
         if (ny.ts - (this.teleLoggPruned || 0) > 3600e3) { this.teleLoggPruned = ny.ts; this.sql.exec(`DELETE FROM telelogg WHERE ts < ?`, this.slettFor(ny.ts)); }
       }

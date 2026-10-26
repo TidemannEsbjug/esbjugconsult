@@ -1933,8 +1933,10 @@ function visPult(t) {
   const kort = document.querySelector('.pultk'); if (!kort) return;
   const har = t && ('flaske' in t || 'stilling' in t || 'pult' in t);
   kort.hidden = !har; if (!har) return;
-  sett('pflaske', t.flaske != null ? t.flaske + ' %' : null);
-  const v = kort.querySelector('.fl-vann'), h = 31 * Math.max(0, Math.min(100, t.flaske ?? 0)) / 100;   // vannet i flasken (32 høy, bunn ved 32.5)
+  // «vann» er det utjevnede nivået fra serveren (går bare ned til flasken fylles); «flaske» er den siste rå målingen.
+  const nv = t.vann ?? t.flaske;
+  sett('pflaske', nv != null ? nv + ' %' : null);
+  const v = kort.querySelector('.fl-vann'), h = 31 * Math.max(0, Math.min(100, nv ?? 0)) / 100;   // vannet i flasken (32 høy, bunn ved 32.5)
   v.setAttribute('y', (32.5 - h).toFixed(1)); v.setAttribute('height', h.toFixed(1));
   sett('pstilling', t.stilling === 'sitter' ? 'Sitter' : t.stilling === 'staar' ? 'Står' : t.stilling === 'borte' || (t.pult != null && t.pult < .5) ? 'Borte' : null);
   sett('phode', t.hodetelefoner != null ? (t.hodetelefoner >= .5 ? 'På' : 'Av') : null);
