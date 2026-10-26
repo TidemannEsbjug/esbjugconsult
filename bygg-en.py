@@ -273,9 +273,8 @@ T_NY = [
     ('aria-label="Spill av siste episode"', 'aria-label="Play the latest episode"'),
     ('aria-label="Alle episoder"', 'aria-label="All episodes"'),
     # Pulten (kameraet).
-    ('aria-label="Kontoret, kamera og mikrofon"', 'aria-label="The office, camera and microphone"'),
-    ('<span class="mono s-t pk-t">Kontoret · kamera og mikrofon</span>', '<span class="mono s-t pk-t">Office · camera and microphone</span>'),
-    ('<span class="sl">Mikrofon</span>', '<span class="sl">Microphone</span>'),
+    ('aria-label="Kontoret, sett av kameraet"', 'aria-label="The office, seen by the camera"'),
+    ('<span class="mono s-t pk-t">Kontoret · kamera</span>', '<span class="mono s-t pk-t">Office · camera</span>'),
     ('<span class="sl">Vannflasken<svg', '<span class="sl">Water bottle<svg'),
     ('<span class="sl">Ved pulten</span>', '<span class="sl">At the desk</span>'),
     ('<span class="sl">Hodetelefoner</span>', '<span class="sl">Headphones</span>'),
