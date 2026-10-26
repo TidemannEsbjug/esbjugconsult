@@ -583,6 +583,11 @@
   /* Lasteanimasjonen (blå) over hele vinduet et kort øyeblikk når tiden flyttes */
   .tid-venter{position:fixed;inset:0;z-index:57;opacity:0;visibility:hidden;transition:opacity .25s ease,visibility 0s .25s}
   .tid-venter.på{opacity:1;visibility:visible;transition:opacity .12s ease}
+  /* Når replay åpnes: at det er en beta og tung programvare */
+  .tid-venter .tv-beta{display:none;position:absolute;left:50%;top:calc(50% + 96px);transform:translateX(-50%);width:min(90vw,420px);text-align:center;gap:8px}
+  .tid-venter.apning .tv-beta{display:grid}
+  .tv-beta b{font:600 11px/1 "SF Mono",Menlo,monospace;letter-spacing:.24em;text-transform:uppercase;color:#FFD23F}
+  .tv-beta span{font:italic 400 15px/1.35 var(--serif);color:rgba(246,231,210,.7)}
   /* Før første versjon fantes ikke nettsiden */
   .ingen-side{position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:10px;background:radial-gradient(60% 50% at 50% 50%,#0b2f70,#00163f);color:#f6e7d2;text-align:center;pointer-events:auto}
   .ingen-side b{font:italic 400 clamp(26px,3vw,40px)/1.1 var(--serif)}
@@ -851,6 +856,8 @@
   .kartmodus #chat,.kartmodus .ck,.kartmodus .natt-lag{display:none}
   @media (max-width:760px){.kartknapp{display:flex}}
   @media (prefers-reduced-motion:reduce){.spor-strom,.meg::before,.meg::after,.s-dot{animation:none}}
+  /* Mobil: luft mellom podkast-kortet og bunnen av kartet (der zoomknappene og kildene står), mindre luft over budskapet */
+  @media (max-width:760px){.hero-i{padding-bottom:72px}.intro{padding-top:36px}}
   /* Replay på mobil: modulen nederst over hele bredden; tidslinjen alene på sin rad, knappene under. */
   @media (max-width:760px){
     .hist{bottom:12px;padding:12px;border-radius:22px;gap:10px}
@@ -906,6 +913,7 @@
   /* «Kast tomat» og «Si heia» er tatt bort (skriptet setter fortsatt .k-tomat, så knappene skjules her). */
   .kast{display:none!important}
   .utg li i{font-style:normal;opacity:.55;margin-left:6px;font-size:12px}
+  .bank.utg[hidden],.utg li[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -2199,7 +2207,7 @@ const GJOR = TX.gjor;
 // Huset hos moren hans, skannet med LiDAR i appen (GET /chat/plan). Bare på testsiden /hjem/ inntil videre.
 // plan.geo plasserer skanningen i kartet: et punkt (x, z) i skanningen dreies th radianer, og blir meter øst
 // (u + tx) og nord (−v + ty) fra geo.lat/lon. Tilpasset husets omriss i kartdataene (OpenStreetMap).
-const HUS = location.pathname.startsWith('/hjem');
+const HUS = true;   // husfunksjonene (huset, rommene, replay) var en test på /hjem/; nå er de på forsiden, og /hjem/ sender hit
 let plan = null;
 const hentPlan = async () => { try { plan = await (await fetch('/chat/plan')).json(); husTegnet = ''; } catch {} };
 if (HUS) { hentPlan(); setInterval(hentPlan, 10 * 60e3); }
@@ -2312,7 +2320,7 @@ if (HUS) setTimeout(function lagAvspiller() {
     bar.style.left = ((a + b) / 2) + 'px'; bar.style.width = Math.min(860, b - a) + 'px'; bar.classList.toggle('smal', b - a < 640);
   };
   addEventListener('resize', plassHist);
-  const replay = åpne => { bar.hidden = !åpne; plassHist(); if (åpne) setTimeout(forvarm, 300); fartvalg.hidden = true; q('.h-kalender').hidden = true; document.body.classList.toggle('replay', åpne); if (åpne && !avsp) last(dagNr.format(Date.now())).then(() => vis(Math.max(0, 1 - 3600e3 / (avsp.t1 - avsp.t0)))); if (!åpne) { settFolg(false); gåLive(); } };
+  const replay = åpne => { bar.hidden = !åpne; plassHist(); if (åpne) åpneLaster(); fartvalg.hidden = true; q('.h-kalender').hidden = true; document.body.classList.toggle('replay', åpne); if (åpne && !avsp) last(dagNr.format(Date.now())).then(() => vis(Math.max(0, 1 - 3600e3 / (avsp.t1 - avsp.t0)))); if (!åpne) { settFolg(false); gåLive(); } };
   q('.kn-spol').onclick = () => { if (tl) tlStopp(); replay(bar.hidden); };
   q('.h-lukk').onclick = () => { if (tl) tlStopp(); replay(false); };
   // Sanntid som standard: ett sekund avspilling er ett sekund av dagen. 10× og 60× for å komme raskere fram.
@@ -2359,6 +2367,15 @@ if (HUS) setTimeout(function lagAvspiller() {
   // (høyst 3 s). Står ingen ramme og laster, går den bort etter et kort blikk.
   const venter = document.createElement('div'); venter.className = 'tid-venter kart-venter'; venter.setAttribute('aria-hidden', 'true');
   venter.innerHTML = document.querySelector('.kart-venter').innerHTML; document.body.append(venter);
+  { const en = TX.loc.startsWith('en'), b = document.createElement('div'); b.className = 'tv-beta';
+    b.innerHTML = '<b>' + (en ? 'Beta · work in progress' : 'Beta · under arbeid') + '</b><span>' + (en ? 'Heavy software: works best on newer devices.' : 'Tung programvare: fungerer best på nyere enheter.') + '</span>'; venter.append(b); }
+  // Når replay åpnes: lasteskjermen med beta-teksten til dagene er hentet (minst 1,4 s, høyst 6 s).
+  const åpneLaster = async () => {
+    venter.classList.add('på', 'apning'); const t0 = performance.now(), vent = ms => new Promise(r => setTimeout(r, ms));
+    await Promise.race([Promise.all([forvarm(), vent(300)]), vent(6000)]);
+    await vent(Math.max(0, 1400 - (performance.now() - t0)));
+    venter.classList.remove('apning'); skjulVenter();
+  };
   const visVenter = () => venter.classList.add('på');
   const skjulVenter = () => { if (!lag.querySelector('iframe:not(.forh):not(.klar)')) venter.classList.remove('på'); };
   const kortVenter = () => { visVenter(); setTimeout(skjulVenter, 450); };
@@ -2468,6 +2485,19 @@ if (HUS) setTimeout(function lagAvspiller() {
     }
     return f && T >= f.fra && T <= f.til ? f.pts : null;
   };
+  // «Kostnader» i replay: hver linje bare fra tidspunktet den har («25. okt · 11:30»), kortet skjult før den første.
+  const MND = ['jan', 'feb', 'mar', 'apr', 'mai', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'des'];
+  const kostnaderVed = T => {
+    const kort = document.querySelector('.bank.utg'); if (!kort) return;
+    let synlige = 0;
+    for (const li of kort.querySelectorAll('li')) {
+      const m = (li.querySelector('i')?.textContent || '').match(/(\d{1,2})\.\s*([a-zæøå]{3})\w*\s*·\s*(\d{1,2}):(\d{2})/i);
+      let ts = -Infinity;
+      if (m) { const nå = new Date(), mo = MND.indexOf(m[2].toLowerCase()); let å = nå.getFullYear(); ts = Date.parse(`${å}-${String(mo + 1).padStart(2, '0')}-${m[1].padStart(2, '0')}T${m[3].padStart(2, '0')}:${m[4]}:00+01:00`); if (ts > Date.now() + 864e5) ts = Date.parse(`${å - 1}-${String(mo + 1).padStart(2, '0')}-${m[1].padStart(2, '0')}T${m[3].padStart(2, '0')}:${m[4]}:00+01:00`); }
+      li.hidden = ts > T; if (!li.hidden) synlige++;
+    }
+    kort.hidden = !synlige;
+  };
   // Dagen fra midnatt til midnatt (eller til nå).
   // Alle dagene hentes når replay åpnes (forvarm), så det er øyeblikkelig å bytte dag. I dag hentes alltid på nytt.
   const dagLager = new Map();
@@ -2560,6 +2590,7 @@ if (HUS) setTimeout(function lagAvspiller() {
     // Saldoene, tellerne og rommet slik de var (fra loggen; før loggen startet vises ikke banken).
     let bk = null; try { bk = da.bank ? JSON.parse(da.bank) : null; } catch {}
     visBank(bk);
+    kostnaderVed(T);
     try { const kk = da.kast ? JSON.parse(da.kast) : null; if (kk) for (const k of ['tomat', 'heia']) if (kk[k] != null) knapp(k).querySelector('b').textContent = tall(kk[k]); } catch {}
     rom = da.rom ?? null;
     // Akselerometrene: de rå pakkene fram til T (hentes i vinduer). Spoler man bakover, begynner kurvene på nytt.
@@ -2594,7 +2625,7 @@ if (HUS) setTimeout(function lagAvspiller() {
     fortell(o.tekst);
     start();
   }
-  function gåLive() { utenPaneler = false; document.body.classList.remove('uten-paneler'); bar.classList.remove('bred', 'sok-åpen'); q('.h-paneler').setAttribute('aria-pressed', 'false'); lag.hidden = true; lag.textContent = ''; venter.classList.remove('på'); lagSha = null; document.body.classList.remove('versjon-på'); document.body.classList.remove('replay-sover'); delete AK.iphone; delete AK.watch; bankNokkel = ''; kart.getSource('avsp-prikk')?.setData({ type: 'FeatureCollection', features: [] }); megMark.getElement().style.visibility = ''; document.body.classList.remove('i-replay'); avsp = null; window.__avsp = false; stopp(); trykket(null); kl2.textContent = '–'; fortell(''); sistSpor = ''; forste = true; hent(); }
+  function gåLive() { kostnaderVed(Infinity); venter.classList.remove('på', 'apning'); utenPaneler = false; document.body.classList.remove('uten-paneler'); bar.classList.remove('bred', 'sok-åpen'); q('.h-paneler').setAttribute('aria-pressed', 'false'); lag.hidden = true; lag.textContent = ''; venter.classList.remove('på'); lagSha = null; document.body.classList.remove('versjon-på'); document.body.classList.remove('replay-sover'); delete AK.iphone; delete AK.watch; bankNokkel = ''; kart.getSource('avsp-prikk')?.setData({ type: 'FeatureCollection', features: [] }); megMark.getElement().style.visibility = ''; document.body.classList.remove('i-replay'); avsp = null; window.__avsp = false; stopp(); trykket(null); kl2.textContent = '–'; fortell(''); sistSpor = ''; forste = true; hent(); }
   spill.onclick = () => { if (tl) tlStopp(); if (!avsp) return; if (avsp.spiller) stopp(); else { if (avsp.k >= 1) avsp.k = 0; start(); } };
   // Farten: en egen glidebryter (som på YouTube) fra 1× til 60×, jevnt fordelt på en logaritmisk skala.
   const fartvalg = q('.h-fartvalg'), fs = q('.h-fs');

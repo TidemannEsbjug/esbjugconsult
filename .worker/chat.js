@@ -154,7 +154,10 @@ export async function handleChat(request, env, url) {
           const dagN = new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", weekday: "long", day: "numeric", month: "numeric" }).format(x.ts);
           const kl = new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", hour: "2-digit", minute: "2-digit" }).format(x.ts);
           const sitat = x.v.replace(/\s+/g, " ").trim();
-          return Response.json({ funnet: { id: "tekst", type: "tekst", ts: x.ts + 1000, tekst: `Skrev ${dagN} kl. ${kl}: «${sitat.length > 90 ? sitat.slice(0, 88) + " …" : sitat}»` }, sikkerhet: a.confidence ?? null });
+          // Postene kom på siden 23.10. kl. 03:55 (e1442e0). Det som ble skrevet før, vises fra da, ellers står det ingen post der.
+          const POSTER_FRA = 1792720504000, ts = Math.max(x.ts + 1000, POSTER_FRA + 60e3);
+          const vist = ts > x.ts + 1000 ? ` (postene kom på siden ${new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", hour: "2-digit", minute: "2-digit" }).format(POSTER_FRA)}, så du ser den derfra)` : "";
+          return Response.json({ funnet: { id: "tekst", type: "tekst", ts, tekst: `Skrev ${dagN} kl. ${kl}: «${sitat.length > 90 ? sitat.slice(0, 88) + " …" : sitat}»${vist}` }, sikkerhet: a.confidence ?? null });
         }
       }
     }

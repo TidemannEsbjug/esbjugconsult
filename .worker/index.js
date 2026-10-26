@@ -18,13 +18,8 @@ export default {
     }
     if (url.pathname.startsWith("/chat/")) return handleChat(request, env, url);
     if (url.pathname === "/bank/tilbake") return handleChat(request, env, url);
-    // /hjem/ er forsiden med husfunksjonene (huset, rom, replay); siden ser selv på adressen. Samme fil som forsiden,
-    // så de aldri glir fra hverandre og har samme versjonshistorikk. Ikke i søkemotorer.
-    if (url.pathname === "/hjem") { url.pathname = "/hjem/"; return Response.redirect(url.toString(), 301); }
-    if (url.pathname === "/hjem/" || url.pathname === "/hjem/index.html") {
-      const side = await env.ASSETS.fetch(new Request(new URL("/", url), request));
-      return new HTMLRewriter().on("head", { element: (el) => { el.prepend('<meta name="robots" content="noindex, nofollow">', { html: true }); } }).transform(side);
-    }
+    // /hjem/ var testsiden for huset, rommene og replay. Det er på forsiden nå.
+    if (url.pathname === "/hjem" || url.pathname.startsWith("/hjem/")) { url.pathname = "/"; return Response.redirect(url.toString(), 301); }
     // Siden slik den så ut ved en tidligere versjon (lagret i R2 fra GitHub, se versjonerOppdater i chat.js).
     const ver = url.pathname.match(/^\/versjon\/([0-9a-f]{40})\/?$/);
     if (ver) return versjonSide(env, url, ver[1]);
