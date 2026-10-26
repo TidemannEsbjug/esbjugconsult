@@ -2183,12 +2183,14 @@ function nyeKast(ny) {
 const kr = new Intl.NumberFormat(TX.loc, { maximumFractionDigits: 0 });
 let bankNokkel = '';
 function visBank(b) {
-  const e = $('.bank'); e.hidden = !b || !b.kontoer || !b.kontoer.length;
+  // Bare brukskonto, Enk-konto, buffer og sparekonto vises (reisekonto, skatt og MVA-konto er tatt ut), og summen er summen av dem.
+  const SKJULT = /reise|skatt|mva/i, vis = b && b.kontoer ? b.kontoer.filter(k => !SKJULT.test(k.navn)) : [];
+  const e = $('.bank'); e.hidden = !vis.length;
   if (e.hidden || b.ts === bankNokkel) return;
   bankNokkel = b.ts;
-  $('.bk-sum').textContent = kr.format(b.sum) + ' kr';
+  $('.bk-sum').textContent = kr.format(vis.reduce((s, k) => s + (k.disp ?? k.saldo ?? 0), 0)) + ' kr';
   $('.bk-t').textContent = TX.oppdatert + kl.format(b.ts);
-  $('.bk-kontoer').replaceChildren(...b.kontoer.map(k => {
+  $('.bk-kontoer').replaceChildren(...vis.map(k => {
     const l = document.createElement('li'), x = document.createElement('span'), y = document.createElement('b');
     x.textContent = k.navn + (k.nr ? ' ··' + k.nr : ''); y.textContent = kr.format(k.disp ?? k.saldo) + ' kr'; l.append(x, y); return l;   // disponibelt, som i nettbanken
   }));
