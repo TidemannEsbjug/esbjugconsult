@@ -134,6 +134,30 @@ export async function handleChat(request, env, url) {
       const r = await (await hub.fetch(new Request("https://hub/internal/verdi", { method: "POST", headers: { "x-role": "internal" }, body: JSON.stringify(vv) }))).json();
       return Response.json({ funnet: r, sikkerhet: r ? 1 : null });
     }
+    // Banken («når brukte han penger sist», «når hadde han minus på konto»): fra saldoene som er logget hvert kvarter.
+    const bs = bankSok(q);
+    if (bs) {
+      const r = await (await hub.fetch(new Request("https://hub/internal/banksok", { method: "POST", headers: { "x-role": "internal" }, body: JSON.stringify(bs) }))).json();
+      return Response.json(r ? { funnet: r, sikkerhet: 1 } : { funnet: null, melding: "Fant ikke noe slikt i saldoene." });
+    }
+    // Tekstene han har skrevet på siden («når skrev han om PC-laderen sin»): Jev velger innlegget som passer.
+    if (/\b(skrev|skrevet|skriver|innlegg|posten|nevnte|tekstboks|notat)/i.test(q)) {
+      const poster = await (await hub.fetch(new Request("https://hub/internal/tekster", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }))).json();
+      if (poster.length && env.JEV && env.INTERN_KEY) {
+        const kort = (s) => s.replace(/\s+/g, " ").slice(0, 400);
+        const r = await env.JEV.fetch(new Request("https://jev/intern/jev", { method: "POST", headers: { "x-intern": env.INTERN_KEY, "Content-Type": "application/json" }, body: JSON.stringify({
+          state: { sporsmal: q.trim() },
+          questions: { innlegg: { type: "choice", instructions: "Hvilket av Tidemanns innlegg på nettsiden handler `sporsmal` om? Velg det som passer best i innhold, også om ordene er andre (f.eks. «PC-laderen» og «laderen til laptopen»).",
+            criteria: Object.fromEntries(poster.map((x) => ["p" + x.id, kort(x.v)])) } } }) }));
+        const a = r.ok ? (await r.json()).data?.answers?.innlegg : null, x = a && poster.find((p) => "p" + p.id === a.choice);
+        if (x) {
+          const dagN = new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", weekday: "long", day: "numeric", month: "numeric" }).format(x.ts);
+          const kl = new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", hour: "2-digit", minute: "2-digit" }).format(x.ts);
+          const sitat = x.v.replace(/\s+/g, " ").trim();
+          return Response.json({ funnet: { id: "tekst", type: "tekst", ts: x.ts + 1000, tekst: `Skrev ${dagN} kl. ${kl}: «${sitat.length > 90 ? sitat.slice(0, 88) + " …" : sitat}»` }, sikkerhet: a.confidence ?? null });
+        }
+      }
+    }
     // Et sted («når var han i Frognerparken», «første gang han var på Aker brygge»): stedet slås opp i OpenStreetMap,
     // og hele posisjonshistorikken søkes etter når han var der.
     const ss = stedSok(q);
@@ -559,6 +583,17 @@ export function tidspunkt(q, nå) {
   return { id: "tid", type: "tid", ts, tekst: `Her var han ${navn} kl. ${kl}` };
 }
 
+// Banken: minus på kontoen, penger brukt eller kommet inn, høyeste eller laveste saldo. Ellers null.
+export function bankSok(q) {
+  const t = q.toLowerCase(), forst = /først|første/.test(t);
+  if (/\b(minus|overtrukket|negativ|i rødt)/.test(t) && /konto|bank|saldo|penger|minus/.test(t)) return { hva: "minus", forst };
+  if (/\b(brukte|brukt|betalte|handlet|kjøpte|tok ut)\b/.test(t) && /penger|kroner|kr\b|noe|brukte|betalte|handlet|kjøpte/.test(t)) return { hva: "brukt", forst };
+  if (/(fikk|kom|satte inn|mottok).{0,20}(penger|lønn|kroner)|penger inn|lønn/.test(t)) return { hva: "inn", forst };
+  if (/(saldo|konto|bank|penger)/.test(t) && /\b(mest|høyest|størst)/.test(t)) return { hva: "hoy" };
+  if (/(saldo|konto|bank|penger)/.test(t) && /\b(minst|lavest)/.test(t)) return { hva: "lav" };
+  return null;
+}
+
 // «Når var han i Frognerparken», «første gang han var på Aker brygge»: stedsnavnet etter i/på/ved/til.
 export function stedSok(q) {
   const t = q.toLowerCase().trim().replace(/[?!.]+$/, "");
@@ -842,6 +877,16 @@ export class ChatHub {
       }
       if (url.pathname === "/internal/hr-raa" || url.pathname === "/internal/aks-raa") {
         return Response.json(await this.vindu(url.pathname === "/internal/aks-raa" ? "aks" : "hr", b.fra, b.til), { headers: { "cache-control": "public, max-age=30" } });
+      }
+      if (url.pathname === "/internal/banksok") {
+        return Response.json(await this.bankSokFinn(b));
+      }
+      if (url.pathname === "/internal/tekster") {
+        // Innleggene han har skrevet: de som står nå, og de som er slettet men finnes i loggen.
+        const alle = new Map();
+        for (const r of this.sql.exec(`SELECT v FROM logg WHERE k='notater' ORDER BY ts`).toArray()) { try { for (const x of JSON.parse(r.v) || []) if (x && x.v) alle.set(x.id, x); } catch {} }
+        for (const x of this.notater(500)) alle.set(x.id, x);
+        return Response.json([...alle.values()].filter((x) => x.v && x.v.trim()).sort((a, b) => b.ts - a.ts).slice(0, 80));
       }
       if (url.pathname === "/internal/sted") {
         return Response.json(await this.stedFinn(b));
@@ -1923,6 +1968,37 @@ export class ChatHub {
       pl = r.lat; po = r.lon; pt = r.ts;
     }
     return trail;
+  }
+
+  // Saldoene over tid (summen av det disponible på alle kontoene, logget hvert kvarter), i hele historikken.
+  async bankSokFinn({ hva, forst }) {
+    const dager = Object.keys((await this.dager()).dager).sort(), rader = [];
+    for (const dag of dager) {
+      const d = await this.dagVed(Date.parse(dag + "T12:00:00Z"));
+      for (const [ts, k, v] of d?.logg || []) {
+        if (k !== "bank" || ts < osloMidnight(Date.parse(dag + "T12:00:00Z"))) continue;
+        try { const j = JSON.parse(v); if (j && j.kontoer) rader.push({ ts, sum: j.kontoer.reduce((s, x) => s + (x.disp ?? x.saldo ?? 0), 0) }); } catch {}
+      }
+    }
+    const like = rader;
+    const kr = (n) => (n < 0 ? "−" : "") + Math.round(Math.abs(n)).toLocaleString("nb-NO") + " kr";
+    const når = (ts) => new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", weekday: "long", day: "numeric", month: "numeric" }).format(ts) + " kl. " + new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", hour: "2-digit", minute: "2-digit" }).format(ts);
+    const svar = (ts, tekst) => ({ id: "bank", type: "bank", ts: ts + 1000, tekst });
+    if (hva === "hoy" || hva === "lav") {
+      const r = like.reduce((b, x) => (!b || (hva === "hoy" ? x.sum > b.sum : x.sum < b.sum) ? x : b), null);
+      return r && svar(r.ts, `${hva === "hoy" ? "Mest" : "Minst"} på konto: ${kr(r.sum)}, ${når(r.ts)}`);
+    }
+    // Endringene: hver gang summen gikk ned (brukt), opp (inn) eller under null (minus, fra der det begynte).
+    const hendelser = [];
+    for (let i = 1; i < like.length; i++) {
+      const før = like[i - 1].sum, nå = like[i].sum, diff = nå - før;
+      if (hva === "brukt" && diff <= -1) hendelser.push({ ts: like[i].ts, tekst: `brukte han ${kr(-diff)}` });
+      if (hva === "inn" && diff >= 1) hendelser.push({ ts: like[i].ts, tekst: `kom det inn ${kr(diff)}` });
+      if (hva === "minus" && nå < 0 && før >= 0) hendelser.push({ ts: like[i].ts, tekst: `gikk kontoen i minus (${kr(nå)})` });
+    }
+    if (hva === "minus" && like.length && like[0].sum < 0) hendelser.unshift({ ts: like[0].ts, tekst: `var kontoen i minus (${kr(like[0].sum)})` });
+    const h = forst ? hendelser[0] : hendelser[hendelser.length - 1];
+    return h ? svar(h.ts, `${forst ? "Første gang" : "Sist"} ${h.tekst}: ${når(h.ts)}`) : null;
   }
 
   // Når han var ved et sted, i hele historikken: siste (eller første) besøk, med når han kom og hvor lenge han var der.
