@@ -896,6 +896,8 @@
   /* Språkvelgeren: ingen indre kant, og det tomme teller-feltet tas ut, så flaggene står med like mye luft på begge sider. */
   .topp .lang{border:0}
   .topp .st:not(:has(.st-i:not([hidden]))){display:none}
+  /* «Kast tomat» og «Si heia» er tatt bort (skriptet setter fortsatt .k-tomat, så knappene skjules her). */
+  .kast{display:none!important}
 </style>
 </head>
 <body>
@@ -1856,9 +1858,10 @@ function tegn() {
   document.body.classList.toggle('gammel', gammel);
   // Under avspilling: tiden som spilles, ikke «Live».
   $('.s-live').textContent = avsp ? 'Replay · ' + kl.format(nå) : gammel ? TX.sistSett + tid(alder) + TX.siden : TX.live + tid(alder) + TX.siden;
-  $('.s-navn').classList.toggle('kjent', !!live.kjent);
+  $('.s-navn').classList.remove('kjent');
   $('.k-tomat').hidden = live.kjent !== 'hjemme hos moren sin';   // tomater bare hjemme hos moren hans; heia overalt
-  $('.s-navn').textContent = live.kjent ? (TX.kjent[live.kjent] || 'Tidemann er ' + live.kjent) : st && st.by ? [st.strok, st.by].filter(Boolean).join(', ') + (st.kode && st.kode !== 'NO' ? ', ' + st.land : '') : TX.jorda;
+  // Vanlig stedsnavn (strøk og by) også på kjente steder; kjente steder som «hjemme hos moren sin» vises ikke lenger.
+  $('.s-navn').textContent = st && st.by ? [st.strok, st.by].filter(Boolean).join(', ') + (st.kode && st.kode !== 'NO' ? ', ' + st.land : '') : TX.jorda;
   const fart = live.spd != null && live.spd >= .8 && !gammel && i.aktivitet !== 'står stille' ? Math.round(live.spd * 3.6) + ' km/t' : null;   // GPS-støy gir litt fart også når han står stille
   // Rommet hjemme, fra fyrene i huset (se /chat/admin/rom). Navnene står slik han skrev dem.
   const sub = fart || (HUS && rom && !gammel ? TX.rom + rom : null);
