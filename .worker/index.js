@@ -18,13 +18,8 @@ export default {
     }
     if (url.pathname.startsWith("/chat/")) return handleChat(request, env, url);
     if (url.pathname === "/bank/tilbake") return handleChat(request, env, url);
-    // /monitor/ er testsiden for kameraet ved pulten (flaske, stilling, plagg, hodetelefoner): forsiden med pultkortet,
-    // som siden slår på selv ut fra adressen. Ikke i søkemotorer.
-    if (url.pathname === "/monitor") { url.pathname = "/monitor/"; return Response.redirect(url.toString(), 301); }
-    if (url.pathname === "/monitor/" || url.pathname === "/monitor/index.html") {
-      const side = await env.ASSETS.fetch(new Request(new URL("/", url), request));
-      return new HTMLRewriter().on("head", { element: (el) => { el.prepend('<meta name="robots" content="noindex, nofollow">', { html: true }); } }).transform(side);
-    }
+    // /monitor/ var testsiden for kameraet ved pulten. Kortet er på forsiden nå.
+    if (url.pathname === "/monitor" || url.pathname.startsWith("/monitor/")) { url.pathname = "/"; return Response.redirect(url.toString(), 301); }
     // /hjem/ var testsiden for huset, rommene og replay. Det er på forsiden nå.
     if (url.pathname === "/hjem" || url.pathname.startsWith("/hjem/")) { url.pathname = "/"; return Response.redirect(url.toString(), 301); }
     // Siden slik den så ut ved en tidligere versjon (lagret i R2 fra GitHub, se versjonerOppdater i chat.js).

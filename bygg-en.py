@@ -272,6 +272,13 @@ T_NY = [
     ('<span class="mono s-t">Aktive AI-abonnementer</span>', '<span class="mono s-t">Active AI subscriptions</span>'),
     ('aria-label="Spill av siste episode"', 'aria-label="Play the latest episode"'),
     ('aria-label="Alle episoder"', 'aria-label="All episodes"'),
+    # Pulten (kameraet).
+    ('aria-label="Pulten, sett av kameraet"', 'aria-label="The desk, seen by the camera"'),
+    ('<span class="mono s-t pk-t">Pulten · kamera</span>', '<span class="mono s-t pk-t">Desk · camera</span>'),
+    ('<span class="sl">Vannflasken<svg', '<span class="sl">Water bottle<svg'),
+    ('<span class="sl">Ved pulten</span>', '<span class="sl">At the desk</span>'),
+    ('<span class="sl">Hodetelefoner</span>', '<span class="sl">Headphones</span>'),
+    ('<span class="sl">Har på seg</span>', '<span class="sl">Wearing</span>'),
     ('<i>25. okt · 11:30</i>', '<i>25 Oct · 11:30</i>'),
     ('<i>25. okt · 10:47</i>', '<i>25 Oct · 10:47</i>'),
     ('<b>Tidemann sover</b><span>Opp klokken 04:00. Skriv gjerne, så svarer jeg når jeg er våken.</span>',
