@@ -1792,7 +1792,7 @@ export class ChatHub {
     let notater = json(l.notater, null);
     if (!notater) notater = this.notater(20).filter((n) => n.ts <= t);
     return {
-      now: t, live, trail: this.sporFra(pos, d.veispor), tele, bev: [],
+      now: t, live, trail: this.sporFra(pos, d.veispor, t), tele, bev: [],
       puls: d.hr.filter((h) => h[0] > t - 5 * 60e3 && h[0] <= t),
       kast: json(l.kast, { le: 0, tomat: 0, heia: 0 }), gjor: l.gjor || "", notater, rom: l.rom || null, bank: json(l.bank, null),
     };
@@ -1880,7 +1880,8 @@ export class ChatHub {
   }
 
   // Sporet fra posisjonene: kartmatchede biter der de finnes (veien), ellers rå GPS, lett nok til å sendes til alle sidene.
-  sporFra(rows, biterFra) {
+  // til: bare veien fram til dette tidspunktet (avspillingen), så sporet ikke tegnes foran ham.
+  sporFra(rows, biterFra, til = Infinity) {
     if (rows.length) {
       const biter = (biterFra || this.sql.exec(`SELECT fra, til, geom FROM veispor WHERE til >= ? AND fra <= ? ORDER BY fra`, rows[0].ts, rows[rows.length - 1].ts).toArray()).map((b) => ({ ...b }));
       if (biter.length) {
@@ -1888,7 +1889,7 @@ export class ChatHub {
         for (const r of rows) {
           while (k < biter.length && biter[k].til < r.ts) k++;
           const b = biter[k];
-          if (b && r.ts >= b.fra && r.ts <= b.til) { if (!b.lagt) { b.lagt = true; for (const p of JSON.parse(b.geom)) ut.push({ lat: p[0], lon: p[1], ts: p[2], vei: true }); } continue; }
+          if (b && r.ts >= b.fra && r.ts <= b.til) { if (!b.lagt) { b.lagt = true; for (const p of JSON.parse(b.geom)) if (p[2] <= til) ut.push({ lat: p[0], lon: p[1], ts: p[2], vei: true }); } continue; }
           ut.push(r);
         }
         rows = ut;
