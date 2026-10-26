@@ -275,7 +275,7 @@ T_NY = [
     # Pulten (kameraet).
     ('aria-label="Kontoret, sett av kameraet"', 'aria-label="The office, seen by the camera"'),
     ('<span class="mono s-t pk-t">Kontoret · kamera</span>', '<span class="mono s-t pk-t">Office · camera</span>'),
-    ('<span class="sl">Vannflasken<svg', '<span class="sl">Water bottle<svg'),
+    ('<span class="sl">Vannflasken</span>', '<span class="sl">Water bottle</span>'),
     ('<span class="sl">Ved pulten</span>', '<span class="sl">At the desk</span>'),
     ('<span class="sl">Hodetelefoner</span>', '<span class="sl">Headphones</span>'),
     ('<span class="sl">Har på seg</span>', '<span class="sl">Wearing</span>'),
