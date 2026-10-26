@@ -1,0 +1,4209 @@
+/* ==========================================================================
+   Klart — landingsside
+   Rolig, lys flate med god luft. Programvinduet er det eneste mørke objektet.
+   ========================================================================== */
+
+:root {
+  --ink: #15202e;
+  --ink-2: #4d5b6c;
+  --ink-3: #8492a4;
+  --ink-4: #adbbcb;
+
+  --ground: #eef3fb;
+  --ground-2: #e4ecf9;
+  --card: #ffffff;
+  --rule: #dbe4f1;
+  --rule-2: #e8eef8;
+
+  --signal: #2456e6;
+  --signal-deep: #1a3fb0;
+  --signal-lit: #6f9bf5;
+  --signal-soft: #e2ebfd;
+  --flag: #c02744;
+  --ok: #0e7a5a;
+
+  /* Programvinduet */
+  --chrome: #16233a;
+  --chrome-2: #1e2f4b;
+  --chrome-3: #27395a;
+  --chrome-line: rgba(255, 255, 255, 0.1);
+  --chrome-line-2: rgba(255, 255, 255, 0.19);
+  --chrome-fog: #ccd8ea;
+  --chrome-mist: #93a4bd;
+  --doc: #fbfcfe;
+
+  --sans: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+  --serif: "Newsreader", Georgia, serif;
+
+  --gut: clamp(22px, 6vw, 104px);
+  --r: 12px;
+  --r-sm: 8px;
+  --shadow: 0 1px 2px rgba(21, 32, 46, 0.04), 0 10px 28px -14px rgba(26, 63, 176, 0.22);
+  --ease: cubic-bezier(0.22, 0.7, 0.26, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 96px;
+}
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16.5px;
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+ul,
+ol,
+dl,
+figure {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.wrap {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+/* --------------------------------------------------------------------------
+   Toppbar
+   -------------------------------------------------------------------------- */
+
+/* Menyen er skjult øverst, så filmen får hele skjermen. Den glir inn når man
+   scroller (klassen «synlig» settes i index.html), eller når den får fokus. */
+.topbar {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 40;
+  transform: translateY(-100%);
+  opacity: 0;
+  transition: transform 420ms var(--ease), opacity 320ms var(--ease);
+}
+
+.topbar.synlig,
+.topbar:focus-within {
+  transform: none;
+  opacity: 1;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  height: 66px;
+  padding: 0 var(--gut);
+  background: rgba(238, 243, 251, 0.72);
+  -webkit-backdrop-filter: saturate(1.3) blur(14px);
+  backdrop-filter: saturate(1.3) blur(14px);
+}
+
+.wordmark {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: none;
+}
+
+.wordmark b {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.wordmark span {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-3);
+  padding-top: 2px;
+}
+
+.topnav {
+  display: flex;
+  gap: 28px;
+  margin-left: 14px;
+  font-size: 14.5px;
+  color: var(--ink-2);
+}
+
+.topnav a {
+  transition: color 160ms var(--ease);
+}
+
+.topnav a:hover {
+  color: var(--signal);
+}
+
+.topbar .btn {
+  margin-left: auto;
+  flex: none;
+}
+
+/* --------------------------------------------------------------------------
+   Knapper
+   -------------------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  height: 46px;
+  padding: 0 22px;
+  border-radius: 100px;
+  background: var(--signal);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.008em;
+  border: 1px solid var(--signal);
+  box-shadow: 0 8px 20px -10px rgba(36, 86, 230, 0.7);
+  transition: background 180ms var(--ease), border-color 180ms var(--ease),
+    color 180ms var(--ease), transform 180ms var(--ease),
+    box-shadow 180ms var(--ease);
+}
+
+.btn:hover {
+  background: var(--signal-deep);
+  border-color: var(--signal-deep);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px -10px rgba(36, 86, 230, 0.75);
+}
+
+.btn.sm {
+  height: 36px;
+  padding: 0 16px;
+  font-size: 13px;
+}
+
+.btn.ghost {
+  background: var(--card);
+  color: var(--ink);
+  border-color: var(--rule);
+  box-shadow: none;
+}
+
+.btn.ghost:hover {
+  background: var(--card);
+  color: var(--signal);
+  border-color: var(--signal-lit);
+  box-shadow: 0 10px 22px -12px rgba(36, 86, 230, 0.45);
+}
+
+.btn .os {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  opacity: 0.6;
+}
+
+/* --------------------------------------------------------------------------
+   Seksjoner
+   -------------------------------------------------------------------------- */
+
+section {
+  padding: clamp(76px, 9.5vw, 152px) var(--gut);
+}
+
+.slug {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 26px;
+}
+
+.slug i {
+  font-style: normal;
+  color: var(--signal);
+  margin-right: 10px;
+}
+
+.title {
+  font-size: clamp(27px, 3.2vw, 42px);
+  line-height: 1.13;
+  font-weight: 700;
+  letter-spacing: -0.024em;
+  max-width: 18ch;
+}
+
+.title .mut {
+  color: var(--ink-3);
+}
+
+.sub {
+  max-width: 52ch;
+  color: var(--ink-2);
+  font-size: 17px;
+}
+
+.intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(26px, 5vw, 88px);
+  align-items: end;
+  margin-bottom: clamp(44px, 5.5vw, 76px);
+}
+
+/* --------------------------------------------------------------------------
+   Hero
+   -------------------------------------------------------------------------- */
+
+.hero {
+  position: relative;
+  padding-top: 0;
+  padding-bottom: clamp(46px, 6vw, 76px);
+  text-align: center;
+}
+
+/* Scenen: filmen fra appens intro over hele bredden, med mye himmel og luft.
+   All teksten står samlet midt i bildet, med et lyst slør bak så den er lett å
+   lese. Når filmen er ferdig, toner det skarpe stillbildet inn. */
+.scene {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: max(640px, 100svh);
+  margin: 0 calc(-1 * var(--gut));
+  /* Klassisk hero: teksten midt i bildet, med luft over og under. */
+  padding: clamp(72px, 10vh, 120px) var(--gut);
+  overflow: hidden;
+  isolation: isolate;
+  /* Uten dette kan en tynn strek av filmen skimte under den siste overgangen. */
+  margin-bottom: -1px;
+  background: #dfe8f2 url("/klart/assets/hero-film-start.jpg") center 40% / cover no-repeat;
+}
+
+.scene-film,
+.scene-bilde {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 40%;
+  pointer-events: none;
+}
+
+/* Stillbildet er filmens siste bilde i høyere oppløsning, så det legger seg
+   nøyaktig over og overgangen synes bare som at bildet blir skarpere. */
+.scene-bilde {
+  z-index: -2;
+  opacity: 0;
+  transition: opacity 1200ms var(--ease);
+}
+
+.scene.stille .scene-bilde {
+  opacity: 1;
+}
+
+.scene-slor {
+  position: absolute;
+  inset: 0 0 -2px;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(238, 243, 251, 0) 0%,
+    rgba(238, 243, 251, 0.12) 30%,
+    rgba(240, 244, 250, 0.38) 55%,
+    rgba(242, 246, 251, 0.6) 80%,
+    var(--ground) 100%
+  );
+}
+
+.scene-tekst {
+  position: relative;
+}
+
+/* Et ekstra mykt lys bak teksten, så den står tydelig også der snøen har skygger. */
+.scene-tekst::before {
+  content: "";
+  position: absolute;
+  inset: -18% -12% -10%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(246, 249, 253, 0.85), rgba(246, 249, 253, 0.55) 55%, transparent);
+}
+
+.hero .scene .tag {
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.hero .scene .lead {
+  color: var(--ink);
+  margin-top: 20px;
+}
+
+/* Ingressen og forklaringen av «lokal AI», samlet i én hvit boks under overskriften. */
+.hero .scene .lokal {
+  max-width: 60ch;
+  margin: 22px auto 0;
+  padding: 18px 22px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: 0 1px 0 var(--rule), 0 10px 30px rgba(21, 32, 46, 0.06);
+  color: var(--ink-2);
+  font-size: 15.5px;
+  text-align: left;
+}
+
+.hero .scene .lokal p + p {
+  margin-top: 10px;
+}
+
+.hero .scene .lokal .hva {
+  color: var(--ink);
+  font-size: 1.08em;
+}
+
+.hero .scene .lokal b {
+  color: var(--ink);
+}
+
+.hero .scene .lokal .avskaaret {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+}
+
+.hero .scene .lokal .avskaaret svg {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  margin-top: 1px;
+  fill: none;
+  stroke: var(--ink-3);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.hero .scene .lokal .avskaaret circle {
+  fill: var(--ink-3);
+  stroke: none;
+}
+
+.hero .scene .lokal .avskaaret .kryss {
+  stroke: var(--flag);
+  stroke-width: 2.4;
+}
+
+.hero .scene .lokal .avskaaret b {
+  color: var(--flag);
+}
+
+.hero .scene .lokal a {
+  color: var(--signal-deep);
+}
+
+.hero .scene .get {
+  margin-top: 30px;
+}
+
+.hero .scene .btn.ghost {
+  background: rgba(255, 255, 255, 0.88);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.hero .scene .fineprint {
+  color: var(--ink-2);
+}
+
+/* Store skjermer (1920 × 1080 og opp): teksten vokser med skjermen, så heroen
+   ikke ser liten ut. Laptop og mobil er som før. */
+@media (min-width: 1500px) {
+  .hero .scene h1 {
+    font-size: clamp(60px, 4.4vw, 104px);
+    max-width: 22ch;
+  }
+
+  .hero .scene .lead {
+    max-width: 62ch;
+    font-size: clamp(18px, 1.12vw, 24px);
+    margin-top: 28px;
+  }
+
+  .hero .scene .lokal {
+    max-width: 62ch;
+    font-size: clamp(15.5px, 0.95vw, 20px);
+  }
+
+  .hero .scene .tag {
+    font-size: clamp(11.5px, 0.7vw, 14px);
+    padding: 9px 20px 8px;
+    margin-bottom: 36px;
+  }
+
+  .hero .scene .get {
+    margin-top: 42px;
+    gap: 16px;
+  }
+
+  .hero .scene .btn {
+    height: clamp(46px, 2.9vw, 60px);
+    padding: 0 clamp(22px, 1.6vw, 32px);
+    font-size: clamp(14.5px, 0.88vw, 18px);
+  }
+
+  .hero .scene .fineprint {
+    margin-top: 22px;
+    font-size: clamp(11px, 0.62vw, 13px);
+  }
+}
+
+/* Windows-knappen før pakken ligger ute. */
+.btn.kommer,
+.btn.kommer:hover {
+  cursor: default;
+  color: var(--ink-3);
+  background: rgba(255, 255, 255, 0.7);
+  border-color: var(--rule);
+  box-shadow: none;
+  transform: none;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--signal-deep);
+  background: var(--signal-soft);
+  border: 1px solid rgba(36, 86, 230, 0.18);
+  border-radius: 100px;
+  padding: 7px 15px 6px;
+  margin-bottom: 30px;
+}
+
+.tag em {
+  font-style: normal;
+  color: var(--signal-lit);
+}
+
+.hero h1 {
+  font-size: clamp(32px, 4.7vw, 60px);
+  line-height: 1.06;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  max-width: 25ch;
+  margin: 0 auto;
+}
+
+.hero h1 span {
+  display: block;
+  background: linear-gradient(96deg, var(--signal) 8%, var(--signal-lit) 92%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero .lead {
+  max-width: 58ch;
+  margin: 26px auto 0;
+  color: var(--ink-2);
+  font-size: 18px;
+}
+
+.get {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 38px;
+}
+
+.fineprint {
+  margin-top: 18px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: var(--ink-3);
+}
+
+/* --------------------------------------------------------------------------
+   Org.nr. eller navn, med forslag fra Enhetsregisteret (orgfelt.js).
+   Brukes på forsiden (nedlasting) og prissiden.
+   -------------------------------------------------------------------------- */
+
+.orgfelt {
+  position: relative;
+}
+
+.orgforslag {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  box-shadow: 0 18px 40px -16px rgba(21, 32, 46, 0.35);
+}
+
+.orgforslag button {
+  display: grid;
+  gap: 1px;
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 8px;
+  text-align: left;
+  font-size: 14.5px;
+  color: var(--ink);
+}
+
+.orgforslag button small {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+.orgforslag button.aktiv,
+.orgforslag button:hover {
+  background: var(--signal-soft);
+}
+
+/* Nedlasting på forsiden: virksomheten først, så knappene. Ingen pris her; den
+   kommer først når de vil kjøpe. Store virksomheter får høre om skreddersydd oppsett. */
+.orgport {
+  /* Over linja under, så forslagene ikke får den gjennom seg når feltet er løftet. */
+  position: relative;
+  z-index: 5;
+  width: min(580px, 100%);
+  margin: 30px auto 0;
+}
+
+/* «Gratis for virksomheter. Ingen betaling, ingen registrering.» Det første de leser ved feltet; knappen sier «Prøv Klart gratis». */
+.orgport-gratis {
+  margin-bottom: 12px;
+  font-size: 17px;
+  color: var(--ink-2);
+  text-align: center;
+}
+
+.orgport-gratis b {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.orgport-rad {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  text-align: left;
+}
+
+.orgport input {
+  width: 100%;
+  height: 60px;
+  padding: 0 24px;
+  font: inherit;
+  font-size: 17.5px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid var(--rule);
+  border-radius: 100px;
+  box-shadow: 0 12px 30px -16px rgba(21, 32, 46, 0.45);
+}
+
+.orgport input:focus {
+  outline: 2px solid rgba(36, 86, 230, 0.35);
+  outline-offset: 1px;
+  border-color: var(--signal-lit);
+}
+
+.orgport .btn {
+  height: 60px;
+  padding: 0 28px;
+  font-size: 16px;
+}
+
+.skjult-tekst {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Når de begynner å skrive, er de klare: boksen over glir bort, og feltet glir opp dit den sto.
+   Overskriften står stille. Hvor langt feltet skal (--loft), måles i skriptet på forsiden. */
+.hero .scene .lokal.in,
+.hero .scene .orgport.in,
+.hero .scene .orgport.in ~ .fineprint {
+  transition: opacity 420ms var(--ease), transform 520ms var(--ease), visibility 420ms, width 420ms var(--ease);
+  transition-delay: 0ms;
+}
+
+.hero .scene .scene-tekst.skriver .lokal.in {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px) scale(0.98);
+}
+
+.hero .scene .scene-tekst.skriver .orgport.in,
+.hero .scene .scene-tekst.skriver .orgport.in ~ .fineprint {
+  transform: translateY(var(--loft, 0px));
+}
+
+.orgport .btn:disabled {
+  opacity: 0.6;
+  transform: none;
+}
+
+.orgport-feil {
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--flag);
+  text-align: center;
+}
+
+.orgport-svar {
+  text-align: center;
+}
+
+/* «hidden» skal vinne over display-reglene under (orgport-ok er inline-flex). */
+.orgport [hidden] {
+  display: none !important;
+}
+
+.orgport-ok {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 18px;
+  border-radius: 100px;
+  font-size: 15px;
+  color: var(--ok);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(14, 122, 90, 0.25);
+  box-shadow: 0 8px 22px -14px rgba(14, 122, 90, 0.5);
+}
+
+.orgport-ok svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--ok);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.orgport-ok b {
+  color: var(--ink);
+}
+
+.orgport .orgport-svar .get {
+  margin-top: 18px;
+}
+
+/* Etter oppslaget: et kort med «godkjent», gratis prøve, prisen etter prøven og knappene. */
+.orgport-svar-hoved {
+  padding: clamp(20px, 3vw, 30px);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: 0 2px 4px rgba(20, 30, 40, 0.05), 0 22px 54px rgba(20, 40, 70, 0.16);
+}
+
+.orgport-svar-hoved .orgport-ok {
+  box-shadow: none;
+}
+
+.orgport-prove {
+  margin-top: 16px;
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+.orgport-prove p + p {
+  margin-top: 8px;
+}
+
+.orgport-prove .orgport-prove-tittel {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.orgport-pris {
+  padding-top: 10px;
+  border-top: 1px solid var(--rule);
+}
+
+.orgport-pris b {
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.orgport-pris a {
+  font-weight: 600;
+  color: var(--signal);
+  white-space: nowrap;
+}
+
+/* Store virksomheter: feltet blir bredere, med navnet og gratis prøve til venstre og skreddersydd
+   oppsett med Mac Studio til høyre. Ingen «godkjent»; de er selvsagt godkjent. */
+.orgport.stor {
+  width: min(980px, 100%);
+}
+
+.orgport.stor .orgport-svar-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: stretch;
+  text-align: left;
+}
+
+.orgport.stor .orgport-svar-hoved {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(24px, 3vw, 36px);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: 0 2px 4px rgba(20, 30, 40, 0.05), 0 22px 54px rgba(20, 40, 70, 0.16);
+}
+
+.orgport.stor .orgport-svar .get {
+  justify-content: flex-start;
+  margin-top: 24px;
+}
+
+.orgport.stor .orgport-endre {
+  align-self: flex-start;
+  margin-top: 16px;
+}
+
+.orgport-firmanavn {
+  font-size: clamp(22px, 2.2vw, 30px);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+}
+
+.orgport-firmatekst {
+  margin-top: 10px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+.orgport-oppsett {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(24px, 3vw, 36px);
+  border-radius: 22px;
+  color: #fff;
+  text-align: left;
+  background: radial-gradient(120% 90% at 80% 70%, #2456e6 0%, transparent 60%), linear-gradient(160deg, #1a3fb0, #102a66);
+  box-shadow: 0 26px 56px -26px rgba(26, 63, 176, 0.85);
+}
+
+.orgport-merke {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.orgport-oppsett h3 {
+  margin-top: 10px;
+  font-size: clamp(24px, 2.4vw, 32px);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+
+.orgport-oppsett p:not(.orgport-merke) {
+  margin-top: 10px;
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.orgport-mac {
+  display: block;
+  width: 100%;
+  max-width: 340px;
+  aspect-ratio: 440 / 240;
+  margin: 18px auto 10px;
+}
+
+.orgport-oppsett .btn {
+  align-self: flex-start;
+  margin-top: auto;
+  color: var(--signal-deep);
+  background: #fff;
+  border-color: #fff;
+}
+
+.orgport-oppsett .btn:hover {
+  color: var(--signal-deep);
+  background: var(--signal-soft);
+  border-color: var(--signal-soft);
+}
+
+@media (max-width: 760px) {
+  .orgport.stor .orgport-svar-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.orgport-endre {
+  margin-top: 12px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+
+.orgport-endre:hover {
+  color: var(--signal);
+}
+
+@media (max-width: 560px) {
+  .orgport-rad {
+    grid-template-columns: 1fr;
+  }
+
+  .orgport .btn {
+    justify-content: center;
+  }
+
+  .orgport input,
+  .orgport .btn {
+    height: 56px;
+  }
+
+  .orgport-gratis {
+    font-size: 15.5px;
+  }
+}
+
+@media (min-width: 1500px) {
+  .orgport {
+    width: min(640px, 100%);
+  }
+
+  .orgport input,
+  .orgport .btn {
+    height: clamp(60px, 3.6vw, 72px);
+  }
+
+  .orgport input {
+    font-size: clamp(17.5px, 1vw, 20px);
+  }
+
+  .orgport-gratis {
+    font-size: clamp(17px, 1vw, 21px);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Filformater
+   -------------------------------------------------------------------------- */
+
+.formats {
+  margin-top: clamp(44px, 5.4vw, 76px);
+  text-align: center;
+}
+
+.formats > p {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 26px;
+}
+
+.formats ul {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 14px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+/* At ansikter pikseleres står rett under filtypene, der folk ser etter. */
+.formats .ansikter {
+  max-width: 62ch;
+  margin: 22px auto 0;
+  color: var(--ink-2);
+  font-family: inherit;
+  font-size: 15px;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.formats .ansikter b {
+  color: var(--ink);
+}
+
+.formats li {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 24px 10px 22px;
+  background: var(--card);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  transition: transform 220ms var(--ease), box-shadow 220ms var(--ease);
+}
+
+.formats li:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 1px 2px rgba(21, 32, 46, 0.05),
+    0 18px 36px -16px rgba(26, 63, 176, 0.4);
+}
+
+.ficon {
+  width: 48px;
+  height: 48px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.ficon text {
+  font-family: var(--sans);
+  font-weight: 700;
+  fill: #fff;
+}
+
+.formats .fname {
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+}
+
+.formats .fext {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--ink-3);
+}
+
+/* --------------------------------------------------------------------------
+   Programvindu
+   -------------------------------------------------------------------------- */
+
+.window {
+  background: var(--chrome);
+  color: var(--chrome-fog);
+  border-radius: var(--r);
+  box-shadow: 0 2px 6px rgba(27, 33, 35, 0.06),
+    0 40px 80px -40px rgba(27, 33, 35, 0.45);
+  overflow: hidden;
+  text-align: left;
+}
+
+.hero .window {
+  margin-top: clamp(56px, 7vw, 96px);
+}
+
+.titlebar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 36px;
+  padding: 0 14px;
+  background: var(--chrome-2);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--chrome-mist);
+}
+
+.dots {
+  display: flex;
+  gap: 6px;
+}
+
+.dots i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--chrome-line-2);
+}
+
+.titlebar .name {
+  margin: 0 auto;
+}
+
+.titlebar .os-tag {
+  opacity: 0.5;
+}
+
+.appbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--chrome-line);
+}
+
+.appbar .brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.appbar .brand b {
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: #fff;
+}
+
+.appbar .brand span {
+  font-size: 13px;
+  color: var(--chrome-mist);
+}
+
+.pulse {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--chrome-mist);
+  white-space: nowrap;
+}
+
+.pulse i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #3fc99a;
+  animation: beat 2.8s var(--ease) infinite;
+}
+
+@keyframes beat {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(63, 201, 154, 0.4);
+  }
+  55% {
+    box-shadow: 0 0 0 6px rgba(63, 201, 154, 0);
+  }
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: 236px minmax(0, 1fr) 260px;
+  min-height: 448px;
+}
+
+.pane {
+  border-right: 1px solid var(--chrome-line);
+  min-width: 0;
+  padding-bottom: 8px;
+}
+
+.pane:last-child {
+  border-right: 0;
+}
+
+.pane > h3 {
+  padding: 16px 16px 12px;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--chrome-mist);
+}
+
+.files li {
+  display: grid;
+  gap: 3px;
+  padding: 9px 16px;
+  border-left: 2px solid transparent;
+}
+
+.files li.on {
+  background: var(--chrome-2);
+  border-left-color: var(--signal);
+}
+
+.files .fn {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12.5px;
+  color: var(--chrome-fog);
+  min-width: 0;
+}
+
+.files .fn > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.files .fn svg {
+  flex: none;
+  width: 17px;
+  height: 17px;
+}
+
+.files .meta {
+  padding-left: 26px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--chrome-mist);
+}
+
+/* Dokumentflaten */
+.sheet-wrap {
+  padding: 20px 22px 22px;
+  height: 100%;
+}
+
+.sheet {
+  background: var(--doc);
+  color: #1b2735;
+  border-radius: var(--r-sm);
+  padding: 26px 30px 32px;
+  height: 100%;
+}
+
+.docket {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #93a2b5;
+  padding-bottom: 14px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e3eaf5;
+}
+
+.sheet p {
+  font-family: var(--serif);
+  font-size: 15px;
+  line-height: 1.75;
+  margin-bottom: 14px;
+}
+
+.sheet p:last-child {
+  margin-bottom: 0;
+}
+
+.sheet .head {
+  font-weight: 500;
+  font-size: 17px;
+}
+
+/* Markeringen skal ikke skyve på tegnsettingen — den legger seg utenpå. */
+mark {
+  background: rgba(36, 86, 230, 0.13);
+  color: inherit;
+  border-radius: 3px;
+  padding: 2px 3px;
+  margin: 0 -3px;
+}
+
+mark.flag {
+  background: rgba(192, 39, 68, 0.13);
+}
+
+mark.mute {
+  background: rgba(21, 32, 46, 0.08);
+}
+
+/* Funn */
+.hits {
+  display: flex;
+  flex-direction: column;
+}
+
+.hit-tools {
+  display: flex;
+  gap: 6px;
+  padding: 0 12px 12px;
+}
+
+.chipbtn {
+  font-family: var(--sans);
+  font-size: 11.5px;
+  padding: 6px 11px;
+  border-radius: 100px;
+  border: 1px solid var(--chrome-line-2);
+  color: var(--chrome-mist);
+}
+
+.hit-group > h4 {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 12px 7px;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--chrome-mist);
+}
+
+.hit {
+  display: grid;
+  gap: 4px;
+  margin: 0 9px 5px;
+  padding: 9px 12px;
+  border-radius: var(--r-sm);
+  background: var(--chrome-2);
+}
+
+.hit.on {
+  background: var(--chrome-3);
+  box-shadow: inset 2px 0 0 var(--signal);
+}
+
+.hit.off {
+  opacity: 0.38;
+}
+
+.hit .val {
+  font-family: var(--serif);
+  font-size: 14px;
+  color: #fff;
+}
+
+.hit .sub {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  max-width: none;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  color: var(--chrome-mist);
+}
+
+.hit .sub b {
+  font-weight: 400;
+  color: #93a9ff;
+}
+
+.hit.off .sub b {
+  color: var(--chrome-mist);
+}
+
+.statusline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 18px;
+  background: var(--chrome-2);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--chrome-mist);
+}
+
+.statusline b {
+  font-weight: 400;
+  color: #fff;
+}
+
+.statusline .actions {
+  display: flex;
+  gap: 8px;
+}
+
+.statusline .btn {
+  box-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   Programvinduet: Klart slik appen ser ut. Verdiene er hentet fra appens
+   src/styles.css (lyst sølvtema, vinterfjellet bak). Alt er prefikset med
+   ka- så det ikke krasjer med sidens egne .sheet, .hit, mark og .btn.
+   Uten JS står data-scene på «gjennom», og den scenen er synlig.
+   -------------------------------------------------------------------------- */
+
+.ka {
+  --k-bg: #e8ebef;
+  --k-surface: #ffffff;
+  --k-surface-2: #f5f6f8;
+  --k-surface-3: #eceff2;
+  --k-ink: #1a1f25;
+  --k-ink-2: #48525c;
+  --k-ink-3: #66717b;
+  --k-line: rgba(24, 34, 44, 0.1);
+  --k-line-strong: rgba(24, 34, 44, 0.2);
+  --k-accent: #2d5f8b;
+  --k-accent-soft: rgba(45, 95, 139, 0.09);
+  --k-accent-line: rgba(45, 95, 139, 0.45);
+  --k-chosen: #dde9f4;
+  --k-chosen-ink: #13314c;
+  --k-chosen-line: #5d8bb3;
+  --k-warn: #8f6210;
+  --k-ok: #357253;
+  --k-radius: 10px;
+  --k-radius-sm: 7px;
+  --k-shadow-sm: 0 1px 2px rgba(20, 30, 40, 0.06), 0 1px 1px rgba(20, 30, 40, 0.04);
+  --k-shadow: 0 1px 2px rgba(20, 30, 40, 0.05), 0 8px 24px rgba(20, 30, 40, 0.08);
+  --k-shadow-lg: 0 2px 4px rgba(20, 30, 40, 0.05), 0 18px 48px rgba(20, 30, 40, 0.12);
+  --k-display: "Schibsted Grotesk", "Avenir Next", sans-serif;
+  --k-serif: "Literata", "Iowan Old Style", serif;
+  --k-mono: "IBM Plex Mono", "SF Mono", ui-monospace, monospace;
+
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(20, 30, 40, 0.14);
+  box-shadow: 0 2px 6px rgba(27, 33, 35, 0.06), 0 40px 80px -40px rgba(27, 33, 35, 0.45);
+  text-align: left;
+  color: var(--k-ink);
+  font-family: var(--k-display);
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: -0.008em;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: default;
+}
+
+.hero .ka {
+  margin-top: clamp(56px, 7vw, 96px);
+}
+
+/* Uten spesifisitet, så klassene under alltid vinner. */
+:where(.ka) :where(h4, h5, p, ul, ol, pre) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Vinterfjellet bak alt, som i appen. */
+.ka-app {
+  display: flex;
+  flex-direction: column;
+  background: url("/klart/assets/klart-vinter.jpg") center 40% / cover no-repeat, var(--k-bg);
+}
+
+.ka-chrome {
+  flex-shrink: 0;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 24px 0 92px;
+  position: relative;
+  border-bottom: 1px solid var(--k-line);
+  background: rgba(250, 251, 252, 0.7);
+  -webkit-backdrop-filter: saturate(1.4) blur(18px);
+  backdrop-filter: saturate(1.4) blur(18px);
+}
+
+.ka-lys {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  display: flex;
+  gap: 8px;
+  transform: translateY(-50%);
+}
+
+.ka-lys i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ff5f57;
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.12);
+}
+
+.ka-lys i + i {
+  background: #febc2e;
+}
+
+.ka-lys i + i + i {
+  background: #28c840;
+}
+
+.ka-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+.ka-mark {
+  font-family: var(--k-serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 19px;
+  letter-spacing: -0.02em;
+}
+
+.ka-av {
+  padding-left: 10px;
+  border-left: 1px solid var(--k-line-strong);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--k-ink-3);
+}
+
+.ka-høyre {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  white-space: nowrap;
+}
+
+.ka-pulse {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--k-mono);
+  font-size: 12px;
+  color: var(--k-ink-2);
+}
+
+.ka-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--k-ok);
+  box-shadow: 0 0 0 4px rgba(53, 114, 83, 0.15);
+}
+
+.ka:not([data-scene="skann"]) .ka-pulse {
+  visibility: hidden;
+}
+
+.ka-lisens {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--k-accent-soft);
+  border: 1px solid rgba(45, 95, 139, 0.2);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--k-accent);
+}
+
+.ka-lenke {
+  font-size: 13px;
+  color: var(--k-accent);
+}
+
+.ka-lenke.ka-liten {
+  font-size: 12px;
+  color: var(--k-ink-3);
+}
+
+.ka-lenker {
+  display: flex;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+/* Scenene. Sløret legges over vinterbildet når appen jobber, som i appen. */
+.ka-stage {
+  position: relative;
+  height: 600px;
+  overflow: hidden;
+  background: rgba(238, 241, 244, 0.9);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  transition: background 500ms ease;
+}
+
+.ka[data-scene="start"] .ka-stage,
+.ka[data-scene="forbered"] .ka-stage {
+  background: linear-gradient(180deg, rgba(240, 243, 246, 0) 40%, rgba(240, 243, 246, 0.35));
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.ka-scene {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 400ms ease, visibility 0s 400ms;
+}
+
+.ka[data-scene="start"] .ka-s-start,
+.ka[data-scene="forbered"] .ka-s-forbered,
+.ka[data-scene="skann"] .ka-s-skann,
+.ka[data-scene="gjennom"] .ka-s-gjennom,
+.ka[data-scene="skriver"] .ka-s-skriver,
+.ka[data-scene="ferdig"] .ka-s-ferdig {
+  z-index: 1;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 400ms ease;
+}
+
+/* Knapper */
+.ka-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  padding: 0 16px;
+  border-radius: var(--k-radius-sm);
+  background: var(--k-accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+  box-shadow: var(--k-shadow-sm);
+  transition: background 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+}
+
+.ka-btn.ghost {
+  background: var(--k-surface);
+  color: var(--k-ink);
+  border: 1px solid var(--k-line-strong);
+}
+
+.ka-btn.stor {
+  height: 40px;
+  padding: 0 20px;
+  font-size: 14px;
+}
+
+.ka-btn.av {
+  opacity: 0.45;
+}
+
+.ka .trykk {
+  transform: scale(0.96);
+  background: #25537a;
+}
+
+.ka .ka-btn.ghost.trykk {
+  background: var(--k-surface);
+}
+
+/* Avkrysningsboksene (native i appen, med accent-color). */
+.ka-boks {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid #8d969f;
+  background: #fff;
+}
+
+.ka-boks.på {
+  border-color: var(--k-accent);
+  background: var(--k-accent)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M3.2 7.3l2.4 2.4 5.2-5.4' fill='none' stroke='%23fff' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    center / 12px no-repeat;
+}
+
+.ka-boks-linje {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--k-ink-2);
+  white-space: nowrap;
+}
+
+/* 1 · Velkommen */
+.ka-s-start {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 400px));
+  justify-content: center;
+  align-content: center;
+  column-gap: clamp(32px, 9vw, 120px);
+  padding: 32px;
+}
+
+.ka-fløy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 300px;
+  padding: 36px 36px 32px;
+  background: rgba(255, 255, 255, 0.78);
+  -webkit-backdrop-filter: saturate(1.3) blur(20px);
+  backdrop-filter: saturate(1.3) blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 14px;
+  box-shadow: var(--k-shadow);
+}
+
+.ka-fløy svg {
+  width: 40px;
+  height: 40px;
+  fill: none;
+  stroke: var(--k-accent);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ka-fløy h4 {
+  margin: 16px 0 6px;
+  font-family: var(--k-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 30px;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.ka-fløy p {
+  flex: 1;
+  margin-bottom: 22px;
+  font-size: 14px;
+  color: var(--k-ink-2);
+}
+
+/* 2 · Mappe valgt */
+.ka-s-forbered {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 22px 28px 24px;
+}
+
+.ka-forbered-topp {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ka-forbered-topp h4 {
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
+  font-family: var(--k-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 24px;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.ka-sti {
+  margin-top: 2px;
+  font-family: var(--k-mono);
+  font-size: 11px;
+  color: var(--k-ink-2);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ka-forbered-kropp {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 16px;
+}
+
+.ka-kort {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.86);
+  -webkit-backdrop-filter: saturate(1.3) blur(20px);
+  backdrop-filter: saturate(1.3) blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  box-shadow: var(--k-shadow-sm);
+}
+
+.ka h5 {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--k-ink-3);
+}
+
+.ka h5 span {
+  margin-left: 8px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.ka-kort-topp {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--k-line);
+}
+
+.ka-kort-topp .ka-lenke {
+  font-size: 12.5px;
+}
+
+.ka-filsøk {
+  display: flex;
+  align-items: center;
+  gap: 6px 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--k-line);
+}
+
+.ka-søk {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 10px;
+  font-size: 13px;
+  color: #9aa2aa;
+  background: var(--k-surface-2);
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-radius-sm);
+}
+
+.ka-filvalg ul {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  padding: 4px 6px 6px;
+}
+
+.ka-filvalg li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: var(--k-radius-sm);
+}
+
+.ka-filnavn {
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ka-filstr {
+  font-family: var(--k-mono);
+  font-size: 11px;
+  color: var(--k-ink-3);
+}
+
+.ka-filvalg-hint {
+  padding: 8px 16px 10px;
+  border-top: 1px solid var(--k-line);
+  font-size: 11.5px;
+  color: var(--k-ink-3);
+}
+
+.ka-metode {
+  gap: 12px;
+  padding: 14px 16px 16px;
+}
+
+.ka-metode-valg {
+  display: grid;
+  gap: 8px;
+}
+
+.ka-metode-valg > span {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid var(--k-line-strong);
+  border-radius: var(--k-radius-sm);
+  background: var(--k-surface);
+}
+
+.ka-metode-valg > span.på {
+  background: var(--k-chosen);
+  border-color: var(--k-chosen-line);
+  box-shadow: inset 0 0 0 1px var(--k-chosen-line);
+  color: var(--k-chosen-ink);
+}
+
+.ka-metode-valg strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ka-metode-valg span span {
+  font-size: 12.5px;
+  color: var(--k-ink-2);
+}
+
+.ka-felt-bunn {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+/* 3 · Skanner */
+.ka-s-skann {
+  display: flex;
+  flex-direction: column;
+  padding: 28px 36px;
+}
+
+.ka-scan-steg {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 22px !important;
+}
+
+.ka-scan-steg li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 6px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--k-line);
+  background: var(--k-surface);
+  font-size: 13px;
+  color: var(--k-ink-3);
+  white-space: nowrap;
+  transition: box-shadow 200ms ease, border-color 200ms ease;
+}
+
+.ka-scan-steg i {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--k-surface-3);
+  color: var(--k-ink-3);
+}
+
+.ka-scan-steg li.aktiv {
+  color: var(--k-ink);
+  border-color: var(--k-accent-line);
+  box-shadow: 0 0 0 3px var(--k-accent-soft);
+}
+
+.ka-scan-steg li.aktiv i {
+  background: var(--k-accent);
+  color: #fff;
+}
+
+.ka-scan-steg li.ferdig {
+  color: var(--k-ink-2);
+}
+
+.ka-scan-steg li.ferdig i {
+  background: var(--k-ok);
+  color: #fff;
+}
+
+.ka-s-skann h4,
+.ka-s-skriver h4 {
+  margin-bottom: 6px;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.ka-scan-forklaring {
+  max-width: 62ch;
+  margin-bottom: 20px !important;
+  font-size: 14px;
+  color: var(--k-ink-2);
+}
+
+.ka-scan-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.ka-scan-board div {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  background: var(--k-surface);
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-radius);
+  box-shadow: var(--k-shadow-sm);
+}
+
+.ka-scan-board b {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+
+.ka-scan-board span {
+  font-size: 12px;
+  color: var(--k-ink-3);
+}
+
+.ka-scan-now {
+  min-height: 21px;
+  margin-bottom: 16px !important;
+  font-size: 14px;
+  color: var(--k-ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ka-scan-now.deep {
+  color: var(--k-accent);
+}
+
+.ka-meter {
+  flex: none;
+  height: 6px;
+  margin-bottom: 18px;
+  border-radius: 999px;
+  background: var(--k-surface-3);
+  overflow: hidden;
+}
+
+.ka-meter i {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--k-accent);
+  transition: width 200ms ease;
+}
+
+.ka-filelist {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  padding: 4px 16px;
+  background: var(--k-surface);
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-radius);
+}
+
+.ka-filelist div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--k-line);
+  font-size: 13px;
+}
+
+.ka-filelist div:last-child {
+  border-bottom: 0;
+}
+
+.ka-filelist .venter {
+  opacity: 0.5;
+}
+
+.ka-name {
+  font-family: var(--k-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ka-stat {
+  color: var(--k-ink-3);
+  white-space: nowrap;
+}
+
+.ka-filelist .jobber .ka-stat {
+  color: var(--k-accent);
+}
+
+.ka-filelist .sjekket .ka-stat {
+  color: var(--k-ink-2);
+}
+
+.ka-filelist .ok .ka-stat {
+  color: var(--k-ok);
+}
+
+/* 4 · Gjennomgang */
+.ka-s-gjennom {
+  display: flex;
+  flex-direction: column;
+}
+
+.ka-review {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr) 360px;
+}
+
+.ka-col {
+  min-height: 0;
+  overflow: hidden;
+  border-right: 1px solid var(--k-line);
+}
+
+.ka-col:last-child {
+  border-right: 0;
+}
+
+.ka-tree,
+.ka-findings {
+  background: var(--k-surface-2);
+}
+
+.ka-col h5 {
+  padding: 16px 16px 10px;
+}
+
+.ka-tre {
+  display: grid;
+  gap: 2px;
+  margin: 0 8px 2px;
+  padding: 8px 10px;
+  border-radius: var(--k-radius-sm);
+}
+
+.ka-tre.på {
+  background: var(--k-chosen);
+  color: var(--k-chosen-ink);
+}
+
+.ka-fn {
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ka-meta {
+  font-family: var(--k-mono);
+  font-size: 11px;
+  color: var(--k-ink-3);
+}
+
+.ka-tre.på .ka-meta {
+  color: var(--k-ink-2);
+}
+
+.ka-sheet-wrap {
+  height: 100%;
+  padding: 28px 36px 0;
+  background: var(--k-bg);
+}
+
+.ka-sheet {
+  position: relative;
+  min-height: calc(100% + 8px);
+  padding: 44px 52px 60px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--k-line);
+  border-radius: 6px;
+  box-shadow: var(--k-shadow-lg);
+}
+
+.ka-docket {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+  font-family: var(--k-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--k-ink-3);
+}
+
+.ka-docket-toggle {
+  flex: none;
+  color: var(--k-accent);
+}
+
+.ka-tekst {
+  font-family: var(--k-serif);
+  font-size: 15px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Markeringene: understrek i fargen til typen, som i appen. */
+.ka mark {
+  margin: 0;
+  padding: 0 1px;
+  border-radius: 2px;
+  background: transparent;
+  color: inherit;
+  transition: box-shadow 300ms ease;
+}
+
+.ka mark.lit.seal {
+  box-shadow: inset 0 -0.45em 0 rgba(178, 63, 40, 0.24);
+}
+
+.ka mark.lit.gilt {
+  box-shadow: inset 0 -0.45em 0 rgba(214, 165, 60, 0.42);
+}
+
+.ka mark.lit.ink {
+  box-shadow: inset 0 -0.45em 0 rgba(45, 95, 139, 0.24);
+}
+
+/* Sladdet visning: alle merkene i gult, som TokenTekst i appen. */
+.ka mark.lit.sladd {
+  box-shadow: inset 0 -0.45em 0 rgba(214, 165, 60, 0.42);
+}
+
+.ka mark .t {
+  display: none;
+}
+
+.ka mark.sladd .o {
+  display: none;
+}
+
+.ka mark.sladd .t {
+  display: inline;
+  animation: ka-inn 380ms ease;
+}
+
+@keyframes ka-inn {
+  from {
+    opacity: 0;
+  }
+}
+
+.ka-sveip {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -90px;
+  height: 90px;
+  background: linear-gradient(180deg, rgba(45, 95, 139, 0), rgba(45, 95, 139, 0.07), rgba(45, 95, 139, 0));
+  pointer-events: none;
+}
+
+.ka-sheet.leser .ka-sveip {
+  animation: ka-sveip 1.6s ease-in-out forwards;
+}
+
+@keyframes ka-sveip {
+  to {
+    top: 100%;
+  }
+}
+
+.ka-revisjon {
+  display: grid;
+  gap: 8px;
+  padding: 0 16px 14px;
+}
+
+.ka-textarea {
+  min-height: 5.5em;
+  padding: 12px 14px;
+  font-size: 16px;
+  color: #9aa2aa;
+  background: var(--k-surface);
+  border: 1px solid var(--k-line-strong);
+  border-radius: var(--k-radius-sm);
+}
+
+.ka-valg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 16px 14px;
+}
+
+.ka-valg span {
+  padding: 9px 14px;
+  border: 1px solid var(--k-line-strong);
+  border-radius: 999px;
+  background: var(--k-surface);
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  transition: background 200ms ease, border-color 200ms ease, transform 140ms ease;
+}
+
+.ka-valg span.på {
+  background: var(--k-chosen);
+  color: var(--k-chosen-ink);
+  border-color: var(--k-chosen-line);
+}
+
+.ka-merker {
+  display: grid;
+  gap: 4px;
+  padding: 0 16px 14px !important;
+}
+
+.ka-merker li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--k-ink-2);
+}
+
+.ka-merker li[hidden] {
+  display: none;
+}
+
+.ka-merker code {
+  font-family: var(--k-mono);
+  font-size: 11px;
+  color: var(--k-ink);
+}
+
+.ka-bar {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px 16px;
+  border-top: 1px solid var(--k-line);
+  background: rgba(250, 251, 252, 0.85);
+}
+
+.ka-stats {
+  font-family: var(--k-mono);
+  font-size: 12px;
+  color: var(--k-ink-3);
+  white-space: nowrap;
+}
+
+.ka-stats b {
+  font-weight: 500;
+  color: var(--k-ink);
+}
+
+.ka-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* 5 · Skriver og ferdig */
+.ka-s-skriver,
+.ka-s-ferdig {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px 56px;
+}
+
+.ka-s-ferdig h4 {
+  margin-bottom: 12px;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.ka-s-ferdig > p {
+  max-width: 48ch;
+  color: var(--k-ink-2);
+}
+
+.ka-behold {
+  margin-top: 4px !important;
+  padding: 10px 12px;
+  border-left: 3px solid var(--k-warn);
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: var(--k-radius-sm);
+}
+
+.ka-behold strong {
+  color: var(--k-ink);
+}
+
+.ka-path {
+  align-self: flex-start;
+  margin: 22px 0 28px !important;
+  padding: 10px 14px;
+  font-family: var(--k-mono);
+  font-size: 13px;
+  color: var(--k-ink) !important;
+  background: var(--k-surface);
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-radius-sm);
+}
+
+.ka-s-ferdig .ka-actions {
+  gap: 12px;
+}
+
+/* Pekeren: macOS-pilen. */
+.ka-peker {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 5;
+  width: 17px;
+  height: 25px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 17 25'%3E%3Cpath d='M1.5 1.5v18.6l4.6-4.4 3.1 7.3 3.2-1.4-3-7.1h6.3z' fill='%23111' stroke='%23fff' stroke-width='1.4' stroke-linejoin='round'/%3E%3C/svg%3E")
+    no-repeat;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 850ms cubic-bezier(0.3, 0.7, 0.3, 1), opacity 300ms ease;
+}
+
+.ka-peker.på {
+  opacity: 1;
+}
+
+.ka-peker::before {
+  content: "";
+  position: absolute;
+  left: -9px;
+  top: -9px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(45, 95, 139, 0.35);
+  opacity: 0;
+}
+
+.ka-peker.klikk::before {
+  animation: ka-klikk 450ms ease-out;
+}
+
+@keyframes ka-klikk {
+  from {
+    opacity: 1;
+    transform: scale(0.3);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.7);
+  }
+}
+
+/* «Spolt fram»: står over vinduet mens skanningen og skrivingen går fort.
+   Sidens egen skrift og en mørk tekstlinje, så det ikke ser ut som en del av appen. */
+.ka-spol {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: max-content;
+  max-width: calc(100% - 24px);
+  margin: 0;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: rgba(21, 32, 46, 0.86);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.4;
+  letter-spacing: 0;
+  box-shadow: 0 8px 24px -10px rgba(21, 32, 46, 0.6);
+  opacity: 0;
+  transform: translate(-50%, 6px);
+  transition: opacity 350ms ease, transform 350ms ease;
+  pointer-events: none;
+}
+
+.ka-spol svg {
+  flex: none;
+  width: 18px;
+  height: 11px;
+  fill: #6f9bf5;
+}
+
+.ka[data-scene="skann"] .ka-spol,
+.ka[data-scene="skriver"] .ka-spol {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* Smalere vinduer: som appen under 980 px, bare det viktigste. */
+@media (max-width: 1100px) {
+  .ka-review {
+    grid-template-columns: 200px minmax(0, 1fr) 300px;
+  }
+
+  .ka-forbered-kropp {
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+
+  .ka-lenke.ka-liten {
+    display: none;
+  }
+
+  .ka-sheet {
+    padding: 36px 36px 48px;
+  }
+
+  .ka-sheet-wrap {
+    padding: 24px 24px 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .ka-stage {
+    height: 560px;
+  }
+
+  .ka-review {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ka-tree,
+  .ka-findings,
+  .ka-lisens,
+  .ka-av {
+    display: none;
+  }
+
+  .ka-forbered-kropp {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
+  .ka-metode-valg,
+  .ka-metode > h5 {
+    display: none;
+  }
+
+  .ka-scan-board {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .ka-chrome {
+    padding-left: 76px;
+    padding-right: 14px;
+  }
+
+  .ka-lys {
+    left: 14px;
+    gap: 6px;
+  }
+
+  .ka-stage {
+    height: 540px;
+  }
+
+  .ka-s-start {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 20px;
+  }
+
+  .ka-s-start .ka-fløy + .ka-fløy,
+  .ka-scan-forklaring,
+  .ka-filvalg-hint,
+  .ka-filsøk .ka-boks-linje,
+  .ka-bar .ka-btn.ghost {
+    display: none;
+  }
+
+  .ka-fløy {
+    min-height: 0;
+    padding: 28px 24px 24px;
+  }
+
+  .ka-s-forbered,
+  .ka-s-skann {
+    padding: 18px 16px;
+  }
+
+  .ka-forbered-topp .ka-lenker {
+    display: none;
+  }
+
+  .ka-scan-steg {
+    flex-wrap: wrap;
+  }
+
+  .ka-scan-board div {
+    padding: 10px 12px;
+  }
+
+  .ka-filelist div {
+    font-size: 12px;
+  }
+
+  .ka-sheet-wrap {
+    padding: 14px 14px 0;
+  }
+
+  .ka-sheet {
+    padding: 22px 20px 32px;
+  }
+
+  .ka-tekst {
+    font-size: 14px;
+  }
+
+  .ka-docket span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ka-bar {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  .ka-bar .ka-actions,
+  .ka-bar .ka-btn {
+    flex: 1 1 100%;
+  }
+
+  .ka-s-skriver,
+  .ka-s-ferdig {
+    padding: 28px 20px;
+  }
+
+  .ka-s-ferdig h4 {
+    font-size: 26px;
+  }
+
+  .ka-path {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+  }
+
+  .ka-s-ferdig .ka-actions {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Nøkkeltall
+   -------------------------------------------------------------------------- */
+
+.readout {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(20px, 4vw, 56px);
+  padding: 0 var(--gut);
+  text-align: center;
+}
+
+.readout b {
+  display: block;
+  font-size: clamp(30px, 3.6vw, 46px);
+  font-weight: 700;
+  letter-spacing: -0.036em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--signal);
+}
+
+.readout .zero {
+  color: var(--ok);
+}
+
+.readout span {
+  display: block;
+  margin-top: 12px;
+  font-size: 14px;
+  color: var(--ink-3);
+}
+
+/* --------------------------------------------------------------------------
+   Kort
+   -------------------------------------------------------------------------- */
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(16px, 2vw, 24px);
+}
+
+.cards article {
+  padding: 34px 32px 38px;
+  background: var(--card);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+}
+
+.cards .idx {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--signal-soft);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+  color: var(--signal-deep);
+}
+
+.cards h3 {
+  margin: 18px 0 12px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.cards p {
+  color: var(--ink-2);
+  font-size: 15px;
+}
+
+/* --------------------------------------------------------------------------
+   Steg
+   -------------------------------------------------------------------------- */
+
+.steps {
+  display: grid;
+  gap: clamp(28px, 4vw, 56px);
+}
+
+.step {
+  display: grid;
+  grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+  gap: clamp(24px, 4.5vw, 72px);
+  align-items: center;
+}
+
+.step .no {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--signal-soft);
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--signal-deep);
+  margin-bottom: 18px;
+}
+
+.step h3 {
+  font-size: clamp(20px, 2.1vw, 26px);
+  font-weight: 700;
+  letter-spacing: -0.024em;
+  margin-bottom: 12px;
+}
+
+.step p {
+  color: var(--ink-2);
+  font-size: 15.5px;
+  max-width: 42ch;
+}
+
+.frag {
+  border-radius: var(--r);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  padding: 26px 28px;
+  min-width: 0;
+}
+
+.well {
+  border: 1px dashed var(--ink-4);
+  border-radius: var(--r-sm);
+  padding: 26px 28px;
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+}
+
+.well strong {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.well span {
+  font-size: 13.5px;
+  color: var(--ink-3);
+}
+
+.frag .scanhead {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  max-width: none;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+.frag .scanhead b {
+  font-weight: 400;
+  color: var(--signal);
+}
+
+.meter {
+  height: 4px;
+  border-radius: 4px;
+  background: var(--rule);
+  overflow: hidden;
+  margin: 12px 0 18px;
+}
+
+.meter i {
+  display: block;
+  height: 100%;
+  width: 4%;
+  border-radius: 4px;
+  background: var(--signal);
+  animation: fill 5.5s var(--ease) infinite;
+}
+
+@keyframes fill {
+  0% {
+    width: 4%;
+  }
+  70%,
+  100% {
+    width: 78%;
+  }
+}
+
+.scanrows {
+  display: grid;
+  gap: 2px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+}
+
+.scanrows li {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 8px 0;
+  color: var(--ink-2);
+}
+
+.scanrows .done {
+  color: var(--ok);
+}
+
+.scanrows .now {
+  color: var(--signal);
+}
+
+.scanrows .wait {
+  color: var(--ink-4);
+}
+
+.frag .hit {
+  margin: 0 0 8px;
+  padding: 12px 14px;
+  background: var(--ground);
+}
+
+.frag .hit:last-child {
+  margin-bottom: 0;
+}
+
+.frag .hit.on {
+  background: var(--signal-soft);
+  box-shadow: inset 2px 0 0 var(--signal);
+}
+
+.frag .hit .val {
+  color: var(--ink);
+}
+
+.frag .hit .sub {
+  color: var(--ink-3);
+  font-size: 10px;
+}
+
+.frag .hit .sub b {
+  color: var(--signal);
+}
+
+.frag .hit.off .sub b {
+  color: var(--ink-3);
+}
+
+.outbox {
+  display: grid;
+  gap: 12px;
+}
+
+.outbox .path {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--signal);
+  padding: 13px 15px;
+  border-radius: var(--r-sm);
+  background: var(--signal-soft);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.outbox .note {
+  font-size: 13.5px;
+  color: var(--ink-3);
+  max-width: none;
+}
+
+/* --------------------------------------------------------------------------
+   Før / etter
+   -------------------------------------------------------------------------- */
+
+.diff {
+  display: grid;
+  grid-template-columns: 1fr 14px 1fr;
+  background: var(--doc);
+  color: #1b2735;
+}
+
+.leaf {
+  padding: 34px 36px 38px;
+}
+
+.leaf p {
+  font-family: var(--serif);
+  font-size: 15px;
+  line-height: 1.78;
+  margin-bottom: 14px;
+}
+
+.leaf code {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--signal-deep);
+  background: var(--signal-soft);
+  border-radius: 3px;
+  padding: 2px 6px;
+}
+
+.perf {
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 9px,
+    #dae3f1 9px 17px
+  );
+}
+
+.diff-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 18px;
+  background: #e9f0fa;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: #78889c;
+  letter-spacing: 0.03em;
+}
+
+/* --------------------------------------------------------------------------
+   Norske felt
+   -------------------------------------------------------------------------- */
+
+.plate {
+  position: relative;
+  border-radius: var(--r);
+  overflow: hidden;
+  margin-bottom: clamp(16px, 2vw, 24px);
+  background: var(--signal-deep);
+}
+
+.plate img {
+  display: block;
+  width: 100%;
+  height: clamp(140px, 20vw, 240px);
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.06) brightness(1.06);
+  mix-blend-mode: luminosity;
+  opacity: 0.82;
+}
+
+/* Lyseblå dis over platen. */
+.plate::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(163, 205, 255, 0.34),
+    rgba(36, 86, 230, 0.1)
+  );
+}
+
+.register {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 24px);
+}
+
+.reg {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  padding: 28px 28px 32px;
+  background: var(--card);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  transition: transform 220ms var(--ease);
+}
+
+.reg:hover {
+  transform: translateY(-3px);
+}
+
+.reg .tok {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--signal);
+}
+
+.reg.flag .tok {
+  color: var(--flag);
+}
+
+.reg b {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.reg span:last-child {
+  font-size: 14px;
+  color: var(--ink-3);
+}
+
+.also {
+  margin-top: clamp(20px, 2.4vw, 28px);
+  padding: 18px 24px;
+  border-radius: var(--r);
+  background: var(--signal-soft);
+  font-size: 15px;
+  color: var(--ink-2);
+}
+
+.also b {
+  color: var(--signal-deep);
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   Spesifikasjon
+   -------------------------------------------------------------------------- */
+
+.spec-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(30px, 5vw, 88px);
+  align-items: start;
+}
+
+.spec {
+  border-radius: var(--r);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.spec dl {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.6fr) minmax(0, 1.4fr);
+}
+
+.spec dt,
+.spec dd {
+  padding: 20px 26px;
+  border-top: 1px solid var(--rule-2);
+  font-size: 15px;
+}
+
+.spec dl > :nth-child(-n + 2) {
+  border-top: 0;
+}
+
+.spec dt {
+  padding-top: 21px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.spec dd {
+  color: var(--ink-2);
+}
+
+.spec dd em {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--ok);
+}
+
+.spec dd code {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--signal);
+}
+
+.exts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.exts span {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 4px 9px;
+  border-radius: 100px;
+  background: var(--ground);
+  color: var(--ink-2);
+}
+
+/* --------------------------------------------------------------------------
+   Ansvar
+   -------------------------------------------------------------------------- */
+
+.ansvar {
+  background: var(--chrome);
+  color: var(--chrome-fog);
+}
+
+.ansvar .slug {
+  color: var(--chrome-mist);
+}
+
+.ansvar .slug i {
+  color: #93a9ff;
+}
+
+.ansvar .title {
+  color: #fff;
+}
+
+.legal {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(28px, 4vw, 56px);
+  margin-top: clamp(40px, 5vw, 64px);
+}
+
+.legal p {
+  font-size: 15px;
+  line-height: 1.72;
+  color: var(--chrome-mist);
+}
+
+.legal p b {
+  display: block;
+  color: #fff;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* --------------------------------------------------------------------------
+   Nedlasting
+   -------------------------------------------------------------------------- */
+
+.download {
+  position: relative;
+  text-align: center;
+  background: linear-gradient(180deg, var(--ground-2), var(--ground) 72%);
+}
+
+.download::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    900px 420px at 50% 12%,
+    rgba(111, 155, 245, 0.34),
+    transparent 66%
+  );
+}
+
+.download > * {
+  position: relative;
+}
+
+.download .title {
+  margin: 0 auto;
+  max-width: 24ch;
+}
+
+.download .sub {
+  margin: 22px auto 0;
+}
+
+/* --------------------------------------------------------------------------
+   Bunn
+   -------------------------------------------------------------------------- */
+
+footer {
+  padding: clamp(44px, 5vw, 68px) var(--gut) clamp(48px, 5vw, 72px);
+  background: var(--ground-2);
+  border-top: 1px solid var(--rule);
+}
+
+.colofon {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+  gap: clamp(24px, 5vw, 80px);
+  align-items: start;
+}
+
+.byline {
+  font-size: 16px;
+  line-height: 1.68;
+  color: var(--ink-2);
+  max-width: 58ch;
+}
+
+.byline b {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.footmeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 26px;
+  margin-top: clamp(32px, 4vw, 48px);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  color: var(--ink-3);
+}
+
+/* --------------------------------------------------------------------------
+   Bevegelse
+   -------------------------------------------------------------------------- */
+
+.rise {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 700ms var(--ease), transform 700ms var(--ease);
+  transition-delay: var(--d, 0ms);
+}
+
+.rise.in {
+  opacity: 1;
+  transform: none;
+}
+
+/* --------------------------------------------------------------------------
+   Responsivt
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 1180px) {
+  .topnav {
+    display: none;
+  }
+
+  .workspace {
+    grid-template-columns: 200px minmax(0, 1fr) 234px;
+  }
+
+  .register {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  body {
+    font-size: 16px;
+  }
+
+  .formats ul {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .spec-grid,
+  .colofon,
+  .intro,
+  .step {
+    grid-template-columns: 1fr;
+  }
+
+  .intro .sub {
+    max-width: none;
+  }
+
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .pane {
+    border-right: 0;
+    border-bottom: 1px solid var(--chrome-line);
+  }
+
+  .readout {
+    grid-template-columns: 1fr 1fr;
+    gap: 36px 20px;
+  }
+
+  .cards,
+  .legal,
+  .register {
+    grid-template-columns: 1fr;
+  }
+
+  .diff {
+    grid-template-columns: 1fr;
+  }
+
+  .perf {
+    height: 12px;
+  }
+}
+
+@media (max-width: 560px) {
+  /* Litt høyere scene og strammere tekst, så hytta står fri over overskriften. */
+  .scene {
+    min-height: max(640px, 100svh);
+    padding: 56px var(--gut) 40px;
+  }
+
+  .hero .scene .lead {
+    font-size: 15px;
+    margin-top: 14px;
+  }
+
+  .hero .scene .lokal {
+    font-size: 14px;
+    padding: 12px 16px;
+    margin-top: 14px;
+  }
+
+  .hero .scene .get {
+    margin-top: 22px;
+  }
+
+  .hero .scene .fineprint {
+    display: none;
+  }
+
+  .hero .scene .tag {
+    gap: 6px;
+    padding: 6px 12px 5px;
+    font-size: 9.5px;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .formats ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .formats li:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .titlebar .os-tag,
+  .appbar .brand span {
+    display: none;
+  }
+
+  .get .btn {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .rise {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Store skjermer (1920 × 1080 og opp), alt under heroen: innholdet holder seg
+   innenfor --innhold i stedet for å fylle bredden, og teksten er litt større.
+   Står sist så den slår grunnreglene over. */
+@media (min-width: 1500px) {
+  :root {
+    --innhold: 1360px;
+  }
+
+  section:not(.hero),
+  .readout,
+  footer {
+    padding-left: max(var(--gut), calc((100% - var(--innhold)) / 2));
+    padding-right: max(var(--gut), calc((100% - var(--innhold)) / 2));
+  }
+
+  .hero > .window {
+    max-width: var(--innhold);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  body {
+    font-size: 18px;
+  }
+
+  .slug {
+    font-size: 12.5px;
+  }
+
+  .title {
+    font-size: clamp(42px, 2.7vw, 56px);
+  }
+
+  .sub {
+    font-size: 19px;
+  }
+
+  .readout b {
+    font-size: clamp(46px, 2.9vw, 58px);
+  }
+
+  .readout span {
+    font-size: 15.5px;
+  }
+
+  .cards h3 {
+    font-size: 23px;
+  }
+
+  .cards p,
+  .step p,
+  .legal p,
+  .spec dt,
+  .spec dd {
+    font-size: 17px;
+  }
+
+  .step h3 {
+    font-size: 28px;
+  }
+
+  .reg b {
+    font-size: 18px;
+  }
+
+  .reg span:last-child {
+    font-size: 15.5px;
+  }
+
+  .spec dt {
+    font-size: 12px;
+  }
+}
+
+/* «Kommer snart» når nedlastingen er satt på pause. */
+.kommer-lapp {
+  position: fixed;
+  left: 50%;
+  bottom: 32px;
+  z-index: 100;
+  transform: translate(-50%, 12px);
+  max-width: calc(100vw - 32px);
+  padding: 12px 18px;
+  border-radius: 10px;
+  background: rgba(20, 32, 46, 0.92);
+  color: #fff;
+  font-size: 15px;
+  box-shadow: 0 10px 30px rgba(10, 20, 30, 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.kommer-lapp.synlig {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* ==========================================================================
+   Under programvinduet (/klartny). Vintertemaet fra heroen går gjennom:
+   klar luft, snø, skispor, hytta og sølvkrystallen fra appikonet.
+   Alt er prefikset nk-, så det ikke krasjer med resten av siden.
+   ========================================================================== */
+
+:root {
+  --nk-natt: #0d1a2e;
+  --nk-natt-2: #142640;
+  --nk-sølv: #c9d4e2;
+  --nk-gul: rgba(214, 165, 60, 0.42);
+  --nk-rød: rgba(178, 63, 40, 0.24);
+  --nk-blå: rgba(45, 95, 139, 0.24);
+}
+
+.nk-merke {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--signal);
+}
+
+.nk-tittel {
+  max-width: 20ch;
+  margin: 14px 0 20px;
+  font-size: clamp(28px, 3.4vw, 46px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.026em;
+}
+
+.nk-ingress {
+  max-width: 56ch;
+  font-size: 17.5px;
+  color: var(--ink-2);
+}
+
+.nk-hode {
+  margin-bottom: clamp(36px, 4.5vw, 60px);
+}
+
+/* Tre løfter i stedet for tallene */
+.nk-lofter {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  max-width: 1240px;
+  margin: 0 var(--gut);
+  border-radius: 18px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+@media (min-width: 1400px) {
+  .nk-lofter {
+    margin: 0 auto;
+  }
+}
+
+.nk-lofte {
+  padding: clamp(26px, 3vw, 38px) clamp(22px, 2.6vw, 36px);
+}
+
+.nk-lofte + .nk-lofte {
+  border-left: 1px solid var(--rule-2);
+}
+
+.nk-lofte svg,
+.nk-bruksliste svg {
+  width: 26px;
+  height: 26px;
+  fill: none;
+  stroke: var(--signal);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.nk-lofte h3 {
+  margin: 16px 0 6px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.nk-lofte p {
+  font-size: 15px;
+  color: var(--ink-2);
+}
+
+.nk-lofte a {
+  color: var(--signal);
+  font-weight: 600;
+}
+
+/* Problemet */
+.nk-problem {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: clamp(32px, 6vw, 96px);
+  align-items: center;
+}
+
+/* Samme innholdsbredde i alle seksjonene: 1240 px, med sidens marg rundt. */
+.nk-problem,
+.nk-bruk,
+.nk-ansvar {
+  max-width: calc(1240px + 2 * var(--gut));
+  margin: 0 auto;
+}
+
+.nk-bilde {
+  margin: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 30px 60px -36px rgba(13, 26, 46, 0.45);
+}
+
+.nk-bilde img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+
+.nk-tekst p:not(.nk-merke) {
+  max-width: 50ch;
+  margin-bottom: 14px;
+  font-size: 17px;
+  color: var(--ink-2);
+}
+
+/* Bruksområder */
+.nk-bruk {
+  padding-top: 0;
+}
+
+.nk-bruksliste {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(28px, 3.4vw, 48px) clamp(24px, 3vw, 48px);
+}
+
+.nk-bruksliste li {
+  padding-top: 22px;
+  border-top: 1px solid var(--nk-sølv);
+}
+
+.nk-bruksliste h3 {
+  margin: 14px 0 6px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.nk-bruksliste p {
+  max-width: 34ch;
+  font-size: 15px;
+  color: var(--ink-2);
+}
+
+/* Slik virker det: skisporet */
+.nk-slik {
+  position: relative;
+  padding-top: 0;
+  background: linear-gradient(180deg, var(--ground), #f6f9fd 40%, var(--ground));
+}
+
+.nk-spor-bilde {
+  margin: 0 calc(-1 * var(--gut)) clamp(40px, 5vw, 72px);
+  height: clamp(200px, 26vw, 400px);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 18%, #000 70%, transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 18%, #000 70%, transparent);
+}
+
+.nk-spor-bilde img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 55%;
+}
+
+.nk-slik > *:not(.nk-spor-bilde) {
+  max-width: 1240px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.nk-sporet {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 28px;
+  margin-bottom: clamp(48px, 6vw, 84px) !important;
+}
+
+/* To parallelle linjer gjennom punktene, som et skispor. */
+.nk-sporet::before,
+.nk-sporet::after {
+  content: "";
+  position: absolute;
+  left: 20px;
+  right: 12%;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--signal-lit), var(--nk-sølv));
+  opacity: 0.6;
+}
+
+.nk-sporet::before {
+  top: 15px;
+}
+
+.nk-sporet::after {
+  top: 23px;
+}
+
+.nk-sporet li {
+  position: relative;
+}
+
+.nk-punkt {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1.5px solid var(--signal);
+  box-shadow: 0 0 0 6px var(--ground);
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--signal-deep);
+}
+
+.nk-sporet h3 {
+  margin: 20px 0 6px;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.018em;
+}
+
+.nk-sporet p {
+  font-size: 15px;
+  color: var(--ink-2);
+}
+
+/* Før og etter, i appens farger */
+.nk-for-etter {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: clamp(14px, 2vw, 28px);
+  align-items: center;
+}
+
+.nk-ark {
+  padding: clamp(24px, 3vw, 38px) clamp(22px, 3vw, 40px);
+  background: #fff;
+  border: 1px solid rgba(24, 34, 44, 0.08);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(20, 30, 40, 0.05), 0 18px 48px rgba(20, 30, 40, 0.12);
+}
+
+.nk-ark-topp {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.nk-ark pre {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--ink);
+}
+
+.nk-ark mark {
+  margin: 0;
+  padding: 0 1px;
+  border-radius: 2px;
+  background: transparent;
+  color: inherit;
+}
+
+.nk-ark mark.r {
+  box-shadow: inset 0 -0.45em 0 var(--nk-rød);
+}
+
+.nk-ark mark.g,
+.nk-ark mark.y {
+  box-shadow: inset 0 -0.45em 0 var(--nk-gul);
+}
+
+.nk-ark mark.b {
+  box-shadow: inset 0 -0.45em 0 var(--nk-blå);
+}
+
+.nk-pil {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+.nk-pil svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: var(--signal);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.nk-fotnote {
+  margin-top: 22px !important;
+  text-align: center;
+  font-size: 14.5px;
+  color: var(--ink-3);
+}
+
+/* Norske felt: natt, med snøkrystallen */
+.nk-norsk {
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(1000px 600px at 85% 30%, rgba(111, 155, 245, 0.16), transparent 70%),
+    linear-gradient(180deg, var(--nk-natt), var(--nk-natt-2));
+  color: #dfe8f5;
+}
+
+.nk-norsk-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: clamp(32px, 6vw, 96px);
+  align-items: center;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.nk-norsk .nk-merke {
+  color: #93b4ff;
+}
+
+.nk-norsk .nk-tittel {
+  color: #fff;
+}
+
+.nk-norsk-tekst > p:not(.nk-merke) {
+  max-width: 54ch;
+  font-size: 17px;
+  color: #b8c6da;
+}
+
+.nk-felt {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 32px;
+  margin: 30px 0 22px;
+}
+
+.nk-felt div {
+  padding: 14px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.nk-felt dt {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: #f0d491;
+}
+
+.nk-felt dd {
+  margin: 4px 0 0;
+  font-size: 15px;
+  color: #c9d6e8;
+}
+
+.nk-norsk .nk-ogsa {
+  font-size: 15px !important;
+  color: #93a4bd !important;
+}
+
+.nk-krystall {
+  margin: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.7);
+}
+
+.nk-krystall img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+/* På maskinen din: hytta */
+.nk-lokal {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: clamp(600px, 78vh, 820px);
+  overflow: hidden;
+  background: var(--nk-natt);
+}
+
+.nk-lokal-bilde {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 65% center;
+}
+
+.nk-lokal-kort {
+  position: relative;
+  max-width: 560px;
+  padding: clamp(28px, 3.4vw, 44px);
+  border-radius: 20px;
+  background: rgba(250, 252, 255, 0.86);
+  -webkit-backdrop-filter: saturate(1.3) blur(18px);
+  backdrop-filter: saturate(1.3) blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 30px 70px -30px rgba(13, 26, 46, 0.6);
+}
+
+.nk-lokal-kort .nk-tittel {
+  margin-bottom: 14px;
+}
+
+.nk-lokal-kort .nk-ingress {
+  font-size: 16px;
+}
+
+.nk-lokal-kort dl {
+  display: grid;
+  grid-template-columns: 108px minmax(0, 1fr);
+  margin-top: 24px;
+}
+
+.nk-lokal-kort dt,
+.nk-lokal-kort dd {
+  padding: 12px 0;
+  border-top: 1px solid var(--rule);
+}
+
+.nk-lokal-kort dt {
+  padding-top: 14px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.nk-lokal-kort dd {
+  margin: 0;
+  font-size: 14.5px;
+  color: var(--ink-2);
+}
+
+.nk-lokal-kort code {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--signal);
+}
+
+/* Ansvar */
+.nk-ansvar-liste {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 26px clamp(28px, 4vw, 64px);
+}
+
+.nk-ansvar-liste p {
+  padding-left: 18px;
+  border-left: 2px solid var(--nk-sølv);
+  font-size: 15.5px;
+  color: var(--ink-2);
+}
+
+.nk-ansvar-liste b {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* Prøv Klart: fjellet bak, ikonet over */
+.download.nk-prov {
+  padding-top: 0;
+  background: var(--ground);
+}
+
+.download.nk-prov::before {
+  display: none;
+}
+
+.nk-prov-bilde {
+  display: block;
+  width: calc(100% + 2 * var(--gut));
+  margin: 0 calc(-1 * var(--gut));
+  height: clamp(240px, 32vw, 460px);
+  object-fit: cover;
+  object-position: center 60%;
+  -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent);
+  mask-image: linear-gradient(180deg, #000 55%, transparent);
+}
+
+.nk-prov-innhold {
+  margin-top: clamp(-120px, -8vw, -60px);
+}
+
+.nk-ikon {
+  display: block;
+  width: 112px;
+  height: 112px;
+  margin: 0 auto 10px;
+  filter: drop-shadow(0 14px 22px rgba(13, 26, 46, 0.25));
+}
+
+.nk-prov .nk-tittel {
+  max-width: 22ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.nk-prov .nk-ingress {
+  margin: 0 auto 30px;
+}
+
+.nk-prislenke {
+  margin-top: 18px;
+  font-size: 16px;
+}
+
+.nk-prislenke a {
+  color: var(--signal);
+  font-weight: 600;
+}
+
+/* Bunnen */
+.nk-bunn {
+  padding: clamp(40px, 5vw, 64px) var(--gut);
+  background: var(--ground-2);
+  border-top: 1px solid var(--rule);
+}
+
+.nk-bunn-topp {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+  gap: clamp(24px, 5vw, 80px);
+  align-items: center;
+}
+
+.nk-bunn-merke {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  color: var(--ink-2);
+}
+
+.nk-bunn-merke b {
+  font-size: 18px;
+  color: var(--ink);
+}
+
+.nk-bunn-topp > p {
+  max-width: 58ch;
+  font-size: 15.5px;
+  color: var(--ink-2);
+}
+
+.nk-bunn-topp > p b {
+  color: var(--ink);
+}
+
+.nk-bunn-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 26px;
+  margin-top: clamp(28px, 4vw, 44px);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  color: var(--ink-3);
+}
+
+.nk-bunn-meta a:hover {
+  color: var(--signal);
+}
+
+@media (max-width: 900px) {
+  .nk-lofter,
+  .nk-problem,
+  .nk-norsk-inner,
+  .nk-ansvar-liste,
+  .nk-bunn-topp {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .nk-lofte + .nk-lofte {
+    border-left: 0;
+    border-top: 1px solid var(--rule-2);
+  }
+
+  .nk-bruksliste {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .nk-sporet {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 36px;
+  }
+
+  .nk-sporet::before,
+  .nk-sporet::after {
+    display: none;
+  }
+
+  .nk-for-etter {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+  }
+
+  .nk-for-etter .nk-ark {
+    width: 100%;
+  }
+
+  .nk-pil {
+    transform: rotate(90deg);
+  }
+
+  .nk-krystall img {
+    aspect-ratio: 3 / 2;
+  }
+
+  /* Smalt: hytta som bilde øverst, kortet under, så hytta ikke skjules. */
+  .nk-lokal {
+    display: block;
+    min-height: 0;
+    padding-top: 0;
+  }
+
+  .nk-lokal-bilde {
+    position: relative;
+    display: block;
+    width: calc(100% + 2 * var(--gut));
+    height: clamp(260px, 60vw, 420px);
+    margin: 0 calc(-1 * var(--gut));
+    object-position: 70% center;
+  }
+
+  .nk-lokal-kort {
+    max-width: none;
+    margin-top: -64px;
+    background: #f6f9fd;
+  }
+}
+
+@media (max-width: 560px) {
+  .nk-bruksliste,
+  .nk-sporet,
+  .nk-felt {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .nk-ark pre {
+    font-size: 14.5px;
+  }
+
+  .nk-ark-topp span + span {
+    display: none;
+  }
+
+  .nk-lokal-kort dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .nk-lokal-kort dd {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .nk-ikon {
+    width: 88px;
+    height: 88px;
+  }
+}

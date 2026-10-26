@@ -1,0 +1,1414 @@
+<!doctype html>
+<html lang="nb">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Klart — gjør dokumenter GDPR-klare, lokalt på maskinen</title>
+    <meta
+      name="description"
+      content="Klart er et norskutviklet program for Mac og Windows der en lokal AI renser en hel mappe med Word-, Excel-, PowerPoint-, PDF- og e-postfiler for norske personopplysninger. Til innsyn, deling, arkiv, opplæring eller AI-verktøy — uten nett og uten konto."
+    />
+    <meta name="theme-color" content="#eef3fb" />
+    <meta
+      property="og:title"
+      content="Klart — gjør dokumenter GDPR-klare, lokalt på maskinen"
+    />
+    <meta
+      property="og:description"
+      content="Norskutviklet program for Mac og Windows. En lokal AI leser Word, Excel, PowerPoint, PDF, e-post og tekst, finner norske personopplysninger og skriver en renset kopi — klar til deling. Ingenting forlater maskinen."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="nb_NO" />
+    <!-- Ikke indekser før nedlastingene er på plass. Fjern når Klart lanseres. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/png" href="media/klart-ikon.png" />
+    <!-- Fontene ligger på siden selv. Henter vi dem fra Google, får Google
+         IP-adressen til hver besøkende — ikke noe en GDPR-side skal gjøre. -->
+    <link rel="stylesheet" href="/klart/fonts.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Filtype-ikoner: dokumentark bak, appflis foran. -->
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <defs>
+        <g id="page">
+          <rect
+            x="16"
+            y="2"
+            width="26"
+            height="32"
+            rx="3.5"
+            fill="#fff"
+            stroke="#dcdfda"
+            stroke-width="1.3"
+          />
+          <g fill="#e4e7e2">
+            <rect x="26" y="9" width="12" height="2.4" rx="1.2" />
+            <rect x="26" y="15" width="12" height="2.4" rx="1.2" />
+          </g>
+        </g>
+
+        <symbol id="i-word" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#185abd" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">W</text>
+        </symbol>
+
+        <symbol id="i-excel" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#107c41" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">X</text>
+        </symbol>
+
+        <symbol id="i-ppt" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#c43e1c" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">P</text>
+        </symbol>
+
+        <symbol id="i-pdf" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#c8322b" />
+          <text x="17.5" y="31" text-anchor="middle" font-size="11">PDF</text>
+        </symbol>
+
+        <symbol id="i-mail" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#0f6cbd" />
+          <rect
+            x="8.5"
+            y="20"
+            width="18"
+            height="13.5"
+            rx="1.8"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2.1"
+          />
+          <path
+            d="M9.2 21.2l8.3 6.4 8.3-6.4"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2.1"
+          />
+        </symbol>
+
+        <symbol id="i-bilde" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#7a4fd6" />
+          <circle cx="23" cy="20" r="3" fill="#fff" />
+          <path d="M7.5 36l7.5-10 5.5 6.5 3.5-4 6.5 7.5z" fill="#fff" />
+        </symbol>
+
+        <symbol id="i-text" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#5b6569" />
+          <g fill="#fff">
+            <rect x="9" y="19.5" width="17" height="2.4" rx="1.2" />
+            <rect x="9" y="25.3" width="17" height="2.4" rx="1.2" />
+            <rect x="9" y="31.1" width="10" height="2.4" rx="1.2" />
+          </g>
+        </symbol>
+
+        <!-- Mac Studio for skreddersydd oppsett. Egen tegning, ikke fra Apple Newsroom. Ligger her én
+             gang, så de to nedlastingsfeltene kan bruke den uten like id-er. -->
+        <linearGradient id="mac-front" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f3f5f8" />
+          <stop offset="0.55" stop-color="#e1e6ec" />
+          <stop offset="1" stop-color="#c4cbd4" />
+        </linearGradient>
+        <linearGradient id="mac-kant" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#6d7783" stop-opacity="0.28" />
+          <stop offset="0.08" stop-color="#6d7783" stop-opacity="0" />
+          <stop offset="0.92" stop-color="#6d7783" stop-opacity="0" />
+          <stop offset="1" stop-color="#6d7783" stop-opacity="0.32" />
+        </linearGradient>
+        <linearGradient id="mac-topp" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#e9edf2" />
+          <stop offset="1" stop-color="#fbfcfd" />
+        </linearGradient>
+        <radialGradient id="mac-skygge" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="#050d1f" stop-opacity="0.45" />
+          <stop offset="1" stop-color="#050d1f" stop-opacity="0" />
+        </radialGradient>
+        <symbol id="mac-studio" viewBox="60 80 440 240">
+          <ellipse cx="280" cy="292" rx="236" ry="26" fill="url(#mac-skygge)" />
+          <rect x="122" y="262" width="316" height="24" rx="9" fill="#8d96a1" />
+          <rect x="128" y="276" width="304" height="6" rx="3" fill="#6e7782" />
+          <path d="M96 150 L128 104 Q134 96 146 96 L414 96 Q426 96 432 104 L464 150 Z" fill="url(#mac-topp)" stroke="#d3d9e1" stroke-width="1.2" />
+          <path d="M96 150 H464 V252 Q464 270 446 270 H114 Q96 270 96 252 Z" fill="url(#mac-front)" />
+          <path d="M96 150 H464 V252 Q464 270 446 270 H114 Q96 270 96 252 Z" fill="url(#mac-kant)" />
+          <path d="M96 150.5 H464" stroke="#ffffff" stroke-width="1.6" />
+          <g fill="#2b3139">
+            <rect x="128" y="200" width="22" height="8" rx="4" />
+            <rect x="162" y="200" width="22" height="8" rx="4" />
+            <rect x="386" y="202" width="42" height="4" rx="2" />
+          </g>
+          <circle cx="114" cy="254" r="2.4" fill="#ffffff" />
+          <circle cx="114" cy="254" r="5" fill="#ffffff" opacity="0.25" />
+        </symbol>
+      </defs>
+    </svg>
+
+    <!-- ================= Toppbar ================= -->
+    <header class="topbar">
+      <a class="wordmark" href="#top">
+        <b>Klart</b>
+        <span>v0.1.0</span>
+      </a>
+      <nav class="topnav">
+        <a href="#bruk">Bruksområder</a>
+        <a href="#slik">Slik virker det</a>
+        <a href="#norsk">Norske felt</a>
+        <a href="#spesifikasjon">Spesifikasjon</a>
+        <a href="#ansvar">Ansvar</a>
+        <a href="/klart/pris/">Pris</a>
+      </nav>
+      <a class="btn sm" href="#last-ned">Last ned</a>
+    </header>
+
+    <main id="top">
+      <!-- ================= Hero ================= -->
+      <section class="hero" id="programmet">
+        <!-- Scenen: filmen fra appens intro. Skisporet leder opp mot hytta,
+             teksten står i himmelen og knappene nede i snøen. -->
+        <div class="scene">
+          <video
+            class="scene-film"
+            autoplay
+            muted
+            playsinline
+            preload="auto"
+            poster="/klart/assets/hero-film-start.jpg"
+            aria-hidden="true"
+          >
+            <source src="/klart/assets/hero-film-16s.mp4" type="video/mp4" />
+          </video>
+          <div class="scene-slor" aria-hidden="true"></div>
+
+          <img class="scene-bilde" src="/klart/assets/hero-film-slutt-skarp.jpg" alt="" aria-hidden="true" />
+
+          <!-- All teksten samlet, nede i snøen. Himmelen, hytta og sporet står fritt over. -->
+          <div class="scene-tekst">
+            <p class="tag rise">
+              Laget i Norge <em>·</em> Mac og Windows <em>·</em> for GDPR
+            </p>
+            <h1 class="rise" style="--d: 60ms">
+              Sladdede dokumenter,
+              <span>med lokal AI.</span>
+            </h1>
+            <!-- Ingressen og forklaringen av «lokal AI» i én boks. Det viktigste står
+                 nederst: Klart har ingen vei ut på nett (ingen HTTP- eller TLS-klient
+                 i appen; se til-it.html for hvordan IT sjekker det). -->
+            <div class="lokal rise" style="--d: 120ms">
+              <p class="hva">
+                Klart finner navn, fødselsnummer og andre personopplysninger i
+                alle filene i en mappe, og pikselerer ansikter i bilder. Du får
+                en renset kopi, klar til deling.
+              </p>
+              <p>
+                <b>Lokal AI</b> betyr at AI-en følger med i programmet og
+                jobber på din egen maskin. Den er laget lett, så en helt vanlig
+                jobb-PC eller Mac holder.
+              </p>
+              <p class="avskaaret">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M2 8.5a15 15 0 0 1 20 0M5.5 12a10 10 0 0 1 13 0M9 15.5a5 5 0 0 1 6 0" />
+                  <circle cx="12" cy="19" r="1.2" />
+                  <path class="kryss" d="M3 3l18 18" />
+                </svg>
+                <span>
+                  <b>Klart kan ikke koble seg til internett.</b> Dokumentene har
+                  ingen vei ut. <a href="/klart/til-it.html">IT kan sjekke det selv</a>.
+                </span>
+              </p>
+            </div>
+            <!-- Nedlasting: virksomheten først (orgfelt.js og skriptet nederst). Etter oppslaget: gratis prøve og hva lisensen koster etterpå. -->
+            <form class="orgport rise" data-orgport style="--d: 180ms" novalidate>
+              <div data-orgport-sok>
+                <p class="orgport-gratis"><b>Gratis for virksomheter.</b> Ingen betaling, ingen registrering.</p>
+                <label class="skjult-tekst" for="orgport-topp">Virksomhetens organisasjonsnummer eller navn</label>
+                <div class="orgport-rad">
+                  <div class="orgfelt">
+                    <input id="orgport-topp" type="text" autocomplete="off" spellcheck="false" placeholder="Virksomhetens org.nr. eller navn" maxlength="80" />
+                    <ul class="orgforslag" role="listbox" hidden></ul>
+                  </div>
+                  <button class="btn" type="submit">Prøv Klart gratis</button>
+                </div>
+                <p class="orgport-feil" role="alert" hidden></p>
+              </div>
+              <!-- Små: «godkjent» og knappene. Store: bredere, med navnet og gratis prøve til venstre og
+                   skreddersydd oppsett med Mac Studio til høyre (klassen «stor» på skjemaet). -->
+              <div class="orgport-svar" data-orgport-svar hidden aria-live="polite">
+                <div class="orgport-svar-grid">
+                  <div class="orgport-svar-hoved">
+                    <p class="orgport-ok" data-godkjent>
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+                      <span><b data-navn></b> er godkjent.</span>
+                    </p>
+                    <div class="orgport-firma" data-firma hidden>
+                      <p class="orgport-firmanavn" data-navn></p>
+                    </div>
+                    <!-- Prøven og hva lisensen koster etterpå, med en gang etter oppslaget. Ingen sperre: knappene står som før. -->
+                    <div class="orgport-prove">
+                      <p class="orgport-prove-tittel">Gratis prøve. Ingen betaling nå.</p>
+                      <p>Hele Klart, ikke en demo. Dere kan lagre 10 rensede filer av hver filtype: Word, Excel, PowerPoint, PDF, e-post, tekst og bilder.</p>
+                      <p class="orgport-pris" data-pris hidden>
+                        Kjøper dere lisens etter prøven: <b data-prisbelop></b> for <span data-prishvem></span>.
+                        <a data-prislenke href="/klart/pris/">Se hva som er med →</a>
+                      </p>
+                    </div>
+                    <div class="get">
+                      <a class="btn" href="/klart/last-ned/mac" download>Last ned for Mac</a>
+                      <a class="btn ghost" href="/klart/last-ned/windows" download>Last ned for Windows</a>
+                    </div>
+                    <button type="button" class="orgport-endre" data-endre>Ikke deres virksomhet?</button>
+                  </div>
+                  <aside class="orgport-oppsett" data-stor hidden>
+                    <p class="orgport-merke">For store virksomheter</p>
+                    <h3>Skreddersydd oppsett</h3>
+                    <p>En større modell, finjustert på deres egne dokumenter og satt opp hos dere, på maskinvare dere eier.</p>
+                    <svg class="orgport-mac" role="img" aria-label="Mac Studio"><use href="#mac-studio" /></svg>
+                    <a class="btn" data-oppsett href="/klart/pris/">Les om skreddersydd oppsett</a>
+                  </aside>
+                </div>
+              </div>
+            </form>
+            <p class="fineprint rise" style="--d: 230ms">
+              Ingen konto · ingen skytjeneste · ingenting lastes ned ved oppstart
+            </p>
+          </div>
+        </div>
+
+        <!-- Filtypene tidlig. Dette er det folk lurer på først. -->
+        <div class="formats rise" style="--d: 290ms">
+          <p>Leser filene du allerede jobber i</p>
+          <ul>
+            <li>
+              <svg class="ficon"><use href="#i-word" /></svg>
+              <span class="fname">Word</span>
+              <span class="fext">.docx</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-excel" /></svg>
+              <span class="fname">Excel</span>
+              <span class="fext">.xlsx · .xls · .csv</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-ppt" /></svg>
+              <span class="fname">PowerPoint</span>
+              <span class="fext">.pptx</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-pdf" /></svg>
+              <span class="fname">PDF</span>
+              <span class="fext">.pdf</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-mail" /></svg>
+              <span class="fname">E-post</span>
+              <span class="fext">.eml</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-bilde" /></svg>
+              <span class="fname">Bilder</span>
+              <span class="fext">.jpg · .png · .tiff</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-text" /></svg>
+              <span class="fname">Tekst</span>
+              <span class="fext">.txt · .md</span>
+            </li>
+          </ul>
+          <p class="ansikter">
+            <b>Ansikter blir pikselert</b>, også i bilder inne i Word og
+            PowerPoint.
+          </p>
+        </div>
+
+        <!-- Programvindu: en kopi av Klart slik appen ser ut (src/styles.css og App.tsx i appen),
+             som spiller av flyten: velg mappe, velg filer, skanning, gjennomgang og ferdig.
+             Uten JS, eller med redusert bevegelse, står den stille på gjennomgangen. -->
+        <figure class="ka rise" data-scene="gjennom">
+          <div class="ka-app" data-fase="gjennomgang" aria-hidden="true">
+            <header class="ka-chrome">
+              <span class="ka-lys"><i></i><i></i><i></i></span>
+              <div class="ka-brand">
+                <span class="ka-mark">Klart</span>
+                <span class="ka-av">av Tidemann Esbjug</span>
+              </div>
+              <div class="ka-høyre">
+                <div class="ka-pulse"><i class="ka-dot on"></i><span data-ka="motor"></span></div>
+                <span class="ka-lisens">Gratis prøve · Lisens for bedrifter</span>
+                <span class="ka-lenke ka-liten">Sikkerhetskopier</span>
+                <span class="ka-lenke ka-liten">Vilkår</span>
+              </div>
+            </header>
+
+            <div class="ka-stage">
+              <!-- Velkommen -->
+              <div class="ka-scene ka-s-start">
+                <div class="ka-fløy">
+                  <svg viewBox="0 0 64 64"><path d="M8 20h18l5 5h25v27H8z" /><path d="M8 28h48" /></svg>
+                  <h4>Mappe</h4>
+                  <p>Rens mange dokumenter på en gang. Du ser filene og velger metode før noe blir lest.</p>
+                  <span class="ka-btn" data-ka="velg">Velg mappe…</span>
+                </div>
+                <div class="ka-fløy">
+                  <svg viewBox="0 0 64 64"><path d="M18 8h20l14 14v34H18z" /><path d="M38 8v14h14" /><path d="M26 36h20M26 44h14" /></svg>
+                  <h4>Dokument</h4>
+                  <p>Åpne ett dokument, se gjennom treffene og bestem selv før det skrives.</p>
+                  <span class="ka-btn ghost">Velg dokument…</span>
+                </div>
+              </div>
+
+              <!-- Mappe valgt: filene til venstre, metoden til høyre -->
+              <div class="ka-scene ka-s-forbered">
+                <div class="ka-forbered-topp">
+                  <div>
+                    <h4>kundesaker</h4>
+                    <p class="ka-sti">/Users/kari/Dokumenter/kundesaker</p>
+                  </div>
+                  <div class="ka-lenker">
+                    <span class="ka-lenke">Bytt mappe</span>
+                    <span class="ka-lenke">Tilbake</span>
+                  </div>
+                </div>
+                <div class="ka-forbered-kropp">
+                  <div class="ka-kort ka-filvalg">
+                    <div class="ka-kort-topp">
+                      <h5>Filer <span>6 av 6 valgt</span></h5>
+                      <div class="ka-lenker">
+                        <span class="ka-lenke">Alle</span>
+                        <span class="ka-lenke">Ingen</span>
+                      </div>
+                    </div>
+                    <div class="ka-filsøk">
+                      <span class="ka-søk">Søk i filene</span>
+                      <span class="ka-boks-linje"><i class="ka-boks"></i>Søk i innholdet</span>
+                    </div>
+                    <ul>
+                      <li><i class="ka-boks på"></i><span class="ka-filnavn">01-arbeidsavtale-acme.docx</span><span class="ka-filstr">48 kB</span></li>
+                      <li><i class="ka-boks på"></i><span class="ka-filnavn">02-vedtak-statsforvalter.pdf</span><span class="ka-filstr">212 kB</span></li>
+                      <li><i class="ka-boks på"></i><span class="ka-filnavn">03-epost-trad.eml</span><span class="ka-filstr">31 kB</span></li>
+                      <li><i class="ka-boks på"></i><span class="ka-filnavn">07-saksnotat.txt</span><span class="ka-filstr">6 kB</span></li>
+                      <li><i class="ka-boks på"></i><span class="ka-filnavn">08-kundeliste.xlsx</span><span class="ka-filstr">64 kB</span></li>
+                      <li><i class="ka-boks på"></i><span class="ka-filnavn">09-statusmote.pptx</span><span class="ka-filstr">1.2 MB</span></li>
+                    </ul>
+                    <p class="ka-filvalg-hint">Dra over filene for å krysse av flere. Shift-klikk velger alt imellom.</p>
+                  </div>
+                  <div class="ka-kort ka-metode">
+                    <h5>Metode</h5>
+                    <div class="ka-metode-valg">
+                      <span class="på"><strong>Full rens</strong><span>Alt appen kjenner igjen blir fjernet.</span></span>
+                      <span><strong>Egendefinert</strong><span>Velg selv hva som skal vekk.</span></span>
+                    </div>
+                    <div class="ka-felt-bunn">
+                      <span class="ka-boks-linje"><i class="ka-boks på"></i>Sikkerhetskopi i Klart før skanningen</span>
+                      <span class="ka-btn stor" data-ka="rens">Rens 6 filer</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Skanner -->
+              <div class="ka-scene ka-s-skann">
+                <ol class="ka-scan-steg">
+                  <li data-ka="steg1"><i>1</i><span>Rask gjennomgang</span></li>
+                  <li data-ka="steg2"><i>2</i><span>Grundig lesing med lokal AI</span></li>
+                </ol>
+                <h4 data-ka="skanntittel">Går gjennom mappen</h4>
+                <p class="ka-scan-forklaring" data-ka="forklaring">Hver fil sjekkes mot norske regler. Etterpå leser den lokale AI-en filene grundig.</p>
+                <div class="ka-scan-board">
+                  <div><b data-ka="ferdige">0 / 6</b><span data-ka="ferdigetekst">filer sjekket</span></div>
+                  <div><b data-ka="treff">0</b><span>treff så langt</span></div>
+                  <div><b data-ka="brukt">0 s</b><span>brukt</span></div>
+                  <div><b data-ka="igjen">Regner ut …</b><span data-ka="igjentekst">igjen av steg 1</span></div>
+                </div>
+                <p class="ka-scan-now" data-ka="nå"></p>
+                <div class="ka-meter"><i data-ka="meter"></i></div>
+                <div class="ka-filelist" data-ka="rader">
+                  <div><span class="ka-name">01-arbeidsavtale-acme.docx</span><span class="ka-stat">I kø</span></div>
+                  <div><span class="ka-name">02-vedtak-statsforvalter.pdf</span><span class="ka-stat">I kø</span></div>
+                  <div><span class="ka-name">03-epost-trad.eml</span><span class="ka-stat">I kø</span></div>
+                  <div><span class="ka-name">07-saksnotat.txt</span><span class="ka-stat">I kø</span></div>
+                  <div><span class="ka-name">08-kundeliste.xlsx</span><span class="ka-stat">I kø</span></div>
+                  <div><span class="ka-name">09-statusmote.pptx</span><span class="ka-stat">I kø</span></div>
+                </div>
+              </div>
+
+              <!-- Gjennomgang -->
+              <div class="ka-scene ka-s-gjennom">
+                <div class="ka-review">
+                  <div class="ka-col ka-tree">
+                    <h5>Filer</h5>
+                    <span class="ka-tre"><span class="ka-fn">01-arbeidsavtale-acme.docx</span><span class="ka-meta">7 treff · 48 kB</span></span>
+                    <span class="ka-tre på"><span class="ka-fn">02-vedtak-statsforvalter.pdf</span><span class="ka-meta">11 treff · 212 kB</span></span>
+                    <span class="ka-tre"><span class="ka-fn">03-epost-trad.eml</span><span class="ka-meta">5 treff · 31 kB</span></span>
+                    <span class="ka-tre"><span class="ka-fn">07-saksnotat.txt</span><span class="ka-meta">0 treff · 6 kB</span></span>
+                    <span class="ka-tre"><span class="ka-fn">08-kundeliste.xlsx</span><span class="ka-meta">3 treff · 64 kB</span></span>
+                    <span class="ka-tre"><span class="ka-fn">09-statusmote.pptx</span><span class="ka-meta">1 treff · 1.2 MB</span></span>
+                  </div>
+                  <div class="ka-col ka-midt">
+                    <div class="ka-sheet-wrap">
+                      <article class="ka-sheet">
+                        <i class="ka-sveip"></i>
+                        <div class="ka-docket">
+                          <span>02-vedtak-statsforvalter.pdf</span>
+                          <span class="ka-docket-toggle" data-ka="vis">Vis sladdet</span>
+                        </div>
+<pre class="ka-tekst">Vedtak om vergemål
+Saksnr. 2024/18442-SF
+
+Vergehaver: <mark class="gilt lit"><span class="o">Kari Nordmann</span><span class="t">[PERSON_1]</span></mark>, fnr. <mark class="seal lit"><span class="o">110779 41012</span><span class="t">[FØDSELSNUMMER_1]</span></mark>
+Adresse: <mark class="gilt" data-ka="adresse"><span class="o">Glenneveien 272, 0550 Oslo</span><span class="t">[ADRESSE_1]</span></mark>
+
+Verge: <mark class="gilt lit"><span class="o">Lars Hansen</span><span class="t">[PERSON_2]</span></mark>, Advokatfirmaet Nordlys AS
+E-post: <mark class="ink lit"><span class="o">lars.hansen@advokat.no</span><span class="t">[E-POST_1]</span></mark>
+
+Vergehaver er diagnostisert med <mark class="seal lit"><span class="o">depresjon</span><span class="t">[HELSE_1]</span></mark> og har behov for bistand i økonomiske saker. Utbetalinger skjer til konto <mark class="seal lit"><span class="o">1503 42 17886</span><span class="t">[KONTONR_1]</span></mark>.</pre>
+                      </article>
+                    </div>
+                  </div>
+                  <div class="ka-col ka-findings">
+                    <h5>Rett</h5>
+                    <div class="ka-revisjon">
+                      <span class="ka-textarea">Tredje Person 2 er By</span>
+                      <span class="ka-btn stor av">Rett</span>
+                    </div>
+                    <div class="ka-valg">
+                      <span class="på">Navn</span>
+                      <span class="på">Fødselsnummer</span>
+                      <span class="på">Telefon og e-post</span>
+                      <span class="på">Helse</span>
+                      <span class="på">Konto</span>
+                      <span class="på">Hemmeligheter</span>
+                      <span data-ka="sted">Adresse og sted</span>
+                      <span>Datoer</span>
+                      <span>Yrke og relasjon</span>
+                      <span>Alder</span>
+                      <span>Arbeidsplass</span>
+                      <span>Saksnummer</span>
+                    </div>
+                    <ul class="ka-merker">
+                      <li><code>[FØDSELSNUMMER_1]</code><span>×1</span></li>
+                      <li><code>[HELSE_1]</code><span>×1</span></li>
+                      <li><code>[KONTONR_1]</code><span>×1</span></li>
+                      <li><code>[PERSON_1]</code><span>×1</span></li>
+                      <li><code>[PERSON_2]</code><span>×1</span></li>
+                      <li><code>[E-POST_1]</code><span>×1</span></li>
+                      <li data-ka="adressemerke" hidden><code>[ADRESSE_1]</code><span>×1</span></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="ka-bar">
+                  <span class="ka-stats" data-ka="stats"><b>6</b> filer · <b>24</b> av 27 byttes ut</span>
+                  <span class="ka-actions">
+                    <span class="ka-btn ghost">Tilbake</span>
+                    <span class="ka-btn" data-ka="lag">Lag rensede kopier nå</span>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Skriver kopier -->
+              <div class="ka-scene ka-s-skriver">
+                <h4>Skriver kopier</h4>
+                <p class="ka-scan-now deep" data-ka="skrivenotat">Lager rensede kopier ved siden av originalene…</p>
+              </div>
+
+              <!-- Ferdig -->
+              <div class="ka-scene ka-s-ferdig">
+                <h4>Ferdig</h4>
+                <p>6 filer. Originalene er urørt.</p>
+                <p class="ka-behold"><strong>Behold originalene.</strong> De rensede kopiene mangler opplysninger med vilje.</p>
+                <p class="ka-path">/Users/kari/Dokumenter/kundesaker-klar</p>
+                <div class="ka-actions">
+                  <span class="ka-btn stor">Åpne mappe</span>
+                  <span class="ka-btn ghost stor">Rett</span>
+                  <span class="ka-btn ghost stor">Ny mappe</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <span class="ka-peker" aria-hidden="true"></span>
+          <!-- Skanningen spilles av mye raskere enn den går på en vanlig maskin. Det skal stå. -->
+          <p class="ka-spol" aria-hidden="true">
+            <svg viewBox="0 0 20 12"><path d="M1 1l8 5-8 5zM10 1l8 5-8 5z" /></svg>
+            <span>Spolt fram. Hvor lang tid skanningen tar, varierer fra maskin til maskin. På en vanlig bærbar går det tregere.</span>
+          </p>
+          <figcaption class="skjult-tekst">
+            Slik virker Klart: velg en mappe og filene, Klart sjekker dem mot norske regler og
+            leser dem grundig med lokal AI, du ser over funnene og velger hva som skal vekk,
+            og Klart skriver rensede kopier ved siden av originalene. Skanningen er spolt fram:
+            hvor lang tid den tar, varierer fra maskin til maskin, og på en vanlig bærbar går
+            det tregere.
+          </figcaption>
+        </figure>
+      </section>
+
+      <!-- ================= Under programvinduet (ny versjon, /klartny) =================
+           Vintertemaet fra heroen går gjennom: klar luft, snø, skispor, hytta og sølvkrystallen
+           fra appikonet. Bildene i media/ er laget med Midjourney. -->
+
+      <!-- Tre løfter i stedet for tallene -->
+      <div class="nk-lofter">
+        <div class="nk-lofte rise">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M2 8.5a15 15 0 0 1 20 0M5.5 12a10 10 0 0 1 13 0M9 15.5a5 5 0 0 1 6 0" />
+            <circle cx="12" cy="19" r="1.2" />
+            <path d="M3 3l18 18" />
+          </svg>
+          <h3>Ingen vei ut</h3>
+          <p>
+            Klart kan ikke koble seg til internett. Dokumentene blir på maskinen.
+            <a href="/klart/til-it.html">IT kan sjekke det selv.</a>
+          </p>
+        </div>
+        <div class="nk-lofte rise" style="--d: 80ms">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 7.5h6l2 2h10v9.5H3z" />
+            <path d="M8 14.5l2.5 2.5L16 11.5" />
+          </svg>
+          <h3>Originalene røres aldri</h3>
+          <p>Kopien skrives i en ny mappe ved siden av, i samme format og med samme struktur.</p>
+        </div>
+        <div class="nk-lofte rise" style="--d: 160ms">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+          <h3>Du har siste ord</h3>
+          <p>Du ser over hvert treff før noe skrives. Samme person får samme merke i hele mappen.</p>
+        </div>
+      </div>
+
+      <!-- ================= Problemet ================= -->
+      <section class="nk-problem" id="problem">
+        <figure class="nk-bilde rise">
+          <img src="media/ark-i-sno.jpg" alt="Et ark med tekst som ligger i nysnø" loading="lazy" />
+        </figure>
+        <div class="nk-tekst rise" style="--d: 80ms">
+          <p class="nk-merke">Problemet</p>
+          <h2 class="nk-tittel">Dokumentene skal videre. Personopplysningene skal ikke.</h2>
+          <p>
+            Saksbehandlere, HR, advokater, verger og økonomi deler dokumenter hver dag: med
+            revisor, en annen etat, en konsulent eller et AI-verktøy. Opplysninger om andre skal
+            ikke følge med uten grunnlag.
+          </p>
+          <p>
+            Én fil kan du sladde for hånd. En hel mappe med Word, Excel, PowerPoint, PDF og
+            e-post, i undermapper, kan du ikke.
+          </p>
+        </div>
+      </section>
+
+      <!-- ================= Bruksområder ================= -->
+      <section class="nk-bruk" id="bruk">
+        <div class="nk-hode rise">
+          <p class="nk-merke">Bruksområder</p>
+          <h2 class="nk-tittel">Én rensing. Kopien kan gå dit den skal.</h2>
+        </div>
+        <ul class="nk-bruksliste">
+          <li class="rise">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z" /><path d="M15 3v4h4" /><path d="M9 12h7M9 16h4" /></svg>
+            <h3>Innsyn og offentlighet</h3>
+            <p>Svar på innsynskrav uten å sladde side for side.</p>
+          </li>
+          <li class="rise" style="--d: 60ms">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h12M12 7l5 5-5 5" /><path d="M20 4v16" /></svg>
+            <h3>Deling med eksterne</h3>
+            <p>Revisor, advokat, leverandør eller en annen etat får saken, ikke personene.</p>
+          </li>
+          <li class="rise" style="--d: 120ms">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" /><path d="M18.5 15.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z" /></svg>
+            <h3>AI-verktøy</h3>
+            <p>ChatGPT, Copilot og andre. Merkene er stabile, så sammenhengen står.</p>
+          </li>
+          <li class="rise">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l9-4 9 4-9 4z" /><path d="M7 10v5c0 1.5 2.2 3 5 3s5-1.5 5-3v-5" /></svg>
+            <h3>Opplæring og maler</h3>
+            <p>Ekte saker som eksempler for nyansatte, uten at noen kan kjennes igjen.</p>
+          </li>
+          <li class="rise" style="--d: 60ms">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="1.5" /><path d="M8 20h8M12 16v4" /><path d="M7.5 10l2 2 4-4" /></svg>
+            <h3>Test og systembytte</h3>
+            <p>Realistiske dokumenter til test av nye systemer, uten ekte kundedata.</p>
+          </li>
+          <li class="rise" style="--d: 120ms">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1" /><path d="M5 9v11h14V9" /><path d="M10 13h4" /></svg>
+            <h3>Arkiv og analyse</h3>
+            <p>Behold innholdet lenger enn personopplysningene, og bruk det til statistikk.</p>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ================= Slik virker det ================= -->
+      <section class="nk-slik" id="slik">
+        <figure class="nk-spor-bilde" aria-hidden="true">
+          <img src="media/skispor.jpg" alt="" loading="lazy" />
+        </figure>
+        <div class="nk-hode rise">
+          <p class="nk-merke">Slik virker det</p>
+          <h2 class="nk-tittel">Fire steg. Du bestemmer i det tredje.</h2>
+          <p class="nk-ingress">
+            Reglene går alltid. Den innebygde AI-en tar et andre pass for det reglene ikke
+            fanger: navn i løpende tekst, adresser og helseopplysninger.
+          </p>
+        </div>
+
+        <!-- Stegene står på et skispor: to parallelle linjer gjennom fire punkter. -->
+        <ol class="nk-sporet">
+          <li class="rise">
+            <span class="nk-punkt">1</span>
+            <h3>Velg mappen</h3>
+            <p>Klart lister opp alt den kan lese, også i undermapper, før noe blir lest.</p>
+          </li>
+          <li class="rise" style="--d: 80ms">
+            <span class="nk-punkt">2</span>
+            <h3>Regler, så AI</h3>
+            <p>Først norske sjekksummer og mønstre. Så leser den lokale AI-en hver fil grundig.</p>
+          </li>
+          <li class="rise" style="--d: 160ms">
+            <span class="nk-punkt">3</span>
+            <h3>Se over funnene</h3>
+            <p>Hvert treff med merke og fil. Du velger hva som skal vekk.</p>
+          </li>
+          <li class="rise" style="--d: 240ms">
+            <span class="nk-punkt">4</span>
+            <h3>Bruk kopien</h3>
+            <p>En ny mappe ved siden av, med rapport over hvor mye som ble byttet ut.</p>
+          </li>
+        </ol>
+
+        <!-- Før og etter, i appens egne farger: understrek etter type, gule merker i kopien. -->
+        <div class="nk-for-etter rise">
+          <article class="nk-ark">
+            <p class="nk-ark-topp"><span>Slik det står i mappen</span><span>Kan ikke deles</span></p>
+<pre>Vedtak om vergemål · sak 2024/18442-SF
+
+Vergehaver: <mark class="g">Kari Nordmann</mark>, fnr. <mark class="r">110779 41012</mark>
+Bosatt: <mark class="g">Glenneveien 272, 0550 Oslo</mark>
+
+Diagnostisert med <mark class="r">depresjon</mark>.
+Kontakt: <mark class="b">lars.hansen@advokat.no</mark></pre>
+          </article>
+          <span class="nk-pil" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6" /></svg>
+          </span>
+          <article class="nk-ark">
+            <p class="nk-ark-topp"><span>Slik den kan deles</span><span>Laget på maskinen</span></p>
+<pre>Vedtak om vergemål · sak <mark class="y">[SAKSNR_1]</mark>
+
+Vergehaver: <mark class="y">[PERSON_1]</mark>, fnr. <mark class="y">[FØDSELSNUMMER_1]</mark>
+Bosatt: <mark class="y">[ADRESSE_1]</mark>
+
+Diagnostisert med <mark class="y">[HELSE_1]</mark>.
+Kontakt: <mark class="y">[E-POST_1]</mark></pre>
+          </article>
+        </div>
+        <p class="nk-fotnote rise">
+          Heter det Kari i både vedtaket og e-posten, blir det [PERSON_1] i begge. Struktur,
+          formatering og filtype beholdes.
+        </p>
+      </section>
+
+      <!-- ================= Norske felt ================= -->
+      <section class="nk-norsk" id="norsk">
+        <div class="nk-norsk-inner">
+          <div class="nk-norsk-tekst rise">
+            <p class="nk-merke">Norske felt</p>
+            <h2 class="nk-tittel">Ikke et oversatt filter. Skrevet for norske dokumenter.</h2>
+            <p>
+              Fødselsnummer og org.nr. sjekkes med modulus 11, kontonummer og norske IBAN med sin
+              egen sjekksum. Et ellevesifret tall blir ikke merket som fødselsnummer før
+              kontrollsifrene stemmer.
+            </p>
+            <dl class="nk-felt">
+              <div><dt>[FØDSELSNUMMER]</dt><dd>Fødselsnummer og D-nummer</dd></div>
+              <div><dt>[HELSE]</dt><dd>Diagnoser, sykmelding, rus og barnevern</dd></div>
+              <div><dt>[KONTONR]</dt><dd>Kontonummer og NO-IBAN</dd></div>
+              <div><dt>[PERSON]</dt><dd>Navn, med norsk navneliste og AI</dd></div>
+              <div><dt>[ADRESSE]</dt><dd>Gate, husnummer, postnummer og sted</dd></div>
+              <div><dt>[SAKSNR]</dt><dd>Journalnr., NAV-sak og SF-sak</dd></div>
+            </dl>
+            <p class="nk-ogsa">
+              Også org.nr., e-post, telefon, fødselsdatoer, og passord og API-nøkler som ligger
+              igjen i notater. Ansikter i bilder pikseleres.
+            </p>
+          </div>
+          <figure class="nk-krystall rise" style="--d: 120ms">
+            <img src="media/snokrystall.jpg" alt="En snøkrystall i nærbilde" loading="lazy" />
+          </figure>
+        </div>
+      </section>
+
+      <!-- ================= Lokalt / spesifikasjon ================= -->
+      <section class="nk-lokal" id="spesifikasjon">
+        <img class="nk-lokal-bilde" src="media/hytte.jpg" alt="" aria-hidden="true" loading="lazy" />
+        <div class="nk-lokal-kort rise">
+          <p class="nk-merke">På maskinen din</p>
+          <h2 class="nk-tittel">Et program, ikke en tjeneste.</h2>
+          <p class="nk-ingress">
+            Ingen konto og ingen server å stole på. Motoren og AI-en ligger i installasjonen, så
+            Klart laster ikke ned noe når du åpner det.
+          </p>
+          <dl>
+            <dt>Plattform</dt>
+            <dd>Mac og Windows. Kjører på vanlig PC og Mac, uten grafikkort.</dd>
+            <dt>Nettverk</dt>
+            <dd>Ingen utgående trafikk. Virker uten nett.</dd>
+            <dt>Leser</dt>
+            <dd>Word, Excel, PowerPoint, PDF, e-post, tekst og bilder.</dd>
+            <dt>Skriver</dt>
+            <dd>Samme format tilbake. PDF-er med sladden brent inn, bilder med ansikter pikselert.</dd>
+            <dt>Utdata</dt>
+            <dd>Ny mappe <code>mappenavn-klar</code> ved siden av, med rapport over antall per type.</dd>
+          </dl>
+        </div>
+      </section>
+
+      <!-- ================= Ansvar ================= -->
+      <section class="nk-ansvar" id="ansvar">
+        <div class="nk-hode rise">
+          <p class="nk-merke">Ansvar</p>
+          <h2 class="nk-tittel">Et verktøy, ikke en garanti.</h2>
+        </div>
+        <div class="nk-ansvar-liste rise">
+          <p>
+            <b>Et teknisk hjelpemiddel.</b> Ikke juridisk rådgivning, og ikke en attest på at et
+            dokument er lovlig å dele.
+          </p>
+          <p>
+            <b>Ingen automatisk rensing fanger alt.</b> Indirekte identifikasjon kan stå igjen, og
+            en lokal AI kan ta feil. Derfor er gjennomgangen en del av flyten.
+          </p>
+          <p>
+            <b>Du er behandlingsansvarlig.</b> Klart erstatter ikke personvernombud, DPIA eller
+            internkontroll, og garanterer ikke full anonymisering.
+          </p>
+          <p>
+            <b>Vi ser ikke dokumentene dine.</b> Alt skjer på maskinen. Ansvaret for det du sender
+            videre, er fortsatt ditt.
+          </p>
+        </div>
+      </section>
+
+      <!-- ================= Prøv Klart ================= -->
+      <section id="last-ned" class="download nk-prov">
+        <img class="nk-prov-bilde" src="media/fjell-panorama.jpg" alt="" aria-hidden="true" loading="lazy" />
+        <div class="nk-prov-innhold">
+          <img class="nk-ikon rise" src="media/klart-ikon.png" alt="Klart-ikonet: en snøkrystall i sølv" width="112" height="112" />
+          <h2 class="nk-tittel rise">Prøv Klart på en av mappene deres.</h2>
+          <p class="nk-ingress rise">
+            Gratis å laste ned og prøve. Pek på en mappe, se alt Klart finner, og lagre ti rensede
+            filer av hver filtype. Lisenser selges til virksomheter.
+          </p>
+          <form class="orgport rise" data-orgport novalidate>
+            <div data-orgport-sok>
+              <p class="orgport-gratis"><b>Gratis for virksomheter.</b> Ingen betaling, ingen registrering.</p>
+              <label class="skjult-tekst" for="orgport-bunn">Virksomhetens organisasjonsnummer eller navn</label>
+              <div class="orgport-rad">
+                <div class="orgfelt">
+                  <input id="orgport-bunn" type="text" autocomplete="off" spellcheck="false" placeholder="Virksomhetens org.nr. eller navn" maxlength="80" />
+                  <ul class="orgforslag" role="listbox" hidden></ul>
+                </div>
+                <button class="btn" type="submit">Prøv Klart gratis</button>
+              </div>
+              <p class="orgport-feil" role="alert" hidden></p>
+            </div>
+            <div class="orgport-svar" data-orgport-svar hidden aria-live="polite">
+              <div class="orgport-svar-grid">
+                <div class="orgport-svar-hoved">
+                  <p class="orgport-ok" data-godkjent>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+                    <span><b data-navn></b> er godkjent.</span>
+                  </p>
+                  <div class="orgport-firma" data-firma hidden>
+                    <p class="orgport-firmanavn" data-navn></p>
+                  </div>
+                  <div class="orgport-prove">
+                    <p class="orgport-prove-tittel">Gratis prøve. Ingen betaling nå.</p>
+                    <p>Hele Klart, ikke en demo. Dere kan lagre 10 rensede filer av hver filtype: Word, Excel, PowerPoint, PDF, e-post, tekst og bilder.</p>
+                    <p class="orgport-pris" data-pris hidden>
+                      Kjøper dere lisens etter prøven: <b data-prisbelop></b> for <span data-prishvem></span>.
+                      <a data-prislenke href="/klart/pris/">Se hva som er med →</a>
+                    </p>
+                  </div>
+                  <div class="get">
+                    <a class="btn" href="/klart/last-ned/mac" download>Last ned for Mac</a>
+                    <a class="btn ghost" href="/klart/last-ned/windows" download>Last ned for Windows</a>
+                  </div>
+                  <button type="button" class="orgport-endre" data-endre>Ikke deres virksomhet?</button>
+                </div>
+                <aside class="orgport-oppsett" data-stor hidden>
+                  <p class="orgport-merke">For store virksomheter</p>
+                  <h3>Skreddersydd oppsett</h3>
+                  <p>En større modell, finjustert på deres egne dokumenter og satt opp hos dere, på maskinvare dere eier.</p>
+                  <svg class="orgport-mac" role="img" aria-label="Mac Studio"><use href="#mac-studio" /></svg>
+                  <a class="btn" data-oppsett href="/klart/pris/">Les om skreddersydd oppsett</a>
+                </aside>
+              </div>
+            </div>
+          </form>
+          <p class="nk-prislenke rise"><a href="/klart/pris/">Se prisen for virksomheten deres</a></p>
+          <p class="fineprint rise">
+            Mac: signert og godkjent av Apple · Windows: ikke signert ennå, så Windows kan advare
+            første gang. Velg «Mer info» og så «Kjør likevel».
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <!-- ================= Bunn ================= -->
+    <footer class="nk-bunn">
+      <div class="nk-bunn-topp">
+        <a class="nk-bunn-merke" href="#top">
+          <img src="media/klart-ikon.png" alt="" width="44" height="44" />
+          <span><b>Klart</b> av Tidemann Esbjug</span>
+        </a>
+        <p>
+          Bygget av norsk AI-konsulent <b>Johan Tidemann Esbjug</b>, for virksomheter som må dele
+          dokumenter uten å dele personopplysninger.
+        </p>
+      </div>
+      <div class="nk-bunn-meta">
+        <span>Laget i Norge · for norske regler</span>
+        <span>Mac og Windows</span>
+        <span>Ikke juridisk rådgivning</span>
+        <a href="/klart/personvern/">Personvern</a>
+        <a href="/klart/vilkar/">Vilkår</a>
+      </div>
+    </footer>
+
+    <script>
+      // Filmen i toppen spilles én gang, og så toner det skarpe stillbildet inn: siste
+      // bilde i filmen, hentet fra originalen og forstørret til 2336 px. Med redusert
+      // bevegelse vises bildet med en gang.
+      (function () {
+        var scene = document.querySelector(".scene");
+        var film = document.querySelector(".scene-film");
+        if (!scene || !film) return;
+        function stille() {
+          scene.classList.add("stille");
+        }
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          film.removeAttribute("autoplay");
+          film.pause();
+          stille();
+          return;
+        }
+        film.addEventListener("ended", stille);
+        film.addEventListener("error", stille);
+      })();
+
+      // Menyen kommer først når man har scrollet forbi toppen av filmen.
+      (function () {
+        var topp = document.querySelector(".topbar");
+        if (!topp) return;
+        function sjekk() {
+          topp.classList.toggle("synlig", window.scrollY > 120);
+        }
+        window.addEventListener("scroll", sjekk, { passive: true });
+        sjekk();
+      })();
+    </script>
+    <script src="/klart/orgfelt.js"></script>
+    <script>
+      // Nedlasting: virksomheten først. Små og store får «godkjent», at prøven er gratis og hele programmet,
+      // hva lisensen koster for dem hvis de kjøper etterpå (GET /klart/api/sjekk gir prisen), og knappene;
+      // de store får også høre om skreddersydd oppsett. Begge feltene på siden viser samme svar.
+      (function () {
+        var skjemaer = document.querySelectorAll("[data-orgport]");
+
+        // I heroen: når de begynner å skrive, er de klare. Boksen over glir bort og feltet glir opp dit
+        // den sto, mens overskriften står stille (CSS: .scene-tekst.skriver og --loft).
+        var tekst = document.querySelector(".hero .scene-tekst");
+        var boks = tekst && tekst.querySelector(".lokal");
+        var toppskjema = tekst && tekst.querySelector("[data-orgport]");
+        var harSvar = false;
+
+        function maalLoft() {
+          // offsetTop regner ikke med transform, så målet blir det samme om feltet alt er løftet.
+          tekst.style.setProperty("--loft", boks.offsetTop - toppskjema.offsetTop + "px");
+        }
+
+        function skriver(ja) {
+          if (!tekst || !boks || !toppskjema) return;
+          if (ja) maalLoft();
+          tekst.classList.toggle("skriver", ja);
+        }
+
+        window.addEventListener("resize", function () {
+          if (tekst && tekst.classList.contains("skriver")) maalLoft();
+        });
+
+        function visSvar(svar) {
+          harSvar = true;
+          skriver(true);
+          skjemaer.forEach(function (s) {
+            // De store er selvsagt godkjent. De får et bredere felt med skreddersydd oppsett ved siden av.
+            s.classList.toggle("stor", Boolean(svar.stor));
+            s.querySelector("[data-orgport-sok]").hidden = true;
+            var boks = s.querySelector("[data-orgport-svar]");
+            boks.querySelectorAll("[data-navn]").forEach(function (el) {
+              el.textContent = svar.navn;
+            });
+            boks.querySelector("[data-godkjent]").hidden = Boolean(svar.stor);
+            boks.querySelector("[data-firma]").hidden = !svar.stor;
+            boks.querySelector("[data-stor]").hidden = !svar.stor;
+            boks.querySelector("[data-oppsett]").href = "pris/?orgnr=" + svar.orgnr + "&vis=oppsett";
+            var pris = boks.querySelector("[data-pris]");
+            pris.hidden = !svar.pris;
+            if (svar.pris) {
+              boks.querySelector("[data-prisbelop]").textContent =
+                new Intl.NumberFormat("nb-NO").format(svar.pris) + " kr per år eks. mva";
+              boks.querySelector("[data-prishvem]").textContent = svar.konsern ? svar.navn + " og hele konsernet" : svar.navn;
+              boks.querySelector("[data-prislenke]").href = "pris/?orgnr=" + svar.orgnr;
+            }
+            boks.hidden = false;
+          });
+        }
+
+        function nullstill() {
+          harSvar = false;
+          skjemaer.forEach(function (s) {
+            s.classList.remove("stor");
+            s.querySelector("[data-orgport-svar]").hidden = true;
+            s.querySelector("[data-orgport-sok]").hidden = false;
+          });
+        }
+
+        skjemaer.forEach(function (skjema) {
+          var input = skjema.querySelector("input");
+          var knapp = skjema.querySelector("button[type=submit]");
+          var feilEl = skjema.querySelector(".orgport-feil");
+          var felt = KlartOrgfelt(input, skjema.querySelector(".orgforslag"), sjekk);
+
+          if (skjema === toppskjema) {
+            input.addEventListener("input", function () {
+              if (input.value.trim()) skriver(true);
+            });
+            // Tømmer de feltet og går videre uten å ha valgt noe, kommer boksen tilbake.
+            input.addEventListener("blur", function () {
+              setTimeout(function () {
+                if (!input.value.trim() && !harSvar && document.activeElement !== input) skriver(false);
+              }, 150);
+            });
+          }
+
+          function feil(melding) {
+            feilEl.textContent = melding || "";
+            feilEl.hidden = !melding;
+          }
+
+          function sjekk(o) {
+            feil("");
+            knapp.disabled = true;
+            fetch("/klart/api/sjekk?orgnr=" + o)
+              .then(function (r) {
+                return r.json().then(function (j) {
+                  if (!r.ok) throw new Error(j.feil || "Noe gikk galt. Prøv igjen om litt.");
+                  return j;
+                });
+              })
+              .then(function (svar) {
+                // En underenhet laster ned på vegne av hovedenheten.
+                if (svar.underenhet) return sjekk(svar.overordnet.orgnr);
+                visSvar(svar);
+              })
+              .catch(function (err) {
+                feil(err.message);
+              })
+              .finally(function () {
+                knapp.disabled = false;
+              });
+          }
+
+          skjema.addEventListener("submit", function (e) {
+            e.preventDefault();
+            var o = felt.orgnr() || (!felt.sifre() && felt.forste());
+            if (!o) {
+              feil(
+                felt.sifre()
+                  ? "Organisasjonsnummeret stemmer ikke. Sjekk at alle ni sifrene er riktige."
+                  : "Fant ingen virksomhet med det navnet. Prøv organisasjonsnummeret."
+              );
+              return;
+            }
+            sjekk(o);
+          });
+
+          skjema.querySelector("[data-endre]").addEventListener("click", function () {
+            nullstill();
+            felt.tom();
+            input.focus();
+          });
+        });
+      })();
+    </script>
+    <script>
+      (function () {
+        var reveal = document.querySelectorAll(".rise");
+        if (!("IntersectionObserver" in window)) {
+          reveal.forEach(function (el) {
+            el.classList.add("in");
+          });
+          return;
+        }
+        var io = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add("in");
+              io.unobserve(entry.target);
+            });
+          },
+          { rootMargin: "0px 0px -10% 0px", threshold: 0.05 }
+        );
+        reveal.forEach(function (el) {
+          io.observe(el);
+        });
+      })();
+    </script>
+      <script>
+      // Nedlastingen er satt på pause (KLART_NEDLASTING i wrangler.jsonc). Knappene
+      // ser ut som vanlig, men et klikk viser «Kommer snart». Settes til false når
+      // den nye versjonen er ute.
+      (function () {
+        var PAUSE = true;
+        if (!PAUSE) return;
+        var lapp;
+        document.querySelectorAll('a[href^="/klart/last-ned/"]').forEach(function (a) {
+          a.addEventListener("click", function (e) {
+            e.preventDefault();
+            if (!lapp) {
+              lapp = document.createElement("div");
+              lapp.className = "kommer-lapp";
+              lapp.setAttribute("role", "status");
+              document.body.appendChild(lapp);
+            }
+            lapp.textContent = "Kommer snart. Den nye versjonen av Klart er rett rundt hjørnet.";
+            lapp.classList.add("synlig");
+            clearTimeout(lapp.t);
+            lapp.t = setTimeout(function () {
+              lapp.classList.remove("synlig");
+            }, 3200);
+          });
+        });
+      })();
+    </script>
+    <script>
+      // Programvinduet spiller av flyten i Klart. Går bare når vinduet er på skjermen.
+      (function () {
+        var ka = document.querySelector(".ka");
+        if (!ka) return;
+        if (
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        )
+          return;
+
+        function $(key) {
+          return ka.querySelector('[data-ka="' + key + '"]');
+        }
+        function each(list, fn) {
+          Array.prototype.forEach.call(list, fn);
+        }
+
+        var peker = ka.querySelector(".ka-peker");
+        var sheet = ka.querySelector(".ka-sheet");
+        var rader = $("rader").children;
+        var adresse = $("adresse");
+        // Adressen er av som standard i appen («Adresse og sted»), så den lyser først når den slås på.
+        var merker = Array.prototype.filter.call(
+          ka.querySelectorAll(".ka-tekst mark"),
+          function (m) {
+            return m !== adresse;
+          }
+        );
+        var filer = [
+          "01-arbeidsavtale-acme.docx",
+          "02-vedtak-statsforvalter.pdf",
+          "03-epost-trad.eml",
+          "07-saksnotat.txt",
+          "08-kundeliste.xlsx",
+          "09-statusmote.pptx"
+        ];
+        // Reglene finner det meste i steg 1. Den lokale AI-en finner resten i steg 2.
+        var regler = [5, 8, 4, 0, 3, 0];
+        var totalt = [7, 11, 5, 0, 3, 1];
+        var treff = 0;
+        var sekunder = 0;
+
+        function treffTekst(n) {
+          return n === 1 ? "1 treff" : n + " treff";
+        }
+        function varighet(s) {
+          if (s < 60) return s + " s";
+          var rest = s % 60;
+          return Math.floor(s / 60) + " min" + (rest ? " " + rest + " s" : "");
+        }
+        function scene(navn) {
+          ka.setAttribute("data-scene", navn);
+        }
+        function tekst(key, verdi) {
+          $(key).textContent = verdi;
+        }
+        function rad(i, klasse, verdi) {
+          rader[i].className = klasse;
+          rader[i].lastChild.textContent = verdi;
+        }
+        function nå(verdi, dyp) {
+          tekst("nå", verdi);
+          $("nå").className = "ka-scan-now" + (dyp ? " deep" : "");
+        }
+        function framdrift(n, s) {
+          tekst("ferdige", n + " / 6");
+          $("meter").style.width = (n / 6) * 100 + "%";
+          sekunder += s;
+          tekst("brukt", varighet(sekunder));
+        }
+        function steg(el, klasse, tall) {
+          el.className = klasse;
+          el.firstChild.textContent = tall;
+        }
+
+        function pek(el) {
+          var r = el.getBoundingClientRect();
+          var f = ka.getBoundingClientRect();
+          if (!r.width) return skjulPeker();
+          var x = r.left - f.left + r.width * 0.6;
+          var y = r.top - f.top + r.height * 0.55;
+          if (!peker.classList.contains("på")) {
+            peker.style.transition = "none";
+            peker.style.transform =
+              "translate(" + (x + 90) + "px," + (y + 110) + "px)";
+            peker.offsetWidth;
+            peker.style.transition = "";
+            peker.classList.add("på");
+          }
+          peker.style.transform = "translate(" + x + "px," + y + "px)";
+        }
+        function skjulPeker() {
+          peker.classList.remove("på");
+        }
+        function klikk(el) {
+          el.classList.add("trykk");
+          peker.classList.remove("klikk");
+          peker.offsetWidth;
+          peker.classList.add("klikk");
+          setTimeout(function () {
+            el.classList.remove("trykk");
+          }, 180);
+        }
+
+        function nullstill() {
+          scene("start");
+          skjulPeker();
+          treff = 0;
+          sekunder = 0;
+          tekst("motor", "");
+          steg($("steg1"), "aktiv", "1");
+          steg($("steg2"), "", "2");
+          tekst("skanntittel", "Går gjennom mappen");
+          tekst(
+            "forklaring",
+            "Hver fil sjekkes mot norske regler. Etterpå leser den lokale AI-en filene grundig."
+          );
+          tekst("ferdigetekst", "filer sjekket");
+          tekst("treff", "0");
+          tekst("igjen", "Regner ut …");
+          tekst("igjentekst", "igjen av steg 1");
+          nå("", false);
+          framdrift(0, 0);
+          each(rader, function (_, i) {
+            rad(i, "venter", "I kø");
+          });
+          sheet.classList.remove("leser");
+          each(ka.querySelectorAll(".ka-tekst mark"), function (m) {
+            m.classList.remove("lit", "sladd");
+          });
+          $("sted").classList.remove("på");
+          $("adressemerke").hidden = true;
+          tekst("vis", "Vis sladdet");
+          $("stats").innerHTML = "<b>6</b> filer · <b>24</b> av 27 byttes ut";
+          tekst("skrivenotat", "Lager rensede kopier ved siden av originalene…");
+        }
+
+        // Tidslinjen: hvert steg står med ventetid etter forrige steg.
+        var tidslinje = [];
+        var t = 0;
+        function etter(dt, fn) {
+          t += dt;
+          tidslinje.push([t, fn]);
+        }
+
+        etter(0, nullstill);
+        etter(900, function () {
+          pek($("velg"));
+        });
+        etter(950, function () {
+          klikk($("velg"));
+        });
+        etter(400, function () {
+          skjulPeker();
+          scene("forbered");
+        });
+        etter(1300, function () {
+          pek($("rens"));
+        });
+        etter(950, function () {
+          klikk($("rens"));
+        });
+        etter(400, function () {
+          skjulPeker();
+          scene("skann");
+          tekst("motor", "Modell");
+        });
+
+        each(rader, function (_, i) {
+          etter(i ? 0 : 450, function () {
+            rad(i, "jobber", "Sjekker mot norske regler");
+            nå("Nå: " + filer[i] + " — sjekker mot norske regler", false);
+          });
+          etter(380, function () {
+            treff += regler[i];
+            tekst("treff", treff);
+            rad(i, "sjekket", treffTekst(regler[i]) + " · venter på grundig lesing");
+            if (i === 1) tekst("igjen", "ca. 8 s");
+            framdrift(i + 1, 2);
+          });
+        });
+
+        etter(500, function () {
+          steg($("steg1"), "ferdig", "✓");
+          steg($("steg2"), "aktiv", "2");
+          tekst("skanntittel", "Leser grundig");
+          tekst(
+            "forklaring",
+            "Den lokale AI-en leser filene på nytt og finner det reglene ikke fanger. Den kjører på denne maskinen og bruker mye prosessorkraft, så maskinen kan være treg til den er ferdig."
+          );
+          tekst("ferdigetekst", "filer lest grundig");
+          tekst("igjentekst", "igjen av steg 2");
+          tekst("igjen", "ca. 54 s");
+          tekst("ferdige", "0 / 6");
+          $("meter").style.width = "0%";
+        });
+
+        each(rader, function (_, i) {
+          etter(i ? 0 : 350, function () {
+            rad(i, "jobber", "Leser grundig");
+            nå("Nå: " + filer[i] + " — leses grundig. Kan ta et minutt.", true);
+          });
+          etter(560, function () {
+            treff += totalt[i] - regler[i];
+            tekst("treff", treff);
+            tekst("igjen", i < 5 ? "ca. " + (45 - i * 9) + " s" : "—");
+            rad(i, "ok", "Ferdig · " + treffTekst(totalt[i]));
+            framdrift(i + 1, 9);
+          });
+        });
+
+        etter(650, function () {
+          scene("gjennom");
+          tekst("motor", "");
+        });
+        etter(450, function () {
+          sheet.classList.add("leser");
+        });
+        each(merker, function (m) {
+          etter(190, function () {
+            m.classList.add("lit");
+          });
+        });
+        etter(700, function () {
+          pek($("sted"));
+        });
+        etter(950, function () {
+          klikk($("sted"));
+          $("sted").classList.add("på");
+          adresse.classList.add("lit");
+          $("adressemerke").hidden = false;
+          $("stats").innerHTML = "<b>6</b> filer · <b>27</b> av 27 byttes ut";
+        });
+        etter(900, function () {
+          pek($("vis"));
+        });
+        etter(950, function () {
+          klikk($("vis"));
+          tekst("vis", "Vis original");
+        });
+        each(ka.querySelectorAll(".ka-tekst mark"), function (m) {
+          etter(140, function () {
+            m.classList.add("sladd");
+          });
+        });
+        etter(1400, function () {
+          pek($("lag"));
+        });
+        etter(950, function () {
+          klikk($("lag"));
+        });
+        etter(400, function () {
+          skjulPeker();
+          scene("skriver");
+        });
+        each(filer, function (fil) {
+          etter(330, function () {
+            tekst("skrivenotat", "Skriver " + fil);
+          });
+        });
+        etter(400, function () {
+          scene("ferdig");
+        });
+        etter(3600, function () {});
+
+        // Klokken går bare mens vinduet er på skjermen og fanen er åpen.
+        var klokke = 0;
+        var neste = 0;
+        var sist = 0;
+        var timer = null;
+        var synlig = false;
+
+        function tikk() {
+          var nå = Date.now();
+          klokke += Math.min(nå - sist, 100);
+          sist = nå;
+          while (neste < tidslinje.length && tidslinje[neste][0] <= klokke) {
+            tidslinje[neste++][1]();
+          }
+          if (neste >= tidslinje.length) {
+            klokke = 0;
+            neste = 0;
+          }
+        }
+        function synk() {
+          var går = synlig && !document.hidden;
+          if (går === !!timer) return;
+          if (går) {
+            sist = Date.now();
+            timer = setInterval(tikk, 50);
+          } else {
+            clearInterval(timer);
+            timer = null;
+          }
+        }
+
+        nullstill();
+        if ("IntersectionObserver" in window) {
+          new IntersectionObserver(
+            function (entries) {
+              synlig = entries[0].isIntersecting;
+              synk();
+            },
+            { threshold: 0.25 }
+          ).observe(ka);
+        } else {
+          synlig = true;
+          synk();
+        }
+        document.addEventListener("visibilitychange", synk);
+      })();
+    </script>
+  </body>
+</html>
