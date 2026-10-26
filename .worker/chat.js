@@ -1054,6 +1054,22 @@ export class ChatHub {
       this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('steder', ?)`, JSON.stringify(steder));
       return Response.json({ ok: true, steder: steder.map((x) => x.navn) });
     }
+    // Akselerometeret etterfylt fra iPhonens eget bakgrunnsopptak (CMSensorRecorder): {kilde, pakker: [[ts, "x,y,z;…"], …]},
+    // 5 s per pakke ved 20 Hz, ts er slutten. Pakker der det allerede finnes en live-pakke (innen 5 s) hoppes over.
+    if (url.pathname === "/chat/admin/aks" && request.method === "POST") {
+      const { kilde, pakker } = await request.json().catch(() => ({}));
+      if (!/^[a-z]{2,12}$/.test(kilde || "") || !Array.isArray(pakker) || pakker.length > 400) return new Response("Bad request", { status: 400 });
+      let lagt = 0;
+      for (const p of pakker) {
+        if (!Array.isArray(p) || !Number.isFinite(p[0]) || typeof p[1] !== "string" || p[1].length > 6000 || !/^[-\d,;]*$/.test(p[1])) continue;
+        const ts = Math.round(p[0]);
+        if (ts > Date.now() + 60e3 || ts < this.slettFor(Date.now())) continue;
+        if (this.sql.exec(`SELECT 1 FROM akslogg WHERE kilde=? AND ts > ? AND ts < ? LIMIT 1`, kilde, ts - 4500, ts + 4500).toArray().length) continue;
+        this.sql.exec(`INSERT OR IGNORE INTO akslogg (kilde, ts, acc) VALUES (?, ?, ?)`, kilde, ts, p[1]);
+        lagt++;
+      }
+      return Response.json({ ok: true, lagt });
+    }
     // Readings from the owner's devices: {kilde: "iphone" | "watch", d: {bat, lader, skritt, trykk, …}}. Only the latest
     // per device is kept; every open page gets it at once.
     if (url.pathname === "/chat/admin/tele" && request.method === "POST") {
