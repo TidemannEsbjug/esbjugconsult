@@ -2377,7 +2377,7 @@ if (HUS) setTimeout(function lagAvspiller() {
     venter.classList.remove('apning'); skjulVenter();
   };
   const visVenter = () => venter.classList.add('på');
-  const skjulVenter = () => { if (!lag.querySelector('iframe:not(.forh):not(.klar)')) venter.classList.remove('på'); };
+  const skjulVenter = () => { if (!venter.classList.contains('apning') && !lag.querySelector('iframe:not(.forh):not(.klar)')) venter.classList.remove('på'); };
   const kortVenter = () => { visVenter(); setTimeout(skjulVenter, 450); };
   const klarNår = (f, ferdig) => {
     f.onload = () => {
