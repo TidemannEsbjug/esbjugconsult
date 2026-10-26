@@ -614,10 +614,10 @@
   .tid-venter .tv-tittel{display:none;font:italic 400 clamp(30px,8vw,40px)/1.1 var(--serif);color:#f6e7d2}
   @media (max-width:760px){
     .tid-venter.start .kv-prikk,.tid-venter.start .kv-i{display:none}
-    .tid-venter.start .tv-beta{display:grid;top:max(12vh,64px)}
+    .tid-venter.start .tv-beta{display:grid;top:max(7vh,40px)}
     .tid-venter.start .tv-tittel{display:block;margin-bottom:6px}
     /* Under overskriften, ikke midt på: når tastaturet er oppe, blir skjermen lavere, og da skal ikke feltet gli opp i teksten */
-    body.replay-start .hist{top:calc(max(12vh,64px) + 170px);bottom:auto}
+    body.replay-start .hist{top:calc(max(7vh,40px) + 160px);bottom:auto}
     /* Lasteanimasjonen høyere opp, over modulen nederst */
     .tid-venter .kv-prikk{top:30%}
     .tid-venter .kv-i{top:calc(30% + 34px)}
@@ -2445,8 +2445,19 @@ if (HUS) setTimeout(function lagAvspiller() {
   // Når replay åpnes: lasteskjermen med beta-teksten til dagene er hentet (minst 1,4 s, høyst 6 s).
   const startModus = på => {
     document.body.classList.toggle('replay-start', på); venter.classList.toggle('start', på);
-    if (på) venter.classList.add('på'); else skjulVenter();
+    if (på) venter.classList.add('på'); else { skjulVenter(); bar.style.top = ''; }
   };
+  // Tastaturet på mobil gjør den synlige delen av skjermen lavere. I startmodus løftes feltet så det står over tastaturet.
+  if (window.visualViewport) {
+    const overTastatur = () => {
+      if (!document.body.classList.contains('replay-start')) return;
+      const vv = visualViewport, h = bar.offsetHeight;
+      bar.style.top = '';
+      const r = bar.getBoundingClientRect(), bunn = vv.offsetTop + vv.height - 12;
+      if (r.bottom > bunn) bar.style.top = Math.max(vv.offsetTop + 8, bunn - h) + 'px';
+    };
+    visualViewport.addEventListener('resize', overTastatur); visualViewport.addEventListener('scroll', overTastatur);
+  }
   const åpneLaster = async () => {
     venter.classList.add('på', 'apning'); const t0 = performance.now(), vent = ms => new Promise(r => setTimeout(r, ms));
     await Promise.race([Promise.all([forvarm(), vent(300)]), vent(6000)]);
