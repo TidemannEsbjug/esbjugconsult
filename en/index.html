@@ -2439,6 +2439,7 @@ if (HUS) setTimeout(function lagAvspiller() {
   // (høyst 3 s). Står ingen ramme og laster, går den bort etter et kort blikk.
   const venter = document.createElement('div'); venter.className = 'tid-venter kart-venter'; venter.setAttribute('aria-hidden', 'true');
   venter.innerHTML = document.querySelector('.kart-venter').innerHTML; document.body.append(venter);
+  venter.querySelectorAll('[style]').forEach(e => e.removeAttribute('style'));   // plasseringen fra forsidens lastebilde følger ikke med
   { const en = TX.loc.startsWith('en'), b = document.createElement('div'); b.className = 'tv-beta';
     b.innerHTML = '<i class="tv-tittel">' + (en ? 'Back in time' : 'Tilbake i tid') + '</i><b>' + (en ? 'Beta · work in progress' : 'Beta · under arbeid') + '</b><span>' + (en ? 'Heavy software: works best on newer devices.' : 'Tung programvare: fungerer best på nyere enheter.') + '</span>'; venter.append(b); }
   // Når replay åpnes: lasteskjermen med beta-teksten til dagene er hentet (minst 1,4 s, høyst 6 s).
