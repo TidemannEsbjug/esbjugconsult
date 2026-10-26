@@ -615,7 +615,8 @@
     .tid-venter.start .kv-prikk,.tid-venter.start .kv-i{display:none}
     .tid-venter.start .tv-beta{display:grid;top:max(12vh,64px)}
     .tid-venter.start .tv-tittel{display:block;margin-bottom:6px}
-    body.replay-start .hist{top:50%;bottom:auto;transform:translate(-50%,-50%)}
+    /* Under overskriften, ikke midt på: når tastaturet er oppe, blir skjermen lavere, og da skal ikke feltet gli opp i teksten */
+    body.replay-start .hist{top:calc(max(12vh,64px) + 170px);bottom:auto}
     body.replay-start .hist .h-kontroll>:not(.h-kal):not(.h-lukk),body.replay-start .hist .h-versjonrad{display:none}
     body.replay-start .hist .h-kontroll{justify-content:space-between}
     body.replay-start .hist .h-kal{width:auto;padding:0 16px;border-radius:999px;gap:8px;display:inline-flex;align-items:center}
@@ -2774,6 +2775,7 @@ if (HUS) setTimeout(function lagAvspiller() {
   q('.h-sok').onsubmit = async e => {
     e.preventDefault();
     const inp = q('.h-sok input'), sp = inp.value.trim(); if (!sp) return;
+    inp.blur();   // tastaturet lukkes når man har søkt
     fortell('Leter …');
     try {
       const r = await fetch('/chat/sok', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ q: sp }) });
