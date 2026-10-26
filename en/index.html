@@ -970,20 +970,33 @@
   .bank.utg[hidden],.utg li[hidden]{display:none}
   /* Aktive AI-abonnementer: logo og navn, to kolonner, dyrest først */
   .abo{display:grid;grid-template-columns:1fr auto;align-items:center;gap:0 12px;padding:14px 18px 14px;cursor:default;outline:none}
-  .abo .abo-n{font:640 26px/1 var(--serif);letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums}
-  /* Samlet til et tall; lista foldes ut ved hover (eller trykk på mobil) */
-  .abo .abo-l{grid-column:1/-1;max-height:0;opacity:0;overflow:hidden;transition:max-height .35s ease,opacity .25s ease,margin .35s ease}
-  .abo:hover .abo-l,.abo:focus-within .abo-l,.abo.apen .abo-l{max-height:220px;opacity:1;margin-top:12px}
+  .abo-l{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 16px;grid-column:1/-1;margin-top:12px}
+  .abo-l li{display:flex;align-items:center;gap:10px;min-width:0;font:italic 500 15px/1.2 var(--serif);color:var(--ink)}
+  .abo-l li span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* Hver logo i en brikke med sin egen farge */
+  .abo-i{flex:none;width:26px;height:26px;padding:5px;box-sizing:border-box;border-radius:8px;background:var(--c);color:var(--f);box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 2px 6px rgba(0,20,60,.18)}
+  .abo-stakk{display:none}
+  /* PC: lukket viser logoene oppå hverandre; hover viser lista */
+  @media (min-width:761px){
+    .abo-stakk{display:flex;align-items:center}
+    .abo-stakk .abo-i{width:24px;height:24px;padding:4.5px;border-radius:50%;margin-left:-7px;box-shadow:0 0 0 2px rgba(255,255,255,.85),0 2px 6px rgba(0,20,60,.2);transition:margin .25s ease}
+    .abo-stakk .abo-i:first-child{margin-left:0}
+    .abo:hover .abo-stakk .abo-i{margin-left:-11px}
+    .abo:hover .abo-stakk .abo-i:first-child{margin-left:0}
+    .abo .abo-l{max-height:0;opacity:0;overflow:hidden;margin-top:0;transition:max-height .35s ease,opacity .25s ease,margin .35s ease}
+    .abo:hover .abo-l,.abo:focus-within .abo-l,.abo.apen .abo-l{max-height:220px;opacity:1;margin-top:14px}
+  }
   /* Pulten (kameraet): flasken med blå strek, plagget over hele bredden */
   .pultk[hidden]{display:none}
   .pultk .pk-t{grid-column:1/-1}
   .pultk .pk-plagg{grid-column:span 2}
   /* Flasken stor til venstre over begge radene; ved pulten, hodetelefoner og plagget til høyre */
-  .pultk{grid-template-columns:minmax(0,.8fr) minmax(0,1fr) minmax(0,1fr)!important}
+  .pultk{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) minmax(0,1fr)!important}
   .pultk [data-k="pflaske"]{grid-row:span 2;display:flex;flex-direction:column}
   .pultk [data-k="pflaske"] .fl-rad{flex:1;align-items:center;gap:10px;margin-top:6px}
   .pultk [data-k="pflaske"] .fl-i{width:66px;height:78px;overflow:visible}
-  .pultk [data-k="pflaske"] b{font-size:34px}
+  .pultk [data-k="pflaske"] b{font-size:32px;overflow:visible;text-overflow:clip}
+  .pultk [data-k="pflaske"] .fl-i{width:58px;height:74px}
   /* Flasken: glass, vann med en rolig bølge, glansstreif, kork, sitronskive og mynteblad lent mot den */
   .pultk .fl-glass{fill:rgba(255,255,255,.4)}
   .pultk .fl-kant{fill:none;stroke:var(--ink);stroke-width:2;stroke-linejoin:round;opacity:.75}
@@ -1006,10 +1019,6 @@
   .pultk.borte [data-k="pstilling"]{grid-column:span 2;align-self:end}
   .pultk.uten-flaske [data-k="pflaske"] b{font-size:15px;line-height:1.15;font-style:italic;font-weight:500;opacity:.75;white-space:normal;overflow:visible;text-overflow:clip}
   .pultk.uten-flaske .fl-i{opacity:.35}
-  .abo-l{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 16px}
-  .abo-l li{display:flex;align-items:center;gap:9px;min-width:0;font:italic 500 15px/1.2 var(--serif);color:var(--ink)}
-  .abo-l li span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .abo-i{flex:none;width:17px;height:17px;color:var(--ink);opacity:.8}
 </style>
 </head>
 <body>
@@ -1049,8 +1058,8 @@
   </section>
   <!-- Aktive AI-abonnementer, dyrest først. Legg til eller fjern linjer her. -->
   <section class="abo gl" aria-label="Active AI subscriptions" tabindex="0">
-    <span class="mono s-t">Active AI subscriptions</span><b class="abo-n">7</b>
-    <ol class="abo-l"><li><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><g stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 12V3.5M12 12l6-6M12 12h8.5M12 12l6.2 5.8M12 12v8.5M12 12l-6 6M12 12H3.5M12 12L5.8 5.8M12 12l3.3-7.9M12 12l-7.9 3.3"/></g></svg><span>Claude Max 20</span></li><li><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><g stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 12V3.5M12 12l6-6M12 12h8.5M12 12l6.2 5.8M12 12v8.5M12 12l-6 6M12 12H3.5M12 12L5.8 5.8M12 12l3.3-7.9M12 12l-7.9 3.3"/></g></svg><span>Claude Max 5</span></li><li><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 4h3.4v6.6L14.6 4H19l-6.6 7.2L19.4 20h-4.5l-4.7-6.2-1.8 1.9V20H5z"/></svg><span>Kling</span></li><li><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="7.2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M4.2 19.8L19.8 4.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span>SuperGrok</span></li><li><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11 3.5L4.5 16H11zM12.5 6l6 10h-6z"/><path d="M3 17.6h18l-2.2 3H5.2z"/></svg><span>Midjourney</span></li><li><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="7" y="4" width="3.4" height="16" rx=".6"/><rect x="13.6" y="4" width="3.4" height="16" rx=".6"/></svg><span>ElevenLabs</span></li><li><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3" y="10" width="2.6" height="4" rx="1.3"/><rect x="7.1" y="6.5" width="2.6" height="11" rx="1.3"/><rect x="11.2" y="3.5" width="2.6" height="17" rx="1.3"/><rect x="15.3" y="7.5" width="2.6" height="9" rx="1.3"/><rect x="19.4" y="10.5" width="2.6" height="3" rx="1.3"/></svg><span>Suno</span></li></ol>
+    <span class="mono s-t">Active AI subscriptions</span><span class="abo-stakk" aria-hidden="true"></span>
+    <ol class="abo-l"><li style="--c:#D97757;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><g stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 12V3.5M12 12l6-6M12 12h8.5M12 12l6.2 5.8M12 12v8.5M12 12l-6 6M12 12H3.5M12 12L5.8 5.8M12 12l3.3-7.9M12 12l-7.9 3.3"/></g></svg><span>Claude Max 20</span></li><li style="--c:#E9A27F;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><g stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 12V3.5M12 12l6-6M12 12h8.5M12 12l6.2 5.8M12 12v8.5M12 12l-6 6M12 12H3.5M12 12L5.8 5.8M12 12l3.3-7.9M12 12l-7.9 3.3"/></g></svg><span>Claude Max 5</span></li><li style="--c:#14b8a6;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 4h3.4v6.6L14.6 4H19l-6.6 7.2L19.4 20h-4.5l-4.7-6.2-1.8 1.9V20H5z"/></svg><span>Kling</span></li><li style="--c:#111;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="7.2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M4.2 19.8L19.8 4.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span>SuperGrok</span></li><li style="--c:#fff;--f:#0b1d4a"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11 3.5L4.5 16H11zM12.5 6l6 10h-6z"/><path d="M3 17.6h18l-2.2 3H5.2z"/></svg><span>Midjourney</span></li><li style="--c:#334155;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="7" y="4" width="3.4" height="16" rx=".6"/><rect x="13.6" y="4" width="3.4" height="16" rx=".6"/></svg><span>ElevenLabs</span></li><li style="--c:linear-gradient(135deg,#ff8a3d,#ff2e7e);--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3" y="10" width="2.6" height="4" rx="1.3"/><rect x="7.1" y="6.5" width="2.6" height="11" rx="1.3"/><rect x="11.2" y="3.5" width="2.6" height="17" rx="1.3"/><rect x="15.3" y="7.5" width="2.6" height="9" rx="1.3"/><rect x="19.4" y="10.5" width="2.6" height="3" rx="1.3"/></svg><span>Suno</span></li></ol>
   </section>
   </div>
   <div class="hoyre">
@@ -1953,7 +1962,10 @@ const km = pts => { let d = 0; for (let i = 1; i < pts.length; i++) if (pts[i] &
 const linjer = pts => { const ut = [[]]; for (const p of pts) { if (!p) { if (ut[ut.length - 1].length) ut.push([]); } else ut[ut.length - 1].push([p[0], p[1]]); } return ut.filter(l => l.length); };
 const tid = ms => { const s = Math.max(0, Math.round(ms / 1000)); return s < 60 ? s + ' s' : s < 3600 ? Math.round(s / 60) + ' min' : Math.floor(s / 3600) + TX.t + Math.round(s % 3600 / 60) + ' min'; };
 const tall = n => Math.round(n).toLocaleString(TX.loc);
-{ const a = document.querySelector('.abo'); if (a) { a.querySelector('.abo-n').textContent = a.querySelectorAll('.abo-l li').length; a.addEventListener('click', () => a.classList.toggle('apen')); } }
+// Abonnementene: på PC står logoene oppå hverandre i overskriften (kopier fra lista), hover eller trykk viser lista.
+{ const a = document.querySelector('.abo'); if (a) { const st = a.querySelector('.abo-stakk');
+  for (const li of a.querySelectorAll('.abo-l li')) { const i = li.querySelector('svg').cloneNode(true); i.style.cssText = li.style.cssText; st.append(i); }
+  a.addEventListener('click', () => a.classList.toggle('apen')); } }
 // Pulten sett av kameraet (flaske, ved pulten, sitter eller står, plagget og hodetelefoner).
 const MONITOR = true;   // pultkortet ble testet på /monitor/ og er nå på forsiden
 const EN_P = TX.loc.startsWith('en');
