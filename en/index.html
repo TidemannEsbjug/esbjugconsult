@@ -987,9 +987,9 @@
   /* Pulten (kameraet): flasken med blå strek, plagget over hele bredden */
   .pultk[hidden]{display:none}
   .pultk .pk-t{grid-column:1/-1}
-  .pultk .pk-plagg{grid-column:span 2}
+  .pultk .pk-plagg{grid-column:auto}
   /* Flasken stor til venstre over begge radene; ved pulten, hodetelefoner og plagget til høyre */
-  .pultk{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) minmax(0,1fr)!important}
+  .pultk{grid-template-columns:minmax(150px,1fr) minmax(0,1.3fr)!important}
   .pultk [data-k="pflaske"]{grid-row:span 2;display:flex;flex-direction:column}
   .pultk [data-k="pflaske"] .fl-rad{flex:1;align-items:center;gap:10px;margin-top:6px}
   .pultk [data-k="pflaske"] .fl-i{width:66px;height:78px;overflow:visible}
@@ -1013,8 +1013,8 @@
   .pultk.borte [data-k="pflaske"]{grid-row:auto}
   .pultk .fl-rad{display:flex;align-items:center;gap:8px}
   .pultk .fl-i{flex:none}
-  .pultk.borte [data-k="phode"],.pultk.borte .pk-plagg,.pultk.borte [data-k="pstilling"] .sl{display:none}
-  .pultk.borte [data-k="pstilling"]{grid-column:span 2;align-self:end}
+  .pultk.borte .pk-plagg,.pultk.borte [data-k="pstilling"] .sl{display:none}
+  .pultk.borte [data-k="pstilling"]{align-self:center}
   .pultk.uten-flaske [data-k="pflaske"] b{font-size:15px;line-height:1.15;font-style:italic;font-weight:500;opacity:.75;white-space:normal;overflow:visible;text-overflow:clip}
   .pultk.uten-flaske .fl-i{opacity:.35}
 </style>
@@ -1080,7 +1080,6 @@
     <span class="mono s-t pk-t">Office · camera</span>
     <div class="sv" data-k="pflaske"><span class="sl">Water bottle</span><span class="fl-rad"><svg class="fl-i" viewBox="0 0 84 100" aria-hidden="true"><defs><clipPath id="fl-form"><path d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/></clipPath><linearGradient id="fl-vann" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe6ff"/><stop offset="1" stop-color="#3f8fdc"/></linearGradient></defs><path class="fl-blad" d="M47 70c4-12 15-19 27-19-2 13-12 21-27 19z"/><path class="fl-bladnerve" d="M49 69c7-6 14-11 22-15"/><path class="fl-glass" d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/><g clip-path="url(#fl-form)"><g class="fl-vg"><path class="fl-vann" d="M-40 0q10-3.2 20 0t20 0 20 0 20 0 20 0 20 0 20 0v120h-140z"/></g></g><rect class="fl-glans" x="17" y="40" width="4" height="44" rx="2"/><path class="fl-kant" d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/><rect class="fl-kork" x="22" y="3" width="18" height="11" rx="3"/><g class="fl-sitron"><circle cx="58" cy="83" r="14"/><circle class="fl-s2" cx="58" cy="83" r="11.5"/><path class="fl-s3" d="M58 83V72.5M58 83l7.4 7.4M58 83l-7.4 7.4M58 83l10-3.3M58 83l-10-3.3"/></g></svg><b>–</b></span></div>
     <div class="sv" data-k="pstilling"><span class="sl">At the desk</span><b>–</b></div>
-    <div class="sv" data-k="phode"><span class="sl">Headphones</span><b>–</b></div>
     <div class="sv pk-plagg" data-k="pplagg"><span class="sl">Wearing</span><b>–</b></div>
   </section>
   <section class="akse gl" aria-label="The accelerometers in his Apple Watch and iPhone, live">
@@ -1971,7 +1970,7 @@ function pultBilde() {
   const nå = Date.now() + skew;
   const liste = ['fyra', 'fyrb'].map(k => tele[k] ? { ...tele[k], kilde: k } : null).filter(Boolean);
   const med = liste.filter(t => t.modus === 'pult' || t.modus === 'flaske');
-  if (!med.length) return tele.fyrb || tele.fyra || null;
+  if (!med.length) { const t = tele.fyrb || tele.fyra; return t ? { ...t, flaskeTs: t.flaskeTs || (('flaske' in t) ? t.ts : 0) } : null; }
   const flaske = med.filter(t => t.modus === 'flaske' && t.flaskeTs && nå - t.flaskeTs < 120e3).sort((a, b) => b.flaskeTs - a.flaskeTs)[0];
   const pult = med.filter(t => t.modus === 'pult').sort((a, b) => (b.ts || 0) - (a.ts || 0))[0];
   const f = flaske || pult;
@@ -1981,6 +1980,7 @@ function pultBilde() {
   if ('flaske' in f) ut.flaske = f.flaske;
   if (f.harflaske !== undefined) ut.harflaske = f.harflaske;
   if (f.vann !== undefined) ut.vann = f.vann;
+  ut.flaskeTs = Math.max(0, ...liste.map(t => t.flaskeTs || 0));   // siste kameraanalyse, fra hvilket som helst fyr
   return ut;
 }
 const EN_P = TX.loc.startsWith('en');
@@ -1989,7 +1989,8 @@ const FARGE = EN_P ? { svart: 'Black', hvit: 'White', graa: 'Grey', blaa: 'Blue'
 const PLAGG = EN_P ? { tskjorte: 't-shirt', genser: 'sweater', annet: 'clothes' } : { tskjorte: 't-skjorte', genser: 'genser', annet: 'klær' };
 function visPult(t) {
   const kort = document.querySelector('.pultk'); if (!kort) return;
-  const har = t && ('flaske' in t || 'stilling' in t || 'pult' in t);
+  // Kortet vises bare mens kameraet går: en analyse (med eller uten flaske) de siste 2 minuttene.
+  const har = t && t.flaskeTs && Date.now() + skew - t.flaskeTs < 120e3;
   kort.hidden = !har; if (!har) return;
   // «vann» er det utjevnede nivået fra serveren (går bare ned til flasken fylles); «flaske» er den siste rå målingen.
   // Ser ikke kameraet flasken (siste måling uten flaske), står det det i stedet for en prosent.
@@ -2003,7 +2004,6 @@ function visPult(t) {
   // Vannflaten: bunnen av flasken er y 96, full flaske står i halsen (y 20).
   kort.querySelector('.fl-vg').style.transform = 'translateY(' + (96 - 76 * Math.max(0, Math.min(100, nv ?? 0)) / 100).toFixed(1) + 'px)';
   sett('pstilling', borte ? (EN_P ? 'Not at the desk' : 'Ikke ved pulten') : t.stilling === 'sitter' ? (EN_P ? 'Sitting' : 'Sitter') : t.stilling === 'staar' ? (EN_P ? 'Standing' : 'Står') : null);
-  sett('phode', t.hodetelefoner != null ? (t.hodetelefoner >= .5 ? (EN_P ? 'On' : 'På') : (EN_P ? 'Off' : 'Av')) : null);
   const f = FARGE[t.farge], pl = PLAGG[t.plagg];
   sett('pplagg', !t.plagg || t.plagg === 'borte' ? null : pl ? (f ? f + ' ' + pl : pl[0].toUpperCase() + pl.slice(1)) : null);
 }

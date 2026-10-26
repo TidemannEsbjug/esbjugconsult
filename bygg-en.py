@@ -277,7 +277,6 @@ T_NY = [
     ('<span class="mono s-t pk-t">Kontoret · kamera</span>', '<span class="mono s-t pk-t">Office · camera</span>'),
     ('<span class="sl">Vannflasken</span>', '<span class="sl">Water bottle</span>'),
     ('<span class="sl">Ved pulten</span>', '<span class="sl">At the desk</span>'),
-    ('<span class="sl">Hodetelefoner</span>', '<span class="sl">Headphones</span>'),
     ('<span class="sl">Har på seg</span>', '<span class="sl">Wearing</span>'),
     ('<i>25. okt · 11:30</i>', '<i>25 Oct · 11:30</i>'),
     ('<i>25. okt · 10:47</i>', '<i>25 Oct · 10:47</i>'),
