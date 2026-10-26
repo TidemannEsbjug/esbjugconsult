@@ -447,10 +447,15 @@ export function robotHint({ ua, lang, org, webdriver }) {
   return "";
 }
 
+export function enhetAv(ua = "") {
+  return /iPhone/.test(ua) ? "iPhone" : /iPad/.test(ua) ? "iPad" : /Android/.test(ua) ? "Android"
+    : /Mac OS X/.test(ua) ? "Mac" : /Windows/.test(ua) ? "Windows" : "";
+}
+
 export function pageVisit(request, env, url, preloaded = false) {
   const h = request.headers;
   if (!preloaded) {
-    if (request.method !== "GET" || !/^\/(en\/)?(index\.html)?$/.test(url.pathname) || url.searchParams.has("speil")) return null;
+    if (request.method !== "GET" || !/^\/((en\/)?(index\.html)?|podcast\/(\d+\/)?)$/.test(url.pathname) || url.searchParams.has("speil")) return null;
     if (h.get("Sec-Fetch-Mode") !== "navigate" || h.get("Sec-Fetch-Dest") !== "document") return null;
     if (/prefetch|prerender/i.test((h.get("Sec-Purpose") || "") + (h.get("Purpose") || ""))) return null;
   }
@@ -460,7 +465,9 @@ export function pageVisit(request, env, url, preloaded = false) {
   if (/(?:^|;\s*)esbjug_eier=1(?:;|$)/.test(cookie) || url.searchParams.has("eier")) return null;
   const vid = /(?:^|;\s*)esbjug_samtykke=ja(?:;|$)/.test(cookie) && (cookie.match(/(?:^|;\s*)esbjug_id=([a-zA-Z0-9-]{8,64})(?:;|$)/) || [])[1] || "";
   const cf = request.cf || {};
-  const body = JSON.stringify({ vid, ip: h.get("CF-Connecting-IP") || "", city: cf.city || "", country: cf.country || "", ua });
+  // Podcastsiden telles for seg (side «podcast», med episoden hvis lenken gikk rett til en).
+  const pod = url.pathname.match(/^\/podcast\/(\d+)?/);
+  const body = JSON.stringify({ vid, ip: h.get("CF-Connecting-IP") || "", city: cf.city || "", country: cf.country || "", ua, side: pod ? "podcast" : "", ep: pod && pod[1] ? Number(pod[1]) : null });
   const hub = env.CHAT.get(env.CHAT.idFromName("hub"));
   return hub.fetch(new Request("https://hub/internal/visit", { method: "POST", headers: { "x-role": "internal" }, body })).catch(() => {});
 }
@@ -670,6 +677,8 @@ export class ChatHub {
     try { this.sql.exec(`ALTER TABLE uniq ADD COLUMN n INTEGER`); } catch {}   // the visitor's number that day
     // Visitor numbers for consented visitors (cookie id), kept so the site can say «Du var nr. 15» on later visits.
     this.sql.exec(`CREATE TABLE IF NOT EXISTS nr (vid TEXT PRIMARY KEY, n INTEGER)`);
+    // Besøk på /podcast/: tid, episoden (null for lista), land og enhet. Ingen IP. Slettes aldri.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS podbesok (ts INTEGER, ep INTEGER, land TEXT, enhet TEXT, ny INTEGER)`);
     if (this.setting("uniqTotal") == null) {
       // Start the counter from what the site has already seen: each browser once per day, robots and test runs left out.
       const rows = this.sql.exec(`SELECT DISTINCT CAST(first_seen / 86400000 AS INTEGER) AS d, city, ua FROM visitors`).toArray();
@@ -815,6 +824,13 @@ export class ChatHub {
         return Response.json(this.hrRange(b.r), { headers: { "cache-control": "no-store" } });
       }
       if (url.pathname === "/internal/visit") {
+        if (b.side === "podcast") {
+          const known = b.vid && this.sql.exec(`SELECT 1 FROM visitors WHERE vid=?`, b.vid).toArray().length > 0;
+          this.sql.exec(`INSERT INTO podbesok (ts, ep, land, enhet, ny) VALUES (?, ?, ?, ?, ?)`, Date.now(), b.ep, b.country || "", enhetAv(b.ua), known ? 0 : 1);
+          if (this.setting("notifyVisits") === "1")
+            await this.pushVisit({ key: "pod:" + (b.vid || pokeNet(b.ip || "")), vid: known ? b.vid : null, first: !known, city: b.city, country: b.country, ua: b.ua, side: "Podcast" + (b.ep ? " · episode " + b.ep : "") });
+          return new Response("ok");
+        }
         if (this.setting("notifyVisits") === "1") {
           // A cookie id only comes with consent; without it nothing about the visitor is stored, the push is all.
           const known = b.vid && this.sql.exec(`SELECT 1 FROM visitors WHERE vid=?`, b.vid).toArray().length > 0;
@@ -1074,6 +1090,21 @@ export class ChatHub {
       this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('sb1state', ?)`, JSON.stringify({ state, til: Date.now() + 15 * 60e3 }));
       const q = new URLSearchParams({ finInst: this.env.SB1_FININST, client_id: this.env.SB1_CLIENT_ID, state, redirect_uri: SB1_TILBAKE, response_type: "code" });
       return Response.json({ url: "https://api.sparebank1.no/oauth/authorize?" + q });
+    }
+    // Besøk på podcastsiden: totalt, i dag, siste 7 dager, per episode og per dag (siste 30).
+    if (url.pathname === "/chat/admin/podcast") {
+      const idag = osloMidnight(Date.now()), n = (q, ...a) => this.sql.exec(q, ...a).one().n;
+      return Response.json({
+        totalt: n(`SELECT COUNT(*) AS n FROM podbesok`),
+        idag: n(`SELECT COUNT(*) AS n FROM podbesok WHERE ts >= ?`, idag),
+        uke: n(`SELECT COUNT(*) AS n FROM podbesok WHERE ts >= ?`, Date.now() - 7 * 864e5),
+        nye: n(`SELECT COUNT(*) AS n FROM podbesok WHERE ny = 1`),
+        episoder: this.sql.exec(`SELECT ep, COUNT(*) AS n FROM podbesok GROUP BY ep ORDER BY ep`).toArray(),
+        dager: this.sql.exec(`SELECT ts FROM podbesok WHERE ts >= ?`, Date.now() - 30 * 864e5).toArray()
+          .reduce((m, r) => { const d = osloDay(r.ts); m[d] = (m[d] || 0) + 1; return m; }, {}),
+        land: this.sql.exec(`SELECT land, COUNT(*) AS n FROM podbesok GROUP BY land ORDER BY n DESC`).toArray(),
+        enheter: this.sql.exec(`SELECT enhet, COUNT(*) AS n FROM podbesok GROUP BY enhet ORDER BY n DESC`).toArray(),
+      });
     }
     if (url.pathname === "/chat/admin/versjoner/hent" && request.method === "POST") {
       return Response.json({ antall: await this.versjonerOppdater() });
@@ -1965,7 +1996,7 @@ export class ChatHub {
   // spam), at most 20 per 10 minutes in total. Same coin sound as messages (the owner's choice).
   // key: the visitor's cookie id, or "n:" + network for visitors without consent. vid only for known visitors (tapping
   // the push opens them in the app).
-  async pushVisit({ key, vid, first, city, country, ua }) {
+  async pushVisit({ key, vid, first, city, country, ua, side }) {
     const now = Date.now();
     this.visitLast = this.visitLast || new Map();
     this.visitLog = (this.visitLog || []).filter((t) => now - t < 600000);
@@ -1974,12 +2005,11 @@ export class ChatHub {
     this.visitLast.set(key, now);
     this.visitLog.push(now);
     ua = ua || "";
-    const device = /iPhone/.test(ua) ? "iPhone" : /iPad/.test(ua) ? "iPad" : /Android/.test(ua) ? "Android"
-      : /Mac OS X/.test(ua) ? "Mac" : /Windows/.test(ua) ? "Windows" : "";
+    const device = enhetAv(ua);
     let land = "";
     try { const n = new Intl.DisplayNames(["nb"], { type: "region" }).of(country); if (n && n !== country) land = n; } catch {}
     const where = [city, land].filter(Boolean).join(", ") || "Ukjent sted";
-    await this.push(first ? "Ny besøkende" : "Besøkende tilbake", [where, device].filter(Boolean).join(" · "), vid || null, { thread: "besok", throttle: false, category: "VISIT" });
+    await this.push((first ? "Ny besøkende" : "Besøkende tilbake") + (side ? " · " + side : ""), [where, device].filter(Boolean).join(" · "), vid || null, { thread: "besok", throttle: false, category: "VISIT" });
   }
 
   // «Sover» husker når han la seg (sovnet), så siden kan si hvor lenge han har sovet.

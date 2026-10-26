@@ -39,6 +39,7 @@ export default {
       if (!pod[2]) { url.pathname += "/"; return Response.redirect(url.toString(), 301); }
       const ep = pod[1] ? EPISODER.find((e) => e.n === Number(pod[1])) : null;
       if (pod[1] && !ep) { url.pathname = "/podcast/"; return Response.redirect(url.toString(), 302); }
+      try { const visit = pageVisit(request, env, url); if (visit) ctx.waitUntil(visit); } catch {}   // varsel og telling, som forsiden
       return podcastSide(env, url, ep);
     }
     // Klart: prøveperiode, kjøp og aktiveringskoder (klart.js). /GDPR/api/ og /GDPR/last-ned/ virker
