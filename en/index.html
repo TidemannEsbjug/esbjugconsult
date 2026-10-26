@@ -2471,10 +2471,11 @@ if (HUS) setTimeout(function lagAvspiller() {
     try {
       const j = await (await fetch('/chat/historikk/dager')).json();
       const idag = dagNr.format(Date.now()), dager = Object.keys(j.dager || {}).filter(d => d !== idag).sort().reverse();
-      let n = 0; const en = TX.loc.startsWith('en'), vis0 = svar.textContent;
-      const arb = async () => { while (dager.length) { await hentDag(dager.shift()).catch(() => {}); n++; if (svar.textContent === vis0 || svar.dataset.klar) { svar.dataset.klar = '1'; fortell((en ? 'Getting replay ready … ' : 'Gjør klar replay … ') + n + '/' + (n + dager.length)); } } };
+      // Fremdriften vises bare så lenge feltet er tomt eller viser fremdriften (et svar fra søket blir stående).
+      let n = 0; const en = TX.loc.startsWith('en'), fri = () => !svar.textContent || /^(Gjør klar|Getting)/.test(svar.textContent);
+      const arb = async () => { while (dager.length) { await hentDag(dager.shift()).catch(() => {}); n++; if (fri()) fortell((en ? 'Getting replay ready … ' : 'Gjør klar replay … ') + n + '/' + (n + dager.length)); } };
       await Promise.all([arb(), arb(), arb(), arb()]);
-      if (svar.dataset.klar) { delete svar.dataset.klar; fortell(en ? 'Ready: every day is loaded' : 'Klar: alle dagene er lastet'); setTimeout(() => { if (/^(Klar|Ready)/.test(svar.textContent)) fortell(''); }, 2500); }
+      if (fri()) { fortell(en ? 'Ready: every day is loaded' : 'Klar: alle dagene er lastet'); setTimeout(() => { if (/^(Klar|Ready)/.test(svar.textContent)) fortell(''); }, 2500); }
     } catch { forvarmet = false; }
   };
   async function last(dag) {
