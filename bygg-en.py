@@ -264,9 +264,9 @@ T = [
 
 # V2 (forsiden fra 7.10.2026) har egne tekster. V1-tekstene den har byttet ut hoppes over.
 T_NY = [
-    # Siste investeringer under banken.
-    ('aria-label="Siste investeringer"', 'aria-label="Recent investments"'),
-    ('<span>Siste investeringer</span>', '<span>Recent investments</span>'),
+    # Kostnader under banken.
+    ('aria-label="Kostnader"', 'aria-label="Costs"'),
+    ('<span>Kostnader</span>', '<span>Costs</span>'),
     ('<i>25. okt · 11:30</i>', '<i>25 Oct · 11:30</i>'),
     ('<i>25. okt · 10:47</i>', '<i>25 Oct · 10:47</i>'),
     ('<b>Tidemann sover</b><span>Opp klokken 04:00. Skriv gjerne, så svarer jeg når jeg er våken.</span>',
