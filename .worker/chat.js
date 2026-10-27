@@ -1209,15 +1209,16 @@ export class ChatHub {
       if ("flaske" in ren) ren.flaskeTs = Date.now();
       // The accelerometer: "x,y,z;…" in hundredths of a g at 20 Hz, a packet every 5 s.
       if (typeof d.acc === "string" && d.acc.length <= 6000 && /^[-\d,;]*$/.test(d.acc)) ren.acc = d.acc;
-      // Vannflasken (kameraet i fyr-appen): vannet kan bare gå ned til flasken fylles. «vann» følger medianen av de fem siste
-      // målingene nedover og står stille ellers; bare når minst fire av de fem er 25 poeng over, er flasken fylt og nivået går opp.
+      // Vannflasken (kameraet i fyr-appen): nivået følger medianen av de tre siste målingene nedover, og går opp når minst
+      // to av de tre er mer enn 4 poeng over (påfyll, også litt). Én måling som hopper, flytter det ikke.
       if (typeof ren.flaske === "number" && ren.flaske >= 0 && ren.flaske <= 100) {
         const k = `vann:${kilde}`, f = JSON.parse(this.sql.exec(`SELECT v FROM kv WHERE k=?`, k).toArray()[0]?.v || "{}");
-        const siste = [...(f.siste || []), ren.flaske].slice(-5), med = [...siste].sort((a, b) => a - b)[Math.floor(siste.length / 2)];
+        const siste = [...(f.siste || []), ren.flaske].slice(-3), mid = (a) => [...a].sort((x, y) => x - y)[Math.floor(a.length / 2)];
         let niva = f.niva;
-        if (niva == null) { if (siste.length >= 3) niva = med; }
-        else if (siste.length >= 5 && siste.filter((x) => x >= niva + 25).length >= 4) niva = [...siste.filter((x) => x >= niva + 25)].sort((a, b) => a - b)[Math.floor(siste.filter((x) => x >= niva + 25).length / 2)];
-        else if (med < niva) niva = med;
+        const over = niva == null ? [] : siste.filter((x) => x > niva + 4);
+        if (niva == null) { if (siste.length >= 2) niva = mid(siste); }
+        else if (over.length >= 2) niva = mid(over);
+        else if (mid(siste) < niva) niva = mid(siste);
         this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, k, JSON.stringify({ niva, siste }));
         if (niva != null) ren.vann = niva;
       }
