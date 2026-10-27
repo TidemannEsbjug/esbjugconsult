@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Første fra · Esbjug Consult</title>
+<meta name="description" content="Når noen kommer fra et nytt sted: Første fra, og Se kart.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#21160f">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2300205B'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%23BA0C2F' stroke='%23fff' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<link rel="stylesheet" href="/norge/sted.css">
+<script>document.documentElement.classList.add("js")</script>
+</head>
+<body class="anim">
+<div id="kart" aria-label="Kart over hvor besøkende kom fra"></div>
+<div class="dim" id="dim"></div>
+<aside class="kort" id="kort">
+  <p class="merknad" id="merknad" hidden>Utkast · loggen er ikke koblet til ennå</p>
+  <p class="kicker" id="kicker">Første fra</p>
+  <h1 class="navn" id="navn"></h1>
+  <button type="button" class="se" id="se">Se kart</button>
+  <div class="etter">
+    <p class="tall"><b id="tot">0</b> <span>besøkende</span></p>
+    <p class="under" id="under"></p>
+    <div class="valg" id="valg"></div>
+    <div class="liste" id="liste"></div>
+    <p class="fot">Egne maskiner og de som er her hele tiden telles ikke. <a href="/norge/">Alle steder</a></p>
+  </div>
+</aside>
+<button type="button" class="igjen" id="igjen" hidden>En gang til</button>
+<p class="sr" id="sr" aria-live="polite"></p>
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="/norge/kart.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let data = { steder: [], totalt: 0 }, kart = null, valgt = 0, gen = 0, åpnet = false, prikk = null;
+
+function merkPrikk(i) {
+  if (!kart) return;
+  Norge.merk(kart, prikk === i ? null : prikk, i);
+  prikk = i;
+}
+
+function slippPrikk() {
+  if (kart && prikk != null) Norge.merk(kart, prikk, null);
+  prikk = null;
+}
+
+function settNavn(navn) {
+  const h = $("navn");
+  h.setAttribute("aria-label", navn);
+  h.replaceChildren();
+  [...navn].forEach((ch, i) => {
+    const s = document.createElement("span");
+    s.className = "b";
+    s.setAttribute("aria-hidden", "true");
+    s.style.setProperty("--i", i);
+    s.textContent = ch === " " ? "\u00a0" : ch;
+    h.append(s);
+  });
+}
+
+function rekkefolge(forst) {
+  const ix = data.steder.map((_, i) => i);
+  return forst == null ? ix : [forst, ...ix.filter((i) => i !== forst)];
+}
+
+function fyll(i) {
+  const steder = data.steder;
+  $("under").textContent = Norge.oppsummer(steder);
+  Norge.tall($("tot"), data.totalt || 0, !still);
+  const valg = $("valg");
+  const første = steder.map((s, k) => ({ s, k })).sort((a, b) => b.s.forst - a.s.forst).slice(0, 6);
+  valg.replaceChildren();
+  if (første.length > 1) for (const { s, k } of første) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = s.by;
+    b.classList.toggle("på", k === i);
+    b.addEventListener("click", () => spill(k));
+    valg.append(b);
+  }
+  Norge.liste($("liste"), steder, rekkefolge(i), (k) => {
+    if (!kart) return;
+    merkPrikk(k);
+    Norge.fly(kart, steder[k]);
+    Norge.puls(kart, steder[k]);
+    Norge.merkRad($("liste"), k);
+  });
+  for (const b of $("liste").querySelectorAll(".ant")) Norge.tall(b, steder[Number(b.parentElement.dataset.i)].n, !still);
+  Norge.merkRad($("liste"), i);
+}
+
+function apne(i) {
+  const s = data.steder[i];
+  if (!s) return;
+  åpnet = true;
+  $("kort").classList.add("apen", "bygg", "bokstaver", "tent", "knapp");
+  $("dim").classList.add("borte");
+  $("igjen").hidden = false;
+  fyll(i);
+  $("sr").textContent = `Kartet viser ${data.totalt || 0} besøkende fra ${data.steder.length} steder.`;
+  if (!kart) return;
+  Norge.synlig(kart, true);
+  merkPrikk(i);
+  Norge.fly(kart, s);
+  Norge.puls(kart, s);
+}
+
+function spill(i) {
+  const s = data.steder[i];
+  if (!s) return;
+  gen += 1;
+  const g = gen;
+  valgt = i;
+  åpnet = false;
+  document.title = `Første fra ${s.by} · Esbjug Consult`;
+  const kort = $("kort");
+  kort.classList.remove("apen", "bygg", "bokstaver", "tent", "knapp");
+  $("dim").classList.remove("borte");
+  $("igjen").hidden = true;
+  settNavn(s.by);
+  if (kart) { slippPrikk(); Norge.synlig(kart, false); Norge.rydd(); Norge.ramme(kart, data.steder, true); }
+  if (still) { kort.classList.add("bygg", "bokstaver", "tent", "knapp"); apne(i); return; }
+  void kort.offsetWidth;
+  kort.classList.add("bygg");
+  const bokstaver = 380 + [...s.by].length * 38;
+  setTimeout(() => { if (g !== gen) return; kort.classList.add("bokstaver"); }, 460);
+  setTimeout(() => { if (g !== gen) return; kort.classList.add("tent"); }, 460 + bokstaver);
+  setTimeout(() => {
+    if (g !== gen) return;
+    kort.classList.add("knapp");
+    $("sr").textContent = `Første fra ${s.by}. Se kart.`;
+  }, 460 + bokstaver + 220);
+  setTimeout(() => { if (g !== gen || åpnet) return; apne(i); }, 460 + bokstaver + 1700);
+}
+
+$("se").addEventListener("click", () => { gen += 1; apne(valgt); });
+$("igjen").addEventListener("click", () => spill(valgt));
+
+(async () => {
+  try { data = await Norge.hent(); }
+  catch { data = Norge.DEMO; $("merknad").hidden = false; }
+  if (!data.nyeste && data.steder.length) data.nyeste = data.steder.slice().sort((a, b) => b.forst - a.forst)[0];
+  const n = data.nyeste;
+  const start = data.steder.findIndex((s) => n && s.by === n.by && s.kode === n.kode);
+  valgt = start >= 0 ? start : 0;
+  if (!data.steder.length) {
+    $("kicker").textContent = "Hvorfra";
+    $("navn").textContent = "Ingen nye steder";
+    $("kort").classList.add("bygg", "bokstaver", "apen");
+    $("dim").classList.add("borte");
+    $("under").textContent = "";
+    $("liste").innerHTML = '<p class="tom">Ingen besøkende utenom de som er her hele tiden.</p>';
+  }
+  try {
+    kart = await Norge.kart($("kart"));
+    Norge.tegn(kart, data.steder);
+    Norge.synlig(kart, false);
+    Norge.ramme(kart, data.steder, false);
+    Norge.klikk(kart, (i) => {
+      if (!åpnet) { gen += 1; apne(i); return; }
+      merkPrikk(i);
+      Norge.fly(kart, data.steder[i]);
+      Norge.puls(kart, data.steder[i]);
+      Norge.merkRad($("liste"), i);
+    });
+  } catch {}
+  if (data.steder.length) spill(valgt);
+})();
+</script>
+</body>
+</html>

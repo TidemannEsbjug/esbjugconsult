@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Hvorfra · Esbjug Consult</title>
+<meta name="description" content="Hvor de som har vært innom esbjugconsult.com kom fra.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#21160f">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2300205B'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%23BA0C2F' stroke='%23fff' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<link rel="stylesheet" href="/norge/sted.css">
+<script>document.documentElement.classList.add("js")</script>
+</head>
+<body class="norge">
+<div id="kart" aria-label="Kart over hvor besøkende kom fra"></div>
+<aside class="kort apen" id="kort">
+  <p class="merknad" id="merknad" hidden>Utkast · loggen er ikke koblet til ennå</p>
+  <p class="kicker">Hvorfra</p>
+  <h1>Hvor de kom fra</h1>
+  <p class="tall"><b id="tot">–</b> <span id="totord">besøkende</span></p>
+  <p class="under" id="under">Henter steder</p>
+  <div class="liste" id="liste"></div>
+  <p class="fot">Egne maskiner og de som er her hele tiden telles ikke. <a href="/animasjon/">Første fra</a></p>
+</aside>
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="/norge/kart.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let data = { steder: [], totalt: 0 }, kart = null, valgt = null;
+
+function velg(i, fly) {
+  const s = data.steder[i];
+  if (!s) return;
+  if (kart) {
+    Norge.merk(kart, valgt, i);
+    if (fly) Norge.fly(kart, s);
+    Norge.puls(kart, s);
+  }
+  valgt = i;
+  Norge.merkRad($("liste"), i);
+}
+
+(async () => {
+  try { data = await Norge.hent(); }
+  catch { data = Norge.DEMO; $("merknad").hidden = false; }
+  const steder = data.steder || [];
+  Norge.tall($("tot"), data.totalt || 0, !still && steder.length);
+  $("totord").textContent = (data.totalt || 0) === 1 ? "besøkende" : "besøkende";
+  if (!steder.length) {
+    $("under").textContent = "";
+    $("liste").innerHTML = '<p class="tom">Ingen besøkende utenom de som er her hele tiden.</p>';
+  } else {
+    $("under").textContent = Norge.oppsummer(steder);
+    Norge.liste($("liste"), steder, steder.map((_, i) => i), (i) => velg(i, true));
+    for (const b of $("liste").querySelectorAll(".ant")) {
+      const i = Number(b.parentElement.dataset.i);
+      Norge.tall(b, steder[i].n, !still);
+    }
+  }
+  try {
+    kart = await Norge.kart($("kart"));
+    Norge.tegn(kart, steder);
+    Norge.synlig(kart, true);
+    Norge.ramme(kart, steder, false);
+    Norge.klikk(kart, (i) => velg(i, true));
+  } catch {}
+})();
+</script>
+</body>
+</html>

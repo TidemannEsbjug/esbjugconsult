@@ -41,6 +41,7 @@
 //   GET  /chat/oyet                               weather now in Dubai, Koh Phangan and Lombok (Open-Meteo, cached 15 min)
 //   GET  /chat/spor                               the public map: live position, today's trail, place name and the readings
 //   GET  /chat/hr                                 today's heart rate from the owner's Apple Watch (Oslo day, per minute) + live bpm
+//   GET  /chat/norge                              where visitors came from, counted by city (no addresses)
 //   POST /chat/besok                              the page was shown from a prefetch/prerender: same visit push as a page load
 //   POST /chat/rec                                last batch of a visit recording (sendBeacon when the page closes)
 //   GET  /chat/admin/sessions[?vid=]              recorded visits (consented visitors only, kept 30 days)
@@ -274,6 +275,12 @@ export async function handleChat(request, env, url) {
     const res = Response.json(steder, { headers: { "cache-control": "public, max-age=900" } });
     await caches.default.put(key, res.clone());
     return res;
+  }
+
+  // Steder besøkende kom fra, slått sammen per by. Ingen IP, ingen cookie, ingen nettleser.
+  if (path === "/chat/norge") {
+    const r = await hub.fetch(new Request("https://hub/internal/norge", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }));
+    return new Response(r.body, { status: r.status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "public, max-age=15" } });
   }
 
   if (path === "/chat/hr") {
@@ -529,7 +536,14 @@ export function pageVisit(request, env, url, preloaded = false) {
   const cf = request.cf || {};
   // Podcastsiden telles for seg (side «podcast», med episoden hvis lenken gikk rett til en).
   const pod = url.pathname.match(/^\/podcast\/(\d+)?/);
-  const body = JSON.stringify({ vid, ip: h.get("CF-Connecting-IP") || "", city: cf.city || "", country: cf.country || "", ua, side: pod ? "podcast" : "", ep: pod && pod[1] ? Number(pod[1]) : null });
+  const body = JSON.stringify({
+    vid, ip: h.get("CF-Connecting-IP") || "",
+    city: cf.city || "", region: cf.region || "", country: cf.country || "",
+    lat: cf.latitude == null || cf.latitude === "" ? null : Number(cf.latitude),
+    lon: cf.longitude == null || cf.longitude === "" ? null : Number(cf.longitude),
+    org: cf.asOrganization || "",
+    ua, side: pod ? "podcast" : "", ep: pod && pod[1] ? Number(pod[1]) : null,
+  });
   const hub = env.CHAT.get(env.CHAT.idFromName("hub"));
   return hub.fetch(new Request("https://hub/internal/visit", { method: "POST", headers: { "x-role": "internal" }, body })).catch(() => {});
 }
@@ -540,6 +554,75 @@ export function pokeNet(ip) {
   const [a, b = ""] = ip.split("::");
   const h = a ? a.split(":") : [], t = b ? b.split(":") : [];
   return [...h, ...Array(Math.max(0, 8 - h.length - t.length)).fill("0"), ...t].slice(0, 4).join(":");
+}
+
+// A browser that comes back this many different days is one of the regulars (the owner and his machines) and is not counted.
+const HJEMME_DAGER = 8;
+
+// City names from the IP lookup, written the Norwegian way. Unknown names are kept.
+const STEDNAVN = {};
+for (const [navn, ...alias] of [
+  ["Lillestrøm", "lillestrom", "lilestrøm", "lillestroem"],
+  ["Tromsø", "tromso"], ["Bodø", "bodo"], ["Ålesund", "alesund", "aalesund"],
+  ["Tønsberg", "tonsberg", "toensberg"], ["Gjøvik", "gjovik"], ["Lørenskog", "lorenskog"],
+  ["Bærum", "baerum"], ["Ås", "aas"], ["Hønefoss", "honefoss"], ["Røros", "roros"],
+  ["Førde", "forde"], ["Ørsta", "orsta"], ["Vadsø", "vadso"], ["Mo i Rana", "mo i rana"],
+  ["Oslo"], ["Bergen"], ["Trondheim"], ["Stavanger"], ["Kristiansand"], ["Kristiansund"],
+  ["Drammen"], ["Fredrikstad"], ["Sarpsborg"], ["Sandefjord"], ["Skien"], ["Porsgrunn"],
+  ["Arendal"], ["Grimstad"], ["Moss"], ["Halden"], ["Hamar"], ["Lillehammer"],
+  ["Kongsberg"], ["Kongsvinger"], ["Haugesund"], ["Sandnes"], ["Molde"], ["Harstad"],
+  ["Alta"], ["Narvik"], ["Hammerfest"], ["Kirkenes"], ["Jessheim"], ["Ski"],
+  ["Larvik"], ["Horten"], ["Steinkjer"], ["Levanger"], ["Sandvika"], ["Fornebu"],
+]) {
+  STEDNAVN[navn.toLowerCase()] = navn;
+  for (const a of alias) STEDNAVN[a.toLowerCase()] = navn;
+}
+
+export function penSted(by) {
+  const t = String(by || "").replace(/\s+/g, " ").trim().replace(/ (municipality|kommune)$/i, "");
+  if (!t || t.length > 80) return "";
+  return STEDNAVN[t.toLowerCase()] || t;
+}
+
+export function landNavn(kode) {
+  const k = String(kode || "").toUpperCase();
+  if (!/^[A-Z]{2}$/.test(k)) return "";
+  try {
+    const n = new Intl.DisplayNames(["nb"], { type: "region" }).of(k);
+    return n && n !== k ? n : k;
+  } catch { return k; }
+}
+
+// Rows from stedtreff become cities on the map. No addresses and no identity leave this function.
+export function slagSteder(rows) {
+  const map = new Map(), hvem = new Set();
+  for (const r of rows || []) {
+    if (!r || !r.by || !r.land) continue;
+    if (r.hvem) hvem.add(r.hvem);
+    const key = r.land + "\n" + r.by;
+    let s = map.get(key);
+    if (!s) {
+      s = { kode: r.land, by: r.by, region: r.region || "", n: 0, forst: r.ts, sist: r.ts, lat: 0, lon: 0 };
+      map.set(key, s);
+    }
+    s.n += 1;
+    s.lat += Number(r.lat) || 0;
+    s.lon += Number(r.lon) || 0;
+    if (r.ts < s.forst) s.forst = r.ts;
+    if (r.ts >= s.sist) { s.sist = r.ts; if (r.region) s.region = r.region; }
+  }
+  const steder = [...map.values()].map((s) => {
+    let region = /^\d+$/.test(s.region) ? "" : s.region;
+    if (region === s.by) region = "";
+    return {
+      by: s.by, region, kode: s.kode, land: landNavn(s.kode),
+      lat: Math.round((s.lat / s.n) * 100) / 100, lon: Math.round((s.lon / s.n) * 100) / 100,
+      n: s.n, forst: s.forst, sist: s.sist,
+    };
+  }).sort((a, b) => b.n - a.n || a.forst - b.forst);
+  let nyeste = null;
+  for (const s of steder) if (!nyeste || s.forst > nyeste.forst || (s.forst === nyeste.forst && s.n < nyeste.n)) nyeste = s;
+  return { steder, totalt: hvem.size, nyeste };
 }
 
 // Oslo midnight (as a UTC timestamp) for the Oslo day that ts falls in. Oslo is UTC+1 or UTC+2, so midnight is
@@ -949,7 +1032,9 @@ export class ChatHub {
       if (url.pathname === "/internal/hr") {
         return Response.json(this.hrRange(b.r), { headers: { "cache-control": "no-store" } });
       }
+      if (url.pathname === "/internal/norge") return Response.json(this.norge());
       if (url.pathname === "/internal/visit") {
+        try { await this.merkSted(b); } catch {}
         if (b.side === "podcast") {
           const known = b.vid && this.sql.exec(`SELECT 1 FROM visitors WHERE vid=?`, b.vid).toArray().length > 0;
           this.sql.exec(`INSERT INTO podbesok (ts, ep, land, enhet, ny) VALUES (?, ?, ?, ?, ?)`, Date.now(), b.ep, b.country || "", enhetAv(b.ua), known ? 0 : 1);
@@ -1744,6 +1829,115 @@ export class ChatHub {
     m[pokeNet(ip)] = now;
     for (const k of Object.keys(m)) if (now - m[k] > 60 * 864e5) delete m[k];
     this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('ownerNets', ?)`, JSON.stringify(m));
+    this.ctx.waitUntil(this.glemEierNett(ip));
+  }
+
+  // Where people opened the site, from Cloudflare's IP lookup. One row per person per city.
+  // The owner's networks, and a browser that returns on HJEMME_DAGER different days, are left out.
+  // The public answer is only city, count and time.
+  stedKlargjor() {
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS stedtreff (
+      hvem TEXT, land TEXT, by TEXT, region TEXT, lat REAL, lon REAL, ts INTEGER,
+      PRIMARY KEY (hvem, land, by))`);
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS stedkjenner (
+      hvem TEXT PRIMARY KEY, dager INTEGER, sist TEXT, hjemme INTEGER)`);
+    if (this.setting("stedTilbake") === "1") return;
+    const tunge = new Set(this.sql.exec(
+      `SELECT v.vid AS vid FROM visitors v
+       LEFT JOIN (
+         SELECT vid, COUNT(*) AS n, COUNT(DISTINCT CAST(start / 86400000 AS INTEGER)) AS d
+         FROM sessions GROUP BY vid
+       ) s ON s.vid = v.vid
+       WHERE COALESCE(s.d, 0) >= 5 OR COALESCE(s.n, 0) >= 20`
+    ).toArray().map((r) => r.vid));
+    for (const v of this.sql.exec(`SELECT vid, first_seen, city, region, country, lat, lon, ua FROM visitors`).toArray()) {
+      if (!v.vid || tunge.has(v.vid) || !v.ua || BOT.test(v.ua)) continue;
+      const by = penSted(v.city), land = String(v.country || "").toUpperCase();
+      const lat = Number(v.lat), lon = Number(v.lon);
+      if (!by || !/^[A-Z]{2}$/.test(land) || !Number.isFinite(lat) || !Number.isFinite(lon) || (lat === 0 && lon === 0)) continue;
+      this.sql.exec(
+        `INSERT OR IGNORE INTO stedtreff (hvem, land, by, region, lat, lon, ts) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        "g:" + v.vid, land, by, String(v.region || "").slice(0, 80), lat, lon, v.first_seen || Date.now());
+    }
+    this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('stedTilbake', '1')`);
+  }
+
+  async stedSalt() {
+    if (this.setting("stedSalt")) return this.setting("stedSalt");
+    this.sql.exec(`INSERT OR IGNORE INTO kv (k, v) VALUES ('stedSalt', ?)`, crypto.randomUUID());
+    return this.setting("stedSalt");
+  }
+
+  async stedHvem(nokkel) {
+    return sha256hex((await this.stedSalt()) + "|" + nokkel);
+  }
+
+  stedGlem(hvem) {
+    this.sql.exec(`INSERT OR REPLACE INTO stedkjenner (hvem, dager, sist, hjemme) VALUES (?, 99, ?, 1)`, hvem, osloDay(Date.now()));
+    this.sql.exec(`DELETE FROM stedtreff WHERE hvem=?`, hvem);
+  }
+
+  async glemEierNett(ip) {
+    try {
+      this.stedKlargjor();
+      const net = pokeNet(ip || "");
+      if (!net) return;
+      this.stedGlem(await this.stedHvem("n|" + net));
+    } catch {}
+  }
+
+  async merkSted(b) {
+    this.stedKlargjor();
+    if (!b || DC.test(b.org || "")) return;
+    const by = penSted(b.city), land = String(b.country || "").toUpperCase();
+    const lat = Number(b.lat), lon = Number(b.lon);
+    if (!by || !/^[A-Z]{2}$/.test(land) || !Number.isFinite(lat) || !Number.isFinite(lon) || (lat === 0 && lon === 0)) return;
+    const ip = b.ip || "", net = ip ? pokeNet(ip) : "";
+    if (net && this.ownerNets().includes(net)) {
+      this.stedGlem(await this.stedHvem("n|" + net));
+      if (b.vid) {
+        this.stedGlem(await this.stedHvem("v|" + b.vid));
+        this.sql.exec(`DELETE FROM stedtreff WHERE hvem=?`, "g:" + b.vid);
+      }
+      return;
+    }
+    const nokkel = b.vid ? "v|" + b.vid : net ? "n|" + net : "";
+    if (!nokkel) return;
+    const hvem = await this.stedHvem(nokkel);
+    const k = this.sql.exec(`SELECT dager, sist, hjemme FROM stedkjenner WHERE hvem=?`, hvem).toArray()[0];
+    if (k && k.hjemme) {
+      if (b.vid) this.sql.exec(`DELETE FROM stedtreff WHERE hvem=?`, "g:" + b.vid);
+      return;
+    }
+    // Only a returning browser (a cookie) can be "here all the time". A bare address is counted once per city:
+    // mobile networks share an address across many people, so a day-count on it would drop them.
+    if (b.vid) {
+      const dag = osloDay(Date.now());
+      let dager = k ? k.dager : 0;
+      if (!k || k.sist !== dag) {
+        dager += 1;
+        if (dager >= HJEMME_DAGER) {
+          this.stedGlem(hvem);
+          this.sql.exec(`DELETE FROM stedtreff WHERE hvem=?`, "g:" + b.vid);
+          return;
+        }
+        this.sql.exec(`INSERT OR REPLACE INTO stedkjenner (hvem, dager, sist, hjemme) VALUES (?, ?, ?, 0)`, hvem, dager, dag);
+      }
+    }
+    let ts = Date.now();
+    if (b.vid) {
+      const g = this.sql.exec(`SELECT ts FROM stedtreff WHERE hvem=? AND land=? AND by=?`, "g:" + b.vid, land, by).toArray()[0];
+      if (g && g.ts && g.ts < ts) ts = g.ts;
+      this.sql.exec(`DELETE FROM stedtreff WHERE hvem=?`, "g:" + b.vid);
+    }
+    this.sql.exec(
+      `INSERT OR IGNORE INTO stedtreff (hvem, land, by, region, lat, lon, ts) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      hvem, land, by, String(b.region || "").slice(0, 80), lat, lon, ts);
+  }
+
+  norge() {
+    this.stedKlargjor();
+    return slagSteder(this.sql.exec(`SELECT hvem, land, by, region, lat, lon, ts FROM stedtreff`).toArray());
   }
 
   // ---------- the map ----------
