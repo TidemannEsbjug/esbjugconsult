@@ -24,6 +24,14 @@
   html,body{margin:0;background:var(--bg);color:var(--ink)}
   body{font-family:-apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;min-height:100svh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
   main{position:relative;padding:0 var(--g);max-width:1180px;width:100%;margin:0 auto}
+  /* Stor skjerm med mus: heroteksten og innholdet vises som med 150 % zoom i nettleseren (125 % på litt mindre skjermer).
+     vw-mål inne i det forstørrede deles på --z, så de blir som ved nettleserzoom. Kartet og videoen er ikke forstørret. */
+  @media (min-width:1300px) and (hover:hover) and (pointer:fine){:root{--z:1.25}}
+  @media (min-width:1600px) and (hover:hover) and (pointer:fine){:root{--z:1.5}}
+  @media (min-width:1300px) and (hover:hover) and (pointer:fine){
+    .sh-nav,.sh-i,main{zoom:var(--z);--g:clamp(16px,calc(6vw / var(--z)),96px)}
+    #chat .ch-b,#chat .ch-pill{zoom:var(--z)}
+  }
   /* Under hero: hvit bakgrunn og svart tekst. Hero, chatten og de blå bildene beholder fargene sine. */
   html,body{background:#fff}
   main{--ink:#000;color:var(--ink)}
@@ -1053,7 +1061,7 @@
   /* Pekeren i sherpa-heroen: en vanlig pil, men av is (frostet, gjennomskinnelig, med blanke kanter). Lyser litt mer
      over noe klikkbart og drysser av seg et snøfnugg iblant når den flyttes. Bare med mus/styreflate. */
   @media (hover:hover) and (pointer:fine){html.mus .sh-hero, html.mus .sh-hero *{cursor:none!important}}
-  .sno-k{position:fixed;left:0;top:0;width:20px;height:29px;z-index:2147483646;pointer-events:none;opacity:0;transition:opacity .4s;transform-origin:0 0}
+  .sno-k{position:fixed;left:0;top:0;width:30px;height:44px;z-index:2147483646;pointer-events:none;opacity:0;transition:opacity .4s;transform-origin:0 0}
   .sno-k svg{position:relative;width:100%;height:100%;display:block;overflow:visible;filter:drop-shadow(0 1px 2px rgba(0,32,91,.55)) drop-shadow(0 0 6px rgba(255,255,255,.6));transition:filter .3s}
   html.sno-over .sno-k svg{filter:drop-shadow(0 1px 2px rgba(0,32,91,.55)) drop-shadow(0 0 9px rgba(205,222,255,.95))}
   html.sno-inne .sno-k{opacity:1}
@@ -1066,10 +1074,12 @@
   .sh-lenker .sh-kontakt{padding:11px 18px;border-radius:999px;border:1.5px solid rgba(0,32,91,.35);background:rgba(255,255,255,.25)}
   .sh-lenker .sh-kontakt:hover{text-decoration:none;background:rgba(255,255,255,.5)}
   .sh-i{padding:clamp(28px,7vh,90px) var(--g) 0;max-width:calc(880px + 2 * var(--g))}
+  /* Med zoom holdes tekstkolonnen på venstre halvdel, så H1 ikke går inn i fjellet. */
+  @media (min-width:1300px) and (hover:hover) and (pointer:fine){.sh-i{max-width:calc(54vw / var(--z))}}
   .sh-ey{margin:0;font:600 12px/1 "SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(0,32,91,.72)}
-  .sh-hero h1{margin:.38em 0 .34em;font:500 clamp(42px,5.4vw,84px)/1.02 var(--serif);letter-spacing:-.022em;font-variation-settings:"opsz" 144}
+  .sh-hero h1{margin:.38em 0 .34em;font:500 clamp(42px,calc(5.4vw / var(--z,1)),84px)/1.02 var(--serif);letter-spacing:-.022em;font-variation-settings:"opsz" 144}
   .sh-hero h1 i{font-style:italic;font-weight:400}
-  .sh-ingress{margin:0;max-width:31em;font:400 clamp(17px,1.45vw,21px)/1.5 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;color:rgba(0,32,91,.88)}
+  .sh-ingress{margin:0;max-width:31em;font:400 clamp(17px,calc(1.45vw / var(--z,1)),21px)/1.5 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;color:rgba(0,32,91,.88)}
   .sh-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
   .sh-knapp{display:inline-flex;align-items:center;gap:10px;padding:16px 24px;border-radius:999px;text-decoration:none;font:600 16px/1 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;transition:transform .15s ease,box-shadow .15s ease,background .15s ease}
   .sh-knapp:hover{transform:translateY(-1px)}
@@ -3414,7 +3424,8 @@ setInterval(tegn, 1000);
     };
     const front = () => (1 - (1 - f) ** 2.2) * (diag + 44);
     const sett = () => {
-      kn.style.setProperty('--fx', ox + 'px'); kn.style.setProperty('--fy', oy + 'px'); kn.style.setProperty('--fr', front() + 'px');
+      const z = fw / (kn.offsetWidth || fw) || 1;  // zoom på store skjermer
+      kn.style.setProperty('--fx', ox / z + 'px'); kn.style.setProperty('--fy', oy / z + 'px'); kn.style.setProperty('--fr', front() / z + 'px');
       fc.style.opacity = Math.min(1, f * 1.8) ** .8;
       kn.classList.toggle('frosset', f > .55);
     };
