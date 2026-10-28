@@ -34,7 +34,6 @@ T = [
     ('Du vil være helt i front med AI, men å få systemene på plass kan være tungt. Det er der jeg kommer inn.',
      'You want to be at the very front with AI, but getting the systems in place can be heavy lifting. That is where I come in.'),
     ('<a class="sh-knapp sh-p" href="mailto:tidemann@esbjugconsult.com">Snakk med meg</a>', '<a class="sh-knapp sh-p" href="mailto:tidemann@esbjugconsult.com">Talk to me</a>'),
-    ('Se hvor jeg er nå <svg', 'See where I am now <svg'),
     ('<span class="sh-sted">Henter posisjonen …</span>', '<span class="sh-sted">Finding him …</span>'),
 
     # --- toppen ---
