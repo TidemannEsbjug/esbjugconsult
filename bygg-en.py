@@ -19,19 +19,19 @@ T = [
     # --- hode ---
     ('<html lang="nb">', '<html lang="en">'),
     ('<title>Esbjug Consult</title>', '<title>Esbjug Consult</title>'),
-    ('content="Tidemann Esbjug – AI Sherpa. Han tar de tunge løftene med å sette opp systemene riktig, så bedriften kan ta del i AI."',
+    ('content="Tidemann Esbjug – KI Sherpa. Han tar de tunge løftene med å sette opp systemene riktig, så bedriften kan ta del i KI."',
      'content="Tidemann Esbjug is the AI Sherpa: he does the heavy lifting of setting up the systems right, so the business can take part in AI."'),
 
     # --- AI-sherpa-heroen ---
-    ('aria-label="AI Sherpa"', 'aria-label="The AI Sherpa"'),
+    ('aria-label="KI Sherpa"', 'aria-label="The AI Sherpa"'),
     ('aria-label="Tegning av et taulag på vei opp en snødekt fjellrygg i Norge, med en rød hytte nede i dalen"',
      'aria-label="Illustration of a roped team climbing a snowy mountain ridge in Norway, with a red cabin in the valley below"'),
     ('<a class="sh-merke" href="/">', '<a class="sh-merke" href="/en/">'),
-    ('Esbjug Consult <span>· AI og Systemer</span>', 'Esbjug Consult <span>· AI and Systems</span>'),
+    ('Esbjug Consult <span>· KI og Systemer</span>', 'Esbjug Consult <span>· AI and Systems</span>'),
     ('<a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Kontakt</a>', '<a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Contact</a>'),
-    ('<p class="sh-ey">Tidemann Esbjug – AI Sherpa</p>', '<p class="sh-ey">Tidemann Esbjug – AI Sherpa</p>'),
+    ('<p class="sh-ey">Tidemann Esbjug – KI Sherpa</p>', '<p class="sh-ey">Tidemann Esbjug – AI Sherpa</p>'),
     ('<h1>Du velger toppen. <i>Jeg bærer utstyret opp.</i></h1>', '<h1>You choose the summit. <i>I carry the gear up.</i></h1>'),
-    ('Du vil være helt i front med AI, men å få systemene på plass kan være tungt. Det er der jeg kommer inn.',
+    ('Du vil være helt i front med KI, men å få systemene på plass kan være tungt. Det er der jeg kommer inn.',
      'You want to be at the very front with AI, but getting the systems in place can be heavy lifting. That is where I come in.'),
     ('<a class="sh-knapp sh-p" href="mailto:tidemann@esbjugconsult.com">Snakk med meg</a>', '<a class="sh-knapp sh-p" href="mailto:tidemann@esbjugconsult.com">Talk to me</a>'),
 
@@ -71,7 +71,7 @@ T = [
      'Together we have already made exciting progress, largely thanks to analysis from Claude Code.'),
     ('Ved å laste inn Google Ads-tall fra deres eksisterende byrå, fant vi store besparelser som følge av ineffektivitet i targeting og for høye administrasjonsgebyr. Det var en case hvor ledelsen hadde gitt fullstendig tillit til byrået, og jeg tror ikke jeg vil finne denne type besparelser like enkelt i de fleste bedrifter.',
      'By loading in Google Ads numbers from their existing agency, we found large savings caused by inefficient targeting and administration fees that were too high. It was a case where management had placed complete trust in the agency, and I don\'t think I\'ll find savings like these as easily in most companies.'),
-    ('Vi flyttet Google Ads in-house og kuttet kostnaden betraktelig, uten kvalitetstap. Mitt vederlag utgjorde 25% av den årlige besparelsen som følge av høy effektivitet fra AI-bruk. Vinn-vinn!',
+    ('Vi flyttet Google Ads in-house og kuttet kostnaden betraktelig, uten kvalitetstap. Mitt vederlag utgjorde 25% av den årlige besparelsen som følge av høy effektivitet fra KI-bruk. Vinn-vinn!',
      'We moved Google Ads in-house and cut the cost considerably, with no loss of quality. My fee came to 25% of the annual savings, thanks to the high efficiency of using AI. Win-win!'),
 
     ('Alarm-app for familier, iPhone og Android', 'Alarm app for families, iPhone and Android'),
@@ -164,7 +164,7 @@ T = [
      'It also makes me something of an activist when it comes to the right to digital privacy.'),
     ('En tanke om dette, morgen 1. oktober.', 'A thought on this, morning of 1 October.'),
     ('Denne artikkelen er fra 29. september.', 'This article is from 29 September.'),
-    ('…og viser hvordan vi nærmer oss et punkt hvor cyber-angrep med AI kan bli langt vanligere.',
+    ('…og viser hvordan vi nærmer oss et punkt hvor cyber-angrep med KI kan bli langt vanligere.',
      '…and shows how we are approaching a point where cyber attacks using AI could become far more common.'),
     ('Dette gjør det å være forberedt når det kommer til cyber-angrep noe å tenke på.',
      'That makes being prepared for cyber attacks something worth thinking about.'),
@@ -281,8 +281,8 @@ T_NY = [
     ('aria-label="Kostnader"', 'aria-label="Costs"'),
     ('<span>Kostnader</span>', '<span>Costs</span>'),
     # Aktive AI-abonnementer og den kompakte podkasten.
-    ('aria-label="Aktive AI-abonnementer"', 'aria-label="Active AI subscriptions"'),
-    ('<span class="mono s-t">Aktive AI-abonnementer</span>', '<span class="mono s-t">Active AI subscriptions</span>'),
+    ('aria-label="Aktive KI-abonnementer"', 'aria-label="Active AI subscriptions"'),
+    ('<span class="mono s-t">Aktive KI-abonnementer</span>', '<span class="mono s-t">Active AI subscriptions</span>'),
     ('aria-label="Spill av siste episode"', 'aria-label="Play the latest episode"'),
     ('aria-label="Alle episoder"', 'aria-label="All episodes"'),
     # Pulten (kameraet).
