@@ -1020,9 +1020,9 @@
   .pultk.uten-flaske .fl-i{opacity:.35}
 
   /* ===== /sherpa/: AI-sherpaen (bygges av bygg-sherpa.py) ===== */
-  .sh-hero,.sh-rute{width:100%;flex:none}
+  .sh-hero{width:100%;flex:none}
   .natt-lag{display:none}
-  .focus .sh-hero,.focus .sh-rute{opacity:0;filter:blur(8px);pointer-events:none}
+  .focus .sh-hero{opacity:0;filter:blur(8px);pointer-events:none}
   .sh-hero{--sky:#74a8d4;position:relative;min-height:100svh;display:flex;flex-direction:column;background:var(--sky);color:#00205B;overflow:hidden;isolation:isolate}
   .sh-bilde{position:absolute;left:0;right:0;bottom:0;height:min(100%,calc(100vw * .4286));z-index:-2;margin:0}
   .sh-bilde img{width:100%;height:100%;object-fit:cover;object-position:70% 100%;display:block}
@@ -1079,60 +1079,18 @@
   .sh-hero:not(.bla) .sh-knapp.sh-s:hover{background:rgba(255,255,255,.3)}
   @media (max-width:760px){.sh-hero:not(.bla)::before{background:linear-gradient(180deg,rgba(0,32,91,.38) 0%,rgba(0,32,91,.22) 55%,rgba(0,32,91,0) 85%)}}
 
-  .sh-rute{background:#fff;color:#00205B;padding:clamp(56px,8vw,112px) var(--g) clamp(40px,5vw,64px)}
-  .sh-w{max-width:1180px;margin:0 auto}
-  .sh-k{margin:0 0 14px;font:600 12px/1 "SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(0,32,91,.6);display:flex;align-items:center;gap:9px}
-  .sh-rute h2{margin:0 0 clamp(28px,4vw,48px);font:500 clamp(32px,4vw,56px)/1.05 var(--serif);letter-spacing:-.02em;max-width:16em}
-  .sh-rute h2 i{font-weight:400}
-  .sh-profil{position:relative;height:130px;margin-bottom:22px}
-  .sh-profil svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
-  .sh-fjell{fill:#eef3fb}
-  .sh-sti{fill:none;stroke:#00205B;stroke-width:2;stroke-dasharray:2 7;stroke-linecap:round;opacity:.55}
-  .sh-pk{position:absolute;width:16px;height:16px;margin-top:-8px;border-radius:50%;background:#fff;border:2.5px solid #00205B;box-sizing:border-box;transition:background .3s,transform .3s}
-  .sh-pk:nth-of-type(1){left:0;top:88.5%}.sh-pk:nth-of-type(2){left:26%;top:65.4%}.sh-pk:nth-of-type(3){left:52%;top:42.3%}.sh-pk:nth-of-type(4){left:78%;top:16.9%;background:#BA0C2F;border-color:#BA0C2F}
-  .sh-pk.her{background:#BA0C2F;border-color:#BA0C2F;transform:scale(1.25);box-shadow:0 0 0 0 rgba(186,12,47,.45);animation:shPuls 2s ease-out infinite}
-  .sh-leirer{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);column-gap:4%}
-  .sh-leirer li{position:relative}
-  .sh-nr{display:block;font:600 12px/1 "SF Mono",Menlo,monospace;color:rgba(0,32,91,.5);margin-bottom:10px}
-  .sh-leirer h3{margin:0 0 8px;font:500 24px/1.15 var(--serif);letter-spacing:-.01em}
-  .sh-leirer p{margin:0;font:400 16px/1.5 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;color:rgba(0,32,91,.82)}
-  .sh-her{display:none;margin-top:12px;font:600 12px/1 "SF Mono",Menlo,monospace;letter-spacing:.08em;text-transform:uppercase;color:#BA0C2F}
-  .sh-leirer li.her .sh-her{display:inline-block}
-  @media (max-width:760px){
-    .sh-profil{display:none}
-    .sh-leirer{grid-template-columns:1fr;row-gap:26px;padding-left:28px;border-left:2px dashed rgba(0,32,91,.25);margin-left:7px}
-    .sh-leirer li::before{content:"";position:absolute;left:-38px;top:-2px;width:16px;height:16px;border-radius:50%;background:#fff;border:2.5px solid #00205B;box-sizing:border-box}
-    .sh-leirer li:last-child::before,.sh-leirer li.her::before{background:#BA0C2F;border-color:#BA0C2F}
-  }
-
-  .sh-to{display:grid;grid-template-columns:1.25fr 1fr;gap:clamp(20px,3vw,36px);margin-top:clamp(48px,6vw,84px);align-items:start}
-  .sh-kort{border-radius:22px;padding:clamp(22px,3vw,34px)}
-  .sh-poll{background:#eef3fb}
-  .sh-kort h3{margin:0 0 6px;font:500 clamp(24px,2.4vw,32px)/1.15 var(--serif);letter-spacing:-.01em}
-  .sh-kort>p{margin:0 0 20px;font:400 16px/1.5 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;color:rgba(0,32,91,.75)}
-  .sh-valg{display:grid;gap:10px}
-  .sh-valg button{--p:0%;position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:16px 18px;border:1.5px solid rgba(0,32,91,.14);border-radius:14px;background:#fff;color:#00205B;font:500 16px/1.3 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;text-align:left;cursor:pointer;overflow:hidden;isolation:isolate;transition:border-color .2s}
-  .sh-valg button:hover{border-color:rgba(0,32,91,.45)}
-  .sh-valg button::before{content:"";position:absolute;inset:0;width:var(--p);background:rgba(116,168,212,.28);z-index:-1;transition:width .6s cubic-bezier(.3,.8,.3,1)}
-  .sh-valg button[aria-pressed="true"]{border-color:#BA0C2F}
-  .sh-valg button[aria-pressed="true"]::before{background:rgba(186,12,47,.13)}
-  .sh-v-n{font:600 11px/1 "SF Mono",Menlo,monospace;color:rgba(0,32,91,.45);margin-right:12px}
-  .sh-v-t{flex:1}
-  .sh-v-p{font:600 14px/1 "SF Mono",Menlo,monospace;font-variant-numeric:tabular-nums}
-  .sh-valg button[aria-pressed="true"] .sh-v-p::after{content:" ✓";color:#BA0C2F}
-  .sh-poll-s{margin:16px 0 0;font:400 14px/1.5 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;color:rgba(0,32,91,.7);min-height:1.5em}
-  .sh-poll-s a{color:#BA0C2F;font-weight:600}
-  .sh-poll:not(.svart) .sh-etter{display:none}
-  .sh-utstyr{border:1.5px solid rgba(0,32,91,.12)}
-  .sh-utstyr .abo{display:block;padding:0;cursor:default}
-  .sh-utstyr .abo>.s-t,.sh-utstyr .abo-ant{display:none}
-  .sh-utstyr .abo .abo-l{max-height:none!important;opacity:1!important;margin-top:0!important;gap:14px 18px}
-  .sh-utstyr .abo-l li{font-size:17px}
-  .sh-utstyr .abo-i{width:30px;height:30px;padding:6px;border-radius:9px}
-  .sh-bro{margin-top:clamp(56px,7vw,96px);display:flex;align-items:end;justify-content:space-between;gap:12px 32px;flex-wrap:wrap}
-  .sh-bro h2{margin:0}
-  .sh-bro p{margin:0;max-width:26em;font:400 16px/1.5 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;color:rgba(0,32,91,.75)}
-  @media (max-width:860px){.sh-to{grid-template-columns:1fr}}
+  /* Kartet i vinterfarger: lys bunn mens det lastes, lyse kontroller */
+  .hero{background:#dfe9f4}
+  #kart{background:#eef3f9}
+  .kart-venter{background:radial-gradient(60% 50% at 50% 50%,#ffffff,#d6e4f2)}
+  .kv-i b{color:#00205B}.kv-t{color:rgba(0,32,91,.45)}
+  #kart .maplibregl-ctrl-group{background:rgba(255,255,255,.8);border-color:rgba(0,32,91,.12)}
+  #kart .maplibregl-ctrl-group button+button{border-top-color:rgba(0,32,91,.12)}
+  #kart .maplibregl-ctrl-group .maplibregl-ctrl-icon{filter:none}
+  #kart .maplibregl-ctrl-attrib{background:rgba(255,255,255,.7);color:rgba(0,32,91,.55)}
+  #kart .maplibregl-ctrl-attrib a{color:rgba(0,32,91,.7)}
+  #kart .maplibregl-ctrl-attrib-button{filter:none}
+  #kart .maplibregl-cooperative-gesture-screen{background:rgba(0,32,91,.45);color:#fff}
 </style>
 </head>
 <body>
@@ -1140,54 +1098,13 @@
 <section class="sh-hero" aria-label="AI-sherpaen">
   <picture class="sh-bilde"><source type="image/webp" media="(max-width:760px)" srcset="/media/sherpa-900.webp"><source type="image/webp" srcset="/media/sherpa.webp"><img src="/media/sherpa.jpg" alt="Tegning av et taulag på vei opp en snødekt fjellrygg i Norge, med en rød hytte nede i dalen" width="1680" height="720" fetchpriority="high"></picture>
   <canvas class="sh-sno" aria-hidden="true"></canvas>
-  <nav class="sh-nav"><a class="sh-merke" href="/sherpa/"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" fill="#00205B"/><circle cx="16" cy="16" r="9" fill="#BA0C2F" stroke="#fff" stroke-width="3"/></svg>Esbjug Consult <span>· AI-sherpaen</span></a><div class="sh-lenker"><a href="#ruten">Ruten</a><a href="#live">Live</a><a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Kontakt</a></div></nav>
+  <nav class="sh-nav"><a class="sh-merke" href="/sherpa/"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" fill="#00205B"/><circle cx="16" cy="16" r="9" fill="#BA0C2F" stroke="#fff" stroke-width="3"/></svg>Esbjug Consult <span>· AI-sherpaen</span></a><div class="sh-lenker"><a href="#live">Live</a><a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Kontakt</a></div></nav>
   <div class="sh-i">
     <p class="sh-ey">AI-sherpaen Tidemann Esbjug</p>
     <h1>Du velger toppen. <i>Jeg bærer utstyret opp.</i></h1>
     <p class="sh-ingress">Du vil være helt i front med AI, men å få systemene på plass kan være tungt. Det er der jeg kommer inn.</p>
     <div class="sh-cta"><a class="sh-knapp sh-p" href="mailto:tidemann@esbjugconsult.com">Snakk med meg</a><a class="sh-knapp sh-s" href="#live">Se hvor jeg er nå <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a></div>
     <p class="sh-live" hidden><i class="sh-prikk"></i><span>Live:</span> <span class="sh-sted">Henter posisjonen …</span></p>
-  </div>
-</section>
-<section class="sh-rute" id="ruten" aria-label="Ruten">
-  <div class="sh-w">
-    <p class="sh-k">&gt; Ruten</p>
-    <h2>Fire leirer, fra der du står til <i>toppen</i>.</h2>
-    <div class="sh-profil" aria-hidden="true">
-      <svg viewBox="0 0 1000 130" preserveAspectRatio="none"><path class="sh-fjell" d="M0 130V117C4 116 6 115 8 115C90 108 180 96 268 85C360 74 440 66 528 55C620 44 700 30 788 22C860 16 930 12 1000 8V130Z"/><path class="sh-sti" vector-effect="non-scaling-stroke" d="M0 117C4 116 6 115 8 115C90 108 180 96 268 85C360 74 440 66 528 55C620 44 700 30 788 22C860 16 930 12 1000 8"/></svg>
-      <i class="sh-pk"></i><i class="sh-pk"></i><i class="sh-pk"></i><i class="sh-pk"></i>
-    </div>
-    <ol class="sh-leirer">
-      <li><span class="sh-nr">01</span><h3>Baseleiren</h3><p>Jeg ser på hvordan du jobber i dag, hvilke systemer du har og hvor det stopper opp.</p><b class="sh-her">Du er her</b></li>
-      <li><span class="sh-nr">02</span><h3>Leir 1</h3><p>Vi legger grunnmuren: kontoer, tilganger, data og sikkerhet satt opp riktig fra start.</p><b class="sh-her">Du er her</b></li>
-      <li><span class="sh-nr">03</span><h3>Leir 2</h3><p>Jeg bygger og kobler sammen det som mangler, som nettside, app eller interne verktøy, så arbeidet flyter.</p><b class="sh-her">Du er her</b></li>
-      <li><span class="sh-nr">04</span><h3>Toppen</h3><p>Systemene står, og du bruker AI i hverdagen. Nå kan du nyte utsikten.</p><b class="sh-her">Du er her</b></li>
-    </ol>
-    <div class="sh-to">
-      <div class="sh-kort sh-poll">
-        <h3>Hvor står bedriften din i dag?</h3>
-        <p>Velg leiren som passer. Du ser svarene til alle med en gang.</p>
-        <div class="sh-valg" role="group" aria-label="Hvor står bedriften din i dag?">
-        <button type="button" aria-pressed="false"><span class="sh-v-t"><span class="sh-v-n">01</span>Vet ikke hvor vi skal begynne</span><span class="sh-v-p"></span></button>
-        <button type="button" aria-pressed="false"><span class="sh-v-t"><span class="sh-v-n">02</span>Vet hva vi trenger, mangler oppsettet</span><span class="sh-v-p"></span></button>
-        <button type="button" aria-pressed="false"><span class="sh-v-t"><span class="sh-v-n">03</span>Har noe på plass, men det henger ikke sammen</span><span class="sh-v-p"></span></button>
-        <button type="button" aria-pressed="false"><span class="sh-v-t"><span class="sh-v-n">04</span>Systemene står, vil bruke AI mer</span><span class="sh-v-p"></span></button>
-        </div>
-        <p class="sh-poll-s" aria-live="polite"><span class="sh-etter"><span class="sh-sum"></span> · Ruten starter der du står i dag. <a href="mailto:tidemann@esbjugconsult.com">Snakk med meg</a></span></p>
-      </div>
-      <div class="sh-kort sh-utstyr">
-        <h3>Utstyret i sekken</h3>
-        <p>AI-abonnementene jeg betaler for selv, dyrest først.</p>
-        <section class="abo" aria-label="Aktive AI-abonnementer" tabindex="0">
-    <span class="mono s-t">Aktive AI-abonnementer</span><span class="abo-ant" aria-hidden="true"><span></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
-    <ol class="abo-l"><li style="--c:#D97757;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><g stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 12V3.5M12 12l6-6M12 12h8.5M12 12l6.2 5.8M12 12v8.5M12 12l-6 6M12 12H3.5M12 12L5.8 5.8M12 12l3.3-7.9M12 12l-7.9 3.3"/></g></svg><span>Claude Max 20</span></li><li style="--c:#E9A27F;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><g stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 12V3.5M12 12l6-6M12 12h8.5M12 12l6.2 5.8M12 12v8.5M12 12l-6 6M12 12H3.5M12 12L5.8 5.8M12 12l3.3-7.9M12 12l-7.9 3.3"/></g></svg><span>Claude Max 5</span></li><li style="--c:#14b8a6;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 4h3.4v6.6L14.6 4H19l-6.6 7.2L19.4 20h-4.5l-4.7-6.2-1.8 1.9V20H5z"/></svg><span>Kling</span></li><li style="--c:#111;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="7.2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M4.2 19.8L19.8 4.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span>SuperGrok</span></li><li style="--c:#fff;--f:#0b1d4a"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11 3.5L4.5 16H11zM12.5 6l6 10h-6z"/><path d="M3 17.6h18l-2.2 3H5.2z"/></svg><span>Midjourney</span></li><li style="--c:#334155;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="7" y="4" width="3.4" height="16" rx=".6"/><rect x="13.6" y="4" width="3.4" height="16" rx=".6"/></svg><span>ElevenLabs</span></li><li style="--c:linear-gradient(135deg,#ff8a3d,#ff2e7e);--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3" y="10" width="2.6" height="4" rx="1.3"/><rect x="7.1" y="6.5" width="2.6" height="11" rx="1.3"/><rect x="11.2" y="3.5" width="2.6" height="17" rx="1.3"/><rect x="15.3" y="7.5" width="2.6" height="9" rx="1.3"/><rect x="19.4" y="10.5" width="2.6" height="3" rx="1.3"/></svg><span>Suno</span></li></ol>
-  </section>
-      </div>
-    </div>
-    <div class="sh-bro">
-      <div><p class="sh-k"><i class="sh-prikk"></i> Live</p><h2>Hvor jeg er nå</h2></div>
-      <p>Kartet, pulsen og maskinene oppdateres mens du ser på.</p>
-    </div>
   </div>
 </section>
 <header class="hero" id="live">
@@ -1225,6 +1142,11 @@
       <li><span>Cloudflare <i>25. okt · 11:30</i></span><b>−47 kr</b></li>
       <li><span>Claude Max 20 <i>25. okt · 10:47</i></span><b>−2&nbsp;299 kr</b></li>
     </ul>
+  </section>
+  <!-- Aktive AI-abonnementer, dyrest først. Legg til eller fjern linjer her. -->
+  <section class="abo gl" aria-label="Aktive AI-abonnementer" tabindex="0">
+    <span class="mono s-t">Aktive AI-abonnementer</span><span class="abo-ant" aria-hidden="true"><span></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+    <ol class="abo-l"><li style="--c:#D97757;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><g stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 12V3.5M12 12l6-6M12 12h8.5M12 12l6.2 5.8M12 12v8.5M12 12l-6 6M12 12H3.5M12 12L5.8 5.8M12 12l3.3-7.9M12 12l-7.9 3.3"/></g></svg><span>Claude Max 20</span></li><li style="--c:#E9A27F;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><g stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 12V3.5M12 12l6-6M12 12h8.5M12 12l6.2 5.8M12 12v8.5M12 12l-6 6M12 12H3.5M12 12L5.8 5.8M12 12l3.3-7.9M12 12l-7.9 3.3"/></g></svg><span>Claude Max 5</span></li><li style="--c:#14b8a6;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 4h3.4v6.6L14.6 4H19l-6.6 7.2L19.4 20h-4.5l-4.7-6.2-1.8 1.9V20H5z"/></svg><span>Kling</span></li><li style="--c:#111;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="7.2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M4.2 19.8L19.8 4.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span>SuperGrok</span></li><li style="--c:#fff;--f:#0b1d4a"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11 3.5L4.5 16H11zM12.5 6l6 10h-6z"/><path d="M3 17.6h18l-2.2 3H5.2z"/></svg><span>Midjourney</span></li><li style="--c:#334155;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="7" y="4" width="3.4" height="16" rx=".6"/><rect x="13.6" y="4" width="3.4" height="16" rx=".6"/></svg><span>ElevenLabs</span></li><li style="--c:linear-gradient(135deg,#ff8a3d,#ff2e7e);--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3" y="10" width="2.6" height="4" rx="1.3"/><rect x="7.1" y="6.5" width="2.6" height="11" rx="1.3"/><rect x="11.2" y="3.5" width="2.6" height="17" rx="1.3"/><rect x="15.3" y="7.5" width="2.6" height="9" rx="1.3"/><rect x="19.4" y="10.5" width="2.6" height="3" rx="1.3"/></svg><span>Suno</span></li></ol>
   </section>
   </div>
   <div class="hoyre">
@@ -2003,10 +1925,10 @@ const $ = q => document.querySelector(q);
 // Høstkartet: vektorkart fra OpenFreeMap (OpenStreetMap-data) med egne farger. Skogen i fem høstfarger fordelt på
 // skogområdene, park i gull, gress i oliven og gull, mørk varm bunn, dypblått vann og veier i rav. Uten WebGL: vanlig OSM.
 const HOST = {
-  bunn: '#21160f', bolig: '#2b1d14', bygg: '#3a291e', vann: '#123048', elv: '#1b4766', park: '#c9971a', gress: '#8f7a22', eng: '#b98a1c',
-  skog: ['#b3261e', '#d9541e', '#e8891c', '#c4410f', '#a8681a'], vatmark: '#4f5a2a', sand: '#6e5634', kirkegard: '#5b3a2a', bane: '#6f7f25',
-  motorvei: '#b9874f', hoved: '#9c7a5a', sekundar: '#836a52', liten: '#5c4838', sti: '#4f3d2f', kant: '#140d08', jernbane: '#5f4838',
-  tekst: '#f6e7d2', halo: '#1a110b',
+  bunn: '#f6f9fc', bolig: '#edf2f8', bygg: '#d6e0ec', vann: '#a9cbe9', elv: '#93bde3', park: '#e4ecf4', gress: '#eaf0f6', eng: '#f0f4f9',
+  skog: ['#b9cadb', '#c7d5e3', '#aebfd2', '#d0dce8', '#bccbdb'], vatmark: '#d3dee9', sand: '#eef0f3', kirkegard: '#dbe3ec', bane: '#e2e9f1',
+  motorvei: '#5f7aa0', hoved: '#7f95b5', sekundar: '#9cadc6', liten: '#bac7d8', sti: '#c9d3e0', kant: '#c3cfdd', jernbane: '#94a4bb',
+  tekst: '#00205B', halo: '#ffffff',
 };
 const farg = (st) => {
   const skogF = ['match', ['%', ['coalesce', ['id'], ['to-number', ['get', 'osm_id'], 0], 0], 5], 0, HOST.skog[0], 1, HOST.skog[1], 2, HOST.skog[2], 3, HOST.skog[3], HOST.skog[4]];
@@ -2033,7 +1955,7 @@ const farg = (st) => {
     else if (l.type === 'line' && /secondary_tertiary/.test(id)) p['line-color'] = HOST.sekundar;
     else if (l.type === 'line' && /path|pedestrian|service_track/.test(id)) p['line-color'] = HOST.sti;
     else if (l.type === 'line' && /minor|street|link/.test(id)) p['line-color'] = HOST.liten;
-    else if (l.type === 'line' && /boundary/.test(id)) p['line-color'] = 'rgba(246,231,210,.25)';
+    else if (l.type === 'line' && /boundary/.test(id)) p['line-color'] = 'rgba(0,32,91,.25)';
     else if (l.type === 'symbol') { if (p['text-color'] !== undefined || l.layout?.['text-field']) { p['text-color'] = HOST.tekst; p['text-halo-color'] = HOST.halo; p['text-halo-width'] = 1.2; } if (/poi|shield|one_way/.test(id)) l.layout = { ...(l.layout || {}), visibility: 'none' }; }
   }
   return st;
@@ -2078,10 +2000,10 @@ function leggKart() {
     kart.on('load', () => {
       kart.addSource('spor', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
       const linje = { 'line-cap': 'round', 'line-join': 'round' };
-      kart.addLayer({ id: 'spor-glod', type: 'line', source: 'spor', layout: linje, paint: { 'line-color': '#FF6A3D', 'line-width': 16, 'line-blur': 10, 'line-opacity': .45 } });
-      kart.addLayer({ id: 'spor-midt', type: 'line', source: 'spor', layout: linje, paint: { 'line-color': '#FFD23F', 'line-width': 6, 'line-blur': 1, 'line-opacity': .75 } });
+      kart.addLayer({ id: 'spor-glod', type: 'line', source: 'spor', layout: linje, paint: { 'line-color': '#BA0C2F', 'line-width': 16, 'line-blur': 10, 'line-opacity': .22 } });
+      kart.addLayer({ id: 'spor-midt', type: 'line', source: 'spor', layout: linje, paint: { 'line-color': '#BA0C2F', 'line-width': 5, 'line-blur': 1, 'line-opacity': .8 } });
       kart.addLayer({ id: 'spor-kjerne', type: 'line', source: 'spor', layout: linje, paint: { 'line-color': '#ffffff', 'line-width': 2, 'line-opacity': .9 } });
-      kart.addLayer({ id: 'spor-strom', type: 'line', source: 'spor', layout: { 'line-cap': 'butt', 'line-join': 'round' }, paint: { 'line-color': '#fff7c2', 'line-width': 3.5, 'line-dasharray': [0, 4, 3] } });
+      kart.addLayer({ id: 'spor-strom', type: 'line', source: 'spor', layout: { 'line-cap': 'butt', 'line-join': 'round' }, paint: { 'line-color': '#ffffff', 'line-width': 3.5, 'line-dasharray': [0, 4, 3] } });
       // Prikken under avspilling tegnes i kartet selv (ikke som HTML over det), så den aldri henger etter kameraet.
       kart.addSource('avsp-prikk', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
       kart.addLayer({ id: 'avsp-glod', type: 'circle', source: 'avsp-prikk', paint: { 'circle-radius': 22, 'circle-color': '#FFD23F', 'circle-opacity': .35, 'circle-blur': 1 } });
@@ -3371,7 +3293,7 @@ setInterval(tegn, 1000);
 })();
 </script>
 <script>
-// /sherpa/: snø over bildet, stedet fra kartpanelet i heroen, og avstemningen (GET/POST /chat/poll).
+// /sherpa/: snø over bildet (musa blåser litt på den) og stedet fra kartpanelet i heroen.
 (() => {
   const $ = q => document.querySelector(q);
   if (/[?&]tekst=bla/.test(location.search)) $('.sh-hero').classList.add('bla');
@@ -3433,48 +3355,6 @@ setInterval(tegn, 1000);
     tegn();
   }
 
-  const poll = $('.sh-poll'); if (!poll) return;
-  const knapper = [...poll.querySelectorAll('.sh-valg button')];
-  const merk = [...document.querySelectorAll('.sh-leirer li'), ...document.querySelectorAll('.sh-pk')];
-  let mitt = null, vid = null, siste = null, nr = 0, vist = 0;
-  try { const v = localStorage.getItem('sherpa_valg'); mitt = v == null ? null : Number(v); vid = localStorage.getItem('sherpa_vid'); } catch {}
-  if (!(mitt >= 0 && mitt < knapper.length)) mitt = null;
-  if (!vid) { vid = crypto.randomUUID ? crypto.randomUUID() : 'v' + String(Math.random()).slice(2) + Date.now(); try { localStorage.setItem('sherpa_vid', vid); } catch {} }
-  const vis = () => {
-    const sum = siste ? siste.reduce((a, b) => a + b, 0) : 0, svart = mitt != null && sum > 0;
-    poll.classList.toggle('svart', svart);
-    // Hele prosent som alltid blir 100 til sammen (største rest får resten).
-    const pr = svart ? siste.map(t => t / sum * 100) : knapper.map(() => 0), hel = pr.map(Math.floor);
-    if (svart) pr.map((p, i) => [p - hel[i], i]).sort((a, b) => b[0] - a[0]).slice(0, 100 - hel.reduce((a, b) => a + b, 0)).forEach(([, i]) => hel[i]++);
-    knapper.forEach((k, i) => {
-      const p = hel[i];
-      k.setAttribute('aria-pressed', String(i === mitt));
-      k.style.setProperty('--p', p + '%');
-      k.querySelector('.sh-v-p').textContent = svart ? p + ' %' : '';
-    });
-    merk.forEach(el => el.classList.toggle('her', mitt != null && [...el.parentNode.children].filter(n => n.tagName === el.tagName).indexOf(el) === mitt));
-    poll.querySelector('.sh-sum').textContent = sum === 1 ? '1 svar' : sum.toLocaleString('nb-NO') + ' svar';
-  };
-  // Hvert svar har et nummer; et svar som er eldre enn det som vises, kastes.
-  const ta = (n, j) => { if (n >= vist && j && Array.isArray(j.tall)) { vist = n; siste = j.tall; vis(); } };
-  const hent = () => { const n = ++nr; return fetch('/chat/poll?id=sherpa', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(j => ta(n, j)).catch(() => {}); };
-  knapper.forEach((k, i) => k.addEventListener('click', () => {
-    if (i === mitt) return;
-    const forrige = mitt, for_ = siste, n = ++nr; mitt = i; vist = n;
-    siste = siste ? siste.slice() : knapper.map(() => 0);
-    if (forrige != null && siste[forrige] > 0) siste[forrige]--;
-    siste[i]++; vis();
-    const angre = () => { if (mitt === i) { mitt = forrige; siste = for_; vis(); } };
-    fetch('/chat/poll', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: 'sherpa', valg: i, vid }) })
-      .then(r => r.ok ? r.json() : null)
-      .then(j => {
-        if (!j) return angre();
-        try { localStorage.setItem('sherpa_valg', String(i)); } catch {}
-        ta(n, j);
-      }).catch(angre);
-  }));
-  vis(); hent();
-  setInterval(() => { if (!document.hidden) hent(); }, 20000);
 })();
 </script>
 </body>

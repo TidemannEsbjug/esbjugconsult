@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """Lager /sherpa/ (sherpa/index.html) fra forsiden (index.html).
 
-Øverst kommer en ny hero (AI-sherpaen, vinterbildet fra Midjourney i media/sherpa.*), ruten i fire leirer
-med avstemningen (/chat/poll i .worker/chat.js) og utstyret (AI-abonnementene, flyttet ut av kartpanelet).
-Rett under ligger kartdelen og resten av forsiden uendret. Siden har noindex mens den er et forsøk.
+Øverst kommer en ny hero (AI-sherpaen, vinterbildet fra Midjourney i media/sherpa.*). Rett under ligger kartdelen
+og resten av forsiden, med kartet i vinterfarger (VINTER under) i stedet for høstfargene. Siden har noindex mens den er et forsøk.
 Kjør etter endringer i index.html:  python3 bygg-sherpa.py  (og publiser med npx wrangler deploy).
 """
 import pathlib, re
@@ -33,19 +32,11 @@ bytt('<link rel="preload" href="/media/fonts/fraunces.woff2"',
      '<link rel="preload" href="/media/sherpa-900.webp" as="image" type="image/webp" media="(max-width:760px)">\n'
      '<link rel="preload" href="/media/fonts/fraunces.woff2"')
 
-# --- AI-abonnementene flyttes fra kartpanelet til «Utstyret i sekken» ---
-m = re.search(r'  <!-- Aktive AI-abonnementer[^\n]*\n  <section class="abo gl".*?</section>\n', s, re.S)
-if not m:
-    raise SystemExit("bygg-sherpa: fant ikke abonnementspanelet (.abo) i index.html")
-abo = m.group(0)
-s = s.replace(abo, "")
-abo = re.sub(r'  <!--[^\n]*-->\n', "", abo).replace('class="abo gl"', 'class="abo"').strip()
-
 CSS = """
   /* ===== /sherpa/: AI-sherpaen (bygges av bygg-sherpa.py) ===== */
-  .sh-hero,.sh-rute{width:100%;flex:none}
+  .sh-hero{width:100%;flex:none}
   .natt-lag{display:none}
-  .focus .sh-hero,.focus .sh-rute{opacity:0;filter:blur(8px);pointer-events:none}
+  .focus .sh-hero{opacity:0;filter:blur(8px);pointer-events:none}
   .sh-hero{--sky:#74a8d4;position:relative;min-height:100svh;display:flex;flex-direction:column;background:var(--sky);color:#00205B;overflow:hidden;isolation:isolate}
   .sh-bilde{position:absolute;left:0;right:0;bottom:0;height:min(100%,calc(100vw * .4286));z-index:-2;margin:0}
   .sh-bilde img{width:100%;height:100%;object-fit:cover;object-position:70% 100%;display:block}
@@ -102,60 +93,18 @@ CSS = """
   .sh-hero:not(.bla) .sh-knapp.sh-s:hover{background:rgba(255,255,255,.3)}
   @media (max-width:760px){.sh-hero:not(.bla)::before{background:linear-gradient(180deg,rgba(0,32,91,.38) 0%,rgba(0,32,91,.22) 55%,rgba(0,32,91,0) 85%)}}
 
-  .sh-rute{background:#fff;color:#00205B;padding:clamp(56px,8vw,112px) var(--g) clamp(40px,5vw,64px)}
-  .sh-w{max-width:1180px;margin:0 auto}
-  .sh-k{margin:0 0 14px;font:600 12px/1 "SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(0,32,91,.6);display:flex;align-items:center;gap:9px}
-  .sh-rute h2{margin:0 0 clamp(28px,4vw,48px);font:500 clamp(32px,4vw,56px)/1.05 var(--serif);letter-spacing:-.02em;max-width:16em}
-  .sh-rute h2 i{font-weight:400}
-  .sh-profil{position:relative;height:130px;margin-bottom:22px}
-  .sh-profil svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
-  .sh-fjell{fill:#eef3fb}
-  .sh-sti{fill:none;stroke:#00205B;stroke-width:2;stroke-dasharray:2 7;stroke-linecap:round;opacity:.55}
-  .sh-pk{position:absolute;width:16px;height:16px;margin-top:-8px;border-radius:50%;background:#fff;border:2.5px solid #00205B;box-sizing:border-box;transition:background .3s,transform .3s}
-  .sh-pk:nth-of-type(1){left:0;top:88.5%}.sh-pk:nth-of-type(2){left:26%;top:65.4%}.sh-pk:nth-of-type(3){left:52%;top:42.3%}.sh-pk:nth-of-type(4){left:78%;top:16.9%;background:#BA0C2F;border-color:#BA0C2F}
-  .sh-pk.her{background:#BA0C2F;border-color:#BA0C2F;transform:scale(1.25);box-shadow:0 0 0 0 rgba(186,12,47,.45);animation:shPuls 2s ease-out infinite}
-  .sh-leirer{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);column-gap:4%}
-  .sh-leirer li{position:relative}
-  .sh-nr{display:block;font:600 12px/1 "SF Mono",Menlo,monospace;color:rgba(0,32,91,.5);margin-bottom:10px}
-  .sh-leirer h3{margin:0 0 8px;font:500 24px/1.15 var(--serif);letter-spacing:-.01em}
-  .sh-leirer p{margin:0;font:400 16px/1.5 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;color:rgba(0,32,91,.82)}
-  .sh-her{display:none;margin-top:12px;font:600 12px/1 "SF Mono",Menlo,monospace;letter-spacing:.08em;text-transform:uppercase;color:#BA0C2F}
-  .sh-leirer li.her .sh-her{display:inline-block}
-  @media (max-width:760px){
-    .sh-profil{display:none}
-    .sh-leirer{grid-template-columns:1fr;row-gap:26px;padding-left:28px;border-left:2px dashed rgba(0,32,91,.25);margin-left:7px}
-    .sh-leirer li::before{content:"";position:absolute;left:-38px;top:-2px;width:16px;height:16px;border-radius:50%;background:#fff;border:2.5px solid #00205B;box-sizing:border-box}
-    .sh-leirer li:last-child::before,.sh-leirer li.her::before{background:#BA0C2F;border-color:#BA0C2F}
-  }
-
-  .sh-to{display:grid;grid-template-columns:1.25fr 1fr;gap:clamp(20px,3vw,36px);margin-top:clamp(48px,6vw,84px);align-items:start}
-  .sh-kort{border-radius:22px;padding:clamp(22px,3vw,34px)}
-  .sh-poll{background:#eef3fb}
-  .sh-kort h3{margin:0 0 6px;font:500 clamp(24px,2.4vw,32px)/1.15 var(--serif);letter-spacing:-.01em}
-  .sh-kort>p{margin:0 0 20px;font:400 16px/1.5 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;color:rgba(0,32,91,.75)}
-  .sh-valg{display:grid;gap:10px}
-  .sh-valg button{--p:0%;position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:16px 18px;border:1.5px solid rgba(0,32,91,.14);border-radius:14px;background:#fff;color:#00205B;font:500 16px/1.3 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;text-align:left;cursor:pointer;overflow:hidden;isolation:isolate;transition:border-color .2s}
-  .sh-valg button:hover{border-color:rgba(0,32,91,.45)}
-  .sh-valg button::before{content:"";position:absolute;inset:0;width:var(--p);background:rgba(116,168,212,.28);z-index:-1;transition:width .6s cubic-bezier(.3,.8,.3,1)}
-  .sh-valg button[aria-pressed="true"]{border-color:#BA0C2F}
-  .sh-valg button[aria-pressed="true"]::before{background:rgba(186,12,47,.13)}
-  .sh-v-n{font:600 11px/1 "SF Mono",Menlo,monospace;color:rgba(0,32,91,.45);margin-right:12px}
-  .sh-v-t{flex:1}
-  .sh-v-p{font:600 14px/1 "SF Mono",Menlo,monospace;font-variant-numeric:tabular-nums}
-  .sh-valg button[aria-pressed="true"] .sh-v-p::after{content:" ✓";color:#BA0C2F}
-  .sh-poll-s{margin:16px 0 0;font:400 14px/1.5 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;color:rgba(0,32,91,.7);min-height:1.5em}
-  .sh-poll-s a{color:#BA0C2F;font-weight:600}
-  .sh-poll:not(.svart) .sh-etter{display:none}
-  .sh-utstyr{border:1.5px solid rgba(0,32,91,.12)}
-  .sh-utstyr .abo{display:block;padding:0;cursor:default}
-  .sh-utstyr .abo>.s-t,.sh-utstyr .abo-ant{display:none}
-  .sh-utstyr .abo .abo-l{max-height:none!important;opacity:1!important;margin-top:0!important;gap:14px 18px}
-  .sh-utstyr .abo-l li{font-size:17px}
-  .sh-utstyr .abo-i{width:30px;height:30px;padding:6px;border-radius:9px}
-  .sh-bro{margin-top:clamp(56px,7vw,96px);display:flex;align-items:end;justify-content:space-between;gap:12px 32px;flex-wrap:wrap}
-  .sh-bro h2{margin:0}
-  .sh-bro p{margin:0;max-width:26em;font:400 16px/1.5 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;color:rgba(0,32,91,.75)}
-  @media (max-width:860px){.sh-to{grid-template-columns:1fr}}
+  /* Kartet i vinterfarger: lys bunn mens det lastes, lyse kontroller */
+  .hero{background:#dfe9f4}
+  #kart{background:#eef3f9}
+  .kart-venter{background:radial-gradient(60% 50% at 50% 50%,#ffffff,#d6e4f2)}
+  .kv-i b{color:#00205B}.kv-t{color:rgba(0,32,91,.45)}
+  #kart .maplibregl-ctrl-group{background:rgba(255,255,255,.8);border-color:rgba(0,32,91,.12)}
+  #kart .maplibregl-ctrl-group button+button{border-top-color:rgba(0,32,91,.12)}
+  #kart .maplibregl-ctrl-group .maplibregl-ctrl-icon{filter:none}
+  #kart .maplibregl-ctrl-attrib{background:rgba(255,255,255,.7);color:rgba(0,32,91,.55)}
+  #kart .maplibregl-ctrl-attrib a{color:rgba(0,32,91,.7)}
+  #kart .maplibregl-ctrl-attrib-button{filter:none}
+  #kart .maplibregl-cooperative-gesture-screen{background:rgba(0,32,91,.45);color:#fff}
 """
 bytt("</style>\n</head>", CSS + "</style>\n</head>")
 
@@ -164,25 +113,10 @@ LOGO = ('<svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32
 PIL = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" '
        'stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>')
 
-LEIRER = [
-    ("Baseleiren", "Jeg ser på hvordan du jobber i dag, hvilke systemer du har og hvor det stopper opp."),
-    ("Leir 1", "Vi legger grunnmuren: kontoer, tilganger, data og sikkerhet satt opp riktig fra start."),
-    ("Leir 2", "Jeg bygger og kobler sammen det som mangler, som nettside, app eller interne verktøy, så arbeidet flyter."),
-    ("Toppen", "Systemene står, og du bruker AI i hverdagen. Nå kan du nyte utsikten."),
-]
-SVAR = ["Vet ikke hvor vi skal begynne", "Vet hva vi trenger, mangler oppsettet", "Har noe på plass, men det henger ikke sammen", "Systemene står, vil bruke AI mer"]
-
-leirer = "\n".join(
-    f'      <li><span class="sh-nr">0{i + 1}</span><h3>{n}</h3><p>{t}</p><b class="sh-her">Du er her</b></li>'
-    for i, (n, t) in enumerate(LEIRER))
-svar = "\n".join(
-    f'        <button type="button" aria-pressed="false"><span class="sh-v-t"><span class="sh-v-n">0{i + 1}</span>{t}</span><span class="sh-v-p"></span></button>'
-    for i, t in enumerate(SVAR))
-
 HTML = f"""<section class="sh-hero" aria-label="AI-sherpaen">
   <picture class="sh-bilde"><source type="image/webp" media="(max-width:760px)" srcset="/media/sherpa-900.webp"><source type="image/webp" srcset="/media/sherpa.webp"><img src="/media/sherpa.jpg" alt="Tegning av et taulag på vei opp en snødekt fjellrygg i Norge, med en rød hytte nede i dalen" width="1680" height="720" fetchpriority="high"></picture>
   <canvas class="sh-sno" aria-hidden="true"></canvas>
-  <nav class="sh-nav"><a class="sh-merke" href="/sherpa/">{LOGO}Esbjug Consult <span>· AI-sherpaen</span></a><div class="sh-lenker"><a href="#ruten">Ruten</a><a href="#live">Live</a><a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Kontakt</a></div></nav>
+  <nav class="sh-nav"><a class="sh-merke" href="/sherpa/">{LOGO}Esbjug Consult <span>· AI-sherpaen</span></a><div class="sh-lenker"><a href="#live">Live</a><a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Kontakt</a></div></nav>
   <div class="sh-i">
     <p class="sh-ey">AI-sherpaen Tidemann Esbjug</p>
     <h1>Du velger toppen. <i>Jeg bærer utstyret opp.</i></h1>
@@ -191,43 +125,11 @@ HTML = f"""<section class="sh-hero" aria-label="AI-sherpaen">
     <p class="sh-live" hidden><i class="sh-prikk"></i><span>Live:</span> <span class="sh-sted">Henter posisjonen …</span></p>
   </div>
 </section>
-<section class="sh-rute" id="ruten" aria-label="Ruten">
-  <div class="sh-w">
-    <p class="sh-k">&gt; Ruten</p>
-    <h2>Fire leirer, fra der du står til <i>toppen</i>.</h2>
-    <div class="sh-profil" aria-hidden="true">
-      <svg viewBox="0 0 1000 130" preserveAspectRatio="none"><path class="sh-fjell" d="M0 130V117C4 116 6 115 8 115C90 108 180 96 268 85C360 74 440 66 528 55C620 44 700 30 788 22C860 16 930 12 1000 8V130Z"/><path class="sh-sti" vector-effect="non-scaling-stroke" d="M0 117C4 116 6 115 8 115C90 108 180 96 268 85C360 74 440 66 528 55C620 44 700 30 788 22C860 16 930 12 1000 8"/></svg>
-      <i class="sh-pk"></i><i class="sh-pk"></i><i class="sh-pk"></i><i class="sh-pk"></i>
-    </div>
-    <ol class="sh-leirer">
-{leirer}
-    </ol>
-    <div class="sh-to">
-      <div class="sh-kort sh-poll">
-        <h3>Hvor står bedriften din i dag?</h3>
-        <p>Velg leiren som passer. Du ser svarene til alle med en gang.</p>
-        <div class="sh-valg" role="group" aria-label="Hvor står bedriften din i dag?">
-{svar}
-        </div>
-        <p class="sh-poll-s" aria-live="polite"><span class="sh-etter"><span class="sh-sum"></span> · Ruten starter der du står i dag. <a href="mailto:tidemann@esbjugconsult.com">Snakk med meg</a></span></p>
-      </div>
-      <div class="sh-kort sh-utstyr">
-        <h3>Utstyret i sekken</h3>
-        <p>AI-abonnementene jeg betaler for selv, dyrest først.</p>
-        {abo}
-      </div>
-    </div>
-    <div class="sh-bro">
-      <div><p class="sh-k"><i class="sh-prikk"></i> Live</p><h2>Hvor jeg er nå</h2></div>
-      <p>Kartet, pulsen og maskinene oppdateres mens du ser på.</p>
-    </div>
-  </div>
-</section>
 """
 bytt('<header class="hero">', HTML + '<header class="hero" id="live">')
 
 JS = """<script>
-// /sherpa/: snø over bildet, stedet fra kartpanelet i heroen, og avstemningen (GET/POST /chat/poll).
+// /sherpa/: snø over bildet (musa blåser litt på den) og stedet fra kartpanelet i heroen.
 (() => {
   const $ = q => document.querySelector(q);
   if (/[?&]tekst=bla\b/.test(location.search)) $('.sh-hero').classList.add('bla');
@@ -289,52 +191,32 @@ JS = """<script>
     tegn();
   }
 
-  const poll = $('.sh-poll'); if (!poll) return;
-  const knapper = [...poll.querySelectorAll('.sh-valg button')];
-  const merk = [...document.querySelectorAll('.sh-leirer li'), ...document.querySelectorAll('.sh-pk')];
-  let mitt = null, vid = null, siste = null, nr = 0, vist = 0;
-  try { const v = localStorage.getItem('sherpa_valg'); mitt = v == null ? null : Number(v); vid = localStorage.getItem('sherpa_vid'); } catch {}
-  if (!(mitt >= 0 && mitt < knapper.length)) mitt = null;
-  if (!vid) { vid = crypto.randomUUID ? crypto.randomUUID() : 'v' + String(Math.random()).slice(2) + Date.now(); try { localStorage.setItem('sherpa_vid', vid); } catch {} }
-  const vis = () => {
-    const sum = siste ? siste.reduce((a, b) => a + b, 0) : 0, svart = mitt != null && sum > 0;
-    poll.classList.toggle('svart', svart);
-    // Hele prosent som alltid blir 100 til sammen (største rest får resten).
-    const pr = svart ? siste.map(t => t / sum * 100) : knapper.map(() => 0), hel = pr.map(Math.floor);
-    if (svart) pr.map((p, i) => [p - hel[i], i]).sort((a, b) => b[0] - a[0]).slice(0, 100 - hel.reduce((a, b) => a + b, 0)).forEach(([, i]) => hel[i]++);
-    knapper.forEach((k, i) => {
-      const p = hel[i];
-      k.setAttribute('aria-pressed', String(i === mitt));
-      k.style.setProperty('--p', p + '%');
-      k.querySelector('.sh-v-p').textContent = svart ? p + ' %' : '';
-    });
-    merk.forEach(el => el.classList.toggle('her', mitt != null && [...el.parentNode.children].filter(n => n.tagName === el.tagName).indexOf(el) === mitt));
-    poll.querySelector('.sh-sum').textContent = sum === 1 ? '1 svar' : sum.toLocaleString('nb-NO') + ' svar';
-  };
-  // Hvert svar har et nummer; et svar som er eldre enn det som vises, kastes.
-  const ta = (n, j) => { if (n >= vist && j && Array.isArray(j.tall)) { vist = n; siste = j.tall; vis(); } };
-  const hent = () => { const n = ++nr; return fetch('/chat/poll?id=sherpa', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(j => ta(n, j)).catch(() => {}); };
-  knapper.forEach((k, i) => k.addEventListener('click', () => {
-    if (i === mitt) return;
-    const forrige = mitt, for_ = siste, n = ++nr; mitt = i; vist = n;
-    siste = siste ? siste.slice() : knapper.map(() => 0);
-    if (forrige != null && siste[forrige] > 0) siste[forrige]--;
-    siste[i]++; vis();
-    const angre = () => { if (mitt === i) { mitt = forrige; siste = for_; vis(); } };
-    fetch('/chat/poll', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: 'sherpa', valg: i, vid }) })
-      .then(r => r.ok ? r.json() : null)
-      .then(j => {
-        if (!j) return angre();
-        try { localStorage.setItem('sherpa_valg', String(i)); } catch {}
-        ta(n, j);
-      }).catch(angre);
-  }));
-  vis(); hent();
-  setInterval(() => { if (!document.hidden) hent(); }, 20000);
 })();
 </script>
 """
 bytt("</body>", JS + "</body>")
+
+# --- Kartet i vinterfarger: snøhvit bunn, snødekket skog i blågrått, isblått vann, veier i dempet marineblått ---
+bytt("""const HOST = {
+  bunn: '#21160f', bolig: '#2b1d14', bygg: '#3a291e', vann: '#123048', elv: '#1b4766', park: '#c9971a', gress: '#8f7a22', eng: '#b98a1c',
+  skog: ['#b3261e', '#d9541e', '#e8891c', '#c4410f', '#a8681a'], vatmark: '#4f5a2a', sand: '#6e5634', kirkegard: '#5b3a2a', bane: '#6f7f25',
+  motorvei: '#b9874f', hoved: '#9c7a5a', sekundar: '#836a52', liten: '#5c4838', sti: '#4f3d2f', kant: '#140d08', jernbane: '#5f4838',
+  tekst: '#f6e7d2', halo: '#1a110b',
+};""", """const HOST = {
+  bunn: '#f6f9fc', bolig: '#edf2f8', bygg: '#d6e0ec', vann: '#a9cbe9', elv: '#93bde3', park: '#e4ecf4', gress: '#eaf0f6', eng: '#f0f4f9',
+  skog: ['#b9cadb', '#c7d5e3', '#aebfd2', '#d0dce8', '#bccbdb'], vatmark: '#d3dee9', sand: '#eef0f3', kirkegard: '#dbe3ec', bane: '#e2e9f1',
+  motorvei: '#5f7aa0', hoved: '#7f95b5', sekundar: '#9cadc6', liten: '#bac7d8', sti: '#c9d3e0', kant: '#c3cfdd', jernbane: '#94a4bb',
+  tekst: '#00205B', halo: '#ffffff',
+};""")
+bytt("else if (l.type === 'line' && /boundary/.test(id)) p['line-color'] = 'rgba(246,231,210,.25)';",
+     "else if (l.type === 'line' && /boundary/.test(id)) p['line-color'] = 'rgba(0,32,91,.25)';")
+# Sporet: rødt i stedet for gult og oransje, så det synes mot snøen
+bytt("paint: { 'line-color': '#FF6A3D', 'line-width': 16, 'line-blur': 10, 'line-opacity': .45 }",
+     "paint: { 'line-color': '#BA0C2F', 'line-width': 16, 'line-blur': 10, 'line-opacity': .22 }")
+bytt("paint: { 'line-color': '#FFD23F', 'line-width': 6, 'line-blur': 1, 'line-opacity': .75 }",
+     "paint: { 'line-color': '#BA0C2F', 'line-width': 5, 'line-blur': 1, 'line-opacity': .8 }")
+bytt("paint: { 'line-color': '#fff7c2', 'line-width': 3.5, 'line-dasharray': [0, 4, 3] }",
+     "paint: { 'line-color': '#ffffff', 'line-width': 3.5, 'line-dasharray': [0, 4, 3] }")
 
 ut = HER / "sherpa" / "index.html"
 ut.parent.mkdir(exist_ok=True)
