@@ -1,5 +1,5 @@
-// Prøvebenk for H1 i heroen: åpne siden med ?h1 og bla med piltast høyre/venstre. Telleren nede til venstre viser
-// hvilket slagord som står. Lastes bare med ?h1, så vanlige besøkende ser ikke noe av dette.
+// Prøvebenk for H1 i heroen: åpne siden med ?h1 og bla med piltast høyre/venstre. Ingen teller eller annet på siden.
+// Lastes bare med ?h1, så vanlige besøkende ser ikke noe av dette.
 (() => {
   const SLAGORD = [
     ['Du velger toppen.', 'Jeg bærer utstyret opp.'],
@@ -25,14 +25,10 @@
   ];
   const h1 = document.querySelector('.sh-hero h1');
   if (!h1) return;
-  const teller = document.createElement('div');
-  teller.style.cssText = 'position:fixed;left:16px;bottom:16px;z-index:50;padding:8px 12px;border-radius:999px;background:rgba(0,32,91,.82);color:#fff;font:600 13px/1 "SF Mono",Menlo,monospace;letter-spacing:.06em;pointer-events:none';
-  document.body.append(teller);
   let n = 0;
   const vis = () => {
     const [a, b] = SLAGORD[n];
     h1.innerHTML = `${a} <i>${b}</i>`;
-    teller.textContent = `← ${n + 1} / ${SLAGORD.length} →`;
   };
   addEventListener('keydown', e => {
     if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
