@@ -1089,9 +1089,9 @@
   /* Frost: ispilen har en usynlig aura, som en kald vind. Jo nærmere knappen, jo sterkere fryser den, fra punktet på
      knappen som er nærmest pekeren. Vinden kommer i kast, så isen puster fram og tilbake, og fokksnø blåser over knappen
      i vindretningen (fra pekeren). Fart mot knappen gir et ekstra kast. Ingenting av vinden synes utenfor knappen. Isen brer seg med en myk kant og gjør det røde om til blått og hvitt, fine iskrystaller vokser litt foran
-     kanten, rim glitrer, og teksten blir mørkeblå når mesteparten er frosset. Når pekeren går unna, tiner det. Styres fra skriptet («Frost») med --fx, --fy og --fr. */
-  .sh-knapp.sh-p{position:relative;overflow:hidden;isolation:isolate;transition:transform .15s ease,color .6s ease}
-  .sh-knapp.sh-p.frosset{color:#00205B}
+     kanten, rim glitrer, og teksten blir lys isblå med hvitt rimskjær når mesteparten er frosset. Når pekeren går unna, tiner det. Styres fra skriptet («Frost») med --fx, --fy og --fr. */
+  .sh-knapp.sh-p{position:relative;overflow:hidden;isolation:isolate;transition:transform .15s ease,color .6s ease,text-shadow .6s ease}
+  .sh-knapp.sh-p.frosset{color:#6b98d6;text-shadow:0 1px 0 rgba(255,255,255,.9),0 0 8px rgba(255,255,255,.75),0 0 2px rgba(255,255,255,.6)}
   .sh-is,.sh-frost{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   .sh-is{z-index:-2;background:linear-gradient(165deg,#f7faff 0%,#dfe9f8 40%,#b9cfee 78%,#9dbbe6 100%);
     -webkit-mask-image:radial-gradient(circle at var(--fx,50%) var(--fy,50%),#000 calc(var(--fr,0px) - 40px),rgba(0,0,0,.55) calc(var(--fr,0px) - 14px),transparent var(--fr,0px));
