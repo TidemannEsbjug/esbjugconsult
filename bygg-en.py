@@ -307,9 +307,9 @@ T_NY = [
     ('aria-label="Alt iPhonen og Apple Watch måler"', 'aria-label="Everything his iPhone and Apple Watch measure"'),
     ('<span class="sl">Gått i dag</span>', '<span class="sl">Walked today</span>'),
     ('aria-label="Akselerometeret i Apple Watch og iPhonen, live"', 'aria-label="The accelerometers in his Apple Watch and iPhone, live"'),
-    ('<span class="sl">Apple Watch R · akselerometer</span>', '<span class="sl">Apple Watch R · accelerometer</span>'),
-    ('<span class="sl">Apple Watch L · akselerometer</span>', '<span class="sl">Apple Watch L · accelerometer</span>'),
-    ('<span class="sl">iPhone · akselerometer</span>', '<span class="sl">iPhone · accelerometer</span>'),
+    ('Watch R · akselerometer</span>', 'Watch R · accelerometer</span>'),
+    ('Watch L · akselerometer</span>', 'Watch L · accelerometer</span>'),
+    ('iPhone · akselerometer</span>', 'iPhone · accelerometer</span>'),
     ('alt="To mobiltelefoner side om side, i blått og hvitt"', 'alt="Two phones side by side, in blue and white"'),
     ('alt="Hengelås i blått og hvitt"', 'alt="A padlock in blue and white"'),
 ]
