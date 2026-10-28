@@ -18,10 +18,12 @@
 <style>
   @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces.woff2) format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
   @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces-italic.woff2) format("woff2");font-weight:100 900;font-style:italic;font-display:swap}
-  /* H1 og ingressen (fra 28.10.2026). Bare latin-delen (med æøå), fra Bunny Fonts. */
+  /* H1, ingressen og knappen (fra 28.10.2026). Bare latin-delen (med æøå), fra Bunny Fonts. */
   @font-face{font-family:"Gloock";src:url(/media/fonts/gloock.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap;
     unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
   @font-face{font-family:"IBM Plex Mono";src:url(/media/fonts/ibm-plex-mono.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap;
+    unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+  @font-face{font-family:"IBM Plex Mono";src:url(/media/fonts/ibm-plex-mono-600.woff2) format("woff2");font-weight:600;font-style:normal;font-display:swap;
     unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
   :root{--y:#fff;--ink:#00205B;--bg:#cfe4f6;--r:#BA0C2F;--serif:"Fraunces",Georgia,"Times New Roman",serif;--g:clamp(16px,6vw,96px);--gv:clamp(28px,9vw,160px)}
   *{box-sizing:border-box}
@@ -1138,6 +1140,8 @@
   /* Mer luft til venstre (--gv) enn til høyre (--g). Luften over teksten følger høyden på vinduet, ikke bredden, så teksten
      ikke havner langt ned i brede vinduer. */
   .sh-i{padding:clamp(20px,7vh,90px) var(--g) 0 var(--gv);max-width:calc(880px + var(--g) + var(--gv))}
+  /* To skrifter i heroen: Gloock i H1, --tekst i ingressen og knappen. */
+  .sh-i{--tekst:"IBM Plex Mono",Menlo,monospace}
   /* Med zoom holdes tekstkolonnen på venstre halvdel, så H1 ikke går inn i fjellet. H1 står på to linjer: «Du velger
      toppen.» og «Jeg bærer utstyret opp.» */
   @media (min-width:900px) and (hover:hover) and (pointer:fine){.sh-i{max-width:calc(57vw / var(--z))}.sh-hero h1{white-space:nowrap;font-size:min(calc(7.6vw / var(--z)),calc(16vh / var(--z)))}.sh-hero h1 i{display:block}}
@@ -1145,9 +1149,9 @@
   /* H1 vokser med bredden, men ikke over 16 % av høyden (bare vinduer bredere enn ca. 2:1 merker det). */
   .sh-hero h1{margin:0 0 .34em;font:400 clamp(46px,min(calc(7.6vw / var(--z,1)),calc(16vh / var(--z,1))),150px)/1.02 "Gloock",var(--serif);letter-spacing:-.022em;font-variation-settings:"opsz" 144}
   .sh-hero h1 i{font-style:italic;font-weight:400}
-  .sh-ingress{margin:0;max-width:31em;font:400 clamp(17px,calc(1.45vw / var(--z,1)),21px)/1.5 "IBM Plex Mono",Menlo,monospace;color:rgba(0,32,91,.88)}
+  .sh-ingress{margin:0;max-width:31em;font:400 clamp(17px,calc(1.45vw / var(--z,1)),21px)/1.5 var(--tekst);color:rgba(0,32,91,.88)}
   .sh-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
-  .sh-knapp{display:inline-flex;align-items:center;gap:10px;padding:16px 24px;border-radius:999px;text-decoration:none;font:600 16px/1 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;transition:transform .15s ease,box-shadow .15s ease,background .15s ease}
+  .sh-knapp{display:inline-flex;align-items:center;gap:10px;padding:16px 24px;border-radius:999px;text-decoration:none;font:600 16px/1 var(--tekst);transition:transform .15s ease,box-shadow .15s ease,background .15s ease}
   .sh-knapp:hover{transform:translateY(-1px)}
   .sh-knapp.sh-p{color:#fff;box-shadow:0 8px 24px rgba(0,32,91,.16)}
   .sh-knapp svg{width:16px;height:16px}
@@ -1514,7 +1518,7 @@
 </footer>
 <script src="/chat-moro.js?v=8"></script>
 <script>if (/[?&](h1|ingress)\b/.test(location.search)) document.body.append(Object.assign(document.createElement('script'), { src: '/slagord.js?v=6' }));</script>
-<script src="/fonter.js?v=3"></script>
+<script src="/fonter.js?v=4"></script>
 <script>
 // Tidemanns egne enheter: åpne siden én gang med ?eier, så teller ikke denne nettleseren som besøkende og gir ikke varsel.
 (()=>{const q=new URLSearchParams(location.search);if(!q.has('eier'))return;document.cookie='esbjug_eier=1; Max-Age=31536000; Path=/; SameSite=Lax; Secure';
