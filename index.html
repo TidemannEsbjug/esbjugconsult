@@ -38,7 +38,10 @@
   main{--ink:#000;color:var(--ink)}
   /* Hero: bare videoen, toppmodulen og budskapet. Resten av siden begynner under. */
   .hero{position:relative;min-height:100svh;display:flex;overflow:hidden;background:#9db4c8}
-  footer.hero{margin-top:clamp(48px,8vh,96px)}
+  /* Fra 28.10.2026 står bare heroen og kartet på forsiden. Innholdet i main er skjult (ikke slettet, skriptene skriver til det),
+     og kartet kommer rett under heroen. */
+  main{display:none}
+  footer.hero{margin-top:0}
   .hero-v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
   .hero-i{position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:flex-start;padding:clamp(16px,2.6vw,36px) var(--g) var(--g)}
   /* Glassbokser: lyst, uskarpt glass med korn. De flyter sakte, vipper mot pekeren og får et lysskjær der pekeren er. */
@@ -1213,7 +1216,7 @@
   <div class="sh-i">
     <p class="sh-ey">Tidemann Esbjug – KI Sherpa</p>
     <h1>Lettere til topps.</h1>
-    <p class="sh-ingress">Du vil være helt i front med KI, men å få systemene på plass kan være tungt. Det er der jeg kommer inn.</p>
+    <p class="sh-ingress">Systemer bygget for å løfte Norge i bruk av KI.</p>
     <div class="sh-cta"><a class="sh-knapp sh-p" href="mailto:tidemann@esbjugconsult.com">Snakk med meg</a></div>
   </div>
 </section>

@@ -31,8 +31,7 @@ T = [
     ('<a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Kontakt</a>', '<a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Contact</a>'),
     ('<p class="sh-ey">Tidemann Esbjug – KI Sherpa</p>', '<p class="sh-ey">Tidemann Esbjug – AI Sherpa</p>'),
     ('<h1>Lettere til topps.</h1>', '<h1>Easier to the top.</h1>'),
-    ('Du vil være helt i front med KI, men å få systemene på plass kan være tungt. Det er der jeg kommer inn.',
-     'You want to be at the very front with AI, but getting the systems in place can be heavy lifting. That is where I come in.'),
+    ('Systemer bygget for å løfte Norge i bruk av KI.', 'Systems built to lift Norway in its use of AI.'),
     ('<a class="sh-knapp sh-p" href="mailto:tidemann@esbjugconsult.com">Snakk med meg</a>', '<a class="sh-knapp sh-p" href="mailto:tidemann@esbjugconsult.com">Talk to me</a>'),
 
     # --- toppen ---
