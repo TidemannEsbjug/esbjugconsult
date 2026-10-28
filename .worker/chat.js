@@ -1204,9 +1204,14 @@ export class ChatHub {
     // Live heart rate from the Apple Watch (only while the owner shares it). {bpm:null} = sharing stopped.
     // Samples are also stored (at most one per 4 s) for today's graph at the top of the site.
     if (url.pathname === "/chat/admin/hr" && request.method === "POST") {
-      const { bpm } = await request.json();
+      const { bpm, kilde } = await request.json();
       const v = Number.isFinite(bpm) && bpm > 25 && bpm < 240 ? Math.round(bpm) : null;
       const now = Date.now();
+      // Med to klokker på sender bare den venstre puls; den høyre teller når den er alene.
+      if (kilde === "watchr") {
+        const l = this.sql.exec(`SELECT v FROM kv WHERE k='tele:watchl'`).toArray()[0];
+        if (l && now - JSON.parse(l.v).ts < 30e3) return Response.json({ ok: true, brukt: false });
+      }
       this.hr = { bpm: v, ts: now };
       if (v && now - this.hrSaved >= 900) {   // hver måling klokka sender (høyst én i sekundet), til avspillingen
         this.hrSaved = now;
