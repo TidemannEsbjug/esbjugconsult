@@ -859,11 +859,12 @@
   .bvp .hpp-n{font-variant-numeric:tabular-nums}
   .ak-c{display:block;width:100%;height:64px;min-height:0;margin:6px 0 0}
   /* Akselerometeret: klokkene (R og L) som tynne striper med liten etikett (iPhonen vises ikke). */
-  .akse{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 14px;padding:9px 16px 9px;transition:padding .3s}
+  .akse{gap:0;padding:9px 16px 9px;transition:padding .3s}
   .akse .ak-h .sl{font-size:9.5px}
   .akse .ak-m{opacity:0;transition:opacity .25s}
   .akse .ak-c{height:26px;margin-top:4px;transition:height .35s cubic-bezier(.2,.8,.2,1)}
-  .akse .ak-i{grid-column:1/-1;max-height:0;opacity:0;overflow:hidden;transition:max-height .35s cubic-bezier(.2,.8,.2,1),opacity .25s,margin .3s}
+  .akse .ak+.ak{margin-top:6px}
+  .akse .ak-i{max-height:0;margin-top:0;opacity:0;overflow:hidden;transition:max-height .35s cubic-bezier(.2,.8,.2,1),opacity .25s,margin .3s}
   .venstre .sted{max-width:none}
   /* Dato og klokkeslett for ham (Oslo-tid), over stedet og under flaggene. */
   .naa{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0;padding:10px 18px}
