@@ -19,8 +19,23 @@ T = [
     # --- hode ---
     ('<html lang="nb">', '<html lang="en">'),
     ('<title>Esbjug Consult</title>', '<title>Esbjug Consult</title>'),
-    ('content="Kode og design har gått gjennom en revolusjon som ikke må oversees."',
-     'content="Code and design have gone through a revolution that must not be overlooked."'),
+    ('content="Tidemann Esbjug er AI-sherpaen: han tar de tunge løftene med å sette opp systemene riktig, så bedriften kan ta del i AI."',
+     'content="Tidemann Esbjug is the AI Sherpa: he does the heavy lifting of setting up the systems right, so the business can take part in AI."'),
+
+    # --- AI-sherpa-heroen ---
+    ('aria-label="AI-sherpaen"', 'aria-label="The AI Sherpa"'),
+    ('alt="Tegning av et taulag på vei opp en snødekt fjellrygg i Norge, med en rød hytte nede i dalen"',
+     'alt="Illustration of a roped team climbing a snowy mountain ridge in Norway, with a red cabin in the valley below"'),
+    ('<a class="sh-merke" href="/">', '<a class="sh-merke" href="/en/">'),
+    ('Esbjug Consult <span>· AI-sherpaen</span>', 'Esbjug Consult <span>· The AI Sherpa</span>'),
+    ('<a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Kontakt</a>', '<a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Contact</a>'),
+    ('<p class="sh-ey">AI-sherpaen Tidemann Esbjug</p>', '<p class="sh-ey">Tidemann Esbjug, the AI Sherpa</p>'),
+    ('<h1>Du velger toppen. <i>Jeg bærer utstyret opp.</i></h1>', '<h1>You choose the summit. <i>I carry the gear up.</i></h1>'),
+    ('Du vil være helt i front med AI, men å få systemene på plass kan være tungt. Det er der jeg kommer inn.',
+     'You want to be at the very front with AI, but getting the systems in place can be heavy lifting. That is where I come in.'),
+    ('<a class="sh-knapp sh-p" href="mailto:tidemann@esbjugconsult.com">Snakk med meg</a>', '<a class="sh-knapp sh-p" href="mailto:tidemann@esbjugconsult.com">Talk to me</a>'),
+    ('Se hvor jeg er nå <svg', 'See where I am now <svg'),
+    ('<span class="sh-sted">Henter posisjonen …</span>', '<span class="sh-sted">Finding him …</span>'),
 
     # --- toppen ---
     ('Kunde-login &rarr;', 'Customer login &rarr;'),

@@ -22,6 +22,8 @@ export default {
     if (url.pathname === "/monitor" || url.pathname.startsWith("/monitor/")) { url.pathname = "/"; return Response.redirect(url.toString(), 301); }
     // /hjem/ var testsiden for huset, rommene og replay. Det er på forsiden nå.
     if (url.pathname === "/hjem" || url.pathname.startsWith("/hjem/")) { url.pathname = "/"; return Response.redirect(url.toString(), 301); }
+    // /sherpa/ var forsøket med AI-sherpa-heroen. Det er forsiden fra 28.10.2026 (?tekst=bla følger med).
+    if (url.pathname === "/sherpa" || url.pathname.startsWith("/sherpa/")) { url.pathname = "/"; return Response.redirect(url.toString(), 301); }
     // Siden slik den så ut ved en tidligere versjon (lagret i R2 fra GitHub, se versjonerOppdater i chat.js).
     const ver = url.pathname.match(/^\/versjon\/([0-9a-f]{40})\/?$/);
     if (ver) return versjonSide(env, url, ver[1]);
