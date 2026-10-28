@@ -38,6 +38,7 @@
 //   POST /chat/admin/rom-slett    {rom}               forget a room's samples
 //   POST /chat/admin/plan         {ts, rom: [...]}    the house plan from the LiDAR scan (2D, metres); public at GET /chat/plan
 //   POST /chat/kast               {k: "le" | "tomat"} a visitor laughs or throws a tomato at the map card (shared counters)
+//   GET  /chat/poll?id=sherpa     poll totals;  POST /chat/poll {id, valg, vid} one vote per visitor (a new vote replaces the old)
 //   POST /chat/android            {bat, lader}        the owner's Android phone reports its battery (its own key, ANDROID_TOKEN)
 //   POST /chat/maskin             {navn, ledig}       a computer says it is on, every minute (starbase, starship, falcon; key MASKIN_TOKEN)
 //   GET  /chat/oyet                               weather now in Dubai, Koh Phangan and Lombok (Open-Meteo, cached 15 min)
@@ -241,6 +242,18 @@ export async function handleChat(request, env, url) {
     const body = await request.text();
     return hub.fetch(new Request("https://hub/internal/kast", { method: "POST", headers: { "x-role": "internal", "x-ip": request.headers.get("CF-Connecting-IP") || "",
       "x-by": encodeURIComponent((request.cf && request.cf.city) || "") }, body }));
+  }
+
+  // Avstemningen på /sherpa/: «Hvor står bedriften din i dag?» (fire leirer). Alle ser de samme tallene.
+  if (path === "/chat/poll") {
+    const stem = request.method === "POST";
+    if (stem && !/^https:\/\/(www\.)?esbjugconsult\.com$/.test(request.headers.get("Origin") || "")) return new Response("Forbidden", { status: 403 });
+    const b = stem ? await request.json().catch(() => null) : { id: url.searchParams.get("id") || "" };
+    if (!b || typeof b !== "object") return new Response("Bad request", { status: 400 });
+    // IPv6: hele /64-blokken teller som én adresse, ellers kan man bytte adresse for hver stemme.
+    const ip = request.headers.get("CF-Connecting-IP") || "", nett = ip.includes(":") ? ip.split(":").slice(0, 4).join(":") : ip;
+    return hub.fetch(new Request("https://hub/internal/poll", { method: "POST", headers: { "x-role": "internal", "x-ip": nett, "x-stem": stem ? "1" : "" },
+      body: JSON.stringify({ id: String(b.id || ""), valg: b.valg, vid: b.vid }) }));
   }
 
   // «Øyet mot»: weather in the three places on the front page (Dubai, Koh Phangan, Lombok, in that order). One call to Open-Meteo for all, cached 15 minutes.
@@ -526,7 +539,7 @@ export function enhetAv(ua = "") {
 export function pageVisit(request, env, url, preloaded = false) {
   const h = request.headers;
   if (!preloaded) {
-    if (request.method !== "GET" || !/^\/((en\/)?(index\.html)?|podcast\/(\d+\/)?)$/.test(url.pathname) || url.searchParams.has("speil")) return null;
+    if (request.method !== "GET" || !/^\/((en\/)?(index\.html)?|sherpa\/|podcast\/(\d+\/)?)$/.test(url.pathname) || url.searchParams.has("speil")) return null;
     if (h.get("Sec-Fetch-Mode") !== "navigate" || h.get("Sec-Fetch-Dest") !== "document") return null;
     if (/prefetch|prerender/i.test((h.get("Sec-Purpose") || "") + (h.get("Purpose") || ""))) return null;
   }
@@ -875,6 +888,8 @@ export class ChatHub {
     // Visitor numbers for consented visitors (cookie id), kept so the site can say «Du var nr. 15» on later visits.
     this.sql.exec(`CREATE TABLE IF NOT EXISTS nr (vid TEXT PRIMARY KEY, n INTEGER)`);
     // Besøk på /podcast/: tid, episoden (null for lista), land og enhet. Ingen IP. Slettes aldri.
+    // Avstemninger (/chat/poll): én stemme per besøkende (tilfeldig id fra nettleseren), siste stemme gjelder.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS poll (id TEXT, velger TEXT, valg INTEGER, ts INTEGER, PRIMARY KEY (id, velger))`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS podbesok (ts INTEGER, ep INTEGER, land TEXT, enhet TEXT, ny INTEGER)`);
     if (this.setting("uniqTotal") == null) {
       // Start the counter from what the site has already seen: each browser once per day, robots and test runs left out.
@@ -977,6 +992,26 @@ export class ChatHub {
         if (b.k === "tomat") this.tomatVarsel(decodeURIComponent(request.headers.get("x-by") || ""));
         if (b.k === "heia") this.heiaVarsel(decodeURIComponent(request.headers.get("x-by") || ""));
         return Response.json(this.kast());
+      }
+      if (url.pathname === "/internal/poll") {
+        const POLLS = { sherpa: 4 };   // id -> antall svar
+        const id = String(b.id || ""), n = POLLS[id];
+        if (!n) return new Response("Bad poll", { status: 400 });
+        if (request.headers.get("x-stem")) {
+          const valg = Number(b.valg), velger = String(b.vid || "");
+          if (!(Number.isInteger(valg) && valg >= 0 && valg < n) || !/^[a-zA-Z0-9-]{8,64}$/.test(velger)) return new Response("Bad request", { status: 400 });
+          const ip = request.headers.get("x-ip") || "", now = Date.now();
+          this.pollRate = this.pollRate || new Map();
+          const r = (this.pollRate.get(ip) || []).filter((t) => now - t < 3600e3);
+          if (r.length >= 10) return new Response("Too many", { status: 429 });
+          if (Number(this.sql.exec(`SELECT COUNT(*) AS c FROM poll WHERE id=?`, id).toArray()[0].c) >= 50000) return new Response("Full", { status: 429 });
+          r.push(now); this.pollRate.set(ip, r);
+          if (this.pollRate.size > 5000) this.pollRate.clear();
+          this.sql.exec(`INSERT OR REPLACE INTO poll (id, velger, valg, ts) VALUES (?, ?, ?, ?)`, id, velger, valg, now);
+        }
+        const tall = Array(n).fill(0);
+        for (const row of this.sql.exec(`SELECT valg, COUNT(*) AS c FROM poll WHERE id=? GROUP BY valg`, id).toArray()) tall[row.valg] = Number(row.c);
+        return Response.json({ id, tall }, { headers: { "cache-control": "no-store" } });
       }
       if (url.pathname === "/internal/versjoner") {
         return new Response(this.setting("versjoner") || "[]", { headers: { "content-type": "application/json" } });

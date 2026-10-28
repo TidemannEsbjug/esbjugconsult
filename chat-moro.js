@@ -205,7 +205,7 @@ const frame = now => {
 // tilbake til forsiden inne i spillet.
 const BENK = /benkpress|bench ?press/i;
 const benk = () => {
-  if (location.pathname !== '/' || document.querySelector('.cm-benk')) return;
+  if (!/^\/(sherpa\/)?$/.test(location.pathname) || document.querySelector('.cm-benk')) return;
   const o = document.createElement('div'), f = document.createElement('iframe'), x = document.createElement('button');
   o.className = 'cm-benk'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-label', 'Tidemann Løfter AI-Norge');
   f.src = '/benkpress/'; f.title = 'Tidemann Løfter AI-Norge'; f.allow = 'fullscreen; autoplay';
