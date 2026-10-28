@@ -43,9 +43,13 @@
   main{display:none}
   /* Kontoene, kostnadene og de aktive KI-abonnementene i kartdelen er skjult (ikke slettet). */
   footer.hero .bank,footer.hero .abo{display:none!important}
-  /* Kortene over kartet: mer gjennomsiktige, med lyseblått og sølv i glasset. */
-  footer.hero .gl{background:linear-gradient(135deg,rgba(226,241,250,.52),rgba(196,222,238,.3));border-color:rgba(235,246,255,.7);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.85),inset 0 -1px 0 rgba(180,210,232,.4),0 14px 40px rgba(20,70,110,.16)}
+  /* Kortene over kartet: frostet glass i lyseblått og sølv, med en blank kant øverst. */
+  footer.hero .gl{background:linear-gradient(140deg,rgba(244,249,253,.82) 0%,rgba(214,230,244,.7) 55%,rgba(196,214,232,.66) 100%);border-color:rgba(255,255,255,.85);
+    box-shadow:inset 0 1px 0 #fff,inset 0 -1px 0 rgba(160,190,218,.45),0 14px 40px rgba(20,60,110,.16)}
+  /* Forsøk 28.10.2026: kartet er skjult, bakgrunnen er den blå-sølv lasteskjermen uten tekst og prikk, med modulene over. */
+  footer.hero #kart{display:none}
+  footer.hero .kart-venter:not(.tid-venter){opacity:1!important}
+  footer.hero .kart-venter:not(.tid-venter)>*{display:none}
   /* Heroen: uten overlinjen, og en større H1. */
   .sh-ey{display:none}
   footer.hero{margin-top:0}
@@ -1998,12 +2002,12 @@ const PC = matchMedia('(min-width:761px)').matches, ZOOM_UTE = PC ? 9.1 : 9, ZOO
 const $ = q => document.querySelector(q);
 // Høstkartet: vektorkart fra OpenFreeMap (OpenStreetMap-data) med egne farger. Skogen i fem høstfarger fordelt på
 // skogområdene, park i gull, gress i oliven og gull, mørk varm bunn, dypblått vann og veier i rav. Uten WebGL: vanlig OSM.
-// Fra 28.10.2026 arktisk: land som is med et hint av teal, skogen i lys isgrønn, vannet som breelv.
+// Fra 28.10.2026 arktisk: lyst som is, i blått og sølv (ikke grønt), skogen i lys isblå, vannet litt dypere blått.
 const HOST = {
-  bunn: '#eef8f8', bolig: '#e2f2f3', bygg: '#c3e0e3', vann: '#8fcdd6', elv: '#84c4cf', park: '#d6eded', gress: '#e0f1f1', eng: '#e9f6f6',
-  skog: ['#a7d5d7', '#b8dfe0', '#9bced1', '#c5e6e6', '#afd9db'], vatmark: '#cae7e8', sand: '#edf6f4', kirkegard: '#d1e9ea', bane: '#dbefef',
-  motorvei: '#4d8797', hoved: '#6da1ae', sekundar: '#91bbc5', liten: '#b3d3d9', sti: '#c3dee1', kant: '#b4d5d9', jernbane: '#84a9b2',
-  tekst: '#0d3b52', halo: '#ffffff',
+  bunn: '#f2f7fb', bolig: '#e8f1f8', bygg: '#cfe0ee', vann: '#a3cde6', elv: '#96c4e2', park: '#e0edf6', gress: '#e7f1f8', eng: '#eef5fa',
+  skog: ['#bcd6e8', '#c9dfee', '#b1cfe4', '#d3e5f1', '#c0d9ea'], vatmark: '#d4e5f1', sand: '#f0f4f7', kirkegard: '#dbe8f2', bane: '#e3eef6',
+  motorvei: '#5e8bb0', hoved: '#7ea2c2', sekundar: '#9dbad3', liten: '#bccfe0', sti: '#cbdae7', kant: '#c2d5e5', jernbane: '#93abc2',
+  tekst: '#123d63', halo: '#ffffff',
 };
 const farg = (st) => {
   const skogF = ['match', ['%', ['coalesce', ['id'], ['to-number', ['get', 'osm_id'], 0], 0], 5], 0, HOST.skog[0], 1, HOST.skog[1], 2, HOST.skog[2], 3, HOST.skog[3], HOST.skog[4]];
