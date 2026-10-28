@@ -17,7 +17,7 @@
 <style>
   @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces.woff2) format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
   @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces-italic.woff2) format("woff2");font-weight:100 900;font-style:italic;font-display:swap}
-  :root{--y:#fff;--ink:#00205B;--bg:#cfe4f6;--r:#BA0C2F;--serif:"Fraunces",Georgia,"Times New Roman",serif;--g:clamp(16px,6vw,96px)}
+  :root{--y:#fff;--ink:#00205B;--bg:#cfe4f6;--r:#BA0C2F;--serif:"Fraunces",Georgia,"Times New Roman",serif;--g:clamp(16px,6vw,96px);--gv:clamp(28px,9vw,160px)}
   *{box-sizing:border-box}
   html{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
   img,video{-webkit-user-drag:none}
@@ -30,7 +30,7 @@
   @media (min-width:1300px) and (hover:hover) and (pointer:fine){:root{--z:1.25}}
   @media (min-width:1600px) and (hover:hover) and (pointer:fine){:root{--z:1.5}}
   @media (min-width:900px) and (hover:hover) and (pointer:fine){
-    .sh-nav,.sh-i{zoom:var(--z);--g:clamp(16px,calc(6vw / var(--z)),96px)}
+    .sh-nav,.sh-i{zoom:var(--z);--g:clamp(16px,calc(6vw / var(--z)),96px);--gv:clamp(28px,calc(9vw / var(--z)),160px)}
     #chat .ch-b,#chat .ch-pill{zoom:var(--z)}
   }
   /* Under hero: hvit bakgrunn og svart tekst. Hero, chatten og de blå bildene beholder fargene sine. */
@@ -54,9 +54,9 @@
   footer.hero{display:none}
   /* Heroen: uten overlinjen, og en større H1. */
   .sh-ey{display:none}
-  /* Toppen av heroen er tom: «Esbjug Consult», «Live» og «Kontakt» er usynlige (ikke slettet), men tar fortsatt plassen,
-     så teksten under står der den sto. */
-  .sh-hero .sh-nav{visibility:hidden}
+  /* Toppen av heroen er tom: «Esbjug Consult», «Live» og «Kontakt» er skjult (ikke slettet) og tar ikke plass, så teksten
+     står høyere. */
+  .sh-hero .sh-nav{display:none}
   /* Chatten er skjult (ikke slettet). */
   #chat{display:none!important}
   footer.hero{margin-top:0}
@@ -1129,10 +1129,11 @@
   .sh-lenker a:hover{text-decoration:underline;text-underline-offset:4px}
   .sh-lenker .sh-kontakt{padding:11px 18px;border-radius:999px;border:1.5px solid rgba(0,32,91,.35);background:rgba(255,255,255,.25)}
   .sh-lenker .sh-kontakt:hover{text-decoration:none;background:rgba(255,255,255,.5)}
-  .sh-i{padding:clamp(28px,7vh,90px) var(--g) 0;max-width:calc(880px + 2 * var(--g))}
+  /* Mer luft til venstre (--gv) enn til høyre (--g). */
+  .sh-i{padding:clamp(24px,5vh,70px) var(--g) 0 var(--gv);max-width:calc(880px + var(--g) + var(--gv))}
   /* Med zoom holdes tekstkolonnen på venstre halvdel, så H1 ikke går inn i fjellet. H1 står på to linjer: «Du velger
      toppen.» og «Jeg bærer utstyret opp.» */
-  @media (min-width:900px) and (hover:hover) and (pointer:fine){.sh-i{max-width:calc(54vw / var(--z))}.sh-hero h1{white-space:nowrap;font-size:calc(7.6vw / var(--z))}.sh-hero h1 i{display:block}}
+  @media (min-width:900px) and (hover:hover) and (pointer:fine){.sh-i{max-width:calc(57vw / var(--z))}.sh-hero h1{white-space:nowrap;font-size:calc(7.6vw / var(--z))}.sh-hero h1 i{display:block}}
   .sh-ey{margin:0;font:600 12px/1 "SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(0,32,91,.72)}
   .sh-hero h1{margin:.38em 0 .34em;font:500 clamp(46px,calc(7.6vw / var(--z,1)),150px)/1.02 var(--serif);letter-spacing:-.022em;font-variation-settings:"opsz" 144}
   .sh-hero h1 i{font-style:italic;font-weight:400}
@@ -1161,7 +1162,7 @@
     mask-image:radial-gradient(circle at var(--fx,50%) var(--fy,50%),transparent calc(var(--fr,0px) - 40px),rgba(0,0,0,.45) calc(var(--fr,0px) - 14px),#000 var(--fr,0px))}
   @media (max-width:760px){
     .sh-lenker a:not(.sh-kontakt){display:none}
-    .sh-i{padding-top:34px}
+    .sh-i{padding-top:44px}
     .sh-hero{min-height:100vh;min-height:100lvh}
     .sh-bilde{display:block;position:relative;inset:auto;height:auto;flex:1 0 300px;order:3;margin-top:-60px;
       -webkit-mask-image:linear-gradient(to bottom,transparent 0,rgba(0,0,0,.15) calc(12% * var(--dyp,1)),rgba(0,0,0,.55) calc(26% * var(--dyp,1)),#000 calc(42% * var(--dyp,1)));
@@ -1505,6 +1506,7 @@
 </footer>
 <script src="/chat-moro.js?v=8"></script>
 <script>if (/[?&](h1|ingress)\b/.test(location.search)) document.body.append(Object.assign(document.createElement('script'), { src: '/slagord.js?v=6' }));</script>
+<script src="/fonter.js?v=1"></script>
 <script>
 // Tidemanns egne enheter: åpne siden én gang med ?eier, så teller ikke denne nettleseren som besøkende og gir ikke varsel.
 (()=>{const q=new URLSearchParams(location.search);if(!q.has('eier'))return;document.cookie='esbjug_eier=1; Max-Age=31536000; Path=/; SameSite=Lax; Secure';
