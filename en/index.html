@@ -312,15 +312,14 @@
   .ch-b.møte::after{animation:none}
   .ch-b.møte::before{content:"";position:absolute;top:10px;left:31px;width:6px;height:6px;border-radius:50%;background:#e9a23b;box-shadow:0 0 0 1.5px rgba(255,255,255,.9)}
   @media (prefers-reduced-motion:reduce){.ch-b.på::before{animation:none}}
-  /* Prikken over boblen er fjernet. I stedet daler det litt snø inne i knappen, bak teksten (to lag med fnugg i ulik fart). */
+  /* Prikken over boblen er fjernet. I stedet glir et svakt lysskjær over knappen innimellom, som lys over is. Ingen
+     snøfnugg her: snøen hører til heroen. */
   .ch-b.på::before,.ch-b.møte::before{content:none}
-  .ch-b{isolation:isolate}
-  .ch-b::after,.ch-b.på::after,.ch-b.møte::after{z-index:-1;animation:chSno 9s linear infinite;
-    background:radial-gradient(circle,#fff 0 .9px,rgba(120,160,215,.55) 1.3px,transparent 1.8px) 0 0/22px 26px,
-      radial-gradient(circle,#fff 0 .6px,rgba(120,160,215,.45) 1px,transparent 1.4px) 11px 7px/17px 19px;
-    -webkit-mask-image:linear-gradient(transparent,#000 35%,#000 70%,transparent);mask-image:linear-gradient(transparent,#000 35%,#000 70%,transparent)}
-  @keyframes chSno{to{background-position:22px 52px,28px 45px}}
-  @media (prefers-reduced-motion:reduce){.ch-b::after,.ch-b.på::after,.ch-b.møte::after{animation:none}}
+  .ch-b{isolation:isolate;overflow:hidden}
+  .ch-b::after,.ch-b.på::after,.ch-b.møte::after{z-index:-1;animation:chGlans 7s ease-in-out infinite;
+    background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.55) 48%,rgba(214,232,252,.35) 52%,transparent 65%) -150% 0/250% 100% no-repeat}
+  @keyframes chGlans{0%,62%{background-position:-150% 0}100%{background-position:250% 0}}
+  @media (prefers-reduced-motion:reduce){.ch-b::after,.ch-b.på::after,.ch-b.møte::after{animation:none;background:none}}
   /* Natt: knappen og chatvinduet blir nattblå, z-ene stiger opp over knappen. */
   .ch-b.sover{background:#1f2c55;color:#cfdcff;box-shadow:0 8px 24px rgba(20,30,70,.35)}
   .natt .ch-p{background:#141b33}
