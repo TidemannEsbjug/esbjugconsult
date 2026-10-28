@@ -43,6 +43,11 @@
   main{display:none}
   /* Kontoene, kostnadene og de aktive KI-abonnementene i kartdelen er skjult (ikke slettet). */
   footer.hero .bank,footer.hero .abo{display:none!important}
+  /* Kortene over kartet: mer gjennomsiktige, med lyseblått og sølv i glasset. */
+  footer.hero .gl{background:linear-gradient(135deg,rgba(226,241,250,.52),rgba(196,222,238,.3));border-color:rgba(235,246,255,.7);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.85),inset 0 -1px 0 rgba(180,210,232,.4),0 14px 40px rgba(20,70,110,.16)}
+  /* Heroen: uten overlinjen, og en større H1. */
+  .sh-ey{display:none}
   footer.hero{margin-top:0}
   .hero-v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
   .hero-i{position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:flex-start;padding:clamp(16px,2.6vw,36px) var(--g) var(--g)}
@@ -1116,9 +1121,9 @@
   .sh-i{padding:clamp(28px,7vh,90px) var(--g) 0;max-width:calc(880px + 2 * var(--g))}
   /* Med zoom holdes tekstkolonnen på venstre halvdel, så H1 ikke går inn i fjellet. H1 står på to linjer: «Du velger
      toppen.» og «Jeg bærer utstyret opp.» */
-  @media (min-width:900px) and (hover:hover) and (pointer:fine){.sh-i{max-width:calc(54vw / var(--z))}.sh-hero h1{white-space:nowrap;font-size:calc(4.8vw / var(--z))}.sh-hero h1 i{display:block}}
+  @media (min-width:900px) and (hover:hover) and (pointer:fine){.sh-i{max-width:calc(54vw / var(--z))}.sh-hero h1{white-space:nowrap;font-size:calc(7.6vw / var(--z))}.sh-hero h1 i{display:block}}
   .sh-ey{margin:0;font:600 12px/1 "SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(0,32,91,.72)}
-  .sh-hero h1{margin:.38em 0 .34em;font:500 clamp(42px,calc(5.4vw / var(--z,1)),84px)/1.02 var(--serif);letter-spacing:-.022em;font-variation-settings:"opsz" 144}
+  .sh-hero h1{margin:.38em 0 .34em;font:500 clamp(46px,calc(7.6vw / var(--z,1)),150px)/1.02 var(--serif);letter-spacing:-.022em;font-variation-settings:"opsz" 144}
   .sh-hero h1 i{font-style:italic;font-weight:400}
   .sh-ingress{margin:0;max-width:31em;font:400 clamp(17px,calc(1.45vw / var(--z,1)),21px)/1.5 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;color:rgba(0,32,91,.88)}
   .sh-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
@@ -1152,7 +1157,7 @@
       mask-image:linear-gradient(to bottom,transparent 0,rgba(0,0,0,.15) calc(12% * var(--dyp,1)),rgba(0,0,0,.55) calc(26% * var(--dyp,1)),#000 calc(42% * var(--dyp,1)))}
     .sh-bilde video{position:absolute;inset:0}
     .sh-merke span{display:none}
-    .sh-hero h1{font-size:clamp(38px,10.5vw,48px)}
+    .sh-hero h1{font-size:clamp(46px,13vw,62px)}
     .sh-ingress{font-size:17px}
     .sh-knapp{padding:15px 20px}
   }
@@ -1989,15 +1994,16 @@ const TX = EN ? {
 };
 const mobil = matchMedia('(pointer:coarse)').matches, still = matchMedia('(prefers-reduced-motion: reduce)').matches;
 let kart = null;   // MapLibre-kartet lages når første posisjon er kjent (leggKart)
-const PC = matchMedia('(min-width:761px)').matches, ZOOM_UTE = PC ? 14.1 : 13, ZOOM_HUS = PC ? 14.1 : 18.6;   // standardzoom: på PC den samme ute og hjemme
+const PC = matchMedia('(min-width:761px)').matches, ZOOM_UTE = PC ? 9.1 : 9, ZOOM_HUS = PC ? 9.1 : 18.6;   // standardzoom: på PC den samme ute og hjemme
 const $ = q => document.querySelector(q);
 // Høstkartet: vektorkart fra OpenFreeMap (OpenStreetMap-data) med egne farger. Skogen i fem høstfarger fordelt på
 // skogområdene, park i gull, gress i oliven og gull, mørk varm bunn, dypblått vann og veier i rav. Uten WebGL: vanlig OSM.
+// Fra 28.10.2026 arktisk: land som is med et hint av teal, skogen i lys isgrønn, vannet som breelv.
 const HOST = {
-  bunn: '#f6f9fc', bolig: '#edf2f8', bygg: '#d6e0ec', vann: '#a9cbe9', elv: '#93bde3', park: '#e4ecf4', gress: '#eaf0f6', eng: '#f0f4f9',
-  skog: ['#b9cadb', '#c7d5e3', '#aebfd2', '#d0dce8', '#bccbdb'], vatmark: '#d3dee9', sand: '#eef0f3', kirkegard: '#dbe3ec', bane: '#e2e9f1',
-  motorvei: '#5f7aa0', hoved: '#7f95b5', sekundar: '#9cadc6', liten: '#bac7d8', sti: '#c9d3e0', kant: '#c3cfdd', jernbane: '#94a4bb',
-  tekst: '#00205B', halo: '#ffffff',
+  bunn: '#eef8f8', bolig: '#e2f2f3', bygg: '#c3e0e3', vann: '#8fcdd6', elv: '#84c4cf', park: '#d6eded', gress: '#e0f1f1', eng: '#e9f6f6',
+  skog: ['#a7d5d7', '#b8dfe0', '#9bced1', '#c5e6e6', '#afd9db'], vatmark: '#cae7e8', sand: '#edf6f4', kirkegard: '#d1e9ea', bane: '#dbefef',
+  motorvei: '#4d8797', hoved: '#6da1ae', sekundar: '#91bbc5', liten: '#b3d3d9', sti: '#c3dee1', kant: '#b4d5d9', jernbane: '#84a9b2',
+  tekst: '#0d3b52', halo: '#ffffff',
 };
 const farg = (st) => {
   const skogF = ['match', ['%', ['coalesce', ['id'], ['to-number', ['get', 'osm_id'], 0], 0], 5], 0, HOST.skog[0], 1, HOST.skog[1], 2, HOST.skog[2], 3, HOST.skog[3], HOST.skog[4]];
