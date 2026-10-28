@@ -269,6 +269,20 @@
   .ch-b.møte{box-shadow:0 0 0 3px #ff8a00,0 8px 24px rgba(0,32,91,.25)}
   .ch-b.møte::after{animation:pulsO 2.2s ease-in-out infinite}
   @keyframes pulsO{50%{box-shadow:0 0 0 7px rgba(255,138,0,.28)}}
+  /* Lukket chat (fra 28.10.2026): en liten flis av frostet is, som snøen i heroen. Lyser lite, synes både på himmelen
+     og på hvit bakgrunn. Tilgjengelig: en isblå prikk som puster sakte. I møte: prikken blir rav. */
+  .ch-b{background:rgba(238,245,251,.55);color:rgba(0,32,91,.82);font-weight:500;font-size:14px;letter-spacing:.01em;gap:7px;padding:10px 15px 10px 13px;
+    border:1px solid rgba(255,255,255,.75);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 6px 22px rgba(0,32,91,.12);
+    -webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);transition:background .3s,box-shadow .3s}
+  .ch-b:hover{background:rgba(245,250,254,.8)}
+  .ch-b svg{width:16px;height:16px;stroke-width:1.8;opacity:.75}
+  .ch-b.på::after{animation:none}
+  .ch-b.på::before{top:8px;left:24px;width:6px;height:6px;background:#8fd3f4;box-shadow:0 0 0 1.5px rgba(255,255,255,.9),0 0 6px rgba(143,211,244,.9);animation:isPust 4s ease-in-out infinite}
+  @keyframes isPust{50%{box-shadow:0 0 0 1.5px rgba(255,255,255,.9),0 0 11px 2px rgba(143,211,244,.55)}}
+  .ch-b.møte{box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 6px 22px rgba(0,32,91,.12)}
+  .ch-b.møte::after{animation:none}
+  .ch-b.møte::before{content:"";position:absolute;top:8px;left:24px;width:6px;height:6px;border-radius:50%;background:#e9a23b;box-shadow:0 0 0 1.5px rgba(255,255,255,.9)}
+  @media (prefers-reduced-motion:reduce){.ch-b.på::before{animation:none}}
   /* Natt: knappen og chatvinduet blir nattblå, z-ene stiger opp over knappen. */
   .ch-b.sover{background:#1f2c55;color:#cfdcff;box-shadow:0 8px 24px rgba(20,30,70,.35)}
   .natt .ch-p{background:#141b33}
@@ -1035,12 +1049,12 @@
   .sh-sno{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
   /* Snøen i to lag: de fjerne fnuggene bak teksten, de nære (store, myke) foran den. */
   .sh-sno.foran{z-index:3}
-  /* Pekeren i sherpa-heroen: et lite snøfnugg som snur seg sakte, blir litt større over noe klikkbart og drysser
-     av seg et fnugg iblant når det flyttes. Bare med mus/styreflate. */
+  /* Pekeren i sherpa-heroen: en vanlig pil, men av is (frostet, gjennomskinnelig, med blanke kanter). Lyser litt mer
+     over noe klikkbart og drysser av seg et snøfnugg iblant når den flyttes. Bare med mus/styreflate. */
   @media (hover:hover) and (pointer:fine){html.mus .sh-hero, html.mus .sh-hero *{cursor:none!important}}
-  .sno-k{position:fixed;left:0;top:0;width:24px;height:24px;margin:-12px 0 0 -12px;z-index:2147483646;pointer-events:none;opacity:0;transition:opacity .4s}
-  .sno-k svg{width:100%;height:100%;display:block;overflow:visible;filter:drop-shadow(0 0 1.5px rgba(0,32,91,.5)) drop-shadow(0 0 7px rgba(255,255,255,.7))}
-  .sno-k g{stroke:#fff;stroke-width:1.5;stroke-linecap:round;fill:none}
+  .sno-k{position:fixed;left:0;top:0;width:17px;height:25px;z-index:2147483646;pointer-events:none;opacity:0;transition:opacity .4s;transform-origin:0 0}
+  .sno-k svg{width:100%;height:100%;display:block;overflow:visible;filter:drop-shadow(0 1px 1.5px rgba(0,32,91,.35)) drop-shadow(0 0 6px rgba(255,255,255,.55));transition:filter .3s}
+  html.sno-over .sno-k svg{filter:drop-shadow(0 1px 1.5px rgba(0,32,91,.35)) drop-shadow(0 0 9px rgba(190,232,255,.95))}
   html.sno-inne .sno-k{opacity:1}
   .sh-nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px var(--g) 0}
   .sh-merke{display:flex;align-items:center;gap:10px;color:inherit;text-decoration:none;font:600 15px/1 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;letter-spacing:.01em}
@@ -3429,28 +3443,31 @@ setInterval(tegn, 1000);
     tegn();
   }
 
-  // Pekeren: et snøfnugg som står nøyaktig der pekeren er. Det snur seg sakte, og litt ekstra når det flyttes sidelengs.
-  // Over noe klikkbart vokser det litt, ved trykk krymper det. Hvert ~80. piksel det flyttes drysser det av seg et fnugg.
+  // Pekeren: en pil av is med spissen nøyaktig der pekeren er. Over noe klikkbart lyser isen litt mer, ved trykk
+  // trykkes den litt sammen. Hvert ~80. piksel den flyttes drysser den av seg et fnugg.
   if (matchMedia('(hover:hover) and (pointer:fine)').matches) {
     const rot = document.documentElement, k = document.createElement('div');
-    const arm = '<line x1="0" y1="0" x2="0" y2="-10"/><polyline points="-3,-8.6 0,-6 3,-8.6"/>';
     k.className = 'sno-k';
-    k.innerHTML = '<svg viewBox="-12 -12 24 24" aria-hidden="true"><g>' + [0, 60, 120, 180, 240, 300].map(v => `<g transform="rotate(${v})">${arm}</g>`).join('') + '<circle r="1.3" fill="#fff" stroke="none"/></g></svg>';
+    k.innerHTML = '<svg viewBox="-.6 -.6 13.6 20.8" aria-hidden="true"><defs>'
+      + '<linearGradient id="is-f" x1="0" y1="0" x2=".9" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".97"/><stop offset=".45" stop-color="#dcf1fb" stop-opacity=".85"/><stop offset="1" stop-color="#9fd2ec" stop-opacity=".9"/></linearGradient></defs>'
+      + '<path d="M0 0V17L4.2 13.2 7 19.6 9.6 18.5 6.9 12.4H12.4Z" fill="url(#is-f)" stroke="rgba(0,32,91,.6)" stroke-width=".8" stroke-linejoin="round"/>'
+      + '<path d="M1.3 3V13.4M1.3 7.6 6 11.4" stroke="#fff" stroke-width=".7" stroke-linecap="round" opacity=".9" fill="none"/>'
+      + '<path d="M5.4 13.9 7.7 18.8" stroke="#fff" stroke-width=".5" stroke-linecap="round" opacity=".6" fill="none"/></svg>';
     document.body.append(k); rot.classList.add('mus');
     const KLIKK = 'a,button,[role="button"],label,select,summary';
-    let px = -99, py = -99, vinkel = 0, spinn = 0, skala = 1, maal = 1, inne = false, over = false, ned = false, vei = 0;
+    let px = -99, py = -99, skala = 1, inne = false, over = false, ned = false, vei = 0;
     addEventListener('pointermove', e => {
       if (e.pointerType !== 'mouse') return;
       const t = e.target instanceof Element ? e.target : null;
-      inne = !!t?.closest('.sh-hero'); rot.classList.toggle('sno-inne', inne);
+      inne = !!t?.closest('.sh-hero') && !t.closest('#chat'); rot.classList.toggle('sno-inne', inne);
       if (!inne) { px = -99; return; }
-      over = !!t.closest(KLIKK);
+      over = !!t.closest(KLIKK); rot.classList.toggle('sno-over', over);
       if (px > -99) {
         const dx = e.clientX - px, dy = e.clientY - py;
-        spinn += dx * .25; vei += Math.hypot(dx, dy);
+        vei += Math.hypot(dx, dy);
         if (vei > 80 && !rolig && drys.length < 40) {
           vei = 0;
-          drys.push({ x: e.clientX + (Math.random() - .5) * 8, y: e.clientY + 6, r: .8 + Math.random() * .9, v: .3 + Math.random() * .25, s: Math.random() * 6.28, dx: dx * .05, liv: 1 });
+          drys.push({ x: e.clientX + 3 + Math.random() * 6, y: e.clientY + 14, r: .8 + Math.random() * .9, v: .3 + Math.random() * .25, s: Math.random() * 6.28, dx: dx * .05, liv: 1 });
         }
       }
       px = e.clientX; py = e.clientY;
@@ -3460,10 +3477,8 @@ setInterval(tegn, 1000);
     document.addEventListener('mouseleave', () => { inne = false; rot.classList.remove('sno-inne'); });
     const loop = () => {
       if (inne) {
-        maal = ned ? .8 : over ? 1.45 : 1;
-        skala += (maal - skala) * .15;
-        if (!rolig) { spinn *= .92; vinkel += .15 + spinn * .08; }
-        k.style.transform = `translate(${px}px,${py}px) rotate(${vinkel}deg) scale(${skala})`;
+        skala += ((ned ? .88 : over ? 1.08 : 1) - skala) * .2;
+        k.style.transform = `translate(${px}px,${py}px) scale(${skala})`;
       }
       requestAnimationFrame(loop);
     };
