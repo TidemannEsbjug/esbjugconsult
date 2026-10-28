@@ -1054,7 +1054,6 @@
   @media (hover:hover) and (pointer:fine){html.mus .sh-hero, html.mus .sh-hero *{cursor:none!important}}
   .sno-k{position:fixed;left:0;top:0;width:20px;height:29px;z-index:2147483646;pointer-events:none;opacity:0;transition:opacity .4s;transform-origin:0 0}
   .sno-k svg{position:relative;width:100%;height:100%;display:block;overflow:visible;filter:drop-shadow(0 1px 2px rgba(0,32,91,.55)) drop-shadow(0 0 6px rgba(255,255,255,.6));transition:filter .3s}
-  .sno-k::before{content:"";position:absolute;left:-54px;top:-54px;width:108px;height:108px;border-radius:50%;background:radial-gradient(circle,rgba(240,247,255,.2),rgba(240,247,255,0) 62%)}
   html.sno-over .sno-k svg{filter:drop-shadow(0 1px 2px rgba(0,32,91,.55)) drop-shadow(0 0 9px rgba(205,222,255,.95))}
   html.sno-inne .sno-k{opacity:1}
   .sh-nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px var(--g) 0}
@@ -1075,8 +1074,9 @@
   .sh-knapp:hover{transform:translateY(-1px)}
   .sh-knapp.sh-p{color:#fff;box-shadow:0 8px 24px rgba(0,32,91,.16)}
   .sh-knapp svg{width:16px;height:16px}
-  /* Frost: ispilen har en usynlig aura. Jo nærmere knappen, jo sterkere fryser den, fra punktet på knappen som er nærmest
-     pekeren. Isen brer seg med en myk kant og gjør det røde om til blått og hvitt, fine iskrystaller vokser litt foran
+  /* Frost: ispilen har en usynlig aura, som en kald vind. Jo nærmere knappen, jo sterkere fryser den, fra punktet på
+     knappen som er nærmest pekeren. Vinden kommer i kast, så isen puster fram og tilbake, og fokksnø blåser over knappen
+     i vindretningen (fra pekeren). Fart mot knappen gir et ekstra kast. Ingenting av vinden synes utenfor knappen. Isen brer seg med en myk kant og gjør det røde om til blått og hvitt, fine iskrystaller vokser litt foran
      kanten, rim glitrer, og teksten blir mørkeblå når mesteparten er frosset. Når pekeren går unna, tiner det. Styres fra skriptet («Frost») med --fx, --fy og --fr. */
   .sh-knapp.sh-p{position:relative;overflow:hidden;isolation:isolate;transition:transform .15s ease,color .6s ease}
   .sh-knapp.sh-p.frosset{color:#00205B}
@@ -1085,6 +1085,7 @@
     -webkit-mask-image:radial-gradient(circle at var(--fx,50%) var(--fy,50%),#000 calc(var(--fr,0px) - 40px),rgba(0,0,0,.55) calc(var(--fr,0px) - 14px),transparent var(--fr,0px));
     mask-image:radial-gradient(circle at var(--fx,50%) var(--fy,50%),#000 calc(var(--fr,0px) - 40px),rgba(0,0,0,.55) calc(var(--fr,0px) - 14px),transparent var(--fr,0px))}
   .sh-frost{z-index:-1}
+  .sh-vind{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1}
   /* Det røde maskeres bort der isen er, så ingen rød kant blir igjen rundt den frosne knappen. */
   .sh-knapp.sh-p::before{content:"";position:absolute;inset:0;z-index:-3;background:#BA0C2F;
     -webkit-mask-image:radial-gradient(circle at var(--fx,50%) var(--fy,50%),transparent calc(var(--fr,0px) - 40px),rgba(0,0,0,.45) calc(var(--fr,0px) - 14px),#000 var(--fr,0px));
@@ -3446,8 +3447,13 @@ setInterval(tegn, 1000);
     const AURA = 170;
     const is = document.createElement('i'); is.className = 'sh-is'; is.setAttribute('aria-hidden', 'true');
     const fc = document.createElement('canvas'); fc.className = 'sh-frost'; fc.setAttribute('aria-hidden', 'true'); kn.prepend(is, fc);
-    const fx = fc.getContext('2d');
+    const vc = document.createElement('canvas'); vc.className = 'sh-vind'; vc.setAttribute('aria-hidden', 'true'); kn.prepend(vc);
+    const fx = fc.getContext('2d'), vx = vc.getContext('2d');
     let fw = 0, fh = 0, diag = 0, ox = 0, oy = 0, tx = 0, ty = 0, f = 0, maal = 0, tupper = [], frø = [], kanter = false, tid = 0;
+    // Vinden: styrke fra avstanden, retning fra pekeren mot knappen, kast fra en langsom sum av sinuser og fra farten
+    // pekeren har mot knappen. Fokk er små korn og streker som blåser over knappen.
+    let styrke = 0, retning = 0, kast = 0, fokk = [], sist = null;
+    const pust = t => .5 + .22 * Math.sin(t / 900) + .16 * Math.sin(t / 370 + 1.3) + .12 * Math.sin(t / 157 + 4.1);
     const tupp = (x, y, a, gen, maks) => tupper.push({ x, y, a, gen, maks, l: 0, neste: 2 + Math.random() * 3 });
     const så = (x, y, n) => {
       frø.push([x, y]);
@@ -3466,7 +3472,15 @@ setInterval(tegn, 1000);
       if (r.bottom < 0 || r.top > innerHeight) { maal = 0; return; }
       const nx = Math.max(r.left, Math.min(r.right, e.clientX)), ny = Math.max(r.top, Math.min(r.bottom, e.clientY));
       const d = Math.hypot(e.clientX - nx, e.clientY - ny);
-      maal = Math.max(0, 1 - d / AURA) ** 1.6;
+      styrke = Math.max(0, 1 - d / AURA) ** 1.6;
+      if (d > 1) retning = Math.atan2(ny - e.clientY, nx - e.clientX);
+      else if (sist && (e.clientX !== sist[0] || e.clientY !== sist[1])) retning = Math.atan2(e.clientY - sist[1], e.clientX - sist[0]);
+      if (sist && d > 1) {  // fart mot knappen gir et kast
+        const mot = ((sist[0] - e.clientX) * (e.clientX - nx) + (sist[1] - e.clientY) * (e.clientY - ny)) / d;
+        if (mot > 0) kast = Math.min(1, kast + mot / 60);
+      }
+      sist = [e.clientX, e.clientY];
+      maal = styrke;
       if (maal <= 0 && f <= 0) return;
       if (f <= 0) {
         const dpr = Math.min(devicePixelRatio || 1, 2);
@@ -3476,15 +3490,48 @@ setInterval(tegn, 1000);
       }
       tx = nx - r.left; ty = ny - r.top;
       if (rolig) { f = maal; ox = tx; oy = ty; sett(); return; }
+      if (fw && vc.width !== fc.width) { vc.width = fc.width; vc.height = fc.height; vx.setTransform(fc.width / fw, 0, 0, fc.width / fw, 0, 0); }
       if (!tid) tid = requestAnimationFrame(gro);
     }, { passive: true });
-    document.addEventListener('mouseleave', () => { maal = 0; if (!tid && !rolig) tid = requestAnimationFrame(gro); });
+    document.addEventListener('mouseleave', () => { maal = styrke = 0; sist = null; if (!tid && !rolig) tid = requestAnimationFrame(gro); });
     const gro = () => {
       tid = 0;
+      const tn = performance.now();
+      kast *= .96;
+      // Vindkast: isen puster med vinden, og pekeren går ikke helt fram til full is før den står på knappen.
+      maal = styrke ? Math.min(1, styrke * (.72 + .5 * pust(tn)) + kast * styrke * .5) : 0;
       f += (maal - f) * (maal > f ? .08 : .04);
       if (Math.abs(maal - f) < .003) f = maal;
       ox += (tx - ox) * .08; oy += (ty - oy) * .08;
+      // Kanten av isen vaier litt med vinden.
+      const vo = (pust(tn * 1.7) - .5) * 10 * f;
+      ox += Math.cos(retning) * vo * .08; oy += Math.sin(retning) * vo * .08;
       sett();
+      // Fokk: blåser inn fra siden pekeren står på, i vindretningen. Mer jo sterkere vinden er.
+      if (fw) {
+        vx.clearRect(0, 0, fw, fh);
+        const v = maal * (.7 + kast);
+        if (v > .03 && fokk.length < 140) for (let i = 0; i < 1 + v * 3; i++) {
+          if (Math.random() > v * 1.4) continue;
+          const sp = (Math.random() - .5) * 2.2, a = retning + sp * .25;
+          // startpunkt: litt bak punktet nærmest pekeren, spredt på tvers av vinden
+          const px = tx - Math.cos(retning) * 12 - Math.sin(retning) * sp * fh * .8, py = ty - Math.sin(retning) * 12 + Math.cos(retning) * sp * fh * .8;
+          fokk.push({ x: px, y: py, a, v: 1.6 + Math.random() * 2.6 + kast * 3, liv: 1, l: Math.random() < .35 ? 4 + Math.random() * 7 : 0, r: .4 + Math.random() * .7 });
+        }
+        vx.lineCap = 'round';
+        for (let i = fokk.length - 1; i >= 0; i--) {
+          const p = fokk[i];
+          p.a += (Math.random() - .5) * .08; p.x += Math.cos(p.a) * p.v; p.y += Math.sin(p.a) * p.v; p.v *= .985; p.liv -= .02;
+          if (p.liv <= 0 || p.x < -12 || p.y < -12 || p.x > fw + 12 || p.y > fh + 12) { fokk.splice(i, 1); continue; }
+          const al = Math.sin(p.liv * Math.PI) * (.35 + .5 * Math.min(1, maal + .2));
+          if (p.l) {
+            vx.strokeStyle = `rgba(255,255,255,${al * .7})`; vx.lineWidth = p.r;
+            vx.beginPath(); vx.moveTo(p.x, p.y); vx.lineTo(p.x - Math.cos(p.a) * p.l, p.y - Math.sin(p.a) * p.l); vx.stroke();
+          } else {
+            vx.fillStyle = `rgba(255,255,255,${al})`; vx.beginPath(); vx.arc(p.x, p.y, p.r, 0, 6.283); vx.fill();
+          }
+        }
+      }
       if (f > .04) {
         // Nye krystaller der isen kommer inn, hvis det ikke allerede gror noen i nærheten.
         if (maal > f && !frø.some(([x, y]) => Math.hypot(x - ox, y - oy) < 22) && tupper.length < 260) så(ox, oy, frø.length ? 4 : 6);
@@ -3521,8 +3568,8 @@ setInterval(tegn, 1000);
           }
         }
       }
-      if (f <= 0) { fx.clearRect(0, 0, fw, fh); tupper = []; frø = []; kanter = false; return; }
-      if (f !== maal || tupper.length || Math.hypot(tx - ox, ty - oy) > .5) tid = requestAnimationFrame(gro);
+      if (f <= 0 && !fokk.length && !styrke) { fx.clearRect(0, 0, fw, fh); vx.clearRect(0, 0, fw, fh); tupper = []; frø = []; kanter = false; return; }
+      tid = requestAnimationFrame(gro);
     };
   }
 
