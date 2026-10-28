@@ -29,6 +29,8 @@
 //   POST /chat/admin/kamera       {kilde, …}          save those settings (kv kamera:<kilde>)
 //   POST /chat/admin/kamera/bilde?kilde=              latest preview JPEG, memory only, only while visning is on (max 300 kB)
 //   GET  /chat/admin/kamera/bilde?kilde=              that JPEG, 404 when older than 10 s
+//   GET  /chat/admin/sporsmal                         the Jev questions the beacons ask {v, flaske, pult} (kv sporsmal)
+//   POST /chat/admin/sporsmal     {flaske, pult}      replace them; v changes, and the beacons fetch them within 2 s
 //   POST /chat/admin/sted-her     {navn, r}           name the place he is at now (e.g. «hjemme hos moren sin»), radius r m
 //   POST /chat/admin/fyr          {nr, navn, trykk}   a beacon phone in the house: its air pressure (hPa)
 //   POST /chat/admin/rom          {b, trykk, laer?}   what the iPhone hears from each beacon; learn a room or guess it
@@ -1249,6 +1251,23 @@ export class ChatHub {
       this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, `kamera:${kilde}`, JSON.stringify(s));
       return Response.json(this.kameraLes(kilde));
     }
+    // Spørsmålene fyrene stiller Jev om bildet. Kilden er chat-app/sporsmal/sporsmal.json (privat repo), sendt hit med
+    // chat-app/sporsmal/send.sh. Bildet går fortsatt bare fra telefonen til Jev; herfra kommer bare teksten.
+    if (url.pathname === "/chat/admin/sporsmal" && request.method === "GET") {
+      const rad = this.sql.exec(`SELECT v FROM kv WHERE k = 'sporsmal'`).toArray()[0];
+      if (!rad) return new Response("Not found", { status: 404 });
+      return new Response(rad.v, { headers: { "content-type": "application/json", "cache-control": "no-store" } });
+    }
+    if (url.pathname === "/chat/admin/sporsmal" && request.method === "POST") {
+      const b = await request.json().catch(() => null);
+      const gyldig = (q) => q && typeof q === "object" && !Array.isArray(q) && Object.keys(q).length > 0 &&
+        Object.values(q).every((x) => x && typeof x.type === "string");
+      if (!b || !gyldig(b.flaske) || !gyldig(b.pult)) return new Response("Bad request", { status: 400 });
+      const v = new Date().toISOString();
+      this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, "sporsmal", JSON.stringify({ v, flaske: b.flaske, pult: b.pult }));
+      this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, "sporsmal:v", v);
+      return Response.json({ ok: true, v });
+    }
     if (url.pathname === "/chat/admin/kamera/bilde" && request.method === "POST") {
       const kilde = url.searchParams.get("kilde") || "";
       if (!/^fyr[a-z]$/.test(kilde)) return new Response("Bad request", { status: 400 });
@@ -2087,7 +2106,9 @@ export class ChatHub {
 
   kameraLes(kilde) {
     const { modus, kamera, zoom, visning } = this.kameraRaw(kilde);
-    return { modus, kamera, zoom, visning };
+    // Versjonen av spørsmålene til Jev: fyret henter dem på nytt når den endrer seg.
+    const sporsmalV = this.sql.exec(`SELECT v FROM kv WHERE k = 'sporsmal:v'`).toArray()[0]?.v ?? null;
+    return { modus, kamera, zoom, visning, sporsmalV };
   }
 
   // Skriver tele:kontor på nytt fra det fyrene sist sendte. Forsiden regner det samme selv, så kortet
