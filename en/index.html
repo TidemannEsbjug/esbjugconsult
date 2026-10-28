@@ -12,8 +12,7 @@
 <link rel="alternate" hreflang="en" href="https://esbjugconsult.com/en/">
 <script>document.documentElement.classList.add("js");if(/[?&]speil=1/.test(location.search))document.documentElement.classList.add("speil","vis")</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2300205B'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%23BA0C2F' stroke='%23fff' stroke-width='3'/%3E%3C/svg%3E">
-<link rel="preload" href="/media/sherpa.webp" as="image" type="image/webp" media="(min-width:761px)">
-<link rel="preload" href="/media/sherpa-900.webp" as="image" type="image/webp" media="(max-width:760px)">
+<link rel="preload" href="/media/sherpa-video.webp" as="image" type="image/webp">
 <link rel="preload" href="/media/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin>
 <style>
   @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces.woff2) format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
@@ -1026,7 +1025,7 @@
   .focus .sh-hero{opacity:0;filter:blur(8px);pointer-events:none}
   .sh-hero{--sky:#74a8d4;position:relative;min-height:100svh;display:flex;flex-direction:column;background:var(--sky);color:#00205B;overflow:hidden;isolation:isolate}
   .sh-bilde{position:absolute;left:0;right:0;bottom:0;height:min(100%,calc(100vw * .4286));z-index:-2;margin:0}
-  .sh-bilde img{width:100%;height:100%;object-fit:cover;object-position:70% 100%;display:block}
+  .sh-bilde video{width:100%;height:100%;object-fit:cover;object-position:70% 100%;display:block}
   .sh-sno{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
   .sh-nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px var(--g) 0}
   .sh-merke{display:flex;align-items:center;gap:10px;color:inherit;text-decoration:none;font:600 15px/1 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;letter-spacing:.01em}
@@ -1097,7 +1096,7 @@
 <body>
 <script>document.body.classList.add('forspill');setTimeout(()=>document.body.classList.remove('forspill'),8000)</script>
 <section class="sh-hero" aria-label="The AI Sherpa">
-  <picture class="sh-bilde"><source type="image/webp" media="(max-width:760px)" srcset="/media/sherpa-900.webp"><source type="image/webp" srcset="/media/sherpa.webp"><img src="/media/sherpa.jpg" alt="Illustration of a roped team climbing a snowy mountain ridge in Norway, with a red cabin in the valley below" width="1680" height="720" fetchpriority="high"></picture>
+  <div class="sh-bilde"><video autoplay muted loop playsinline preload="auto" poster="/media/sherpa-video.webp" role="img" aria-label="Illustration of a roped team climbing a snowy mountain ridge in Norway, with a red cabin in the valley below"><source src="/media/sherpa-900.mp4" type="video/mp4" media="(max-width:760px)"><source src="/media/sherpa.mp4" type="video/mp4"></video></div>
   <canvas class="sh-sno" aria-hidden="true"></canvas>
   <nav class="sh-nav"><a class="sh-merke" href="/en/"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" fill="#00205B"/><circle cx="16" cy="16" r="9" fill="#BA0C2F" stroke="#fff" stroke-width="3"/></svg>Esbjug Consult <span>· The AI Sherpa</span></a><div class="sh-lenker"><a href="#live">Live</a><a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Contact</a></div></nav>
   <div class="sh-i">
@@ -3294,7 +3293,14 @@ setInterval(tegn, 1000);
 // AI-sherpa-heroen: snø over bildet (musa blåser litt på den) og stedet fra kartpanelet i heroen.
 (() => {
   const $ = q => document.querySelector(q);
-  if (/[?&]tekst=bla/.test(location.search)) $('.sh-hero').classList.add('bla');
+  if (/[?&]tekst=bla\b/.test(location.search)) $('.sh-hero').classList.add('bla');
+  // Videoen i heroen (Grok-animasjon av Midjourney-bildet, sømløs løkke): står stille ved redusert bevegelse
+  // og pauses når heroen er ute av syne.
+  const vid = $('.sh-bilde video');
+  if (vid) {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { vid.removeAttribute('autoplay'); vid.pause(); }
+    else new IntersectionObserver(e => { if (e[0].isIntersecting) vid.play().catch(() => {}); else vid.pause(); }).observe(vid);
+  }
   const navn = $('.sted .s-navn'), sted = $('.sh-sted');
   if (navn && sted) {
     const sett = () => {

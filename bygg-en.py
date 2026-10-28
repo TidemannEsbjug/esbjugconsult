@@ -24,8 +24,8 @@ T = [
 
     # --- AI-sherpa-heroen ---
     ('aria-label="AI-sherpaen"', 'aria-label="The AI Sherpa"'),
-    ('alt="Tegning av et taulag på vei opp en snødekt fjellrygg i Norge, med en rød hytte nede i dalen"',
-     'alt="Illustration of a roped team climbing a snowy mountain ridge in Norway, with a red cabin in the valley below"'),
+    ('aria-label="Tegning av et taulag på vei opp en snødekt fjellrygg i Norge, med en rød hytte nede i dalen"',
+     'aria-label="Illustration of a roped team climbing a snowy mountain ridge in Norway, with a red cabin in the valley below"'),
     ('<a class="sh-merke" href="/">', '<a class="sh-merke" href="/en/">'),
     ('Esbjug Consult <span>· AI-sherpaen</span>', 'Esbjug Consult <span>· The AI Sherpa</span>'),
     ('<a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Kontakt</a>', '<a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Contact</a>'),
