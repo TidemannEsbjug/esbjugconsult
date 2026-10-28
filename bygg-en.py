@@ -215,7 +215,6 @@ T = [
     ('aria-label="Lyd av"', 'aria-label="Mute"'),
     ('aria-label="Legg på"', 'aria-label="Hang up"'),
     ('<span class="cp-t">I samtale med Tidemann</span>', '<span class="cp-t">In a call with Tidemann</span>'),
-    ('<span>Ikke nøl! Go, go, go!</span>', '<span>Don\'t hesitate! Go, go, go!</span>'),
     ('class="ch-del" type="button">Slett samtalen</button>', 'class="ch-del" type="button">Delete conversation</button>'),
     ('aria-label="Ring Tidemann" title="Ring Tidemann"', 'aria-label="Call Tidemann" title="Call Tidemann"'),
     # Bare telefonen på engelsk: «Call» ved siden av «Delete conversation» presser navnet over to linjer.
@@ -241,7 +240,6 @@ T = [
     ("'Sover - svarer når jeg er våken'", "'Asleep - I\\'ll reply when I\\'m awake'"),
     ("'I møte, kan kanskje svare'", "'In a meeting, might be able to reply'"),
     ("'Tidemann er her nå'", "'Tidemann is here now'"),
-    ("'Ikke nøl! Go, go, go!'", "'Don\\'t hesitate! Go, go, go!'"),
     ("'Tidemann ringer deg'", "'Tidemann is calling you'"),
     ("'Lydsamtale i nettleseren'", "'Voice call in the browser'"),
     ("'Samtalen er avsluttet'", "'The call has ended'"),
