@@ -1074,8 +1074,9 @@
   .sh-lenker .sh-kontakt{padding:11px 18px;border-radius:999px;border:1.5px solid rgba(0,32,91,.35);background:rgba(255,255,255,.25)}
   .sh-lenker .sh-kontakt:hover{text-decoration:none;background:rgba(255,255,255,.5)}
   .sh-i{padding:clamp(28px,7vh,90px) var(--g) 0;max-width:calc(880px + 2 * var(--g))}
-  /* Med zoom holdes tekstkolonnen på venstre halvdel, så H1 ikke går inn i fjellet. */
-  @media (min-width:1300px) and (hover:hover) and (pointer:fine){.sh-i{max-width:calc(54vw / var(--z))}}
+  /* Med zoom holdes tekstkolonnen på venstre halvdel, så H1 ikke går inn i fjellet. H1 står på to linjer: «Du velger
+     toppen.» og «Jeg bærer utstyret opp.» */
+  @media (min-width:1300px) and (hover:hover) and (pointer:fine){.sh-i{max-width:calc(54vw / var(--z))}.sh-hero h1{white-space:nowrap;font-size:calc(4.8vw / var(--z))}.sh-hero h1 i{display:block}}
   .sh-ey{margin:0;font:600 12px/1 "SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(0,32,91,.72)}
   .sh-hero h1{margin:.38em 0 .34em;font:500 clamp(42px,calc(5.4vw / var(--z,1)),84px)/1.02 var(--serif);letter-spacing:-.022em;font-variation-settings:"opsz" 144}
   .sh-hero h1 i{font-style:italic;font-weight:400}
