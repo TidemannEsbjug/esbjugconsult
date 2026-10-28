@@ -252,15 +252,37 @@ JS = """<script>
     };
     str(); addEventListener('resize', str);
     new IntersectionObserver(e => { synlig = e[0].isIntersecting; }).observe(c);
+    // Musa blåser litt på fnuggene: de nærmeste får et lite dytt i musas retning og bort fra pekeren, som dør ut.
+    const mus = { x: -999, y: -999, vx: 0, vy: 0 };
+    c.parentNode.addEventListener('pointermove', e => {
+      if (e.pointerType !== 'mouse') return;
+      const r = c.getBoundingClientRect(), nx = e.clientX - r.left, ny = e.clientY - r.top;
+      if (mus.x > -999) { mus.vx = mus.vx * .5 + (nx - mus.x) * .5; mus.vy = mus.vy * .5 + (ny - mus.y) * .5; }
+      mus.x = nx; mus.y = ny;
+    });
+    c.parentNode.addEventListener('pointerleave', () => { mus.x = mus.y = -999; mus.vx = mus.vy = 0; });
+    const R = 130;
     const tegn = () => {
       if (synlig && !document.hidden) {
         x.clearRect(0, 0, w, h); x.fillStyle = 'rgba(255,255,255,.8)'; x.beginPath();
         for (const p of f) {
-          p.y += p.v; p.s += .012; p.x += Math.sin(p.s) * .25;
-          if (p.y > h + 4) { p.y = -4; p.x = Math.random() * w; }
+          const fart = Math.abs(mus.vx) + Math.abs(mus.vy);
+          if (fart > .5) {
+            const dx = p.x - mus.x, dy = p.y - mus.y, d = Math.hypot(dx, dy);
+            if (d < R && d > 0) {
+              const k = (1 - d / R) * Math.min(fart, 40) / 40;
+              p.dx = (p.dx || 0) + (mus.vx * .02 + dx / d * .35) * k;
+              p.dy = (p.dy || 0) + (mus.vy * .02 + dy / d * .35) * k;
+            }
+          }
+          p.dx = (p.dx || 0) * .95; p.dy = (p.dy || 0) * .95;
+          p.y += p.v + p.dy; p.s += .012; p.x += Math.sin(p.s) * .25 + p.dx;
+          if (p.y > h + 4) { p.y = -4; p.x = Math.random() * w; p.dx = p.dy = 0; }
+          if (p.x < -6) p.x = w + 6; else if (p.x > w + 6) p.x = -6;
           x.moveTo(p.x + p.r, p.y); x.arc(p.x, p.y, p.r, 0, 6.283);
         }
         x.fill();
+        mus.vx *= .85; mus.vy *= .85;
       }
       requestAnimationFrame(tegn);
     };
