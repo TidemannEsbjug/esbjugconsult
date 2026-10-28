@@ -27,7 +27,6 @@ T = [
     ('aria-label="Tegning av et taulag på vei opp en snødekt fjellrygg i Norge, med en rød hytte nede i dalen"',
      'aria-label="Illustration of a roped team climbing a snowy mountain ridge in Norway, with a red cabin in the valley below"'),
     ('<a class="sh-merke" href="/">', '<a class="sh-merke" href="/en/">'),
-    ('Esbjug Consult <span>· Kanskje norges viktigste enkeltmannsforetak.</span>', 'Esbjug Consult <span>· Perhaps Norway\'s most important sole proprietorship.</span>'),
     ('<a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Kontakt</a>', '<a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Contact</a>'),
     ('<p class="sh-ey">Tidemann Esbjug – KI Sherpa</p>', '<p class="sh-ey">Tidemann Esbjug – AI Sherpa</p>'),
     ('<h1>Lettere til topps.</h1>', '<h1>Easier to the top.</h1>'),
