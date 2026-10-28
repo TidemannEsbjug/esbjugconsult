@@ -1989,7 +1989,8 @@ function pultBilde() {
 const EN_P = TX.loc.startsWith('en');
 const FARGE = EN_P ? { svart: 'Black', hvit: 'White', graa: 'Grey', blaa: 'Blue', roed: 'Red', groenn: 'Green', gul: 'Yellow', brun: 'Brown', oransje: 'Orange', rosa: 'Pink', lilla: 'Purple' }
   : { svart: 'Svart', hvit: 'Hvit', graa: 'Grå', blaa: 'Blå', roed: 'Rød', groenn: 'Grønn', gul: 'Gul', brun: 'Brun', oransje: 'Oransje', rosa: 'Rosa', lilla: 'Lilla' };
-const PLAGG = EN_P ? { tskjorte: 't-shirt', genser: 'sweater', annet: 'clothes' } : { tskjorte: 't-skjorte', genser: 'genser', annet: 'klær' };
+const PLAGG = EN_P ? { tskjorte: 't-shirt', skjorte: 'shirt', genser: 'sweater', hettegenser: 'hoodie', jakke: 'jacket', singlet: 'tank top', annet: 'clothes' }
+  : { tskjorte: 't-skjorte', skjorte: 'skjorte', genser: 'genser', hettegenser: 'hettegenser', jakke: 'jakke', singlet: 'singlet', annet: 'klær' };
 function visPult(t) {
   const kort = document.querySelector('.pultk'); if (!kort) return;
   // Kortet vises bare mens kameraet går: en analyse (med eller uten flaske) de siste 2 minuttene.
