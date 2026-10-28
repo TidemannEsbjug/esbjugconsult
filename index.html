@@ -54,6 +54,10 @@
   footer.hero{display:none}
   /* Heroen: uten overlinjen, og en større H1. */
   .sh-ey{display:none}
+  /* Toppen av heroen er tom: «Esbjug Consult», «Live» og «Kontakt» er skjult (ikke slettet). */
+  .sh-hero .sh-nav{display:none}
+  /* Chatten er skjult (ikke slettet). */
+  #chat{display:none!important}
   footer.hero{margin-top:0}
   .hero-v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
   .hero-i{position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:flex-start;padding:clamp(16px,2.6vw,36px) var(--g) var(--g)}
@@ -1163,7 +1167,8 @@
       mask-image:linear-gradient(to bottom,transparent 0,rgba(0,0,0,.15) calc(12% * var(--dyp,1)),rgba(0,0,0,.55) calc(26% * var(--dyp,1)),#000 calc(42% * var(--dyp,1)))}
     .sh-bilde video{position:absolute;inset:0}
     .sh-merke span{display:none}
-    .sh-hero h1{font-size:clamp(46px,13vw,62px)}
+    /* «Lettere til topps.» på én linje (8,9 em bred), heller mindre skrift enn to linjer. */
+    .sh-hero h1{font-size:9.6vw;white-space:nowrap}
     .sh-ingress{font-size:17px}
     .sh-knapp{padding:15px 20px}
   }
