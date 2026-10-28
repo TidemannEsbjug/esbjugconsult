@@ -306,7 +306,7 @@ export async function handleChat(request, env, url) {
   // Bevegelseshistorikk for akselerometrene (iPhone og Apple Watch), som pulsen: siste time, i dag, 7 dager, 30 dager.
   if (path === "/chat/bev") {
     const r = ["time", "fin", "dag", "uke", "mnd"].includes(url.searchParams.get("r")) ? url.searchParams.get("r") : "time";
-    const k = url.searchParams.get("k") === "watch" ? "watch" : "iphone";
+    const k = ["watchr", "watchl", "watch"].includes(url.searchParams.get("k")) ? url.searchParams.get("k") : "iphone";
     return hub.fetch(new Request("https://hub/internal/bev", { method: "POST", headers: { "x-role": "internal" }, body: JSON.stringify({ r, k }) }));
   }
 
@@ -1372,7 +1372,7 @@ export class ChatHub {
       this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, `tele:${kilde}`, JSON.stringify(ny));
       if (/^fyr[a-z]$/.test(kilde) && ["flaske", "harflaske", "modus", "pult", "stilling", "plagg", "farge", "hodetelefoner"].some((k) => k in ren)) this.kontorOppdater();
       {
-        const v = kilde === "iphone" ? ren.bevegelse : kilde === "watch" ? ren.haand : undefined;
+        const v = kilde === "iphone" ? ren.bevegelse : /^watch[rl]?$/.test(kilde) ? ren.haand : undefined;
         if (typeof v === "number" && v >= 0 && v < 20) {
           this.sql.exec(`INSERT OR REPLACE INTO bevegelse (k, ts, v) VALUES (?, ?, ?)`, kilde, ny.ts, v);
           if (ny.ts - (this.bevegelsePruned || 0) > 3600e3) { this.bevegelsePruned = ny.ts; this.sql.exec(`DELETE FROM bevegelse WHERE ts < ?`, this.slettFor(ny.ts)); }
@@ -2425,11 +2425,11 @@ export class ChatHub {
     const fra = Date.now() - 7 * 864e5, rekke = forst ? "ASC" : "DESC";
     const r = type === "puls"
       ? this.sql.exec(`SELECT ts, bpm AS v FROM hr WHERE ts >= ? ORDER BY ABS(bpm - ?) ASC, ts ${rekke} LIMIT 1`, fra, v).toArray()[0]
-      : this.sql.exec(`SELECT ts, json_extract(d, '$.bat') AS v FROM telelogg WHERE kilde=? AND ts >= ? AND json_extract(d, '$.bat') IS NOT NULL ORDER BY ABS(json_extract(d, '$.bat') - ?) ASC, ts ${rekke} LIMIT 1`, kilde, fra, v).toArray()[0];
+      : this.sql.exec(`SELECT ts, json_extract(d, '$.bat') AS v FROM telelogg WHERE kilde LIKE ? AND ts >= ? AND json_extract(d, '$.bat') IS NOT NULL ORDER BY ABS(json_extract(d, '$.bat') - ?) ASC, ts ${rekke} LIMIT 1`, kilde === "watch" ? "watch%" : kilde, fra, v).toArray()[0];
     if (!r) return null;
     const navn = new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", weekday: "long", day: "numeric", month: "numeric" }).format(r.ts);
     const kl = new Intl.DateTimeFormat("nb-NO", { timeZone: "Europe/Oslo", hour: "2-digit", minute: "2-digit" }).format(r.ts);
-    const hva = type === "puls" ? `${r.v} i puls` : `${r.v} % batteri på ${{ iphone: "iPhonen", watch: "Apple Watch", android: "Android-telefonen" }[kilde]}`;
+    const hva = type === "puls" ? `${r.v} i puls` : `${r.v} % batteri på ${{ iphone: "iPhonen", watch: "Apple Watch", watchr: "Apple Watch R", watchl: "Apple Watch L", android: "Android-telefonen" }[kilde]}`;
     return { id: "verdi", type, ts: r.ts, verdi: r.v, tekst: `${forst ? "Første" : "Siste"} gang han hadde ${hva}: ${navn} kl. ${kl}` + (r.v !== v ? ` (nærmeste: ${r.v})` : "") };
   }
 
@@ -2458,10 +2458,10 @@ export class ChatHub {
       const fyll = (type, r) => { if (!r) return; const [t, fmt, hoy] = TYPER[type]; legg(`${type}-${i}`, type, r.ts, r.v, `${t[0].toUpperCase() + t.slice(1)} ${navn}: ${fmt(r.v)} kl. ${kl.format(r.ts)}`, hoy); };
       fyll("pulsHoy", en(`SELECT ts, bpm AS v FROM hr WHERE ts >= ? AND ts < ? ORDER BY bpm DESC LIMIT 1`, start, slutt));
       fyll("pulsLav", en(`SELECT ts, bpm AS v FROM hr WHERE ts >= ? AND ts < ? ORDER BY bpm ASC LIMIT 1`, start, slutt));
-      for (const [k, type] of [["iphone", "iphoneBat"], ["watch", "watchBat"], ["android", "androidBat"]])
-        fyll(type, en(`SELECT ts, json_extract(d, '$.bat') AS v FROM telelogg WHERE kilde=? AND ts >= ? AND ts < ? AND json_extract(d, '$.bat') IS NOT NULL ORDER BY v ASC, ts ASC LIMIT 1`, k, start, slutt));
+      for (const [k, type] of [["iphone", "iphoneBat"], ["watch%", "watchBat"], ["android", "androidBat"]])
+        fyll(type, en(`SELECT ts, json_extract(d, '$.bat') AS v FROM telelogg WHERE kilde LIKE ? AND ts >= ? AND ts < ? AND json_extract(d, '$.bat') IS NOT NULL ORDER BY v ASC, ts ASC LIMIT 1`, k, start, slutt));
       fyll("bevegelse", en(`SELECT ts, v FROM bevegelse WHERE k='iphone' AND ts >= ? AND ts < ? ORDER BY v DESC LIMIT 1`, start, slutt));
-      fyll("haand", en(`SELECT ts, v FROM bevegelse WHERE k='watch' AND ts >= ? AND ts < ? ORDER BY v DESC LIMIT 1`, start, slutt));
+      fyll("haand", en(`SELECT ts, v FROM bevegelse WHERE k LIKE 'watch%' AND ts >= ? AND ts < ? ORDER BY v DESC LIMIT 1`, start, slutt));
       fyll("fart", en(`SELECT ts, spd AS v FROM pos WHERE ts >= ? AND ts < ? AND spd IS NOT NULL AND acc < 30 ORDER BY spd DESC LIMIT 1`, start, slutt));
     }
     for (const [type, b] of Object.entries(beste)) ut.push({ id: `${type}-uke`, type, ts: b.ts, verdi: b.verdi, uke: true,
