@@ -1064,10 +1064,9 @@
     .sh-knapp{padding:15px 20px}
   }
   @media (prefers-reduced-motion:reduce){.sh-prikk{animation:none}}
-  /* Hvit tekst i heroen (standard). Et svakt blått slør bak teksten gir nok kontrast mot den lyse himmelen.
+  /* Hvit tekst i heroen (standard), med en svak skygge rundt bokstavene. Ikke noe slør over bildet.
      ?tekst=bla viser den mørkeblå teksten (klassen .bla) for å sammenligne. */
   .sh-hero:not(.bla){color:#fff}
-  .sh-hero:not(.bla)::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(100deg,rgba(0,32,91,.42) 0%,rgba(0,32,91,.22) 40%,rgba(0,32,91,0) 66%)}
   .sh-hero:not(.bla) .sh-i{text-shadow:0 1px 22px rgba(0,25,70,.35)}
   .sh-hero:not(.bla) .sh-ey{color:rgba(255,255,255,.82)}
   .sh-hero:not(.bla) .sh-ingress{color:rgba(255,255,255,.94)}
@@ -1076,7 +1075,6 @@
   .sh-hero:not(.bla) .sh-lenker .sh-kontakt{border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.12)}
   .sh-hero:not(.bla) .sh-lenker .sh-kontakt:hover{background:rgba(255,255,255,.25)}
   .sh-hero:not(.bla) .sh-knapp{text-shadow:none}
-  @media (max-width:760px){.sh-hero:not(.bla)::before{background:linear-gradient(180deg,rgba(0,32,91,.38) 0%,rgba(0,32,91,.2) 40%,rgba(0,32,91,0) 55%)}}
 
   /* Kartet i vinterfarger: lys bunn mens det lastes, lyse kontroller */
   .hero{background:#dfe9f4}
