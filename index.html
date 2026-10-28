@@ -1178,7 +1178,35 @@
 <body>
 <script>document.body.classList.add('forspill');setTimeout(()=>document.body.classList.remove('forspill'),8000)</script>
 <section class="sh-hero" aria-label="AI-sherpaen">
-  <div class="sh-bilde"><video autoplay muted loop playsinline preload="auto" poster="/media/sherpa-video.webp" role="img" aria-label="Tegning av et taulag på vei opp en snødekt fjellrygg i Norge, med en rød hytte nede i dalen"><source src="/media/sherpa-900.mp4?v=3" type="video/mp4" media="(max-width:760px)"><source src="/media/sherpa.mp4?v=3" type="video/mp4"></video></div>
+  <div class="sh-bilde"><video autoplay muted loop playsinline preload="auto" poster="/media/sherpa-video.webp" role="img" aria-label="Tegning av et taulag på vei opp en snødekt fjellrygg i Norge, med en rød hytte nede i dalen"></video></div>
+  <script>
+  // Videokvaliteten velges før noe lastes. En kort regnetest (8 ms) og det nettleseren vet om nettet og minnet avgjør:
+  // høy (1456 px, 2,5 Mbit/s), middels (1456 px, 1 Mbit/s) eller lav (900 px). Henger videoen i mer enn halvannet
+  // sekund, går den ned ett trinn og fortsetter der den var.
+  (() => {
+    const v = document.querySelector('.sh-bilde video'), nett = navigator.connection || {}, minne = navigator.deviceMemory;
+    const NIVÅ = ['/media/sherpa-900.mp4?v=4', '/media/sherpa.mp4?v=3', '/media/sherpa-hq.mp4?v=1'];
+    let x = 1, n = 0, t0 = performance.now();
+    while (performance.now() - t0 < 2) for (let i = 0; i < 1000; i++) x = (x * 1.000001 + i) % 1e6;
+    t0 = performance.now();
+    while (performance.now() - t0 < 8) { for (let i = 0; i < 1000; i++) x = (x * 1.000001 + i) % 1e6; n++; }
+    const tregtNett = nett.saveData || /2g/.test(nett.effectiveType || '') || (nett.downlink && nett.downlink < 1.5);
+    const rasktNett = !nett.effectiveType || (nett.effectiveType === '4g' && !(nett.downlink && nett.downlink < 5));
+    let i = tregtNett || n < 150 || (minne && minne <= 2) ? 0 : rasktNett && n >= 350 && !(minne && minne < 4) ? 2 : 1;
+    v.src = NIVÅ[i];
+    let vakt;
+    v.addEventListener('waiting', () => {
+      clearTimeout(vakt);
+      vakt = setTimeout(() => {
+        if (v.readyState >= 3 || !i) return;
+        const t = v.currentTime;
+        v.src = NIVÅ[--i];
+        v.addEventListener('loadedmetadata', () => { v.currentTime = t; v.play().catch(() => {}); }, { once: true });
+      }, 1500);
+    });
+    v.addEventListener('playing', () => clearTimeout(vakt));
+  })();
+  </script>
   <canvas class="sh-sno" aria-hidden="true"></canvas>
   <canvas class="sh-sno foran" aria-hidden="true"></canvas>
   <nav class="sh-nav"><a class="sh-merke" href="/">Esbjug Consult <span>· AI-sherpaen</span></a><div class="sh-lenker"><a href="#live">Live</a><a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Kontakt</a></div></nav>
