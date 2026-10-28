@@ -186,7 +186,7 @@ HTML = f"""<section class="sh-hero" aria-label="AI-sherpaen">
   <div class="sh-i">
     <p class="sh-ey">AI-sherpaen Tidemann Esbjug</p>
     <h1>Du velger toppen. <i>Jeg bærer utstyret opp.</i></h1>
-    <p class="sh-ingress">Jeg tar de tunge løftene og setter opp systemene riktig, så ting går. Du kan nyte utsikten og ta del i AI.</p>
+    <p class="sh-ingress">Du vil være helt i front med AI, men å få systemene på plass kan være tungt. Det er der jeg kommer inn.</p>
     <div class="sh-cta"><a class="sh-knapp sh-p" href="mailto:tidemann@esbjugconsult.com">Snakk med meg</a><a class="sh-knapp sh-s" href="#live">Se hvor jeg er nå {PIL}</a></div>
     <p class="sh-live" hidden><i class="sh-prikk"></i><span>Live:</span> <span class="sh-sted">Henter posisjonen …</span></p>
   </div>
