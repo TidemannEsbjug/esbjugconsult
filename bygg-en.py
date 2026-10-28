@@ -29,7 +29,10 @@ T = [
     ('<a class="sh-merke" href="/">', '<a class="sh-merke" href="/en/">'),
     ('<a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Kontakt</a>', '<a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Contact</a>'),
     ('<p class="sh-ey">Tidemann Esbjug – KI Sherpa</p>', '<p class="sh-ey">Tidemann Esbjug – AI Sherpa</p>'),
-    ('Systemer bygget for å løfte Norge i bruk av KI.', 'Systems built to lift Norway in its use of AI.'),
+    ('Jeg bruker all tiden min på å prøve å bygge programvare som er nyttig for så mange mennesker som mulig.',
+     'I spend all my time trying to build software that is useful to as many people as possible.'),
+    ('Klart er neste release. Programmet som gjør GDPR-hverdagen langt enklere, og som hjelper med tryggere bruk av KI.',
+     'Klart is the next release. The program that makes everyday GDPR work far easier, and helps with safer use of AI.'),
     ('<a class="sh-knapp sh-p" href="mailto:tidemann@esbjugconsult.com">Snakk med meg</a>', '<a class="sh-knapp sh-p" href="mailto:tidemann@esbjugconsult.com">Talk to me</a>'),
 
     # --- toppen ---
