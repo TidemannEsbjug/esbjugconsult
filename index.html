@@ -1482,7 +1482,7 @@
   </div>
 </footer>
 <script src="/chat-moro.js?v=8"></script>
-<script>if (new URLSearchParams(location.search).has('h1')) document.body.append(Object.assign(document.createElement('script'), { src: '/slagord.js?v=3' }));</script>
+<script>if (/[?&](h1|ingress)\b/.test(location.search)) document.body.append(Object.assign(document.createElement('script'), { src: '/slagord.js?v=4' }));</script>
 <script>
 // Tidemanns egne enheter: åpne siden én gang med ?eier, så teller ikke denne nettleseren som besøkende og gir ikke varsel.
 (()=>{const q=new URLSearchParams(location.search);if(!q.has('eier'))return;document.cookie='esbjug_eier=1; Max-Age=31536000; Path=/; SameSite=Lax; Secure';

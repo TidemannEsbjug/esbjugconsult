@@ -1,4 +1,5 @@
-// Prøvebenk for H1 i heroen: åpne siden med ?h1 og bla med piltast høyre/venstre. Ingen teller eller annet på siden.
+// Prøvebenk for teksten i heroen: ?h1 blar i overskriften, ?ingress i teksten under, med piltast høyre/venstre.
+// Ingen teller eller annet på siden.
 // Lastes bare med ?h1, så vanlige besøkende ser ikke noe av dette. To deler = to linjer (andre del i kursiv på egen
 // linje). Én streng = én linje, der *ord* blir kursiv i linjen.
 (() => {
@@ -44,17 +45,41 @@
     'Oppover, *sammen*.',
     'KI på *din* fjellside.',
   ];
-  const h1 = document.querySelector('.sh-hero h1');
-  if (!h1) return;
+  const INGRESS = [
+    'Du vil være helt i front med KI, men å få systemene på plass kan være tungt. Det er der jeg kommer inn.',
+    'Du vil være helt i front med KI. Jeg setter opp systemene, så du slipper å bære dem selv.',
+    'KI kan gjøre bedriften din raskere. Jeg tar de tunge løftene med å få det til å virke i hverdagen.',
+    'Du bestemmer hvor bedriften skal. Jeg velger verktøyene, setter dem opp og får dem til å virke.',
+    'De fleste vil bruke KI, få har tid til å sette det opp. Det er det jeg gjør.',
+    'Jeg setter opp KI og systemene rundt, så du kan bruke tiden på det du er god på.',
+    'Fra første idé til systemer som går av seg selv. Jeg går foran og bærer det tunge.',
+    'KI er ikke vanskelig når noen har gått ruten før. Jeg har gått den mange ganger.',
+    'Du trenger ikke kunne alt om KI. Du trenger noen som kan det, og som setter det opp for deg.',
+    'Mindre manuelt arbeid, færre feil, mer tid. Jeg bygger KI-løsningene som gjør det mulig.',
+    'Jeg finner hvor KI sparer deg mest, setter det opp og sørger for at det fortsetter å virke.',
+    'Som en sherpa: Jeg kjenner fjellet, bærer utstyret og sørger for at hele laget kommer opp.',
+    'Teknologien finnes allerede. Jobben er å få den på plass hos deg, og den tar jeg.',
+    'Du vil ha KI som virker, ikke enda et prosjekt. Jeg leverer det ferdig satt opp.',
+    'Nye verktøy kommer hver uke. Jeg holder oversikten, velger riktig og setter det opp for deg.',
+    'Jeg bygger systemene, kobler sammen verktøyene og lærer laget ditt å bruke dem.',
+    'KI gir et forsprang til dem som kommer i gang. Jeg får deg i gang, og holder deg der.',
+    'Det tunge med KI er ikke ideen, men oppsettet. Det er der jeg kommer inn.',
+    'Kartlegging, oppsett og drift av KI og systemene rundt. Du går lett, jeg bærer.',
+    'Du får forspranget. Jeg tar slitet.',
+  ];
+  const ingress = new URLSearchParams(location.search).has('ingress');
+  const el = document.querySelector(ingress ? '.sh-ingress' : '.sh-hero h1');
+  if (!el) return;
+  const LISTE = ingress ? INGRESS : SLAGORD;
   let n = 0;
   const vis = () => {
-    const s = SLAGORD[n];
-    h1.innerHTML = Array.isArray(s) ? `${s[0]} <i>${s[1]}</i>` : s.replace(/\*(.+?)\*/g, '<i style="display:inline">$1</i>');
+    const s = LISTE[n];
+    el.innerHTML = Array.isArray(s) ? `${s[0]} <i>${s[1]}</i>` : s.replace(/\*(.+?)\*/g, '<i style="display:inline">$1</i>');
   };
   addEventListener('keydown', e => {
     if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
     if (/^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName)) return;
-    n = (n + (e.key === 'ArrowRight' ? 1 : SLAGORD.length - 1)) % SLAGORD.length;
+    n = (n + (e.key === 'ArrowRight' ? 1 : LISTE.length - 1)) % LISTE.length;
     vis();
   });
   vis();
