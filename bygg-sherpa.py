@@ -165,15 +165,15 @@ PIL = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=
        'stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>')
 
 LEIRER = [
-    ("Baseleiren", "Jeg ser på hvordan dere jobber i dag, hvilke systemer dere har og hvor det stopper opp."),
+    ("Baseleiren", "Jeg ser på hvordan du jobber i dag, hvilke systemer du har og hvor det stopper opp."),
     ("Leir 1", "Vi legger grunnmuren: kontoer, tilganger, data og sikkerhet satt opp riktig fra start."),
     ("Leir 2", "Jeg bygger og kobler sammen det som mangler, som nettside, app eller interne verktøy, så arbeidet flyter."),
-    ("Toppen", "Systemene står, og dere bruker AI i hverdagen. Nå kan dere nyte utsikten."),
+    ("Toppen", "Systemene står, og du bruker AI i hverdagen. Nå kan du nyte utsikten."),
 ]
 SVAR = ["Vet ikke hvor vi skal begynne", "Vet hva vi trenger, mangler oppsettet", "Har noe på plass, men det henger ikke sammen", "Systemene står, vil bruke AI mer"]
 
 leirer = "\n".join(
-    f'      <li><span class="sh-nr">0{i + 1}</span><h3>{n}</h3><p>{t}</p><b class="sh-her">Dere er her</b></li>'
+    f'      <li><span class="sh-nr">0{i + 1}</span><h3>{n}</h3><p>{t}</p><b class="sh-her">Du er her</b></li>'
     for i, (n, t) in enumerate(LEIRER))
 svar = "\n".join(
     f'        <button type="button" aria-pressed="false"><span class="sh-v-t"><span class="sh-v-n">0{i + 1}</span>{t}</span><span class="sh-v-p"></span></button>'
@@ -185,8 +185,8 @@ HTML = f"""<section class="sh-hero" aria-label="AI-sherpaen">
   <nav class="sh-nav"><a class="sh-merke" href="/sherpa/">{LOGO}Esbjug Consult <span>· AI-sherpaen</span></a><div class="sh-lenker"><a href="#ruten">Ruten</a><a href="#live">Live</a><a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Kontakt</a></div></nav>
   <div class="sh-i">
     <p class="sh-ey">AI-sherpaen Tidemann Esbjug</p>
-    <h1>Jeg tar de tunge løftene. <i>Dere nyter utsikten.</i></h1>
-    <p class="sh-ingress">En sherpa kjenner fjellet og bærer det tunge, så andre kommer trygt opp. Jeg gjør det samme med AI: jeg setter opp systemene riktig, så ting går og dere kan ta del i AI.</p>
+    <h1>Du velger toppen. <i>Jeg bærer utstyret opp.</i></h1>
+    <p class="sh-ingress">Jeg tar de tunge løftene og setter opp systemene riktig, så ting går. Du kan nyte utsikten og ta del i AI.</p>
     <div class="sh-cta"><a class="sh-knapp sh-p" href="mailto:tidemann@esbjugconsult.com">Snakk med meg</a><a class="sh-knapp sh-s" href="#live">Se hvor jeg er nå {PIL}</a></div>
     <p class="sh-live" hidden><i class="sh-prikk"></i><span>Live:</span> <span class="sh-sted">Henter posisjonen …</span></p>
   </div>
@@ -194,7 +194,7 @@ HTML = f"""<section class="sh-hero" aria-label="AI-sherpaen">
 <section class="sh-rute" id="ruten" aria-label="Ruten">
   <div class="sh-w">
     <p class="sh-k">&gt; Ruten</p>
-    <h2>Fire leirer, fra der dere står til <i>toppen</i>.</h2>
+    <h2>Fire leirer, fra der du står til <i>toppen</i>.</h2>
     <div class="sh-profil" aria-hidden="true">
       <svg viewBox="0 0 1000 130" preserveAspectRatio="none"><path class="sh-fjell" d="M0 130V117C4 116 6 115 8 115C90 108 180 96 268 85C360 74 440 66 528 55C620 44 700 30 788 22C860 16 930 12 1000 8V130Z"/><path class="sh-sti" vector-effect="non-scaling-stroke" d="M0 117C4 116 6 115 8 115C90 108 180 96 268 85C360 74 440 66 528 55C620 44 700 30 788 22C860 16 930 12 1000 8"/></svg>
       <i class="sh-pk"></i><i class="sh-pk"></i><i class="sh-pk"></i><i class="sh-pk"></i>
@@ -209,7 +209,7 @@ HTML = f"""<section class="sh-hero" aria-label="AI-sherpaen">
         <div class="sh-valg" role="group" aria-label="Hvor står bedriften din i dag?">
 {svar}
         </div>
-        <p class="sh-poll-s" aria-live="polite"><span class="sh-etter"><span class="sh-sum"></span> · Ruten starter der bedriften står i dag. <a href="mailto:tidemann@esbjugconsult.com">Snakk med meg</a></span></p>
+        <p class="sh-poll-s" aria-live="polite"><span class="sh-etter"><span class="sh-sum"></span> · Ruten starter der du står i dag. <a href="mailto:tidemann@esbjugconsult.com">Snakk med meg</a></span></p>
       </div>
       <div class="sh-kort sh-utstyr">
         <h3>Utstyret i sekken</h3>
