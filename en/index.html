@@ -1098,7 +1098,7 @@
 <body>
 <script>document.body.classList.add('forspill');setTimeout(()=>document.body.classList.remove('forspill'),8000)</script>
 <section class="sh-hero" aria-label="The AI Sherpa">
-  <div class="sh-bilde"><video autoplay muted loop playsinline preload="auto" poster="/media/sherpa-video.webp" role="img" aria-label="Illustration of a roped team climbing a snowy mountain ridge in Norway, with a red cabin in the valley below"><source src="/media/sherpa-900.mp4" type="video/mp4" media="(max-width:760px)"><source src="/media/sherpa.mp4" type="video/mp4"></video></div>
+  <div class="sh-bilde"><video autoplay muted loop playsinline preload="auto" poster="/media/sherpa-video.webp" role="img" aria-label="Illustration of a roped team climbing a snowy mountain ridge in Norway, with a red cabin in the valley below"><source src="/media/sherpa-900.mp4?v=2" type="video/mp4" media="(max-width:760px)"><source src="/media/sherpa.mp4?v=2" type="video/mp4"></video></div>
   <canvas class="sh-sno" aria-hidden="true"></canvas>
   <nav class="sh-nav"><a class="sh-merke" href="/en/"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" fill="#00205B"/><circle cx="16" cy="16" r="9" fill="#BA0C2F" stroke="#fff" stroke-width="3"/></svg>Esbjug Consult <span>· The AI Sherpa</span></a><div class="sh-lenker"><a href="#live">Live</a><a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Contact</a></div></nav>
   <div class="sh-i">
@@ -3296,10 +3296,24 @@ setInterval(tegn, 1000);
 (() => {
   const $ = q => document.querySelector(q);
   if (/[?&]tekst=bla\b/.test(location.search)) $('.sh-hero').classList.add('bla');
-  // Videoen i heroen (Grok-animasjon av Midjourney-bildet, sømløs løkke): står stille ved redusert bevegelse
-  // og pauses når heroen er ute av syne.
+  // Videoen i heroen: tre Grok-klipp av Midjourney-bilder, klippet rett etter hverandre (start, den bratte bakken,
+  // toppen) og i løkke. Står stille ved redusert bevegelse og pauses når heroen er ute av syne.
   const vid = $('.sh-bilde video');
   if (vid) {
+    // Bakgrunnen over videoen følger himmelen i hver scene, så toppen av videoen glir over i riktig farge.
+    // Starttid i sekunder (klippene er 361, 343 og 361 bilder i 24 fps) og himmelfargen målt øverst til venstre.
+    const HIMMEL = [[0, '#74a8d4'], [361 / 24, '#b2d0de'], [704 / 24, '#7dadc0']];
+    const hero = $('.sh-hero');
+    const himmel = () => {
+      const t = vid.currentTime + 0.01;
+      let farge = HIMMEL[0][1];
+      for (const [start, f] of HIMMEL) if (t >= start) farge = f;
+      hero.style.setProperty('--sky', farge);
+    };
+    if ('requestVideoFrameCallback' in vid) {
+      const hvertBilde = () => { himmel(); vid.requestVideoFrameCallback(hvertBilde); };
+      vid.requestVideoFrameCallback(hvertBilde);
+    } else vid.addEventListener('timeupdate', himmel);
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) { vid.removeAttribute('autoplay'); vid.pause(); }
     else new IntersectionObserver(e => { if (e[0].isIntersecting) vid.play().catch(() => {}); else vid.pause(); }).observe(vid);
   }

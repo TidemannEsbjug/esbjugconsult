@@ -88,9 +88,33 @@ export default {
     }
     // Visit push for page loads; never allowed to break serving the page.
     try { const visit = pageVisit(request, env, url); if (visit) ctx.waitUntil(visit); } catch {}
-    return env.ASSETS.fetch(request);
+    const svar = await env.ASSETS.fetch(request);
+    if (/\.(mp4|m4v|webm|mov|mp3|m4a)$/i.test(url.pathname)) return medRange(request, svar);
+    return svar;
   },
 };
+
+// Statiske filer svarer ikke på Range, men Safari spiller ikke video uten (og spoling trenger det overalt).
+// Videoene og lyden her er noen få MB, så hele fila leses og biten som ble bedt om sendes som 206.
+async function medRange(request, svar) {
+  if (svar.status !== 200) return svar;
+  const hoder = new Headers(svar.headers);
+  hoder.set("Accept-Ranges", "bytes");
+  const m = (request.headers.get("Range") || "").match(/^bytes=(\d*)-(\d*)$/);
+  if (!m || (!m[1] && !m[2])) return new Response(svar.body, { status: 200, headers: hoder });
+  const data = await svar.arrayBuffer();
+  const str = data.byteLength;
+  let fra = m[1] ? Number(m[1]) : Math.max(0, str - Number(m[2]));
+  const til = m[1] && m[2] ? Math.min(Number(m[2]), str - 1) : str - 1;
+  if (fra >= str || fra > til) {
+    hoder.set("Content-Range", `bytes */${str}`);
+    hoder.delete("Content-Length");
+    return new Response(null, { status: 416, headers: hoder });
+  }
+  hoder.set("Content-Range", `bytes ${fra}-${til}/${str}`);
+  hoder.set("Content-Length", String(til - fra + 1));
+  return new Response(data.slice(fra, til + 1), { status: 206, headers: hoder });
+}
 
 // En episode fra R2 med Range-støtte, så spoling virker (Safari krever det for lyd).
 async function podcastLyd(request, env, fil) {
