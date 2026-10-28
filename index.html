@@ -1033,6 +1033,15 @@
     -webkit-mask-image:linear-gradient(to bottom,transparent,#000 22%);mask-image:linear-gradient(to bottom,transparent,#000 22%)}
   .sh-bilde video{width:100%;height:100%;object-fit:cover;object-position:70% 100%;display:block}
   .sh-sno{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+  /* Snøen i to lag: de fjerne fnuggene bak teksten, de nære (store, myke) foran den. */
+  .sh-sno.foran{z-index:3}
+  /* Pekeren i sherpa-heroen: et lite snøfnugg som snur seg sakte, blir litt større over noe klikkbart og drysser
+     av seg et fnugg iblant når det flyttes. Bare med mus/styreflate. */
+  @media (hover:hover) and (pointer:fine){html.mus .sh-hero, html.mus .sh-hero *{cursor:none!important}}
+  .sno-k{position:fixed;left:0;top:0;width:24px;height:24px;margin:-12px 0 0 -12px;z-index:2147483646;pointer-events:none;opacity:0;transition:opacity .4s}
+  .sno-k svg{width:100%;height:100%;display:block;overflow:visible;filter:drop-shadow(0 0 1.5px rgba(0,32,91,.5)) drop-shadow(0 0 7px rgba(255,255,255,.7))}
+  .sno-k g{stroke:#fff;stroke-width:1.5;stroke-linecap:round;fill:none}
+  html.sno-inne .sno-k{opacity:1}
   .sh-nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px var(--g) 0}
   .sh-merke{display:flex;align-items:center;gap:10px;color:inherit;text-decoration:none;font:600 15px/1 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;letter-spacing:.01em}
   .sh-merke svg{width:26px;height:26px;border-radius:7px;flex:none}
@@ -1102,6 +1111,7 @@
 <section class="sh-hero" aria-label="AI-sherpaen">
   <div class="sh-bilde"><video autoplay muted loop playsinline preload="auto" poster="/media/sherpa-video.webp" role="img" aria-label="Tegning av et taulag på vei opp en snødekt fjellrygg i Norge, med en rød hytte nede i dalen"><source src="/media/sherpa-900.mp4?v=2" type="video/mp4" media="(max-width:760px)"><source src="/media/sherpa.mp4?v=2" type="video/mp4"></video></div>
   <canvas class="sh-sno" aria-hidden="true"></canvas>
+  <canvas class="sh-sno foran" aria-hidden="true"></canvas>
   <nav class="sh-nav"><a class="sh-merke" href="/"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" fill="#00205B"/><circle cx="16" cy="16" r="9" fill="#BA0C2F" stroke="#fff" stroke-width="3"/></svg>Esbjug Consult <span>· AI-sherpaen</span></a><div class="sh-lenker"><a href="#live">Live</a><a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Kontakt</a></div></nav>
   <div class="sh-i">
     <p class="sh-ey">AI-sherpaen Tidemann Esbjug</p>
@@ -3339,18 +3349,30 @@ setInterval(tegn, 1000);
     sett(); new MutationObserver(sett).observe(navn, { childList: true, characterData: true, subtree: true });
   }
 
-  const c = $('.sh-sno');
-  if (c && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const x = c.getContext('2d'); let w = 0, h = 0, f = [], synlig = true;
+  // Snøen har dybde: hvert fnugg har en avstand z (0 langt borte, 1 nærmest). Nære fnugg er større, mykere og faller
+  // fortere. De nærmeste tegnes på et lerret foran teksten, resten bak. Foran teksten dempes de, så den kan leses.
+  const c = $('.sh-sno'), cf = $('.sh-sno.foran'), rolig = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const drys = [];  // fnugg som pekeren drysser av seg
+  if (c && cf && !rolig) {
+    const x = c.getContext('2d'), xf = cf.getContext('2d'); let w = 0, h = 0, f = [], synlig = true, tekst = [], n = 0;
+    const FORAN = .84;
+    const nytt = y => { const z = Math.random() ** 1.7; return { x: Math.random() * w, y, z, r: .45 + z * 2.4, v: .15 + z * .6, s: Math.random() * 6.28, a: 1 }; };
+    const maalTekst = () => {
+      const r0 = c.getBoundingClientRect();
+      tekst = [...document.querySelectorAll('.sh-ey, .sh-hero h1, .sh-ingress, .sh-cta, .sh-live, .sh-nav')].map(el => el.getBoundingClientRect())
+        .filter(r => r.width).map(r => [r.left - r0.left - 8, r.top - r0.top - 8, r.right - r0.left + 8, r.bottom - r0.top + 8]);
+    };
     const str = () => {
       if (c.clientWidth === w && c.clientHeight === h) return;
       const nyBredde = c.clientWidth !== w, d = Math.min(devicePixelRatio || 1, 2); w = c.clientWidth; h = c.clientHeight;
-      c.width = w * d; c.height = h * d; x.setTransform(d, 0, 0, d, 0, 0);
-      if (nyBredde || !f.length) f = Array.from({ length: Math.round(w * h / 9000) }, () => ({ x: Math.random() * w, y: Math.random() * h, r: Math.random() * 1.7 + .5, v: Math.random() * .45 + .2, s: Math.random() * 6.28 }));
+      for (const [k, kx] of [[c, x], [cf, xf]]) { k.width = w * d; k.height = h * d; kx.setTransform(d, 0, 0, d, 0, 0); }
+      if (nyBredde || !f.length) f = Array.from({ length: Math.round(w * h / 8000) }, () => nytt(Math.random() * h));
+      maalTekst();
     };
     str(); addEventListener('resize', str);
     new IntersectionObserver(e => { synlig = e[0].isIntersecting; }).observe(c);
     // Musa blåser litt på fnuggene: de nærmeste får et lite dytt i musas retning og bort fra pekeren, som dør ut.
+    // Nære fnugg flytter seg mer enn fjerne.
     const mus = { x: -999, y: -999, vx: 0, vy: 0 };
     c.parentNode.addEventListener('pointermove', e => {
       if (e.pointerType !== 'mouse') return;
@@ -3360,31 +3382,92 @@ setInterval(tegn, 1000);
     });
     c.parentNode.addEventListener('pointerleave', () => { mus.x = mus.y = -999; mus.vx = mus.vy = 0; });
     const R = 130;
+    const overTekst = p => tekst.some(([l, t, r, b]) => p.x > l && p.x < r && p.y > t && p.y < b);
     const tegn = () => {
       if (synlig && !document.hidden) {
-        x.clearRect(0, 0, w, h); x.fillStyle = 'rgba(255,255,255,.8)'; x.beginPath();
+        if (++n % 60 === 0) maalTekst();
+        x.clearRect(0, 0, w, h); xf.clearRect(0, 0, w, h);
+        const fart = Math.abs(mus.vx) + Math.abs(mus.vy);
         for (const p of f) {
-          const fart = Math.abs(mus.vx) + Math.abs(mus.vy);
           if (fart > .5) {
             const dx = p.x - mus.x, dy = p.y - mus.y, d = Math.hypot(dx, dy);
             if (d < R && d > 0) {
-              const k = (1 - d / R) * Math.min(fart, 40) / 40;
+              const k = (1 - d / R) * Math.min(fart, 40) / 40 * (.4 + p.z);
               p.dx = (p.dx || 0) + (mus.vx * .02 + dx / d * .35) * k;
               p.dy = (p.dy || 0) + (mus.vy * .02 + dy / d * .35) * k;
             }
           }
           p.dx = (p.dx || 0) * .95; p.dy = (p.dy || 0) * .95;
-          p.y += p.v + p.dy; p.s += .012; p.x += Math.sin(p.s) * .25 + p.dx;
-          if (p.y > h + 4) { p.y = -4; p.x = Math.random() * w; p.dx = p.dy = 0; }
-          if (p.x < -6) p.x = w + 6; else if (p.x > w + 6) p.x = -6;
-          x.moveTo(p.x + p.r, p.y); x.arc(p.x, p.y, p.r, 0, 6.283);
+          p.y += p.v + p.dy; p.s += .012; p.x += Math.sin(p.s) * (.12 + p.z * .25) + p.dx;
+          if (p.y > h + 6) Object.assign(p, nytt(-6), { dx: 0, dy: 0 });
+          if (p.x < -8) p.x = w + 8; else if (p.x > w + 8) p.x = -8;
+          if (p.z > FORAN) {
+            p.a += ((overTekst(p) ? .3 : 1) - p.a) * .08;
+            const g = xf.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 1.8);
+            g.addColorStop(0, `rgba(255,255,255,${.9 * p.a})`); g.addColorStop(.55, `rgba(255,255,255,${.55 * p.a})`); g.addColorStop(1, 'rgba(255,255,255,0)');
+            xf.fillStyle = g; xf.beginPath(); xf.arc(p.x, p.y, p.r * 1.8, 0, 6.283); xf.fill();
+          } else {
+            x.globalAlpha = .45 + p.z * .5; x.fillStyle = '#fff';
+            x.beginPath(); x.arc(p.x, p.y, p.r, 0, 6.283); x.fill();
+          }
         }
-        x.fill();
+        x.globalAlpha = 1;
+        // Drysset fra pekeren: små fnugg som daler rolig og blekner på et par sekunder.
+        const r0 = c.getBoundingClientRect();
+        for (let i = drys.length - 1; i >= 0; i--) {
+          const p = drys[i];
+          p.liv -= .006; if (p.liv <= 0) { drys.splice(i, 1); continue; }
+          p.y += p.v; p.s += .03; p.x += Math.sin(p.s) * .3 + p.dx; p.dx *= .96;
+          xf.globalAlpha = p.liv * .85; xf.fillStyle = '#fff';
+          xf.beginPath(); xf.arc(p.x - r0.left, p.y - r0.top, p.r, 0, 6.283); xf.fill();
+        }
+        xf.globalAlpha = 1;
         mus.vx *= .85; mus.vy *= .85;
       }
       requestAnimationFrame(tegn);
     };
     tegn();
+  }
+
+  // Pekeren: et snøfnugg som står nøyaktig der pekeren er. Det snur seg sakte, og litt ekstra når det flyttes sidelengs.
+  // Over noe klikkbart vokser det litt, ved trykk krymper det. Hvert ~80. piksel det flyttes drysser det av seg et fnugg.
+  if (matchMedia('(hover:hover) and (pointer:fine)').matches) {
+    const rot = document.documentElement, k = document.createElement('div');
+    const arm = '<line x1="0" y1="0" x2="0" y2="-10"/><polyline points="-3,-8.6 0,-6 3,-8.6"/>';
+    k.className = 'sno-k';
+    k.innerHTML = '<svg viewBox="-12 -12 24 24" aria-hidden="true"><g>' + [0, 60, 120, 180, 240, 300].map(v => `<g transform="rotate(${v})">${arm}</g>`).join('') + '<circle r="1.3" fill="#fff" stroke="none"/></g></svg>';
+    document.body.append(k); rot.classList.add('mus');
+    const KLIKK = 'a,button,[role="button"],label,select,summary';
+    let px = -99, py = -99, vinkel = 0, spinn = 0, skala = 1, maal = 1, inne = false, over = false, ned = false, vei = 0;
+    addEventListener('pointermove', e => {
+      if (e.pointerType !== 'mouse') return;
+      const t = e.target instanceof Element ? e.target : null;
+      inne = !!t?.closest('.sh-hero'); rot.classList.toggle('sno-inne', inne);
+      if (!inne) { px = -99; return; }
+      over = !!t.closest(KLIKK);
+      if (px > -99) {
+        const dx = e.clientX - px, dy = e.clientY - py;
+        spinn += dx * .25; vei += Math.hypot(dx, dy);
+        if (vei > 80 && !rolig && drys.length < 40) {
+          vei = 0;
+          drys.push({ x: e.clientX + (Math.random() - .5) * 8, y: e.clientY + 6, r: .8 + Math.random() * .9, v: .3 + Math.random() * .25, s: Math.random() * 6.28, dx: dx * .05, liv: 1 });
+        }
+      }
+      px = e.clientX; py = e.clientY;
+    }, { passive: true });
+    addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') ned = true; });
+    addEventListener('pointerup', () => { ned = false; });
+    document.addEventListener('mouseleave', () => { inne = false; rot.classList.remove('sno-inne'); });
+    const loop = () => {
+      if (inne) {
+        maal = ned ? .8 : over ? 1.45 : 1;
+        skala += (maal - skala) * .15;
+        if (!rolig) { spinn *= .92; vinkel += .15 + spinn * .08; }
+        k.style.transform = `translate(${px}px,${py}px) rotate(${vinkel}deg) scale(${skala})`;
+      }
+      requestAnimationFrame(loop);
+    };
+    loop();
   }
 
 })();
