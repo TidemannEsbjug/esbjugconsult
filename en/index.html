@@ -292,9 +292,24 @@
   .ch-b.møte::after{animation:none}
   .ch-b.møte::before{content:"";position:absolute;top:10px;left:31px;width:6px;height:6px;border-radius:50%;background:#e9a23b;box-shadow:0 0 0 1.5px rgba(255,255,255,.9)}
   @media (prefers-reduced-motion:reduce){.ch-b.på::before{animation:none}}
+  /* Prikken over boblen er fjernet. I stedet daler det litt snø inne i knappen, bak teksten (to lag med fnugg i ulik fart). */
+  .ch-b.på::before,.ch-b.møte::before{content:none}
+  .ch-b{isolation:isolate}
+  .ch-b::after,.ch-b.på::after,.ch-b.møte::after{z-index:-1;animation:chSno 9s linear infinite;
+    background:radial-gradient(circle,#fff 0 .9px,rgba(120,160,215,.55) 1.3px,transparent 1.8px) 0 0/22px 26px,
+      radial-gradient(circle,#fff 0 .6px,rgba(120,160,215,.45) 1px,transparent 1.4px) 11px 7px/17px 19px;
+    -webkit-mask-image:linear-gradient(transparent,#000 35%,#000 70%,transparent);mask-image:linear-gradient(transparent,#000 35%,#000 70%,transparent)}
+  @keyframes chSno{to{background-position:22px 52px,28px 45px}}
+  @media (prefers-reduced-motion:reduce){.ch-b::after,.ch-b.på::after,.ch-b.møte::after{animation:none}}
   /* Natt: knappen og chatvinduet blir nattblå, z-ene stiger opp over knappen. */
   .ch-b.sover{background:#1f2c55;color:#cfdcff;box-shadow:0 8px 24px rgba(20,30,70,.35)}
   .natt .ch-p{background:#141b33}
+  /* Chatvinduet (fra 28.10.2026): halvgjennomsiktig is i arktisk blått i stedet for marineblått, med uskarphet bak. */
+  #chat .ch-p{background:linear-gradient(165deg,rgba(96,140,190,.72),rgba(44,84,138,.8));border:1px solid rgba(255,255,255,.35);
+    -webkit-backdrop-filter:blur(20px) saturate(1.25);backdrop-filter:blur(20px) saturate(1.25);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 18px 50px rgba(0,32,91,.3)}
+  #chat .ch-m .him,#chat .ch-more button,#chat .ch-mail,#chat .ch-ck,#chat .ch-m p.file a{background:rgba(255,255,255,.17)}
+  #chat .ch-f textarea{background:rgba(10,40,85,.28)}
+  .natt #chat .ch-p{background:rgba(20,27,51,.82)}
   .natt .ch-h{border-bottom-color:rgba(160,180,255,.18)}
   .natt .ch-h b{color:#cfdcff}
   .natt .ch-m .him{background:#222b4a}
@@ -1050,10 +1065,10 @@
   .natt-lag{display:none}
   .focus .sh-hero{opacity:0;filter:blur(8px);pointer-events:none}
   .sh-hero{--sky:#74a8d4;position:relative;min-height:100svh;display:flex;flex-direction:column;background:var(--sky);color:#00205B;overflow:hidden;isolation:isolate}
-  /* Videoen står nederst i sitt eget format. Toppen glir over i himmelen (bakgrunnen følger himmelen i hver scene,
-     se HIMMEL i skriptet), så fjelltoppen ikke kuttes av en vannrett kant når kameraet stiger. */
+  /* Videoen står nederst i sitt eget format. Toppen glir mykt over i himmelen. Bakgrunnen får fargen målt fra toppen av
+     videoen i hvert bilde (se «himmel» i skriptet), så det ikke blir en vannrett strek der videoen begynner. */
   .sh-bilde{position:absolute;left:0;right:0;bottom:0;height:min(100%,calc(100vw * .4286));z-index:-2;margin:0;
-    -webkit-mask-image:linear-gradient(to bottom,transparent,#000 22%);mask-image:linear-gradient(to bottom,transparent,#000 22%)}
+    -webkit-mask-image:linear-gradient(to bottom,transparent,rgba(0,0,0,.3) 13%,rgba(0,0,0,.72) 25%,#000 36%);mask-image:linear-gradient(to bottom,transparent,rgba(0,0,0,.3) 13%,rgba(0,0,0,.72) 25%,#000 36%)}
   .sh-bilde video{width:100%;height:100%;object-fit:cover;object-position:70% 100%;display:block}
   .sh-sno{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
   /* Snøen i to lag: de fjerne fnuggene bak teksten, de nære (store, myke) foran den. */
@@ -3310,7 +3325,23 @@ setInterval(tegn, 1000);
     // Starttid i sekunder (klippene er 361, 343 og 361 bilder i 24 fps) og himmelfargen målt øverst til venstre.
     const HIMMEL = [[0, '#74a8d4'], [361 / 24, '#b2d0de'], [704 / 24, '#7dadc0']];
     const hero = $('.sh-hero');
+    // Fargen måles i det øverste båndet av videoen (venstre halvdel, der det er himmel) og glir mot ny verdi, så den følger
+    // kameraet. Går målingen ikke, brukes fargen for scenen fra HIMMEL.
+    const prøve = document.createElement('canvas'); prøve.width = 24; prøve.height = 3;
+    const px = prøve.getContext('2d', { willReadFrequently: true });
+    let rgb = null, kanMåle = true;
     const himmel = () => {
+      if (kanMåle && vid.videoWidth) {
+        try {
+          px.drawImage(vid, 0, 0, vid.videoWidth * .5, vid.videoHeight * .05, 0, 0, 24, 3);
+          const d = px.getImageData(0, 0, 24, 3).data, ny = [0, 0, 0];
+          for (let i = 0; i < d.length; i += 4) { ny[0] += d[i]; ny[1] += d[i + 1]; ny[2] += d[i + 2]; }
+          for (let k = 0; k < 3; k++) ny[k] /= d.length / 4;
+          rgb = rgb ? rgb.map((v, k) => v + (ny[k] - v) * .3) : ny;
+          hero.style.setProperty('--sky', `rgb(${rgb.map(Math.round).join(',')})`);
+          return;
+        } catch { kanMåle = false; }
+      }
       const t = vid.currentTime + 0.01;
       let farge = HIMMEL[0][1];
       for (const [start, f] of HIMMEL) if (t >= start) farge = f;
