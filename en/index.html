@@ -11,7 +11,7 @@
 <link rel="alternate" hreflang="nb" href="https://esbjugconsult.com/">
 <link rel="alternate" hreflang="en" href="https://esbjugconsult.com/en/">
 <script>document.documentElement.classList.add("js");if(/[?&]speil=1/.test(location.search))document.documentElement.classList.add("speil","vis")</script>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2300205B'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%23BA0C2F' stroke='%23fff' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2300205B'/%3E%3Ctext x='16' y='23.5' text-anchor='middle' font-family='Georgia,Times New Roman,serif' font-size='22' fill='%23fff'%3EE%3C/text%3E%3C/svg%3E">
 <link rel="preload" href="/media/sherpa-video.webp" as="image" type="image/webp">
 <link rel="preload" href="/media/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin>
 <style>
@@ -1052,13 +1052,13 @@
   /* Pekeren i sherpa-heroen: en vanlig pil, men av is (frostet, gjennomskinnelig, med blanke kanter). Lyser litt mer
      over noe klikkbart og drysser av seg et snøfnugg iblant når den flyttes. Bare med mus/styreflate. */
   @media (hover:hover) and (pointer:fine){html.mus .sh-hero, html.mus .sh-hero *{cursor:none!important}}
-  .sno-k{position:fixed;left:0;top:0;width:17px;height:25px;z-index:2147483646;pointer-events:none;opacity:0;transition:opacity .4s;transform-origin:0 0}
-  .sno-k svg{width:100%;height:100%;display:block;overflow:visible;filter:drop-shadow(0 1px 1.5px rgba(0,32,91,.35)) drop-shadow(0 0 6px rgba(255,255,255,.55));transition:filter .3s}
-  html.sno-over .sno-k svg{filter:drop-shadow(0 1px 1.5px rgba(0,32,91,.35)) drop-shadow(0 0 9px rgba(205,222,255,.95))}
+  .sno-k{position:fixed;left:0;top:0;width:20px;height:29px;z-index:2147483646;pointer-events:none;opacity:0;transition:opacity .4s;transform-origin:0 0}
+  .sno-k svg{position:relative;width:100%;height:100%;display:block;overflow:visible;filter:drop-shadow(0 1px 2px rgba(0,32,91,.55)) drop-shadow(0 0 6px rgba(255,255,255,.6));transition:filter .3s}
+  .sno-k::before{content:"";position:absolute;left:-54px;top:-54px;width:108px;height:108px;border-radius:50%;background:radial-gradient(circle,rgba(240,247,255,.2),rgba(240,247,255,0) 62%)}
+  html.sno-over .sno-k svg{filter:drop-shadow(0 1px 2px rgba(0,32,91,.55)) drop-shadow(0 0 9px rgba(205,222,255,.95))}
   html.sno-inne .sno-k{opacity:1}
   .sh-nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px var(--g) 0}
   .sh-merke{display:flex;align-items:center;gap:10px;color:inherit;text-decoration:none;font:600 15px/1 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;letter-spacing:.01em}
-  .sh-merke svg{width:26px;height:26px;border-radius:7px;flex:none}
   .sh-merke span{opacity:.6;font-weight:500}
   .sh-lenker{display:flex;align-items:center;gap:26px}
   .sh-lenker a{color:inherit;text-decoration:none;font:500 15px/1 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif}
@@ -1073,19 +1073,22 @@
   .sh-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
   .sh-knapp{display:inline-flex;align-items:center;gap:10px;padding:16px 24px;border-radius:999px;text-decoration:none;font:600 16px/1 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;transition:transform .15s ease,box-shadow .15s ease,background .15s ease}
   .sh-knapp:hover{transform:translateY(-1px)}
-  .sh-knapp.sh-p{background:#BA0C2F;color:#fff;box-shadow:0 10px 28px rgba(186,12,47,.32)}
+  .sh-knapp.sh-p{color:#fff;box-shadow:0 8px 24px rgba(0,32,91,.16)}
   .sh-knapp svg{width:16px;height:16px}
-  /* Frost: når ispilen holdes over knappen, fryser den fra der pekeren kom inn. Isen brer seg med en myk kant og gjør
-     det røde om til blått og hvitt, fine iskrystaller vokser litt foran kanten, rim glitrer, og teksten blir mørkeblå når
-     mesteparten er frosset. Når pekeren går, tiner det tilbake. Styres fra skriptet («Frost») med --fx, --fy og --fr. */
-  .sh-knapp.sh-p{position:relative;overflow:hidden;isolation:isolate;transition:transform .15s ease,box-shadow 1.2s ease,color .9s ease}
-  .sh-knapp.sh-p.frosset{color:#00205B;box-shadow:0 10px 30px rgba(110,150,215,.35)}
+  /* Frost: ispilen har en usynlig aura. Jo nærmere knappen, jo sterkere fryser den, fra punktet på knappen som er nærmest
+     pekeren. Isen brer seg med en myk kant og gjør det røde om til blått og hvitt, fine iskrystaller vokser litt foran
+     kanten, rim glitrer, og teksten blir mørkeblå når mesteparten er frosset. Når pekeren går unna, tiner det. Styres fra skriptet («Frost») med --fx, --fy og --fr. */
+  .sh-knapp.sh-p{position:relative;overflow:hidden;isolation:isolate;transition:transform .15s ease,color .6s ease}
+  .sh-knapp.sh-p.frosset{color:#00205B}
   .sh-is,.sh-frost{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   .sh-is{z-index:-2;background:linear-gradient(165deg,#f7faff 0%,#dfe9f8 40%,#b9cfee 78%,#9dbbe6 100%);
     -webkit-mask-image:radial-gradient(circle at var(--fx,50%) var(--fy,50%),#000 calc(var(--fr,0px) - 40px),rgba(0,0,0,.55) calc(var(--fr,0px) - 14px),transparent var(--fr,0px));
     mask-image:radial-gradient(circle at var(--fx,50%) var(--fy,50%),#000 calc(var(--fr,0px) - 40px),rgba(0,0,0,.55) calc(var(--fr,0px) - 14px),transparent var(--fr,0px))}
   .sh-frost{z-index:-1}
-  .sh-knapp.sh-p::before{content:"";position:absolute;inset:0;z-index:-3;background:#BA0C2F}
+  /* Det røde maskeres bort der isen er, så ingen rød kant blir igjen rundt den frosne knappen. */
+  .sh-knapp.sh-p::before{content:"";position:absolute;inset:0;z-index:-3;background:#BA0C2F;
+    -webkit-mask-image:radial-gradient(circle at var(--fx,50%) var(--fy,50%),transparent calc(var(--fr,0px) - 40px),rgba(0,0,0,.45) calc(var(--fr,0px) - 14px),#000 var(--fr,0px));
+    mask-image:radial-gradient(circle at var(--fx,50%) var(--fy,50%),transparent calc(var(--fr,0px) - 40px),rgba(0,0,0,.45) calc(var(--fr,0px) - 14px),#000 var(--fr,0px))}
   @media (max-width:760px){
     .sh-lenker a:not(.sh-kontakt){display:none}
     .sh-i{padding-top:34px}
@@ -1129,7 +1132,7 @@
   <div class="sh-bilde"><video autoplay muted loop playsinline preload="auto" poster="/media/sherpa-video.webp" role="img" aria-label="Illustration of a roped team climbing a snowy mountain ridge in Norway, with a red cabin in the valley below"><source src="/media/sherpa-900.mp4?v=2" type="video/mp4" media="(max-width:760px)"><source src="/media/sherpa.mp4?v=2" type="video/mp4"></video></div>
   <canvas class="sh-sno" aria-hidden="true"></canvas>
   <canvas class="sh-sno foran" aria-hidden="true"></canvas>
-  <nav class="sh-nav"><a class="sh-merke" href="/en/"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" fill="#00205B"/><circle cx="16" cy="16" r="9" fill="#BA0C2F" stroke="#fff" stroke-width="3"/></svg>Esbjug Consult <span>· The AI Sherpa</span></a><div class="sh-lenker"><a href="#live">Live</a><a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Contact</a></div></nav>
+  <nav class="sh-nav"><a class="sh-merke" href="/en/">Esbjug Consult <span>· The AI Sherpa</span></a><div class="sh-lenker"><a href="#live">Live</a><a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Contact</a></div></nav>
   <div class="sh-i">
     <p class="sh-ey">Tidemann Esbjug, the AI Sherpa</p>
     <h1>You choose the summit. <i>I carry the gear up.</i></h1>
@@ -3435,49 +3438,56 @@ setInterval(tegn, 1000);
     tegn();
   }
 
-  // Frost: f går mot 1 mens ispilen er over «Snakk med meg» og tilbake mot 0 når den går (tining går litt fortere).
-  // Isen brer seg i en sirkel fra der pekeren kom inn. Iskrystallene vokser i seks retninger med greiner parvis i 60°,
-  // som et snøkrystall, og bare litt foran iskanten. Når isen er halvveis, begynner det også å rime fra kantene.
+  // Frost: ispilen har en aura. Styrken er 1 når pekeren er på knappen og faller til 0 AURA px unna. Isen (f) går raskt
+  // mot styrken og brer seg fra punktet på knappen nærmest pekeren. Iskrystallene vokser i seks retninger med greiner
+  // parvis i 60°, som et snøkrystall, og bare litt foran iskanten. Når isen er halvveis, begynner det også å rime fra kantene.
   const kn = $('.sh-knapp.sh-p');
   if (kn && matchMedia('(hover:hover) and (pointer:fine)').matches) {
+    const AURA = 170;
     const is = document.createElement('i'); is.className = 'sh-is'; is.setAttribute('aria-hidden', 'true');
     const fc = document.createElement('canvas'); fc.className = 'sh-frost'; fc.setAttribute('aria-hidden', 'true'); kn.prepend(is, fc);
     const fx = fc.getContext('2d');
-    let fw = 0, fh = 0, diag = 0, ox = 0, oy = 0, f = 0, maal = 0, tupper = [], kanter = false, tid = 0;
+    let fw = 0, fh = 0, diag = 0, ox = 0, oy = 0, tx = 0, ty = 0, f = 0, maal = 0, tupper = [], frø = [], kanter = false, tid = 0;
     const tupp = (x, y, a, gen, maks) => tupper.push({ x, y, a, gen, maks, l: 0, neste: 2 + Math.random() * 3 });
+    const så = (x, y, n) => {
+      frø.push([x, y]);
+      const a0 = Math.random() * 1.05;
+      for (let i = 0; i < n; i++) tupp(x, y, a0 + i * 2 * Math.PI / n + (Math.random() - .5) * .2, 0, 24 + Math.random() * 46);
+    };
+    const front = () => (1 - (1 - f) ** 2.2) * (diag + 44);
     const sett = () => {
-      const e = 1 - (1 - f) ** 3;  // myk start, rolig slutt
-      kn.style.setProperty('--fr', (e * (diag + 44)) + 'px');
-      fc.style.opacity = Math.min(1, f * 1.6) ** .8;
+      kn.style.setProperty('--fx', ox + 'px'); kn.style.setProperty('--fy', oy + 'px'); kn.style.setProperty('--fr', front() + 'px');
+      fc.style.opacity = Math.min(1, f * 1.8) ** .8;
       kn.classList.toggle('frosset', f > .55);
     };
-    kn.addEventListener('pointerenter', e => {
+    addEventListener('pointermove', e => {
       if (e.pointerType !== 'mouse') return;
-      maal = 1;
-      if (f < .02) {
-        const r = kn.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2);
-        fw = r.width; fh = r.height; diag = Math.hypot(fw, fh); fc.width = fw * d; fc.height = fh * d; fx.setTransform(d, 0, 0, d, 0, 0); fx.clearRect(0, 0, fw, fh);
-        ox = e.clientX - r.left; oy = e.clientY - r.top; kn.style.setProperty('--fx', ox + 'px'); kn.style.setProperty('--fy', oy + 'px');
-        tupper = []; kanter = false;
-        const a0 = Math.random() * 1.05;
-        for (let i = 0; i < 6; i++) tupp(ox, oy, a0 + i * Math.PI / 3 + (Math.random() - .5) * .2, 0, 28 + Math.random() * 50);
+      const r = kn.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > innerHeight) { maal = 0; return; }
+      const nx = Math.max(r.left, Math.min(r.right, e.clientX)), ny = Math.max(r.top, Math.min(r.bottom, e.clientY));
+      const d = Math.hypot(e.clientX - nx, e.clientY - ny);
+      maal = Math.max(0, 1 - d / AURA) ** 1.6;
+      if (maal <= 0 && f <= 0) return;
+      if (f <= 0) {
+        const dpr = Math.min(devicePixelRatio || 1, 2);
+        fw = r.width; fh = r.height; diag = Math.hypot(fw, fh); fc.width = fw * dpr; fc.height = fh * dpr; fx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        fx.clearRect(0, 0, fw, fh); tupper = []; frø = []; kanter = false;
+        ox = nx - r.left; oy = ny - r.top;
       }
-      if (rolig) { f = 1; sett(); return; }
+      tx = nx - r.left; ty = ny - r.top;
+      if (rolig) { f = maal; ox = tx; oy = ty; sett(); return; }
       if (!tid) tid = requestAnimationFrame(gro);
-    });
-    kn.addEventListener('pointerleave', () => {
-      maal = 0;
-      if (rolig) { f = 0; sett(); return; }
-      if (!tid) tid = requestAnimationFrame(gro);
-    });
+    }, { passive: true });
+    document.addEventListener('mouseleave', () => { maal = 0; if (!tid && !rolig) tid = requestAnimationFrame(gro); });
     const gro = () => {
       tid = 0;
-      f += (maal - f) * (maal ? .015 : .04) + (maal ? .0015 : -.002);
-      f = Math.max(0, Math.min(1, f));
+      f += (maal - f) * (maal > f ? .08 : .04);
+      if (Math.abs(maal - f) < .003) f = maal;
+      ox += (tx - ox) * .08; oy += (ty - oy) * .08;
       sett();
-      const front = (1 - (1 - f) ** 3) * (diag + 44) - 20;
-      if (maal) {
-        // Rim fra kantene når isen er halvveis.
+      if (f > .04) {
+        // Nye krystaller der isen kommer inn, hvis det ikke allerede gror noen i nærheten.
+        if (maal > f && !frø.some(([x, y]) => Math.hypot(x - ox, y - oy) < 22) && tupper.length < 260) så(ox, oy, frø.length ? 4 : 6);
         if (!kanter && f > .45) {
           kanter = true;
           for (let i = 0; i < 4; i++) {
@@ -3485,11 +3495,12 @@ setInterval(tegn, 1000);
             tupp(x, y, Math.atan2(fh / 2 - y, fw / 2 - x) + (Math.random() - .5) * .6, 1, 10 + Math.random() * 14);
           }
         }
+        const fr = front() - 20;
         fx.lineCap = 'round'; fx.shadowColor = 'rgba(40,80,150,.35)'; fx.shadowBlur = 1.2;
         for (let i = tupper.length - 1; i >= 0; i--) {
           const t = tupper[i];
-          if (Math.hypot(t.x - ox, t.y - oy) > front + 16 && t.gen === 0) continue;  // venter på isen
-          const fart = .35 + .5 * (1 - t.l / t.maks), nx = t.x + Math.cos(t.a) * fart, ny = t.y + Math.sin(t.a) * fart;
+          if (Math.hypot(t.x - ox, t.y - oy) > fr + 16) continue;  // venter på isen
+          const fart = (.45 + .7 * (1 - t.l / t.maks)) * (.4 + f * .6), nx = t.x + Math.cos(t.a) * fart, ny = t.y + Math.sin(t.a) * fart;
           fx.strokeStyle = `rgba(255,255,255,${[.9, .7, .5][t.gen]})`; fx.lineWidth = [.75, .5, .35][t.gen] * (1 - t.l / t.maks * .5);
           fx.beginPath(); fx.moveTo(t.x, t.y); fx.lineTo(nx, ny); fx.stroke();
           t.x = nx; t.y = ny; t.l += fart; t.a += (Math.random() - .5) * .02;
@@ -3502,15 +3513,16 @@ setInterval(tegn, 1000);
         }
         fx.shadowBlur = 0;
         // Rim som glitrer like innenfor iskanten.
-        for (let i = 0; i < 4; i++) {
-          const v = Math.random() * 6.283, d = front - Math.random() * 26, x = ox + Math.cos(v) * d, y = oy + Math.sin(v) * d;
+        if (maal >= f) for (let i = 0; i < 4; i++) {
+          const v = Math.random() * 6.283, d = fr - Math.random() * 26, x = ox + Math.cos(v) * d, y = oy + Math.sin(v) * d;
           if (d > 0 && x > 0 && y > 0 && x < fw && y < fh) {
             fx.fillStyle = `rgba(255,255,255,${.25 + Math.random() * .5})`;
             fx.beginPath(); fx.arc(x, y, .3 + Math.random() * .5, 0, 6.283); fx.fill();
           }
         }
-      } else if (f === 0) { fx.clearRect(0, 0, fw, fh); tupper = []; }
-      if (maal ? f < 1 || tupper.length : f > 0) tid = requestAnimationFrame(gro);
+      }
+      if (f <= 0) { fx.clearRect(0, 0, fw, fh); tupper = []; frø = []; kanter = false; return; }
+      if (f !== maal || tupper.length || Math.hypot(tx - ox, ty - oy) > .5) tid = requestAnimationFrame(gro);
     };
   }
 
@@ -3521,7 +3533,7 @@ setInterval(tegn, 1000);
     k.className = 'sno-k';
     k.innerHTML = '<svg viewBox="-.6 -.6 13.6 20.8" aria-hidden="true"><defs>'
       + '<linearGradient id="is-f" x1="0" y1="0" x2=".9" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".97"/><stop offset=".45" stop-color="#e3ecfa" stop-opacity=".85"/><stop offset="1" stop-color="#a9c4ea" stop-opacity=".9"/></linearGradient></defs>'
-      + '<path d="M0 0V17L4.2 13.2 7 19.6 9.6 18.5 6.9 12.4H12.4Z" fill="url(#is-f)" stroke="rgba(0,32,91,.6)" stroke-width=".8" stroke-linejoin="round"/>'
+      + '<path d="M0 0V17L4.2 13.2 7 19.6 9.6 18.5 6.9 12.4H12.4Z" fill="url(#is-f)" stroke="rgba(0,32,91,.85)" stroke-width=".95" stroke-linejoin="round"/>'
       + '<path d="M1.3 3V13.4M1.3 7.6 6 11.4" stroke="#fff" stroke-width=".7" stroke-linecap="round" opacity=".9" fill="none"/>'
       + '<path d="M5.4 13.9 7.7 18.8" stroke="#fff" stroke-width=".5" stroke-linecap="round" opacity=".6" fill="none"/></svg>';
     document.body.append(k); rot.classList.add('mus');
