@@ -24,7 +24,7 @@ def bytt(gammel, ny, tekst=None):
 # --- hode ---
 bytt("<title>Esbjug Consult</title>", "<title>AI-sherpaen · Esbjug Consult</title>")
 bytt('content="Kode og design har gått gjennom en revolusjon som ikke må oversees."',
-     'content="Tidemann Esbjug er AI-sherpaen: han finner hva bedriften betaler for mye for, bygger det den mangler og sørger for at den kan drive det selv."')
+     'content="Tidemann Esbjug er AI-sherpaen: han tar de tunge løftene med å sette opp systemene riktig, så bedriften kan ta del i AI."')
 bytt('<meta name="theme-color" content="#cfe4f6">', '<meta name="theme-color" content="#74a8d4">\n<meta name="robots" content="noindex">')
 bytt('<link rel="alternate" hreflang="nb" href="https://esbjugconsult.com/">\n', "")
 bytt('<link rel="alternate" hreflang="en" href="https://esbjugconsult.com/en/">\n', "")
@@ -86,6 +86,21 @@ CSS = """
     .sh-knapp{padding:15px 20px}
   }
   @media (prefers-reduced-motion:reduce){.sh-prikk{animation:none}}
+  /* Hvit tekst i heroen (standard). Et svakt blått slør bak teksten gir nok kontrast mot den lyse himmelen.
+     ?tekst=bla viser den mørkeblå teksten (klassen .bla) for å sammenligne. */
+  .sh-hero:not(.bla){color:#fff}
+  .sh-hero:not(.bla)::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(100deg,rgba(0,32,91,.42) 0%,rgba(0,32,91,.22) 40%,rgba(0,32,91,0) 66%)}
+  .sh-hero:not(.bla) .sh-i{text-shadow:0 1px 22px rgba(0,25,70,.35)}
+  .sh-hero:not(.bla) .sh-ey{color:rgba(255,255,255,.82)}
+  .sh-hero:not(.bla) .sh-ingress{color:rgba(255,255,255,.94)}
+  .sh-hero:not(.bla) .sh-live{color:rgba(255,255,255,.85)}
+  .sh-hero:not(.bla) .sh-sted{color:#fff}
+  .sh-hero:not(.bla) .sh-lenker .sh-kontakt{border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.12)}
+  .sh-hero:not(.bla) .sh-lenker .sh-kontakt:hover{background:rgba(255,255,255,.25)}
+  .sh-hero:not(.bla) .sh-knapp{text-shadow:none}
+  .sh-hero:not(.bla) .sh-knapp.sh-s{background:rgba(255,255,255,.18);color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.55)}
+  .sh-hero:not(.bla) .sh-knapp.sh-s:hover{background:rgba(255,255,255,.3)}
+  @media (max-width:760px){.sh-hero:not(.bla)::before{background:linear-gradient(180deg,rgba(0,32,91,.38) 0%,rgba(0,32,91,.22) 55%,rgba(0,32,91,0) 85%)}}
 
   .sh-rute{background:#fff;color:#00205B;padding:clamp(56px,8vw,112px) var(--g) clamp(40px,5vw,64px)}
   .sh-w{max-width:1180px;margin:0 auto}
@@ -150,12 +165,12 @@ PIL = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=
        'stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>')
 
 LEIRER = [
-    ("Baseleiren", "Jeg går gjennom tallene, avtalene og verktøyene dere har, og finner hvor pengene og timene forsvinner."),
-    ("Leir 1", "Vi tar de første gevinstene, for eksempel ved å flytte Google Ads hjem fra byrået, eller ved å sikre kontoer og tilganger."),
-    ("Leir 2", "Jeg bygger det dere mangler, som nettside, app eller interne verktøy, med AI og til langt lavere pris enn før."),
-    ("Toppen", "Dere driver løsningen selv, og jeg viser dere hvordan dere kan bruke AI videre."),
+    ("Baseleiren", "Jeg ser på hvordan dere jobber i dag, hvilke systemer dere har og hvor det stopper opp."),
+    ("Leir 1", "Vi legger grunnmuren: kontoer, tilganger, data og sikkerhet satt opp riktig fra start."),
+    ("Leir 2", "Jeg bygger og kobler sammen det som mangler, som nettside, app eller interne verktøy, så arbeidet flyter."),
+    ("Toppen", "Systemene står, og dere bruker AI i hverdagen. Nå kan dere nyte utsikten."),
 ]
-SVAR = ["Vet ikke hvor vi skal begynne", "Vet hva som bør endres", "Klare til å bygge noe nytt", "Driver selv, vil bruke AI mer"]
+SVAR = ["Vet ikke hvor vi skal begynne", "Vet hva vi trenger, mangler oppsettet", "Har noe på plass, men det henger ikke sammen", "Systemene står, vil bruke AI mer"]
 
 leirer = "\n".join(
     f'      <li><span class="sh-nr">0{i + 1}</span><h3>{n}</h3><p>{t}</p><b class="sh-her">Dere er her</b></li>'
@@ -170,8 +185,8 @@ HTML = f"""<section class="sh-hero" aria-label="AI-sherpaen">
   <nav class="sh-nav"><a class="sh-merke" href="/sherpa/">{LOGO}Esbjug Consult <span>· AI-sherpaen</span></a><div class="sh-lenker"><a href="#ruten">Ruten</a><a href="#live">Live</a><a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Kontakt</a></div></nav>
   <div class="sh-i">
     <p class="sh-ey">AI-sherpaen Tidemann Esbjug</p>
-    <h1>Du velger toppen. <i>Jeg bærer utstyret opp.</i></h1>
-    <p class="sh-ingress">En sherpa kjenner fjellet og bærer det tunge, så andre kommer trygt opp. Jeg gjør det samme for bedrifter med AI: jeg finner hva dere betaler for mye for, bygger det dere mangler og sørger for at dere kan drive det selv.</p>
+    <h1>Jeg tar de tunge løftene. <i>Dere nyter utsikten.</i></h1>
+    <p class="sh-ingress">En sherpa kjenner fjellet og bærer det tunge, så andre kommer trygt opp. Jeg gjør det samme med AI: jeg setter opp systemene riktig, så ting går og dere kan ta del i AI.</p>
     <div class="sh-cta"><a class="sh-knapp sh-p" href="mailto:tidemann@esbjugconsult.com">Snakk med meg</a><a class="sh-knapp sh-s" href="#live">Se hvor jeg er nå {PIL}</a></div>
     <p class="sh-live" hidden><i class="sh-prikk"></i><span>Live:</span> <span class="sh-sted">Henter posisjonen …</span></p>
   </div>
@@ -215,6 +230,7 @@ JS = """<script>
 // /sherpa/: snø over bildet, stedet fra kartpanelet i heroen, og avstemningen (GET/POST /chat/poll).
 (() => {
   const $ = q => document.querySelector(q);
+  if (/[?&]tekst=bla\b/.test(location.search)) $('.sh-hero').classList.add('bla');
   const navn = $('.sted .s-navn'), sted = $('.sh-sted');
   if (navn && sted) {
     const sett = () => {
