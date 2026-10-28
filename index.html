@@ -1024,9 +1024,8 @@
   .natt-lag{display:none}
   .focus .sh-hero{opacity:0;filter:blur(8px);pointer-events:none}
   .sh-hero{--sky:#74a8d4;position:relative;min-height:100svh;display:flex;flex-direction:column;background:var(--sky);color:#00205B;overflow:hidden;isolation:isolate}
-  .sh-bilde{position:absolute;left:0;right:0;bottom:0;height:min(100%,calc(100vw * .4286));z-index:-2;margin:0;
-    /* Toppen av videoen glir over i himmelen: når kameraet stiger, kuttes fjelltoppen av kanten ellers og gir en vannrett strek. */
-    -webkit-mask-image:linear-gradient(to bottom,transparent,#000 22%);mask-image:linear-gradient(to bottom,transparent,#000 22%)}
+  /* Videoen er hele bakgrunnen i heroen, uten slør eller overganger. */
+  .sh-bilde{position:absolute;inset:0;z-index:-2;margin:0}
   .sh-bilde video{width:100%;height:100%;object-fit:cover;object-position:70% 100%;display:block}
   .sh-sno{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
   .sh-nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px var(--g) 0}
@@ -3295,7 +3294,7 @@ setInterval(tegn, 1000);
   // toppen) og i løkke. Står stille ved redusert bevegelse og pauses når heroen er ute av syne.
   const vid = $('.sh-bilde video');
   if (vid) {
-    // Bakgrunnen over videoen følger himmelen i hver scene, så toppen av videoen glir over i riktig farge.
+    // På mobil ligger videoen under teksten. Bakgrunnen over den følger himmelen i hver scene, så toppen glir over i riktig farge.
     // Starttid i sekunder (klippene er 361, 343 og 361 bilder i 24 fps) og himmelfargen målt øverst til venstre.
     const HIMMEL = [[0, '#74a8d4'], [361 / 24, '#b2d0de'], [704 / 24, '#7dadc0']];
     const hero = $('.sh-hero');
