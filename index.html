@@ -479,7 +479,7 @@
   #kart{position:absolute;inset:0;z-index:0;background:#1c0f07;opacity:0;transform:scale(1.035);transition:opacity 1.1s ease,transform 1.8s cubic-bezier(.2,.8,.2,1)}
   .kart-klar #kart{opacity:1;transform:none}
   /* Mens kartet lastes: bare «Esbjug Consult», lite, midt i. Kartet tones inn over det. */
-  /* Lasteskjermen mens kartet hentes: en rav-prikk med en ring som pulserer rolig ut (som prikken hans på kartet),
+  /* Lasteskjermen mens kartet hentes: en isblå prikk med en ring som pulserer rolig ut (som prikken hans på kartet),
      «Esbjug Consult» og en dempet linje under. Tones bort når kartet er tegnet. */
   .kart-venter{position:absolute;inset:0;z-index:0;pointer-events:none;transition:opacity .9s ease;background:radial-gradient(60% 50% at 50% 50%,#0b2f70,#00163f)}
   .kart-klar .kart-venter{opacity:0}
@@ -489,8 +489,8 @@
   /* Prikken står nøyaktig i midten, der posisjonsprikken dukker opp når kartet tones inn; teksten under. */
   .kv-i{position:absolute;left:50%;top:calc(50% + 34px);transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:12px;white-space:nowrap;animation:kvInn 1.2s ease both}
   @keyframes kvInn{from{opacity:0;transform:translate(-50%,6px)}}
-  .kv-prikk{position:absolute;left:50%;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,#FFD23F 45%,#FF6A3D);box-shadow:0 0 14px 4px rgba(255,210,63,.45)}
-  .kv-prikk::before,.kv-prikk::after{content:"";position:absolute;inset:-3px;border-radius:50%;border:1.5px solid rgba(255,210,63,.6);animation:kvRing 2.4s cubic-bezier(.2,.6,.3,1) infinite}
+  .kv-prikk{position:absolute;left:50%;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,#8fe6ff 45%,#1593c7);box-shadow:0 0 14px 4px rgba(111,214,255,.5)}
+  .kv-prikk::before,.kv-prikk::after{content:"";position:absolute;inset:-3px;border-radius:50%;border:1.5px solid rgba(21,147,199,.55);animation:kvRing 2.4s cubic-bezier(.2,.6,.3,1) infinite}
   .kv-prikk::after{animation-delay:1.2s}
   @keyframes kvRing{from{transform:scale(1);opacity:1}to{transform:scale(4.2);opacity:0}}
   .kv-i b{font:italic 400 clamp(24px,2.6vw,34px)/1 var(--serif);letter-spacing:-.01em;color:#f6e7d2}
@@ -513,12 +513,12 @@
   .spor-glod{filter:blur(6px)}
   .spor-strom{stroke-dasharray:2 18;animation:strom 1.6s linear infinite}
   @keyframes strom{to{stroke-dashoffset:-20}}
-  .meg{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,#FFD23F 45%,#FF6A3D);box-shadow:0 0 18px 6px rgba(255,210,63,.65),0 0 60px 20px rgba(255,106,61,.35)}
-  .meg::before,.meg::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid rgba(255,210,63,.7);animation:megRing 2.4s ease-out infinite}
+  .meg{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,#8fe6ff 45%,#1593c7);box-shadow:0 0 18px 6px rgba(111,214,255,.7),0 0 60px 20px rgba(21,147,199,.3)}
+  .meg::before,.meg::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid rgba(21,147,199,.6);animation:megRing 2.4s ease-out infinite}
   .meg::after{animation-delay:1.2s}
   @keyframes megRing{from{transform:scale(1);opacity:1}to{transform:scale(3.4);opacity:0}}
   /* Hjemme (bare /hjem/): mindre prikk, så den kan flytte seg rundt i huset. */
-  .meg.liten{width:11px;height:11px;box-shadow:0 0 10px 3px rgba(255,210,63,.6),0 0 26px 8px rgba(255,106,61,.3)}
+  .meg.liten{width:11px;height:11px;box-shadow:0 0 10px 3px rgba(111,214,255,.65),0 0 26px 8px rgba(21,147,199,.28)}
   .meg.liten::before,.meg.liten::after{inset:-3px;border-width:1.5px}
   /* Historikken (bare /hjem/): dagene, spill av og en glidebryter nederst på kartet. */
   .kn{display:inline-flex;gap:8px;order:3;pointer-events:auto}
@@ -722,16 +722,16 @@
   .gjor{display:flex;flex-direction:column;gap:6px;padding:14px 20px 15px}
   .gjor[hidden],.poster[hidden]{display:none}
   html:has(#chat.natt) .gjor{display:none}   /* sover han, sier natta det; «Holder på med» skjules */
-  /* Postene: en bunke papirkort. Det øverste vises helt; de neste stikker så vidt ut bak (tynne, falmede kanter).
+  /* Postene: en bunke kort i frostet hvitt og isblått. Det øverste vises helt; de neste stikker så vidt ut bak (tynne, falmede kanter).
      Trykk, og det øverste tones ut og neste kommer fram. Tiden er når posten først ble skrevet. */
   .poster{position:relative;pointer-events:auto;cursor:pointer;-webkit-tap-highlight-color:transparent;outline:none;transition:height .5s cubic-bezier(.2,.8,.2,1)}
   /* Kortene bak krymper fra bunnen, så en tydelig kant stikker ut under det øverste. Bytte: det øverste sveipes ut
      til venstre med en liten vridning mens neste vokser opp på plass; det gamle legger seg bakerst. Ingen toning av tekst. */
-  .post{position:absolute;left:0;right:0;top:0;box-sizing:border-box;overflow:hidden;padding:16px 20px 14px;border-radius:22px;background:linear-gradient(#fffdf6,#fbf5e6);border:1px solid rgba(176,141,87,.35);box-shadow:0 14px 34px rgba(0,20,60,.22);
+  .post{position:absolute;left:0;right:0;top:0;box-sizing:border-box;overflow:hidden;padding:16px 20px 14px;border-radius:22px;background:linear-gradient(#ffffff,#eef4fb);border:1px solid rgba(0,32,91,.12);box-shadow:0 14px 34px rgba(0,20,60,.22);
     transform-origin:50% 100%;transition:transform .55s cubic-bezier(.2,.8,.2,1),opacity .45s ease,height .5s cubic-bezier(.2,.8,.2,1)}
   .post[data-l="0"]{z-index:4}
-  .post[data-l="1"]{z-index:3;transform:translateY(7px) scale(.95);pointer-events:none;background:linear-gradient(#f7f1e3,#efe6d2)}
-  .post[data-l="2"]{z-index:2;transform:translateY(14px) scale(.9);pointer-events:none;background:linear-gradient(#efe7d5,#e5dac2)}
+  .post[data-l="1"]{z-index:3;transform:translateY(7px) scale(.95);pointer-events:none;background:linear-gradient(#eaf1f9,#dfe8f3)}
+  .post[data-l="2"]{z-index:2;transform:translateY(14px) scale(.9);pointer-events:none;background:linear-gradient(#dde6f1,#d0dcea)}
   .post[data-l="3"]{z-index:1;transform:translateY(14px) scale(.9);opacity:0;pointer-events:none}
   .post.ut{z-index:5;transform:translateX(-112%) rotate(-7deg);transition:transform .55s cubic-bezier(.45,0,.2,1)}
   .post.stille{transition:none!important}
@@ -2001,14 +2001,14 @@ function leggKart() {
     kart.on('load', () => {
       kart.addSource('spor', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
       const linje = { 'line-cap': 'round', 'line-join': 'round' };
-      kart.addLayer({ id: 'spor-glod', type: 'line', source: 'spor', layout: linje, paint: { 'line-color': '#BA0C2F', 'line-width': 16, 'line-blur': 10, 'line-opacity': .22 } });
-      kart.addLayer({ id: 'spor-midt', type: 'line', source: 'spor', layout: linje, paint: { 'line-color': '#BA0C2F', 'line-width': 5, 'line-blur': 1, 'line-opacity': .8 } });
+      kart.addLayer({ id: 'spor-glod', type: 'line', source: 'spor', layout: linje, paint: { 'line-color': '#6fd6ff', 'line-width': 16, 'line-blur': 10, 'line-opacity': .4 } });
+      kart.addLayer({ id: 'spor-midt', type: 'line', source: 'spor', layout: linje, paint: { 'line-color': '#1593c7', 'line-width': 5, 'line-blur': 1, 'line-opacity': .85 } });
       kart.addLayer({ id: 'spor-kjerne', type: 'line', source: 'spor', layout: linje, paint: { 'line-color': '#ffffff', 'line-width': 2, 'line-opacity': .9 } });
-      kart.addLayer({ id: 'spor-strom', type: 'line', source: 'spor', layout: { 'line-cap': 'butt', 'line-join': 'round' }, paint: { 'line-color': '#ffffff', 'line-width': 3.5, 'line-dasharray': [0, 4, 3] } });
+      kart.addLayer({ id: 'spor-strom', type: 'line', source: 'spor', layout: { 'line-cap': 'butt', 'line-join': 'round' }, paint: { 'line-color': '#e6fbff', 'line-width': 3.5, 'line-dasharray': [0, 4, 3] } });
       // Prikken under avspilling tegnes i kartet selv (ikke som HTML over det), så den aldri henger etter kameraet.
       kart.addSource('avsp-prikk', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
-      kart.addLayer({ id: 'avsp-glod', type: 'circle', source: 'avsp-prikk', paint: { 'circle-radius': 22, 'circle-color': '#FFD23F', 'circle-opacity': .35, 'circle-blur': 1 } });
-      kart.addLayer({ id: 'avsp-prikk', type: 'circle', source: 'avsp-prikk', paint: { 'circle-radius': 7, 'circle-color': '#FFD23F', 'circle-stroke-color': '#fff8dc', 'circle-stroke-width': 3 } });
+      kart.addLayer({ id: 'avsp-glod', type: 'circle', source: 'avsp-prikk', paint: { 'circle-radius': 22, 'circle-color': '#6fd6ff', 'circle-opacity': .4, 'circle-blur': 1 } });
+      kart.addLayer({ id: 'avsp-prikk', type: 'circle', source: 'avsp-prikk', paint: { 'circle-radius': 7, 'circle-color': '#1593c7', 'circle-stroke-color': '#ffffff', 'circle-stroke-width': 3 } });
       const el = document.createElement('div'); el.innerHTML = '<div class="meg"></div>';
       megMark = new maplibregl.Marker({ element: el }).setLngLat(midt);
       tegn();
@@ -3046,7 +3046,6 @@ function husIKart(hus) {
     }
     if (hus.r) f.push({ type: 'Feature', properties: { t: 'navn', navn: hus.r.navn }, geometry: { type: 'Point', coordinates: hus.pos } });
     if (hus.sti.length > 1) f.push({ type: 'Feature', properties: { t: 'sti' }, geometry: { type: 'LineString', coordinates: hus.sti } });
-    if (plan.geo.buss) f.push({ type: 'Feature', properties: { t: 'buss' }, geometry: { type: 'Point', coordinates: plan.geo.buss } });
   }
   const data = { type: 'FeatureCollection', features: f };
   if (kart.getSource('hus')) { kart.getSource('hus').setData(data); return; }
@@ -3054,11 +3053,9 @@ function husIKart(hus) {
   const før = kart.getLayer('spor-glod') ? 'spor-glod' : undefined;
   kart.addLayer({ id: 'hus-gulv', type: 'fill', source: 'hus', filter: ['==', ['get', 't'], 'gulv'], paint: { 'fill-color': ['case', ['get', 'her'], '#6b2a2c', '#3d3631'] } }, før);   // tette farger: rom som overlapper blir ikke mørkere
   kart.addLayer({ id: 'hus-vegg', type: 'line', source: 'hus', filter: ['==', ['get', 't'], 'vegg'], layout: { 'line-cap': 'round' }, paint: { 'line-color': '#fffaf0', 'line-opacity': .75, 'line-width': ['interpolate', ['linear'], ['zoom'], 17, .6, 21, 2.2] } }, før);
-  // Stien: korte streker med mellomrom, som en sti på et turkart. Busstoppet er en liten rund prikk.
+  // Stien: korte streker med mellomrom, som en sti på et turkart. Busstoppet har ikke eget merke (tatt bort 28.10.2026).
   kart.addLayer({ id: 'hus-sti', type: 'line', source: 'hus', filter: ['==', ['get', 't'], 'sti'], layout: { 'line-cap': 'round', 'line-join': 'round' },
     paint: { 'line-color': '#fffaf0', 'line-opacity': .9, 'line-width': ['interpolate', ['linear'], ['zoom'], 16, 1.5, 21, 4], 'line-dasharray': [1.6, 2.2] } }, før);
-  kart.addLayer({ id: 'hus-buss', type: 'circle', source: 'hus', filter: ['==', ['get', 't'], 'buss'],
-    paint: { 'circle-radius': ['interpolate', ['linear'], ['zoom'], 16, 3.5, 21, 8], 'circle-color': '#BA0C2F', 'circle-stroke-color': '#fffaf0', 'circle-stroke-width': 1.8 } });
   kart.addLayer({ id: 'hus-navn', type: 'symbol', source: 'hus', minzoom: 19.5, filter: ['==', ['get', 't'], 'navn'],
     layout: { 'text-field': ['get', 'navn'], 'text-font': ['Noto Sans Italic'], 'text-size': 13, 'text-offset': [0, 1.3], 'text-anchor': 'top' },
     paint: { 'text-color': '#fffaf0', 'text-halo-color': 'rgba(0,0,0,.55)', 'text-halo-width': 1.4 } });
