@@ -152,16 +152,16 @@
   .ch-h b{display:block;color:var(--y);font-size:16px}
   .ch-s{display:flex;align-items:center;gap:6px;margin-top:3px;font-size:12px;opacity:.75}
   .ch-s i{width:7px;height:7px;border-radius:50%;background:#8a8a8a}
-  .ch-s.on i{background:#3ddc84}
+  .ch-s.on i{background:#8fd3f4}
   .ch-t{flex:1;min-width:0}
   .ch-a{display:flex;align-items:center;gap:6px}
   .ch-del{border:0;background:none;color:#f2f6fb;opacity:.55;font-size:12px;font-family:inherit;cursor:pointer;padding:4px 6px;text-decoration:underline;text-underline-offset:3px}
   .ch-del:hover{opacity:.9}
   /* «Ring»: du ringer Tidemann. Vises bare når han er tilgjengelig; da ringer telefonen og klokka hans. */
-  .ch-ring{display:flex;align-items:center;gap:6px;border:0;border-radius:999px;background:#3ddc84;color:#00205B;font-weight:700;font-size:13px;line-height:1;font-family:inherit;cursor:pointer;padding:8px 11px;white-space:nowrap}
+  .ch-ring{display:flex;align-items:center;gap:6px;border:0;border-radius:999px;background:#8fd3f4;color:#00205B;font-weight:700;font-size:13px;line-height:1;font-family:inherit;cursor:pointer;padding:8px 11px;white-space:nowrap}
   .ch-ring[hidden]{display:none}
   .ch-ring svg{width:15px;height:15px;flex:none}
-  .ch-ring:hover{background:#5fe69c}
+  .ch-ring:hover{background:#b5e4f9}
   .ch-x{border:0;background:none;color:var(--y);font-size:26px;line-height:1;cursor:pointer;padding:0 4px}
   .ch-m{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:16px;display:flex;flex-direction:column;gap:8px}
   .ch-m p{margin:0;max-width:82%;padding:9px 12px;border-radius:14px;font-size:15px;line-height:1.35;white-space:pre-wrap;overflow-wrap:anywhere}
@@ -238,13 +238,13 @@
   .cc-i{display:flex;align-items:center;gap:12px}
   .cc-i b{display:block;color:var(--y);font-size:16px}
   .cc-s{display:block;font-size:13px;opacity:.7;margin-top:2px;font-variant-numeric:tabular-nums}
-  .cc-dot{width:12px;height:12px;border-radius:50%;background:#3ddc84;flex:none}
+  .cc-dot{width:12px;height:12px;border-radius:50%;background:#8fd3f4;flex:none}
   .ch-call.ring .cc-dot{animation:ring 1s ease-in-out infinite}
-  @keyframes ring{50%{box-shadow:0 0 0 8px rgba(61,220,132,.25)}}
+  @keyframes ring{50%{box-shadow:0 0 0 8px rgba(143,211,244,.25)}}
   .cc-b{display:flex;gap:8px;margin-top:12px}
   .cc-b button{flex:1;border:0;border-radius:999px;padding:11px;font-weight:700;font-size:14px;line-height:1;font-family:inherit;cursor:pointer}
   .cc-b button[hidden]{display:none}
-  .cc-ans{background:#3ddc84;color:#00205B}
+  .cc-ans{background:#8fd3f4;color:#00205B}
   .cc-dec,.cc-end{background:#ff3d57;color:#fff}
   .cc-mute{background:#183d85;color:#f2f6fb}
   .cc-mute.on{background:var(--y);color:var(--ink)}
@@ -255,33 +255,33 @@
   .ch-pill[hidden]{display:none}
   .ch-pill button{border:0;cursor:pointer;font-family:inherit}
   .cp-open{display:flex;align-items:center;gap:8px;background:none;color:var(--y);font-weight:700;font-size:14px;padding:6px 8px 6px 10px;font-variant-numeric:tabular-nums}
-  .cp-open i{width:9px;height:9px;border-radius:50%;background:#3ddc84;animation:ring 1.6s ease-in-out infinite}
+  .cp-open i{width:9px;height:9px;border-radius:50%;background:#8fd3f4;animation:ring 1.6s ease-in-out infinite}
   .cp-mute,.cp-end{width:38px;height:38px;border-radius:50%;display:grid;place-items:center}
   .cp-mute{background:#183d85;color:#f2f6fb}
   .cp-mute.on{background:var(--y);color:var(--ink)}
   .cp-end{background:#ff3d57;color:#fff}
   .ch-pill svg{width:18px;height:18px}
-  /* Status som bevegelse. Tilgjengelig: grønne ringer pulserer ut. I møte: oransje ring som puster. Sover: z-er svever opp. */
+  /* Status som bevegelse. Tilgjengelig: isblå ringer pulserer ut. I møte: oransje ring som puster. Sover: z-er svever opp. */
   .ch-b::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none}
   .ch-b.på::after{animation:pulsG 2.6s ease-out infinite}
-  @keyframes pulsG{0%{box-shadow:0 0 0 0 rgba(61,220,132,.6)}70%{box-shadow:0 0 0 14px rgba(61,220,132,0)}100%{box-shadow:0 0 0 0 rgba(61,220,132,0)}}
-  .ch-b.på::before{content:"";position:absolute;top:9px;left:30px;width:8px;height:8px;border-radius:50%;background:#3ddc84;box-shadow:0 0 0 2px var(--ink)}
+  @keyframes pulsG{0%{box-shadow:0 0 0 0 rgba(143,211,244,.6)}70%{box-shadow:0 0 0 14px rgba(143,211,244,0)}100%{box-shadow:0 0 0 0 rgba(143,211,244,0)}}
+  .ch-b.på::before{content:"";position:absolute;top:9px;left:30px;width:8px;height:8px;border-radius:50%;background:#8fd3f4;box-shadow:0 0 0 2px var(--ink)}
   .ch-b.møte{box-shadow:0 0 0 3px #ff8a00,0 8px 24px rgba(0,32,91,.25)}
   .ch-b.møte::after{animation:pulsO 2.2s ease-in-out infinite}
   @keyframes pulsO{50%{box-shadow:0 0 0 7px rgba(255,138,0,.28)}}
   /* Lukket chat (fra 28.10.2026): en liten flis av frostet is, som snøen i heroen. Lyser lite, synes både på himmelen
      og på hvit bakgrunn. Tilgjengelig: en isblå prikk som puster sakte. I møte: prikken blir rav. */
-  .ch-b{background:rgba(238,245,251,.55);color:rgba(0,32,91,.82);font-weight:500;font-size:14px;letter-spacing:.01em;gap:7px;padding:10px 15px 10px 13px;
+  .ch-b{background:rgba(238,245,251,.55);color:rgba(0,32,91,.82);font-weight:500;font-size:16px;letter-spacing:.01em;gap:9px;padding:14px 21px 14px 18px;
     border:1px solid rgba(255,255,255,.75);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 6px 22px rgba(0,32,91,.12);
     -webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);transition:background .3s,box-shadow .3s}
   .ch-b:hover{background:rgba(245,250,254,.8)}
-  .ch-b svg{width:16px;height:16px;stroke-width:1.8;opacity:.75}
+  .ch-b svg{width:19px;height:19px;stroke-width:1.8;opacity:.75}
   .ch-b.på::after{animation:none}
-  .ch-b.på::before{top:8px;left:24px;width:6px;height:6px;background:#8fd3f4;box-shadow:0 0 0 1.5px rgba(255,255,255,.9),0 0 6px rgba(143,211,244,.9);animation:isPust 4s ease-in-out infinite}
+  .ch-b.på::before{top:10px;left:31px;width:6px;height:6px;background:#8fd3f4;box-shadow:0 0 0 1.5px rgba(255,255,255,.9),0 0 6px rgba(143,211,244,.9);animation:isPust 4s ease-in-out infinite}
   @keyframes isPust{50%{box-shadow:0 0 0 1.5px rgba(255,255,255,.9),0 0 11px 2px rgba(143,211,244,.55)}}
   .ch-b.møte{box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 6px 22px rgba(0,32,91,.12)}
   .ch-b.møte::after{animation:none}
-  .ch-b.møte::before{content:"";position:absolute;top:8px;left:24px;width:6px;height:6px;border-radius:50%;background:#e9a23b;box-shadow:0 0 0 1.5px rgba(255,255,255,.9)}
+  .ch-b.møte::before{content:"";position:absolute;top:10px;left:31px;width:6px;height:6px;border-radius:50%;background:#e9a23b;box-shadow:0 0 0 1.5px rgba(255,255,255,.9)}
   @media (prefers-reduced-motion:reduce){.ch-b.på::before{animation:none}}
   /* Natt: knappen og chatvinduet blir nattblå, z-ene stiger opp over knappen. */
   .ch-b.sover{background:#1f2c55;color:#cfdcff;box-shadow:0 8px 24px rgba(20,30,70,.35)}
@@ -302,9 +302,9 @@
   .ch-s .zz i:nth-child(2){font-size:12px}
   .ch-s .zz i:nth-child(3){font-size:14px}
   .ch-s.sover>i{display:none}
-  .ch-s.på i{background:#3ddc84;opacity:.6}
+  .ch-s.på i{background:#8fd3f4;opacity:.6}
   .ch-s.på.on>i{opacity:1;animation:pulsDot 2s ease-out infinite}
-  @keyframes pulsDot{0%{box-shadow:0 0 0 0 rgba(61,220,132,.6)}80%{box-shadow:0 0 0 7px rgba(61,220,132,0)}}
+  @keyframes pulsDot{0%{box-shadow:0 0 0 0 rgba(143,211,244,.6)}80%{box-shadow:0 0 0 7px rgba(143,211,244,0)}}
   .ch-s.møte>i{background:#ff8a00}
   @media (prefers-reduced-motion:reduce){.ch-b::after,.zz i,.ch-s.på.on>i{animation:none}.sover .zz i{opacity:1}.zz i:nth-child(2){transform:translate(7px,-12px)}.zz i:nth-child(3){transform:translate(14px,-24px)}}
   /* «Sende mail istedet?»: liten knapp til venstre over skrivefeltet når chatten er åpnet fra «Snakk med meg om alt dette.» */
@@ -344,8 +344,8 @@
   .st-v{display:flex;align-items:center;gap:12px;font:850 clamp(32px,3.4vw,46px)/1 -apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;letter-spacing:-.04em;font-variant-numeric:tabular-nums;white-space:nowrap}
   .st-l{display:flex;align-items:center;gap:8px;min-height:18px;font:600 11px/1 "SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(0,32,91,.62)}
   .st-c{position:relative;display:flex;flex-direction:column;gap:8px}
-  .tl-dot{width:.24em;height:.24em;flex:none;border-radius:50%;background:#16a34a;animation:tlDot 2.4s ease-out infinite}
-  @keyframes tlDot{0%{box-shadow:0 0 0 0 rgba(22,163,74,.5)}70%,100%{box-shadow:0 0 0 .26em rgba(22,163,74,0)}}
+  .tl-dot{width:.24em;height:.24em;flex:none;border-radius:50%;background:#2b8fc4;animation:tlDot 2.4s ease-out infinite}
+  @keyframes tlDot{0%{box-shadow:0 0 0 0 rgba(43,143,196,.5)}70%,100%{box-shadow:0 0 0 .26em rgba(43,143,196,0)}}
   .od{display:inline-flex;--dh:1.05em;border-radius:.14em;padding:0 .08em;margin:0 -.08em;transition:background .4s,color .4s}
   .od .d{display:inline-block;height:var(--dh);overflow:hidden;line-height:var(--dh);padding:0 .08em;margin:0 -.08em}
   .od .r{display:flex;flex-direction:column;transition:transform 1.2s cubic-bezier(.2,.9,.2,1)}
@@ -760,13 +760,13 @@
   .sl{display:block;font:600 9.5px/1.3 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(0,32,91,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .sv b{display:block;margin-top:3px;font:640 clamp(17px,1.5vw,21px)/1.15 var(--serif);letter-spacing:-.01em;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .sv .bar{display:block;margin-top:5px;height:4px;border-radius:2px;background:rgba(0,32,91,.12);overflow:hidden}
-  .sv .bar i{display:block;height:100%;width:0;border-radius:2px;background:#16a34a;transition:width .8s ease}
+  .sv .bar i{display:block;height:100%;width:0;border-radius:2px;background:#2b8fc4;transition:width .8s ease}
   .sv.lav .bar i{background:#e0233c}
   /* Lader: et mykt grønt lys glir gjennom tallet og stolpen (klassisk lading), og et lite lyn i dempet grønt. */
-  .sv.lader b{background:linear-gradient(100deg,var(--ink) 0 38%,#3f9d63 47%,#7fc79a 50%,#3f9d63 53%,var(--ink) 62% 100%) 0 0/260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:ladeTekst 2.8s ease-in-out infinite}
+  .sv.lader b{background:linear-gradient(100deg,var(--ink) 0 38%,#2b8fc4 47%,#9fd8f3 50%,#2b8fc4 53%,var(--ink) 62% 100%) 0 0/260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:ladeTekst 2.8s ease-in-out infinite}
   @keyframes ladeTekst{from{background-position:100% 0}to{background-position:-60% 0}}
-  .sv.lader b::after{content:"";display:inline-block;width:8px;height:12px;margin-left:6px;vertical-align:0;background:#4f9e6c;clip-path:polygon(60% 0,0 58%,45% 58%,35% 100%,100% 40%,55% 40%)}
-  .sv.lader .bar i{background:linear-gradient(90deg,#2f8f55 0,#2f8f55 35%,#8fd3a8 50%,#2f8f55 65%,#2f8f55 100%) 0 0/250% 100%;animation:ladeBar 2.8s ease-in-out infinite}
+  .sv.lader b::after{content:"";display:inline-block;width:8px;height:12px;margin-left:6px;vertical-align:0;background:#3a9fd0;clip-path:polygon(60% 0,0 58%,45% 58%,35% 100%,100% 40%,55% 40%)}
+  .sv.lader .bar i{background:linear-gradient(90deg,#2b86b8 0,#2b86b8 35%,#a8dcf5 50%,#2b86b8 65%,#2b86b8 100%) 0 0/250% 100%;animation:ladeBar 2.8s ease-in-out infinite}
   @keyframes ladeBar{from{background-position:100% 0}to{background-position:-50% 0}}
   @media (prefers-reduced-motion:reduce){.sv.lader b,.sv.lader .bar i{animation:none}}
   .sv.ny b{animation:svNy 1.2s ease}
@@ -781,8 +781,8 @@
   .sv.maskin b{display:flex;align-items:center;gap:8px;overflow:visible}
   .sv.maskin .mv{overflow:hidden;text-overflow:ellipsis}
   .sv.maskin .mp{position:relative;flex:none;width:8px;height:8px;border-radius:50%;background:rgba(0,32,91,.25)}
-  .sv.maskin.på .mp{background:#16a34a}
-  .sv.maskin.på .mp::after{content:"";position:absolute;inset:0;border-radius:50%;background:#16a34a;animation:maskinPuls 2.4s ease-out infinite}
+  .sv.maskin.på .mp{background:#2b8fc4}
+  .sv.maskin.på .mp::after{content:"";position:absolute;inset:0;border-radius:50%;background:#2b8fc4;animation:maskinPuls 2.4s ease-out infinite}
   .sv.maskin:not(.på) b{color:rgba(0,32,91,.45)}
   @keyframes maskinPuls{0%{transform:scale(1);opacity:.5}70%,100%{transform:scale(2.4);opacity:0}}
   @media (prefers-reduced-motion:reduce){.sv.maskin.på .mp::after{animation:none;opacity:0}}
@@ -1021,8 +1021,8 @@
   .pultk .fl-vg{transition:transform .8s cubic-bezier(.3,.8,.3,1)}
   .pultk .fl-vann{fill:url(#fl-vann);animation:flBolge 3.2s linear infinite}
   @keyframes flBolge{to{transform:translateX(20px)}}
-  .pultk .fl-blad{fill:#5bb85f}
-  .pultk .fl-bladnerve{fill:none;stroke:#2f7d34;stroke-width:1.2;stroke-linecap:round}
+  .pultk .fl-blad{fill:#a9d6ec}
+  .pultk .fl-bladnerve{fill:none;stroke:#4f8fb3;stroke-width:1.2;stroke-linecap:round}
   .pultk .fl-sitron circle{fill:#f2c80f}
   .pultk .fl-sitron .fl-s2{fill:#fdf0a0}
   .pultk .fl-s3{fill:none;stroke:#f2c80f;stroke-width:1.6;stroke-linecap:round}
@@ -1075,6 +1075,14 @@
   .sh-knapp:hover{transform:translateY(-1px)}
   .sh-knapp.sh-p{background:#BA0C2F;color:#fff;box-shadow:0 10px 28px rgba(186,12,47,.32)}
   .sh-knapp svg{width:16px;height:16px}
+  /* Frost: når isen (pekeren) holdes over knappen, gror iskrystaller ut fra der den kom inn, og knappen rimes. Den
+     tiner igjen når pekeren går. Krystallene tegnes i et lerret i knappen (se «Frost» i skriptet). */
+  .sh-knapp.sh-p{position:relative;overflow:hidden;isolation:isolate}
+  .sh-frost{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1;opacity:0;transition:opacity 1.6s ease;
+    background:radial-gradient(circle at var(--fx,50%) var(--fy,50%),rgba(232,245,255,.42) var(--fr,0px),rgba(232,245,255,0) calc(var(--fr,0px) + 26px))}
+  .sh-knapp.fryser .sh-frost{opacity:1;transition:opacity .3s ease}
+  .sh-knapp.sh-p::before{content:"";position:absolute;inset:0;z-index:-2;background:#BA0C2F;transition:background 2.4s ease}
+  .sh-knapp.sh-p.fryser::before{background:#a8455f}
   .sh-live[hidden]{display:none}
   .sh-live{display:flex;align-items:center;gap:9px;margin:22px 0 0;font:500 13px/1.3 "SF Mono",Menlo,monospace;color:rgba(0,32,91,.75)}
   .sh-prikk{width:8px;height:8px;border-radius:50%;background:#BA0C2F;flex:none;box-shadow:0 0 0 0 rgba(186,12,47,.5);animation:shPuls 2s ease-out infinite}
@@ -1399,7 +1407,7 @@
   </section>
 </div>
 <canvas id="c" aria-hidden="true"></canvas>
-<script src="/chat-moro.js?v=7"></script>
+<script src="/chat-moro.js?v=8"></script>
 <script>
 // Tidemanns egne enheter: åpne siden én gang med ?eier, så teller ikke denne nettleseren som besøkende og gir ikke varsel.
 (()=>{const q=new URLSearchParams(location.search);if(!q.has('eier'))return;document.cookie='esbjug_eier=1; Max-Age=31536000; Path=/; SameSite=Lax; Secure';
@@ -1782,7 +1790,7 @@ const sovetI=()=>{if(!sovnet)return'';const m=Math.max(1,Math.round((Date.now()-
 const natt=()=>{const b=blund();ntB.textContent=b?nt.dataset.blund:ntB0;ntS.textContent=b?nt.dataset.blundT+(sovnet?' '+sovetI():''):ntS0};
 setInterval(()=>{if(stat==='sleeping')render()},60000);
 const STAT={available:['Tilgjengelig','på'],meeting:['I møte','møte'],sleeping:['Sover','sover']};
-// Statusen vises som animasjon på chatknappen (grønne ringer, oransje ring, z-er), med tekst bare når Tidemann er i møte.
+// Statusen vises som animasjon på chatknappen (isblå prikk, rav prikk, z-er), med tekst bare når Tidemann er i møte.
 const render=()=>{const [label,cls]=STAT[stat]||STAT.available;
   btn.classList.remove('på','møte','sover');btn.classList.add(cls);document.getElementById('chat').classList.toggle('natt',stat==='sleeping');btn.setAttribute('aria-label','Chat med Tidemann ('+label.toLowerCase()+')');
   st.className='ch-s '+cls+(ownerOn&&stat==='available'?' on':'');
@@ -2404,7 +2412,7 @@ function visKast(k, fraX) {
     let html = `<path d="${d}Z" fill="#d9261c"/><circle r="15" cx="-6" cy="-6" fill="#f0473a" opacity=".8"/><circle r="5" cx="-10" cy="-12" fill="#ffd2c8" opacity=".9"/>`;
     for (let n = 0; n < 9; n++) { const a = Math.random() * Math.PI * 2, rr = 46 + Math.random() * 22; html += `<circle cx="${(Math.cos(a) * rr).toFixed(1)}" cy="${(Math.sin(a) * rr).toFixed(1)}" r="${(2 + Math.random() * 5).toFixed(1)}" fill="#d9261c"/>`; }
     for (let n = 0; n < 3; n++) { const x = -16 + n * 15 + Math.random() * 6; html += `<g class="dr" style="animation-delay:${.2 + n * .3}s"><rect x="${x - 3}" y="22" width="6" height="${16 + Math.random() * 12}" rx="3" fill="#c81f17"/><circle cx="${x}" cy="${40 + Math.random() * 8}" r="4.5" fill="#c81f17"/></g>`; }
-    html += `<circle r="9" cx="22" cy="-26" fill="#3a7d2c"/><path d="M22 -34 l3 -8" stroke="#3a7d2c" stroke-width="3" stroke-linecap="round"/>`;
+    html += `<circle r="9" cx="22" cy="-26" fill="#4f6f8a"/><path d="M22 -34 l3 -8" stroke="#4f6f8a" stroke-width="3" stroke-linecap="round"/>`;
     if (påHam) sp.classList.add('splat-kart');
     sp.innerHTML = html; kort.append(sp); setTimeout(() => sp.remove(), 4600);
     // «Taper» bare hjemme hos moren hans; ellers et vanlig treff-ord.
@@ -3441,6 +3449,57 @@ setInterval(tegn, 1000);
       requestAnimationFrame(tegn);
     };
     tegn();
+  }
+
+  // Frost: holdes pekeren over «Snakk med meg», gror iskrystaller ut fra der den kom inn (seks retninger, som i et
+  // snøkrystall, med greiner i 60°), og et rimlag brer seg utover. Når pekeren går, tiner det bort.
+  const kn = $('.sh-knapp.sh-p');
+  if (kn && matchMedia('(hover:hover) and (pointer:fine)').matches) {
+    const fc = document.createElement('canvas'); fc.className = 'sh-frost'; fc.setAttribute('aria-hidden', 'true'); kn.prepend(fc);
+    const fx = fc.getContext('2d'); let fw = 0, fh = 0, tupper = [], rad = 0, ox = 0, oy = 0, over = false, tin = 0, tid = 0;
+    const tupp = (x, y, a, gen, maks) => tupper.push({ x, y, a, gen, maks, l: 0, neste: 5 + Math.random() * 6 });
+    kn.addEventListener('pointerenter', e => {
+      if (e.pointerType !== 'mouse') return;
+      clearTimeout(tin); over = true; kn.classList.add('fryser');
+      const r = kn.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2);
+      if (!tupper.length && rad === 0) {
+        fw = r.width; fh = r.height; fc.width = fw * d; fc.height = fh * d; fx.setTransform(d, 0, 0, d, 0, 0); fx.clearRect(0, 0, fw, fh);
+        ox = e.clientX - r.left; oy = e.clientY - r.top; fc.style.setProperty('--fx', ox + 'px'); fc.style.setProperty('--fy', oy + 'px');
+        const a0 = Math.random() * 1.05;
+        for (let i = 0; i < 6; i++) tupp(ox, oy, a0 + i * Math.PI / 3, 0, 40 + Math.random() * 60);
+        if (rolig) { rad = Math.hypot(fw, fh); fc.style.setProperty('--fr', rad + 'px'); tupper = []; return; }
+      }
+      if (!rolig && !tid) tid = requestAnimationFrame(gro);
+    });
+    kn.addEventListener('pointerleave', () => {
+      over = false; kn.classList.remove('fryser');
+      tin = setTimeout(() => { tupper = []; rad = 0; fc.style.setProperty('--fr', '0px'); fx.clearRect(0, 0, fw, fh); }, 1700);
+    });
+    const gro = () => {
+      tid = 0;
+      if (!over) return;
+      if (rad < Math.hypot(fw, fh)) { rad += .9; fc.style.setProperty('--fr', rad + 'px'); }
+      fx.lineCap = 'round';
+      for (let i = tupper.length - 1; i >= 0; i--) {
+        const t = tupper[i], nx = t.x + Math.cos(t.a) * .8, ny = t.y + Math.sin(t.a) * .8;
+        fx.strokeStyle = `rgba(255,255,255,${.8 - t.gen * .15})`; fx.lineWidth = 1.1 - t.gen * .22;
+        fx.beginPath(); fx.moveTo(t.x, t.y); fx.lineTo(nx, ny); fx.stroke();
+        t.x = nx; t.y = ny; t.l += .8; t.a += (Math.random() - .5) * .04;
+        if (t.l > t.neste && t.gen < 3 && tupper.length < 260) {
+          t.neste = t.l + 4 + Math.random() * 8;
+          const rest = (t.maks - t.l) * (.35 + Math.random() * .3);
+          if (rest > 3) tupp(t.x, t.y, t.a + (Math.random() < .5 ? 1 : -1) * Math.PI / 3, t.gen + 1, rest);
+        }
+        if (t.l > t.maks || t.x < -2 || t.y < -2 || t.x > fw + 2 || t.y > fh + 2) tupper.splice(i, 1);
+      }
+      // Rim: små lyse korn innenfor rimlaget.
+      fx.fillStyle = 'rgba(255,255,255,.55)';
+      for (let i = 0; i < 3; i++) {
+        const v = Math.random() * 6.283, d = Math.sqrt(Math.random()) * rad, x = ox + Math.cos(v) * d, y = oy + Math.sin(v) * d;
+        if (x > 0 && y > 0 && x < fw && y < fh) { fx.beginPath(); fx.arc(x, y, .4 + Math.random() * .6, 0, 6.283); fx.fill(); }
+      }
+      if (tupper.length || rad < Math.hypot(fw, fh)) tid = requestAnimationFrame(gro);
+    };
   }
 
   // Pekeren: en pil av is med spissen nøyaktig der pekeren er. Over noe klikkbart lyser isen litt mer, ved trykk

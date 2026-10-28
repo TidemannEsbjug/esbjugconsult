@@ -163,7 +163,7 @@ const canvas = () => {
   const d = devicePixelRatio || 1; cv.width = innerWidth * d; cv.height = innerHeight * d; cx.setTransform(d, 0, 0, d, 0, 0);
 };
 const R = (a, b) => a + Math.random() * (b - a);
-const KF = ['#FFD23F', '#FF6A3D', '#FF2E7E', '#2fd1ff', '#7a5cff', '#3ddc84', '#ffffff'];
+const KF = ['#FFD23F', '#FF6A3D', '#FF2E7E', '#2fd1ff', '#7a5cff', '#bfe8fb', '#ffffff'];
 const start = (m) => {
   if (m === 'rist') { const r = document.documentElement; r.classList.remove('cm-rist'); void r.offsetWidth; r.classList.add('cm-rist'); setTimeout(() => r.classList.remove('cm-rist'), 800); return; }
   if (still.matches && m !== 'lys') return;
