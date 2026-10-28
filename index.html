@@ -24,12 +24,12 @@
   html,body{margin:0;background:var(--bg);color:var(--ink)}
   body{font-family:-apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;min-height:100svh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
   main{position:relative;padding:0 var(--g);max-width:1180px;width:100%;margin:0 auto}
-  /* Stor skjerm med mus: heroteksten og innholdet vises som med 150 % zoom i nettleseren (125 % på litt mindre skjermer).
-     vw-mål inne i det forstørrede deles på --z, så de blir som ved nettleserzoom. Kartet og videoen er ikke forstørret. */
+  /* Stor skjerm med mus: heroteksten vises som med 150 % zoom i nettleseren (125 % på litt mindre skjermer).
+     vw-mål inne i det forstørrede deles på --z, så de blir som ved nettleserzoom. Innholdet under, kartet og videoen er ikke forstørret. */
   @media (min-width:1300px) and (hover:hover) and (pointer:fine){:root{--z:1.25}}
   @media (min-width:1600px) and (hover:hover) and (pointer:fine){:root{--z:1.5}}
   @media (min-width:1300px) and (hover:hover) and (pointer:fine){
-    .sh-nav,.sh-i,main{zoom:var(--z);--g:clamp(16px,calc(6vw / var(--z)),96px)}
+    .sh-nav,.sh-i{zoom:var(--z);--g:clamp(16px,calc(6vw / var(--z)),96px)}
     #chat .ch-b,#chat .ch-pill{zoom:var(--z)}
   }
   /* Under hero: hvit bakgrunn og svart tekst. Hero, chatten og de blå bildene beholder fargene sine. */
