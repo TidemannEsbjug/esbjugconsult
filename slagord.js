@@ -1,5 +1,6 @@
 // Prøvebenk for H1 i heroen: åpne siden med ?h1 og bla med piltast høyre/venstre. Ingen teller eller annet på siden.
-// Lastes bare med ?h1, så vanlige besøkende ser ikke noe av dette.
+// Lastes bare med ?h1, så vanlige besøkende ser ikke noe av dette. To deler = to linjer (andre del i kursiv på egen
+// linje). Én streng = én linje, der *ord* blir kursiv i linjen.
 (() => {
   const SLAGORD = [
     ['Du velger toppen.', 'Jeg bærer utstyret opp.'],
@@ -22,13 +23,33 @@
     ['KI i sekken.', 'Sherpaen på laget.'],
     ['Ingen går alene.', 'Vi går i taulag.'],
     ['Du tar steget.', 'Jeg tar vekten.'],
+    ['Du drømmer om toppen.', 'Jeg har tauet.'],
+    ['Ikke bær KI alene.', 'Ta med en sherpa.'],
+    ['KI er fjellet.', 'Jeg er sherpaen.'],
+    ['Høydemeterne er dine.', 'Kiloene er mine.'],
+    ['Start i dalen.', 'Slutt på toppen.'],
+    'Sammen til topps.',
+    'Du velger toppen.',
+    'Vi går i taulag.',
+    'Lettere til topps.',
+    'Jeg bærer det tunge.',
+    'Ingen går alene.',
+    'Bratt er greit.',
+    'KI uten tunge løft.',
+    'Gå lett. Jeg bærer.',
+    'Til topps med *KI*.',
+    'Toppen er *din*.',
+    'Din topp, *min sekk*.',
+    'KI, *ferdig båret opp*.',
+    'Oppover, *sammen*.',
+    'KI på *din* fjellside.',
   ];
   const h1 = document.querySelector('.sh-hero h1');
   if (!h1) return;
   let n = 0;
   const vis = () => {
-    const [a, b] = SLAGORD[n];
-    h1.innerHTML = `${a} <i>${b}</i>`;
+    const s = SLAGORD[n];
+    h1.innerHTML = Array.isArray(s) ? `${s[0]} <i>${s[1]}</i>` : s.replace(/\*(.+?)\*/g, '<i style="display:inline">$1</i>');
   };
   addEventListener('keydown', e => {
     if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
