@@ -545,14 +545,21 @@
   .natt-st circle{fill:#fff6d8;animation:nattGlimt 5s ease-in-out infinite}
   .natt-st circle:nth-child(3n){animation-delay:-1.7s}.natt-st circle:nth-child(3n+1){animation-delay:-3.3s}
   @keyframes nattGlimt{0%,100%{opacity:.9}50%{opacity:.45}}
-  /* Månen står mellom knappene øverst og panelene, midt på kartet, så den aldri havner under et panel. */
-  .natt-mane{display:none;align-self:center;align-items:center;gap:clamp(12px,1.4vw,20px);margin-top:clamp(8px,1.6vh,20px);animation:nattInn 1.4s ease both,nattSvev 9s ease-in-out infinite}
+  /* Stor måne oppe til høyre med teksten til venstre for den. På PC står den i hjørnet på høyde med knappene, og høyre kolonne
+     flyttes ned under den, så den aldri havner under et panel. På mobil står den til høyre under knappene. */
+  footer.hero{--mane:clamp(84px,11vw,170px)}
+  .natt-mane{display:none;align-self:flex-end;flex-direction:row-reverse;align-items:center;gap:clamp(12px,1.6vw,22px);margin-top:8px;animation:nattInn 1.4s ease both,nattSvev 9s ease-in-out infinite}
   html:not(.kartmodus):not(.speil):has(#chat.natt) body:not(.i-replay) .natt-mane,body.i-replay.replay-sover .natt-mane{display:flex}
+  @media (min-width:761px){
+    .natt-mane{position:absolute;top:clamp(16px,2.6vw,36px);right:var(--g);margin:0}
+    .hoyre{transition:margin-top .6s cubic-bezier(.2,.8,.2,1)}
+    html:not(.kartmodus):not(.speil):has(#chat.natt) body:not(.i-replay) .hoyre,body.i-replay.replay-sover .hoyre{margin-top:calc(var(--mane) - 36px)}
+  }
   @keyframes nattInn{from{opacity:0}}
-  .natt-mane svg{flex:none;width:clamp(56px,6vw,96px);height:auto;filter:drop-shadow(0 0 34px rgba(255,226,150,.55)) drop-shadow(0 0 90px rgba(255,226,150,.25))}
-  .natt-t{color:#fff;text-shadow:0 2px 18px rgba(5,10,40,.7)}
-  .natt-t b{display:block;font:italic 500 clamp(24px,2.6vw,40px)/1.05 var(--serif);letter-spacing:-.01em}
-  .natt-t span{display:block;margin-top:6px;font-size:clamp(12px,1.05vw,15px);font-weight:500;opacity:.85;max-width:24em}
+  .natt-mane svg{flex:none;width:var(--mane);height:auto;filter:drop-shadow(0 0 34px rgba(255,226,150,.55)) drop-shadow(0 0 90px rgba(255,226,150,.25))}
+  .natt-t{color:#fff;text-align:right;text-shadow:0 2px 18px rgba(5,10,40,.7)}
+  .natt-t b{display:block;font:italic 500 clamp(22px,2.6vw,40px)/1.05 var(--serif);letter-spacing:-.01em}
+  .natt-t span{display:block;margin-top:6px;font-size:clamp(12px,1.05vw,15px);font-weight:500;opacity:.85;max-width:17em;margin-left:auto}
   .natt-sky{position:absolute;left:-2vw;bottom:-1vh;width:clamp(220px,34vw,520px);height:auto;opacity:.95;animation:nattSvev 12s ease-in-out infinite reverse}
   @keyframes nattSvev{0%,100%{translate:0 0}50%{translate:0 -8px}}
   /* Store, tydelige Z-er fra chatknappen. */
@@ -1685,7 +1692,7 @@
   <div class="flyt"><button type="button" class="kartknapp gl" aria-label="Vis kartet" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="kk-kart" d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/><path class="kk-x" d="M6 6l12 12M18 6 6 18"/></svg></button><div class="topp gl"><a class="lang" href="/en/" hreflang="en" aria-label="Språk: norsk. Bytt til engelsk"><span class="lang-k" aria-hidden="true"></span><span class="lf no" aria-hidden="true"><svg viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span class="lf gb" aria-hidden="true"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg></span></a>
   <div class="st"><div class="st-i tl-a" hidden data-av data-l="her nå"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">her nå</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><div class="st-i tl-b" hidden data-av data-l="unike besøkende" data-ny="+1 · du er nr. {n}" data-er="Du er nr. {n}" data-var="Du var nr. {n}"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unike besøkende</span><span class="tl-deg" aria-hidden="true">+1 · det er deg</span></div></div><span class="tl-sr"></span></div>
   </div></div>
-  <!-- Natt: månen med «Tidemann sover» over panelene, bare når status er «Sover». -->
+  <!-- Natt: månen med «Tidemann sover» oppe til høyre i kartet, bare når status er «Sover». -->
   <div class="natt-mane"><svg viewBox="0 0 100 100" aria-hidden="true"><defs><radialGradient id="nm" cx="35%" cy="35%" r="75%"><stop offset="0" stop-color="#fffbe8"/><stop offset="1" stop-color="#ffe08a"/></radialGradient><mask id="nmm"><rect width="100" height="100" fill="#fff"/><circle cx="66" cy="38" r="38" fill="#000"/></mask></defs><circle cx="46" cy="54" r="40" fill="url(#nm)" mask="url(#nmm)"/></svg><div class="natt-t" data-blund="Tidemann tar en blund" data-blund-t="Mest sannsynlig en blund for å hente energi. Han er sannsynligvis våken igjen om en time eller to." data-sovet="Har sovet i" data-kort="Tar en blund, våken igjen om en time eller to" data-t="t"><b>Tidemann sover</b><span>Skriv gjerne, så svarer jeg når jeg er våken.</span></div></div>
   <div class="paneler">
   <div class="venstre">
