@@ -86,6 +86,10 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeBar(); 
 
 // ---------- GIF-er ----------
 let gp = null, gq = '', gnext = 0, gload = false, gend = false, gt = 0;
+// Tomt søkefelt viser GIF-er for «norway» (uten at ordet står i feltet). Første side hentes på forhånd, med forhåndsbildene.
+const GSTART = 'norway';
+let gfør = null;
+const hentGifs = (q, offset) => fetch('/chat/gifs?q=' + encodeURIComponent(q) + '&offset=' + offset).then(r => r.json());
 const gifPanel = () => {
   if (gp) return gp;
   const pan = document.querySelector('#chat .ch-p'), form = pan.querySelector('.ch-f');
@@ -101,14 +105,13 @@ const gifPanel = () => {
   new ResizeObserver(place).observe(form); place();
   return gp;
 };
-const search = q => { gq = q; gnext = 0; gend = false; gp.querySelector('.cm-gl').textContent = ''; more(); };
+const search = q => { gq = q || GSTART; gnext = 0; gend = false; gp.querySelector('.cm-gl').textContent = ''; more(); };
 const more = async () => {
   if (gload || gend) return;
   gload = true;
   const list = gp.querySelector('.cm-gl'), q = gq;
   try {
-    const r = await fetch('/chat/gifs?q=' + encodeURIComponent(q) + '&offset=' + gnext);
-    const j = await r.json();
+    const j = (q === GSTART && !gnext && gfør && await gfør) || await hentGifs(q, gnext);
     if (q !== gq) return;
     gnext = j.next; gend = !j.gifs.length || j.next >= j.total;
     if (!j.gifs.length && !list.children.length) { const p = document.createElement('p'); p.textContent = T.none; list.append(p); }
@@ -143,6 +146,7 @@ const gifButton = () => {
   b.type = 'button'; b.className = 'cm-gb'; b.textContent = T.gif; b.setAttribute('aria-label', en ? 'Send a GIF' : 'Send en GIF');
   b.onclick = () => { const g = gifPanel(); g.hidden = !g.hidden; if (!g.hidden) { if (!g.querySelector('.cm-gl').children.length) search(''); g.querySelector('input').focus({ preventScroll: true }); } };
   form.insertBefore(b, ta);
+  gfør = hentGifs(GSTART, 0).then(j => { for (const g of j.gifs.slice(0, 12)) { const i = new Image(); i.referrerPolicy = 'no-referrer'; i.src = g.preview; } return j; }).catch(() => null);
 };
 
 // ---------- skjermeffekter ----------
