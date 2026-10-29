@@ -2021,8 +2021,9 @@ addEventListener('esbjug-kast', () => {
   kastN = ny.slurk; visTeller();
 });
 knapp.addEventListener('click', async () => {
-  egne++; egneVent++; visTeller(); melding(TT.sendt); slurkBobler();
-  try { const r = await fetch('/chat/kast', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ k: 'slurk' }) }); if (r.ok) { const j = await r.json(); if (j.slurk != null) { kastN = j.slurk; egne = 0; egneVent = 0; visTeller(); } } } catch {}
+  egne++; egneVent++; visTeller(); slurkBobler();
+  // «Sendt» først når serveren har tatt imot, så det aldri står der uten at varselet er på vei.
+  try { const r = await fetch('/chat/kast', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ k: 'slurk' }) }); if (r.ok) { const j = await r.json(); if (j.slurk != null) { kastN = j.slurk; egne = 0; egneVent = 0; visTeller(); melding(TT.sendt); } } } catch {}
 });
 // Klokka i strømmen går hvert sekund, og en melding i statusen går tilbake etter 3,5 s.
 setInterval(() => {
