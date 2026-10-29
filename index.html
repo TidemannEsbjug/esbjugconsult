@@ -2012,7 +2012,7 @@ const TX = EN ? {
 };
 const mobil = matchMedia('(pointer:coarse)').matches, still = matchMedia('(prefers-reduced-motion: reduce)').matches;
 let kart = null;   // MapLibre-kartet lages når første posisjon er kjent (leggKart)
-const PC = matchMedia('(min-width:761px)').matches, ZOOM_UTE = PC ? 9.1 : 9, ZOOM_HUS = PC ? 9.1 : 18.6;   // standardzoom: på PC den samme ute og hjemme
+const PC = matchMedia('(min-width:761px)').matches, ZOOM_UTE = PC ? 9.1 : 9;   // standardzoom
 const $ = q => document.querySelector(q);
 // Høstkartet: vektorkart fra OpenFreeMap (OpenStreetMap-data) med egne farger. Skogen i fem høstfarger fordelt på
 // skogområdene, park i gull, gress i oliven og gull, mørk varm bunn, dypblått vann og veier i rav. Uten WebGL: vanlig OSM.
@@ -2082,13 +2082,10 @@ function leggKart() {
     kart.setPadding(marg()); kart.jumpTo({ center: midt });   // midten er den synlige skjermen, ikke den høye heroen
     addEventListener('resize', () => { if (kart) kart.setPadding(marg()); });
     kart.touchZoomRotate.disableRotation();
-    // Den besøkende kan flytte og zoome fritt. Mens man holder eller nettopp har rørt kartet, står det i ro;
-    // etter TILBAKE ms uten berøring glir det tilbake til ham.
-    const ror = e => { if (e.originalEvent) rort = Date.now(); };
-    kart.on('move', ror); kart.on('zoom', ror);
-    kart.getCanvasContainer().addEventListener('pointerdown', () => { holder = true; rort = Date.now(); });
-    addEventListener('pointerup', () => { if (holder) { holder = false; rort = Date.now(); } });
-    addEventListener('pointercancel', () => { holder = false; });
+    // Den besøkende kan flytte og zoome fritt, og kartet flytter seg ikke selv. Trykk på prikken låser kartet på ham
+    // (det følger ham, uten å zoome); flytter eller zoomer man selv, slipper låsen.
+    const slipp = e => { if (e.originalEvent) låst = false; };
+    kart.on('movestart', slipp); kart.on('zoomstart', slipp);
     kart.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-left');
     kart.on('load', () => {
       kart.addSource('spor', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
@@ -2103,6 +2100,8 @@ function leggKart() {
       kart.addLayer({ id: 'avsp-prikk', type: 'circle', source: 'avsp-prikk', paint: { 'circle-radius': 7, 'circle-color': '#1593c7', 'circle-stroke-color': '#ffffff', 'circle-stroke-width': 3 } });
       const el = document.createElement('div'); el.innerHTML = '<div class="meg"></div>';
       megMark = new maplibregl.Marker({ element: el }).setLngLat(midt);
+      el.style.cursor = 'pointer';
+      el.addEventListener('click', () => { låst = true; kart.easeTo({ center: megMark.getLngLat(), duration: 700 }); });
       tegn();
       // Strømmen starter først når kartet er tegnet; ellers tegnes kartet hele tiden og blir aldri «ferdig».
       kart.once('idle', () => { visKart(); if (!still) strom(); });
@@ -2133,8 +2132,7 @@ function iBildet(lngLat, marg) {
   const p = kart.project(lngLat), c = kart.getContainer(), w = c.clientWidth, h = c.clientHeight;
   return p.x > w * marg && p.x < w * (1 - marg) && p.y > h * marg && p.y < h * (1 - marg);
 }
-const TILBAKE = 20000;   // ms uten berøring før kartet går tilbake til ham
-let rort = 0, holder = false, varHjemme = false;
+let låst = false;   // kartet følger ham bare etter trykk på prikken
 let watchBegge = false, live = null, rom = null, trail = [], tele = {}, forste = true, skew = 0, stier = [], forrige = {};
 const dist = (a, b) => Math.hypot((a[0] - b[0]) * 111.2e3, (a[1] - b[1]) * 111.2e3 * Math.cos(a[0] * Math.PI / 180));
 const km = pts => { let d = 0; for (let i = 1; i < pts.length; i++) if (pts[i] && pts[i - 1]) d += dist(pts[i - 1], pts[i]); return d; };
@@ -2257,18 +2255,10 @@ function tegn() {
   if (sporNokkel !== sistSpor) { sistSpor = sporNokkel; kart.getSource('spor').setData({ type: 'Feature', geometry: { type: 'MultiLineString', coordinates: spor.map(l => l.map(p => [p[1], p[0]])) } }); }
   megMark.setLngLat(lngLat); if (!megMark._map) megMark.addTo(kart);
   megMark.getElement().querySelector('.meg').classList.toggle('liten', !!hus);
-  // Hjemme zoomes kartet helt inn på huset; ute er det vanlig zoom (på PC 3,5 trinn lenger ut enn på mobil).
-  const zoom = hus ? ZOOM_HUS : ZOOM_UTE;
-  if (forste) { forste = false; varHjemme = !!hus; kart.jumpTo({ center: lngLat, zoom }); }
-  else if (følg) { if (!avsp) kart.easeTo({ center: lngLat, duration: 900 }); }   // låst på prikken (avspillingen flytter kameraet selv)
-  else if (holder || Date.now() - rort < TILBAKE) return;
-  else if (rort || varHjemme !== !!hus) {
-    varHjemme = !!hus;
-    const p = kart.project(lngLat), m = kart.project(kart.getCenter());
-    if (Math.hypot(p.x - m.x, p.y - m.y) > 30 || Math.abs(kart.getZoom() - zoom) > .2) kart.easeTo({ center: lngLat, zoom, duration: 1800 });
-    rort = 0;
-  }
-  else if (!iBildet(lngLat, .2)) kart.easeTo({ center: lngLat, duration: 900 });
+  // Første gang står kartet på ham med vanlig zoom. Etterpå flytter det seg bare når det er låst på ham (trykk på prikken),
+  // og zoomen endres aldri av seg selv.
+  if (forste) { forste = false; kart.jumpTo({ center: lngLat, zoom: ZOOM_UTE }); }
+  else if ((følg || låst) && !avsp) kart.easeTo({ center: lngLat, duration: 900 });   // avspillingen flytter kameraet selv
 }
 const hero = $('.hero');
 let synlig = true; new IntersectionObserver(e => { synlig = e[0].isIntersecting; }).observe(hero);
