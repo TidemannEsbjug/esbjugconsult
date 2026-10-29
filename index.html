@@ -1268,7 +1268,8 @@
   .vf-svg #vf-flaske{cursor:pointer}
   .vf-chip{position:relative;margin:0;display:inline-flex;align-items:center;gap:9px;padding:9px 15px 9px 12px;border-radius:999px;
     background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.18);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
-    font:600 12px/1 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;pointer-events:none}
+    font:600 12px/1 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;pointer-events:none;transition:opacity .35s,transform .35s}
+  .vf-chip.tom{opacity:0;transform:translateY(-4px)}
   /* Strømmen over scenen: LIVE, klokka som går, og hva armen gjør */
   .vf-hud{position:absolute;left:2%;top:3%;z-index:2;display:flex;flex-wrap:wrap;align-items:center;gap:8px;max-width:44%;pointer-events:none}
   .vf-strom{display:inline-flex;align-items:center;gap:9px;padding:5px 13px 5px 5px;border-radius:999px;background:rgba(0,10,36,.45);border:1px solid rgba(255,255,255,.14);
@@ -1495,7 +1496,7 @@
         <g class="vf-merke"><path d="M860 0H904" stroke="#ffd93b" stroke-width="3" stroke-linecap="round"/><circle cx="860" r="5.5" fill="#ffd93b"/></g>
       </svg>
       <div class="vf-maal"><p class="vf-tall"><b class="vf-n" aria-hidden="true">–</b><span class="vf-pst" aria-hidden="true">%</span><span class="vf-sr" aria-live="polite"></span></p><span class="vf-tl" aria-hidden="true">igjen i flasken</span><span class="vf-tl vf-dr" hidden>Drukket i dag <b>–</b></span></div>
-      <div class="vf-hud"><span class="vf-strom" aria-hidden="true"><span class="vf-live"><i></i><b>Live</b></span><span class="vf-klokke">&nbsp;</span></span><p class="vf-chip" aria-hidden="true"><i></i><span>&nbsp;</span></p></div>
+      <div class="vf-hud"><span class="vf-strom" aria-hidden="true"><span class="vf-live"><i></i><b>Live</b></span><span class="vf-klokke">&nbsp;</span></span><p class="vf-chip tom" aria-hidden="true"><i></i><span>&nbsp;</span></p></div>
     </div>
     <div class="vf-bunn">
       <button type="button" class="vf-slurk" aria-label="Be meg ta en slurk"><span class="vf-e" aria-hidden="true">💧</span><span>Be meg ta en slurk</span><b>0</b></button>
@@ -1788,8 +1789,8 @@
 const sek = document.querySelector('.vf'); if (!sek) return;
 const svg = sek.querySelector('.vf-svg'), q = s => svg.querySelector(s), NS = 'http://www.w3.org/2000/svg';
 const EN = document.documentElement.lang === 'en';
-const TT = EN ? { leter: 'Searching …', fant: 'Found it', skanner: 'Scanning …', live: 'Live', borte: 'Looking for the bottle …', sist: 'Last seen ', hviler: 'Resting', igjen: '% left in the bottle', offline: 'Offline', sendt: '💧 Sent! I’m getting a nudge', andre: '💧 Someone asked me to take a sip', loc: 'en-GB' }
-  : { leter: 'Leter …', fant: 'Fant flasken', skanner: 'Skanner …', live: 'Live', borte: 'Leter etter flasken …', sist: 'Sist sett ', hviler: 'Hviler', igjen: ' % igjen i flasken', offline: 'Offline', sendt: '💧 Sendt! Jeg får et varsel', andre: '💧 Noen ba meg ta en slurk', loc: 'nb-NO' };
+const TT = EN ? { leter: 'Searching …', fant: 'Found it', skanner: 'Scanning …', borte: 'Looking for the bottle …', sist: 'Last seen ', hviler: 'Resting', igjen: '% left in the bottle', offline: 'Offline', sendt: '💧 Sent! I’m getting a nudge', andre: '💧 Someone asked me to take a sip', loc: 'en-GB' }
+  : { leter: 'Leter …', fant: 'Fant flasken', skanner: 'Skanner …', borte: 'Leter etter flasken …', sist: 'Sist sett ', hviler: 'Hviler', igjen: ' % igjen i flasken', offline: 'Offline', sendt: '💧 Sendt! Jeg får et varsel', andre: '💧 Noen ba meg ta en slurk', loc: 'nb-NO' };
 const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const smal = matchMedia('(max-width: 600px)');
 // På mobil synes hele robotarmen (foten, leddene og kameraet), så flasken blir litt mindre; scenen står nederst, og tallet i
@@ -1975,7 +1976,7 @@ function armSteg(dt, snap) {
 
 // Skanningen og tallet.
 const SKANN = 1.7, skannEl = q('.vf-skann'), skB = q('.vf-skann-b'), skG = q('.vf-skann-g'), skL = q('.vf-skann-l'), skS = q('.vf-skann-s'), merke = q('.vf-merke');
-const drEl = sek.querySelector('.vf-dr'), nEl = sek.querySelector('.vf-n'), srEl = sek.querySelector('.vf-sr'), chip = sek.querySelector('.vf-chip span'), klokke = sek.querySelector('.vf-klokke');
+const drEl = sek.querySelector('.vf-dr'), nEl = sek.querySelector('.vf-n'), srEl = sek.querySelector('.vf-sr'), chipEl = sek.querySelector('.vf-chip'), chip = chipEl.querySelector('span'), klokke = sek.querySelector('.vf-klokke');
 let meldingTil = 0, meldingTekst = '';
 let data = null, live = false, sett = false, sistTid = 0, sisteTs = 0, nyMaaling = false, antall = 0, passert = false, tallNå = null, tallA = 0;
 function visTall(n) {
@@ -1997,11 +1998,12 @@ function skannSteg() {
 }
 function chipTekst() {
   if (Date.now() < meldingTil) return meldingTekst;
-  if (fase !== 'av') return { leter: TT.leter, borte: TT.borte, laas: TT.fant, skann: TT.skanner, ferdig: TT.live }[fase];
+  if (fase !== 'av') return { leter: TT.leter, borte: TT.borte, laas: TT.fant, skann: TT.skanner, ferdig: '' }[fase];
   if (!sistTid) return TT.hviler;
   const d = new Date(sistTid), gml = Date.now() - sistTid > 20 * 3600e3;
   return TT.sist + (gml ? d.toLocaleDateString(TT.loc, { day: 'numeric', month: 'short' }) : d.toLocaleTimeString(TT.loc, { hour: '2-digit', minute: '2-digit' }));
 }
+const visChip = txt => { chip.textContent = txt || '\u00a0'; chipEl.classList.toggle('tom', !txt); };
 function bytt(f) {
   fase = f; faseT = 0; passert = false;
   svg.classList.toggle('laas', f === 'laas' || f === 'skann');
@@ -2010,12 +2012,12 @@ function bytt(f) {
   if (f === 'av' || f === 'borte') visTall(data);
   sek.classList.toggle('av', f === 'av');
   for (const e of sek.querySelectorAll('.vf-live b')) e.textContent = f === 'av' ? TT.offline : 'Live';
-  chip.textContent = chipTekst();
+  visChip(chipTekst());
 }
 function faseSteg(dt) {
   faseT += dt;
   const tvang = !live ? 'av' : !sett ? 'borte' : null;
-  if (tvang) { if (fase !== tvang) bytt(tvang); else if (fase === 'av') chip.textContent = chipTekst(); return; }
+  if (tvang) { if (fase !== tvang) bytt(tvang); else if (fase === 'av') visChip(chipTekst()); return; }
   if (fase === 'av' || fase === 'borte') bytt('leter');
   else if (fase === 'leter' && faseT > 2.6) bytt('laas');
   else if (fase === 'laas' && faseT > .7) bytt('skann');
@@ -2032,7 +2034,7 @@ function merkeSteg() {
 // «Be meg ta en slurk»: Tidemann får et varsel (høyst ett i minuttet, se slurkVarsel i chat.js). Den som trykker, og alle
 // andre som ser på, får det i statusen over scenen, og flasken bobler.
 const knapp = sek.querySelector('.vf-slurk'), tellerEl = knapp.querySelector('b');
-const melding = txt => { meldingTekst = txt; meldingTil = Date.now() + 3500; chip.textContent = txt; srEl.textContent = txt; };
+const melding = txt => { meldingTekst = txt; meldingTil = Date.now() + 3500; visChip(txt); srEl.textContent = txt; };
 const slurkBobler = () => { pust(MX, BUNN - 30, 10); plask(MX - 40 + Math.random() * 80, 140); tiltV += (Math.random() - .5) * .05; kjor(); };
 let kastN = null, egne = 0, egneVent = 0, sistKast = 0;
 const visTeller = () => { tellerEl.textContent = ((kastN || 0) + egne).toLocaleString(TT.loc); };
@@ -2053,7 +2055,7 @@ knapp.addEventListener('click', async () => {
 // Klokka i strømmen går hvert sekund, og en melding i statusen går tilbake etter 3,5 s.
 setInterval(() => {
   klokke.textContent = new Date().toLocaleTimeString(TT.loc, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  if (meldingTil && Date.now() > meldingTil) { meldingTil = 0; chip.textContent = chipTekst(); }
+  if (meldingTil && Date.now() > meldingTil) { meldingTil = 0; visChip(chipTekst()); }
 }, 1000);
 
 // Trykk på flasken: plask der man trykket. Pekeren som stryker over vannflaten lager små bølger.
