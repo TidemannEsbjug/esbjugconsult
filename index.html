@@ -3115,7 +3115,9 @@ function nyeKast(ny) {
 // Podkasten: episodelista (podcast/episoder.json), nyeste først, med datoen. Trykk på en episode, så byttes lista med en
 // spiller i samme høyde: tilbake til episodene, stor spill/pause, tittel, dato og spolelinje. Lyden spiller videre om
 // man går tilbake til lista (episoden som spilles er merket der), og et trykk på den åpner spilleren igjen.
+// Avpublisert fra 29.10.2026 (PODKAST = false): /podcast/ svarer ikke, så lista hentes ikke og modulen står skjult.
 {
+  const PODKAST = false;
   const pod = $('.pod'), lista = $('.pod-l'), vis = $('.pod-v'), lyd = new Audio(); lyd.preload = 'none';
   const bar = $('.pod-bar'), fyll = bar.firstChild, tidEl = $('.pod-tid'), totEl = $('.pod-tot'), stor = $('.pod-stor');
   const podDato = new Intl.DateTimeFormat(TX.loc, { day: 'numeric', month: 'short' }), langDato = new Intl.DateTimeFormat(TX.loc, { day: 'numeric', month: 'long', year: 'numeric' });
@@ -3141,7 +3143,7 @@ function nyeKast(ny) {
   bar.addEventListener('keydown', e => { const d = { ArrowLeft: -10, ArrowRight: 10 }[e.key]; if (d) { e.preventDefault(); lyd.currentTime += d; } });
   stor.addEventListener('click', () => { lyd.paused ? lyd.play().catch(() => {}) : lyd.pause(); });
   $('.pod-tilbake').addEventListener('click', () => visSpiller(false));
-  fetch('/podcast/episoder.json').then(r => r.json()).then(liste => {
+  if (PODKAST) fetch('/podcast/episoder.json').then(r => r.json()).then(liste => {
     eps = liste;
     lista.replaceChildren(...eps.slice().sort((a, b) => b.n - a.n).map(e => {
       const li = document.createElement('li'), b = document.createElement('button');
