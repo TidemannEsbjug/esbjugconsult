@@ -1353,17 +1353,23 @@ export class ChatHub {
       if ("flaske" in ren) ren.flaskeTs = Date.now();
       // The accelerometer: "x,y,z;…" in hundredths of a g at 20 Hz, a packet every 5 s.
       if (typeof d.acc === "string" && d.acc.length <= 6000 && /^[-\d,;]*$/.test(d.acc)) ren.acc = d.acc;
-      // Vannflasken (kameraet i fyr-appen): nivået følger medianen av de tre siste målingene nedover, og går opp når minst
-      // to av de tre er mer enn 4 poeng over (påfyll, også litt). Én måling som hopper, flytter det ikke.
-      if (typeof ren.flaske === "number" && ren.flaske >= 0 && ren.flaske <= 100) {
-        const k = `vann:${kilde}`, f = JSON.parse(this.sql.exec(`SELECT v FROM kv WHERE k=?`, k).toArray()[0]?.v || "{}");
-        const siste = [...(f.siste || []), ren.flaske].slice(-3), mid = (a) => [...a].sort((x, y) => x - y)[Math.floor(a.length / 2)];
-        let niva = f.niva;
-        const over = niva == null ? [] : siste.filter((x) => x > niva + 4);
-        if (niva == null) { if (siste.length >= 2) niva = mid(siste); }
-        else if (over.length >= 2) niva = mid(over);
-        else if (mid(siste) < niva) niva = mid(siste);
-        this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, k, JSON.stringify({ niva, siste }));
+      // Vannflasken (kameraet i fyr-appen). Målingene spriker ±5 poeng, og mens flasken løftes, drikkes av og settes tilbake,
+      // leses den ofte fullere enn den er. Derfor er nivået medianen av de fem siste målingene: det går ned når medianen er
+      // minst 3 poeng lavere (en slurk, etter tre lave målinger), og opp bare når fire av fem er tydelig høyere (påfyll).
+      // Målinger de første 15 sekundene etter at flasken var borte fra bildet, teller ikke.
+      if ("flaske" in ren) {
+        const k = `vann:${kilde}`, f = JSON.parse(this.sql.exec(`SELECT v FROM kv WHERE k=?`, k).toArray()[0]?.v || "{}"), nå = Date.now();
+        const sett = typeof ren.flaske === "number" && ren.flaske >= 0 && ren.flaske <= 100 && !(typeof ren.harflaske === "number" && ren.harflaske < .5);
+        let { niva = null, siste = [], borte = 0 } = f;
+        if (!sett) borte = nå;
+        else if (nå - borte >= 15e3) {
+          siste = [...siste, ren.flaske].slice(-5);
+          const mid = (a) => [...a].sort((x, y) => x - y)[Math.floor(a.length / 2)], m = mid(siste);
+          if (niva == null) { if (siste.length >= 3) niva = m; }
+          else if (siste.length >= 5 && m >= niva + 6 && siste.filter((x) => x > niva + 4).length >= 4) niva = m;
+          else if (siste.length >= 3 && m <= niva - 3) niva = m;
+        }
+        this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, k, JSON.stringify({ niva, siste, borte }));
         if (niva != null) ren.vann = niva;
       }
       // Mikrofonen (verktoy/lyd): nye ord hvert sekund summeres til ord i dag (Oslo-døgnet). Bare antallet, aldri ordene.
