@@ -37,7 +37,7 @@
 //   GET  /chat/admin/rom                              current room, rooms with sample counts, beacons
 //   POST /chat/admin/rom-slett    {rom}               forget a room's samples
 //   POST /chat/admin/plan         {ts, rom: [...]}    the house plan from the LiDAR scan (2D, metres); public at GET /chat/plan
-//   POST /chat/kast               {k: "le" | "tomat"} a visitor laughs or throws a tomato at the map card (shared counters)
+//   POST /chat/kast               {k: "le" | "tomat" | "heia" | "sitron"} a visitor laughs, throws a tomato, cheers or drops a lemon in the bottle (shared counters)
 //   GET  /chat/poll?id=sherpa     poll totals;  POST /chat/poll {id, valg, vid} one vote per visitor (a new vote replaces the old)
 //   POST /chat/android            {bat, lader}        the owner's Android phone reports its battery (its own key, ANDROID_TOKEN)
 //   POST /chat/maskin             {navn, ledig}       a computer says it is on, every minute (starbase, starship, falcon; key MASKIN_TOKEN)
@@ -976,8 +976,8 @@ export class ChatHub {
         return Response.json({ status: this.status(), sovnet: this.sovnet(), owner: this.ownerOnline(), hr: this.liveHr() }, { headers: { "cache-control": "no-store" } });
       }
       if (url.pathname === "/internal/kast") {
-        // Laughs, tomatoes and cheers (heia): shared counters, at most 20 a minute from one address.
-        if (!["le", "tomat", "heia"].includes(b.k)) return new Response("Bad request", { status: 400 });
+        // Laughs, tomatoes, cheers (heia) and lemons for the water bottle (sitron): shared counters, at most 20 a minute from one address.
+        if (!["le", "tomat", "heia", "sitron"].includes(b.k)) return new Response("Bad request", { status: 400 });
         // Tomatoes only while he is at his mother's.
         if (b.k === "tomat" && this.sporLive()?.kjent !== "hjemme hos moren sin") return new Response("Ikke hjemme hos moren sin", { status: 403 });
         const ip = request.headers.get("x-ip") || "", now = Date.now();
@@ -2117,7 +2117,7 @@ export class ChatHub {
 
   kast() {
     const n = (k) => Number(this.sql.exec(`SELECT v FROM kv WHERE k=?`, `kast:${k}`).toArray()[0]?.v || 0);
-    return { le: n("le"), tomat: n("tomat"), heia: n("heia") };
+    return { le: n("le"), tomat: n("tomat"), heia: n("heia"), sitron: n("sitron") };
   }
 
   tele() {
