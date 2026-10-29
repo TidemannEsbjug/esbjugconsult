@@ -1751,7 +1751,9 @@ const TT = EN ? { leter: 'Searching …', fant: 'Found it', skanner: 'Scanning �
   : { leter: 'Leter …', fant: 'Fant flasken', skanner: 'Skanner …', live: 'Live', borte: 'Leter etter flasken …', sist: 'Sist sett ', hviler: 'Hviler', igjen: ' % igjen i flasken', loc: 'nb-NO' };
 const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const smal = matchMedia('(max-width: 600px)');
-const settVB = () => svg.setAttribute('viewBox', smal.matches ? '160 46 740 900' : '100 40 810 920');
+// På mobil synes hele robotarmen (foten, leddene og kameraet), så flasken blir litt mindre; scenen står nederst, og tallet i
+// det ledige feltet over den.
+const settVB = () => { svg.setAttribute('viewBox', smal.matches ? '4 50 904 885' : '100 40 810 920'); svg.setAttribute('preserveAspectRatio', smal.matches ? 'xMidYMax meet' : 'xMidYMid meet'); };
 settVB(); smal.addEventListener('change', settVB);
 const kl = (v, a, b) => Math.max(a, Math.min(b, v)), f1 = v => v.toFixed(1);
 
