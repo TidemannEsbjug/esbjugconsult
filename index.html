@@ -1100,8 +1100,8 @@
   .focus .sh-hero{opacity:0;filter:blur(8px);pointer-events:none}
   .sh-hero{--sky:#74a8d4;position:relative;min-height:100svh;display:flex;flex-direction:column;background:var(--sky);color:#00205B;overflow:hidden;isolation:isolate}
   /* Videoen står nederst i sitt eget format. Toppen glir mykt over i himmelen. Bakgrunnen får fargen målt fra toppen av
-     videoen i hvert bilde (se «himmel» i skriptet), så det ikke blir en vannrett strek der videoen begynner. I scene 2 står
-     klippetoppene helt øverst, så der er overgangen kort (--dyp, settes av skriptet). */
+     videoen i hvert bilde (se «himmel» i skriptet), så det ikke blir en vannrett strek der videoen begynner. --dyp kan korte
+     inn overgangen (står på 1 nå som scene 2 er tatt ut). */
   .sh-bilde{position:absolute;left:0;right:0;bottom:0;height:min(100%,calc(100vw * .4286));z-index:-2;margin:0;
     -webkit-mask-image:linear-gradient(to bottom,transparent,rgba(0,0,0,.3) calc(13% * var(--dyp,1)),rgba(0,0,0,.72) calc(25% * var(--dyp,1)),#000 calc(36% * var(--dyp,1)));mask-image:linear-gradient(to bottom,transparent,rgba(0,0,0,.3) calc(13% * var(--dyp,1)),rgba(0,0,0,.72) calc(25% * var(--dyp,1)),#000 calc(36% * var(--dyp,1)))}
   .sh-bilde video{width:100%;height:100%;object-fit:cover;object-position:70% 100%;display:block}
@@ -1206,7 +1206,7 @@
   // sekund, går den ned ett trinn og fortsetter der den var.
   (() => {
     const v = document.querySelector('.sh-bilde video'), nett = navigator.connection || {}, minne = navigator.deviceMemory;
-    const NIVÅ = ['/media/sherpa-900.mp4?v=4', '/media/sherpa.mp4?v=3', '/media/sherpa-hq.mp4?v=1'];
+    const NIVÅ = ['/media/sherpa-900.mp4?v=5', '/media/sherpa.mp4?v=4', '/media/sherpa-hq.mp4?v=2'];
     let x = 1, n = 0, t0 = performance.now();
     while (performance.now() - t0 < 2) for (let i = 0; i < 1000; i++) x = (x * 1.000001 + i) % 1e6;
     t0 = performance.now();
@@ -3387,23 +3387,19 @@ setInterval(tegn, 1000);
 (() => {
   const $ = q => document.querySelector(q);
   if (/[?&]tekst=bla\b/.test(location.search)) $('.sh-hero').classList.add('bla');
-  // Videoen i heroen: tre Grok-klipp av Midjourney-bilder, klippet rett etter hverandre (start, den bratte bakken,
-  // toppen) og i løkke. Står stille ved redusert bevegelse og pauses når heroen er ute av syne.
+  // Videoen i heroen: to Grok-klipp av Midjourney-bilder, klippet rett etter hverandre (start og toppen) og i løkke. Står stille ved redusert bevegelse og pauses når heroen er ute av syne.
   const vid = $('.sh-bilde video');
   if (vid) {
     // Bakgrunnen over videoen følger himmelen i hver scene, så toppen av videoen glir over i riktig farge.
-    // Starttid i sekunder (klippene er 361, 343 og 361 bilder i 24 fps) og himmelfargen målt øverst til venstre.
-    const HIMMEL = [[0, '#74a8d4'], [361 / 24, '#b2d0de'], [704 / 24, '#7dadc0']];
+    // Starttid i sekunder (klippene er 361 og 361 bilder i 24 fps) og himmelfargen målt øverst til venstre.
+    const HIMMEL = [[0, '#74a8d4'], [361 / 24, '#7dadc0']];
     const hero = $('.sh-hero');
     // Fargen måles i det øverste båndet av videoen (venstre halvdel, der det er himmel) og glir mot ny verdi, så den følger
     // kameraet. Går målingen ikke, brukes fargen for scenen fra HIMMEL.
     const prøve = document.createElement('canvas'); prøve.width = 24; prøve.height = 3;
     const px = prøve.getContext('2d', { willReadFrequently: true });
     let rgb = null, kanMåle = true;
-    // Hvor dypt toppen av videoen tones ut: kort i scene 2, der klippene når helt opp, og glir inn over et halvt sekund.
-    const dyp = t => t >= 361 / 24 && t < 704 / 24 ? .22 + .78 * Math.max(0, 1 - (t - 361 / 24) / .5) : t >= 704 / 24 ? Math.min(1, .22 + .78 * (t - 704 / 24) / .5) : 1;
     const himmel = () => {
-      hero.style.setProperty('--dyp', dyp(vid.currentTime).toFixed(3));
       if (kanMåle && vid.videoWidth) {
         try {
           px.drawImage(vid, 0, 0, vid.videoWidth * .5, vid.videoHeight * .05, 0, 0, 24, 3);
