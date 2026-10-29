@@ -290,9 +290,7 @@ T_NY = [
     # Vannflasken: egen seksjon under kartet (fra 29.10.2026). Statusen i skriptet velger selv språk etter <html lang>.
     ('aria-label="Vannflasken, live"', 'aria-label="The water bottle, live"'),
     ('<span class="mono">Livestream fra pulten</span>', '<span class="mono">Live stream from the desk</span>'),
-    ('<h2 class="vf-h">Når livet gir deg sitroner,</h2>', '<h2 class="vf-h">When life gives you lemons,</h2>'),
-    ('<p class="vf-sub">putt dem i vannet, og sett en robot til å holde øye med flasken.</p>',
-     '<p class="vf-sub">put them in your water, and get a robot to keep an eye on the bottle.</p>'),
+    ('<h2 class="vf-h">Når livet gir deg sitroner&nbsp;…</h2>', '<h2 class="vf-h">When life gives you lemons&nbsp;…</h2>'),
     ('<p class="vf-forklar">En robotarm styrer et kamera etter vannflasken min og måler hvor mye som er igjen, nå mens du ser på.</p>',
      '<p class="vf-forklar">A robot arm points a camera at my water bottle and measures how much is left, right now as you watch.</p>'),
     ('<span class="vf-tl" aria-hidden="true">igjen i flasken</span>', '<span class="vf-tl" aria-hidden="true">left in the bottle</span>'),

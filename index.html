@@ -1229,32 +1229,33 @@
   .vf-lys i{position:absolute;bottom:-12%;left:var(--x);width:var(--s);height:var(--s);border-radius:50%;opacity:0;
     background:radial-gradient(closest-side,var(--c),transparent);animation:vfStig var(--d) linear var(--del) infinite}
   @keyframes vfStig{0%{transform:translateY(0);opacity:0}15%,80%{opacity:var(--o)}100%{transform:translateY(-120svh);opacity:0}}
-  /* PC: en stripe på rundt 60 % av skjermhøyden, samlet mot midten. Scenen er like bred som tegningen. */
-  .vf-i{--py:clamp(22px,3.6svh,40px);position:relative;width:100%;max-width:1180px;margin:0 auto;box-sizing:border-box;padding:var(--py) var(--g);
-    display:grid;grid-template-columns:minmax(0,500px) auto;justify-content:center;grid-template-areas:". scene" "tekst scene" "bunn scene" ". scene";
+  /* PC: en stripe samlet mot midten, med god luft over og under. Scenen er like bred som tegningen (med plass til tallet til høyre). */
+  .vf-i{--py:clamp(36px,7svh,84px);position:relative;width:100%;max-width:1320px;margin:0 auto;box-sizing:border-box;padding:var(--py) var(--g);
+    display:grid;grid-template-columns:minmax(0,460px) auto;justify-content:center;grid-template-areas:". scene" "tekst scene" "bunn scene" ". scene";
     grid-template-rows:1fr auto auto 1fr;column-gap:clamp(24px,4vw,64px)}
   .vf-tekst{grid-area:tekst;position:relative;z-index:2}
-  .vf-bunn{grid-area:bunn;position:relative;z-index:2;display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 28px;margin-top:clamp(16px,2.6svh,28px)}
-  .vf-ey{margin:0 0 14px;display:flex;align-items:center;gap:12px;color:#ffe066}
+  .vf-bunn{grid-area:bunn;position:relative;z-index:2;margin-top:clamp(22px,3.4svh,36px)}
+  .vf-ey{margin:0 0 18px;display:flex;align-items:center;gap:12px;color:#ffe066}
   .vf-ey .vf-live{padding:6px 10px 6px 9px;font-size:12px;vertical-align:0}
   .vf-h{margin:0;font:400 clamp(34px,3.4vw,58px)/1.04 "Gloock",var(--serif);letter-spacing:-.02em;text-wrap:balance}
-  .vf-sub{margin:.6em 0 0;max-width:24em;font:400 clamp(16px,1.2vw,19px)/1.5 "Literata",Georgia,serif;color:rgba(255,255,255,.8);text-wrap:pretty}
   /* Forklaringen: et rødt LIVE-merke som på en strømming, grått når kameraet er av */
-  .vf-forklar{margin:.9em 0 0;max-width:30em;font:500 clamp(14px,1vw,16px)/1.5 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;color:rgba(255,255,255,.74);text-wrap:pretty}
+  .vf-forklar{margin:1em 0 0;max-width:28em;font:500 clamp(14px,1vw,16px)/1.5 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;color:rgba(255,255,255,.74);text-wrap:pretty}
   .vf-live{display:inline-flex;align-items:center;gap:6px;margin-right:5px;padding:4px 8px 4px 7px;border-radius:6px;background:#d42a45;color:#fff;font:700 11px/1 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;vertical-align:2px;transition:background .4s}
   .vf-live i{width:6px;height:6px;border-radius:50%;background:#fff;animation:vfBlink 1.4s ease-in-out infinite}
   .vf-live b{font:inherit}
   @keyframes vfBlink{50%{opacity:.25}}
   .vf.av .vf-live{background:rgba(255,255,255,.16)}
   .vf.av .vf-live i{animation:none;opacity:.5}
+  /* Tallet står ved vannflaten til høyre for flasken og følger den opp og ned (top settes i skriptet). */
+  .vf-maal{position:absolute;z-index:2;left:77.5%;top:50%;width:max-content;margin-top:calc(clamp(52px,4.2vw,80px) * -.42);pointer-events:none}
   .vf-tall{margin:0;display:flex;align-items:flex-start}
-  .vf-n{font:400 clamp(72px,6.2vw,120px)/.8 "Gloock",var(--serif);letter-spacing:-.045em;padding:.06em 0 0;
+  .vf-n{font:400 clamp(52px,4.2vw,80px)/.8 "Gloock",var(--serif);letter-spacing:-.045em;padding:.06em 0 0;
     background:linear-gradient(180deg,#fff 35%,#bfe8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
-  .vf-pst{font:400 clamp(28px,2.4vw,46px)/1 "Gloock",var(--serif);color:#ffd93b;margin:.1em 0 0 .14em}
+  .vf-pst{font:400 clamp(20px,1.6vw,30px)/1 "Gloock",var(--serif);color:#ffd93b;margin:.1em 0 0 .14em}
   html[lang="en"] .vf-pst{margin-left:.04em}
   .vf-tl.vf-dr{margin-top:6px;color:rgba(255,255,255,.85)}.vf-dr b{font-weight:700;color:#fff}.vf-dr[hidden]{display:none}
-  .vf-tl{display:block;margin-top:10px;font:600 12px/1.4 "SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6)}
-  .vf-slurk{margin:0 0 4px;display:inline-flex;align-items:center;gap:10px;border:0;cursor:pointer;padding:13px 14px 13px 16px;border-radius:999px;
+  .vf-tl{display:block;margin-top:8px;font:600 11px/1.4 "SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+  .vf-slurk{margin:0;display:inline-flex;align-items:center;gap:10px;border:0;cursor:pointer;padding:13px 14px 13px 16px;border-radius:999px;
     font:600 16px/1 "Literata",Georgia,serif;color:#00205B;background:linear-gradient(180deg,#fff27e,#ffd21f);
     box-shadow:0 10px 30px rgba(255,210,31,.26),inset 0 1px 0 rgba(255,255,255,.75);transition:transform .15s ease,box-shadow .15s ease;-webkit-tap-highlight-color:transparent}
   .vf-slurk:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(255,210,31,.4),inset 0 1px 0 rgba(255,255,255,.75)}
@@ -1262,14 +1263,14 @@
   .vf-slurk:focus-visible{outline:3px solid #fff;outline-offset:3px}
   .vf-slurk .vf-e{font-size:20px;line-height:1}
   .vf-slurk b{min-width:1.6em;padding:6px 9px;border-radius:999px;background:#00205B;color:#ffe066;font:600 13px/1 "SF Mono",Menlo,monospace;text-align:center}
-  .vf-scene{grid-area:scene;position:relative;height:clamp(340px,calc(60svh - 2 * var(--py)),640px);aspect-ratio:870/920}
+  .vf-scene{grid-area:scene;position:relative;height:clamp(320px,48svh,560px);aspect-ratio:1120/920}
   .vf-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;-webkit-tap-highlight-color:transparent}
   .vf-svg #vf-flaske{cursor:pointer}
   .vf-chip{position:relative;margin:0;display:inline-flex;align-items:center;gap:9px;padding:9px 15px 9px 12px;border-radius:999px;
     background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.18);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
     font:600 12px/1 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;pointer-events:none}
   /* Strømmen over scenen: LIVE, klokka som går, og hva armen gjør */
-  .vf-hud{position:absolute;left:2%;top:3%;z-index:2;display:flex;flex-wrap:wrap;align-items:center;gap:8px;max-width:56%;pointer-events:none}
+  .vf-hud{position:absolute;left:2%;top:3%;z-index:2;display:flex;flex-wrap:wrap;align-items:center;gap:8px;max-width:44%;pointer-events:none}
   .vf-strom{display:inline-flex;align-items:center;gap:9px;padding:5px 13px 5px 5px;border-radius:999px;background:rgba(0,10,36,.45);border:1px solid rgba(255,255,255,.14);
     -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
   .vf-strom .vf-live{margin:0;vertical-align:0}
@@ -1295,12 +1296,11 @@
     .vf-scene{height:auto;min-height:0;aspect-ratio:auto;margin:0 calc(var(--g) * -1)}
     .vf-ey{margin-bottom:clamp(6px,1.2svh,14px)}
     .vf-h{font-size:clamp(28px,min(8.4vw,4.6svh),52px)}
-    .vf-sub{margin-top:.45em;font-size:clamp(14px,min(4vw,2.2svh),19px);line-height:1.42}
     .vf-forklar{margin-top:.6em;font-size:clamp(13px,min(3.6vw,2svh),16px);line-height:1.42}
     .vf-live{padding:3px 7px 3px 6px;font-size:10px}
     /* Tallet står i det tomme feltet til venstre for flasken; knappen alene nederst til venstre, unna chat-knappen. */
     .vf-bunn{display:contents}
-    .vf-maal{grid-area:scene;align-self:start;justify-self:start;position:relative;z-index:2;margin-top:clamp(72px,11svh,96px);pointer-events:none}
+    .vf-maal{left:var(--g);top:clamp(72px,11svh,96px)!important;margin-top:0}
     .vf-tall{margin-top:0}
     .vf-n{font-size:clamp(60px,min(18vw,10svh),120px)}
     .vf-pst{font-size:clamp(24px,min(7vw,4svh),44px)}
@@ -1315,11 +1315,10 @@
   }
   /* Lave skjermer (mobil på tvers, små vinduer): alt litt mindre, så stripen ikke blir høyere enn skjermen. */
   @media (max-height:620px) and (orientation:landscape){
-    .vf-i{--py:12px}
-    .vf-scene{min-height:0}
+    .vf-i{--py:14px}
+    .vf-scene{height:calc(100svh - 28px)}
     .vf-ey{margin-bottom:8px}
     .vf-h{font-size:clamp(26px,6.4svh,44px)}
-    .vf-sub{font-size:14px;margin-top:.4em}
     .vf-forklar{font-size:13px;margin-top:.5em}
     .vf-n{font-size:clamp(48px,15svh,96px)}
     .vf-pst{font-size:clamp(20px,6svh,36px)}
@@ -1378,8 +1377,7 @@
   <div class="vf-i">
     <div class="vf-tekst">
       <p class="vf-ey"><span class="vf-live"><i></i><b>Live</b></span><span class="mono">Livestream fra pulten</span></p>
-      <h2 class="vf-h">Når livet gir deg sitroner,</h2>
-      <p class="vf-sub">putt dem i vannet, og sett en robot til å holde øye med flasken.</p>
+      <h2 class="vf-h">Når livet gir deg sitroner&nbsp;…</h2>
       <p class="vf-forklar">En robotarm styrer et kamera etter vannflasken min og måler hvor mye som er igjen, nå mens du ser på.</p>
     </div>
     <div class="vf-scene">
@@ -1494,12 +1492,12 @@
         </g>
         <!-- Søkerammen rundt flasken og merket ved vannflaten -->
         <path class="vf-sikte" d="M522 116V70H568M832 70H878V116M522 884V930H568M832 930H878V884" fill="none" stroke="#ffd93b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-        <g class="vf-merke"><path d="M860 0H896" stroke="#ffd93b" stroke-width="3" stroke-linecap="round"/><circle cx="860" r="5.5" fill="#ffd93b"/></g>
+        <g class="vf-merke"><path d="M860 0H904" stroke="#ffd93b" stroke-width="3" stroke-linecap="round"/><circle cx="860" r="5.5" fill="#ffd93b"/></g>
       </svg>
+      <div class="vf-maal"><p class="vf-tall"><b class="vf-n" aria-hidden="true">–</b><span class="vf-pst" aria-hidden="true">%</span><span class="vf-sr" aria-live="polite"></span></p><span class="vf-tl" aria-hidden="true">igjen i flasken</span><span class="vf-tl vf-dr" hidden>Drukket i dag <b>–</b></span></div>
       <div class="vf-hud"><span class="vf-strom" aria-hidden="true"><span class="vf-live"><i></i><b>Live</b></span><span class="vf-klokke">&nbsp;</span></span><p class="vf-chip" aria-hidden="true"><i></i><span>&nbsp;</span></p></div>
     </div>
     <div class="vf-bunn">
-      <div class="vf-maal"><p class="vf-tall"><b class="vf-n" aria-hidden="true">–</b><span class="vf-pst" aria-hidden="true">%</span><span class="vf-sr" aria-live="polite"></span></p><span class="vf-tl" aria-hidden="true">igjen i flasken</span><span class="vf-tl vf-dr" hidden>Drukket i dag <b>–</b></span></div>
       <button type="button" class="vf-slurk" aria-label="Be meg ta en slurk"><span class="vf-e" aria-hidden="true">💧</span><span>Be meg ta en slurk</span><b>0</b></button>
     </div>
   </div>
@@ -1796,7 +1794,7 @@ const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const smal = matchMedia('(max-width: 600px)');
 // På mobil synes hele robotarmen (foten, leddene og kameraet), så flasken blir litt mindre; scenen står nederst, og tallet i
 // det ledige feltet over den.
-const settVB = () => { svg.setAttribute('viewBox', smal.matches ? '4 50 904 885' : '40 40 870 920'); svg.setAttribute('preserveAspectRatio', smal.matches ? 'xMidYMax meet' : 'xMidYMid meet'); };
+const settVB = () => { svg.setAttribute('viewBox', smal.matches ? '4 50 904 885' : '40 40 1120 920'); svg.setAttribute('preserveAspectRatio', smal.matches ? 'xMidYMax meet' : 'xMidYMid meet'); };
 settVB(); smal.addEventListener('change', settVB);
 const kl = (v, a, b) => Math.max(a, Math.min(b, v)), f1 = v => v.toFixed(1);
 
@@ -2024,7 +2022,12 @@ function faseSteg(dt) {
   else if (fase === 'skann' && faseT > SKANN) { if (!passert) visTall(data); bytt('ferdig'); svg.classList.add('merket'); }
   else if (fase === 'ferdig' && nyMaaling && faseT > 3) { nyMaaling = false; antall++; bytt(antall % 4 === 0 ? 'leter' : 'laas'); }
 }
-function merkeSteg() { merke.setAttribute('transform', `translate(0 ${f1(flateVed(838))})`); }
+const maalEl = sek.querySelector('.vf-maal'), mobil = matchMedia('(max-width: 899px) and (orientation: portrait)');
+function merkeSteg() {
+  const y = flateVed(838); merke.setAttribute('transform', `translate(0 ${f1(y)})`);
+  // På PC står tallet ved vannflaten (utsnittet går fra y 40 og er 920 høyt), litt innenfor toppen og bunnen.
+  if (!mobil.matches) maalEl.style.top = kl((y - 40) / 920 * 100, 12, 84).toFixed(2) + '%';
+}
 
 // «Be meg ta en slurk»: Tidemann får et varsel (høyst ett i minuttet, se slurkVarsel i chat.js). Den som trykker, og alle
 // andre som ser på, får det i statusen over scenen, og flasken bobler.
