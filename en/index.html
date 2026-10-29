@@ -1226,13 +1226,15 @@
     grid-template-rows:1fr auto auto 1fr;column-gap:clamp(16px,3vw,48px)}
   .vf-tekst{grid-area:tekst;position:relative;z-index:2}
   .vf-bunn{grid-area:bunn;position:relative;z-index:2}
-  .vf-ey{margin:0 0 20px;color:#ffe066}
+  .vf-ey{margin:0 0 20px;display:flex;align-items:center;gap:12px;color:#ffe066}
+  .vf-ey .vf-live{padding:6px 10px 6px 9px;font-size:12px;vertical-align:0}
   .vf-h{margin:0;font:400 clamp(42px,5.4vw,88px)/1.02 "Gloock",var(--serif);letter-spacing:-.02em;text-wrap:balance}
   .vf-sub{margin:.75em 0 0;max-width:21em;font:400 clamp(18px,1.55vw,23px)/1.5 "Literata",Georgia,serif;color:rgba(255,255,255,.8);text-wrap:pretty}
   /* Forklaringen: et rødt LIVE-merke som på en strømming, grått når kameraet er av */
   .vf-forklar{margin:1.1em 0 0;max-width:30em;font:500 clamp(15px,1.15vw,17px)/1.5 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;color:rgba(255,255,255,.74);text-wrap:pretty}
   .vf-live{display:inline-flex;align-items:center;gap:6px;margin-right:5px;padding:4px 8px 4px 7px;border-radius:6px;background:#d42a45;color:#fff;font:700 11px/1 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;vertical-align:2px;transition:background .4s}
   .vf-live i{width:6px;height:6px;border-radius:50%;background:#fff;animation:vfBlink 1.4s ease-in-out infinite}
+  .vf-live b{font:inherit}
   @keyframes vfBlink{50%{opacity:.25}}
   .vf.av .vf-live{background:rgba(255,255,255,.16)}
   .vf.av .vf-live i{animation:none;opacity:.5}
@@ -1242,20 +1244,26 @@
   .vf-pst{font:400 clamp(40px,4.6vw,78px)/1 "Gloock",var(--serif);color:#ffd93b;margin:.1em 0 0 .14em}
   html[lang="en"] .vf-pst{margin-left:.04em}
   .vf-tl{display:block;margin-top:14px;font:600 12px/1.4 "SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6)}
-  .vf-sitron{margin-top:clamp(24px,3vw,36px);display:inline-flex;align-items:center;gap:10px;border:0;cursor:pointer;padding:13px 14px 13px 16px;border-radius:999px;
+  .vf-slurk{margin-top:clamp(24px,3vw,36px);display:inline-flex;align-items:center;gap:10px;border:0;cursor:pointer;padding:13px 14px 13px 16px;border-radius:999px;
     font:600 16px/1 "Literata",Georgia,serif;color:#00205B;background:linear-gradient(180deg,#fff27e,#ffd21f);
     box-shadow:0 10px 30px rgba(255,210,31,.26),inset 0 1px 0 rgba(255,255,255,.75);transition:transform .15s ease,box-shadow .15s ease;-webkit-tap-highlight-color:transparent}
-  .vf-sitron:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(255,210,31,.4),inset 0 1px 0 rgba(255,255,255,.75)}
-  .vf-sitron:active{transform:translateY(1px) scale(.98)}
-  .vf-sitron:focus-visible{outline:3px solid #fff;outline-offset:3px}
-  .vf-sitron .vf-e{font-size:20px;line-height:1}
-  .vf-sitron b{min-width:1.6em;padding:6px 9px;border-radius:999px;background:#00205B;color:#ffe066;font:600 13px/1 "SF Mono",Menlo,monospace;text-align:center}
+  .vf-slurk:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(255,210,31,.4),inset 0 1px 0 rgba(255,255,255,.75)}
+  .vf-slurk:active{transform:translateY(1px) scale(.98)}
+  .vf-slurk:focus-visible{outline:3px solid #fff;outline-offset:3px}
+  .vf-slurk .vf-e{font-size:20px;line-height:1}
+  .vf-slurk b{min-width:1.6em;padding:6px 9px;border-radius:999px;background:#00205B;color:#ffe066;font:600 13px/1 "SF Mono",Menlo,monospace;text-align:center}
   .vf-scene{grid-area:scene;position:relative;height:min(calc(100svh - 2 * var(--py)),1000px);min-height:560px}
   .vf-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;-webkit-tap-highlight-color:transparent}
   .vf-svg #vf-flaske{cursor:pointer}
-  .vf-chip{position:absolute;left:3%;top:6%;margin:0;display:inline-flex;align-items:center;gap:9px;padding:9px 15px 9px 12px;border-radius:999px;
+  .vf-chip{position:relative;margin:0;display:inline-flex;align-items:center;gap:9px;padding:9px 15px 9px 12px;border-radius:999px;
     background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.18);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
     font:600 12px/1 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;pointer-events:none}
+  /* Strømmen over scenen: LIVE, klokka som går, og hva armen gjør */
+  .vf-hud{position:absolute;left:3%;top:6%;z-index:2;display:flex;flex-wrap:wrap;align-items:center;gap:8px;max-width:94%;pointer-events:none}
+  .vf-strom{display:inline-flex;align-items:center;gap:9px;padding:5px 13px 5px 5px;border-radius:999px;background:rgba(0,10,36,.45);border:1px solid rgba(255,255,255,.14);
+    -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  .vf-strom .vf-live{margin:0;vertical-align:0}
+  .vf-klokke{font:600 13px/1 "SF Mono",Menlo,monospace;letter-spacing:.06em;font-variant-numeric:tabular-nums;color:#fff}
   .vf-chip i{flex:none;width:8px;height:8px;border-radius:50%;background:#ffd93b;animation:vfPuls 1.6s ease-out infinite}
   .vf.av .vf-chip i{background:rgba(255,255,255,.4);animation:none}
   @keyframes vfPuls{from{box-shadow:0 0 0 0 rgba(255,217,59,.7)}to{box-shadow:0 0 0 10px rgba(255,217,59,0)}}
@@ -1267,8 +1275,6 @@
   .vf-svg.hvil .vf-sikte{opacity:.4;transform:none}
   .vf-merke{opacity:0;transition:opacity .5s ease}
   .vf-svg.merket .vf-merke{opacity:1}
-  .vf-kork{transform-origin:770px 184px;transition:transform .5s cubic-bezier(.3,1.35,.5,1)}
-  .vf-svg.aapen .vf-kork{transform:rotate(116deg)}
   .vf-skjerm-paa{transition:opacity .6s ease}
   .vf.av .vf-skjerm-paa{opacity:0}
   /* Mobil (stående): hele seksjonen er én skjermhøyde. Teksten og tallraden er små, flasken får resten av høyden. */
@@ -1284,15 +1290,18 @@
     .vf-live{padding:3px 7px 3px 6px;font-size:10px}
     /* Tallet står i det tomme feltet til venstre for flasken; knappen alene nederst til venstre, unna chat-knappen. */
     .vf-bunn{display:contents}
-    .vf-maal{grid-area:scene;align-self:start;justify-self:start;position:relative;z-index:2;margin-top:clamp(40px,7svh,64px);pointer-events:none}
+    .vf-maal{grid-area:scene;align-self:start;justify-self:start;position:relative;z-index:2;margin-top:clamp(72px,11svh,96px);pointer-events:none}
     .vf-tall{margin-top:0}
     .vf-n{font-size:clamp(60px,min(18vw,10svh),120px)}
     .vf-pst{font-size:clamp(24px,min(7vw,4svh),44px)}
     .vf-tl{margin-top:6px;font-size:10px;letter-spacing:.12em;white-space:nowrap}
-    .vf-sitron{grid-area:bunn;justify-self:start;margin-top:0;flex:none;gap:6px;padding:9px 8px 9px 11px;font-size:clamp(12.5px,3.5vw,14px)}
-    .vf-sitron .vf-e{font-size:16px}
-    .vf-sitron b{padding:5px 7px;font-size:12px}
-    .vf-chip{left:var(--g);top:0;padding:7px 12px 7px 10px;font-size:11px}
+    .vf-slurk{grid-area:bunn;justify-self:start;margin-top:0;flex:none;gap:6px;padding:9px 8px 9px 11px;font-size:clamp(12.5px,3.5vw,14px)}
+    .vf-slurk .vf-e{font-size:16px}
+    .vf-slurk b{padding:5px 7px;font-size:12px}
+    .vf-hud{left:var(--g);top:0;max-width:calc(100% - 2 * var(--g));gap:6px}
+    .vf-chip{padding:7px 12px 7px 10px;font-size:11px}
+    .vf-strom{padding:4px 11px 4px 4px;gap:7px}
+    .vf-klokke{font-size:12px}
   }
   /* Lave skjermer (mobil på tvers, små vinduer): alt litt mindre, så det fortsatt er én skjermhøyde. */
   @media (max-height:620px) and (orientation:landscape){
@@ -1306,7 +1315,7 @@
     .vf-n{font-size:clamp(48px,15svh,96px)}
     .vf-pst{font-size:clamp(20px,6svh,36px)}
     .vf-tl{margin-top:6px}
-    .vf-sitron{margin-top:12px;padding:9px 10px 9px 12px;font-size:14px}
+    .vf-slurk{margin-top:12px;padding:9px 10px 9px 12px;font-size:14px}
   }
   @media (prefers-reduced-motion:reduce){.vf::before,.vf-lys i,.vf-chip i,.vf-live i{animation:none}.vf-lys{display:none}}
 </style>
@@ -1617,16 +1626,16 @@
   </div>
   </div>
 </footer>
-<!-- Vannflasken: egen seksjon under kartet (fra 29.10.2026). Robotarmen med iPhonen leter etter flasken, låser seg på den
-     og skanner, så kommer tallet. Sitronskivene og myntebladet flyter i vannet; besøkende kan slippe en sitron oppi. -->
+<!-- Vannflasken: egen seksjon under kartet (fra 29.10.2026), en livestream. Robotarmen med iPhonen leter etter flasken, låser
+     seg på den og skanner, så kommer tallet. Sitronskivene og myntebladet flyter i vannet; besøkende kan be meg ta en slurk. -->
 <section class="vf" id="vann" aria-label="The water bottle, live">
   <div class="vf-lys" aria-hidden="true"><i style="--x:7%;--s:14px;--c:rgba(255,236,150,.9);--o:.5;--d:19s;--del:-3s"></i><i style="--x:16%;--s:8px;--c:rgba(190,235,255,.9);--o:.6;--d:15s;--del:-9s"></i><i style="--x:28%;--s:22px;--c:rgba(190,235,255,.8);--o:.25;--d:24s;--del:-14s"></i><i style="--x:41%;--s:6px;--c:rgba(255,255,255,.9);--o:.5;--d:13s;--del:-5s"></i><i style="--x:55%;--s:12px;--c:rgba(255,236,150,.9);--o:.35;--d:21s;--del:-17s"></i><i style="--x:66%;--s:30px;--c:rgba(190,235,255,.7);--o:.2;--d:28s;--del:-2s"></i><i style="--x:78%;--s:9px;--c:rgba(255,255,255,.9);--o:.45;--d:16s;--del:-11s"></i><i style="--x:88%;--s:16px;--c:rgba(255,236,150,.8);--o:.3;--d:22s;--del:-7s"></i><i style="--x:95%;--s:7px;--c:rgba(190,235,255,.9);--o:.5;--d:14s;--del:-1s"></i></div>
   <div class="vf-i">
     <div class="vf-tekst">
-      <p class="vf-ey mono">The water bottle</p>
+      <p class="vf-ey"><span class="vf-live"><i></i><b>Live</b></span><span class="mono">Live stream from the desk</span></p>
       <h2 class="vf-h">When life gives you lemons,</h2>
       <p class="vf-sub">put them in your water, and get a robot to keep an eye on the bottle.</p>
-      <p class="vf-forklar"><span class="vf-live"><i></i>Live</span> A robot arm points a camera at the water bottle on the desk and measures how much is left.</p>
+      <p class="vf-forklar">A robot arm points a camera at my water bottle and measures how much is left, right now as you watch.</p>
     </div>
     <div class="vf-scene">
       <svg class="vf-svg" viewBox="100 40 810 920" aria-hidden="true">
@@ -1714,7 +1723,6 @@
             <path class="vf-menisk" fill="none" stroke="#fff" stroke-opacity=".8" stroke-width="2.6" stroke-linecap="round"/>
             <g class="vf-dropper"></g>
           </g>
-          <g class="vf-fall"></g>
           <path fill-rule="evenodd" fill="#e3fff8" fill-opacity=".17" d="M640 178L640 228C640 262 550 284 550 346L550 856Q550 902 596 902L804 902Q850 902 850 856L850 346C850 284 760 262 760 228L760 178ZM650 178L650 232C650 270 560 290 560 350L560 840Q560 878 598 878L802 878Q840 878 840 840L840 350C840 290 750 270 750 232L750 178Z"/>
           <path d="M556 362V846M845 362V846" stroke="#00163f" stroke-opacity=".28" stroke-width="2"/>
           <path d="M566 888Q700 899 834 888" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="2.5" stroke-linecap="round"/><path d="M600 880Q700 886 800 880" fill="none" stroke="#bff7ec" stroke-opacity=".35" stroke-width="2" stroke-linecap="round"/>
@@ -1743,16 +1751,16 @@
         <path class="vf-sikte" d="M522 116V70H568M832 70H878V116M522 884V930H568M832 930H878V884" fill="none" stroke="#ffd93b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
         <g class="vf-merke"><path d="M860 0H896" stroke="#ffd93b" stroke-width="3" stroke-linecap="round"/><circle cx="860" r="5.5" fill="#ffd93b"/></g>
       </svg>
-      <p class="vf-chip" aria-hidden="true"><i></i><span>&nbsp;</span></p>
+      <div class="vf-hud"><span class="vf-strom" aria-hidden="true"><span class="vf-live"><i></i><b>Live</b></span><span class="vf-klokke">&nbsp;</span></span><p class="vf-chip" aria-hidden="true"><i></i><span>&nbsp;</span></p></div>
     </div>
     <div class="vf-bunn">
       <div class="vf-maal"><p class="vf-tall"><b class="vf-n" aria-hidden="true">–</b><span class="vf-pst" aria-hidden="true">%</span><span class="vf-sr" aria-live="polite"></span></p><span class="vf-tl" aria-hidden="true">left in the bottle</span></div>
-      <button type="button" class="vf-sitron" aria-label="Give Tidemann a lemon"><span class="vf-e" aria-hidden="true">🍋</span><span>Give Tidemann a lemon</span><b>0</b></button>
+      <button type="button" class="vf-slurk" aria-label="Ask me to take a sip"><span class="vf-e" aria-hidden="true">💧</span><span>Ask me to take a sip</span><b>0</b></button>
     </div>
   </div>
 </section>
 <script>
-// Vannflasken under kartet. Vannet lever: flaten er en kjede av fjærer (bølger, skvulp når man ruller siden, plask når
+// Vannflasken under kartet, en livestream. Vannet lever: flaten er en kjede av fjærer (bølger, skvulp når man ruller siden, plask når
 // man trykker), med bobler, sitronskiver og et mynteblad. Robotarmen leter etter flasken med en smal lyskjegle, låser seg
 // på den, skanner den, og så telles tallet opp. Tallet er det samme som i kortet over kartet: kartskriptet legger det
 // siste bildet i window.__vann (hendelsen «esbjug-vann») og tellerne i window.__kast («esbjug-kast»).
@@ -1760,8 +1768,8 @@
 const sek = document.querySelector('.vf'); if (!sek) return;
 const svg = sek.querySelector('.vf-svg'), q = s => svg.querySelector(s), NS = 'http://www.w3.org/2000/svg';
 const EN = document.documentElement.lang === 'en';
-const TT = EN ? { leter: 'Searching …', fant: 'Found it', skanner: 'Scanning …', live: 'Live', borte: 'Looking for the bottle …', sist: 'Last seen ', hviler: 'Resting', igjen: '% left in the bottle', loc: 'en-GB' }
-  : { leter: 'Leter …', fant: 'Fant flasken', skanner: 'Skanner …', live: 'Live', borte: 'Leter etter flasken …', sist: 'Sist sett ', hviler: 'Hviler', igjen: ' % igjen i flasken', loc: 'nb-NO' };
+const TT = EN ? { leter: 'Searching …', fant: 'Found it', skanner: 'Scanning …', live: 'Live', borte: 'Looking for the bottle …', sist: 'Last seen ', hviler: 'Resting', igjen: '% left in the bottle', offline: 'Offline', sendt: '💧 Sent! I’m getting a nudge', andre: '💧 Someone asked me to take a sip', loc: 'en-GB' }
+  : { leter: 'Leter …', fant: 'Fant flasken', skanner: 'Skanner …', live: 'Live', borte: 'Leter etter flasken …', sist: 'Sist sett ', hviler: 'Hviler', igjen: ' % igjen i flasken', offline: 'Offline', sendt: '💧 Sendt! Jeg får et varsel', andre: '💧 Noen ba meg ta en slurk', loc: 'nb-NO' };
 const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const smal = matchMedia('(max-width: 600px)');
 // På mobil synes hele robotarmen (foten, leddene og kameraet), så flasken blir litt mindre; scenen står nederst, og tallet i
@@ -1846,9 +1854,7 @@ function biterSteg(snap) {
     y = Math.min(y, BUNN - r * sy - 1);
     const hb = Math.max(0, halvBredde(y) - r * .85); x = kl(x, MX - hb, MX + hb);
     b.el.setAttribute('transform', `translate(${f1(x)} ${f1(y)}) rotate(${f1(rot)}) scale(${b.s} ${(b.s * sy).toFixed(3)})`);
-    if (b.ut != null) { b.ut += .02; b.el.setAttribute('opacity', Math.max(0, 1 - b.ut).toFixed(2)); }
   }
-  for (let i = biter.length - 1; i >= 0; i--) if (biter[i].ut >= 1) { biter[i].el.remove(); biter.splice(i, 1); }
 }
 
 // Bobler som stiger fra bunnen (og fra skivene) og forsvinner i flaten. De som starter under bunnen, venter skjult.
@@ -1949,7 +1955,8 @@ function armSteg(dt, snap) {
 
 // Skanningen og tallet.
 const SKANN = 1.7, skannEl = q('.vf-skann'), skB = q('.vf-skann-b'), skG = q('.vf-skann-g'), skL = q('.vf-skann-l'), skS = q('.vf-skann-s'), merke = q('.vf-merke');
-const nEl = sek.querySelector('.vf-n'), srEl = sek.querySelector('.vf-sr'), chip = sek.querySelector('.vf-chip span');
+const nEl = sek.querySelector('.vf-n'), srEl = sek.querySelector('.vf-sr'), chip = sek.querySelector('.vf-chip span'), klokke = sek.querySelector('.vf-klokke');
+let meldingTil = 0, meldingTekst = '';
 let data = null, live = false, sett = false, sistTid = 0, sisteTs = 0, nyMaaling = false, antall = 0, passert = false, tallNå = null, tallA = 0;
 function visTall(n) {
   if (n == null) { nEl.textContent = '–'; return; }
@@ -1969,6 +1976,7 @@ function skannSteg() {
   if (!passert && y >= nivaaY(nivaa)) { passert = true; visTall(data); svg.classList.add('merket'); plask(MX, 90); }
 }
 function chipTekst() {
+  if (Date.now() < meldingTil) return meldingTekst;
   if (fase !== 'av') return { leter: TT.leter, borte: TT.borte, laas: TT.fant, skann: TT.skanner, ferdig: TT.live }[fase];
   if (!sistTid) return TT.hviler;
   const d = new Date(sistTid), gml = Date.now() - sistTid > 20 * 3600e3;
@@ -1981,6 +1989,7 @@ function bytt(f) {
   if (f !== 'ferdig' && f !== 'skann') svg.classList.remove('merket');
   if (f === 'av' || f === 'borte') visTall(data);
   sek.classList.toggle('av', f === 'av');
+  for (const e of sek.querySelectorAll('.vf-live b')) e.textContent = f === 'av' ? TT.offline : 'Live';
   chip.textContent = chipTekst();
 }
 function faseSteg(dt) {
@@ -1995,52 +2004,31 @@ function faseSteg(dt) {
 }
 function merkeSteg() { merke.setAttribute('transform', `translate(0 ${f1(flateVed(838))})`); }
 
-// Sitronene: knappen slipper en skive ned i flasken (korken løfter seg), og andres sitroner kommer også ned.
-const fallLag = q('.vf-fall'), fall = [], knapp = sek.querySelector('.vf-sitron'), tellerEl = knapp.querySelector('b');
-let lukkT = 0;
-const leggTil = () => {
-  const ant = biter.filter(b => !b.mynte && b.ut == null);
-  if (ant.length >= 7) { const eldst = ant.find(b => b.lagt) || ant[ant.length - 1]; if (still) { eldst.el.remove(); biter.splice(biter.indexOf(eldst), 1); } else eldst.ut = 0; }
-  const flyt = Math.random() < .6;
-  return nyBit(flyt ? 'flyt' : 'svev', { x: 610 + Math.random() * 180, s: .74 + Math.random() * .16, dyp: .2 + Math.random() * .55, lagt: true });
-};
-function slippSitron() {
-  if (still || !synlig) { leggTil(); if (still) tegnAlt(0, true); return; }
-  svg.classList.add('aapen'); lukkT = tid + 1.5;
-  const g = document.createElementNS(NS, 'g'), u = document.createElementNS(NS, 'use'); u.setAttribute('href', '#vf-skive'); g.append(u); fallLag.append(g);
-  fall.push({ el: g, x: MX + (Math.random() - .5) * 16, y: -40, vy: 0, rot: Math.random() * 360, vr: (Math.random() - .5) * 520, s: .76 + Math.random() * .08, vent: .3 });
-  kjor();
-}
-function fallSteg(dt) {
-  if (lukkT && tid > lukkT && !fall.length) { svg.classList.remove('aapen'); lukkT = 0; }
-  for (let i = fall.length - 1; i >= 0; i--) {
-    const f = fall[i];
-    if (f.vent > 0) { f.vent -= dt; continue; }
-    f.vy += 2300 * dt; f.y += f.vy * dt; f.rot += f.vr * dt;
-    const sy = .4 + .6 * Math.abs(Math.cos(f.rot * .012));
-    f.el.setAttribute('transform', `translate(${f1(f.x)} ${f1(f.y)}) rotate(${f1(f.rot)}) scale(${f.s} ${(f.s * sy).toFixed(3)})`);
-    if (nivaa > .5 ? f.y >= flateVed(f.x) - 4 : f.y >= BUNN - 20) {
-      const y = flateVed(f.x); f.el.remove(); fall.splice(i, 1);
-      plask(f.x, 300 + f.vy * .08); sprut(f.x, y, 11); pust(f.x, y, 9); tiltV += (Math.random() - .5) * .05;
-      leggTil(); lukkT = Math.max(lukkT, tid + .5);
-    }
-  }
-}
+// «Be meg ta en slurk»: Tidemann får et varsel (høyst ett i minuttet, se slurkVarsel i chat.js). Den som trykker, og alle
+// andre som ser på, får det i statusen over scenen, og flasken bobler.
+const knapp = sek.querySelector('.vf-slurk'), tellerEl = knapp.querySelector('b');
+const melding = txt => { meldingTekst = txt; meldingTil = Date.now() + 3500; chip.textContent = txt; srEl.textContent = txt; };
+const slurkBobler = () => { pust(MX, BUNN - 30, 10); plask(MX - 40 + Math.random() * 80, 140); tiltV += (Math.random() - .5) * .05; kjor(); };
 let kastN = null, egne = 0, egneVent = 0, sistKast = 0;
 const visTeller = () => { tellerEl.textContent = ((kastN || 0) + egne).toLocaleString(TT.loc); };
 addEventListener('esbjug-kast', () => {
-  const ny = window.__kast; if (!ny || ny.sitron == null) return;
+  const ny = window.__kast; if (!ny || ny.slurk == null) return;
   const fulgt = Date.now() - sistKast < 6000; sistKast = Date.now();
   if (kastN != null && fulgt) {
-    let n = ny.sitron - kastN; const egn = Math.min(Math.max(0, n), egneVent); n -= egn; egneVent -= egn;
-    for (let i = 0; i < Math.min(3, n); i++) setTimeout(slippSitron, i * 700);
+    let n = ny.slurk - kastN; const egn = Math.min(Math.max(0, n), egneVent); n -= egn; egneVent -= egn;
+    if (n > 0) { melding(TT.andre); slurkBobler(); }
   }
-  kastN = ny.sitron; visTeller();
+  kastN = ny.slurk; visTeller();
 });
 knapp.addEventListener('click', async () => {
-  egne++; egneVent++; visTeller(); slippSitron();
-  try { const r = await fetch('/chat/kast', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ k: 'sitron' }) }); if (r.ok) { const j = await r.json(); if (j.sitron != null) { kastN = j.sitron; egne = 0; egneVent = 0; visTeller(); } } } catch {}
+  egne++; egneVent++; visTeller(); melding(TT.sendt); slurkBobler();
+  try { const r = await fetch('/chat/kast', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ k: 'slurk' }) }); if (r.ok) { const j = await r.json(); if (j.slurk != null) { kastN = j.slurk; egne = 0; egneVent = 0; visTeller(); } } } catch {}
 });
+// Klokka i strømmen går hvert sekund, og en melding i statusen går tilbake etter 3,5 s.
+setInterval(() => {
+  klokke.textContent = new Date().toLocaleTimeString(TT.loc, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  if (meldingTil && Date.now() > meldingTil) { meldingTil = 0; chip.textContent = chipTekst(); }
+}, 1000);
 
 // Trykk på flasken: plask der man trykket. Pekeren som stryker over vannflaten lager små bølger.
 const tilSvg = e => { const m = svg.getScreenCTM(); if (!m) return null; const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(m.inverse()); return p; };
@@ -2090,7 +2078,7 @@ function tegnAlt(dt, snap) {
     vannSteg(dt); faseSteg(dt);
   }
   flateTegn(); biterSteg(snap); armSteg(dt, snap); skannSteg(); merkeSteg();
-  if (!snap) { smaattSteg(dt); fallSteg(dt); }
+  if (!snap) smaattSteg(dt);
 }
 let kjorer = false;
 function kjor() {

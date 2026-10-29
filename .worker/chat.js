@@ -37,7 +37,7 @@
 //   GET  /chat/admin/rom                              current room, rooms with sample counts, beacons
 //   POST /chat/admin/rom-slett    {rom}               forget a room's samples
 //   POST /chat/admin/plan         {ts, rom: [...]}    the house plan from the LiDAR scan (2D, metres); public at GET /chat/plan
-//   POST /chat/kast               {k: "le" | "tomat" | "heia" | "sitron"} a visitor laughs, throws a tomato, cheers or drops a lemon in the bottle (shared counters)
+//   POST /chat/kast               {k: "le" | "tomat" | "heia" | "slurk"} a visitor laughs, throws a tomato, cheers or asks him to take a sip (shared counters)
 //   GET  /chat/poll?id=sherpa     poll totals;  POST /chat/poll {id, valg, vid} one vote per visitor (a new vote replaces the old)
 //   POST /chat/android            {bat, lader}        the owner's Android phone reports its battery (its own key, ANDROID_TOKEN)
 //   POST /chat/maskin             {navn, ledig}       a computer says it is on, every minute (starbase, starship, falcon; key MASKIN_TOKEN)
@@ -976,8 +976,8 @@ export class ChatHub {
         return Response.json({ status: this.status(), sovnet: this.sovnet(), owner: this.ownerOnline(), hr: this.liveHr() }, { headers: { "cache-control": "no-store" } });
       }
       if (url.pathname === "/internal/kast") {
-        // Laughs, tomatoes, cheers (heia) and lemons for the water bottle (sitron): shared counters, at most 20 a minute from one address.
-        if (!["le", "tomat", "heia", "sitron"].includes(b.k)) return new Response("Bad request", { status: 400 });
+        // Laughs, tomatoes, cheers (heia) and «take a sip» (slurk, the water bottle): shared counters, at most 20 a minute from one address.
+        if (!["le", "tomat", "heia", "slurk"].includes(b.k)) return new Response("Bad request", { status: 400 });
         // Tomatoes only while he is at his mother's.
         if (b.k === "tomat" && this.sporLive()?.kjent !== "hjemme hos moren sin") return new Response("Ikke hjemme hos moren sin", { status: 403 });
         const ip = request.headers.get("x-ip") || "", now = Date.now();
@@ -991,6 +991,7 @@ export class ChatHub {
         this.loggFor("kast", JSON.stringify(this.kast()));
         if (b.k === "tomat") this.tomatVarsel(decodeURIComponent(request.headers.get("x-by") || ""));
         if (b.k === "heia") this.heiaVarsel(decodeURIComponent(request.headers.get("x-by") || ""));
+        if (b.k === "slurk") this.slurkVarsel(decodeURIComponent(request.headers.get("x-by") || ""));
         return Response.json(this.kast());
       }
       if (url.pathname === "/internal/poll") {
@@ -2117,13 +2118,20 @@ export class ChatHub {
     this.ctx.waitUntil(this.push("📣 Heia!", by ? `Noen i ${by} sier heia til deg` : "Noen sier heia til deg", null, { thread: "heia" }));
   }
 
+  // «Be meg ta en slurk» fra vannflaske-seksjonen: høyst ett varsel i minuttet, resten telles bare.
+  slurkVarsel(by) {
+    if (Date.now() - (this.slurkSist || 0) < 60e3) return;
+    this.slurkSist = Date.now();
+    this.ctx.waitUntil(this.push("💧 Ta en slurk", by ? `Noen i ${by} ber deg ta en slurk vann` : "Noen ber deg ta en slurk vann", null, { thread: "slurk" }));
+  }
+
   notater(n = 100) {
     return this.sql.exec(`SELECT id, v, ts FROM notater ORDER BY ts DESC, id DESC LIMIT ?`, n).toArray();
   }
 
   kast() {
     const n = (k) => Number(this.sql.exec(`SELECT v FROM kv WHERE k=?`, `kast:${k}`).toArray()[0]?.v || 0);
-    return { le: n("le"), tomat: n("tomat"), heia: n("heia"), sitron: n("sitron") };
+    return { le: n("le"), tomat: n("tomat"), heia: n("heia"), slurk: n("slurk") };
   }
 
   tele() {
