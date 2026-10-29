@@ -900,6 +900,7 @@ export class ChatHub {
     this.hrSaved = 0;
     this.hrPruned = 0;
     this.kamerabilde = {}; // siste forhåndsvisning per fyr: { bytes, ts }. Bare minnet, aldri R2 eller logg.
+    this.fyrAapen = {};    // når hvert fyr sist spurte etter kamerainnstillingene (appen er åpen). Bare minnet.
     this.jwt = null;
     this.pushLog = [];          // times of recent pushes (global cap)
     this.pushLast = new Map();  // vid -> last push time
@@ -1275,6 +1276,7 @@ export class ChatHub {
     if (url.pathname === "/chat/admin/kamera" && request.method === "GET") {
       const kilde = url.searchParams.get("kilde") || "";
       if (!/^fyr[a-z]$/.test(kilde)) return new Response("Bad request", { status: 400 });
+      this.fyrAapen[kilde] = Date.now();   // bare fyr-appen spør her, hvert 2. s mens den er åpen
       return Response.json(this.kameraLes(kilde), { headers: { "cache-control": "no-store" } });
     }
     if (url.pathname === "/chat/admin/kamera" && request.method === "POST") {
@@ -2148,6 +2150,8 @@ export class ChatHub {
     for (const r of this.sql.exec(`SELECT k, v FROM kv WHERE k LIKE 'tele:%' OR k='sted'`).toArray()) {
       try { out[r.k === "sted" ? "sted" : r.k.slice(5)] = JSON.parse(r.v); } catch {}
     }
+    // Forsiden ser av «aapen» når fyr-appen er lukket, uten å vente på at målingene blir gamle.
+    for (const [k, ts] of Object.entries(this.fyrAapen)) if (out[k]) out[k].aapen = ts;
     return out;
   }
 
