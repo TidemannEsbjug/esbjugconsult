@@ -1204,7 +1204,7 @@
   #kart .maplibregl-ctrl-attrib a{color:rgba(0,32,91,.7)}
   #kart .maplibregl-ctrl-attrib-button{filter:none}
   #kart .maplibregl-cooperative-gesture-screen{background:rgba(0,32,91,.45);color:#fff}
-  /* ===== Vannflasken: egen seksjon under kartet (fra 29.10.2026). Dypt blått som et basseng, flasken stor med
+  /* ===== Vannflasken: egen seksjon rett under heroen (fra 29.10.2026). Dypt blått som et basseng, flasken stor med
      sitronskiver i vannet, og robotarmen med iPhonen som leter etter flasken, låser seg på den og skanner. Lite tekst. ===== */
   .vf{position:relative;isolation:isolate;overflow:hidden;width:100%;flex:none;min-height:100svh;display:flex;align-items:center;color:#fff;
     background:radial-gradient(64% 58% at 70% 50%,#1767cc 0%,#0c4499 36%,#00205B 70%,#01143c 100%)}
@@ -1362,95 +1362,139 @@
     <div class="sh-cta"><a class="sh-knapp sh-p" href="mailto:tidemann@esbjugconsult.com">Talk to me</a></div>
   </div>
 </section>
-<!-- Kartet med live-modulene ligger rett under heroen (fra 29.10.2026), over innholdet i main. -->
-<footer class="hero" id="live">
-  <div class="kart-venter" aria-hidden="true"><span class="kv-prikk"></span><div class="kv-i"><b>Esbjug Consult</b><span class="kv-t">finding Tidemann …</span></div></div><div id="kart" aria-label="Map: where Tidemann is now"></div>
-  <div class="hero-i">
-  <div class="flyt"><button type="button" class="kartknapp gl" aria-label="Show the map" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="kk-kart" d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/><path class="kk-x" d="M6 6l12 12M18 6 6 18"/></svg></button><div class="topp gl"><a class="lang en" href="/" hreflang="nb" aria-label="Language: English. Switch to Norwegian"><span class="lang-k" aria-hidden="true"></span><span class="lf no" aria-hidden="true"><svg viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span class="lf gb" aria-hidden="true"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg></span></a>
-  <div class="st"><div class="st-i tl-a" hidden data-av data-l="here now"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">here now</span><span class="tl-deg" aria-hidden="true">+1 · that's you</span></div></div><div class="st-i tl-b" hidden data-av data-l="unique visitors" data-ny="+1 · you are no. {n}" data-er="You are no. {n}" data-var="You were no. {n}"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unique visitors</span><span class="tl-deg" aria-hidden="true">+1 · that's you</span></div></div><span class="tl-sr"></span></div>
-  </div></div>
-  <div class="paneler">
-  <div class="venstre">
-  <p class="naa gl" aria-live="off"><span class="naa-d">&nbsp;</span><b class="naa-k">&nbsp;</b></p>
-  <section class="sted gl" aria-live="polite">
-    <span class="mono s-t"><i class="s-dot"></i><span class="s-live">Live</span></span>
-    <b class="s-navn">Finding him …</b>
-    <span class="s-sub">&nbsp;</span>
-    <div class="kast"><button type="button" class="k-tomat" aria-label="Throw a tomato at Tidemann" hidden>🍅 <span>Throw a tomato</span> <b>0</b></button><button type="button" class="k-heia" aria-label="Cheer Tidemann on">📣 <span>Cheer</span> <b>0</b></button></div>
-  </section>
-  <section class="gjor gl" hidden aria-live="polite">
-    <span class="mono s-t">Right now</span>
-    <b class="g-navn">–</b>
-  </section>
-  <section class="poster" hidden aria-live="polite" aria-label="Poster fra Tidemann. Trykk for neste." role="button" tabindex="0"></section>
-  <section class="bank gl" hidden aria-label="Bank">
-    <span class="mono s-t"><span>SpareBank 1</span><span class="bk-t"></span></span>
-    <b class="bk-sum">–</b>
-    <ul class="bk-kontoer"></ul>
-  </section>
-  <!-- Kostnader: det jeg bruker penger på, nyeste øverst, i hele kroner. Legg til nye linjer her. -->
-  <section class="bank utg gl" aria-label="Costs">
-    <span class="mono s-t"><span>Costs</span></span>
-    <ul class="ut-liste">
-      <li><span>Proton <i>27. okt · 20:49</i></span><b>−209 kr</b></li>
-      <li><span>Spaceship <i>27. okt · 11:41</i></span><b>−9 kr</b></li>
-      <li><span>iCloud <i>26. okt · 16:48</i></span><b>−129 kr</b></li>
-      <li><span>Cloudflare <i>25 Oct · 11:30</i></span><b>−47 kr</b></li>
-      <li><span>Claude Max 20 <i>25 Oct · 10:47</i></span><b>−2&nbsp;299 kr</b></li>
-    </ul>
-  </section>
-  <!-- Aktive AI-abonnementer, dyrest først. Legg til eller fjern linjer her. -->
-  <section class="abo gl" aria-label="Active AI subscriptions" tabindex="0">
-    <span class="mono s-t">Active AI subscriptions</span><span class="abo-ant" aria-hidden="true"><span></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
-    <ol class="abo-l"><li style="--c:#D97757;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><g stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 12V3.5M12 12l6-6M12 12h8.5M12 12l6.2 5.8M12 12v8.5M12 12l-6 6M12 12H3.5M12 12L5.8 5.8M12 12l3.3-7.9M12 12l-7.9 3.3"/></g></svg><span>Claude Max 20</span></li><li style="--c:#E9A27F;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><g stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 12V3.5M12 12l6-6M12 12h8.5M12 12l6.2 5.8M12 12v8.5M12 12l-6 6M12 12H3.5M12 12L5.8 5.8M12 12l3.3-7.9M12 12l-7.9 3.3"/></g></svg><span>Claude Max 5</span></li><li style="--c:#14b8a6;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 4h3.4v6.6L14.6 4H19l-6.6 7.2L19.4 20h-4.5l-4.7-6.2-1.8 1.9V20H5z"/></svg><span>Kling</span></li><li style="--c:#111;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="7.2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M4.2 19.8L19.8 4.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span>SuperGrok</span></li><li style="--c:#fff;--f:#0b1d4a"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11 3.5L4.5 16H11zM12.5 6l6 10h-6z"/><path d="M3 17.6h18l-2.2 3H5.2z"/></svg><span>Midjourney</span></li><li style="--c:#334155;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="7" y="4" width="3.4" height="16" rx=".6"/><rect x="13.6" y="4" width="3.4" height="16" rx=".6"/></svg><span>ElevenLabs</span></li><li style="--c:linear-gradient(135deg,#ff8a3d,#ff2e7e);--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3" y="10" width="2.6" height="4" rx="1.3"/><rect x="7.1" y="6.5" width="2.6" height="11" rx="1.3"/><rect x="11.2" y="3.5" width="2.6" height="17" rx="1.3"/><rect x="15.3" y="7.5" width="2.6" height="9" rx="1.3"/><rect x="19.4" y="10.5" width="2.6" height="3" rx="1.3"/></svg><span>Suno</span></li></ol>
-  </section>
-  </div>
-  <div class="hoyre">
-  <section class="sens gl" aria-label="Everything his iPhone and Apple Watch measure">
-    <div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Heart rate today"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg><svg class="hk" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true"><path class="hk-l" d=""/><circle class="hk-p" r="3" cx="-9" cy="-9"/></svg></span></button><span class="st-l"><span class="hp-on">Live from Apple Watch</span><span class="hp-av">Not live right now</span></span></div><span class="hk-x" aria-hidden="true"><span>5 min</span><span>nå</span></span>
-    <div class="sv" data-k="ibat"><span class="sl">iPhone</span><b>–</b><i class="bar"><i></i></i></div>
-    <div class="sv" data-k="wbatl" hidden><span class="sl"><svg class="di" viewBox="0 0 24 24" fill="currentColor" aria-label="Apple" role="img"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg>Watch<span class="wa"> L</span></span><b>–</b><i class="bar"><i></i></i></div>
-    <div class="sv" data-k="wbatr"><span class="sl"><svg class="di" viewBox="0 0 24 24" fill="currentColor" aria-label="Apple" role="img"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg>Watch<span class="wa"> R</span></span><b>–</b><i class="bar"><i></i></i></div>
-    <div class="sv" data-k="fyra" hidden><span class="sl">iPhone</span><b>–</b><i class="bar"><i></i></i></div>
-    <div class="sv" data-k="fyrb" hidden><span class="sl">iPhone</span><b>–</b><i class="bar"><i></i></i></div>
-    <div class="sv" data-k="abat"><span class="sl">Android</span><b>–</b><i class="bar"><i></i></i></div>
-    <div class="sv" data-k="gatt"><span class="sl">Walked today</span><b>–</b></div>
-    <div class="maskiner">
-      <div class="sv maskin" data-k="starbase" title="Starbase"><span class="sl"><svg class="mi" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg><span class="mn">Starbase</span></span><b><i class="mp"></i><span class="mv">–</span></b></div>
-      <div class="sv maskin" data-k="starship" title="Starship"><span class="sl"><svg class="mi" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.2l7.4-1v7.2H3zM11.3 4.1L21 2.7v8.7h-9.7zM3 12.4h7.4v7.2L3 18.6zM11.3 12.4H21v8.9l-9.7-1.4z"/></svg><span class="mn">Starship</span></span><b><i class="mp"></i><span class="mv">–</span></b></div>
-      <div class="sv maskin" data-k="falcon" title="Falcon 9"><span class="sl"><svg class="mi" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.2l7.4-1v7.2H3zM11.3 4.1L21 2.7v8.7h-9.7zM3 12.4h7.4v7.2L3 18.6zM11.3 12.4H21v8.9l-9.7-1.4z"/></svg><span class="mn">Falcon 9</span></span><b><i class="mp"></i><span class="mv">–</span></b></div>
+<!-- Vannflasken: egen seksjon rett under heroen (fra 29.10.2026), en livestream. Robotarmen med iPhonen leter etter flasken, låser
+     seg på den og skanner, så kommer tallet. Sitronskivene og myntebladet flyter i vannet; besøkende kan be meg ta en slurk. -->
+<section class="vf" id="vann" aria-label="The water bottle, live">
+  <div class="vf-lys" aria-hidden="true"><i style="--x:7%;--s:14px;--c:rgba(255,236,150,.9);--o:.5;--d:19s;--del:-3s"></i><i style="--x:16%;--s:8px;--c:rgba(190,235,255,.9);--o:.6;--d:15s;--del:-9s"></i><i style="--x:28%;--s:22px;--c:rgba(190,235,255,.8);--o:.25;--d:24s;--del:-14s"></i><i style="--x:41%;--s:6px;--c:rgba(255,255,255,.9);--o:.5;--d:13s;--del:-5s"></i><i style="--x:55%;--s:12px;--c:rgba(255,236,150,.9);--o:.35;--d:21s;--del:-17s"></i><i style="--x:66%;--s:30px;--c:rgba(190,235,255,.7);--o:.2;--d:28s;--del:-2s"></i><i style="--x:78%;--s:9px;--c:rgba(255,255,255,.9);--o:.45;--d:16s;--del:-11s"></i><i style="--x:88%;--s:16px;--c:rgba(255,236,150,.8);--o:.3;--d:22s;--del:-7s"></i><i style="--x:95%;--s:7px;--c:rgba(190,235,255,.9);--o:.5;--d:14s;--del:-1s"></i></div>
+  <div class="vf-i">
+    <div class="vf-tekst">
+      <p class="vf-ey"><span class="vf-live"><i></i><b>Live</b></span><span class="mono">Live stream from the desk</span></p>
+      <h2 class="vf-h">When life gives you lemons,</h2>
+      <p class="vf-sub">put them in your water, and get a robot to keep an eye on the bottle.</p>
+      <p class="vf-forklar">A robot arm points a camera at my water bottle and measures how much is left, right now as you watch.</p>
     </div>
-  </section>
-  <!-- Kontoret: pult-kameraet (person, plagg, hodetelefoner) og flaske-kameraet (vannet når målingen er under 2 min). -->
-  <section class="sens pultk gl" hidden aria-label="The office, seen by the camera">
-    <span class="mono s-t pk-t">Office · camera</span>
-    <div class="sv" data-k="pflaske"><span class="sl">Water bottle</span><span class="fl-rad"><svg class="fl-i" viewBox="0 0 84 100" aria-hidden="true"><defs><clipPath id="fl-form"><path d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/></clipPath><linearGradient id="fl-vann" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe6ff"/><stop offset="1" stop-color="#3f8fdc"/></linearGradient></defs><path class="fl-blad" d="M47 70c4-12 15-19 27-19-2 13-12 21-27 19z"/><path class="fl-bladnerve" d="M49 69c7-6 14-11 22-15"/><path class="fl-glass" d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/><g clip-path="url(#fl-form)"><g class="fl-vg"><path class="fl-vann" d="M-40 0q10-3.2 20 0t20 0 20 0 20 0 20 0 20 0 20 0v120h-140z"/></g></g><rect class="fl-glans" x="17" y="40" width="4" height="44" rx="2"/><path class="fl-kant" d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/><rect class="fl-kork" x="22" y="3" width="18" height="11" rx="3"/><g class="fl-sitron"><circle cx="58" cy="83" r="14"/><circle class="fl-s2" cx="58" cy="83" r="11.5"/><path class="fl-s3" d="M58 83V72.5M58 83l7.4 7.4M58 83l-7.4 7.4M58 83l10-3.3M58 83l-10-3.3"/></g></svg><b>–</b></span></div>
-    <div class="sv" data-k="pstilling"><span class="sl">At the desk</span><b>–</b></div>
-    <div class="sv pk-plagg" data-k="pplagg"><span class="sl">Wearing</span><b>–</b></div>
-  </section>
-  <section class="akse gl" aria-label="The accelerometers in his Apple Watch and iPhone, live">
-    <div class="ak ak-l" hidden><div class="ak-h"><span class="sl"><svg class="di" viewBox="0 0 24 24" fill="currentColor" aria-label="Apple" role="img"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg>Watch<span class="wa"> L</span> · accelerometer</span><span class="ak-m">20 Hz · g</span></div><canvas class="ak-c" data-k="watchl"></canvas></div>
-    <div class="ak"><div class="ak-h"><span class="sl"><svg class="di" viewBox="0 0 24 24" fill="currentColor" aria-label="Apple" role="img"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg>Watch<span class="wa"> R</span> · accelerometer</span><span class="ak-m">20 Hz · g</span></div><canvas class="ak-c" data-k="watchr"></canvas></div>
-    <div class="ak ak-i"><div class="ak-h"><span class="sl">iPhone · accelerometer</span><span class="ak-m"><i class="kx">x</i> <i class="ky">y</i> <i class="kz">z</i></span></div><canvas class="ak-c" data-k="iphone"></canvas></div>
-  </section>
-  <section class="pod gl" hidden aria-label="Podcast">
-    <span class="mono s-t">Podcast</span>
-    <div class="pod-kort"><button type="button" class="pod-siste" aria-label="Play the latest episode"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg></button><span class="pod-sinfo"><b class="pod-stittel"></b><span class="pod-sdato"></span></span><button type="button" class="pod-alle" aria-expanded="false" aria-label="All episodes"><span class="pod-antall"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></div>
-    <ol class="pod-l"></ol>
-    <div class="pod-v" hidden>
-      <button type="button" class="pod-tilbake" aria-label="Back to the episodes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg></button>
-      <button type="button" class="pod-stor" aria-label="Play"><svg class="pod-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg><svg class="pod-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></svg></button>
-      <div class="pod-hoyre">
-        <div class="pod-info"><b class="pod-tittel"></b><span class="pod-dato"></span></div>
-        <div class="pod-bar" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i><b></b></div>
-        <div class="pod-sp"><span class="pod-tid">0:00</span><span class="pod-tot">0:00</span></div>
-      </div>
+    <div class="vf-scene">
+      <svg class="vf-svg" viewBox="100 40 810 920" aria-hidden="true">
+        <defs>
+          <clipPath id="vf-indre"><path d="M650 178L650 232C650 270 560 290 560 350L560 840Q560 878 598 878L802 878Q840 878 840 840L840 350C840 290 750 270 750 232L750 178Z"/></clipPath>
+          <clipPath id="vf-ytre"><path d="M640 178L640 228C640 262 550 284 550 346L550 856Q550 902 596 902L804 902Q850 902 850 856L850 346C850 284 760 262 760 228L760 178Z"/></clipPath>
+          <clipPath id="vf-skjerm"><rect x="-46" y="-27" width="92" height="54" rx="2"/></clipPath>
+          <clipPath id="vf-mini-k"><path d="M-9 -12h18v31a3 3 0 0 1-3 3h-12a3 3 0 0 1-3-3z"/></clipPath>
+          <radialGradient id="vf-glod"><stop offset="0" stop-color="#53b6ff" stop-opacity=".42"/><stop offset=".55" stop-color="#2a83e0" stop-opacity=".14"/><stop offset="1" stop-color="#2a83e0" stop-opacity="0"/></radialGradient>
+          <radialGradient id="vf-gulv"><stop offset="0" stop-color="#bfe6ff" stop-opacity=".22"/><stop offset="1" stop-color="#bfe6ff" stop-opacity="0"/></radialGradient>
+          <radialGradient id="vf-k-g"><stop offset="0" stop-color="#fff6b0" stop-opacity=".95"/><stop offset=".45" stop-color="#bff0ff" stop-opacity=".5"/><stop offset="1" stop-color="#bff0ff" stop-opacity="0"/></radialGradient>
+          <linearGradient id="vf-vann" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9eeeff" stop-opacity=".36"/><stop offset=".3" stop-color="#4cc0f4" stop-opacity=".44"/><stop offset="1" stop-color="#1663c4" stop-opacity=".74"/></linearGradient>
+          <linearGradient id="vf-vann-bak" class="vf-bak-g" gradientUnits="userSpaceOnUse" x1="0" y1="500" x2="0" y2="530"><stop offset="0" stop-color="#f4fcff" stop-opacity=".95"/><stop offset="1" stop-color="#97d6ff" stop-opacity=".7"/></linearGradient>
+          <linearGradient id="vf-kant" gradientUnits="userSpaceOnUse" x1="550" y1="0" x2="850" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".14" stop-color="#fff" stop-opacity=".35"/><stop offset=".5" stop-color="#fff" stop-opacity=".16"/><stop offset=".86" stop-color="#fff" stop-opacity=".3"/><stop offset="1" stop-color="#fff" stop-opacity=".8"/></linearGradient>
+          <linearGradient id="vf-glans" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".18" stop-color="#fff" stop-opacity=".75"/><stop offset=".8" stop-color="#fff" stop-opacity=".6"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+          <linearGradient id="vf-kork-g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5c6773"/><stop offset=".1" stop-color="#b9c3cd"/><stop offset=".26" stop-color="#f5f8fa"/><stop offset=".4" stop-color="#97a3b0"/><stop offset=".56" stop-color="#dfe5eb"/><stop offset=".72" stop-color="#a7b2be"/><stop offset=".88" stop-color="#eef2f5"/><stop offset="1" stop-color="#66717d"/></linearGradient><linearGradient id="vf-kork-s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".25" stop-color="#fff" stop-opacity="0"/><stop offset=".75" stop-color="#000a24" stop-opacity="0"/><stop offset="1" stop-color="#000a24" stop-opacity=".3"/></linearGradient>
+          <linearGradient id="vf-arm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9eef3"/><stop offset=".22" stop-color="#fbfcfd"/><stop offset=".42" stop-color="#c3ccd6"/><stop offset=".6" stop-color="#e2e8ee"/><stop offset=".82" stop-color="#aab6c3"/><stop offset="1" stop-color="#7f8d9c"/></linearGradient>
+          <linearGradient id="vf-fot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16397f"/><stop offset="1" stop-color="#00163f"/></linearGradient>
+          <radialGradient id="vf-ledd" cx=".38" cy=".34" r=".7"><stop offset="0" stop-color="#fbfcfd"/><stop offset=".45" stop-color="#d3dbe3"/><stop offset=".75" stop-color="#e6ebf0"/><stop offset="1" stop-color="#8f9dac"/></radialGradient>
+          <radialGradient id="vf-frukt"><stop offset="0" stop-color="#fff6be"/><stop offset=".7" stop-color="#ffe164"/><stop offset="1" stop-color="#ffcd2a"/></radialGradient>
+          <radialGradient id="vf-strale-g" class="vf-strale-g" gradientUnits="userSpaceOnUse" cx="500" cy="450" r="400"><stop offset="0" stop-color="#fff4b8" stop-opacity=".62"/><stop offset=".55" stop-color="#bfeaff" stop-opacity=".2"/><stop offset="1" stop-color="#bfeaff" stop-opacity="0"/></radialGradient>
+          <radialGradient id="vf-flekk-g"><stop offset="0" stop-color="#fff4b8" stop-opacity=".55"/><stop offset="1" stop-color="#fff4b8" stop-opacity="0"/></radialGradient>
+          <linearGradient id="vf-skann-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe98a" stop-opacity="0"/><stop offset="1" stop-color="#ffe98a" stop-opacity=".3"/></linearGradient>
+          <linearGradient id="vf-skjerm-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d4598"/><stop offset="1" stop-color="#052259"/></linearGradient>
+          <linearGradient id="vf-speil-g" gradientUnits="userSpaceOnUse" x1="0" y1="903" x2="0" y2="1010"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/></linearGradient>
+          <mask id="vf-speil-m" maskUnits="userSpaceOnUse" x="400" y="900" width="600" height="200"><rect x="400" y="900" width="600" height="200" fill="url(#vf-speil-g)"/></mask>
+          <filter id="vf-uskarp" x="-30%" y="-200%" width="160%" height="500%"><feGaussianBlur stdDeviation="6"/></filter>
+          <filter id="vf-gloe" x="-10%" y="-400%" width="120%" height="900%"><feGaussianBlur stdDeviation="5"/></filter>
+          <filter id="vf-kf" x="-20%" y="-80%" width="140%" height="260%"><feTurbulence type="fractalNoise" baseFrequency=".016 .08" numOctaves="2" seed="4" result="n"><animate attributeName="baseFrequency" dur="10s" values=".016 .08;.022 .06;.016 .08" repeatCount="indefinite"/></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="16" xChannelSelector="R" yChannelSelector="G"/><feGaussianBlur stdDeviation="1.4"/></filter>
+          <!-- Sitronskiven (skallet, det hvite og båtene lages i skriptet) og myntebladet, sentrert i 0,0 -->
+          <g id="vf-skive"></g>
+          <g id="vf-mynte"><path d="M-36 0C-22 -21 14 -23 36 0C14 23 -22 21 -36 0Z" fill="#33b673"/><path d="M-36 0C-22 -21 14 -23 36 0" fill="none" stroke="#7be0a6" stroke-width="2" opacity=".6"/><path d="M-32 0H31M-12 0l-8-10M2 0l-7-12M16 0l-6-10M-12 0l-8 10M2 0l-7 12M16 0l-6 10" fill="none" stroke="#1d7f4f" stroke-width="1.8" stroke-linecap="round"/></g>
+        </defs>
+        <circle cx="700" cy="520" r="440" fill="url(#vf-glod)"/>
+        <!-- Gulvet: glansen, speilbildet, skyggen og lyset som har gått gjennom vannet og sitronene -->
+        <ellipse cx="700" cy="906" rx="380" ry="30" fill="url(#vf-gulv)"/>
+        <use href="#vf-flaske" transform="matrix(1 0 0 -1 0 1806)" mask="url(#vf-speil-m)" opacity=".3"/>
+        <ellipse cx="700" cy="904" rx="170" ry="11" fill="#000a24" opacity=".45" filter="url(#vf-uskarp)"/>
+        <g class="vf-kaustikk" filter="url(#vf-kf)" opacity=".8"><ellipse cx="790" cy="922" rx="180" ry="22" fill="url(#vf-k-g)"/><ellipse cx="776" cy="920" rx="108" ry="10" fill="none" stroke="#fff6b8" stroke-width="2.4" opacity=".55"/></g>
+        <!-- Kameraets synsfelt: en smal lyskjegle som leter, så hele flasken når den er funnet -->
+        <g class="vf-strale" opacity="0"><path class="vf-kjegle" fill="url(#vf-strale-g)"/><path class="vf-kanter" fill="none" stroke="#fff3b0" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="2 8" opacity=".6"/><circle class="vf-flekk" r="54" fill="url(#vf-flekk-g)" opacity="0"/></g>
+        <!-- Robotarmen: foten, overarmen, underarmen og hodet (gimbalen med iPhonen) -->
+        <g class="vf-arm" transform="translate(-56 127) scale(.86)">
+          <ellipse cx="240" cy="905" rx="96" ry="14" fill="#000a24" opacity=".45" filter="url(#vf-uskarp)"/>
+          <path d="M166 874h148v20a10 10 0 0 1-10 10H176a10 10 0 0 1-10-10z" fill="url(#vf-fot)"/>
+          <rect x="166" y="866" width="148" height="13" rx="6.5" fill="#dfe7f1"/>
+          <rect x="205" y="836" width="70" height="36" rx="10" fill="url(#vf-arm)"/>
+          <path class="vf-kabel" fill="none" stroke="#0a2a66" stroke-width="5" stroke-linecap="round" opacity=".85"/>
+          <g class="vf-del1"><rect x="-27" y="-26" width="304" height="52" rx="26" fill="url(#vf-arm)"/><rect x="34" y="12" width="180" height="4" rx="2" fill="#00205B" opacity=".1"/></g>
+          <g class="vf-del2"><rect x="-20" y="-20" width="250" height="40" rx="20" fill="url(#vf-arm)"/><rect x="28" y="9" width="140" height="3.5" rx="1.75" fill="#00205B" opacity=".1"/></g>
+          <g class="vf-ledd1"><circle r="38" fill="url(#vf-ledd)"/><circle r="36" fill="none" stroke="#00205B" stroke-width="5"/><circle r="15" fill="#ffd93b"/><circle r="5.5" fill="#00205B"/></g>
+          <g class="vf-ledd2"><circle r="29" fill="url(#vf-ledd)"/><circle r="27.5" fill="none" stroke="#00205B" stroke-width="4.5"/><circle r="11" fill="#ffd93b"/><circle r="4" fill="#00205B"/></g>
+          <g class="vf-hode">
+            <rect x="-4" y="-11" width="48" height="22" rx="11" fill="url(#vf-arm)"/>
+            <circle r="23" fill="url(#vf-ledd)"/><circle r="21.5" fill="none" stroke="#00205B" stroke-width="4"/><circle r="8.5" fill="#ffd93b"/>
+            <circle cx="44" r="15" fill="#0d2b66"/><circle cx="44" r="5.5" fill="#ffd93b"/>
+            <g transform="translate(108 0)">
+              <rect x="-14" y="-41" width="28" height="10" rx="3" fill="#0d2b66"/><rect x="-14" y="31" width="28" height="10" rx="3" fill="#0d2b66"/>
+              <rect x="-62" y="-33" width="124" height="66" rx="13" fill="#0c111d" stroke="#3b4762" stroke-width="2"/>
+              <rect x="-46" y="-27" width="92" height="54" rx="2" fill="#030a1c"/>
+              <g class="vf-skjerm-paa" clip-path="url(#vf-skjerm)">
+                <rect x="-46" y="-27" width="92" height="54" fill="url(#vf-skjerm-g)"/>
+                <g class="vf-mini">
+                  <g clip-path="url(#vf-mini-k)"><rect x="-10" y="-13" width="20" height="36" fill="#cfefff" opacity=".16"/><rect class="vf-mini-v" x="-10" y="4" width="20" height="40" fill="#4fb3ff"/><circle class="vf-mini-s" cx="-2" cy="8" r="3.4" fill="#ffd93b"/></g>
+                  <path d="M-9 -12h18v31a3 3 0 0 1-3 3h-12a3 3 0 0 1-3-3z" fill="none" stroke="#e8f6ff" stroke-width="1.3"/>
+                  <path d="M-4.5 -12v-5h9v5" fill="none" stroke="#e8f6ff" stroke-width="1.2"/><rect x="-5.5" y="-21.5" width="11" height="5" rx="1.3" fill="#e8f6ff"/>
+                </g>
+                <path class="vf-mini-ramme" d="M-17 -18v-6h6M11 -24h6v6M-17 20v6h6M11 26h6v-6" fill="none" stroke="#ffd93b" stroke-width="1.6" stroke-linecap="round" opacity="0"/>
+                <rect class="vf-mini-skann" x="-46" y="0" width="92" height="1.6" fill="#fff3b0" opacity="0"/>
+                <circle class="vf-rec" cx="38" cy="-20" r="2.3" fill="#ff5a5a"/>
+              </g>
+              <circle cx="-54" r="5.5" fill="none" stroke="#3b4762" stroke-width="1.6"/><rect x="53" y="-6" width="3" height="12" rx="1.5" fill="#3b4762"/>
+              <circle cx="64" cy="-21" r="8.5" fill="#0c111d" stroke="#56627e" stroke-width="2"/><circle cx="64" cy="-21" r="3.6" fill="#5cc0ff"/>
+            </g>
+          </g>
+        </g>
+        <!-- Flasken: glass, vannet (flaten, skivene, boblene), glans og korken med hank -->
+        <g id="vf-flaske">
+          <path d="M640 178L640 228C640 262 550 284 550 346L550 856Q550 902 596 902L804 902Q850 902 850 856L850 346C850 284 760 262 760 228L760 178Z" fill="#d6fff6" fill-opacity=".08"/>
+          <g clip-path="url(#vf-indre)">
+            <path class="vf-vbak" fill="url(#vf-vann-bak)"/>
+            <g class="vf-skiver"></g>
+            <path class="vf-vfront" fill="url(#vf-vann)"/>
+            <g class="vf-bobler"></g>
+            <path class="vf-menisk" fill="none" stroke="#fff" stroke-opacity=".8" stroke-width="2.6" stroke-linecap="round"/>
+            <g class="vf-dropper"></g>
+          </g>
+          <path fill-rule="evenodd" fill="#e3fff8" fill-opacity=".17" d="M640 178L640 228C640 262 550 284 550 346L550 856Q550 902 596 902L804 902Q850 902 850 856L850 346C850 284 760 262 760 228L760 178ZM650 178L650 232C650 270 560 290 560 350L560 840Q560 878 598 878L802 878Q840 878 840 840L840 350C840 290 750 270 750 232L750 178Z"/>
+          <path d="M556 362V846M845 362V846" stroke="#00163f" stroke-opacity=".28" stroke-width="2"/>
+          <path d="M566 888Q700 899 834 888" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="2.5" stroke-linecap="round"/><path d="M600 880Q700 886 800 880" fill="none" stroke="#bff7ec" stroke-opacity=".35" stroke-width="2" stroke-linecap="round"/>
+          <path d="M640 178L640 228C640 262 550 284 550 346L550 856Q550 902 596 902L804 902Q850 902 850 856L850 346C850 284 760 262 760 228L760 178" fill="none" stroke="url(#vf-kant)" stroke-width="2.5" stroke-linejoin="round"/>
+          <rect x="574" y="384" width="17" height="456" rx="8.5" fill="url(#vf-glans)" opacity=".75"/>
+          <rect x="600" y="404" width="5" height="396" rx="2.5" fill="url(#vf-glans)" opacity=".5"/>
+          <rect x="804" y="392" width="24" height="436" rx="12" fill="url(#vf-glans)" opacity=".15"/>
+          <path d="M836 374V846" stroke="#fff" stroke-opacity=".45" stroke-width="2" stroke-linecap="round"/>
+          <path d="M574 378C576 332 620 306 645 280" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="5" stroke-linecap="round"/>
+          <rect x="635" y="184" width="130" height="13" rx="5" fill="#e8fffb" fill-opacity=".2" stroke="#fff" stroke-opacity=".55" stroke-width="1.5"/>
+          <g class="vf-kork">
+            <path d="M674 102V86a26 26 0 0 1 52 0v16" fill="none" stroke="#6f7b88" stroke-width="13" stroke-linecap="round"/><path d="M674 102V86a26 26 0 0 1 52 0v16" fill="none" stroke="#d9e0e7" stroke-width="8" stroke-linecap="round"/>
+            <path d="M681 94V86a19 19 0 0 1 19-19" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="3" stroke-linecap="round"/>
+            <path d="M630 184V114a16 16 0 0 1 16-16h108a16 16 0 0 1 16 16v70z" fill="url(#vf-kork-g)"/><path d="M630 184V114a16 16 0 0 1 16-16h108a16 16 0 0 1 16 16v70z" fill="url(#vf-kork-s)"/>
+            <path d="M647 112v56M663 112v56M679 112v56M695 112v56M711 112v56M727 112v56M743 112v56M759 112v56" stroke="#1e2833" stroke-opacity=".16" stroke-width="3"/>
+            <rect x="640" y="103" width="120" height="6" rx="3" fill="#fff" fill-opacity=".55"/>
+            <rect x="630" y="174" width="140" height="10" fill="#7a8592"/><rect x="630" y="174" width="140" height="2.5" fill="#fff" fill-opacity=".5"/>
+          </g>
+        </g>
+        <!-- Skanningen: en lysende strek fra toppen til bunnen av flasken, med skinner på sidene -->
+        <g class="vf-skann">
+          <g clip-path="url(#vf-ytre)"><rect class="vf-skann-b" x="540" y="0" width="320" height="150" fill="url(#vf-skann-g)"/><rect class="vf-skann-g" x="540" y="0" width="320" height="6" fill="#fff1a0" filter="url(#vf-gloe)"/><rect class="vf-skann-l" x="540" y="0" width="320" height="3" fill="#fffbe0"/></g>
+          <path class="vf-skann-s" fill="none" stroke="#ffd93b" stroke-width="4" stroke-linecap="round"/>
+        </g>
+        <!-- Søkerammen rundt flasken og merket ved vannflaten -->
+        <path class="vf-sikte" d="M522 116V70H568M832 70H878V116M522 884V930H568M832 930H878V884" fill="none" stroke="#ffd93b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <g class="vf-merke"><path d="M860 0H896" stroke="#ffd93b" stroke-width="3" stroke-linecap="round"/><circle cx="860" r="5.5" fill="#ffd93b"/></g>
+      </svg>
+      <div class="vf-hud"><span class="vf-strom" aria-hidden="true"><span class="vf-live"><i></i><b>Live</b></span><span class="vf-klokke">&nbsp;</span></span><p class="vf-chip" aria-hidden="true"><i></i><span>&nbsp;</span></p></div>
     </div>
-  </section>
+    <div class="vf-bunn">
+      <div class="vf-maal"><p class="vf-tall"><b class="vf-n" aria-hidden="true">–</b><span class="vf-pst" aria-hidden="true">%</span><span class="vf-sr" aria-live="polite"></span></p><span class="vf-tl" aria-hidden="true">left in the bottle</span></div>
+      <button type="button" class="vf-slurk" aria-label="Ask me to take a sip"><span class="vf-e" aria-hidden="true">💧</span><span>Ask me to take a sip</span><b>0</b></button>
+    </div>
   </div>
-  </div>
-  </div>
-</footer>
+</section>
 <main>
   <div class="intro">
   <div class="mono k"><span>&gt; Tidemann Esbjug</span><span>07.10.2026</span><!-- Skjult inntil videre: <a class="kl" href="/login/">Customer login &rarr;</a> --></div>
@@ -1626,141 +1670,97 @@
     <form class="ch-f"><span class="ch-more" hidden><button type="button" class="ch-att" aria-label="Attach file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5l-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l8.6-8.6a3.7 3.7 0 0 1 5.2 5.2l-8.6 8.6a1.8 1.8 0 0 1-2.6-2.6l7.9-7.9"/></svg></button><button type="button" class="ch-mic" aria-label="Record a voice message"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><input type="file" class="ch-file" hidden></span><textarea rows="1" maxlength="2000" placeholder="Write a message …" aria-label="Message"></textarea><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
   </section>
 </div>
-<!-- Vannflasken: egen seksjon under kartet (fra 29.10.2026), en livestream. Robotarmen med iPhonen leter etter flasken, låser
-     seg på den og skanner, så kommer tallet. Sitronskivene og myntebladet flyter i vannet; besøkende kan be meg ta en slurk. -->
-<section class="vf" id="vann" aria-label="The water bottle, live">
-  <div class="vf-lys" aria-hidden="true"><i style="--x:7%;--s:14px;--c:rgba(255,236,150,.9);--o:.5;--d:19s;--del:-3s"></i><i style="--x:16%;--s:8px;--c:rgba(190,235,255,.9);--o:.6;--d:15s;--del:-9s"></i><i style="--x:28%;--s:22px;--c:rgba(190,235,255,.8);--o:.25;--d:24s;--del:-14s"></i><i style="--x:41%;--s:6px;--c:rgba(255,255,255,.9);--o:.5;--d:13s;--del:-5s"></i><i style="--x:55%;--s:12px;--c:rgba(255,236,150,.9);--o:.35;--d:21s;--del:-17s"></i><i style="--x:66%;--s:30px;--c:rgba(190,235,255,.7);--o:.2;--d:28s;--del:-2s"></i><i style="--x:78%;--s:9px;--c:rgba(255,255,255,.9);--o:.45;--d:16s;--del:-11s"></i><i style="--x:88%;--s:16px;--c:rgba(255,236,150,.8);--o:.3;--d:22s;--del:-7s"></i><i style="--x:95%;--s:7px;--c:rgba(190,235,255,.9);--o:.5;--d:14s;--del:-1s"></i></div>
-  <div class="vf-i">
-    <div class="vf-tekst">
-      <p class="vf-ey"><span class="vf-live"><i></i><b>Live</b></span><span class="mono">Live stream from the desk</span></p>
-      <h2 class="vf-h">When life gives you lemons,</h2>
-      <p class="vf-sub">put them in your water, and get a robot to keep an eye on the bottle.</p>
-      <p class="vf-forklar">A robot arm points a camera at my water bottle and measures how much is left, right now as you watch.</p>
-    </div>
-    <div class="vf-scene">
-      <svg class="vf-svg" viewBox="100 40 810 920" aria-hidden="true">
-        <defs>
-          <clipPath id="vf-indre"><path d="M650 178L650 232C650 270 560 290 560 350L560 840Q560 878 598 878L802 878Q840 878 840 840L840 350C840 290 750 270 750 232L750 178Z"/></clipPath>
-          <clipPath id="vf-ytre"><path d="M640 178L640 228C640 262 550 284 550 346L550 856Q550 902 596 902L804 902Q850 902 850 856L850 346C850 284 760 262 760 228L760 178Z"/></clipPath>
-          <clipPath id="vf-skjerm"><rect x="-46" y="-27" width="92" height="54" rx="2"/></clipPath>
-          <clipPath id="vf-mini-k"><path d="M-9 -12h18v31a3 3 0 0 1-3 3h-12a3 3 0 0 1-3-3z"/></clipPath>
-          <radialGradient id="vf-glod"><stop offset="0" stop-color="#53b6ff" stop-opacity=".42"/><stop offset=".55" stop-color="#2a83e0" stop-opacity=".14"/><stop offset="1" stop-color="#2a83e0" stop-opacity="0"/></radialGradient>
-          <radialGradient id="vf-gulv"><stop offset="0" stop-color="#bfe6ff" stop-opacity=".22"/><stop offset="1" stop-color="#bfe6ff" stop-opacity="0"/></radialGradient>
-          <radialGradient id="vf-k-g"><stop offset="0" stop-color="#fff6b0" stop-opacity=".95"/><stop offset=".45" stop-color="#bff0ff" stop-opacity=".5"/><stop offset="1" stop-color="#bff0ff" stop-opacity="0"/></radialGradient>
-          <linearGradient id="vf-vann" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9eeeff" stop-opacity=".36"/><stop offset=".3" stop-color="#4cc0f4" stop-opacity=".44"/><stop offset="1" stop-color="#1663c4" stop-opacity=".74"/></linearGradient>
-          <linearGradient id="vf-vann-bak" class="vf-bak-g" gradientUnits="userSpaceOnUse" x1="0" y1="500" x2="0" y2="530"><stop offset="0" stop-color="#f4fcff" stop-opacity=".95"/><stop offset="1" stop-color="#97d6ff" stop-opacity=".7"/></linearGradient>
-          <linearGradient id="vf-kant" gradientUnits="userSpaceOnUse" x1="550" y1="0" x2="850" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".14" stop-color="#fff" stop-opacity=".35"/><stop offset=".5" stop-color="#fff" stop-opacity=".16"/><stop offset=".86" stop-color="#fff" stop-opacity=".3"/><stop offset="1" stop-color="#fff" stop-opacity=".8"/></linearGradient>
-          <linearGradient id="vf-glans" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".18" stop-color="#fff" stop-opacity=".75"/><stop offset=".8" stop-color="#fff" stop-opacity=".6"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
-          <linearGradient id="vf-kork-g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5c6773"/><stop offset=".1" stop-color="#b9c3cd"/><stop offset=".26" stop-color="#f5f8fa"/><stop offset=".4" stop-color="#97a3b0"/><stop offset=".56" stop-color="#dfe5eb"/><stop offset=".72" stop-color="#a7b2be"/><stop offset=".88" stop-color="#eef2f5"/><stop offset="1" stop-color="#66717d"/></linearGradient><linearGradient id="vf-kork-s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".25" stop-color="#fff" stop-opacity="0"/><stop offset=".75" stop-color="#000a24" stop-opacity="0"/><stop offset="1" stop-color="#000a24" stop-opacity=".3"/></linearGradient>
-          <linearGradient id="vf-arm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9eef3"/><stop offset=".22" stop-color="#fbfcfd"/><stop offset=".42" stop-color="#c3ccd6"/><stop offset=".6" stop-color="#e2e8ee"/><stop offset=".82" stop-color="#aab6c3"/><stop offset="1" stop-color="#7f8d9c"/></linearGradient>
-          <linearGradient id="vf-fot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16397f"/><stop offset="1" stop-color="#00163f"/></linearGradient>
-          <radialGradient id="vf-ledd" cx=".38" cy=".34" r=".7"><stop offset="0" stop-color="#fbfcfd"/><stop offset=".45" stop-color="#d3dbe3"/><stop offset=".75" stop-color="#e6ebf0"/><stop offset="1" stop-color="#8f9dac"/></radialGradient>
-          <radialGradient id="vf-frukt"><stop offset="0" stop-color="#fff6be"/><stop offset=".7" stop-color="#ffe164"/><stop offset="1" stop-color="#ffcd2a"/></radialGradient>
-          <radialGradient id="vf-strale-g" class="vf-strale-g" gradientUnits="userSpaceOnUse" cx="500" cy="450" r="400"><stop offset="0" stop-color="#fff4b8" stop-opacity=".62"/><stop offset=".55" stop-color="#bfeaff" stop-opacity=".2"/><stop offset="1" stop-color="#bfeaff" stop-opacity="0"/></radialGradient>
-          <radialGradient id="vf-flekk-g"><stop offset="0" stop-color="#fff4b8" stop-opacity=".55"/><stop offset="1" stop-color="#fff4b8" stop-opacity="0"/></radialGradient>
-          <linearGradient id="vf-skann-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe98a" stop-opacity="0"/><stop offset="1" stop-color="#ffe98a" stop-opacity=".3"/></linearGradient>
-          <linearGradient id="vf-skjerm-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d4598"/><stop offset="1" stop-color="#052259"/></linearGradient>
-          <linearGradient id="vf-speil-g" gradientUnits="userSpaceOnUse" x1="0" y1="903" x2="0" y2="1010"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/></linearGradient>
-          <mask id="vf-speil-m" maskUnits="userSpaceOnUse" x="400" y="900" width="600" height="200"><rect x="400" y="900" width="600" height="200" fill="url(#vf-speil-g)"/></mask>
-          <filter id="vf-uskarp" x="-30%" y="-200%" width="160%" height="500%"><feGaussianBlur stdDeviation="6"/></filter>
-          <filter id="vf-gloe" x="-10%" y="-400%" width="120%" height="900%"><feGaussianBlur stdDeviation="5"/></filter>
-          <filter id="vf-kf" x="-20%" y="-80%" width="140%" height="260%"><feTurbulence type="fractalNoise" baseFrequency=".016 .08" numOctaves="2" seed="4" result="n"><animate attributeName="baseFrequency" dur="10s" values=".016 .08;.022 .06;.016 .08" repeatCount="indefinite"/></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="16" xChannelSelector="R" yChannelSelector="G"/><feGaussianBlur stdDeviation="1.4"/></filter>
-          <!-- Sitronskiven (skallet, det hvite og båtene lages i skriptet) og myntebladet, sentrert i 0,0 -->
-          <g id="vf-skive"></g>
-          <g id="vf-mynte"><path d="M-36 0C-22 -21 14 -23 36 0C14 23 -22 21 -36 0Z" fill="#33b673"/><path d="M-36 0C-22 -21 14 -23 36 0" fill="none" stroke="#7be0a6" stroke-width="2" opacity=".6"/><path d="M-32 0H31M-12 0l-8-10M2 0l-7-12M16 0l-6-10M-12 0l-8 10M2 0l-7 12M16 0l-6 10" fill="none" stroke="#1d7f4f" stroke-width="1.8" stroke-linecap="round"/></g>
-        </defs>
-        <circle cx="700" cy="520" r="440" fill="url(#vf-glod)"/>
-        <!-- Gulvet: glansen, speilbildet, skyggen og lyset som har gått gjennom vannet og sitronene -->
-        <ellipse cx="700" cy="906" rx="380" ry="30" fill="url(#vf-gulv)"/>
-        <use href="#vf-flaske" transform="matrix(1 0 0 -1 0 1806)" mask="url(#vf-speil-m)" opacity=".3"/>
-        <ellipse cx="700" cy="904" rx="170" ry="11" fill="#000a24" opacity=".45" filter="url(#vf-uskarp)"/>
-        <g class="vf-kaustikk" filter="url(#vf-kf)" opacity=".8"><ellipse cx="790" cy="922" rx="180" ry="22" fill="url(#vf-k-g)"/><ellipse cx="776" cy="920" rx="108" ry="10" fill="none" stroke="#fff6b8" stroke-width="2.4" opacity=".55"/></g>
-        <!-- Kameraets synsfelt: en smal lyskjegle som leter, så hele flasken når den er funnet -->
-        <g class="vf-strale" opacity="0"><path class="vf-kjegle" fill="url(#vf-strale-g)"/><path class="vf-kanter" fill="none" stroke="#fff3b0" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="2 8" opacity=".6"/><circle class="vf-flekk" r="54" fill="url(#vf-flekk-g)" opacity="0"/></g>
-        <!-- Robotarmen: foten, overarmen, underarmen og hodet (gimbalen med iPhonen) -->
-        <g class="vf-arm" transform="translate(-56 127) scale(.86)">
-          <ellipse cx="240" cy="905" rx="96" ry="14" fill="#000a24" opacity=".45" filter="url(#vf-uskarp)"/>
-          <path d="M166 874h148v20a10 10 0 0 1-10 10H176a10 10 0 0 1-10-10z" fill="url(#vf-fot)"/>
-          <rect x="166" y="866" width="148" height="13" rx="6.5" fill="#dfe7f1"/>
-          <rect x="205" y="836" width="70" height="36" rx="10" fill="url(#vf-arm)"/>
-          <path class="vf-kabel" fill="none" stroke="#0a2a66" stroke-width="5" stroke-linecap="round" opacity=".85"/>
-          <g class="vf-del1"><rect x="-27" y="-26" width="304" height="52" rx="26" fill="url(#vf-arm)"/><rect x="34" y="12" width="180" height="4" rx="2" fill="#00205B" opacity=".1"/></g>
-          <g class="vf-del2"><rect x="-20" y="-20" width="250" height="40" rx="20" fill="url(#vf-arm)"/><rect x="28" y="9" width="140" height="3.5" rx="1.75" fill="#00205B" opacity=".1"/></g>
-          <g class="vf-ledd1"><circle r="38" fill="url(#vf-ledd)"/><circle r="36" fill="none" stroke="#00205B" stroke-width="5"/><circle r="15" fill="#ffd93b"/><circle r="5.5" fill="#00205B"/></g>
-          <g class="vf-ledd2"><circle r="29" fill="url(#vf-ledd)"/><circle r="27.5" fill="none" stroke="#00205B" stroke-width="4.5"/><circle r="11" fill="#ffd93b"/><circle r="4" fill="#00205B"/></g>
-          <g class="vf-hode">
-            <rect x="-4" y="-11" width="48" height="22" rx="11" fill="url(#vf-arm)"/>
-            <circle r="23" fill="url(#vf-ledd)"/><circle r="21.5" fill="none" stroke="#00205B" stroke-width="4"/><circle r="8.5" fill="#ffd93b"/>
-            <circle cx="44" r="15" fill="#0d2b66"/><circle cx="44" r="5.5" fill="#ffd93b"/>
-            <g transform="translate(108 0)">
-              <rect x="-14" y="-41" width="28" height="10" rx="3" fill="#0d2b66"/><rect x="-14" y="31" width="28" height="10" rx="3" fill="#0d2b66"/>
-              <rect x="-62" y="-33" width="124" height="66" rx="13" fill="#0c111d" stroke="#3b4762" stroke-width="2"/>
-              <rect x="-46" y="-27" width="92" height="54" rx="2" fill="#030a1c"/>
-              <g class="vf-skjerm-paa" clip-path="url(#vf-skjerm)">
-                <rect x="-46" y="-27" width="92" height="54" fill="url(#vf-skjerm-g)"/>
-                <g class="vf-mini">
-                  <g clip-path="url(#vf-mini-k)"><rect x="-10" y="-13" width="20" height="36" fill="#cfefff" opacity=".16"/><rect class="vf-mini-v" x="-10" y="4" width="20" height="40" fill="#4fb3ff"/><circle class="vf-mini-s" cx="-2" cy="8" r="3.4" fill="#ffd93b"/></g>
-                  <path d="M-9 -12h18v31a3 3 0 0 1-3 3h-12a3 3 0 0 1-3-3z" fill="none" stroke="#e8f6ff" stroke-width="1.3"/>
-                  <path d="M-4.5 -12v-5h9v5" fill="none" stroke="#e8f6ff" stroke-width="1.2"/><rect x="-5.5" y="-21.5" width="11" height="5" rx="1.3" fill="#e8f6ff"/>
-                </g>
-                <path class="vf-mini-ramme" d="M-17 -18v-6h6M11 -24h6v6M-17 20v6h6M11 26h6v-6" fill="none" stroke="#ffd93b" stroke-width="1.6" stroke-linecap="round" opacity="0"/>
-                <rect class="vf-mini-skann" x="-46" y="0" width="92" height="1.6" fill="#fff3b0" opacity="0"/>
-                <circle class="vf-rec" cx="38" cy="-20" r="2.3" fill="#ff5a5a"/>
-              </g>
-              <circle cx="-54" r="5.5" fill="none" stroke="#3b4762" stroke-width="1.6"/><rect x="53" y="-6" width="3" height="12" rx="1.5" fill="#3b4762"/>
-              <circle cx="64" cy="-21" r="8.5" fill="#0c111d" stroke="#56627e" stroke-width="2"/><circle cx="64" cy="-21" r="3.6" fill="#5cc0ff"/>
-            </g>
-          </g>
-        </g>
-        <!-- Flasken: glass, vannet (flaten, skivene, boblene), glans og korken med hank -->
-        <g id="vf-flaske">
-          <path d="M640 178L640 228C640 262 550 284 550 346L550 856Q550 902 596 902L804 902Q850 902 850 856L850 346C850 284 760 262 760 228L760 178Z" fill="#d6fff6" fill-opacity=".08"/>
-          <g clip-path="url(#vf-indre)">
-            <path class="vf-vbak" fill="url(#vf-vann-bak)"/>
-            <g class="vf-skiver"></g>
-            <path class="vf-vfront" fill="url(#vf-vann)"/>
-            <g class="vf-bobler"></g>
-            <path class="vf-menisk" fill="none" stroke="#fff" stroke-opacity=".8" stroke-width="2.6" stroke-linecap="round"/>
-            <g class="vf-dropper"></g>
-          </g>
-          <path fill-rule="evenodd" fill="#e3fff8" fill-opacity=".17" d="M640 178L640 228C640 262 550 284 550 346L550 856Q550 902 596 902L804 902Q850 902 850 856L850 346C850 284 760 262 760 228L760 178ZM650 178L650 232C650 270 560 290 560 350L560 840Q560 878 598 878L802 878Q840 878 840 840L840 350C840 290 750 270 750 232L750 178Z"/>
-          <path d="M556 362V846M845 362V846" stroke="#00163f" stroke-opacity=".28" stroke-width="2"/>
-          <path d="M566 888Q700 899 834 888" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="2.5" stroke-linecap="round"/><path d="M600 880Q700 886 800 880" fill="none" stroke="#bff7ec" stroke-opacity=".35" stroke-width="2" stroke-linecap="round"/>
-          <path d="M640 178L640 228C640 262 550 284 550 346L550 856Q550 902 596 902L804 902Q850 902 850 856L850 346C850 284 760 262 760 228L760 178" fill="none" stroke="url(#vf-kant)" stroke-width="2.5" stroke-linejoin="round"/>
-          <rect x="574" y="384" width="17" height="456" rx="8.5" fill="url(#vf-glans)" opacity=".75"/>
-          <rect x="600" y="404" width="5" height="396" rx="2.5" fill="url(#vf-glans)" opacity=".5"/>
-          <rect x="804" y="392" width="24" height="436" rx="12" fill="url(#vf-glans)" opacity=".15"/>
-          <path d="M836 374V846" stroke="#fff" stroke-opacity=".45" stroke-width="2" stroke-linecap="round"/>
-          <path d="M574 378C576 332 620 306 645 280" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="5" stroke-linecap="round"/>
-          <rect x="635" y="184" width="130" height="13" rx="5" fill="#e8fffb" fill-opacity=".2" stroke="#fff" stroke-opacity=".55" stroke-width="1.5"/>
-          <g class="vf-kork">
-            <path d="M674 102V86a26 26 0 0 1 52 0v16" fill="none" stroke="#6f7b88" stroke-width="13" stroke-linecap="round"/><path d="M674 102V86a26 26 0 0 1 52 0v16" fill="none" stroke="#d9e0e7" stroke-width="8" stroke-linecap="round"/>
-            <path d="M681 94V86a19 19 0 0 1 19-19" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="3" stroke-linecap="round"/>
-            <path d="M630 184V114a16 16 0 0 1 16-16h108a16 16 0 0 1 16 16v70z" fill="url(#vf-kork-g)"/><path d="M630 184V114a16 16 0 0 1 16-16h108a16 16 0 0 1 16 16v70z" fill="url(#vf-kork-s)"/>
-            <path d="M647 112v56M663 112v56M679 112v56M695 112v56M711 112v56M727 112v56M743 112v56M759 112v56" stroke="#1e2833" stroke-opacity=".16" stroke-width="3"/>
-            <rect x="640" y="103" width="120" height="6" rx="3" fill="#fff" fill-opacity=".55"/>
-            <rect x="630" y="174" width="140" height="10" fill="#7a8592"/><rect x="630" y="174" width="140" height="2.5" fill="#fff" fill-opacity=".5"/>
-          </g>
-        </g>
-        <!-- Skanningen: en lysende strek fra toppen til bunnen av flasken, med skinner på sidene -->
-        <g class="vf-skann">
-          <g clip-path="url(#vf-ytre)"><rect class="vf-skann-b" x="540" y="0" width="320" height="150" fill="url(#vf-skann-g)"/><rect class="vf-skann-g" x="540" y="0" width="320" height="6" fill="#fff1a0" filter="url(#vf-gloe)"/><rect class="vf-skann-l" x="540" y="0" width="320" height="3" fill="#fffbe0"/></g>
-          <path class="vf-skann-s" fill="none" stroke="#ffd93b" stroke-width="4" stroke-linecap="round"/>
-        </g>
-        <!-- Søkerammen rundt flasken og merket ved vannflaten -->
-        <path class="vf-sikte" d="M522 116V70H568M832 70H878V116M522 884V930H568M832 930H878V884" fill="none" stroke="#ffd93b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-        <g class="vf-merke"><path d="M860 0H896" stroke="#ffd93b" stroke-width="3" stroke-linecap="round"/><circle cx="860" r="5.5" fill="#ffd93b"/></g>
-      </svg>
-      <div class="vf-hud"><span class="vf-strom" aria-hidden="true"><span class="vf-live"><i></i><b>Live</b></span><span class="vf-klokke">&nbsp;</span></span><p class="vf-chip" aria-hidden="true"><i></i><span>&nbsp;</span></p></div>
-    </div>
-    <div class="vf-bunn">
-      <div class="vf-maal"><p class="vf-tall"><b class="vf-n" aria-hidden="true">–</b><span class="vf-pst" aria-hidden="true">%</span><span class="vf-sr" aria-live="polite"></span></p><span class="vf-tl" aria-hidden="true">left in the bottle</span></div>
-      <button type="button" class="vf-slurk" aria-label="Ask me to take a sip"><span class="vf-e" aria-hidden="true">💧</span><span>Ask me to take a sip</span><b>0</b></button>
-    </div>
+<!-- Kartet med live-modulene er bunnteksten, nederst på siden. -->
+<footer class="hero" id="live">
+  <div class="kart-venter" aria-hidden="true"><span class="kv-prikk"></span><div class="kv-i"><b>Esbjug Consult</b><span class="kv-t">finding Tidemann …</span></div></div><div id="kart" aria-label="Map: where Tidemann is now"></div>
+  <div class="hero-i">
+  <div class="flyt"><button type="button" class="kartknapp gl" aria-label="Show the map" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="kk-kart" d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/><path class="kk-x" d="M6 6l12 12M18 6 6 18"/></svg></button><div class="topp gl"><a class="lang en" href="/" hreflang="nb" aria-label="Language: English. Switch to Norwegian"><span class="lang-k" aria-hidden="true"></span><span class="lf no" aria-hidden="true"><svg viewBox="0 0 22 16" aria-hidden="true"><rect width="22" height="16" fill="#BA0C2F"/><path d="M0,8h22M8,0v16" stroke="#fff" stroke-width="4"/><path d="M0,8h22M8,0v16" stroke="#00205B" stroke-width="2"/></svg></span><span class="lf gb" aria-hidden="true"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath><path d="M0,0v30h60v-30z" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#C8102E" stroke-width="6"/></svg></span></a>
+  <div class="st"><div class="st-i tl-a" hidden data-av data-l="here now"><div class="st-c"><span class="st-v" aria-hidden="true"><i class="tl-dot"></i><b class="od"></b></span><span class="st-l" aria-hidden="true">here now</span><span class="tl-deg" aria-hidden="true">+1 · that's you</span></div></div><div class="st-i tl-b" hidden data-av data-l="unique visitors" data-ny="+1 · you are no. {n}" data-er="You are no. {n}" data-var="You were no. {n}"><div class="st-c"><span class="st-v" aria-hidden="true"><b class="od"></b></span><span class="st-l" aria-hidden="true">unique visitors</span><span class="tl-deg" aria-hidden="true">+1 · that's you</span></div></div><span class="tl-sr"></span></div>
+  </div></div>
+  <div class="paneler">
+  <div class="venstre">
+  <p class="naa gl" aria-live="off"><span class="naa-d">&nbsp;</span><b class="naa-k">&nbsp;</b></p>
+  <section class="sted gl" aria-live="polite">
+    <span class="mono s-t"><i class="s-dot"></i><span class="s-live">Live</span></span>
+    <b class="s-navn">Finding him …</b>
+    <span class="s-sub">&nbsp;</span>
+    <div class="kast"><button type="button" class="k-tomat" aria-label="Throw a tomato at Tidemann" hidden>🍅 <span>Throw a tomato</span> <b>0</b></button><button type="button" class="k-heia" aria-label="Cheer Tidemann on">📣 <span>Cheer</span> <b>0</b></button></div>
+  </section>
+  <section class="gjor gl" hidden aria-live="polite">
+    <span class="mono s-t">Right now</span>
+    <b class="g-navn">–</b>
+  </section>
+  <section class="poster" hidden aria-live="polite" aria-label="Poster fra Tidemann. Trykk for neste." role="button" tabindex="0"></section>
+  <section class="bank gl" hidden aria-label="Bank">
+    <span class="mono s-t"><span>SpareBank 1</span><span class="bk-t"></span></span>
+    <b class="bk-sum">–</b>
+    <ul class="bk-kontoer"></ul>
+  </section>
+  <!-- Kostnader: det jeg bruker penger på, nyeste øverst, i hele kroner. Legg til nye linjer her. -->
+  <section class="bank utg gl" aria-label="Costs">
+    <span class="mono s-t"><span>Costs</span></span>
+    <ul class="ut-liste">
+      <li><span>Proton <i>27. okt · 20:49</i></span><b>−209 kr</b></li>
+      <li><span>Spaceship <i>27. okt · 11:41</i></span><b>−9 kr</b></li>
+      <li><span>iCloud <i>26. okt · 16:48</i></span><b>−129 kr</b></li>
+      <li><span>Cloudflare <i>25 Oct · 11:30</i></span><b>−47 kr</b></li>
+      <li><span>Claude Max 20 <i>25 Oct · 10:47</i></span><b>−2&nbsp;299 kr</b></li>
+    </ul>
+  </section>
+  <!-- Aktive AI-abonnementer, dyrest først. Legg til eller fjern linjer her. -->
+  <section class="abo gl" aria-label="Active AI subscriptions" tabindex="0">
+    <span class="mono s-t">Active AI subscriptions</span><span class="abo-ant" aria-hidden="true"><span></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+    <ol class="abo-l"><li style="--c:#D97757;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><g stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 12V3.5M12 12l6-6M12 12h8.5M12 12l6.2 5.8M12 12v8.5M12 12l-6 6M12 12H3.5M12 12L5.8 5.8M12 12l3.3-7.9M12 12l-7.9 3.3"/></g></svg><span>Claude Max 20</span></li><li style="--c:#E9A27F;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><g stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 12V3.5M12 12l6-6M12 12h8.5M12 12l6.2 5.8M12 12v8.5M12 12l-6 6M12 12H3.5M12 12L5.8 5.8M12 12l3.3-7.9M12 12l-7.9 3.3"/></g></svg><span>Claude Max 5</span></li><li style="--c:#14b8a6;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 4h3.4v6.6L14.6 4H19l-6.6 7.2L19.4 20h-4.5l-4.7-6.2-1.8 1.9V20H5z"/></svg><span>Kling</span></li><li style="--c:#111;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="7.2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M4.2 19.8L19.8 4.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span>SuperGrok</span></li><li style="--c:#fff;--f:#0b1d4a"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11 3.5L4.5 16H11zM12.5 6l6 10h-6z"/><path d="M3 17.6h18l-2.2 3H5.2z"/></svg><span>Midjourney</span></li><li style="--c:#334155;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="7" y="4" width="3.4" height="16" rx=".6"/><rect x="13.6" y="4" width="3.4" height="16" rx=".6"/></svg><span>ElevenLabs</span></li><li style="--c:linear-gradient(135deg,#ff8a3d,#ff2e7e);--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3" y="10" width="2.6" height="4" rx="1.3"/><rect x="7.1" y="6.5" width="2.6" height="11" rx="1.3"/><rect x="11.2" y="3.5" width="2.6" height="17" rx="1.3"/><rect x="15.3" y="7.5" width="2.6" height="9" rx="1.3"/><rect x="19.4" y="10.5" width="2.6" height="3" rx="1.3"/></svg><span>Suno</span></li></ol>
+  </section>
   </div>
-</section>
+  <div class="hoyre">
+  <section class="sens gl" aria-label="Everything his iPhone and Apple Watch measure">
+    <div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Heart rate today"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg><svg class="hk" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true"><path class="hk-l" d=""/><circle class="hk-p" r="3" cx="-9" cy="-9"/></svg></span></button><span class="st-l"><span class="hp-on">Live from Apple Watch</span><span class="hp-av">Not live right now</span></span></div><span class="hk-x" aria-hidden="true"><span>5 min</span><span>nå</span></span>
+    <div class="sv" data-k="ibat"><span class="sl">iPhone</span><b>–</b><i class="bar"><i></i></i></div>
+    <div class="sv" data-k="wbatl" hidden><span class="sl"><svg class="di" viewBox="0 0 24 24" fill="currentColor" aria-label="Apple" role="img"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg>Watch<span class="wa"> L</span></span><b>–</b><i class="bar"><i></i></i></div>
+    <div class="sv" data-k="wbatr"><span class="sl"><svg class="di" viewBox="0 0 24 24" fill="currentColor" aria-label="Apple" role="img"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg>Watch<span class="wa"> R</span></span><b>–</b><i class="bar"><i></i></i></div>
+    <div class="sv" data-k="fyra" hidden><span class="sl">iPhone</span><b>–</b><i class="bar"><i></i></i></div>
+    <div class="sv" data-k="fyrb" hidden><span class="sl">iPhone</span><b>–</b><i class="bar"><i></i></i></div>
+    <div class="sv" data-k="abat"><span class="sl">Android</span><b>–</b><i class="bar"><i></i></i></div>
+    <div class="sv" data-k="gatt"><span class="sl">Walked today</span><b>–</b></div>
+    <div class="maskiner">
+      <div class="sv maskin" data-k="starbase" title="Starbase"><span class="sl"><svg class="mi" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg><span class="mn">Starbase</span></span><b><i class="mp"></i><span class="mv">–</span></b></div>
+      <div class="sv maskin" data-k="starship" title="Starship"><span class="sl"><svg class="mi" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.2l7.4-1v7.2H3zM11.3 4.1L21 2.7v8.7h-9.7zM3 12.4h7.4v7.2L3 18.6zM11.3 12.4H21v8.9l-9.7-1.4z"/></svg><span class="mn">Starship</span></span><b><i class="mp"></i><span class="mv">–</span></b></div>
+      <div class="sv maskin" data-k="falcon" title="Falcon 9"><span class="sl"><svg class="mi" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.2l7.4-1v7.2H3zM11.3 4.1L21 2.7v8.7h-9.7zM3 12.4h7.4v7.2L3 18.6zM11.3 12.4H21v8.9l-9.7-1.4z"/></svg><span class="mn">Falcon 9</span></span><b><i class="mp"></i><span class="mv">–</span></b></div>
+    </div>
+  </section>
+  <!-- Kontoret: pult-kameraet (person, plagg, hodetelefoner) og flaske-kameraet (vannet når målingen er under 2 min). -->
+  <section class="sens pultk gl" hidden aria-label="The office, seen by the camera">
+    <span class="mono s-t pk-t">Office · camera</span>
+    <div class="sv" data-k="pflaske"><span class="sl">Water bottle</span><span class="fl-rad"><svg class="fl-i" viewBox="0 0 84 100" aria-hidden="true"><defs><clipPath id="fl-form"><path d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/></clipPath><linearGradient id="fl-vann" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe6ff"/><stop offset="1" stop-color="#3f8fdc"/></linearGradient></defs><path class="fl-blad" d="M47 70c4-12 15-19 27-19-2 13-12 21-27 19z"/><path class="fl-bladnerve" d="M49 69c7-6 14-11 22-15"/><path class="fl-glass" d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/><g clip-path="url(#fl-form)"><g class="fl-vg"><path class="fl-vann" d="M-40 0q10-3.2 20 0t20 0 20 0 20 0 20 0 20 0 20 0v120h-140z"/></g></g><rect class="fl-glans" x="17" y="40" width="4" height="44" rx="2"/><path class="fl-kant" d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/><rect class="fl-kork" x="22" y="3" width="18" height="11" rx="3"/><g class="fl-sitron"><circle cx="58" cy="83" r="14"/><circle class="fl-s2" cx="58" cy="83" r="11.5"/><path class="fl-s3" d="M58 83V72.5M58 83l7.4 7.4M58 83l-7.4 7.4M58 83l10-3.3M58 83l-10-3.3"/></g></svg><b>–</b></span></div>
+    <div class="sv" data-k="pstilling"><span class="sl">At the desk</span><b>–</b></div>
+    <div class="sv pk-plagg" data-k="pplagg"><span class="sl">Wearing</span><b>–</b></div>
+  </section>
+  <section class="akse gl" aria-label="The accelerometers in his Apple Watch and iPhone, live">
+    <div class="ak ak-l" hidden><div class="ak-h"><span class="sl"><svg class="di" viewBox="0 0 24 24" fill="currentColor" aria-label="Apple" role="img"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg>Watch<span class="wa"> L</span> · accelerometer</span><span class="ak-m">20 Hz · g</span></div><canvas class="ak-c" data-k="watchl"></canvas></div>
+    <div class="ak"><div class="ak-h"><span class="sl"><svg class="di" viewBox="0 0 24 24" fill="currentColor" aria-label="Apple" role="img"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg>Watch<span class="wa"> R</span> · accelerometer</span><span class="ak-m">20 Hz · g</span></div><canvas class="ak-c" data-k="watchr"></canvas></div>
+    <div class="ak ak-i"><div class="ak-h"><span class="sl">iPhone · accelerometer</span><span class="ak-m"><i class="kx">x</i> <i class="ky">y</i> <i class="kz">z</i></span></div><canvas class="ak-c" data-k="iphone"></canvas></div>
+  </section>
+  <section class="pod gl" hidden aria-label="Podcast">
+    <span class="mono s-t">Podcast</span>
+    <div class="pod-kort"><button type="button" class="pod-siste" aria-label="Play the latest episode"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg></button><span class="pod-sinfo"><b class="pod-stittel"></b><span class="pod-sdato"></span></span><button type="button" class="pod-alle" aria-expanded="false" aria-label="All episodes"><span class="pod-antall"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></div>
+    <ol class="pod-l"></ol>
+    <div class="pod-v" hidden>
+      <button type="button" class="pod-tilbake" aria-label="Back to the episodes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg></button>
+      <button type="button" class="pod-stor" aria-label="Play"><svg class="pod-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg><svg class="pod-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></svg></button>
+      <div class="pod-hoyre">
+        <div class="pod-info"><b class="pod-tittel"></b><span class="pod-dato"></span></div>
+        <div class="pod-bar" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i><b></b></div>
+        <div class="pod-sp"><span class="pod-tid">0:00</span><span class="pod-tot">0:00</span></div>
+      </div>
+    </div>
+  </section>
+  </div>
+  </div>
+  </div>
+</footer>
 <script>
-// Vannflasken under kartet, en livestream. Vannet lever: flaten er en kjede av fjærer (bølger, skvulp når man ruller siden, plask når
+// Vannflasken rett under heroen, en livestream. Vannet lever: flaten er en kjede av fjærer (bølger, skvulp når man ruller siden, plask når
 // man trykker), med bobler, sitronskiver og et mynteblad. Robotarmen leter etter flasken med en smal lyskjegle, låser seg
 // på den, skanner den, og så telles tallet opp. Tallet er det samme som i kortet over kartet: kartskriptet legger det
 // siste bildet i window.__vann (hendelsen «esbjug-vann») og tellerne i window.__kast («esbjug-kast»).
