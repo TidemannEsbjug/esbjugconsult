@@ -293,6 +293,8 @@ T_NY = [
     ('<h2 class="vf-h">Når livet gir deg sitroner,</h2>', '<h2 class="vf-h">When life gives you lemons,</h2>'),
     ('<p class="vf-sub">putt dem i vannet, og sett en robot til å holde øye med flasken.</p>',
      '<p class="vf-sub">put them in your water, and get a robot to keep an eye on the bottle.</p>'),
+    ('</span> En robotarm styrer et kamera etter vannflasken på pulten og måler hvor mye som er igjen.</p>',
+     '</span> A robot arm points a camera at the water bottle on the desk and measures how much is left.</p>'),
     ('<span class="vf-tl" aria-hidden="true">igjen i flasken</span>', '<span class="vf-tl" aria-hidden="true">left in the bottle</span>'),
     ('aria-label="Gi Tidemann en sitron"><span class="vf-e" aria-hidden="true">🍋</span><span>Gi Tidemann en sitron</span>',
      'aria-label="Give Tidemann a lemon"><span class="vf-e" aria-hidden="true">🍋</span><span>Give Tidemann a lemon</span>'),

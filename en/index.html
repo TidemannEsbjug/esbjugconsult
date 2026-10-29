@@ -1229,6 +1229,13 @@
   .vf-ey{margin:0 0 20px;color:#ffe066}
   .vf-h{margin:0;font:400 clamp(42px,5.4vw,88px)/1.02 "Gloock",var(--serif);letter-spacing:-.02em;text-wrap:balance}
   .vf-sub{margin:.75em 0 0;max-width:21em;font:400 clamp(18px,1.55vw,23px)/1.5 "Literata",Georgia,serif;color:rgba(255,255,255,.8);text-wrap:pretty}
+  /* Forklaringen: et rødt LIVE-merke som på en strømming, grått når kameraet er av */
+  .vf-forklar{margin:1.1em 0 0;max-width:30em;font:500 clamp(15px,1.15vw,17px)/1.5 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;color:rgba(255,255,255,.74);text-wrap:pretty}
+  .vf-live{display:inline-flex;align-items:center;gap:6px;margin-right:5px;padding:4px 8px 4px 7px;border-radius:6px;background:#d42a45;color:#fff;font:700 11px/1 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;vertical-align:2px;transition:background .4s}
+  .vf-live i{width:6px;height:6px;border-radius:50%;background:#fff;animation:vfBlink 1.4s ease-in-out infinite}
+  @keyframes vfBlink{50%{opacity:.25}}
+  .vf.av .vf-live{background:rgba(255,255,255,.16)}
+  .vf.av .vf-live i{animation:none;opacity:.5}
   .vf-tall{margin:clamp(22px,3.6vw,44px) 0 0;display:flex;align-items:flex-start}
   .vf-n{font:400 clamp(112px,13vw,224px)/.8 "Gloock",var(--serif);letter-spacing:-.045em;padding:.06em 0 0;
     background:linear-gradient(180deg,#fff 35%,#bfe8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -1273,6 +1280,8 @@
     .vf-ey{margin-bottom:clamp(6px,1.2svh,14px)}
     .vf-h{font-size:clamp(28px,min(8.4vw,4.6svh),52px)}
     .vf-sub{margin-top:.45em;font-size:clamp(14px,min(4vw,2.2svh),19px);line-height:1.42}
+    .vf-forklar{margin-top:.6em;font-size:clamp(13px,min(3.6vw,2svh),16px);line-height:1.42}
+    .vf-live{padding:3px 7px 3px 6px;font-size:10px}
     /* Tallet står i det tomme feltet til venstre for flasken; knappen alene nederst til venstre, unna chat-knappen. */
     .vf-bunn{display:contents}
     .vf-maal{grid-area:scene;align-self:start;justify-self:start;position:relative;z-index:2;margin-top:clamp(40px,7svh,64px);pointer-events:none}
@@ -1292,13 +1301,14 @@
     .vf-ey{margin-bottom:8px}
     .vf-h{font-size:clamp(26px,6.4svh,44px)}
     .vf-sub{font-size:14px;margin-top:.4em}
+    .vf-forklar{font-size:13px;margin-top:.5em}
     .vf-tall{margin-top:10px}
     .vf-n{font-size:clamp(48px,15svh,96px)}
     .vf-pst{font-size:clamp(20px,6svh,36px)}
     .vf-tl{margin-top:6px}
     .vf-sitron{margin-top:12px;padding:9px 10px 9px 12px;font-size:14px}
   }
-  @media (prefers-reduced-motion:reduce){.vf::before,.vf-lys i,.vf-chip i{animation:none}.vf-lys{display:none}}
+  @media (prefers-reduced-motion:reduce){.vf::before,.vf-lys i,.vf-chip i,.vf-live i{animation:none}.vf-lys{display:none}}
 </style>
 </head>
 <body>
@@ -1616,6 +1626,7 @@
       <p class="vf-ey mono">The water bottle</p>
       <h2 class="vf-h">When life gives you lemons,</h2>
       <p class="vf-sub">put them in your water, and get a robot to keep an eye on the bottle.</p>
+      <p class="vf-forklar"><span class="vf-live"><i></i>Live</span> A robot arm points a camera at the water bottle on the desk and measures how much is left.</p>
     </div>
     <div class="vf-scene">
       <svg class="vf-svg" viewBox="100 40 810 920" aria-hidden="true">
