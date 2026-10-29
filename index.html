@@ -1262,15 +1262,40 @@
   .vf-svg.aapen .vf-kork{transform:rotate(116deg)}
   .vf-skjerm-paa{transition:opacity .6s ease}
   .vf.av .vf-skjerm-paa{opacity:0}
-  @media (max-width:899px){
-    .vf{min-height:0;display:block}
-    .vf-i{grid-template-columns:minmax(0,1fr);grid-template-areas:"tekst" "scene" "bunn";grid-template-rows:auto;padding-top:72px;padding-bottom:56px}
-    .vf-scene{height:min(78svh,700px);min-height:440px;margin:8px calc(var(--g) * -1) 0}
-    .vf-bunn{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 20px;margin-top:-8px}
+  /* Mobil (stående): hele seksjonen er én skjermhøyde. Teksten og tallraden er små, flasken får resten av høyden. */
+  @media (max-width:899px) and (orientation:portrait){
+    .vf{min-height:0;height:100svh;display:block}
+    .vf-i{height:100%;grid-template-columns:minmax(0,1fr);grid-template-areas:"tekst" "scene" "bunn";grid-template-rows:auto minmax(0,1fr) auto;
+      row-gap:clamp(6px,1.4svh,14px);padding-top:clamp(18px,4svh,44px);padding-bottom:clamp(14px,3svh,36px)}
+    .vf-scene{height:auto;min-height:0;margin:0 calc(var(--g) * -1)}
+    .vf-ey{margin-bottom:clamp(6px,1.2svh,14px)}
+    .vf-h{font-size:clamp(28px,min(8.4vw,4.6svh),52px)}
+    .vf-sub{margin-top:.45em;font-size:clamp(14px,min(4vw,2.2svh),19px);line-height:1.42}
+    /* Tallet står i det tomme feltet til venstre for flasken; knappen alene nederst til venstre, unna chat-knappen. */
+    .vf-bunn{display:contents}
+    .vf-maal{grid-area:scene;align-self:start;justify-self:start;position:relative;z-index:2;margin-top:clamp(40px,7svh,64px);pointer-events:none}
     .vf-tall{margin-top:0}
-    .vf-chip{left:var(--g);top:2%}
+    .vf-n{font-size:clamp(60px,min(18vw,10svh),120px)}
+    .vf-pst{font-size:clamp(24px,min(7vw,4svh),44px)}
+    .vf-tl{margin-top:6px;font-size:10px;letter-spacing:.12em;white-space:nowrap}
+    .vf-sitron{grid-area:bunn;justify-self:start;margin-top:0;flex:none;gap:6px;padding:9px 8px 9px 11px;font-size:clamp(12.5px,3.5vw,14px)}
+    .vf-sitron .vf-e{font-size:16px}
+    .vf-sitron b{padding:5px 7px;font-size:12px}
+    .vf-chip{left:var(--g);top:0;padding:7px 12px 7px 10px;font-size:11px}
   }
-  @media (max-width:600px){.vf-scene{height:auto;min-height:0;aspect-ratio:690/900}}
+  /* Lave skjermer (mobil på tvers, små vinduer): alt litt mindre, så det fortsatt er én skjermhøyde. */
+  @media (max-height:620px) and (orientation:landscape){
+    .vf-i{--py:12px}
+    .vf-scene{min-height:0}
+    .vf-ey{margin-bottom:8px}
+    .vf-h{font-size:clamp(26px,6.4svh,44px)}
+    .vf-sub{font-size:14px;margin-top:.4em}
+    .vf-tall{margin-top:10px}
+    .vf-n{font-size:clamp(48px,15svh,96px)}
+    .vf-pst{font-size:clamp(20px,6svh,36px)}
+    .vf-tl{margin-top:6px}
+    .vf-sitron{margin-top:12px;padding:9px 10px 9px 12px;font-size:14px}
+  }
   @media (prefers-reduced-motion:reduce){.vf::before,.vf-lys i,.vf-chip i{animation:none}.vf-lys{display:none}}
 </style>
 </head>
@@ -1726,7 +1751,7 @@ const TT = EN ? { leter: 'Searching …', fant: 'Found it', skanner: 'Scanning �
   : { leter: 'Leter …', fant: 'Fant flasken', skanner: 'Skanner …', live: 'Live', borte: 'Leter etter flasken …', sist: 'Sist sett ', hviler: 'Hviler', igjen: ' % igjen i flasken', loc: 'nb-NO' };
 const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const smal = matchMedia('(max-width: 600px)');
-const settVB = () => svg.setAttribute('viewBox', smal.matches ? '214 46 690 900' : '100 40 810 920');
+const settVB = () => svg.setAttribute('viewBox', smal.matches ? '160 46 740 900' : '100 40 810 920');
 settVB(); smal.addEventListener('change', settVB);
 const kl = (v, a, b) => Math.max(a, Math.min(b, v)), f1 = v => v.toFixed(1);
 
