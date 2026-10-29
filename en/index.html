@@ -1214,7 +1214,7 @@
   #kart .maplibregl-cooperative-gesture-screen{background:rgba(0,32,91,.45);color:#fff}
   /* ===== Vannflasken: egen seksjon rett under heroen (fra 29.10.2026). Dypt blått som et basseng, flasken stor med
      sitronskiver i vannet, og robotarmen med iPhonen som leter etter flasken, låser seg på den og skanner. Lite tekst. ===== */
-  .vf{position:relative;isolation:isolate;overflow:hidden;width:100%;flex:none;min-height:100svh;display:flex;align-items:center;color:#fff;
+  .vf{position:relative;isolation:isolate;overflow:hidden;width:100%;flex:none;display:block;color:#fff;
     background:radial-gradient(64% 58% at 70% 50%,#1767cc 0%,#0c4499 36%,#00205B 70%,#01143c 100%)}
   .focus .vf{opacity:0;filter:blur(8px);pointer-events:none}
   /* Lysstriper fra overflaten som svaier sakte, og en sol oppe til høyre */
@@ -1229,31 +1229,32 @@
   .vf-lys i{position:absolute;bottom:-12%;left:var(--x);width:var(--s);height:var(--s);border-radius:50%;opacity:0;
     background:radial-gradient(closest-side,var(--c),transparent);animation:vfStig var(--d) linear var(--del) infinite}
   @keyframes vfStig{0%{transform:translateY(0);opacity:0}15%,80%{opacity:var(--o)}100%{transform:translateY(-120svh);opacity:0}}
-  .vf-i{--py:clamp(20px,4svh,48px);position:relative;width:100%;max-width:1480px;margin:0 auto;box-sizing:border-box;padding:var(--py) var(--g);
-    display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);grid-template-areas:". scene" "tekst scene" "bunn scene" ". scene";
-    grid-template-rows:1fr auto auto 1fr;column-gap:clamp(16px,3vw,48px)}
+  /* PC: en stripe på rundt 60 % av skjermhøyden, samlet mot midten. Scenen er like bred som tegningen. */
+  .vf-i{--py:clamp(22px,3.6svh,40px);position:relative;width:100%;max-width:1180px;margin:0 auto;box-sizing:border-box;padding:var(--py) var(--g);
+    display:grid;grid-template-columns:minmax(0,500px) auto;justify-content:center;grid-template-areas:". scene" "tekst scene" "bunn scene" ". scene";
+    grid-template-rows:1fr auto auto 1fr;column-gap:clamp(24px,4vw,64px)}
   .vf-tekst{grid-area:tekst;position:relative;z-index:2}
-  .vf-bunn{grid-area:bunn;position:relative;z-index:2}
-  .vf-ey{margin:0 0 20px;display:flex;align-items:center;gap:12px;color:#ffe066}
+  .vf-bunn{grid-area:bunn;position:relative;z-index:2;display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 28px;margin-top:clamp(16px,2.6svh,28px)}
+  .vf-ey{margin:0 0 14px;display:flex;align-items:center;gap:12px;color:#ffe066}
   .vf-ey .vf-live{padding:6px 10px 6px 9px;font-size:12px;vertical-align:0}
-  .vf-h{margin:0;font:400 clamp(42px,5.4vw,88px)/1.02 "Gloock",var(--serif);letter-spacing:-.02em;text-wrap:balance}
-  .vf-sub{margin:.75em 0 0;max-width:21em;font:400 clamp(18px,1.55vw,23px)/1.5 "Literata",Georgia,serif;color:rgba(255,255,255,.8);text-wrap:pretty}
+  .vf-h{margin:0;font:400 clamp(34px,3.4vw,58px)/1.04 "Gloock",var(--serif);letter-spacing:-.02em;text-wrap:balance}
+  .vf-sub{margin:.6em 0 0;max-width:24em;font:400 clamp(16px,1.2vw,19px)/1.5 "Literata",Georgia,serif;color:rgba(255,255,255,.8);text-wrap:pretty}
   /* Forklaringen: et rødt LIVE-merke som på en strømming, grått når kameraet er av */
-  .vf-forklar{margin:1.1em 0 0;max-width:30em;font:500 clamp(15px,1.15vw,17px)/1.5 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;color:rgba(255,255,255,.74);text-wrap:pretty}
+  .vf-forklar{margin:.9em 0 0;max-width:30em;font:500 clamp(14px,1vw,16px)/1.5 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;color:rgba(255,255,255,.74);text-wrap:pretty}
   .vf-live{display:inline-flex;align-items:center;gap:6px;margin-right:5px;padding:4px 8px 4px 7px;border-radius:6px;background:#d42a45;color:#fff;font:700 11px/1 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;vertical-align:2px;transition:background .4s}
   .vf-live i{width:6px;height:6px;border-radius:50%;background:#fff;animation:vfBlink 1.4s ease-in-out infinite}
   .vf-live b{font:inherit}
   @keyframes vfBlink{50%{opacity:.25}}
   .vf.av .vf-live{background:rgba(255,255,255,.16)}
   .vf.av .vf-live i{animation:none;opacity:.5}
-  .vf-tall{margin:clamp(22px,3.6vw,44px) 0 0;display:flex;align-items:flex-start}
-  .vf-n{font:400 clamp(112px,13vw,224px)/.8 "Gloock",var(--serif);letter-spacing:-.045em;padding:.06em 0 0;
+  .vf-tall{margin:0;display:flex;align-items:flex-start}
+  .vf-n{font:400 clamp(72px,6.2vw,120px)/.8 "Gloock",var(--serif);letter-spacing:-.045em;padding:.06em 0 0;
     background:linear-gradient(180deg,#fff 35%,#bfe8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
-  .vf-pst{font:400 clamp(40px,4.6vw,78px)/1 "Gloock",var(--serif);color:#ffd93b;margin:.1em 0 0 .14em}
+  .vf-pst{font:400 clamp(28px,2.4vw,46px)/1 "Gloock",var(--serif);color:#ffd93b;margin:.1em 0 0 .14em}
   html[lang="en"] .vf-pst{margin-left:.04em}
   .vf-tl.vf-dr{margin-top:6px;color:rgba(255,255,255,.85)}.vf-dr b{font-weight:700;color:#fff}.vf-dr[hidden]{display:none}
-  .vf-tl{display:block;margin-top:14px;font:600 12px/1.4 "SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6)}
-  .vf-slurk{margin-top:clamp(24px,3vw,36px);display:inline-flex;align-items:center;gap:10px;border:0;cursor:pointer;padding:13px 14px 13px 16px;border-radius:999px;
+  .vf-tl{display:block;margin-top:10px;font:600 12px/1.4 "SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+  .vf-slurk{margin:0 0 4px;display:inline-flex;align-items:center;gap:10px;border:0;cursor:pointer;padding:13px 14px 13px 16px;border-radius:999px;
     font:600 16px/1 "Literata",Georgia,serif;color:#00205B;background:linear-gradient(180deg,#fff27e,#ffd21f);
     box-shadow:0 10px 30px rgba(255,210,31,.26),inset 0 1px 0 rgba(255,255,255,.75);transition:transform .15s ease,box-shadow .15s ease;-webkit-tap-highlight-color:transparent}
   .vf-slurk:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(255,210,31,.4),inset 0 1px 0 rgba(255,255,255,.75)}
@@ -1261,14 +1262,14 @@
   .vf-slurk:focus-visible{outline:3px solid #fff;outline-offset:3px}
   .vf-slurk .vf-e{font-size:20px;line-height:1}
   .vf-slurk b{min-width:1.6em;padding:6px 9px;border-radius:999px;background:#00205B;color:#ffe066;font:600 13px/1 "SF Mono",Menlo,monospace;text-align:center}
-  .vf-scene{grid-area:scene;position:relative;height:min(calc(100svh - 2 * var(--py)),1000px);min-height:560px}
+  .vf-scene{grid-area:scene;position:relative;height:clamp(340px,calc(60svh - 2 * var(--py)),640px);aspect-ratio:870/920}
   .vf-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;-webkit-tap-highlight-color:transparent}
   .vf-svg #vf-flaske{cursor:pointer}
   .vf-chip{position:relative;margin:0;display:inline-flex;align-items:center;gap:9px;padding:9px 15px 9px 12px;border-radius:999px;
     background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.18);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
     font:600 12px/1 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;pointer-events:none}
   /* Strømmen over scenen: LIVE, klokka som går, og hva armen gjør */
-  .vf-hud{position:absolute;left:3%;top:6%;z-index:2;display:flex;flex-wrap:wrap;align-items:center;gap:8px;max-width:94%;pointer-events:none}
+  .vf-hud{position:absolute;left:2%;top:3%;z-index:2;display:flex;flex-wrap:wrap;align-items:center;gap:8px;max-width:56%;pointer-events:none}
   .vf-strom{display:inline-flex;align-items:center;gap:9px;padding:5px 13px 5px 5px;border-radius:999px;background:rgba(0,10,36,.45);border:1px solid rgba(255,255,255,.14);
     -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
   .vf-strom .vf-live{margin:0;vertical-align:0}
@@ -1291,7 +1292,7 @@
     .vf{min-height:0;height:100svh;display:block}
     .vf-i{height:100%;grid-template-columns:minmax(0,1fr);grid-template-areas:"tekst" "scene" "bunn";grid-template-rows:auto minmax(0,1fr) auto;
       row-gap:clamp(6px,1.4svh,14px);padding-top:clamp(18px,4svh,44px);padding-bottom:clamp(14px,3svh,36px)}
-    .vf-scene{height:auto;min-height:0;margin:0 calc(var(--g) * -1)}
+    .vf-scene{height:auto;min-height:0;aspect-ratio:auto;margin:0 calc(var(--g) * -1)}
     .vf-ey{margin-bottom:clamp(6px,1.2svh,14px)}
     .vf-h{font-size:clamp(28px,min(8.4vw,4.6svh),52px)}
     .vf-sub{margin-top:.45em;font-size:clamp(14px,min(4vw,2.2svh),19px);line-height:1.42}
@@ -1312,7 +1313,7 @@
     .vf-strom{padding:4px 11px 4px 4px;gap:7px}
     .vf-klokke{font-size:12px}
   }
-  /* Lave skjermer (mobil på tvers, små vinduer): alt litt mindre, så det fortsatt er én skjermhøyde. */
+  /* Lave skjermer (mobil på tvers, små vinduer): alt litt mindre, så stripen ikke blir høyere enn skjermen. */
   @media (max-height:620px) and (orientation:landscape){
     .vf-i{--py:12px}
     .vf-scene{min-height:0}
@@ -1320,11 +1321,10 @@
     .vf-h{font-size:clamp(26px,6.4svh,44px)}
     .vf-sub{font-size:14px;margin-top:.4em}
     .vf-forklar{font-size:13px;margin-top:.5em}
-    .vf-tall{margin-top:10px}
     .vf-n{font-size:clamp(48px,15svh,96px)}
     .vf-pst{font-size:clamp(20px,6svh,36px)}
     .vf-tl{margin-top:6px}
-    .vf-slurk{margin-top:12px;padding:9px 10px 9px 12px;font-size:14px}
+    .vf-slurk{padding:9px 10px 9px 12px;font-size:14px}
   }
   @media (prefers-reduced-motion:reduce){.vf::before,.vf-lys i,.vf-chip i,.vf-live i{animation:none}.vf-lys{display:none}}
 </style>
@@ -1796,7 +1796,7 @@ const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const smal = matchMedia('(max-width: 600px)');
 // På mobil synes hele robotarmen (foten, leddene og kameraet), så flasken blir litt mindre; scenen står nederst, og tallet i
 // det ledige feltet over den.
-const settVB = () => { svg.setAttribute('viewBox', smal.matches ? '4 50 904 885' : '100 40 810 920'); svg.setAttribute('preserveAspectRatio', smal.matches ? 'xMidYMax meet' : 'xMidYMid meet'); };
+const settVB = () => { svg.setAttribute('viewBox', smal.matches ? '4 50 904 885' : '40 40 870 920'); svg.setAttribute('preserveAspectRatio', smal.matches ? 'xMidYMax meet' : 'xMidYMid meet'); };
 settVB(); smal.addEventListener('change', settVB);
 const kl = (v, a, b) => Math.max(a, Math.min(b, v)), f1 = v => v.toFixed(1);
 
