@@ -46,6 +46,8 @@
   main{--ink:#000;color:var(--ink)}
   /* Hero: bare videoen, toppmodulen og budskapet. Resten av siden begynner under. */
   .hero{position:relative;min-height:100svh;display:flex;overflow:hidden;background:#9db4c8}
+  /* De store tekstene i kartdelen har samme skrift som H1 i heroen (Gloock, bare én vekt). */
+  footer.hero :is(.kv-i b,.s-navn,.g-navn,.bk-sum,.hb-n){font-family:"Gloock",var(--serif);font-weight:400}
   /* Kortene over kartet: frostet glass i lyseblått og sølv, med en blank kant øverst. */
   footer.hero .gl{background:linear-gradient(140deg,rgba(244,249,253,.82) 0%,rgba(214,230,244,.7) 55%,rgba(196,214,232,.66) 100%);border-color:rgba(255,255,255,.85);
     box-shadow:inset 0 1px 0 #fff,inset 0 -1px 0 rgba(160,190,218,.45),0 14px 40px rgba(20,60,110,.16)}
@@ -1100,8 +1102,8 @@
   .focus .sh-hero{opacity:0;filter:blur(8px);pointer-events:none}
   .sh-hero{--sky:#74a8d4;position:relative;min-height:100svh;display:flex;flex-direction:column;background:var(--sky);color:#00205B;overflow:hidden;isolation:isolate}
   /* Videoen står nederst i sitt eget format. Toppen glir mykt over i himmelen. Bakgrunnen får fargen målt fra toppen av
-     videoen i hvert bilde (se «himmel» i skriptet), så det ikke blir en vannrett strek der videoen begynner. I scene 2 står
-     klippetoppene helt øverst, så der er overgangen kort (--dyp, settes av skriptet). */
+     videoen i hvert bilde (se «himmel» i skriptet), så det ikke blir en vannrett strek der videoen begynner. --dyp kan korte
+     inn overgangen (står på 1 nå som scene 2 er tatt ut). */
   .sh-bilde{position:absolute;left:0;right:0;bottom:0;height:min(100%,calc(100vw * .4286));z-index:-2;margin:0;
     -webkit-mask-image:linear-gradient(to bottom,transparent,rgba(0,0,0,.3) calc(13% * var(--dyp,1)),rgba(0,0,0,.72) calc(25% * var(--dyp,1)),#000 calc(36% * var(--dyp,1)));mask-image:linear-gradient(to bottom,transparent,rgba(0,0,0,.3) calc(13% * var(--dyp,1)),rgba(0,0,0,.72) calc(25% * var(--dyp,1)),#000 calc(36% * var(--dyp,1)))}
   .sh-bilde video{width:100%;height:100%;object-fit:cover;object-position:70% 100%;display:block}
