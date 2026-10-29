@@ -1243,6 +1243,7 @@
     background:linear-gradient(180deg,#fff 35%,#bfe8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
   .vf-pst{font:400 clamp(40px,4.6vw,78px)/1 "Gloock",var(--serif);color:#ffd93b;margin:.1em 0 0 .14em}
   html[lang="en"] .vf-pst{margin-left:.04em}
+  .vf-tl.vf-dr{margin-top:6px;color:rgba(255,255,255,.85)}.vf-dr b{font-weight:700;color:#fff}.vf-dr[hidden]{display:none}
   .vf-tl{display:block;margin-top:14px;font:600 12px/1.4 "SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6)}
   .vf-slurk{margin-top:clamp(24px,3vw,36px);display:inline-flex;align-items:center;gap:10px;border:0;cursor:pointer;padding:13px 14px 13px 16px;border-radius:999px;
     font:600 16px/1 "Literata",Georgia,serif;color:#00205B;background:linear-gradient(180deg,#fff27e,#ffd21f);
@@ -1490,7 +1491,7 @@
       <div class="vf-hud"><span class="vf-strom" aria-hidden="true"><span class="vf-live"><i></i><b>Live</b></span><span class="vf-klokke">&nbsp;</span></span><p class="vf-chip" aria-hidden="true"><i></i><span>&nbsp;</span></p></div>
     </div>
     <div class="vf-bunn">
-      <div class="vf-maal"><p class="vf-tall"><b class="vf-n" aria-hidden="true">–</b><span class="vf-pst" aria-hidden="true">%</span><span class="vf-sr" aria-live="polite"></span></p><span class="vf-tl" aria-hidden="true">igjen i flasken</span></div>
+      <div class="vf-maal"><p class="vf-tall"><b class="vf-n" aria-hidden="true">–</b><span class="vf-pst" aria-hidden="true">%</span><span class="vf-sr" aria-live="polite"></span></p><span class="vf-tl" aria-hidden="true">igjen i flasken</span><span class="vf-tl vf-dr" hidden>Drukket i dag <b>–</b></span></div>
       <button type="button" class="vf-slurk" aria-label="Be meg ta en slurk"><span class="vf-e" aria-hidden="true">💧</span><span>Be meg ta en slurk</span><b>0</b></button>
     </div>
   </div>
@@ -1955,7 +1956,7 @@ function armSteg(dt, snap) {
 
 // Skanningen og tallet.
 const SKANN = 1.7, skannEl = q('.vf-skann'), skB = q('.vf-skann-b'), skG = q('.vf-skann-g'), skL = q('.vf-skann-l'), skS = q('.vf-skann-s'), merke = q('.vf-merke');
-const nEl = sek.querySelector('.vf-n'), srEl = sek.querySelector('.vf-sr'), chip = sek.querySelector('.vf-chip span'), klokke = sek.querySelector('.vf-klokke');
+const drEl = sek.querySelector('.vf-dr'), nEl = sek.querySelector('.vf-n'), srEl = sek.querySelector('.vf-sr'), chip = sek.querySelector('.vf-chip span'), klokke = sek.querySelector('.vf-klokke');
 let meldingTil = 0, meldingTekst = '';
 let data = null, live = false, sett = false, sistTid = 0, sisteTs = 0, nyMaaling = false, antall = 0, passert = false, tallNå = null, tallA = 0;
 function visTall(n) {
@@ -2053,6 +2054,7 @@ function nyData() {
   const nv = t.vann ?? t.flaske;
   if (nv != null) data = Math.round(kl(nv, 0, 100));
   sistTid = t.flaskeTs || sistTid;
+  if (t.drukket != null) { drEl.hidden = false; drEl.querySelector('b').textContent = (t.drukket / 1000).toLocaleString(document.documentElement.lang === 'en' ? 'en-GB' : 'nb-NO', { maximumFractionDigits: 1, minimumFractionDigits: 1 }) + ' l'; }
   if (t.flaskeTs && t.flaskeTs !== sisteTs) { if (sisteTs) nyMaaling = true; sisteTs = t.flaskeTs; }
   if (startet && data != null) {
     if (maal != null && Math.abs(data - maal) >= 1) { tiltV += kl((data - maal) * .004, -.06, .06); plask(MX - 60 + Math.random() * 120, (maal - data) * 6); }
@@ -2750,6 +2752,10 @@ function pultBilde() {
   if (f.harflaske !== undefined) ut.harflaske = f.harflaske;
   if (f.vann !== undefined) ut.vann = f.vann;
   ut.flaskeTs = Math.max(0, ...liste.map(t => t.flaskeTs || 0));   // siste kameraanalyse, fra hvilket som helst fyr
+  // Drukket i dag (ml): det ferskeste tallet fra fyrene som er fra i dag.
+  const idag = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Oslo' }).format(new Date(nå));
+  const dr = liste.filter(t => t.drukketDag === idag && typeof t.drukket === 'number').sort((a, b) => (b.ts || 0) - (a.ts || 0))[0];
+  ut.drukket = dr ? dr.drukket : 0;
   return ut;
 }
 const EN_P = TX.loc.startsWith('en');

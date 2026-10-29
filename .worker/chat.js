@@ -1372,6 +1372,15 @@ export class ChatHub {
         }
         this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, k, JSON.stringify({ niva, siste, borte }));
         if (niva != null) ren.vann = niva;
+        // Drukket i dag (Oslo-døgnet): hvert fall i det utjevnede nivået er en slurk, 1 poeng = 10 ml (flasken er 1 liter).
+        // Påfyll teller ikke. Ser to kameraer flasken, teller bare det som sist talte (eller et annet etter 10 min stille).
+        const dag = osloDay(nå), dk = JSON.parse(this.sql.exec(`SELECT v FROM kv WHERE k='drukket'`).toArray()[0]?.v || "{}");
+        if (dk.dag !== dag) Object.assign(dk, { dag, ml: 0 });
+        if (niva != null && f.niva != null && niva < f.niva && (!dk.fra || dk.fra === kilde || nå - (dk.ts || 0) > 600e3)) {
+          Object.assign(dk, { ml: dk.ml + Math.round((f.niva - niva) * 10), fra: kilde, ts: nå });
+        }
+        this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('drukket', ?)`, JSON.stringify(dk));
+        ren.drukket = dk.ml; ren.drukketDag = dag;
       }
       // Mikrofonen (verktoy/lyd): nye ord hvert sekund summeres til ord i dag (Oslo-døgnet). Bare antallet, aldri ordene.
       if (typeof ren.ord === "number" && ren.ord >= 0 && ren.ord < 1000) {
@@ -1402,7 +1411,7 @@ export class ChatHub {
       if (ny.ts - (this.teleLogg[kilde] || 0) >= 60e3) {
         this.teleLogg[kilde] = ny.ts;
         const d = {};
-        for (const k of ["bat", "lader", "meter", "skritt", "etasjer", "lyd", "nett", "bevegelse", "haand", "aktivitet", "trykk", "ledig", "snakker", "ordIdag", "flaske", "vann", "harflaske", "pult", "stilling", "plagg", "farge", "hodetelefoner", "modus", "flaskeTs"]) if (ny[k] !== undefined) d[k] = ny[k];
+        for (const k of ["bat", "lader", "meter", "skritt", "etasjer", "lyd", "nett", "bevegelse", "haand", "aktivitet", "trykk", "ledig", "snakker", "ordIdag", "flaske", "vann", "drukket", "harflaske", "pult", "stilling", "plagg", "farge", "hodetelefoner", "modus", "flaskeTs"]) if (ny[k] !== undefined) d[k] = ny[k];
         this.sql.exec(`INSERT OR REPLACE INTO telelogg (kilde, ts, d) VALUES (?, ?, ?)`, kilde, ny.ts, JSON.stringify(d));
         if (ny.ts - (this.teleLoggPruned || 0) > 3600e3) { this.teleLoggPruned = ny.ts; this.sql.exec(`DELETE FROM telelogg WHERE ts < ?`, this.slettFor(ny.ts)); }
       }

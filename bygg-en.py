@@ -296,6 +296,7 @@ T_NY = [
     ('<p class="vf-forklar">En robotarm styrer et kamera etter vannflasken min og måler hvor mye som er igjen, nå mens du ser på.</p>',
      '<p class="vf-forklar">A robot arm points a camera at my water bottle and measures how much is left, right now as you watch.</p>'),
     ('<span class="vf-tl" aria-hidden="true">igjen i flasken</span>', '<span class="vf-tl" aria-hidden="true">left in the bottle</span>'),
+    ('<span class="vf-tl vf-dr" hidden>Drukket i dag <b>', '<span class="vf-tl vf-dr" hidden>Drunk today <b>'),
     ('aria-label="Be meg ta en slurk"><span class="vf-e" aria-hidden="true">💧</span><span>Be meg ta en slurk</span>',
      'aria-label="Ask me to take a sip"><span class="vf-e" aria-hidden="true">💧</span><span>Ask me to take a sip</span>'),
     ('<i>25. okt · 11:30</i>', '<i>25 Oct · 11:30</i>'),
