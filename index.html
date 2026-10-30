@@ -7,7 +7,7 @@
 <meta name="description" content="Tidemann Esbjug – KI Sherpa. Han tar de tunge løftene med å sette opp systemene riktig, så bedriften kan ta del i KI.">
 <script>history.scrollRestoration="manual"</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
-<meta name="theme-color" content="#7cb0d6">
+<meta name="theme-color" content="#74a8d4">
 <link rel="alternate" hreflang="nb" href="https://esbjugconsult.com/">
 <link rel="alternate" hreflang="en" href="https://esbjugconsult.com/en/">
 <script>document.documentElement.classList.add("js");if(/[?&]speil=1/.test(location.search))document.documentElement.classList.add("speil","vis")</script>
@@ -22,7 +22,7 @@ if(v&&!(Date.now()-v.t<14*864e5))v=null;
 if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.documentElement.classList.add('lett');window.__ytelse=v})()
 </script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2300205B'/%3E%3Ctext x='16' y='23.5' text-anchor='middle' font-family='Georgia,Times New Roman,serif' font-size='22' fill='%23fff'%3EE%3C/text%3E%3C/svg%3E">
-<link rel="preload" href="/media/sherpa-video.webp" as="image" type="image/webp">
+<link rel="preload" href="/media/sherpa-mj.webp" as="image" type="image/webp" fetchpriority="high">
 <link rel="preload" href="/media/fonts/gloock.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/media/fonts/literata.woff2" as="font" type="font/woff2" crossorigin>
 <style>
@@ -1147,7 +1147,7 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   /* ===== AI-sherpaen: heroen øverst og kartet i vinterfarger (fra 28.10.2026, først prøvd på /sherpa/) ===== */
   .sh-hero{width:100%;flex:none}
   .focus .sh-hero{opacity:0;filter:blur(8px);pointer-events:none}
-  .sh-hero{--sky:#7cb0d6;position:relative;min-height:100svh;display:flex;flex-direction:column;background:var(--sky);color:#00205B;overflow:hidden;isolation:isolate}
+  .sh-hero{--sky:#74a8d4;position:relative;min-height:100svh;display:flex;flex-direction:column;background:var(--sky);color:#00205B;overflow:hidden;isolation:isolate}
   /* Bildet står nederst i sitt eget format. Toppen glir mykt over i himmelen: bakgrunnen (--sky) har samme farge som
      himmelen øverst i bildet, så det ikke blir en vannrett strek der bildet begynner. --dyp kan korte inn overgangen. */
   .sh-bilde{position:absolute;left:0;right:0;bottom:0;height:min(100%,calc(100vw * .4286));z-index:-2;margin:0;
@@ -1412,8 +1412,8 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
 <body>
 <script>document.body.classList.add('forspill');setTimeout(()=>document.body.classList.remove('forspill'),8000)</script>
 <section class="sh-hero" aria-label="KI Sherpa">
-  <!-- Bildet i stedet for videoen (fra 30.10.2026, prøves ut). Klippene ligger fortsatt i media/ (sherpa*.mp4). -->
-  <div class="sh-bilde"><img src="/media/sherpa-video.webp" width="1456" height="624" fetchpriority="high" alt="Tegning av et taulag på vei opp en snødekt fjellrygg i Norge, med en rød hytte nede i dalen"></div>
+  <!-- Midjourney-bildet i full størrelse (1680 × 720) i stedet for videoen (fra 30.10.2026, prøves ut). Klippene ligger fortsatt i media/ (sherpa*.mp4). -->
+  <div class="sh-bilde"><img src="/media/sherpa-mj.webp" width="1680" height="720" fetchpriority="high" alt="Tegning av et taulag på vei opp en snødekt fjellrygg i Norge, med en rød hytte nede i dalen"></div>
   <canvas class="sh-sno" aria-hidden="true"></canvas>
   <canvas class="sh-sno foran" aria-hidden="true"></canvas>
   <nav class="sh-nav"><a class="sh-merke" href="/">Esbjug Consult</a><div class="sh-lenker"><a href="#live">Live</a><a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Kontakt</a></div></nav>
