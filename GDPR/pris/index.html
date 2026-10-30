@@ -162,6 +162,7 @@
                       </p>
                       <h3 class="op-under">Vilkår</h3>
                       <ul class="vilkar">
+                        <li>Reise og hotell ordner og dekker jeg selv</li>
                         <li>Mer enn én dag faktureres per time</li>
                         <li>Datoen kan i sjeldne tilfeller flyttes etter avtale. Da får dere 10 % avslag</li>
                         <li>Booker dere en kort sprint innen tre måneder etter oppsettsdagen, trekkes oppsettsdagen fra</li>
@@ -193,6 +194,7 @@
                       <h3>Slik er avtalen</h3>
                       <ul class="vilkar">
                         <li>På stedet, under taushetserklæring og databehandleravtale</li>
+                        <li>Reise og hotell ordner og dekker jeg selv</li>
                         <li data-kun="kort">Dag 1 er oppsettsdagen, og den er inkludert</li>
                         <li>Hvordan et renset dokument skal se ut, avtales skriftlig før dag én</li>
                         <li>Grunnhonoraret betales ved booking og beholdes</li>
@@ -269,39 +271,6 @@
                 <div class="book-start" id="book-start">
                   <button type="button" class="btn" id="book-aapne">Book sprint</button>
                 </div>
-                <form class="skjema" id="book-skjema" novalidate hidden>
-                  <div>
-                    <span class="etikett" id="kal-etikett">Velg dato</span>
-                    <div class="kalender" aria-labelledby="kal-etikett">
-                      <div class="kal-topp">
-                        <button type="button" id="kal-forrige" aria-label="Forrige måned">‹</button>
-                        <span id="kal-maaned"></span>
-                        <button type="button" id="kal-neste" aria-label="Neste måned">›</button>
-                      </div>
-                      <div class="kal-dager" id="kal-dager"></div>
-                    </div>
-                    <p class="valgt-tid" id="kal-valgt">Laster ledige datoer …</p>
-                  </div>
-                  <div>
-                    <label for="bk-navn">Navn</label>
-                    <input id="bk-navn" type="text" autocomplete="name" maxlength="120" />
-                  </div>
-                  <div>
-                    <label for="bk-epost">E-post</label>
-                    <input id="bk-epost" type="email" autocomplete="email" />
-                  </div>
-                  <div>
-                    <label for="bk-tlf">Telefon (valgfritt)</label>
-                    <input id="bk-tlf" type="tel" autocomplete="tel" maxlength="40" />
-                  </div>
-                  <div class="skjult-felt" aria-hidden="true">
-                    <label for="bk-nettside">Nettside</label>
-                    <input id="bk-nettside" type="text" tabindex="-1" autocomplete="off" />
-                  </div>
-                  <p class="feil" id="bk-feil" role="alert" hidden></p>
-                  <button type="submit" class="btn" id="bk-knapp">Betal og book</button>
-                  <p class="smaa" id="bk-info">Betaling med kort i Stripe. Datoen holdes i 30 minutter mens dere betaler.</p>
-                </form>
                 <p class="ekstra">
                   <button type="button" class="lenke" id="til-samtale">Spørsmål først? Send meg en melding.</button>
                 </p>
@@ -333,6 +302,81 @@
                   <p class="merke ok mt-18">Sendt</p>
                   <p class="tekst">Takk. Jeg svarer på e-postadressen dere oppga.</p>
                 </div>
+          </div>
+
+          <!-- Booking, ett steg om gangen: hvor, når og hvem. -->
+          <div class="steg" id="s-book-sted" hidden>
+            <button type="button" class="tilbake" data-tilbake>← Tilbake</button>
+            <p class="merke" data-book-merke>Book sprint</p>
+            <h2 tabindex="-1">Hvor skal jeg komme?</h2>
+            <p class="ingress">Skriv inn adressen der jeg skal jobbe.</p>
+            <div class="book-felt">
+              <label class="skjult-tekst" for="bs-adresse">Adresse</label>
+              <div class="orgfelt">
+                <input id="bs-adresse" type="text" autocomplete="off" spellcheck="false" placeholder="Gate og nummer, sted" maxlength="120" />
+                <ul class="orgforslag" id="bs-forslag" role="listbox" hidden></ul>
+              </div>
+            </div>
+            <div class="book-kart" id="bs-kart" aria-hidden="true"></div>
+            <p class="book-kilde">Kart: © OpenStreetMap, OpenFreeMap. Adresser: Kartverket.</p>
+            <p class="book-svar" id="bs-svar" hidden></p>
+            <p class="feil" id="bs-feil" role="alert" hidden></p>
+            <div class="knapper">
+              <button type="button" class="btn" id="bs-videre" disabled>Gå videre</button>
+            </div>
+          </div>
+
+          <div class="steg" id="s-book-dato" hidden>
+            <button type="button" class="tilbake" data-tilbake>← Tilbake</button>
+            <p class="merke" data-book-merke>Book sprint</p>
+            <h2 tabindex="-1">Når skal jeg komme?</h2>
+            <p class="ingress" id="bd-ingress"></p>
+            <span class="skjult-tekst" id="kal-etikett">Velg dato</span>
+            <div class="kalender" aria-labelledby="kal-etikett">
+              <div class="kal-topp">
+                <button type="button" id="kal-forrige" aria-label="Forrige måned">‹</button>
+                <span id="kal-maaned"></span>
+                <button type="button" id="kal-neste" aria-label="Neste måned">›</button>
+              </div>
+              <div class="kal-dager" id="kal-dager"></div>
+            </div>
+            <p class="valgt-tid" id="kal-valgt">Laster ledige datoer …</p>
+            <p class="feil" id="bd-feil" role="alert" hidden></p>
+            <div class="knapper">
+              <button type="button" class="btn" id="bd-videre">Gå videre</button>
+            </div>
+          </div>
+
+          <div class="steg" id="s-book-kontakt" hidden>
+            <button type="button" class="tilbake" data-tilbake>← Tilbake</button>
+            <p class="merke" data-book-merke>Book sprint</p>
+            <h2 tabindex="-1">Hvem skal jeg kontakte?</h2>
+            <form class="skjema" id="book-skjema" novalidate>
+              <div>
+                <label for="bk-navn">Navn</label>
+                <input id="bk-navn" type="text" autocomplete="name" maxlength="120" />
+              </div>
+              <div>
+                <label for="bk-epost">E-post</label>
+                <input id="bk-epost" type="email" autocomplete="email" />
+              </div>
+              <div>
+                <label for="bk-tlf">Telefon (valgfritt)</label>
+                <input id="bk-tlf" type="tel" autocomplete="tel" maxlength="40" />
+              </div>
+              <div class="skjult-felt" aria-hidden="true">
+                <label for="bk-nettside">Nettside</label>
+                <input id="bk-nettside" type="text" tabindex="-1" autocomplete="off" />
+              </div>
+              <dl class="sammendrag" id="bk-liste"></dl>
+              <p class="feil" id="bk-feil" role="alert" hidden></p>
+              <button type="submit" class="btn" id="bk-knapp">Betal og book</button>
+              <p class="smaa" id="bk-info">Betaling med kort i Stripe. Datoen holdes i 30 minutter mens dere betaler.</p>
+            </form>
+            <div id="bk-ferdig" hidden>
+              <p class="merke ok">Forespørsel sendt</p>
+              <p class="tekst" id="bk-ferdig-tekst"></p>
+            </div>
           </div>
 
           <!-- Utvidet testing -->
@@ -573,6 +617,7 @@
     </footer>
 
     <script src="../orgfelt.js"></script>
+    <script src="kart.js"></script>
     <script src="pris.js"></script>
   </body>
 </html>

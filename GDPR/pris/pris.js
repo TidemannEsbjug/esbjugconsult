@@ -148,9 +148,9 @@
 
   // ---------- Stegene: ett om gangen i samme kort ----------
 
-  var STEG = ["s-port", "s-pris", "s-oppsett", "s-testing", "s-dekker", "s-betaling", "s-nokkel", "s-bekreft", "s-ferdig", "s-kvittering"];
+  var STEG = ["s-port", "s-pris", "s-oppsett", "s-testing", "s-dekker", "s-book-sted", "s-book-dato", "s-book-kontakt", "s-betaling", "s-nokkel", "s-bekreft", "s-ferdig", "s-kvittering"];
   // Kortet er bredere der det er mer å se.
-  var BREDDE = { "s-oppsett": "bred", "s-dekker": "middels", "s-betaling": "middels", "s-nokkel": "middels", "s-bekreft": "middels", "s-ferdig": "middels", "s-testing": "middels" };
+  var BREDDE = { "s-oppsett": "bred", "s-book-sted": "middels", "s-book-dato": "middels", "s-book-kontakt": "middels", "s-dekker": "middels", "s-betaling": "middels", "s-nokkel": "middels", "s-bekreft": "middels", "s-ferdig": "middels", "s-testing": "middels" };
 
   /** Slår opp virksomheten fra adressen: kortet er skjult til svaret er her (pris-tidlig.js). */
   function ferdigStartet() {
@@ -167,9 +167,9 @@
     $("kort").classList.toggle("bred", bredde === "bred");
     $("kort").classList.toggle("middels", bredde === "middels");
     // Oversikten over oppsett og sprint er for høy til vinterbildet: der er bakgrunnen en rolig, ensfarget flate.
-    $("port").classList.toggle("oversikt", steg === "s-oppsett");
+    $("port").classList.toggle("oversikt", steg === "s-oppsett" || steg.indexOf("s-book") === 0);
     tegnStegrad(steg);
-    if (steg === "s-oppsett") lastLedige();
+    if (steg === "s-book-sted") startSted();
     var overskrift = el.querySelector("h2[tabindex], h1");
     if (overskrift && steg !== "s-port") overskrift.focus({ preventScroll: true });
     if ($("port").getBoundingClientRect().top < 0) $("port").scrollIntoView({ behavior: "smooth" });
@@ -197,6 +197,7 @@
 
   /** Stegraden øverst: Pris · (Lisensen) · Betaling · Bekreft. «Lisensen» er bare med når den er et steg. */
   function tegnStegrad(steg) {
+    if (steg.indexOf("s-book") === 0) return tegnBookrad(steg);
     var rekke = ["s-pris", "s-dekker", "s-betaling", "s-bekreft"];
     var navn = { "s-pris": "Pris", "s-dekker": "Lisensen", "s-betaling": "Betaling", "s-bekreft": "Bekreft" };
     var med = rekke.filter(function (s) {
@@ -503,10 +504,12 @@
     document.querySelectorAll("#s-oppsett [data-felt]").forEach(function (el) {
       el.textContent = felt[el.getAttribute("data-felt")];
     });
-    $("book-aapne").textContent = oppsett ? "Book oppsettsdag" : t.id === "kort" ? "Book kort sprint" : "Book sprint";
+    var book = oppsett ? "Book oppsettsdag" : t.id === "kort" ? "Book kort sprint" : "Book sprint";
+    $("book-aapne").textContent = book;
+    document.querySelectorAll("[data-book-merke]").forEach(function (el) {
+      el.textContent = book;
+    });
     glid($("op-mac"), !oppsett);
-    glid($("book-skjema"), false);
-    glid($("book-start"), true);
     $("kal-etikett").textContent = oppsett ? "Velg dag" : "Velg startdato";
     $("kal-valgt").textContent = "Laster ledige datoer …";
     oppdaterKnapp();
@@ -529,7 +532,7 @@
   function lastLedige() {
     if (!valgtTilbud) return Promise.resolve();
     var id = valgtTilbud.id;
-    return api("sprint/ledige?tilbud=" + id)
+    return api("sprint/ledige?tilbud=" + id + (sted && sted.reise ? "&reise=1" : ""))
       .then(function (svar) {
         if (!valgtTilbud || valgtTilbud.id !== id) return;
         ledige = new Set(svar.ledige);
@@ -574,7 +577,7 @@
           (function (start) {
             return function () {
               valgtStart = start;
-              feil("bk-feil", "");
+              feil("bd-feil", "");
               tegnKalender();
             };
           })(t)
@@ -621,14 +624,146 @@
     tegnKalender();
   });
 
-  // Kalenderen og skjemaet kommer først når de har lest og trykker «Book».
+  // Booking: egne steg, først hvor og så når. Avstanden avgjør om jeg må reise dagen før.
+  var sted = null;
+  var stedVent = null;
+  var stedNr = 0;
+
   $("book-aapne").addEventListener("click", function () {
-    glid($("book-start"), false);
-    glid($("book-skjema"), true);
-    setTimeout(function () {
-      $("book-skjema").scrollIntoView({ behavior: UTEN_BEVEGELSE ? "auto" : "smooth", block: "start" });
-    }, GLID_TID.duration);
+    gaaTil("s-book-sted");
   });
+
+  function tegnBookrad(steg) {
+    var rad = $("stegrad");
+    var med = ["s-book-sted", "s-book-dato", "s-book-kontakt"];
+    var navn = ["Sted", "Dato", "Kontakt"];
+    var i = med.indexOf(steg);
+    rad.hidden = false;
+    rad.replaceChildren();
+    navn.forEach(function (n, j) {
+      var el = li(n);
+      if (j < i) el.className = "ferdig";
+      if (j === i) {
+        el.className = "her";
+        el.setAttribute("aria-current", "step");
+      }
+      rad.appendChild(el);
+    });
+  }
+
+  function startSted() {
+    window.KlartKart.vis($("bs-kart")).catch(function () {});
+    // Virksomhetens adresse som utgangspunkt. Da er det ofte bare å gå videre.
+    if (!$("bs-adresse").value && tilbud && tilbud.besoksadresse) {
+      $("bs-adresse").value = tilbud.besoksadresse;
+      sokAdresse(tilbud.besoksadresse, true);
+    }
+  }
+
+  function velgSted(t) {
+    sted = t;
+    valgtStart = null;
+    kalMaaned = null;
+    $("bs-adresse").value = t.tekst;
+    $("bs-forslag").hidden = true;
+    feil("bs-feil", "");
+    $("bs-svar").textContent = t.reise
+      ? "Det er rundt " + t.km + " km fra meg, så jeg reiser dagen før. Reise og hotell ordner og dekker jeg selv. Dere trenger ikke ordne noe."
+      : "Det er rundt " + t.km + " km fra meg, så jeg reiser fram og tilbake selv. Dere trenger ikke ordne noe.";
+    glid($("bs-svar"), true);
+    $("bs-videre").disabled = false;
+    window.KlartKart.vis($("bs-kart"), t.lat, t.lon).catch(function () {});
+  }
+
+  function sokAdresse(q, velgForste) {
+    var mitt = ++stedNr;
+    api("adresse?q=" + encodeURIComponent(q))
+      .then(function (svar) {
+        if (mitt !== stedNr) return;
+        var treff = svar.treff || [];
+        if (velgForste && treff.length) return velgSted(treff[0]);
+        var liste = $("bs-forslag");
+        liste.replaceChildren();
+        treff.forEach(function (t) {
+          var rad = document.createElement("li");
+          var b = document.createElement("button");
+          b.type = "button";
+          b.setAttribute("role", "option");
+          var navn = document.createElement("span");
+          navn.textContent = t.tekst;
+          b.appendChild(navn);
+          // mousedown, så valget skjer før feltet mister fokus.
+          b.addEventListener("mousedown", function (e) {
+            e.preventDefault();
+            velgSted(t);
+          });
+          rad.appendChild(b);
+          liste.appendChild(rad);
+        });
+        liste.hidden = !treff.length;
+        liste._treff = treff;
+      })
+      .catch(function () {});
+  }
+
+  $("bs-adresse").addEventListener("input", function () {
+    var q = this.value.trim();
+    sted = null;
+    $("bs-videre").disabled = true;
+    glid($("bs-svar"), false);
+    clearTimeout(stedVent);
+    if (q.length < 3) {
+      stedNr++;
+      $("bs-forslag").hidden = true;
+      return;
+    }
+    stedVent = setTimeout(function () {
+      sokAdresse(q);
+    }, 220);
+  });
+  $("bs-adresse").addEventListener("keydown", function (e) {
+    var treff = $("bs-forslag")._treff;
+    if (e.key === "Enter" && treff && treff.length && !$("bs-forslag").hidden) {
+      e.preventDefault();
+      velgSted(treff[0]);
+    } else if (e.key === "Escape") {
+      $("bs-forslag").hidden = true;
+    }
+  });
+  $("bs-adresse").addEventListener("blur", function () {
+    setTimeout(function () {
+      $("bs-forslag").hidden = true;
+    }, 120);
+  });
+
+  $("bs-videre").addEventListener("click", function () {
+    if (!sted) return feil("bs-feil", "Velg en adresse fra listen.");
+    $("bd-ingress").textContent = sted.reise
+      ? "Velg dagen jeg begynner hos dere. Jeg reiser dagen før, og det ordner jeg."
+      : "Velg dagen jeg begynner hos dere.";
+    gaaTil("s-book-dato");
+    lastLedige();
+  });
+
+  $("bd-videre").addEventListener("click", function () {
+    if (!valgtStart) return feil("bd-feil", "Velg en dato.");
+    var dager = valgtTilbud.dager;
+    var tid = dager === 1 ? datoTekst(valgtStart) : datoTekst(valgtStart) + " – " + datoTekst(leggTilDager(valgtStart, dager - 1));
+    var liste = $("bk-liste");
+    liste.replaceChildren();
+    [["Sted", sted.tekst], ["Dato", tid]].concat(sted.reise ? [["Reise", "Jeg reiser dagen før, på min regning"]] : []).forEach(function (r) {
+      var rad = document.createElement("div");
+      var dt = document.createElement("dt");
+      dt.textContent = r[0];
+      var dd = document.createElement("dd");
+      dd.textContent = r[1];
+      rad.appendChild(dt);
+      rad.appendChild(dd);
+      liste.appendChild(rad);
+    });
+    gaaTil("s-book-kontakt");
+  });
+
 
   $("book-skjema").addEventListener("submit", function (e) {
     e.preventDefault();
@@ -636,12 +771,12 @@
       orgnr: tilbud ? tilbud.orgnr : null,
       tilbud: valgtTilbud ? valgtTilbud.id : null,
       start: valgtStart,
+      adresse: sted ? sted.tekst : "",
       navn: $("bk-navn").value.trim(),
       epost: $("bk-epost").value.trim(),
       telefon: $("bk-tlf").value.trim(),
       nettside: $("bk-nettside").value,
     };
-    if (!data.start) return feil("bk-feil", "Velg en dato.");
     if (!data.navn || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.epost)) return feil("bk-feil", "Skriv inn navn og e-post.");
     feil("bk-feil", "");
     opptatt($("bk-knapp"), true);
@@ -649,9 +784,8 @@
       .then(function (svar) {
         if (svar.forespurt) {
           glid($("book-skjema"), false);
-          glid($("samtale-ferdig"), true);
-          $("samtale-ferdig").querySelector(".merke").textContent = "Forespørsel sendt";
-          $("samtale-ferdig").querySelector(".tekst").textContent =
+          glid($("bk-ferdig"), true);
+          $("bk-ferdig-tekst").textContent =
             "Jeg flytter oppsettsdagen som ligger i perioden, og sender en betalingslenke til " + data.epost +
             " når " + datoTekst(svar.start) + " – " + datoTekst(svar.slutt) + " er bekreftet. Ingenting er betalt ennå.";
           return;

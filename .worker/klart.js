@@ -24,6 +24,8 @@
 //
 // Prissiden (/klart/pris/) selger lisenser for hele virksomheten, priset fra antall ansatte:
 //
+//   GET  /klart/api/adresse?q=…           → adresser fra Kartverket, med avstand og om det trengs reisedag
+//   GET  /klart/api/kart/…                → kartdata via oss, så siden aldri kobler seg til andre enn oss
 //   GET  /klart/api/sok?q=…               → opptil seks virksomheter som passer navnet (forslag i feltet)
 //   GET  /klart/api/sjekk?orgnr=…         → virksomheten, om den er stor nok for skreddersydd oppsett, og
 //                                           lisensprisen etter prøven (forsiden viser den ved nedlasting).
@@ -62,6 +64,7 @@ import {
   sprintTilbudFor,
   betalingFor,
   ehfForvalgt,
+  reiseFor,
   aktiv,
   virksomhetFra,
   grunnlagFra,
@@ -89,6 +92,8 @@ export async function handleKlart(request, env, url) {
     if (sti === "hent" && request.method === "POST") return await hent(request, env);
     if (sti === "stripe" && request.method === "POST") return await webhook(request, env);
     if (sti === "sok" && request.method === "GET") return await sok(url);
+    if (sti === "adresse" && request.method === "GET") return json({ treff: await adresser(url.searchParams.get("q")) });
+    if (sti.startsWith("kart/") && request.method === "GET") return await kartdata(url);
     if (sti === "sjekk" && request.method === "GET") return await sjekk(env, url);
     if (sti === "pris" && request.method === "GET") return await pris(env, url);
     if (sti === "kasse" && request.method === "POST") return await kasse(request, env, url);
@@ -625,6 +630,40 @@ function underenhetTekst(o) {
 // --- Søk og sjekk (feltet på forsiden og prissiden) -------------------------------
 
 /** Forslag mens noen skriver navnet. Enhetsregisteret slipper ikke nettleseren til selv (ingen CORS). */
+/** Adresser fra Kartverket, med avstand og om det trengs en reisedag. */
+async function adresser(tekst) {
+  const q = tekstFra(tekst, 120);
+  if (q.length < 3) return [];
+  const svar = await fetch(
+    `https://ws.geonorge.no/adresser/v1/sok?sok=${encodeURIComponent(q)}&fuzzy=true&treffPerSide=5&utkoordsys=4258`,
+    { headers: { accept: "application/json" }, cf: { cacheEverything: true, cacheTtl: 86400 } }
+  );
+  if (!svar.ok) throw new Error(`Kartverket: ${svar.status}`);
+  const stor = (s) => String(s || "").toLowerCase().replace(/(^|[\s-])\p{L}/gu, (b) => b.toUpperCase());
+  return ((await svar.json()).adresser || [])
+    .filter((a) => a.representasjonspunkt)
+    .map((a) => {
+      const { lat, lon } = a.representasjonspunkt;
+      return { tekst: `${a.adressetekst}, ${a.postnummer} ${stor(a.poststed)}`, lat, lon, ...reiseFor(lat, lon) };
+    });
+}
+
+/** Kartdata fra OpenFreeMap via oss. Bare det kartet trenger slipper gjennom. */
+async function kartdata(url) {
+  const sti = decodeURIComponent(url.pathname).replace(/^\/(klart|GDPR)\/api\/kart\//, "");
+  const lov = /^(planet|planet\/\w+\/\d+\/\d+\/\d+\.pbf|fonts\/Noto Sans Regular\/\d+-\d+\.pbf)$/.test(sti);
+  if (!lov) return json({ feil: "Finnes ikke." }, 404);
+  const svar = await fetch(`https://tiles.openfreemap.org/${encodeURI(sti)}`, { cf: { cacheEverything: true, cacheTtl: 604800 } });
+  if (!svar.ok) return new Response(null, { status: svar.status === 404 ? 204 : 502 });
+  if (sti === "planet") {
+    const tekst = (await svar.text()).replaceAll("https://tiles.openfreemap.org/", `${url.origin}/klart/api/kart/`);
+    return new Response(tekst, { headers: { "content-type": "application/json", "cache-control": "public, max-age=3600" } });
+  }
+  return new Response(svar.body, {
+    headers: { "content-type": svar.headers.get("content-type") || "application/x-protobuf", "cache-control": "public, max-age=604800" },
+  });
+}
+
 async function sok(url) {
   const q = tekstFra(url.searchParams.get("q"), 80);
   if (q.length < 2) return json({ treff: [] });
@@ -687,6 +726,7 @@ async function pris(env, url) {
     konsern: g.konsern,
     pris: l.pris,
     betaling: betalingFor(),
+    besoksadresse: v.adresse?.postnummer ? `${(v.adresse.linjer || []).join(" ")}, ${v.adresse.postnummer} ${v.adresse.poststed}`.trim() : "",
     ehf: ehfForvalgt(v.form, g.v.ansatte),
     testing: testet ? null : { pris: p.testing.pris, eksporter: p.testing.eksporter, apen: testmodus(env) || TESTING_I_APPEN },
     // Oppsettsdag og sprinter som gjelder (tom liste for de små), med prisene åpent.
@@ -1246,6 +1286,10 @@ function sluttFor(start, dager) {
   return omDager(dager - 1, Date.parse(`${start}T00:00:00Z`));
 }
 
+function forrigeDag(iso) {
+  return omDager(-1, Date.parse(`${iso}T00:00:00Z`));
+}
+
 function kalenderType(id) {
   return id === "oppsett" ? "oppsett" : "sprint";
 }
@@ -1255,7 +1299,8 @@ function kalenderType(id) {
 function ledigFor(rader, type, start, slutt) {
   let forespurt = false;
   for (const r of rader) {
-    if (r.start > slutt || r.slutt < start) continue;
+    // En booking med reisedag holder også dagen før.
+    if ((r.reise ? forrigeDag(r.start) : r.start) > slutt || r.slutt < start) continue;
     if (r.status === "sperret") return { ok: false };
     const rt = r.type || "sprint";
     if (type === "oppsett") {
@@ -1271,16 +1316,16 @@ function ledigFor(rader, type, start, slutt) {
 
 /** Startdager for tilbudet: hverdager fra SPRINT_VARSEL til SPRINT_HORISONT dager fram. «forespurt» er de
     som blir en forespørsel fordi en oppsettsdag ligger i perioden. */
-async function ledigeStarter(env, tilbud) {
+async function ledigeStarter(env, tilbud, reise = false) {
   const type = kalenderType(tilbud.id);
-  const rader = await lager(env).sprintOpptatt(omDager(SPRINT_VARSEL), sluttFor(omDager(SPRINT_HORISONT), tilbud.dager), new Date().toISOString());
+  const rader = await lager(env).sprintOpptatt(omDager(SPRINT_VARSEL - 1), sluttFor(omDager(SPRINT_HORISONT), tilbud.dager), new Date().toISOString());
   const ledige = [];
   const forespurt = [];
   for (let d = SPRINT_VARSEL; d <= SPRINT_HORISONT; d++) {
     const start = omDager(d);
     const dag = ukedag(start);
     if (dag === 0 || dag === 6) continue;
-    const l = ledigFor(rader, type, start, sluttFor(start, tilbud.dager));
+    const l = ledigFor(rader, type, reise ? forrigeDag(start) : start, sluttFor(start, tilbud.dager));
     if (l.ok) (l.forespurt ? forespurt : ledige).push(start);
   }
   return { ledige, forespurt };
@@ -1312,7 +1357,7 @@ async function sprintLedige(env, url) {
   const id = url.searchParams.get("tilbud") || "sprint";
   const dager = { oppsett: 1, kort: 5, sprint: 10 }[id];
   if (!dager) return json({ feil: "Ukjent tilbud." }, 400);
-  return json({ dager, ...(await ledigeStarter(env, { id, dager })) });
+  return json({ dager, ...(await ledigeStarter(env, { id, dager }, url.searchParams.get("reise") === "1")) });
 }
 
 function sprintMeta(p, g, v, t, id, start, slutt) {
@@ -1400,6 +1445,8 @@ async function sprintBook(request, env, url) {
   if (!orgnr) return json({ feil: "Skriv inn et gyldig organisasjonsnummer." }, 400);
   if (!navn || !epost) return json({ feil: "Skriv inn navn og e-post." }, 400);
   if (!start) return json({ feil: "Velg en dato." }, 400);
+  const sted = (await adresser(inn.adresse))[0];
+  if (!sted) return json({ feil: "Fant ikke adressen. Gå tilbake og velg den på nytt." }, 400);
   const o = await slaaOppVirksomhet(orgnr);
   if (o.feil) return json({ feil: o.feil }, o.kode);
   if (o.underenhet) return json({ feil: underenhetTekst(o) }, 409);
@@ -1407,7 +1454,7 @@ async function sprintBook(request, env, url) {
   const g = grunnlag(p, o);
   const t = sprintTilbud(p, g).find((x) => x.id === inn.tilbud);
   if (!t) return json({ feil: "Det tilbudet gjelder ikke for denne virksomheten." }, 400);
-  const fri = await ledigeStarter(env, t);
+  const fri = await ledigeStarter(env, t, sted.reise);
   const forespurt = fri.forespurt.includes(start);
   if (!forespurt && !fri.ledige.includes(start)) return json({ feil: "Den datoen er ikke ledig lenger. Velg en annen." }, 409);
 
@@ -1421,6 +1468,9 @@ async function sprintBook(request, env, url) {
     firma: v.navn,
     adresse: v.adresse,
     mva: v.mva,
+    sted: sted.tekst,
+    km: sted.km,
+    reise: sted.reise,
   };
   // Holdt litt lenger enn økten, så en betaling i siste sekund ikke mister datoen.
   const holdtTil = new Date(Date.now() + (SPRINT_OKT_MIN + 2) * 60_000).toISOString();
@@ -1441,6 +1491,12 @@ async function sprintBook(request, env, url) {
   }
 }
 
+/** Sted og reise i e-postene. Gamle bookinger har ikke sted. */
+function stedLinjer(d) {
+  if (!d.sted) return [];
+  return [`Sted: ${d.sted}.`, d.reise ? "Jeg reiser dagen før. Reise og hotell ordner og dekker jeg selv." : "Reise ordner og dekker jeg selv."];
+}
+
 async function sprintForespurtVarsel(env, id, d, orgnr, start, slutt) {
   const tid = tidTekst(start, slutt);
   const hva = d.id === "kort" ? "kort sprint" : "sprint";
@@ -1452,6 +1508,7 @@ async function sprintForespurtVarsel(env, id, d, orgnr, start, slutt) {
     tekst: [
       `${d.navn} <${d.epost}>${d.telefon ? `, ${d.telefon}` : ""}`,
       `${d.firma}, org.nr ${orgnrTekst(orgnr)}, ${d.trinn}: ${hva}, ${tid}.`,
+      ...stedLinjer(d),
       `Det ligger en oppsettsdag i perioden: ${over.join(", ")}. Flytt den, og bekreft med`,
       `POST /klart/api/sprint/bekreft {"id": ${id}} (Bearer ADMIN_TOKEN). Det gir betalingslenken til kunden.`,
       "",
@@ -1558,7 +1615,7 @@ async function sprintBetalt(env, okt) {
     await sendEpost(env, {
       til: mottaker,
       emne: `Klart: ${hva.toLowerCase()} er booket ${tid}`,
-      tekst: [`Hei ${d.navn},`, "", ...linjer, "", "Kalenderfilen ligger vedlagt.", "", "Hilsen Esbjug Consult"].join("\n"),
+      tekst: [`Hei ${d.navn},`, "", ...linjer, "", ...stedLinjer(d), "", "Kalenderfilen ligger vedlagt.", "", "Hilsen Esbjug Consult"].join("\n"),
       vedlegg,
     });
     await sendEpost(env, {
@@ -1568,6 +1625,7 @@ async function sprintBetalt(env, okt) {
       tekst: [
         `${d.navn} <${mottaker}>${d.telefon ? `, ${d.telefon}` : ""}`,
         `${d.firma}, org.nr ${orgnrTekst(r.rad.orgnr)}, ${d.trinn}`,
+        ...(d.sted ? [`Sted: ${d.sted} (${d.km} km)${d.reise ? ". Reisedag dagen før, den er holdt av i kalenderen." : "."}`] : []),
         d.id === "oppsett"
           ? `Oppsettsdag betalt: ${kroner(d.fast)} eks. mva.`
           : `Grunnhonorar betalt (beholdes): ${kroner(d.grunn)} eks. mva. Resten ved nådd kriterium: ${kroner(d.total - d.grunn)} eks. mva.`,
@@ -1627,6 +1685,7 @@ function sprintIcs(rad) {
     `DTSTART;VALUE=DATE:${icsDag(rad.start)}`,
     `DTEND;VALUE=DATE:${icsDag(omDager(1, Date.parse(`${rad.slutt}T00:00:00Z`)))}`,
     `SUMMARY:${tekst(`${hva} hos ${d.firma}`)}`,
+    ...(d.sted ? [`LOCATION:${tekst(d.sted)}`] : []),
     `DESCRIPTION:${tekst(`Med Esbjug Consult, ${d.dager || 10} ${d.dager === 1 ? "dag" : "dager"}. Kontakt: ${EIER}`)}`,
     "END:VEVENT",
     "END:VCALENDAR",
@@ -1934,19 +1993,21 @@ export class KlartLager extends DurableObject {
   sprintOpptatt(fra, til, na) {
     return this.sql
       .exec(
-        `SELECT id, type, start, slutt, status FROM sprinter WHERE start <= ? AND slutt >= ?
+        `SELECT id, type, start, slutt, status, data FROM sprinter WHERE start <= ? AND slutt >= ?
          AND (status IN ('betalt', 'sperret', 'forespurt') OR (status = 'holdt' AND holdt_til > ?))`,
-        til,
+        omDager(1, Date.parse(`${til}T00:00:00Z`)), // en reisedag kan ligge dagen før starten
         fra,
         na
       )
-      .toArray();
+      .toArray()
+      .map(({ data, ...r }) => ({ ...r, reise: Boolean(JSON.parse(data || "{}").reise) }));
   }
 
   /** Holder datoen hvis kalenderen tillater det (ledigFor). Sjekk og innsetting i samme kall, så to kan ikke
       få samme dag. En sprint over en oppsettsdag lagres som «forespurt». { id, forespurt } eller null. */
   holdSprint(type, start, slutt, holdtTil, orgnr, data) {
-    const l = ledigFor(this.sprintOpptatt(start, slutt, new Date().toISOString()), type, start, slutt);
+    const fra = data.reise ? forrigeDag(start) : start;
+    const l = ledigFor(this.sprintOpptatt(fra, slutt, new Date().toISOString()), type, fra, slutt);
     if (!l.ok) return null;
     const id = this.sql
       .exec(

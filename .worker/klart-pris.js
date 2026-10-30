@@ -241,6 +241,19 @@ export function betalingFor() {
   return { kort: true, faktura: true };
 }
 
+/** Hvor langt fra eieren adressen er, og om det trengs en reisedag før oppstart. Luftlinje fra Drøbak;
+    fra 150 km (Lillehammer, Kristiansand, Bergen, Trondheim …) reiser eieren dagen før. */
+const HJEM = { lat: 59.663, lon: 10.63 };
+const REISEDAG_KM = 150;
+export function reiseFor(lat, lon) {
+  const rad = (g) => (g * Math.PI) / 180;
+  const a =
+    Math.sin(rad(lat - HJEM.lat) / 2) ** 2 +
+    Math.cos(rad(HJEM.lat)) * Math.cos(rad(lat)) * Math.sin(rad(lon - HJEM.lon) / 2) ** 2;
+  const km = Math.round(6371 * 2 * Math.asin(Math.sqrt(a)));
+  return { km, reise: km >= REISEDAG_KM };
+}
+
 /** Om EHF skal være forhåndsvalgt på fakturaen. Det offentlige må ha EHF, og fra 5 ansatte bruker de fleste
     det. De aller minste får vanlig faktura som utgangspunkt. Kunden kan alltid endre valget. */
 const OFFENTLIG = new Set(["STAT", "SF", "KOMM", "FYLK", "KF", "FKF", "IKS", "ORGL"]);

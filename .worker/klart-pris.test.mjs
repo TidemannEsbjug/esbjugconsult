@@ -20,6 +20,7 @@ import {
   sektorFor,
   aktiv,
   ehfForvalgt,
+  reiseFor,
   virksomhetFra,
 } from "./klart-pris.js";
 
@@ -191,6 +192,11 @@ assert.equal(ehfForvalgt("AS", 4), false);
 assert.equal(ehfForvalgt("ENK", 0), false);
 assert.equal(ehfForvalgt("AS", 5), true);
 assert.equal(ehfForvalgt("KOMM", 0), true);
+
+// Reisedag: nær Drøbak ingen, langt unna én
+assert.equal(reiseFor(59.91, 10.75).reise, false); // Oslo
+assert.equal(reiseFor(58.97, 5.73).reise, true); // Stavanger
+assert.equal(reiseFor(63.43, 10.4).reise, true); // Trondheim
 
 // Enhetsregisteret
 assert.equal(aktiv({ konkurs: false }), true);

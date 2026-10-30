@@ -574,7 +574,6 @@ textarea:focus {
   padding-left: var(--inn);
   padding-right: var(--inn);
 }
-#s-oppsett #book-skjema,
 #s-oppsett #samtale-skjema {
   padding-left: var(--inn);
   padding-right: var(--inn);
@@ -675,23 +674,6 @@ textarea:focus {
   height: 60px;
   font-size: 17px;
 }
-/* Kalenderen til venstre, feltene til høyre. */
-#s-oppsett #book-skjema {
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-  gap: 14px clamp(24px, 3vw, 44px);
-  align-content: start;
-  margin-top: 30px;
-  padding-top: 26px;
-  border-top: 1px solid var(--rule);
-}
-#s-oppsett #book-skjema > :first-child {
-  grid-column: 1;
-  grid-row: 1 / span 6;
-}
-#s-oppsett #book-skjema > :not(:first-child) {
-  grid-column: 2;
-}
 #s-oppsett #samtale-skjema {
   margin-top: 18px;
 }
@@ -701,14 +683,8 @@ textarea:focus {
 @media (max-width: 760px) {
   .op-hode,
   .op-rutenett,
-  .op-spalter,
-  #s-oppsett #book-skjema {
+  .op-spalter {
     grid-template-columns: minmax(0, 1fr);
-  }
-  #s-oppsett #book-skjema > :first-child,
-  #s-oppsett #book-skjema > :not(:first-child) {
-    grid-column: 1;
-    grid-row: auto;
   }
 }
 .tekst {
@@ -1078,3 +1054,57 @@ textarea:focus {
 .mt-18 { margin-top: 18px !important; }
 .mt-22 { margin-top: 22px !important; }
 .valgliste-to { margin-top: 0 !important; grid-template-columns: 1fr 1fr !important; }
+
+/* Bookingen: egne steg med kart */
+.book-felt {
+  margin-top: 18px;
+}
+.book-felt input {
+  width: 100%;
+  height: 56px;
+  padding: 0 20px;
+  font: inherit;
+  font-size: 17px;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+}
+.book-felt input:focus {
+  outline: 2px solid rgba(36, 86, 230, 0.35);
+  outline-offset: 1px;
+  border-color: var(--signal-lit);
+}
+.book-kart {
+  height: clamp(240px, 38vh, 380px);
+  margin-top: 14px;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--ground);
+  border: 1px solid var(--rule);
+}
+.book-kilde {
+  margin-top: 6px;
+  font-size: 11.5px;
+  color: var(--ink-3);
+}
+.book-svar {
+  margin-top: 14px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  font-size: 15.5px;
+  line-height: 1.45;
+  color: var(--ink);
+  background: var(--signal-soft);
+}
+.book-nal {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--signal);
+  border: 4px solid #fff;
+  box-shadow: 0 4px 14px rgba(26, 63, 176, 0.5);
+}
+#s-book-dato .kalender {
+  margin-top: 20px;
+}
