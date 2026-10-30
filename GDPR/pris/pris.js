@@ -150,7 +150,7 @@
 
   var STEG = ["s-port", "s-pris", "s-oppsett", "s-testing", "s-dekker", "s-betaling", "s-nokkel", "s-bekreft", "s-ferdig", "s-kvittering"];
   // Kortet er bredere der det er mer å se.
-  var BREDDE = { "s-oppsett": "middels", "s-dekker": "middels", "s-betaling": "middels", "s-nokkel": "middels", "s-bekreft": "middels", "s-ferdig": "middels", "s-testing": "middels" };
+  var BREDDE = { "s-oppsett": "bred", "s-dekker": "middels", "s-betaling": "middels", "s-nokkel": "middels", "s-bekreft": "middels", "s-ferdig": "middels", "s-testing": "middels" };
 
   function vis(steg, tilbake) {
     STEG.forEach(function (id) {
@@ -164,6 +164,8 @@
     var bredde = steg === "s-pris" ? (tilbud && tilbud.stor ? "bred" : "middels") : BREDDE[steg];
     $("kort").classList.toggle("bred", bredde === "bred");
     $("kort").classList.toggle("middels", bredde === "middels");
+    // Oversikten over oppsett og sprint er for høy til vinterbildet: der er bakgrunnen en blå flate.
+    $("port").classList.toggle("oversikt", steg === "s-oppsett");
     tegnStegrad(steg);
     if (steg === "s-oppsett") lastLedige();
     var overskrift = el.querySelector("h2[tabindex], h1");

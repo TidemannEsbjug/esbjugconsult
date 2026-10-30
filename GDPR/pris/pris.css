@@ -21,6 +21,21 @@ textarea {
   min-height: 100svh;
   padding: clamp(32px, 10vh, 120px) 16px clamp(48px, 8vh, 96px);
   background: #dfe8f2 url("../assets/hero-film-slutt.jpg") center 38% / cover no-repeat;
+  position: relative;
+  isolation: isolate;
+}
+.port::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(165deg, #6f9bf5 0%, #2456e6 38%, #1a3fb0 72%, #102a66 100%);
+  opacity: 0;
+  transition: opacity 500ms var(--ease);
+  pointer-events: none;
+}
+.port.oversikt::before {
+  opacity: 1;
 }
 .kort {
   width: min(560px, 100%);
@@ -558,19 +573,120 @@ textarea:focus {
 }
 
 /* ---------- Skreddersydd oppsett, utvidet testing ---------- */
-/* Én kolonne: tydelige deler nedover, og bookingen helt nederst. */
-#s-oppsett .vilkar-tittel {
-  margin-top: 32px;
-  padding-top: 26px;
-  font-family: var(--sans);
+/* Oversikten: hele bredden, prisen ved siden av innledningen, og delene i kort. Bookingen helt nederst. */
+.kort.bred:has(#s-oppsett:not([hidden])) {
+  width: min(1120px, 100%);
+  background: rgba(255, 255, 255, 0.97);
+}
+.op-topp {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(20px, 3vw, 40px);
+  align-items: start;
+  margin-top: 22px;
+}
+#s-oppsett .op-topp .ingress {
+  font-size: clamp(17px, 1.6vw, 20px);
+  line-height: 1.45;
+  color: var(--ink);
+}
+#s-oppsett .op-topp .sprint-pris {
+  margin-top: 0;
+}
+.op-rutenett {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  margin-top: 26px;
+}
+.op-del {
+  padding: clamp(20px, 2.2vw, 28px);
+  border-radius: 16px;
+  background: var(--ground);
+  border: 1px solid var(--rule-2);
+}
+.op-del.hel {
+  grid-column: 1 / -1;
+}
+.op-del h3 {
   font-size: 19px;
   font-weight: 700;
   line-height: 1.25;
   letter-spacing: -0.015em;
-  text-transform: none;
   color: var(--ink);
 }
-#s-oppsett .vilkar-tittel + .tekst {
+.op-del h3.op-under {
+  margin-top: 22px;
+}
+.op-del .vilkar {
+  margin-top: 12px;
+}
+.op-del h3 + .tekst {
+  margin-top: 8px;
+}
+.op-spalter {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 4px clamp(20px, 3vw, 40px);
+}
+#s-oppsett .mac {
+  max-width: 260px;
+  margin: 18px auto 0;
+  padding: 0;
+  background: none;
+  border: 0;
+}
+#s-oppsett .mac figcaption {
+  margin-top: 2px;
+}
+.book-start {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+.book-start .btn {
+  justify-content: center;
+  width: min(420px, 100%);
+  height: 60px;
+  font-size: 17px;
+}
+/* Kalenderen til venstre, feltene til høyre. */
+#s-oppsett #book-skjema {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 14px clamp(24px, 3vw, 44px);
+  align-content: start;
+  margin-top: 30px;
+  padding-top: 26px;
+  border-top: 1px solid var(--rule);
+}
+#s-oppsett #book-skjema > :first-child {
+  grid-column: 1;
+  grid-row: 1 / span 6;
+}
+#s-oppsett #book-skjema > :not(:first-child) {
+  grid-column: 2;
+}
+#s-oppsett #samtale-skjema {
+  margin-top: 18px;
+}
+#s-oppsett .ekstra {
+  text-align: center;
+}
+@media (max-width: 760px) {
+  .op-topp,
+  .op-rutenett,
+  .op-spalter,
+  #s-oppsett #book-skjema {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  #s-oppsett #book-skjema > :first-child,
+  #s-oppsett #book-skjema > :not(:first-child) {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}
+.tekst {
   margin-top: 8px;
 }
 #s-oppsett .mac {
