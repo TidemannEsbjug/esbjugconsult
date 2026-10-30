@@ -1407,6 +1407,35 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
     .vf-slurk{padding:9px 10px 9px 12px;font-size:14px}
   }
   @media (prefers-reduced-motion:reduce){.vf::before,.vf-lys i,.vf-chip i,.vf-live i{animation:none}.vf-lys{display:none}}
+  /* Forenklet forside (30.10.2026). Modulene er skjult, ikke slettet, fordi skriptene skriver til dem. Under heroen kommer kartet rett etter. */
+  main,.bank,.abo,.poster,.gjor,.sted,.lang,.topp:not(:has(.st-i:not([hidden]))),.pultk .pk-t,.pultk [data-k="pstilling"],.pultk .pk-plagg{display:none!important}
+  footer.hero{min-height:clamp(360px,58svh,620px)}
+  .pultk{grid-template-columns:minmax(0,1fr)!important;cursor:pointer}
+  .pultk [data-k="pflaske"]{grid-row:auto}
+  .kk-rad{margin:0;max-width:none;padding:12px var(--g);font-size:12px;background:#fff;color:#00205B}
+  @media (min-width:1100px){
+    .venstre{width:min(300px,100%)}
+    .hoyre{width:min(880px,100%);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+    .hoyre .sens:not(.pultk){grid-row:span 2}
+  }
+  /* Vannflasken er et vindu ved kortet på kartet: hover på PC, trykk på mobil. Er den lukket, står animasjonen stille. */
+  .vf:not(.vf-aapen){display:none}
+  .vf.vf-aapen{position:fixed;z-index:1400;left:16px;top:16px;width:min(860px,calc(100vw - 32px));max-height:calc(100svh - 32px);overflow:hidden;border-radius:24px;box-shadow:0 30px 80px rgba(0,20,60,.45);animation:vfInn .28s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes vfInn{from{opacity:0;transform:translateY(10px) scale(.98)}}
+  .vf-aapen .vf-i{--py:clamp(22px,4svh,40px);max-height:calc(100svh - 32px);overflow:hidden auto;padding-left:28px;padding-right:28px;grid-template-columns:minmax(0,290px) auto;column-gap:24px}
+  .vf-aapen .vf-scene{height:min(390px,calc(100svh - 90px))}
+  .vf-aapen .vf-h{font-size:clamp(30px,2.6vw,38px)}
+  .vf-aapen .vf-forklar{max-width:none;font-size:15px}
+  .vf-forklar+.vf-forklar{margin-top:.7em}
+  .vf-x{display:none;position:absolute;z-index:3;right:12px;top:12px;width:40px;height:40px;border:0;border-radius:50%;background:rgba(0,10,36,.55);color:#fff;font:400 26px/1 -apple-system,system-ui,sans-serif;cursor:pointer}
+  @media (hover:none){.vf-x{display:block}}
+  @media (max-width:899px) and (orientation:portrait){
+    .vf.vf-aapen{left:0!important;top:0!important;width:100%;height:100svh;max-height:none;border-radius:0}
+    .vf-aapen .vf-i{max-height:none;padding-left:var(--g);padding-right:var(--g);grid-template-columns:minmax(0,1fr)}
+    .vf-aapen .vf-scene{height:auto}
+    .vf-x{display:block}
+  }
+  @media (prefers-reduced-motion:reduce){.vf.vf-aapen{animation:none}}
 </style>
 </head>
 <body>
@@ -1427,13 +1456,14 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
 <!-- Vannflasken: egen seksjon rett under heroen (fra 29.10.2026), en livestream. Robotarmen med iPhonen leter etter flasken, låser
      seg på den og skanner, så kommer tallet. Sitronskivene og myntebladet flyter i vannet; besøkende kan be meg ta en slurk.
      Seksjonen er skjult til kameraet er live, og forsvinner igjen når det slås av. -->
-<section class="vf" id="vann" aria-label="The water bottle, live" hidden>
+<section class="vf" id="vann" aria-label="The water bottle, live" hidden><button type="button" class="vf-x" aria-label="Close the water bottle">&times;</button>
   <div class="vf-lys" aria-hidden="true"><i style="--x:7%;--s:14px;--c:rgba(255,236,150,.9);--o:.5;--d:19s;--del:-3s"></i><i style="--x:16%;--s:8px;--c:rgba(190,235,255,.9);--o:.6;--d:15s;--del:-9s"></i><i style="--x:28%;--s:22px;--c:rgba(190,235,255,.8);--o:.25;--d:24s;--del:-14s"></i><i style="--x:41%;--s:6px;--c:rgba(255,255,255,.9);--o:.5;--d:13s;--del:-5s"></i><i style="--x:55%;--s:12px;--c:rgba(255,236,150,.9);--o:.35;--d:21s;--del:-17s"></i><i style="--x:66%;--s:30px;--c:rgba(190,235,255,.7);--o:.2;--d:28s;--del:-2s"></i><i style="--x:78%;--s:9px;--c:rgba(255,255,255,.9);--o:.45;--d:16s;--del:-11s"></i><i style="--x:88%;--s:16px;--c:rgba(255,236,150,.8);--o:.3;--d:22s;--del:-7s"></i><i style="--x:95%;--s:7px;--c:rgba(190,235,255,.9);--o:.5;--d:14s;--del:-1s"></i></div>
   <div class="vf-i">
     <div class="vf-tekst">
       <p class="vf-ey"><span class="vf-live"><i></i><b>Live</b></span><span class="mono">Live stream from the desk</span></p>
       <h2 class="vf-h">When life gives you lemons&nbsp;…</h2>
-      <p class="vf-forklar">A robot arm points a camera at my water bottle and measures how much is left, right now as you watch.</p>
+      <p class="vf-forklar">We reverse-engineered a DJI gimbal and used TypeSafe Jev image recognition to steer it after a water bottle, to have a little fun with modern technology.</p>
+      <p class="vf-forklar">The camera follows the bottle and measures how much is left, right now as you watch.</p>
     </div>
     <div class="vf-scene">
       <svg class="vf-svg" viewBox="100 40 810 920" aria-hidden="true">
@@ -1685,9 +1715,6 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
     </aside>
   </section>
 
-  <div class="mono m">
-    <a href="#" class="ck-endre">Cookies</a>
-  </div>
   </div>
 </main>
 <section class="ck" id="cookies" role="dialog" aria-label="Cookies" hidden>
@@ -1789,7 +1816,7 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
     </div>
   </section>
   <!-- Kontoret: pult-kameraet (person, plagg, hodetelefoner) og flaske-kameraet (vannet når målingen er under 2 min). -->
-  <section class="sens pultk gl" hidden aria-label="The office, seen by the camera">
+  <section class="sens pultk gl" hidden aria-label="The water bottle. Open the explanation." role="button" tabindex="0" aria-expanded="false">
     <span class="mono s-t pk-t">Office · camera</span>
     <div class="sv" data-k="pflaske"><span class="sl">Water bottle</span><span class="fl-rad"><svg class="fl-i" viewBox="0 0 84 100" aria-hidden="true"><defs><clipPath id="fl-form"><path d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/></clipPath><linearGradient id="fl-vann" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe6ff"/><stop offset="1" stop-color="#3f8fdc"/></linearGradient></defs><path class="fl-blad" d="M47 70c4-12 15-19 27-19-2 13-12 21-27 19z"/><path class="fl-bladnerve" d="M49 69c7-6 14-11 22-15"/><path class="fl-glass" d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/><g clip-path="url(#fl-form)"><g class="fl-vg"><path class="fl-vann" d="M-40 0q10-3.2 20 0t20 0 20 0 20 0 20 0 20 0 20 0v120h-140z"/></g></g><rect class="fl-glans" x="17" y="40" width="4" height="44" rx="2"/><path class="fl-kant" d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/><rect class="fl-kork" x="22" y="3" width="18" height="11" rx="3"/><g class="fl-sitron"><circle cx="58" cy="83" r="14"/><circle class="fl-s2" cx="58" cy="83" r="11.5"/><path class="fl-s3" d="M58 83V72.5M58 83l7.4 7.4M58 83l-7.4 7.4M58 83l10-3.3M58 83l-10-3.3"/></g></svg><b>–</b></span></div>
     <div class="sv" data-k="pstilling"><span class="sl">At the desk</span><b>–</b></div>
@@ -1823,6 +1850,7 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   </div>
   </div>
 </footer>
+<div class="mono m kk-rad"><a href="#" class="ck-endre">Cookies</a></div>
 <script>
 // «Les mer» i seksjonene: teksten (og tanken) er skjult til man trykker.
 (() => {
@@ -2194,6 +2222,33 @@ if (still) q('.vf-kaustikk animate')?.remove();
 bytt('av'); tegnAlt(0, true);
 new IntersectionObserver(([e]) => { synlig = e.isIntersecting; if (synlig && !startet) start(); kjor(); }, { threshold: .2 }).observe(sek);
 document.addEventListener('visibilitychange', kjor);
+// Kortet på kartet åpner seksjonen som et vindu: hover på PC, trykk på mobil. Vinduet legger seg til venstre for kortet.
+const kort = document.querySelector('.pultk');
+if (kort) {
+  let lukkT = 0;
+  const hover = matchMedia('(hover: hover)');
+  const åpen = () => sek.classList.contains('vf-aapen');
+  const plasser = () => {
+    if (!åpen()) return;
+    if (mobil.matches) { sek.style.left = sek.style.top = ''; return; }
+    const k = kort.getBoundingClientRect(), b = sek.offsetWidth, h = sek.offsetHeight;
+    sek.style.left = kl(k.left - b - 16, 16, Math.max(16, innerWidth - b - 16)) + 'px';
+    sek.style.top = kl(k.top + k.height / 2 - h / 2, 16, Math.max(16, innerHeight - h - 16)) + 'px';
+  };
+  const vis = på => { clearTimeout(lukkT); sek.classList.toggle('vf-aapen', på); kort.setAttribute('aria-expanded', på); plasser(); };
+  const vent = () => { clearTimeout(lukkT); lukkT = setTimeout(() => vis(false), 250); };
+  for (const el of [kort, sek]) {
+    el.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') vis(true); });
+    el.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') vent(); });
+  }
+  kort.addEventListener('click', () => vis(hover.matches || !åpen()));
+  kort.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); vis(!åpen()); } });
+  sek.querySelector('.vf-x').addEventListener('click', () => vis(false));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') vis(false); });
+  document.addEventListener('pointerdown', e => { if (åpen() && !sek.contains(e.target) && !kort.contains(e.target)) vis(false); });
+  addEventListener('scroll', plasser, { passive: true });
+  addEventListener('resize', plasser);
+}
 nyData();
 })();
 </script>
@@ -3272,6 +3327,7 @@ const GJOR = TX.gjor;
 // Huset hos moren hans, skannet med LiDAR i appen (GET /chat/plan). Bare på testsiden /hjem/ inntil videre.
 // plan.geo plasserer skanningen i kartet: et punkt (x, z) i skanningen dreies th radianer, og blir meter øst
 // (u + tx) og nord (−v + ty) fra geo.lat/lon. Tilpasset husets omriss i kartdataene (OpenStreetMap).
+const REPLAY = false;   // replay er av på forsiden fra 30.10.2026
 const HUS = true;   // husfunksjonene (huset, rommene, replay) var en test på /hjem/; nå er de på forsiden, og /hjem/ sender hit
 let plan = null;
 const hentPlan = async () => { try { plan = await (await fetch('/chat/plan')).json(); husTegnet = ''; } catch {} };
@@ -3334,7 +3390,7 @@ function tomtSpor(linjer, hjemme) {
 // Prikken flyttes hvert skjermbilde og glattes (vektet snitt av punktene ±40 s), så den glir i stedet for å hoppe.
 let avsp = null, følg = false;
 // Bygges når kartet og prikken finnes (kartet lages først etter første svar fra serveren).
-if (HUS) setTimeout(function lagAvspiller() {
+if (HUS && REPLAY) setTimeout(function lagAvspiller() {
   if (!kart || !megMark) return setTimeout(lagAvspiller, 300);
   const rad = document.createElement('span');
   rad.className = 'kn';
@@ -4038,7 +4094,7 @@ setInterval(tegn, 1000);
   k.className = 'mus-k'; k.innerHTML = '<i></i><i></i><i></i><i></i><b></b><span></span>';
   document.body.append(k); h.classList.add('mus');
   const lapp = k.querySelector('span'), en = h.lang === 'en';
-  const KLIKK = 'a,button,[role="button"],[role="tab"],label,select,summary,input[type="range"],input[type="checkbox"],.maplibregl-ctrl button,.poster,.hp-o,.ak';
+  const KLIKK = 'a,button,[role="button"],[role="tab"],label,select,summary,input[type="range"],input[type="checkbox"],.maplibregl-ctrl button,.poster,.hp-o,.ak,.pultk';
   const grad = (v, pos, neg) => Math.abs(v).toFixed(5) + '° ' + (v >= 0 ? pos : neg);
   const tekst = (el, sel) => (el.querySelector(sel)?.textContent || '').trim();
   // Modul → lapp. Første treff vinner, så de mest spesifikke står først.
@@ -4055,6 +4111,7 @@ setInterval(tegn, 1000);
     ['.pod', () => en ? 'Podcast' : 'Podkast'],
     ['.ak', el => en ? 'See the movement' : 'Se bevegelsen'],
     ['.hp', el => { const b = tekst(el, '.hb-n'); return '♥ ' + (b && b !== '–' ? b + ' bpm · ' : '') + (en ? 'open' : 'åpne'); }],
+    ['.pultk', () => en ? 'When life gives you lemons …' : 'Når livet gir deg sitroner …'],
     ['.sens', () => en ? 'Live from his devices' : 'Live fra enhetene hans'],
     ['.bank', el => (en ? 'Balance ' : 'Saldo ') + tekst(el, '.bk-sum')],
     ['.poster', () => en ? 'Next post' : 'Neste post'],
