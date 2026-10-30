@@ -4334,25 +4334,34 @@ setInterval(tegn, 1000);
     };
   }
 
-  // Is i tittelen (bare PC): bare der pekeren er, fryser bokstavene. Hver flekk vokser mot R mens pekeren er i den og tiner
-  // når pekeren har gått videre, så isen følger pekeren og resten av tittelen er uendret. Flagget i «ult» fryser fram på
-  // samme måte. Flekkene blir masker i --is; --isk/--iskw legger dem sammen og snitter med flaggets toning i CSS.
+  // Is i tittelen (bare PC): bare der pekeren er, fryser bokstavene, som om den iskalde pekeren rører ved dem. Flekken vokser
+  // raskt til R0, og holder man pekeren i ro, brer isen seg videre, fortere i starten og saktere mot RMAKS. Flekker pekeren
+  // har forlatt, tiner på drøyt ett sekund, så isen følger pekeren og resten av tittelen er uendret. Flagget i «ult» fryser
+  // fram på samme måte. Flekkene blir masker i --is; --isk/--iskw legger dem sammen og snitter med flaggets toning i CSS.
   const h1 = $('.sh-hero h1');
   if (h1 && matchMedia('(min-width:900px) and (hover:hover) and (pointer:fine)').matches) {
     let flekker = [], inne = null, rf = 0, sistT = 0;
-    const R = () => parseFloat(getComputedStyle(h1).fontSize) * .6;
+    const em = () => parseFloat(getComputedStyle(h1).fontSize), R0 = .75, RMAKS = 2.4;
     const tegnIs = () => {
       if (!flekker.length) { for (const k of ['--is', '--isk', '--iskw']) h1.style.removeProperty(k); return; }
-      h1.style.setProperty('--is', flekker.map(p => `radial-gradient(circle at ${p.x.toFixed(1)}px ${p.y.toFixed(1)}px,#000 ${(p.r * .5).toFixed(1)}px,rgba(0,0,0,.55) ${(p.r * .78).toFixed(1)}px,transparent ${p.r.toFixed(1)}px)`).join(','));
+      const kant = em() * R0 * .45, f = n => n.toFixed(1) + 'px';
+      h1.style.setProperty('--is', flekker.map(p => { const e = Math.min(p.r * .5, kant);
+        return `radial-gradient(circle at ${f(p.x)} ${f(p.y)},#000 ${f(p.r - e)},rgba(0,0,0,.55) ${f(p.r - e * .45)},transparent ${f(p.r)})`; }).join(','));
       h1.style.setProperty('--isk', 'intersect' + ',add'.repeat(flekker.length));
       h1.style.setProperty('--iskw', 'source-in' + ',source-over'.repeat(flekker.length));
     };
     const steg = t => {
       rf = 0;
-      const dt = sistT ? Math.min(.05, (t - sistT) / 1000) : .016, r = R(); sistT = t;
+      const dt = sistT ? Math.min(.05, (t - sistT) / 1000) : .016, e = em(); sistT = t;
       for (const p of flekker) {
-        if (p === inne) p.r = rolig ? r : p.r + (r - p.r) * Math.min(1, dt * 7);
-        else p.r = rolig ? 0 : p.r - r * dt / .9;   // tiner på knapt ett sekund
+        if (p === inne) {
+          p.holdt += dt;
+          const maal = e * (rolig ? R0 : R0 + (RMAKS - R0) * (1 - Math.exp(-p.holdt / 3.5)));
+          p.r = rolig ? maal : p.r + (maal - p.r) * Math.min(1, dt * 7);
+        } else {
+          p.fra ??= p.r;
+          p.r = rolig ? 0 : p.r - p.fra * dt / 1.2;
+        }
       }
       flekker = flekker.filter(p => p === inne || p.r > .5);
       tegnIs();
@@ -4362,7 +4371,10 @@ setInterval(tegn, 1000);
       if (e.pointerType !== 'mouse') return;
       const b = h1.getBoundingClientRect(), z = b.width / (h1.offsetWidth || b.width) || 1;   // zoom på store skjermer
       const x = (e.clientX - b.left) / z, y = (e.clientY - b.top) / z;
-      if (!inne || Math.hypot(x - inne.x, y - inne.y) > R() * .5) { inne = { x, y, r: 0 }; flekker.push(inne); if (flekker.length > 40) flekker.shift(); }
+      // Små bevegelser innenfor flekken teller som å holde i ro.
+      if (!inne || Math.hypot(x - inne.x, y - inne.y) > Math.max(em() * R0 * .5, inne.r * .35)) {
+        inne = { x, y, r: 0, holdt: 0 }; flekker.push(inne); if (flekker.length > 40) flekker.shift();
+      }
       if (!rf) rf = requestAnimationFrame(steg);
     });
     h1.addEventListener('pointerleave', () => { inne = null; if (!rf) rf = requestAnimationFrame(steg); });
