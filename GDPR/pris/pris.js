@@ -164,7 +164,7 @@
     var bredde = steg === "s-pris" ? (tilbud && tilbud.stor ? "bred" : "middels") : BREDDE[steg];
     $("kort").classList.toggle("bred", bredde === "bred");
     $("kort").classList.toggle("middels", bredde === "middels");
-    // Oversikten over oppsett og sprint er høy: der står vinterbildet fast i skjermen, så det ikke forstørres.
+    // Oversikten over oppsett og sprint er for høy til vinterbildet: der er bakgrunnen en rolig, ensfarget flate.
     $("port").classList.toggle("oversikt", steg === "s-oppsett");
     tegnStegrad(steg);
     if (steg === "s-oppsett") lastLedige();

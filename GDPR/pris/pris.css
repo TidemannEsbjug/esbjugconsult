@@ -23,15 +23,13 @@ textarea {
   background: #dfe8f2 url("../assets/hero-film-slutt.jpg") center 38% / cover no-repeat;
   position: relative;
   isolation: isolate;
-  /* Klipper det faste bildet til seksjonen, så det ikke legger seg over bunnen. */
-  clip-path: inset(0);
 }
 .port::before {
   content: "";
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: -1;
-  background: #dfe8f2 url("../assets/hero-film-slutt-skarp.jpg") center 38% / cover no-repeat;
+  background: var(--ground-2);
   opacity: 0;
   transition: opacity 500ms var(--ease);
   pointer-events: none;
@@ -581,6 +579,28 @@ textarea:focus {
   background: rgba(255, 255, 255, 0.97);
 }
 /* Toppen: tittel, innledning, valg og pris til venstre, maskinen stor til høyre. Begge starter på samme linje. */
+#s-oppsett {
+  --inn: clamp(18px, 2.2vw, 28px);
+}
+#s-oppsett > .tilbake,
+#s-oppsett #op-merke,
+#s-oppsett #op-tittel,
+#s-oppsett .op-hode .ingress {
+  margin-left: var(--inn);
+}
+#s-oppsett .tilbudvalg button {
+  padding-left: calc(var(--inn) - 1px);
+  padding-right: calc(var(--inn) - 1px);
+}
+#s-oppsett .sprint-pris {
+  padding-left: var(--inn);
+  padding-right: var(--inn);
+}
+#s-oppsett #book-skjema,
+#s-oppsett #samtale-skjema {
+  padding-left: var(--inn);
+  padding-right: var(--inn);
+}
 .op-hode {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -618,7 +638,7 @@ textarea:focus {
   margin-top: 26px;
 }
 .op-del {
-  padding: clamp(20px, 2.2vw, 28px);
+  padding: calc(var(--inn) - 1px);
   border-radius: 16px;
   background: var(--ground);
   border: 1px solid var(--rule-2);
@@ -689,7 +709,7 @@ textarea:focus {
   margin-top: 18px;
 }
 #s-oppsett .ekstra {
-  text-align: center;
+  padding-left: var(--inn);
 }
 @media (max-width: 760px) {
   .op-hode,
