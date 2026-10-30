@@ -874,8 +874,8 @@ section {
 }
 
 .orgport-prove {
-  margin-top: clamp(20px, 2.6vw, 30px);
-  padding-top: clamp(18px, 2.2vw, 26px);
+  margin-top: 16px;
+  padding-top: 16px;
   border-top: 1px solid var(--rule);
   font-size: 16px;
   line-height: 1.5;
@@ -1054,7 +1054,7 @@ section {
 /* Store virksomheter: feltet blir bredere, med navnet og gratis prøve til venstre og skreddersydd
    oppsett med Mac Studio til høyre. Ingen «godkjent»; de er selvsagt godkjent. */
 .orgport.stor {
-  width: min(980px, 100%);
+  width: min(880px, 100%);
 }
 
 /* Navnet, prøven og prisen til venstre, skreddersydd oppsett til høyre. */
@@ -1069,11 +1069,42 @@ section {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: clamp(24px, 3vw, 36px);
+  padding: clamp(22px, 2.4vw, 28px);
 }
 
 .orgport.stor .orgport-firmanavn {
-  font-size: clamp(26px, 2.8vw, 36px);
+  font-size: clamp(24px, 2.3vw, 30px);
+}
+
+.orgport.stor .orgport-prove {
+  font-size: 15px;
+}
+
+.orgport.stor .orgport-prove .orgport-prove-tittel {
+  font-size: 17px;
+}
+
+.orgport.stor .orgport-pris {
+  margin-top: 14px;
+}
+
+.orgport.stor .orgport-pris-celle {
+  padding: 12px 16px;
+  font-size: 14px;
+}
+
+.orgport.stor .orgport-belop {
+  font-size: clamp(26px, 2.6vw, 32px);
+}
+
+.orgport.stor .orgport-svar .get {
+  margin-top: 16px;
+}
+
+.orgport.stor .get .btn {
+  height: 50px;
+  padding: 0 20px;
+  font-size: 15px;
 }
 
 /* Prisen står alene her: at prøven er gratis, står i teksten over. */
@@ -1099,7 +1130,7 @@ section {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding: clamp(24px, 3vw, 36px);
+  padding: clamp(22px, 2.4vw, 28px);
   border-radius: 22px;
   color: #fff;
   text-align: left;
@@ -1133,16 +1164,16 @@ section {
 }
 
 .orgport-oppsett h3 {
-  margin-top: 16px;
-  font-size: clamp(28px, 2.9vw, 38px);
-  line-height: 1.06;
+  margin-top: 12px;
+  font-size: clamp(24px, 2.3vw, 30px);
+  line-height: 1.08;
   letter-spacing: -0.03em;
 }
 
 .orgport-oppsett p:not(.orgport-merke) {
-  margin-top: 12px;
-  font-size: 16px;
-  line-height: 1.5;
+  margin-top: 8px;
+  font-size: 15px;
+  line-height: 1.45;
   color: rgba(255, 255, 255, 0.88);
 }
 
@@ -1150,10 +1181,10 @@ section {
   display: block;
   flex: none;
   width: 100%;
-  max-width: 420px;
+  max-width: 270px;
   aspect-ratio: 440 / 240;
   margin: auto;
-  padding: 20px 0;
+  padding: 12px 0;
   box-sizing: content-box;
 }
 
@@ -1161,6 +1192,8 @@ section {
   flex: none;
   justify-content: center;
   width: 100%;
+  height: 50px;
+  font-size: 15px;
   color: var(--signal-deep);
   background: #fff;
   border-color: #fff;
