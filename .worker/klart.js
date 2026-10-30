@@ -948,12 +948,12 @@ async function kasse(request, env, url) {
   return json({ adresse: okt.url });
 }
 
-/** Faktura: abonnement som sendes som faktura med 30 dagers frist. Nøkkelen gis når fakturaen er sendt. */
+/** Faktura: abonnement som sendes som faktura med 7 dagers frist. Nøkkelen sendes når fakturaen er betalt (invoice.paid). */
 async function fakturer(env, { kunde, meta, linjer, mva, beskrivelse }) {
   const felt = {
     customer: kunde.id,
     collection_method: "send_invoice",
-    days_until_due: "30",
+    days_until_due: "7",
     description: beskrivelse,
     "payment_settings[payment_method_types][0]": "card",
     "expand[0]": "latest_invoice",
@@ -972,15 +972,11 @@ async function fakturer(env, { kunde, meta, linjer, mva, beskrivelse }) {
   // Med auto_advance sender Stripe fakturaen selv når den er ferdigstilt.
   if (faktura.status === "draft") faktura = await stripe(env, "POST", `invoices/${faktura.id}/finalize`);
   if (faktura.auto_advance === false) faktura = await stripe(env, "POST", `invoices/${faktura.id}/send`);
-  const lisens = await orgLisens(env, abo, kunde.email);
-  const kode = await sendNokkel(env, lisens);
   return {
-    kode,
     type: meta.license_type,
-    navn: lisens.navn,
-    orgnr: lisens.orgnr,
-    epost: lisens.epost,
-    utloper: lisens.utloper,
+    navn: meta.company_name,
+    orgnr: orgnrFra(meta.orgnr),
+    epost: kunde.email,
     faktura: {
       nummer: faktura.number,
       belop: faktura.total / 100,
@@ -1864,18 +1860,10 @@ async function webhook(request, env) {
       if (aboId) {
         const abo = await stripe(env, "GET", `subscriptions/${aboId}`);
         await lager(env).settUtloper(abo.id, utloperFor(abo), "aktiv");
-        // Kort og avdrag: ny nøkkel når en ny periode er betalt. Fakturakundene fikk den da fakturaen ble sendt.
-        if (abo.metadata?.license_type && abo.collection_method !== "send_invoice") {
+        // Ny nøkkel når en periode er betalt, med kort eller faktura.
+        if (abo.metadata?.license_type) {
           await sendNokkel(env, await orgLisens(env, abo, obj.customer_email));
         }
-      }
-      break;
-    }
-    case "invoice.finalized": {
-      const aboId = aboFra(obj);
-      if (aboId && obj.collection_method === "send_invoice") {
-        const abo = await stripe(env, "GET", `subscriptions/${aboId}`);
-        if (abo.metadata?.license_type) await sendNokkel(env, await orgLisens(env, abo, obj.customer_email));
       }
       break;
     }

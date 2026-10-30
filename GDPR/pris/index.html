@@ -1251,7 +1251,7 @@
               </button>
               <button type="button" class="valg" role="radio" data-betaling="faktura" aria-checked="false">
                 <strong>Faktura</strong>
-                <span>30 dagers betalingsfrist. Også som EHF.</span>
+                <span>7 dagers betalingsfrist. Tilgang så snart den er betalt. Også som EHF.</span>
               </button>
             </div>
             <div class="underpanel skjema" id="faktura-felt" hidden>
@@ -1296,7 +1296,6 @@
             <p class="merke ok">Fakturaen er sendt</p>
             <h2 id="f-tittel" tabindex="-1"></h2>
             <p class="ingress" id="f-tekst"></p>
-            <div id="f-nokkel"></div>
             <div class="knapper">
               <a class="btn ghost" id="f-faktura" href="#" target="_blank" rel="noopener" hidden>Åpne fakturaen</a>
             </div>
@@ -2180,7 +2179,7 @@
 
         // ---------- 5. Bekreft ----------
 
-        var BETALING = { kort: "Kort, årlig", faktura: "Faktura, 30 dagers betalingsfrist" };
+        var BETALING = { kort: "Kort, årlig", faktura: "Faktura, 7 dagers betalingsfrist" };
 
         function visBekreft() {
           var rader = [
@@ -2271,8 +2270,7 @@
             " inkl. mva er sendt til " +
             svar.epost +
             (f.forfall ? ", med forfall " + datoTekst(f.forfall) : "") +
-            ". Nøkkelen under gjelder fra i dag.";
-          nokkelBoks($("f-nokkel"), svar);
+            ". Lisensnøkkelen kommer på e-post så snart fakturaen er betalt.";
           $("f-faktura").hidden = !f.adresse;
           if (f.adresse) $("f-faktura").href = f.adresse;
           historikk = [];
