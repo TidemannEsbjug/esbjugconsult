@@ -254,19 +254,28 @@
                         <p class="orgport-orgnr">Org.nr. <span data-orgnr></span></p>
                       </div>
                     </div>
-                    <!-- Prøven, så knappene, så hva lisensen koster etterpå. Ingen sperre: knappene står som før. -->
+                    <!-- At dette er fullversjonen, så hva det koster, så knappene. Ingen sperre: knappene står som før. -->
                     <div class="orgport-prove">
-                      <p class="orgport-prove-tittel">Gratis prøve. Ingen registrering, ingen kort.</p>
-                      <p>Hele Klart, ikke en demo. Dere kan lagre 10 rensede filer av hver filtype: Word, Excel, PowerPoint, PDF, e-post, tekst og bilder.</p>
+                      <p class="orgport-prove-tittel">Dette er fullversjonen av Klart.</p>
+                      <p>Samme program som med lisens, ikke en demo, og ingenting er skrudd av. Prøven stopper bare ved 10 rensede filer av hver filtype.</p>
+                    </div>
+                    <div class="orgport-pris" data-pris hidden>
+                      <div class="orgport-pris-celle">
+                        <p class="orgport-pris-merke">Prøve nå</p>
+                        <p class="orgport-belop">0 kr</p>
+                        <p>Ingen registrering, ingen kort.</p>
+                      </div>
+                      <div class="orgport-pris-celle lisens">
+                        <p class="orgport-pris-merke">Lisens etter prøven</p>
+                        <p class="orgport-belop" data-prisbelop></p>
+                        <p>Per år eks. mva for <span data-prishvem></span>, uten filgrense.</p>
+                        <a data-prislenke href="pris/">Se hva som er med →</a>
+                      </div>
                     </div>
                     <div class="get">
                       <a class="btn" href="/klart/last-ned/mac" download>Last ned for Mac</a>
                       <a class="btn ghost" href="/klart/last-ned/windows" download>Last ned for Windows</a>
                     </div>
-                    <p class="orgport-pris" data-pris hidden>
-                      Kjøper dere lisens etter prøven: <b data-prisbelop></b> for <span data-prishvem></span>.
-                      <a data-prislenke href="pris/">Se hva som er med →</a>
-                    </p>
                     <button type="button" class="orgport-endre" data-endre>Ikke deres virksomhet?</button>
                   </div>
                   <aside class="orgport-oppsett" data-stor hidden>
@@ -1039,19 +1048,28 @@ Vergehaver er diagnostisert med <mark class="seal lit"><span class="o">depresjon
                     <p class="orgport-orgnr">Org.nr. <span data-orgnr></span></p>
                   </div>
                 </div>
-                <!-- Prøven, så knappene, så hva lisensen koster etterpå. Ingen sperre: knappene står som før. -->
+                <!-- At dette er fullversjonen, så hva det koster, så knappene. Ingen sperre: knappene står som før. -->
                 <div class="orgport-prove">
-                  <p class="orgport-prove-tittel">Gratis prøve. Ingen registrering, ingen kort.</p>
-                  <p>Hele Klart, ikke en demo. Dere kan lagre 10 rensede filer av hver filtype: Word, Excel, PowerPoint, PDF, e-post, tekst og bilder.</p>
+                  <p class="orgport-prove-tittel">Dette er fullversjonen av Klart.</p>
+                  <p>Samme program som med lisens, ikke en demo, og ingenting er skrudd av. Prøven stopper bare ved 10 rensede filer av hver filtype.</p>
+                </div>
+                <div class="orgport-pris" data-pris hidden>
+                  <div class="orgport-pris-celle">
+                    <p class="orgport-pris-merke">Prøve nå</p>
+                    <p class="orgport-belop">0 kr</p>
+                    <p>Ingen registrering, ingen kort.</p>
+                  </div>
+                  <div class="orgport-pris-celle lisens">
+                    <p class="orgport-pris-merke">Lisens etter prøven</p>
+                    <p class="orgport-belop" data-prisbelop></p>
+                    <p>Per år eks. mva for <span data-prishvem></span>, uten filgrense.</p>
+                    <a data-prislenke href="pris/">Se hva som er med →</a>
+                  </div>
                 </div>
                 <div class="get">
                   <a class="btn" href="/klart/last-ned/mac" download>Last ned for Mac</a>
                   <a class="btn ghost" href="/klart/last-ned/windows" download>Last ned for Windows</a>
                 </div>
-                <p class="orgport-pris" data-pris hidden>
-                  Kjøper dere lisens etter prøven: <b data-prisbelop></b> for <span data-prishvem></span>.
-                  <a data-prislenke href="pris/">Se hva som er med →</a>
-                </p>
                 <button type="button" class="orgport-endre" data-endre>Ikke deres virksomhet?</button>
               </div>
               <aside class="orgport-oppsett" data-stor hidden>
@@ -1182,7 +1200,7 @@ Vergehaver er diagnostisert med <mark class="seal lit"><span class="o">depresjon
             pris.hidden = !svar.pris;
             if (svar.pris) {
               boks.querySelector("[data-prisbelop]").textContent =
-                new Intl.NumberFormat("nb-NO").format(svar.pris) + " kr per år eks. mva";
+                new Intl.NumberFormat("nb-NO").format(svar.pris) + " kr";
               boks.querySelector("[data-prishvem]").textContent = svar.konsern ? svar.navn + " og hele konsernet" : svar.navn;
               boks.querySelector("[data-prislenke]").href = "pris/?orgnr=" + svar.orgnr;
             }
