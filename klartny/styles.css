@@ -755,23 +755,7 @@ section {
   backdrop-filter: blur(24px) saturate(1.35);
   border: 1px solid rgba(255, 255, 255, 0.75);
   box-shadow: 0 2px 4px rgba(20, 30, 40, 0.05), 0 22px 54px rgba(20, 40, 70, 0.16);
-  animation: orgport-kort 640ms cubic-bezier(0.2, 1.2, 0.4, 1) both, orgport-glod 1500ms ease-out 420ms both;
-}
-
-/* Blått lys som brer seg over kortet fra merket idet det godkjennes. */
-.orgport-svar-hoved::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  background: radial-gradient(circle at 80px 90px, rgba(36, 86, 230, 0.34), rgba(36, 86, 230, 0.1) 40%, transparent 72%);
-  opacity: 0;
-  animation: orgport-lys 1300ms ease-out 420ms both;
-}
-
-.orgport.stor .orgport-svar-hoved::before {
-  display: none;
+  animation: orgport-kort 560ms cubic-bezier(0.2, 1.2, 0.4, 1) both;
 }
 
 /* Innholdet kommer etter tur, etter at merket og navnet har landet. */
@@ -786,19 +770,19 @@ section {
 }
 
 .orgport-svar-hoved > .orgport-prove {
-  animation-delay: 1050ms;
+  animation-delay: 860ms;
 }
 
 .orgport-svar-hoved > .orgport-pris {
-  animation-delay: 1150ms;
+  animation-delay: 950ms;
 }
 
 .orgport-svar-hoved > .get {
-  animation-delay: 1250ms;
+  animation-delay: 1040ms;
 }
 
 .orgport-svar-hoved > .orgport-endre {
-  animation-delay: 1350ms;
+  animation-delay: 1130ms;
 }
 
 .orgport-topp {
@@ -811,30 +795,24 @@ section {
   min-width: 0;
 }
 
-/* Godkjent-merket: spretter inn, ringen tegnes, fylles blått, haken tegnes,
-   og to ringer brer seg utover. */
+/* Godkjent-merket: en hel grønn sirkel spretter inn, haken tegnes, og én ring brer seg kort utover. */
 .orgport-segl {
   position: relative;
   flex: none;
   width: clamp(60px, 7.4vw, 82px);
   height: clamp(60px, 7.4vw, 82px);
-  animation: orgport-segl 860ms cubic-bezier(0.2, 0.9, 0.3, 1) 60ms both;
+  animation: orgport-segl 620ms cubic-bezier(0.2, 0.9, 0.3, 1) 60ms both;
 }
 
-.orgport-segl::before,
 .orgport-segl::after {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 3px solid var(--signal-lit);
+  border: 2px solid var(--ok);
   opacity: 0;
   pointer-events: none;
-  animation: orgport-ring 1000ms cubic-bezier(0.15, 0.7, 0.3, 1) 440ms both;
-}
-
-.orgport-segl::after {
-  animation-delay: 620ms;
+  animation: orgport-ring 760ms cubic-bezier(0.15, 0.7, 0.3, 1) 300ms both;
 }
 
 .orgport-segl svg {
@@ -848,27 +826,21 @@ section {
 }
 
 .orgport-segl circle {
-  fill: var(--signal);
-  stroke: var(--signal);
-  stroke-width: 3;
-  stroke-dasharray: 1;
-  transform: rotate(-90deg);
-  transform-origin: center;
-  animation: orgport-tegn 420ms var(--ease) 60ms both, orgport-fyll 220ms ease-out 400ms both;
+  fill: var(--ok);
 }
 
 .orgport-segl path {
   stroke: #fff;
   stroke-width: 4.5;
   stroke-dasharray: 1;
-  animation: orgport-tegn 300ms ease-out 520ms both;
+  animation: orgport-tegn 320ms ease-out 300ms both;
 }
 
 .orgport-ok {
   font-size: clamp(15px, 1.5vw, 17px);
   font-weight: 700;
-  color: var(--signal);
-  animation: orgport-sprett 520ms cubic-bezier(0.2, 1.5, 0.4, 1) 420ms both;
+  color: var(--ok);
+  animation: orgport-sprett 520ms cubic-bezier(0.2, 1.5, 0.4, 1) 320ms both;
   transform-origin: left center;
 }
 
@@ -887,10 +859,10 @@ section {
   white-space: nowrap;
 }
 
-/* Bokstavene lander blått og tones til vanlig farge. */
+/* Bokstavene lander grønt og tones til vanlig farge. */
 .orgport-bokstav {
   display: inline-block;
-  animation: orgport-bokstav 760ms cubic-bezier(0.2, 1.4, 0.4, 1) calc(480ms + var(--i) * 24ms) both;
+  animation: orgport-bokstav 760ms cubic-bezier(0.2, 1.4, 0.4, 1) calc(380ms + var(--i) * 22ms) both;
 }
 
 .orgport-orgnr {
@@ -898,7 +870,7 @@ section {
   font-family: var(--mono);
   font-size: 13px;
   color: var(--ink-2);
-  animation: orgport-opp 480ms var(--ease) 950ms both;
+  animation: orgport-opp 480ms var(--ease) 760ms both;
 }
 
 .orgport-prove {
@@ -1019,30 +991,6 @@ section {
   }
 }
 
-@keyframes orgport-glod {
-  0% {
-    box-shadow: 0 2px 4px rgba(20, 30, 40, 0.05), 0 22px 54px rgba(20, 40, 70, 0.16), 0 0 0 0 rgba(36, 86, 230, 0);
-  }
-  18% {
-    box-shadow: 0 2px 4px rgba(20, 30, 40, 0.05), 0 22px 54px rgba(20, 40, 70, 0.16), 0 0 0 3px rgba(36, 86, 230, 0.7), 0 0 70px 8px rgba(36, 86, 230, 0.38);
-  }
-  100% {
-    box-shadow: 0 2px 4px rgba(20, 30, 40, 0.05), 0 22px 54px rgba(20, 40, 70, 0.16), 0 0 0 0 rgba(36, 86, 230, 0);
-  }
-}
-
-@keyframes orgport-lys {
-  0% {
-    opacity: 0;
-  }
-  18% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
 @keyframes orgport-sprett {
   from {
     opacity: 0;
@@ -1053,12 +1001,12 @@ section {
 @keyframes orgport-bokstav {
   0% {
     opacity: 0;
-    color: var(--signal-lit);
+    color: #37c99a;
     transform: translateY(0.6em) scale(0.6) rotate(6deg);
   }
   45% {
     opacity: 1;
-    color: var(--signal);
+    color: var(--ok);
   }
 }
 
@@ -1072,14 +1020,14 @@ section {
 @keyframes orgport-segl {
   0% {
     opacity: 0;
-    transform: scale(0.2) rotate(-25deg);
+    transform: scale(0.3);
   }
-  45% {
+  55% {
     opacity: 1;
-    transform: scale(1.28) rotate(5deg);
+    transform: scale(1.14);
   }
-  70% {
-    transform: scale(0.94) rotate(-1deg);
+  80% {
+    transform: scale(0.97);
   }
 }
 
@@ -1092,20 +1040,14 @@ section {
   }
 }
 
-@keyframes orgport-fyll {
-  from {
-    fill-opacity: 0;
-  }
-}
-
 @keyframes orgport-ring {
   0% {
-    opacity: 0.8;
+    opacity: 0.6;
     transform: scale(1);
   }
   100% {
     opacity: 0;
-    transform: scale(2.3);
+    transform: scale(1.5);
   }
 }
 
