@@ -1247,14 +1247,6 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
     mask-image:radial-gradient(circle at var(--fx,50%) var(--fy,50%),#000 calc(var(--fr,0px) - 40px),rgba(0,0,0,.55) calc(var(--fr,0px) - 14px),transparent var(--fr,0px))}
   .sh-frost{z-index:-1}
   .sh-vind{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1}
-  /* Flagget i slutten av knappen (22:16, like høyt som knappen), med rim over. Det synes bare der isen er (samme maske som
-     .sh-is), og kanten mot isen tones ut, som flagget i tittelen. --fbw er flaggets bredde, satt fra skriptet. */
-  .sh-flagg{position:absolute;inset:0;pointer-events:none;z-index:-2;
-    background:linear-gradient(rgba(255,255,255,.38),rgba(255,255,255,0) 45%,rgba(255,255,255,0) 72%,rgba(175,212,245,.3)),
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 16' preserveAspectRatio='none'%3E%3Cpath fill='%23BA0C2F' d='M0 0h22v16H0z'/%3E%3Cpath fill='%23fff' d='M6 0h4v16H6zM0 6h22v4H0z'/%3E%3Cpath fill='%2300205B' d='M7 0h2v16H7zM0 7h22v2H0z'/%3E%3C/svg%3E") 100% 0/var(--fbw,66px) 100% no-repeat;
-    -webkit-mask-image:linear-gradient(90deg,transparent calc(100% - var(--fbw,66px)),#000 calc(100% - var(--fbw,66px) * .74)),radial-gradient(circle at var(--fx,50%) var(--fy,50%),#000 calc(var(--fr,0px) - 40px),rgba(0,0,0,.55) calc(var(--fr,0px) - 14px),transparent var(--fr,0px));
-    mask-image:linear-gradient(90deg,transparent calc(100% - var(--fbw,66px)),#000 calc(100% - var(--fbw,66px) * .74)),radial-gradient(circle at var(--fx,50%) var(--fy,50%),#000 calc(var(--fr,0px) - 40px),rgba(0,0,0,.55) calc(var(--fr,0px) - 14px),transparent var(--fr,0px));
-    -webkit-mask-composite:source-in;mask-composite:intersect}
   /* Det røde maskeres bort der isen er, og tones i tillegg ut med isen totalt (--rod), så ingen rød kant blir igjen rundt
      knappen mens den fryser. */
   .sh-knapp.sh-p::before{content:"";position:absolute;inset:0;z-index:-3;background:#BA0C2F;opacity:var(--rod,1);
@@ -4257,16 +4249,15 @@ setInterval(tegn, 1000);
 
   // Frost: ispilen har en aura. Styrken er 1 når pekeren er på knappen og faller til 0 aura() px unna, samme radius som isen i
   // tittelen (0,75 em av tittelen). Isen (f) går raskt mot styrken og brer seg fra punktet på knappen nærmest pekeren. Den
-  // fryser fort, men tiner sakte: når pekeren er utenfor auraen, står isen i 2,5 s og tiner så over 7 s. I slutten av
-  // knappen ligger et norsk flagg som kommer fram der isen er. Iskrystallene vokser i seks retninger med greiner
+  // fryser fort, men tiner sakte: når pekeren er utenfor auraen, står isen i 2,5 s og tiner så over 7 s. Iskrystallene
+  // vokser i seks retninger med greiner
   // parvis i 60°, som et snøkrystall, og bare litt foran iskanten. Når isen er halvveis, begynner det også å rime fra kantene.
   const kn = $('.sh-knapp.sh-p');
   if (kn && matchMedia('(hover:hover) and (pointer:fine)').matches) {
     const tittel = $('.sh-hero h1');
     const aura = () => { if (!tittel) return 90; const b = tittel.getBoundingClientRect(); return parseFloat(getComputedStyle(tittel).fontSize) * .75 * (b.width / (tittel.offsetWidth || b.width) || 1); };
     const is = document.createElement('i'); is.className = 'sh-is'; is.setAttribute('aria-hidden', 'true');
-    const fl = document.createElement('i'); fl.className = 'sh-flagg'; fl.setAttribute('aria-hidden', 'true');
-    const fc = document.createElement('canvas'); fc.className = 'sh-frost'; fc.setAttribute('aria-hidden', 'true'); kn.prepend(is, fl, fc);
+    const fc = document.createElement('canvas'); fc.className = 'sh-frost'; fc.setAttribute('aria-hidden', 'true'); kn.prepend(is, fc);
     const vc = document.createElement('canvas'); vc.className = 'sh-vind'; vc.setAttribute('aria-hidden', 'true'); kn.prepend(vc);
     const fx = fc.getContext('2d'), vx = vc.getContext('2d');
     let fw = 0, fh = 0, diag = 0, ox = 0, oy = 0, tx = 0, ty = 0, f = 0, maal = 0, tupper = [], frø = [], kanter = false, tid = 0, kaldSist = 0;
@@ -4284,7 +4275,6 @@ setInterval(tegn, 1000);
     const sett = () => {
       const z = fw / (kn.offsetWidth || fw) || 1;  // zoom på store skjermer
       kn.style.setProperty('--fx', ox / z + 'px'); kn.style.setProperty('--fy', oy / z + 'px'); kn.style.setProperty('--fr', front() / z + 'px');
-      kn.style.setProperty('--fbw', fh * 22 / 16 / z + 'px');
       fc.style.opacity = Math.min(1, f * 1.8) ** .8;
       kn.style.setProperty('--rod', Math.max(0, 1 - f * 1.6).toFixed(3));
       kn.classList.toggle('frosset', f > .55);
