@@ -1168,7 +1168,7 @@ async function sprint(request, env) {
   if (inn.nettside) return json({ ok: true });
   const navn = tekstFra(inn.navn, 120);
   const epost = epostFra(inn.epost);
-  if (!navn || !epost) return json({ feil: "Skriv inn navn og e-post, så tar vi kontakt." }, 400);
+  if (!navn || !epost) return json({ feil: "Skriv inn navn og e-post, så tar jeg kontakt." }, 400);
   const orgnr = orgnrFra(inn.orgnr);
   const o = orgnr ? await slaaOppVirksomhet(orgnr).catch(() => null) : null;
   const v = o?.virksomhet || null;
@@ -1225,8 +1225,7 @@ const ISO_DAG = /^\d{4}-\d{2}-\d{2}$/;
 const OKT_ID = /^cs_(test|live)_[A-Za-z0-9]+$/;
 // Samme kriterium som på prissiden (/klart/pris/), i Stripe og e-postene.
 const SPRINT_KRITERIER =
-  "Suksesskriteriet: det testes i runder på 100 tilfeldige dokumenter fra egne arkiver (eller høyst 1 000 sider), " +
-  "med fasit merket av kunden med Klarts forslag som utgangspunkt. Går Klart glipp av noe, rettes modellen, og " +
+  "Suksesskriteriet: før sprinten blir vi enige om hvordan et renset dokument skal se ut. Det testes i runder på 100 tilfeldige dokumenter fra egne arkiver (eller høyst 1 000 sider). " + "Går Klart glipp av noe, rettes modellen, og " +
   "dokumentene blir treningsmateriale; så tas 100 nye. Kriteriet er nådd når en ny runde blir 100 % ren på første " +
   "forsøk, målt på Klart alene: alle direkte identifikatorer og alt annet avtalt borte, og ingen gjenkjennelige " +
   "personer igjen. Det må nås innenfor sprinten; ellers faller resten av honoraret bort. Kriteriet gjelder rundene " +
@@ -1234,7 +1233,7 @@ const SPRINT_KRITERIER =
 const OPPSETT_INNHOLD =
   "Oppsettsdagen: Klart installeres på en maskin dere har klar, tilgang internt settes opp med deres IT " +
   "(fjerntilgang til maskinen; Klart selv kobler seg ikke til nett), opplæring, og Klart kjøres på et utvalg av " +
-  "deres egne dokumenter som vi går gjennom sammen. Ingen egen modell og ingen suksesskriterier. Er ikke " +
+  "deres egne dokumenter som vi går gjennom sammen, dere og jeg. Ingen egen modell og ingen suksesskriterier. Er ikke " +
   "sjekklisten klar (maskin, IT-kontakt, tilganger, testdokumenter), flyttes dagen. Mer enn én dag faktureres per time.";
 
 function ukedag(iso) {
@@ -1463,8 +1462,8 @@ async function sprintForespurtVarsel(env, id, d, orgnr, start, slutt) {
     tekst: [
       `Hei ${d.navn},`,
       "",
-      `Vi har mottatt forespørselen om ${hva} hos ${d.firma} ${tid}.`,
-      "Det ligger en annen avtale i perioden, som vi flytter først. Vi bekrefter så snart vi kan og sender en",
+      `Jeg har mottatt forespørselen om ${hva} hos ${d.firma} ${tid}.`,
+      "Det ligger en annen avtale i perioden, som jeg flytter først. Jeg bekrefter så snart jeg kan og sender en",
       `betalingslenke for grunnhonoraret på ${kroner(d.grunn)} eks. mva. Ingenting er betalt ennå.`,
       "",
       "Hilsen Esbjug Consult",
@@ -1538,7 +1537,7 @@ async function sprintBetalt(env, okt) {
             "",
             OPPSETT_INNHOLD,
             "",
-            "Vi sender sjekklisten før dagen. Datoen kan i sjeldne tilfeller flyttes etter avtale; da får dere 10 % avslag.",
+            "Jeg sender sjekklisten før dagen. Datoen kan i sjeldne tilfeller flyttes etter avtale; da får dere 10 % avslag.",
             "Bookes en kort sprint innen tre måneder, trekkes oppsettsdagen fra.",
           ]
         : [
@@ -1551,8 +1550,8 @@ async function sprintBetalt(env, okt) {
             "",
             SPRINT_KRITERIER,
             "",
-            "Dere stiller med en fagperson som merker hver runde med Klarts forslag som utgangspunkt (regn med 4–8 timer per runde), og en kontakt i IT.",
-            "Vi tar kontakt for å avtale fasiten og hva som skal bort, skriftlig før dag én.",
+            "Dere stiller med et arbeidsrom hos dere der jeg kan jobbe uforstyrret, 12–14 timer om dagen.",
+            "Jeg tar kontakt for å avtale hvordan et renset dokument skal se ut, skriftlig før dag én.",
           ];
     await sendEpost(env, {
       til: mottaker,

@@ -444,7 +444,7 @@
     $("r-oppsett").querySelector("h3").textContent = sprinten ? "Skreddersydd oppsett" : "Oppsettsdag";
     $("r-oppsett").querySelector("p:not(.merke)").textContent = sprinten
       ? "En egen modell, finjustert på deres egne dokumenter og satt opp hos dere, på maskinvare dere eier."
-      : "Vi setter opp Klart hos dere på én dag, med tilgang internt og opplæring. " + nok(liste.length ? liste[0].fast : 0) + " eks. mva.";
+      : "Jeg setter opp Klart hos dere på én dag, med tilgang internt og opplæring. " + nok(liste.length ? liste[0].fast : 0) + " eks. mva.";
     $("r-oppsett").querySelector("svg").style.display = sprinten ? "" : "none";
 
     var valg = $("op-valg");
@@ -515,7 +515,7 @@
     $("bk-knapp").disabled = !kjop;
     $("bk-knapp").textContent = !kjop ? "Booking åpner snart" : foresp ? "Send forespørsel" : "Betal " + nok(forskudd(t) * 1.25) + " og book";
     $("bk-info").textContent = foresp
-      ? "Det ligger en oppsettsdag i perioden, som vi flytter først. Dere betaler ingenting nå; vi sender en betalingslenke når datoene er bekreftet."
+      ? "Det ligger en oppsettsdag i perioden, som jeg flytter først. Dere betaler ingenting nå; jeg sender en betalingslenke når datoene er bekreftet."
       : (t.id === "oppsett" ? "Prisen" : "Grunnhonoraret") +
         " inkl. 25 % mva. Betaling med kort i Stripe. Datoen holdes i 30 minutter mens dere betaler.";
   }
@@ -588,7 +588,7 @@
     v.replaceChildren();
     var hva = NAVN[valgtTilbud.id];
     if (!liste.length) {
-      v.textContent = "Ingen ledige datoer akkurat nå. Send oss en melding, så finner vi en tid.";
+      v.textContent = "Ingen ledige datoer akkurat nå. Send meg en melding, så finner vi en tid.";
     } else if (valgtStart) {
       v.appendChild(document.createTextNode(hva + ": "));
       var b = document.createElement("b");
@@ -646,7 +646,7 @@
           glid($("samtale-ferdig"), true);
           $("samtale-ferdig").querySelector(".merke").textContent = "Forespørsel sendt";
           $("samtale-ferdig").querySelector(".tekst").textContent =
-            "Vi flytter oppsettsdagen som ligger i perioden, og sender en betalingslenke til " + data.epost +
+            "Jeg flytter oppsettsdagen som ligger i perioden, og sender en betalingslenke til " + data.epost +
             " når " + datoTekst(svar.start) + " – " + datoTekst(svar.slutt) + " er bekreftet. Ingenting er betalt ennå.";
           return;
         }
@@ -693,7 +693,7 @@
       orgnr: tilbud ? tilbud.orgnr : null,
     };
     if (!data.navn || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.epost)) {
-      return feil("sa-feil", "Skriv inn navn og e-post, så tar vi kontakt.");
+      return feil("sa-feil", "Skriv inn navn og e-post, så tar jeg kontakt.");
     }
     var skjema = this;
     skjema.classList.add("venter");
@@ -1041,7 +1041,7 @@
   if (sprintOkt) {
     vis("s-kvittering");
     $("k-tittel").textContent = "Booket";
-    $("k-tekst").textContent = "Vi henter bookingen.";
+    $("k-tekst").textContent = "Henter bookingen.";
     api("sprint/kvittering?session=" + encodeURIComponent(sprintOkt))
       .then(function (svar) {
         var hvem = svar.navn + " (org.nr " + orgnrTekst(svar.orgnr) + ")";
@@ -1049,14 +1049,14 @@
           $("k-tittel").textContent = "Oppsettsdagen er booket";
           $("k-tekst").textContent =
             "Oppsettsdagen hos " + hvem + " er booket " + datoTekst(svar.start) + ". " + nok(svar.fast) +
-            " eks. mva er betalt. Bekreftelsen er sendt til " + svar.epost + ". Vi sender sjekklisten før dagen.";
+            " eks. mva er betalt. Bekreftelsen er sendt til " + svar.epost + ". Jeg sender sjekklisten før dagen.";
         } else {
           $("k-tittel").textContent = svar.tilbud === "kort" ? "Den korte sprinten er booket" : "Sprinten er booket";
           $("k-tekst").textContent =
             (svar.tilbud === "kort" ? "Den korte sprinten" : "Sprinten") + " hos " + hvem + " er booket " +
             datoTekst(svar.start) + " – " + datoTekst(svar.slutt) + ". Grunnhonoraret på " + nok(svar.grunn) +
             " eks. mva er betalt og beholdes. Resten faktureres bare hvis suksesskriteriet er nådd. Bekreftelsen er sendt til " + svar.epost +
-            ". Vi tar kontakt for å avtale fasiten og hva som skal bort, skriftlig før dag én.";
+            ". Jeg tar kontakt for å avtale hvordan et renset dokument skal se ut, skriftlig før dag én.";
         }
         $("k-ics").href = "/klart/api/sprint/ics?session=" + encodeURIComponent(sprintOkt);
         $("k-ics-rad").hidden = false;
