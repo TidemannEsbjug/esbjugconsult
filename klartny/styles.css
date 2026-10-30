@@ -1092,50 +1092,75 @@ section {
   color: var(--ink-2);
 }
 
+/* Skreddersydd oppsett: teksten øverst, maskinen stor midt i med lys bak seg, knappen over hele bredden nederst. */
 .orgport-oppsett {
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   padding: clamp(24px, 3vw, 36px);
   border-radius: 22px;
   color: #fff;
   text-align: left;
-  background: radial-gradient(120% 90% at 80% 70%, #2456e6 0%, transparent 60%), linear-gradient(160deg, #1a3fb0, #102a66);
-  box-shadow: 0 26px 56px -26px rgba(26, 63, 176, 0.85);
+  background: linear-gradient(165deg, #1f49c4 0%, #16348f 52%, #0d2159 100%);
+  box-shadow: 0 26px 56px -26px rgba(26, 63, 176, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.orgport-oppsett::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 56%;
+  width: 130%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, rgba(111, 155, 245, 0.55), rgba(111, 155, 245, 0.16) 55%, transparent);
+  pointer-events: none;
 }
 
 .orgport-merke {
+  align-self: flex-start;
+  padding: 5px 11px;
+  border-radius: 100px;
   font-family: var(--mono);
   font-size: 11px;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.13);
 }
 
 .orgport-oppsett h3 {
-  margin-top: 10px;
-  font-size: clamp(24px, 2.4vw, 32px);
-  line-height: 1.1;
-  letter-spacing: -0.025em;
+  margin-top: 16px;
+  font-size: clamp(28px, 2.9vw, 38px);
+  line-height: 1.06;
+  letter-spacing: -0.03em;
 }
 
 .orgport-oppsett p:not(.orgport-merke) {
-  margin-top: 10px;
-  font-size: 15.5px;
+  margin-top: 12px;
+  font-size: 16px;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.86);
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .orgport-mac {
   display: block;
+  flex: none;
   width: 100%;
-  max-width: 340px;
+  max-width: 420px;
   aspect-ratio: 440 / 240;
-  margin: 18px auto 10px;
+  margin: auto;
+  padding: 20px 0;
+  box-sizing: content-box;
 }
 
 .orgport-oppsett .btn {
-  align-self: flex-start;
-  margin-top: auto;
+  flex: none;
+  justify-content: center;
+  width: 100%;
   color: var(--signal-deep);
   background: #fff;
   border-color: #fff;
