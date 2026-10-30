@@ -202,7 +202,7 @@
                  i appen; se til-it.html for hvordan IT sjekker det). -->
             <div class="lokal rise" style="--d: 120ms">
               <p class="hva">
-                Klart finner navn, fødselsnummer og andre personopplysninger i
+                <b>Klart</b> finner navn, fødselsnummer og andre personopplysninger i
                 alle filene i en mappe, og pikselerer ansikter i bilder. Du får
                 en renset kopi som du ser over før den brukes videre.
               </p>
@@ -237,31 +237,37 @@
                 </div>
                 <p class="orgport-feil" role="alert" hidden></p>
               </div>
-              <!-- Små: «godkjent» og knappene. Store: bredere, med navnet og gratis prøve til venstre og
+              <!-- Små: stort kort med navnet, «godkjent» og knappene. Store: bredere, med navnet og gratis prøve til venstre og
                    skreddersydd oppsett med Mac Studio til høyre (klassen «stor» på skjemaet). -->
               <div class="orgport-svar" data-orgport-svar hidden aria-live="polite">
                 <div class="orgport-svar-grid">
                   <div class="orgport-svar-hoved">
-                    <p class="orgport-ok" data-godkjent>
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
-                      <span><b data-navn></b> er godkjent.</span>
-                    </p>
-                    <div class="orgport-firma" data-firma hidden>
-                      <p class="orgport-firmanavn" data-navn></p>
+                    <div class="orgport-topp">
+                      <span class="orgport-segl" data-godkjent>
+                        <svg viewBox="0 0 56 56" aria-hidden="true">
+                          <circle cx="28" cy="28" r="25" pathLength="1" />
+                          <path d="M17 29l8 8 15-17" pathLength="1" />
+                        </svg>
+                      </span>
+                      <div>
+                        <p class="orgport-ok" data-godkjent>Godkjent</p>
+                        <p class="orgport-firmanavn" data-navn></p>
+                        <p class="orgport-orgnr">Org.nr. <span data-orgnr></span></p>
+                      </div>
                     </div>
-                    <!-- Prøven og hva lisensen koster etterpå, med en gang etter oppslaget. Ingen sperre: knappene står som før. -->
+                    <!-- Prøven, så knappene, så hva lisensen koster etterpå. Ingen sperre: knappene står som før. -->
                     <div class="orgport-prove">
                       <p class="orgport-prove-tittel">Gratis prøve. Ingen registrering, ingen kort.</p>
                       <p>Hele Klart, ikke en demo. Dere kan lagre 10 rensede filer av hver filtype: Word, Excel, PowerPoint, PDF, e-post, tekst og bilder.</p>
-                      <p class="orgport-pris" data-pris hidden>
-                        Kjøper dere lisens etter prøven: <b data-prisbelop></b> for <span data-prishvem></span>.
-                        <a data-prislenke href="/klart/pris/">Se hva som er med →</a>
-                      </p>
                     </div>
                     <div class="get">
                       <a class="btn" href="/klart/last-ned/mac" download>Last ned for Mac</a>
                       <a class="btn ghost" href="/klart/last-ned/windows" download>Last ned for Windows</a>
                     </div>
+                    <p class="orgport-pris" data-pris hidden>
+                      Kjøper dere lisens etter prøven: <b data-prisbelop></b> for <span data-prishvem></span>.
+                      <a data-prislenke href="/klart/pris/">Se hva som er med →</a>
+                    </p>
                     <button type="button" class="orgport-endre" data-endre>Ikke deres virksomhet?</button>
                   </div>
                   <aside class="orgport-oppsett" data-stor hidden>
@@ -834,25 +840,32 @@ Kontakt: <mark class="y">[E-POST_1]</mark></pre>
             <div class="orgport-svar" data-orgport-svar hidden aria-live="polite">
               <div class="orgport-svar-grid">
                 <div class="orgport-svar-hoved">
-                  <p class="orgport-ok" data-godkjent>
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
-                    <span><b data-navn></b> er godkjent.</span>
-                  </p>
-                  <div class="orgport-firma" data-firma hidden>
-                    <p class="orgport-firmanavn" data-navn></p>
+                  <div class="orgport-topp">
+                    <span class="orgport-segl" data-godkjent>
+                      <svg viewBox="0 0 56 56" aria-hidden="true">
+                        <circle cx="28" cy="28" r="25" pathLength="1" />
+                        <path d="M17 29l8 8 15-17" pathLength="1" />
+                      </svg>
+                    </span>
+                    <div>
+                      <p class="orgport-ok" data-godkjent>Godkjent</p>
+                      <p class="orgport-firmanavn" data-navn></p>
+                      <p class="orgport-orgnr">Org.nr. <span data-orgnr></span></p>
+                    </div>
                   </div>
+                  <!-- Prøven, så knappene, så hva lisensen koster etterpå. Ingen sperre: knappene står som før. -->
                   <div class="orgport-prove">
                     <p class="orgport-prove-tittel">Gratis prøve. Ingen registrering, ingen kort.</p>
                     <p>Hele Klart, ikke en demo. Dere kan lagre 10 rensede filer av hver filtype: Word, Excel, PowerPoint, PDF, e-post, tekst og bilder.</p>
-                    <p class="orgport-pris" data-pris hidden>
-                      Kjøper dere lisens etter prøven: <b data-prisbelop></b> for <span data-prishvem></span>.
-                      <a data-prislenke href="/klart/pris/">Se hva som er med →</a>
-                    </p>
                   </div>
                   <div class="get">
                     <a class="btn" href="/klart/last-ned/mac" download>Last ned for Mac</a>
                     <a class="btn ghost" href="/klart/last-ned/windows" download>Last ned for Windows</a>
                   </div>
+                  <p class="orgport-pris" data-pris hidden>
+                    Kjøper dere lisens etter prøven: <b data-prisbelop></b> for <span data-prishvem></span>.
+                    <a data-prislenke href="/klart/pris/">Se hva som er med →</a>
+                  </p>
                   <button type="button" class="orgport-endre" data-endre>Ikke deres virksomhet?</button>
                 </div>
                 <aside class="orgport-oppsett" data-stor hidden>
@@ -962,8 +975,13 @@ Kontakt: <mark class="y">[E-POST_1]</mark></pre>
 
         function visSvar(svar) {
           harSvar = true;
-          skriver(true);
+          // Svaret tar hele plassen: overskriften og boksen viker, og kortet står alene midt i bildet.
+          if (tekst) {
+            tekst.classList.remove("skriver");
+            tekst.classList.add("har-svar");
+          }
           skjemaer.forEach(function (s) {
+            s.classList.add("svar");
             // De store er selvsagt godkjent. De får et bredere felt med skreddersydd oppsett ved siden av.
             s.classList.toggle("stor", Boolean(svar.stor));
             s.querySelector("[data-orgport-sok]").hidden = true;
@@ -971,8 +989,10 @@ Kontakt: <mark class="y">[E-POST_1]</mark></pre>
             boks.querySelectorAll("[data-navn]").forEach(function (el) {
               el.textContent = svar.navn;
             });
-            boks.querySelector("[data-godkjent]").hidden = Boolean(svar.stor);
-            boks.querySelector("[data-firma]").hidden = !svar.stor;
+            boks.querySelector("[data-orgnr]").textContent = KlartOrgfelt.tekst(svar.orgnr);
+            boks.querySelectorAll("[data-godkjent]").forEach(function (el) {
+              el.hidden = Boolean(svar.stor);
+            });
             boks.querySelector("[data-stor]").hidden = !svar.stor;
             boks.querySelector("[data-oppsett]").href = "pris/?orgnr=" + svar.orgnr + "&vis=oppsett";
             var pris = boks.querySelector("[data-pris]");
@@ -990,10 +1010,12 @@ Kontakt: <mark class="y">[E-POST_1]</mark></pre>
         function nullstill() {
           harSvar = false;
           skjemaer.forEach(function (s) {
-            s.classList.remove("stor");
+            s.classList.remove("stor", "svar");
             s.querySelector("[data-orgport-svar]").hidden = true;
             s.querySelector("[data-orgport-sok]").hidden = false;
           });
+          if (tekst) tekst.classList.remove("har-svar");
+          skriver(true);
         }
 
         skjemaer.forEach(function (skjema) {
