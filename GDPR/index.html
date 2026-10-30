@@ -1195,24 +1195,6 @@ Vergehaver er diagnostisert med <mark class="seal lit"><span class="o">depresjon
           });
         }
 
-        // Gnistene som skytes ut fra merket idet det fylles.
-        function lagGnister(segl) {
-          segl.querySelectorAll(".orgport-gnist").forEach(function (g) {
-            g.remove();
-          });
-          var farger = ["var(--signal)", "var(--signal-lit)", "var(--signal-deep)", "#9dbcff", "#c9dbff"];
-          for (var i = 0; i < 26; i++) {
-            var g = document.createElement("span");
-            g.className = "orgport-gnist";
-            g.style.setProperty("--v", (i / 26) * 360 + Math.random() * 12 + "deg");
-            g.style.setProperty("--l", 70 + Math.random() * 130 + "px");
-            g.style.setProperty("--s", 4 + Math.random() * 7 + "px");
-            g.style.setProperty("--d", 400 + Math.random() * 110 + "ms");
-            g.style.setProperty("--f", farger[i % farger.length]);
-            segl.appendChild(g);
-          }
-        }
-
         function visSvar(svar) {
           harSvar = true;
           // Svaret tar hele plassen: overskriften og boksen viker, og kortet står alene midt i bildet.
@@ -1230,7 +1212,6 @@ Vergehaver er diagnostisert med <mark class="seal lit"><span class="o">depresjon
               if (el.classList.contains("orgport-firmanavn")) spreNavn(el, svar.navn);
               else el.textContent = svar.navn;
             });
-            lagGnister(boks.querySelector(".orgport-segl"));
             boks.querySelector("[data-orgnr]").textContent = KlartOrgfelt.tekst(svar.orgnr);
             boks.querySelectorAll("[data-godkjent]").forEach(function (el) {
               el.hidden = Boolean(svar.stor);

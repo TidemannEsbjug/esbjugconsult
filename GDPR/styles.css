@@ -812,7 +812,7 @@ section {
 }
 
 /* Godkjent-merket: spretter inn, ringen tegnes, fylles blått, haken tegnes,
-   og ringer og gnister skytes utover. */
+   og to ringer brer seg utover. */
 .orgport-segl {
   position: relative;
   flex: none;
@@ -835,20 +835,6 @@ section {
 
 .orgport-segl::after {
   animation-delay: 620ms;
-}
-
-.orgport-gnist {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: var(--s);
-  height: var(--s);
-  margin: calc(var(--s) / -2);
-  border-radius: 50%;
-  background: var(--f);
-  opacity: 0;
-  pointer-events: none;
-  animation: orgport-gnist 900ms cubic-bezier(0.12, 0.7, 0.3, 1) var(--d) both;
 }
 
 .orgport-segl svg {
@@ -1073,20 +1059,6 @@ section {
   45% {
     opacity: 1;
     color: var(--signal);
-  }
-}
-
-@keyframes orgport-gnist {
-  0% {
-    opacity: 1;
-    transform: rotate(var(--v)) translateX(20px) scale(1);
-  }
-  65% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: rotate(var(--v)) translateX(var(--l)) scale(0.2);
   }
 }
 
