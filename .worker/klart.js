@@ -61,6 +61,7 @@ import {
   sprintFor,
   sprintTilbudFor,
   betalingFor,
+  ehfForvalgt,
   aktiv,
   virksomhetFra,
   grunnlagFra,
@@ -686,6 +687,7 @@ async function pris(env, url) {
     konsern: g.konsern,
     pris: l.pris,
     betaling: betalingFor(),
+    ehf: ehfForvalgt(v.form, g.v.ansatte),
     testing: testet ? null : { pris: p.testing.pris, eksporter: p.testing.eksporter, apen: testmodus(env) || TESTING_I_APPEN },
     // Oppsettsdag og sprinter som gjelder (tom liste for de små), med prisene åpent.
     stor: sprintTilbud(p, g).length > 0,

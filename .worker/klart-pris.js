@@ -241,6 +241,13 @@ export function betalingFor() {
   return { kort: true, faktura: true };
 }
 
+/** Om EHF skal være forhåndsvalgt på fakturaen. Det offentlige må ha EHF, og fra 5 ansatte bruker de fleste
+    det. De aller minste får vanlig faktura som utgangspunkt. Kunden kan alltid endre valget. */
+const OFFENTLIG = new Set(["STAT", "SF", "KOMM", "FYLK", "KF", "FKF", "IKS", "ORGL"]);
+export function ehfForvalgt(form, ansatte) {
+  return OFFENTLIG.has(form) || ansatte >= 5;
+}
+
 /** En enhet fra Enhetsregisteret kan kjøpe når den ikke er slettet, konkurs eller under avvikling. */
 export function aktiv(enhet) {
   return Boolean(

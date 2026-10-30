@@ -360,6 +360,7 @@
     });
 
     velgEn(null, "data-dekker", "egen");
+    velgEn(null, "data-ehf", d.ehf ? "ja" : "nei");
     $("kunde-panel").hidden = true;
     tegnKunder();
     $("sporsmal").hidden = false;

@@ -19,6 +19,7 @@ import {
   betalingFor,
   sektorFor,
   aktiv,
+  ehfForvalgt,
   virksomhetFra,
 } from "./klart-pris.js";
 
@@ -184,6 +185,12 @@ assert.deepEqual(betalingFor(), { kort: true, faktura: true });
 // Ugyldig kurve stoppes
 assert.throws(() => lesPriser(JSON.stringify({ kurve: { solo: 3000, punkter: [[1, 5000], [1, 6000]] } })));
 assert.throws(() => lesPriser(JSON.stringify({ kurve: { solo: 3000, punkter: [[1, 5000], [2, 4000]] } })));
+
+// EHF er forhåndsvalgt for det offentlige og fra 5 ansatte
+assert.equal(ehfForvalgt("AS", 4), false);
+assert.equal(ehfForvalgt("ENK", 0), false);
+assert.equal(ehfForvalgt("AS", 5), true);
+assert.equal(ehfForvalgt("KOMM", 0), true);
 
 // Enhetsregisteret
 assert.equal(aktiv({ konkurs: false }), true);
