@@ -11,6 +11,16 @@
 <link rel="alternate" hreflang="nb" href="https://esbjugconsult.com/">
 <link rel="alternate" hreflang="en" href="https://esbjugconsult.com/en/">
 <script>document.documentElement.classList.add("js");if(/[?&]speil=1/.test(location.search))document.documentElement.classList.add("speil","vis")</script>
+<script>
+// Lett modus (html.lett) for maskiner som ikke klarer alt: ingen uskarphet bak glasset, færre snøfnugg på ett lerret,
+// ingen strøm i sporet og færre bilder i sekundet i animasjonene. Ytelsesmåleren nederst slår det på når siden hakker,
+// og det huskes i 14 dager. ?lett og ?full overstyrer måleren (huskes like lenge), ?auto gir måleren ordet igjen.
+(()=>{let v=null;try{v=JSON.parse(localStorage.getItem('ytelse'))}catch{}
+const m=/[?&](lett|full|auto)\b/.exec(location.search);
+if(m){v=m[1]==='auto'?null:{m:m[1],t:Date.now(),valgt:1};try{v?localStorage.setItem('ytelse',JSON.stringify(v)):localStorage.removeItem('ytelse')}catch{}}
+if(v&&!(Date.now()-v.t<14*864e5))v=null;
+if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.documentElement.classList.add('lett');window.__ytelse=v})()
+</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2300205B'/%3E%3Ctext x='16' y='23.5' text-anchor='middle' font-family='Georgia,Times New Roman,serif' font-size='22' fill='%23fff'%3EE%3C/text%3E%3C/svg%3E">
 <link rel="preload" href="/media/sherpa-video.webp" as="image" type="image/webp">
 <link rel="preload" href="/media/fonts/gloock.woff2" as="font" type="font/woff2" crossorigin>
@@ -70,6 +80,16 @@
   .gl::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .35s ease;background:radial-gradient(220px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.85),rgba(255,255,255,0) 65%)}
   .gl.paa::after{opacity:1}
   @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.gl{background:rgba(255,255,255,.86)}}
+  /* Lett modus: glasset uten uskarphet bak (tettere i stedet), uten korn og uten å flyte. Hvert nytt bilde av kartet
+     og snøen må ellers gjøres uskarpt på nytt bak hvert panel. :where gjør bakgrunnen like svak som grunnregelen,
+     så varianter med egen bakgrunn fortsatt vinner. */
+  html.lett .gl{-webkit-backdrop-filter:none;backdrop-filter:none}
+  :where(html.lett) .gl{background:rgba(255,255,255,.86)}
+  html.lett .gl::before{display:none}
+  html.lett .flyt{animation:none}
+  /* ?ytelse: bildefrekvensen og modusen nede til venstre. */
+  .ytelse-m{position:fixed;left:8px;bottom:8px;z-index:2147483647;padding:5px 9px;border-radius:7px;background:rgba(0,0,0,.72);color:#fff;
+    font:600 12px/1.3 ui-monospace,"SF Mono",Menlo,monospace;pointer-events:none;white-space:pre}
   /* Toppmodulen: språkvalg, puls, her nå og unike besøkende i én boks. */
   .topp{display:inline-flex;align-items:center;flex-wrap:wrap;gap:12px clamp(14px,1.8vw,24px);padding:12px 20px 12px 14px}
   .topp .lang{position:relative;top:auto;left:auto;flex:none}
@@ -357,6 +377,11 @@
   /* Chatvinduet (fra 28.10.2026): halvgjennomsiktig is i arktisk blått i stedet for marineblått, med uskarphet bak. */
   #chat .ch-p{background:linear-gradient(165deg,rgba(96,140,190,.72),rgba(44,84,138,.8));border:1px solid rgba(255,255,255,.35);
     -webkit-backdrop-filter:blur(20px) saturate(1.25);backdrop-filter:blur(20px) saturate(1.25);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 18px 50px rgba(0,32,91,.3)}
+  /* Lett modus: chatknappen og chatvinduet uten uskarphet bak (tettere i stedet), og uten lysskjæret som glir over knappen. */
+  html.lett .ch-b,html.lett #chat .ch-p{-webkit-backdrop-filter:none;backdrop-filter:none}
+  :where(html.lett) .ch-b{background:rgba(238,245,251,.9)}
+  :where(html.lett) #chat .ch-p{background:linear-gradient(165deg,rgba(96,140,190,.96),rgba(44,84,138,.97))}
+  html.lett .ch-b::after{animation:none;background:none}
   #chat .ch-m .him,#chat .ch-more button,#chat .ch-mail,#chat .ch-ck,#chat .ch-m p.file a{background:rgba(255,255,255,.17)}
   #chat .ch-f textarea{background:rgba(10,40,85,.28)}
   /* Lys plassholdertekst i meldingsfeltet og GIF-søket, ellers forsvinner den mot den mørke bakgrunnen. */
@@ -1132,6 +1157,8 @@
   .sh-sno{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
   /* Snøen i to lag: de fjerne fnuggene bak teksten, de nære (store, myke) foran den. */
   .sh-sno.foran{z-index:3}
+  /* Lett modus: bare laget bak (de nære fnuggene tegnes der), så det er ett lerret i full skjerm mindre å legge sammen. */
+  html.lett .sh-sno.foran{display:none}
   /* Pekeren i sherpa-heroen: en vanlig pil, men av is (frostet, gjennomskinnelig, med blanke kanter). Lyser litt mer
      over noe klikkbart og drysser av seg et snøfnugg iblant når den flyttes. Bare med mus/styreflate. */
   @media (hover:hover) and (pointer:fine){html.mus .sh-hero, html.mus .sh-hero *{cursor:none!important}}
@@ -1280,6 +1307,8 @@
     background:repeating-linear-gradient(102deg,rgba(255,255,255,.06) 0 30px,transparent 30px 110px,rgba(190,235,255,.05) 110px 128px,transparent 128px 210px);
     -webkit-mask:linear-gradient(to bottom,#000 10%,transparent 85%);mask:linear-gradient(to bottom,#000 10%,transparent 85%);animation:vfStraaler 16s ease-in-out infinite alternate}
   @keyframes vfStraaler{from{transform:rotate(-4deg) translateX(-3%)}to{transform:rotate(4deg) translateX(3%)}}
+  html.lett .vf::before{animation:none}
+  html.lett .vf-chip,html.lett .vf-strom{-webkit-backdrop-filter:none;backdrop-filter:none}
   .vf::after{content:"";position:absolute;right:-12%;top:-30%;width:75%;aspect-ratio:1;z-index:-1;pointer-events:none;border-radius:50%;
     background:radial-gradient(closest-side,rgba(255,232,140,.26),rgba(255,232,140,0))}
   /* Lysprikker som stiger, som bobler langt bak */
@@ -1407,6 +1436,7 @@
     const tregtNett = nett.saveData || /2g/.test(nett.effectiveType || '') || (nett.downlink && nett.downlink < 1.5);
     const rasktNett = !nett.effectiveType || (nett.effectiveType === '4g' && !(nett.downlink && nett.downlink < 5));
     let i = tregtNett || n < 150 || (minne && minne <= 2) ? 0 : rasktNett && n >= 350 && !(minne && minne < 4) ? 2 : 1;
+    if (document.documentElement.classList.contains('lett')) i = Math.min(i, 1);   // lett modus: aldri høy
     v.src = NIVÅ[i];
     let vakt;
     v.addEventListener('waiting', () => {
@@ -2190,6 +2220,8 @@ function kjor() {
   kjorer = true; let sist = performance.now(); sy0 = scrollY; sv0 = 0;
   const f = n => {
     if (!synlig || document.hidden) { kjorer = false; return; }
+    // Lett modus (se ytelsesmåleren): 30 bilder i sekundet. Steget er aldri over 1/30 s uansett.
+    if (n - sist < 30 && document.documentElement.classList.contains('lett')) { requestAnimationFrame(f); return; }
     const dt = Math.min(1 / 30, (n - sist) / 1000); sist = n; tid += dt;
     tegnAlt(dt, false); requestAnimationFrame(f);
   };
@@ -2703,6 +2735,7 @@ const TX = EN ? {
   treff: ['SPLÆSJ!', 'Treff!', 'Rett i fleisen', 'Bingo!', 'PANG!', 'Midt i blinken', 'Au!', 'Klæsj', 'Full pott', 'Den satt!'],
 };
 const mobil = matchMedia('(pointer:coarse)').matches, still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const lett = () => document.documentElement.classList.contains('lett');   // se ytelsesmåleren
 let kart = null;   // MapLibre-kartet lages når første posisjon er kjent (leggKart)
 const PC = matchMedia('(min-width:761px)').matches, ZOOM_UTE = PC ? 9.1 : 9;   // standardzoom
 const $ = q => document.querySelector(q);
@@ -2762,7 +2795,7 @@ function leggKart() {
     kart = new maplibregl.Map({ container: 'kart', style: st, center: midt, zoom: live ? ZOOM_UTE : ZOOM_UTE - 2, attributionControl: { compact: true },
       // /hjem/: hold ⌘ eller Ctrl og rull for å zoome (vanlig rulling ruller siden).
       dragRotate: false, pitchWithRotate: false, touchPitch: false, scrollZoom: false, fadeDuration: 0,   // musehjulet ruller siden; zoom med + og −
-      pixelRatio: Math.min(devicePixelRatio || 1, 2),   // iPhonens 3× er ni ganger så mange piksler som 1×; 2× er skarpt nok og mye lettere
+      pixelRatio: lett() ? 1 : Math.min(devicePixelRatio || 1, 2),   // iPhonens 3× er ni ganger så mange piksler som 1×; 2× er skarpt nok og mye lettere
       // Mobil utenfor kartmodus: én finger ruller siden, to fingre flytter og zoomer kartet (så nettleseren aldri
       // zoomer siden når man kniper på kartet). I kartmodus slås dette av og kartet tar alt.
       cooperativeGestures: mobil,
@@ -2808,7 +2841,7 @@ let stromSteg = 0;
 let beveger = false, rullet = 0;
 addEventListener('scroll', () => { rullet = Date.now(); }, { passive: true });
 function strom() { kart.on('movestart', () => { beveger = true; }); kart.on('moveend', () => { beveger = false; });
-  setInterval(() => { if (!kart || !synlig || beveger || document.hidden || Date.now() - rullet < 400) return; stromSteg = (stromSteg + 2) % STEG.length; kart.setPaintProperty('spor-strom', 'line-dasharray', STEG[stromSteg]); }, 180); }   // samme fart, annethvert steg: halvparten så mange nye kartbilder
+  setInterval(() => { if (!kart || !synlig || beveger || document.hidden || lett() || Date.now() - rullet < 400) return; stromSteg = (stromSteg + 2) % STEG.length; kart.setPaintProperty('spor-strom', 'line-dasharray', STEG[stromSteg]); }, 180); }   // samme fart, annethvert steg: halvparten så mange nye kartbilder
 // Lasteprikken står der posisjonsprikken kommer: midt på den synlige skjermen (se marg()).
 { const h = document.getElementById('kart').clientHeight, y = Math.min(h / 2, innerHeight / 2);
   document.querySelector('.kv-prikk').style.top = y + 'px'; document.querySelector('.kv-i').style.top = (y + 34) + 'px'; }
@@ -2983,7 +3016,7 @@ function inn(k, t) {
 let oskSist = 0;
 function oskilloskop(ts) {
   requestAnimationFrame(oskilloskop);
-  if (ts - oskSist < 32 || Date.now() - rullet < 400) return;   // 30 bilder i sekundet er nok for kurvene; stille mens man ruller
+  if (ts - oskSist < (lett() ? 64 : 32) || Date.now() - rullet < 400) return;   // 30 bilder i sekundet er nok for kurvene (15 i lett modus); stille mens man ruller
   oskSist = ts;
   if (!synlig || document.documentElement.classList.contains('kartmodus')) return;   // skjult i kartmodus
   const nå = Date.now() + skew - FORS, d = devicePixelRatio || 1;
@@ -4093,6 +4126,7 @@ setInterval(tegn, 1000);
 // AI-sherpa-heroen: snø over bildet (musa blåser litt på den), ispilen og frosten på knappen.
 (() => {
   const $ = q => document.querySelector(q);
+  const lett = () => document.documentElement.classList.contains('lett');   // se ytelsesmåleren
   if (/[?&]tekst=bla\b/.test(location.search)) $('.sh-hero').classList.add('bla');
   // Videoen i heroen: to Grok-klipp av Midjourney-bilder, klippet rett etter hverandre (start og toppen) og i løkke. Står stille ved redusert bevegelse og pauses når heroen er ute av syne.
   const vid = $('.sh-bilde video');
@@ -4113,7 +4147,7 @@ setInterval(tegn, 1000);
           const d = px.getImageData(0, 0, 24, 3).data, ny = [0, 0, 0];
           for (let i = 0; i < d.length; i += 4) { ny[0] += d[i]; ny[1] += d[i + 1]; ny[2] += d[i + 2]; }
           for (let k = 0; k < 3; k++) ny[k] /= d.length / 4;
-          rgb = rgb ? rgb.map((v, k) => v + (ny[k] - v) * .3) : ny;
+          rgb = rgb ? rgb.map((v, k) => v + (ny[k] - v) * .5) : ny;
           hero.style.setProperty('--sky', `rgb(${rgb.map(Math.round).join(',')})`);
           return;
         } catch { kanMåle = false; }
@@ -4123,8 +4157,11 @@ setInterval(tegn, 1000);
       for (const [start, f] of HIMMEL) if (t >= start) farge = f;
       hero.style.setProperty('--sky', farge);
     };
+    // Fargen måles hvert 3. bilde (8 ganger i sekundet), i lett modus hvert 12.: hver måling henter bildet tilbake fra
+    // grafikkortet, og det koster.
     if ('requestVideoFrameCallback' in vid) {
-      const hvertBilde = () => { himmel(); vid.requestVideoFrameCallback(hvertBilde); };
+      let nr = 0;
+      const hvertBilde = () => { if (nr++ % (lett() ? 12 : 3) === 0) himmel(); vid.requestVideoFrameCallback(hvertBilde); };
       vid.requestVideoFrameCallback(hvertBilde);
     } else vid.addEventListener('timeupdate', himmel);
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) { vid.removeAttribute('autoplay'); vid.pause(); }
@@ -4164,12 +4201,17 @@ setInterval(tegn, 1000);
     c.parentNode.addEventListener('pointerleave', () => { mus.x = mus.y = -999; mus.vx = mus.vy = 0; });
     const R = 130;
     const overTekst = p => tekst.some(([l, t, r, b]) => p.x > l && p.x < r && p.y > t && p.y < b);
+    // Lett modus: 40 % av fnuggene, alle på lerretet bak som enkle prikker, tegnet annethvert bilde (de flytter seg
+    // fortsatt hvert bilde, så farten er den samme).
     const tegn = () => {
       if (synlig && !document.hidden) {
+        const lt = lett(), xn = lt ? x : xf;
         if (++n % 60 === 0) maalTekst();
-        x.clearRect(0, 0, w, h); xf.clearRect(0, 0, w, h);
-        const fart = Math.abs(mus.vx) + Math.abs(mus.vy);
-        for (const p of f) {
+        const ut = !lt || n % 2 === 0;
+        if (ut) { x.clearRect(0, 0, w, h); if (!lt) xf.clearRect(0, 0, w, h); }
+        const fart = Math.abs(mus.vx) + Math.abs(mus.vy), N = lt ? Math.ceil(f.length * .4) : f.length;
+        for (let i = 0; i < N; i++) {
+          const p = f[i];
           if (fart > .5) {
             const dx = p.x - mus.x, dy = p.y - mus.y, d = Math.hypot(dx, dy);
             if (d < R && d > 0) {
@@ -4184,10 +4226,12 @@ setInterval(tegn, 1000);
           if (p.x < -8) p.x = w + 8; else if (p.x > w + 8) p.x = -8;
           if (p.z > FORAN) {
             p.a += ((overTekst(p) ? .3 : 1) - p.a) * .08;
+            if (!ut) continue;
+            if (lt) { x.globalAlpha = .8 * p.a; x.fillStyle = '#fff'; x.beginPath(); x.arc(p.x, p.y, p.r * 1.2, 0, 6.283); x.fill(); continue; }
             const g = xf.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 1.8);
             g.addColorStop(0, `rgba(255,255,255,${.9 * p.a})`); g.addColorStop(.55, `rgba(255,255,255,${.55 * p.a})`); g.addColorStop(1, 'rgba(255,255,255,0)');
             xf.fillStyle = g; xf.beginPath(); xf.arc(p.x, p.y, p.r * 1.8, 0, 6.283); xf.fill();
-          } else {
+          } else if (ut) {
             x.globalAlpha = .45 + p.z * .5; x.fillStyle = '#fff';
             x.beginPath(); x.arc(p.x, p.y, p.r, 0, 6.283); x.fill();
           }
@@ -4199,10 +4243,11 @@ setInterval(tegn, 1000);
           const p = drys[i];
           p.liv -= .006; if (p.liv <= 0) { drys.splice(i, 1); continue; }
           p.y += p.v; p.s += .03; p.x += Math.sin(p.s) * .3 + p.dx; p.dx *= .96;
-          xf.globalAlpha = p.liv * .85; xf.fillStyle = '#fff';
-          xf.beginPath(); xf.arc(p.x - r0.left, p.y - r0.top, p.r, 0, 6.283); xf.fill();
+          if (!ut) continue;
+          xn.globalAlpha = p.liv * .85; xn.fillStyle = '#fff';
+          xn.beginPath(); xn.arc(p.x - r0.left, p.y - r0.top, p.r, 0, 6.283); xn.fill();
         }
-        xf.globalAlpha = 1;
+        x.globalAlpha = xf.globalAlpha = 1;
         mus.vx *= .85; mus.vy *= .85;
       }
       requestAnimationFrame(tegn);
@@ -4444,6 +4489,40 @@ setInterval(tegn, 1000);
     loop();
   }
 
+})();
+</script>
+<script>
+// Ytelsesmåleren: teller bildene mens siden vises, fra 3 s etter at den har lastet (innlastingen hakker alltid litt).
+// Hvert 2. s ses det på bildene: er medianen over 24 ms (under ~40 bilder i sekundet) eller hvert fjerde bilde over
+// 40 ms, er det en dårlig måling. Tre dårlige på rad (6 s), og lett modus slås på med en gang og huskes i 14 dager.
+// Pauser over 0,7 s er bakgrunn eller struping, ikke hakking, og telles ikke. Valgt med ?lett eller ?full: måleren
+// bare måler. ?ytelse viser bildefrekvensen og modusen nede til venstre.
+(() => {
+  const r = document.documentElement, v = window.__ytelse, auto = !v?.valgt;
+  const lett = () => r.classList.contains('lett');
+  let boks = null;
+  if (/[?&]ytelse\b/.test(location.search)) { boks = document.createElement('div'); boks.className = 'ytelse-m'; boks.textContent = '…'; document.body.append(boks); }
+  let sist = 0, t0 = 0, d = [], dårlige = 0;
+  const f = t => {
+    if (sist && !document.hidden && t - sist < 700) d.push(t - sist);
+    sist = t; t0 ||= t;
+    if (t - t0 >= 2000) {
+      if (d.length >= 8) {
+        d.sort((a, b) => a - b);
+        const med = d[d.length >> 1], p75 = d[Math.floor(d.length * .75)];
+        dårlige = med > 24 || p75 > 40 ? dårlige + 1 : 0;
+        if (auto && !lett() && dårlige >= 3) {
+          r.classList.add('lett');
+          try { localStorage.setItem('ytelse', JSON.stringify({ m: 'lett', t: Date.now() })); } catch {}
+        }
+        if (boks) boks.textContent = `${Math.round(1000 / med)} fps (median ${med.toFixed(1)} ms)\n${lett() ? 'lett' : 'full'} · ${auto ? 'auto' : 'valgt'}`;
+      }
+      d = []; t0 = t;
+    }
+    if (boks || (auto && !lett())) requestAnimationFrame(f);
+  };
+  const start = () => setTimeout(() => requestAnimationFrame(f), 3000);
+  if (document.readyState === 'complete') start(); else addEventListener('load', start, { once: true });
 })();
 </script>
 </body>
