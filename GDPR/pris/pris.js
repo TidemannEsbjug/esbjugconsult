@@ -61,22 +61,52 @@
       return;
     }
     var s = getComputedStyle(el);
+    // Kantlinjen øverst og nederst tegnes som skygge mens elementet beveger seg, med samme plass i polstringen.
+    // Chrome runder kantlinjer opp til 1 px helt til de er 0, og da ville alt under hoppet på slutten.
+    var kantTopp = parseFloat(s.borderTopWidth) || 0;
+    var kantBunn = parseFloat(s.borderBottomWidth) || 0;
     var aapen = {
       height: el.offsetHeight + "px",
       marginTop: s.marginTop,
       marginBottom: s.marginBottom,
-      paddingTop: s.paddingTop,
-      paddingBottom: s.paddingBottom,
+      paddingTop: parseFloat(s.paddingTop) + kantTopp + "px",
+      paddingBottom: parseFloat(s.paddingBottom) + kantBunn + "px",
       opacity: 1,
     };
     var lukket = { height: "0px", marginTop: "0px", marginBottom: "0px", paddingTop: "0px", paddingBottom: "0px", opacity: 0 };
+    el.style.boxShadow = "inset 0 " + kantTopp + "px 0 " + s.borderTopColor + ", inset 0 " + -kantBunn + "px 0 " + s.borderBottomColor;
+    el.style.borderTopWidth = "0";
+    el.style.borderBottomWidth = "0";
+    // Mellomrommet i et rutenett forsvinner ikke med høyden. Neste element tar det opp, så ingenting hopper.
+    var ps = getComputedStyle(el.parentElement);
+    var nabo = el.nextElementSibling;
+    var mellomrom = /grid|flex/.test(ps.display) && nabo && !nabo.hidden ? parseFloat(ps.rowGap) || 0 : 0;
+    var naboAnim = null;
+    if (mellomrom) {
+      var naboTopp = parseFloat(getComputedStyle(nabo).marginTop) || 0;
+      var ute = { marginTop: naboTopp + "px" };
+      var inne = { marginTop: naboTopp - mellomrom + "px" };
+      naboAnim = nabo.animate(vis ? [inne, ute] : [ute, inne], { duration: GLID_TID.duration, easing: GLID_TID.easing, fill: "forwards" });
+    }
     el.style.overflow = "hidden";
     el.style.boxSizing = "border-box";
-    spill(el, vis ? [lukket, aapen] : [aapen, lukket], function () {
+    function rydd() {
       el.style.overflow = "";
       el.style.boxSizing = "";
+      el.style.boxShadow = "";
+      el.style.borderTopWidth = "";
+      el.style.borderBottomWidth = "";
+      if (naboAnim) naboAnim.cancel();
+    }
+    spill(el, vis ? [lukket, aapen] : [aapen, lukket], function () {
       el.hidden = !vis;
+      rydd();
     });
+    var stopp = el._glid.cancel;
+    el._glid.cancel = function () {
+      stopp();
+      rydd();
+    };
   }
 
   // Spørsmålene og andre <details> åpnes og lukkes på samme måte.
@@ -1032,7 +1062,7 @@
     b.addEventListener("click", function () {
       betaling = b.getAttribute("data-betaling");
       visBetaling();
-      if (betaling === "faktura") $("b-epost").focus();
+      if (betaling === "faktura") $("b-epost").focus({ preventScroll: true });
     });
   });
   function annenNokkelEpost() {
