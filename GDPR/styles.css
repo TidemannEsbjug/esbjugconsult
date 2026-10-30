@@ -669,6 +669,21 @@ section {
   margin-top: auto;
 }
 
+/* På desktop står feltet rett under hytta. Hyttas plass i bildet følger av bredde og høyde (object-fit: cover). */
+@media (min-width: 761px) {
+  .hero .scene-tekst:not(.har-svar) {
+    position: static;
+  }
+
+  .hero .scene-tekst:not(.har-svar) > .orgport {
+    position: absolute;
+    top: calc(23vw + 8vh + 30px);
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+  }
+}
+
 /* Heroen har én oppgave: feltet og knappen, store og midt i bildet. Forklaringen står rett under bildet. */
 @media (min-width: 561px) {
   .hero .scene .orgport:not(.svar) {
