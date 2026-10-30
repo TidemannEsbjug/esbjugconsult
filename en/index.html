@@ -7,7 +7,7 @@
 <meta name="description" content="Tidemann Esbjug is the AI Sherpa: he does the heavy lifting of setting up the systems right, so the business can take part in AI.">
 <script>history.scrollRestoration="manual"</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
-<meta name="theme-color" content="#74a8d4">
+<meta name="theme-color" content="#7cb0d6">
 <link rel="alternate" hreflang="nb" href="https://esbjugconsult.com/">
 <link rel="alternate" hreflang="en" href="https://esbjugconsult.com/en/">
 <script>document.documentElement.classList.add("js");if(/[?&]speil=1/.test(location.search))document.documentElement.classList.add("speil","vis")</script>
@@ -1147,13 +1147,12 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   /* ===== AI-sherpaen: heroen øverst og kartet i vinterfarger (fra 28.10.2026, først prøvd på /sherpa/) ===== */
   .sh-hero{width:100%;flex:none}
   .focus .sh-hero{opacity:0;filter:blur(8px);pointer-events:none}
-  .sh-hero{--sky:#74a8d4;position:relative;min-height:100svh;display:flex;flex-direction:column;background:var(--sky);color:#00205B;overflow:hidden;isolation:isolate}
-  /* Videoen står nederst i sitt eget format. Toppen glir mykt over i himmelen. Bakgrunnen får fargen målt fra toppen av
-     videoen i hvert bilde (se «himmel» i skriptet), så det ikke blir en vannrett strek der videoen begynner. --dyp kan korte
-     inn overgangen (står på 1 nå som scene 2 er tatt ut). */
+  .sh-hero{--sky:#7cb0d6;position:relative;min-height:100svh;display:flex;flex-direction:column;background:var(--sky);color:#00205B;overflow:hidden;isolation:isolate}
+  /* Bildet står nederst i sitt eget format. Toppen glir mykt over i himmelen: bakgrunnen (--sky) har samme farge som
+     himmelen øverst i bildet, så det ikke blir en vannrett strek der bildet begynner. --dyp kan korte inn overgangen. */
   .sh-bilde{position:absolute;left:0;right:0;bottom:0;height:min(100%,calc(100vw * .4286));z-index:-2;margin:0;
     -webkit-mask-image:linear-gradient(to bottom,transparent,rgba(0,0,0,.3) calc(13% * var(--dyp,1)),rgba(0,0,0,.72) calc(25% * var(--dyp,1)),#000 calc(36% * var(--dyp,1)));mask-image:linear-gradient(to bottom,transparent,rgba(0,0,0,.3) calc(13% * var(--dyp,1)),rgba(0,0,0,.72) calc(25% * var(--dyp,1)),#000 calc(36% * var(--dyp,1)))}
-  .sh-bilde video{width:100%;height:100%;object-fit:cover;object-position:70% 100%;display:block}
+  .sh-bilde img{width:100%;height:100%;object-fit:cover;object-position:70% 100%;display:block}
   .sh-sno{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
   /* Snøen i to lag: de fjerne fnuggene bak teksten, de nære (store, myke) foran den. */
   .sh-sno.foran{z-index:3}
@@ -1259,7 +1258,7 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
     .sh-bilde{display:block;position:relative;inset:auto;height:auto;flex:1 0 300px;order:3;margin-top:-60px;
       -webkit-mask-image:linear-gradient(to bottom,transparent 0,rgba(0,0,0,.15) calc(12% * var(--dyp,1)),rgba(0,0,0,.55) calc(26% * var(--dyp,1)),#000 calc(42% * var(--dyp,1)));
       mask-image:linear-gradient(to bottom,transparent 0,rgba(0,0,0,.15) calc(12% * var(--dyp,1)),rgba(0,0,0,.55) calc(26% * var(--dyp,1)),#000 calc(42% * var(--dyp,1)))}
-    .sh-bilde video{position:absolute;inset:0}
+    .sh-bilde img{position:absolute;inset:0}
     .sh-merke span{display:none}
     /* «Lettere til topps.» på én linje (8,9 em bred), heller mindre skrift enn to linjer. */
     .sh-hero h1{font-size:9.6vw;white-space:nowrap}
@@ -1413,36 +1412,8 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
 <body>
 <script>document.body.classList.add('forspill');setTimeout(()=>document.body.classList.remove('forspill'),8000)</script>
 <section class="sh-hero" aria-label="The AI Sherpa">
-  <div class="sh-bilde"><video autoplay muted loop playsinline preload="auto" poster="/media/sherpa-video.webp" role="img" aria-label="Illustration of a roped team climbing a snowy mountain ridge in Norway, with a red cabin in the valley below"></video></div>
-  <script>
-  // Videokvaliteten velges før noe lastes. En kort regnetest (8 ms) og det nettleseren vet om nettet og minnet avgjør:
-  // høy (1456 px, 2,5 Mbit/s), middels (1456 px, 1 Mbit/s) eller lav (900 px). Henger videoen i mer enn halvannet
-  // sekund, går den ned ett trinn og fortsetter der den var.
-  (() => {
-    const v = document.querySelector('.sh-bilde video'), nett = navigator.connection || {}, minne = navigator.deviceMemory;
-    const NIVÅ = ['/media/sherpa-900.mp4?v=5', '/media/sherpa.mp4?v=4', '/media/sherpa-hq.mp4?v=2'];
-    let x = 1, n = 0, t0 = performance.now();
-    while (performance.now() - t0 < 2) for (let i = 0; i < 1000; i++) x = (x * 1.000001 + i) % 1e6;
-    t0 = performance.now();
-    while (performance.now() - t0 < 8) { for (let i = 0; i < 1000; i++) x = (x * 1.000001 + i) % 1e6; n++; }
-    const tregtNett = nett.saveData || /2g/.test(nett.effectiveType || '') || (nett.downlink && nett.downlink < 1.5);
-    const rasktNett = !nett.effectiveType || (nett.effectiveType === '4g' && !(nett.downlink && nett.downlink < 5));
-    let i = tregtNett || n < 150 || (minne && minne <= 2) ? 0 : rasktNett && n >= 350 && !(minne && minne < 4) ? 2 : 1;
-    if (document.documentElement.classList.contains('lett')) i = Math.min(i, 1);   // lett modus: aldri høy
-    v.src = NIVÅ[i];
-    let vakt;
-    v.addEventListener('waiting', () => {
-      clearTimeout(vakt);
-      vakt = setTimeout(() => {
-        if (v.readyState >= 3 || !i) return;
-        const t = v.currentTime;
-        v.src = NIVÅ[--i];
-        v.addEventListener('loadedmetadata', () => { v.currentTime = t; v.play().catch(() => {}); }, { once: true });
-      }, 1500);
-    });
-    v.addEventListener('playing', () => clearTimeout(vakt));
-  })();
-  </script>
+  <!-- Bildet i stedet for videoen (fra 30.10.2026, prøves ut). Klippene ligger fortsatt i media/ (sherpa*.mp4). -->
+  <div class="sh-bilde"><img src="/media/sherpa-video.webp" width="1456" height="624" fetchpriority="high" alt="Illustration of a roped team climbing a snowy mountain ridge in Norway, with a red cabin in the valley below"></div>
   <canvas class="sh-sno" aria-hidden="true"></canvas>
   <canvas class="sh-sno foran" aria-hidden="true"></canvas>
   <nav class="sh-nav"><a class="sh-merke" href="/en/">Esbjug Consult</a><div class="sh-lenker"><a href="#live">Live</a><a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Contact</a></div></nav>
@@ -4120,45 +4091,6 @@ setInterval(tegn, 1000);
   const $ = q => document.querySelector(q);
   const lett = () => document.documentElement.classList.contains('lett');   // se ytelsesmåleren
   if (/[?&]tekst=bla\b/.test(location.search)) $('.sh-hero').classList.add('bla');
-  // Videoen i heroen: to Grok-klipp av Midjourney-bilder, klippet rett etter hverandre (start og toppen) og i løkke. Står stille ved redusert bevegelse og pauses når heroen er ute av syne.
-  const vid = $('.sh-bilde video');
-  if (vid) {
-    // Bakgrunnen over videoen følger himmelen i hver scene, så toppen av videoen glir over i riktig farge.
-    // Starttid i sekunder (klippene er 361 og 361 bilder i 24 fps) og himmelfargen målt øverst til venstre.
-    const HIMMEL = [[0, '#74a8d4'], [361 / 24, '#7dadc0']];
-    const hero = $('.sh-hero');
-    // Fargen måles i det øverste båndet av videoen (venstre halvdel, der det er himmel) og glir mot ny verdi, så den følger
-    // kameraet. Går målingen ikke, brukes fargen for scenen fra HIMMEL.
-    const prøve = document.createElement('canvas'); prøve.width = 24; prøve.height = 3;
-    const px = prøve.getContext('2d', { willReadFrequently: true });
-    let rgb = null, kanMåle = true;
-    const himmel = () => {
-      if (kanMåle && vid.videoWidth) {
-        try {
-          px.drawImage(vid, 0, 0, vid.videoWidth * .5, vid.videoHeight * .05, 0, 0, 24, 3);
-          const d = px.getImageData(0, 0, 24, 3).data, ny = [0, 0, 0];
-          for (let i = 0; i < d.length; i += 4) { ny[0] += d[i]; ny[1] += d[i + 1]; ny[2] += d[i + 2]; }
-          for (let k = 0; k < 3; k++) ny[k] /= d.length / 4;
-          rgb = rgb ? rgb.map((v, k) => v + (ny[k] - v) * .5) : ny;
-          hero.style.setProperty('--sky', `rgb(${rgb.map(Math.round).join(',')})`);
-          return;
-        } catch { kanMåle = false; }
-      }
-      const t = vid.currentTime + 0.01;
-      let farge = HIMMEL[0][1];
-      for (const [start, f] of HIMMEL) if (t >= start) farge = f;
-      hero.style.setProperty('--sky', farge);
-    };
-    // Fargen måles hvert 3. bilde (8 ganger i sekundet), i lett modus hvert 12.: hver måling henter bildet tilbake fra
-    // grafikkortet, og det koster.
-    if ('requestVideoFrameCallback' in vid) {
-      let nr = 0;
-      const hvertBilde = () => { if (nr++ % (lett() ? 12 : 3) === 0) himmel(); vid.requestVideoFrameCallback(hvertBilde); };
-      vid.requestVideoFrameCallback(hvertBilde);
-    } else vid.addEventListener('timeupdate', himmel);
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { vid.removeAttribute('autoplay'); vid.pause(); }
-    else new IntersectionObserver(e => { if (e[0].isIntersecting) vid.play().catch(() => {}); else vid.pause(); }).observe(vid);
-  }
   // Snøen har dybde: hvert fnugg har en avstand z (0 langt borte, 1 nærmest). Nære fnugg er større, mykere og faller
   // fortere. De nærmeste tegnes på et lerret foran teksten, resten bak. Foran teksten dempes de, så den kan leses.
   const c = $('.sh-sno'), cf = $('.sh-sno.foran'), rolig = matchMedia('(prefers-reduced-motion: reduce)').matches;
