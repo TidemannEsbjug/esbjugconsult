@@ -438,6 +438,8 @@
 
   // Kortet ved siden av lisensprisen, og valgene på siden for oppsett og sprint.
   function visSprintPris(d) {
+    // Hentes i forkant, så bildet er klart idet oversikten rulles ut.
+    if (d.stor) new Image().src = "../assets/klart-maskin-sno.jpg";
     var liste = d.sprint || [];
     var sprinten = liste.find(function (t) {
       return t.id !== "oppsett";
