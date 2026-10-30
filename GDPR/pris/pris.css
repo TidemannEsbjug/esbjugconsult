@@ -45,7 +45,6 @@ textarea {
   backdrop-filter: saturate(1.3) blur(22px);
   border: 1px solid rgba(255, 255, 255, 0.75);
   box-shadow: 0 2px 4px rgba(20, 30, 40, 0.05), 0 22px 54px rgba(20, 40, 70, 0.18);
-  transition: width 360ms var(--ease);
 }
 .kort.middels {
   width: min(680px, 100%);
@@ -55,25 +54,6 @@ textarea {
 }
 
 /* Hvert steg glir inn fra høyre (fram) eller venstre (tilbake). */
-.steg {
-  animation: fram 340ms var(--ease) both;
-}
-.steg.tilbake-inn {
-  animation-name: tilbake;
-}
-@keyframes fram {
-  from {
-    opacity: 0;
-    transform: translateX(28px);
-  }
-}
-@keyframes tilbake {
-  from {
-    opacity: 0;
-    transform: translateX(-28px);
-  }
-}
-
 .stegrad {
   display: flex;
   gap: 6px;
@@ -576,11 +556,6 @@ textarea:focus {
 .kort.bred:has(#s-oppsett:not([hidden])) {
   width: min(1120px, 100%);
   background: rgba(255, 255, 255, 0.97);
-  /* Bytter i ett, uten toning: bredde, innhold og bakgrunn kommer samtidig. */
-  transition: none;
-}
-#s-oppsett {
-  animation: none;
 }
 /* Toppen: tittel, innledning, valg og pris til venstre, maskinen stor til høyre. Begge starter på samme linje. */
 #s-oppsett {

@@ -152,15 +152,11 @@
   // Kortet er bredere der det er mer å se.
   var BREDDE = { "s-oppsett": "bred", "s-dekker": "middels", "s-betaling": "middels", "s-nokkel": "middels", "s-bekreft": "middels", "s-ferdig": "middels", "s-testing": "middels" };
 
-  function vis(steg, tilbake) {
+  function vis(steg) {
     STEG.forEach(function (id) {
       $(id).hidden = id !== steg;
     });
     var el = $(steg);
-    el.classList.toggle("tilbake-inn", Boolean(tilbake));
-    el.style.animation = "none";
-    void el.offsetHeight;
-    el.style.animation = "";
     var bredde = steg === "s-pris" ? (tilbud && tilbud.stor ? "bred" : "middels") : BREDDE[steg];
     $("kort").classList.toggle("bred", bredde === "bred");
     $("kort").classList.toggle("middels", bredde === "middels");
@@ -189,7 +185,7 @@
         visBetaling();
         return;
       }
-      vis(historikk.pop() || "s-pris", true);
+      vis(historikk.pop() || "s-pris");
     });
   });
 
@@ -382,7 +378,7 @@
       portfelt.tom();
       $("sporsmal").hidden = true;
       settAdresse(null);
-      vis("s-port", true);
+      vis("s-port");
       $("orgnr").focus();
     });
   });
