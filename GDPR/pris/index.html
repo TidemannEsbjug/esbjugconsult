@@ -849,6 +849,96 @@
           padding-right: var(--gut);
         }
       }
+
+      /* Faktura sendt: Klart øverst, så beskjeden, detaljene og hva som skjer videre. */
+      .ferdig-logo {
+        display: block;
+        margin-bottom: 26px;
+        font-size: 21px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        text-decoration: none;
+      }
+      .ferdig-topp {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .ferdig-topp svg {
+        flex: none;
+        width: 52px;
+        height: 52px;
+        fill: none;
+        animation: ferdig-merke 620ms cubic-bezier(0.2, 1.3, 0.4, 1) both;
+      }
+      .ferdig-topp circle {
+        fill: var(--ok);
+      }
+      .ferdig-topp path {
+        stroke: #fff;
+        stroke-width: 4.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .kort .ferdig-topp h2 {
+        margin: 0;
+      }
+      .ferdig-firma {
+        margin-top: 4px;
+        font-size: 15px;
+        color: var(--ink-2);
+      }
+      .ferdig-videre {
+        margin: 26px 0 0;
+        padding: 0;
+        list-style: none;
+        counter-reset: videre;
+      }
+      .ferdig-videre li {
+        position: relative;
+        padding: 0 0 14px 38px;
+        font-size: 15.5px;
+        line-height: 1.45;
+        color: var(--ink-2);
+        counter-increment: videre;
+      }
+      .ferdig-videre li:last-child {
+        padding-bottom: 0;
+      }
+      .ferdig-videre li::before {
+        content: counter(videre);
+        position: absolute;
+        left: 0;
+        top: -1px;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 26px;
+        text-align: center;
+        color: var(--signal-deep);
+        background: var(--signal-soft);
+      }
+      .ferdig-videre b {
+        color: var(--ink);
+      }
+      .ferdig-tittel {
+        margin-top: 26px;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--ink);
+      }
+      .ferdig-tittel + .ferdig-videre {
+        margin-top: 12px;
+      }
+      @keyframes ferdig-merke {
+        from {
+          opacity: 0;
+          transform: scale(0.4);
+        }
+      }
     </style>
   </head>
   <body>
@@ -1300,11 +1390,24 @@
 
           <!-- Faktura sendt -->
           <div class="steg" id="s-ferdig" hidden>
-            <p class="merke ok">Fakturaen er sendt</p>
-            <h2 id="f-tittel" tabindex="-1"></h2>
-            <p class="ingress" id="f-tekst"></p>
+            <a class="ferdig-logo" href="/klart/">Klart</a>
+            <div class="ferdig-topp">
+              <svg viewBox="0 0 56 56" aria-hidden="true"><circle cx="28" cy="28" r="28" /><path d="M17 29l8 8 15-17" /></svg>
+              <div>
+                <h2 tabindex="-1">Fakturaen er sendt</h2>
+                <p class="ferdig-firma" id="f-tittel"></p>
+              </div>
+            </div>
+            <dl class="sammendrag" id="f-liste" style="margin-top: 22px"></dl>
+            <p class="ferdig-tittel">Slik går det videre</p>
+            <ol class="ferdig-videre">
+              <li>Betal fakturaen <b id="f-frist"></b>.</li>
+              <li>Lisensnøkkelen kommer til <b id="f-nokkel-til"></b> så snart betalingen er mottatt.</li>
+              <li>Lim nøkkelen inn i Klart. Da er grensen på 10 dokumenter borte.</li>
+            </ol>
             <div class="knapper">
-              <a class="btn ghost" id="f-faktura" href="#" target="_blank" rel="noopener" hidden>Åpne fakturaen</a>
+              <a class="btn" id="f-faktura" href="#" target="_blank" rel="noopener" hidden>Åpne fakturaen</a>
+              <a class="btn ghost" href="/klart/#last-ned">Last ned Klart</a>
             </div>
           </div>
 
@@ -2295,16 +2398,24 @@
 
         function visFaktura(svar) {
           var f = svar.faktura;
-          $("f-tittel").textContent = svar.navn;
-          $("f-tekst").textContent =
-            "Faktura" +
-            (f.nummer ? " " + f.nummer : "") +
-            " på " +
-            nok(f.belop) +
-            " inkl. mva er sendt til " +
-            svar.epost +
-            (f.forfall ? ", med forfall " + datoTekst(f.forfall) : "") +
-            ". Lisensnøkkelen sendes til " + svar.nokkelEpost + " så snart fakturaen er betalt.";
+          $("f-tittel").textContent = svar.navn + " · Org.nr. " + orgnrTekst(svar.orgnr);
+          var rader = [["Beløp inkl. mva", nok(f.belop)], ["Sendt til", svar.epost]];
+          if (f.nummer) rader.unshift(["Fakturanummer", f.nummer]);
+          if (f.forfall) rader.push(["Forfall", datoTekst(f.forfall)]);
+          var liste = $("f-liste");
+          liste.innerHTML = "";
+          rader.forEach(function (r) {
+            var dt = document.createElement("dt");
+            dt.textContent = r[0];
+            var dd = document.createElement("dd");
+            dd.textContent = r[1];
+            var rad = document.createElement("div");
+            rad.appendChild(dt);
+            rad.appendChild(dd);
+            liste.appendChild(rad);
+          });
+          $("f-frist").textContent = f.forfall ? "innen " + datoTekst(f.forfall) : "innen 7 dager";
+          $("f-nokkel-til").textContent = svar.nokkelEpost;
           $("f-faktura").hidden = !f.adresse;
           if (f.adresse) $("f-faktura").href = f.adresse;
           historikk = [];

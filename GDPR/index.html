@@ -1174,6 +1174,45 @@ Vergehaver er diagnostisert med <mark class="seal lit"><span class="o">depresjon
           if (tekst && tekst.classList.contains("skriver")) maalLoft();
         });
 
+        // Navnet er det de har ventet på: bokstavene spretter inn én og én, hele ord holdes samlet.
+        function spreNavn(el, navn) {
+          el.textContent = "";
+          el.setAttribute("aria-label", navn);
+          var i = 0;
+          navn.split(" ").forEach(function (ord, n) {
+            if (n) el.appendChild(document.createTextNode(" "));
+            var o = document.createElement("span");
+            o.className = "orgport-ord";
+            o.setAttribute("aria-hidden", "true");
+            Array.from(ord).forEach(function (tegn) {
+              var b = document.createElement("span");
+              b.className = "orgport-bokstav";
+              b.style.setProperty("--i", Math.min(i++, 28));
+              b.textContent = tegn;
+              o.appendChild(b);
+            });
+            el.appendChild(o);
+          });
+        }
+
+        // Gnistene som skytes ut fra merket idet det fylles.
+        function lagGnister(segl) {
+          segl.querySelectorAll(".orgport-gnist").forEach(function (g) {
+            g.remove();
+          });
+          var farger = ["var(--ok)", "#37c99a", "var(--signal)", "var(--signal-lit)", "#f4bf3a"];
+          for (var i = 0; i < 26; i++) {
+            var g = document.createElement("span");
+            g.className = "orgport-gnist";
+            g.style.setProperty("--v", (i / 26) * 360 + Math.random() * 12 + "deg");
+            g.style.setProperty("--l", 70 + Math.random() * 130 + "px");
+            g.style.setProperty("--s", 4 + Math.random() * 7 + "px");
+            g.style.setProperty("--d", 400 + Math.random() * 110 + "ms");
+            g.style.setProperty("--f", farger[i % farger.length]);
+            segl.appendChild(g);
+          }
+        }
+
         function visSvar(svar) {
           harSvar = true;
           // Svaret tar hele plassen: overskriften og boksen viker, og kortet står alene midt i bildet.
@@ -1188,8 +1227,10 @@ Vergehaver er diagnostisert med <mark class="seal lit"><span class="o">depresjon
             s.querySelector("[data-orgport-sok]").hidden = true;
             var boks = s.querySelector("[data-orgport-svar]");
             boks.querySelectorAll("[data-navn]").forEach(function (el) {
-              el.textContent = svar.navn;
+              if (el.classList.contains("orgport-firmanavn")) spreNavn(el, svar.navn);
+              else el.textContent = svar.navn;
             });
+            lagGnister(boks.querySelector(".orgport-segl"));
             boks.querySelector("[data-orgnr]").textContent = KlartOrgfelt.tekst(svar.orgnr);
             boks.querySelectorAll("[data-godkjent]").forEach(function (el) {
               el.hidden = Boolean(svar.stor);
