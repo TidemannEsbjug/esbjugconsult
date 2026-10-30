@@ -19,7 +19,7 @@ textarea {
   flex-direction: column;
   align-items: center;
   min-height: 100svh;
-  padding: clamp(32px, 10vh, 120px) 16px clamp(48px, 8vh, 96px);
+  padding: clamp(32px, 10vh, 120px) 16px clamp(20px, 3vh, 48px);
   background: #dfe8f2 url("../assets/hero-film-slutt.jpg") center 38% / cover no-repeat;
   position: relative;
   isolation: isolate;
@@ -1076,8 +1076,7 @@ textarea:focus {
   border-color: var(--signal-lit);
 }
 .book-kart {
-  height: clamp(240px, 38vh, 380px);
-  margin-top: 14px;
+  height: clamp(240px, 46vh, 440px);
   overflow: hidden;
   border-radius: 16px;
   background: var(--ground);
@@ -1105,6 +1104,40 @@ textarea:focus {
   border: 4px solid #fff;
   box-shadow: 0 4px 14px rgba(26, 63, 176, 0.5);
 }
-#s-book-dato .kalender {
-  margin-top: 20px;
+/* To kolonner, så alt får plass på skjermen uten å rulle. Bakgrunnen dekker hele skjermen. */
+.book-rute {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+  gap: clamp(24px, 3.4vw, 48px);
+  align-items: start;
+  margin-top: 8px;
+}
+.book-rute .knapper {
+  margin-top: 18px;
+}
+.book-rute .ingress {
+  margin-top: 0;
+}
+.book-rute .kalender {
+  margin-top: 0;
+}
+.book-rute .sammendrag {
+  margin-top: 0;
+}
+.book-rute .book-felt {
+  margin-top: 14px;
+}
+.book-kolonne {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  min-width: 0;
+}
+#book-skjema.book-rute {
+  display: grid;
+}
+@media (max-width: 760px) {
+  .book-rute {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

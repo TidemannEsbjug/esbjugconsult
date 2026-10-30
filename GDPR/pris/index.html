@@ -309,6 +309,8 @@
             <button type="button" class="tilbake" data-tilbake>← Tilbake</button>
             <p class="merke" data-book-merke>Book sprint</p>
             <h2 tabindex="-1">Hvor skal jeg komme?</h2>
+            <div class="book-rute">
+            <div>
             <p class="ingress">Skriv inn adressen der jeg skal jobbe.</p>
             <div class="book-felt">
               <label class="skjult-tekst" for="bs-adresse">Adresse</label>
@@ -317,12 +319,16 @@
                 <ul class="orgforslag" id="bs-forslag" role="listbox" hidden></ul>
               </div>
             </div>
-            <div class="book-kart" id="bs-kart" aria-hidden="true"></div>
-            <p class="book-kilde">Kart: © OpenStreetMap, OpenFreeMap. Adresser: Kartverket.</p>
             <p class="book-svar" id="bs-svar" hidden></p>
             <p class="feil" id="bs-feil" role="alert" hidden></p>
             <div class="knapper">
               <button type="button" class="btn" id="bs-videre" disabled>Gå videre</button>
+            </div>
+            </div>
+            <div>
+            <div class="book-kart" id="bs-kart" aria-hidden="true"></div>
+            <p class="book-kilde">Kart: © OpenStreetMap, OpenFreeMap. Adresser: Kartverket.</p>
+            </div>
             </div>
           </div>
 
@@ -330,7 +336,16 @@
             <button type="button" class="tilbake" data-tilbake>← Tilbake</button>
             <p class="merke" data-book-merke>Book sprint</p>
             <h2 tabindex="-1">Når skal jeg komme?</h2>
+            <div class="book-rute">
+            <div>
             <p class="ingress" id="bd-ingress"></p>
+            <p class="valgt-tid" id="kal-valgt">Laster ledige datoer …</p>
+            <p class="feil" id="bd-feil" role="alert" hidden></p>
+            <div class="knapper">
+              <button type="button" class="btn" id="bd-videre">Gå videre</button>
+            </div>
+            </div>
+            <div>
             <span class="skjult-tekst" id="kal-etikett">Velg dato</span>
             <div class="kalender" aria-labelledby="kal-etikett">
               <div class="kal-topp">
@@ -340,10 +355,7 @@
               </div>
               <div class="kal-dager" id="kal-dager"></div>
             </div>
-            <p class="valgt-tid" id="kal-valgt">Laster ledige datoer …</p>
-            <p class="feil" id="bd-feil" role="alert" hidden></p>
-            <div class="knapper">
-              <button type="button" class="btn" id="bd-videre">Gå videre</button>
+            </div>
             </div>
           </div>
 
@@ -351,7 +363,8 @@
             <button type="button" class="tilbake" data-tilbake>← Tilbake</button>
             <p class="merke" data-book-merke>Book sprint</p>
             <h2 tabindex="-1">Hvem skal jeg kontakte?</h2>
-            <form class="skjema" id="book-skjema" novalidate>
+            <form class="skjema book-rute" id="book-skjema" novalidate>
+              <div class="book-kolonne">
               <div>
                 <label for="bk-navn">Navn</label>
                 <input id="bk-navn" type="text" autocomplete="name" maxlength="120" />
@@ -368,10 +381,13 @@
                 <label for="bk-nettside">Nettside</label>
                 <input id="bk-nettside" type="text" tabindex="-1" autocomplete="off" />
               </div>
+              </div>
+              <div class="book-kolonne">
               <dl class="sammendrag" id="bk-liste"></dl>
               <p class="feil" id="bk-feil" role="alert" hidden></p>
               <button type="submit" class="btn" id="bk-knapp">Betal og book</button>
               <p class="smaa" id="bk-info">Betaling med kort i Stripe. Datoen holdes i 30 minutter mens dere betaler.</p>
+              </div>
             </form>
             <div id="bk-ferdig" hidden>
               <p class="merke ok">Forespørsel sendt</p>
@@ -600,7 +616,7 @@
     </main>
 
     <!-- Bunnen er alltid synlig. Selgeren etter ehandelsloven § 8; hakeparentesene fylles inn når selskapet er bestemt. -->
-    <footer class="pris-bunn">
+    <footer class="pris-bunn" id="pris-bunn">
       <div class="colofon">
         <p class="wordmark"><a href="/klart/"><b>Klart</b></a> <span>v0.1.0</span></p>
         <p class="selger">

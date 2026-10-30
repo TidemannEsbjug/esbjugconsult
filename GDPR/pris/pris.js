@@ -150,7 +150,7 @@
 
   var STEG = ["s-port", "s-pris", "s-oppsett", "s-testing", "s-dekker", "s-book-sted", "s-book-dato", "s-book-kontakt", "s-betaling", "s-nokkel", "s-bekreft", "s-ferdig", "s-kvittering"];
   // Kortet er bredere der det er mer å se.
-  var BREDDE = { "s-oppsett": "bred", "s-book-sted": "middels", "s-book-dato": "middels", "s-book-kontakt": "middels", "s-dekker": "middels", "s-betaling": "middels", "s-nokkel": "middels", "s-bekreft": "middels", "s-ferdig": "middels", "s-testing": "middels" };
+  var BREDDE = { "s-oppsett": "bred", "s-book-sted": "bred", "s-book-dato": "bred", "s-book-kontakt": "bred", "s-dekker": "middels", "s-betaling": "middels", "s-nokkel": "middels", "s-bekreft": "middels", "s-ferdig": "middels", "s-testing": "middels" };
 
   /** Slår opp virksomheten fra adressen: kortet er skjult til svaret er her (pris-tidlig.js). */
   function ferdigStartet() {
@@ -168,6 +168,10 @@
     $("kort").classList.toggle("middels", bredde === "middels");
     // Oversikten over oppsett og sprint er for høy til vinterbildet: der er bakgrunnen en rolig, ensfarget flate.
     $("port").classList.toggle("oversikt", steg === "s-oppsett" || steg.indexOf("s-book") === 0);
+    // Pris, oversikt og booking står alene, uten spørsmål og bunn under.
+    var alene = steg === "s-pris" || steg === "s-oppsett" || steg.indexOf("s-book") === 0;
+    $("pris-bunn").hidden = alene;
+    $("sporsmal").hidden = alene || steg === "s-port";
     tegnStegrad(steg);
     if (steg === "s-book-sted") startSted();
     var overskrift = el.querySelector("h2[tabindex], h1");
@@ -367,7 +371,6 @@
     velgEn(null, "data-ehf", d.ehf ? "ja" : "nei");
     $("kunde-panel").hidden = true;
     tegnKunder();
-    $("sporsmal").hidden = false;
     settAdresse(d.orgnr);
     // Fra forsiden («Les om skreddersydd oppsett») går vi rett dit.
     if (q.get("vis") === "oppsett" && d.stor) {
@@ -670,7 +673,7 @@
     $("bs-svar").textContent = t.reise
       ? "Det er rundt " + t.km + " km fra meg, så jeg reiser dagen før. Reise og hotell ordner og dekker jeg selv. Dere trenger ikke ordne noe."
       : "Det er rundt " + t.km + " km fra meg, så jeg reiser fram og tilbake selv. Dere trenger ikke ordne noe.";
-    glid($("bs-svar"), true);
+    $("bs-svar").hidden = false;
     $("bs-videre").disabled = false;
     window.KlartKart.vis($("bs-kart"), t.lat, t.lon).catch(function () {});
   }
@@ -710,7 +713,7 @@
     var q = this.value.trim();
     sted = null;
     $("bs-videre").disabled = true;
-    glid($("bs-svar"), false);
+    $("bs-svar").hidden = true;
     clearTimeout(stedVent);
     if (q.length < 3) {
       stedNr++;
