@@ -28,7 +28,7 @@
 //   GET  /klart/api/sjekk?orgnr=…         → virksomheten, om den er stor nok for skreddersydd oppsett, og
 //                                           lisensprisen etter prøven (forsiden viser den ved nedlasting).
 //   GET  /klart/api/pris?orgnr=…[&som=kunde]  → virksomheten, prisen og hvordan den kan betale
-//   POST /klart/api/kasse        { type, orgnr, betaling, kunder?, epost?, referanse?, ehf? }
+//   POST /klart/api/kasse        { type, orgnr, betaling, kunder?, epost?, nokkelEpost?, referanse?, ehf? }
 //                                → adresse til Stripe Checkout, eller fakturaen og nøkkelen
 //   GET  /klart/api/ordre?session=cs_…   → nøkkelen etter betaling på prissiden
 //   POST /klart/api/kunder       { kode, kunder } → legger kunder til en tjenesteleverandørlisens
@@ -862,6 +862,9 @@ async function kasse(request, env, url) {
   if (type === "testing") betaling = "kort";
   const epost = epostFra(inn.epost);
   if (betaling === "faktura" && !epost) return json({ feil: "Skriv inn e-postadressen fakturaen skal sendes til." }, 400);
+  // Nøkkelen kan gå til en annen adresse enn fakturaen. Tomt felt betyr samme adresse.
+  const nokkelEpost = betaling === "faktura" && inn.nokkelEpost ? epostFra(inn.nokkelEpost) : null;
+  if (betaling === "faktura" && inn.nokkelEpost && !nokkelEpost) return json({ feil: "Skriv inn en gyldig e-postadresse for lisensnøkkelen." }, 400);
 
   let linjer;
   let beskrivelse;
@@ -901,6 +904,7 @@ async function kasse(request, env, url) {
     license_type: type,
     betaling,
   };
+  if (nokkelEpost) meta.nokkel_epost = nokkelEpost;
   const kunde = await stripeKunde(env, v, meta, {
     epost,
     referanse: tekstFra(inn.referanse, 140),
@@ -977,6 +981,7 @@ async function fakturer(env, { kunde, meta, linjer, mva, beskrivelse }) {
     navn: meta.company_name,
     orgnr: orgnrFra(meta.orgnr),
     epost: kunde.email,
+    nokkelEpost: meta.nokkel_epost || kunde.email,
     faktura: {
       nummer: faktura.number,
       belop: faktura.total / 100,
@@ -1862,7 +1867,7 @@ async function webhook(request, env) {
         await lager(env).settUtloper(abo.id, utloperFor(abo), "aktiv");
         // Ny nøkkel når en periode er betalt, med kort eller faktura.
         if (abo.metadata?.license_type) {
-          await sendNokkel(env, await orgLisens(env, abo, obj.customer_email));
+          await sendNokkel(env, await orgLisens(env, abo, abo.metadata.nokkel_epost || obj.customer_email));
         }
       }
       break;

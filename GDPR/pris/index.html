@@ -1260,8 +1260,15 @@
                 <input id="b-epost" type="email" autocomplete="email" placeholder="faktura@virksomhet.no" />
               </div>
               <div>
-                <label for="b-ref">Bestillingsnummer eller referanse (valgfritt)</label>
-                <input id="b-ref" type="text" autocomplete="off" maxlength="140" />
+                <span class="etikett">Hvor skal lisensnøkkelen sendes?</span>
+                <div class="valgliste" role="radiogroup" aria-label="Hvor lisensnøkkelen skal sendes" style="margin-top: 0; grid-template-columns: 1fr 1fr">
+                  <button type="button" class="valg" role="radio" data-nokkel="samme" aria-checked="true"><strong>Samme e-post</strong></button>
+                  <button type="button" class="valg" role="radio" data-nokkel="annen" aria-checked="false"><strong>En annen e-post</strong></button>
+                </div>
+              </div>
+              <div id="nokkel-felt" hidden>
+                <label for="b-nokkel">E-post lisensnøkkelen skal til</label>
+                <input id="b-nokkel" type="email" autocomplete="off" placeholder="it@virksomhet.no" />
               </div>
               <div>
                 <span class="etikett">EHF-faktura</span>
@@ -2172,6 +2179,16 @@
             if (betaling === "faktura") $("b-epost").focus();
           });
         });
+        function annenNokkelEpost() {
+          return document.querySelector('[data-nokkel="annen"]').getAttribute("aria-checked") === "true";
+        }
+        document.querySelectorAll("[data-nokkel]").forEach(function (b) {
+          b.addEventListener("click", function () {
+            velgEn(null, "data-nokkel", b.getAttribute("data-nokkel"));
+            $("nokkel-felt").hidden = !annenNokkelEpost();
+            if (annenNokkelEpost()) $("b-nokkel").focus();
+          });
+        });
         document.querySelectorAll("[data-ehf]").forEach(function (b) {
           b.addEventListener("click", function () {
             velgEn(null, "data-ehf", b.getAttribute("data-ehf"));
@@ -2182,6 +2199,11 @@
           if (betaling === "faktura" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($("b-epost").value.trim())) {
             feil("betaling-feil", "Skriv inn e-postadressen fakturaen skal sendes til.");
             $("b-epost").focus();
+            return;
+          }
+          if (betaling === "faktura" && annenNokkelEpost() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($("b-nokkel").value.trim())) {
+            feil("betaling-feil", "Skriv inn e-postadressen lisensnøkkelen skal sendes til.");
+            $("b-nokkel").focus();
             return;
           }
           kjop = "lisens";
@@ -2227,9 +2249,10 @@
             rader.push(["Pris per år, eks. mva", nok(sum), "sum-rad"]);
             if (betaling === "faktura") {
               data.epost = $("b-epost").value.trim();
-              data.referanse = $("b-ref").value.trim();
+              if (annenNokkelEpost()) data.nokkelEpost = $("b-nokkel").value.trim();
               data.ehf = document.querySelector('[data-ehf][aria-checked="true"]').getAttribute("data-ehf") === "ja";
               rader.push(["Faktura til", data.epost]);
+              rader.push(["Lisensnøkkel til", data.nokkelEpost || data.epost]);
             }
           }
           var liste = $("b-liste");
@@ -2281,7 +2304,7 @@
             " inkl. mva er sendt til " +
             svar.epost +
             (f.forfall ? ", med forfall " + datoTekst(f.forfall) : "") +
-            ". Lisensnøkkelen kommer på e-post så snart fakturaen er betalt.";
+            ". Lisensnøkkelen sendes til " + svar.nokkelEpost + " så snart fakturaen er betalt.";
           $("f-faktura").hidden = !f.adresse;
           if (f.adresse) $("f-faktura").href = f.adresse;
           historikk = [];
