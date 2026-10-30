@@ -1433,12 +1433,16 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .pultk{padding:20px 20px 18px}
   .pultk [data-k="pflaske"]{grid-column:1/-1;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto 1fr auto auto;column-gap:18px}
   .pultk [data-k="pflaske"] .fl-rad{display:contents}
-  .pultk [data-k="pflaske"] .fl-i{grid-column:1;grid-row:1/4;width:auto;height:150px;aspect-ratio:68/100}
+  .pultk [data-k="pflaske"] .fl-i{grid-column:1;grid-row:1/4;align-self:center;width:auto;height:140px;aspect-ratio:44/100;overflow:hidden}
   .pultk [data-k="pflaske"] .sl{grid-column:2;grid-row:1;padding-top:8px;font-size:11px}
   .pultk [data-k="pflaske"] b{grid-column:2;grid-row:2;align-self:end;margin:0;font-size:clamp(58px,5vw,72px);line-height:1;letter-spacing:-.035em}
   .pultk.uten-flaske [data-k="pflaske"] b{grid-row:2/4;align-self:center;font-size:22px}
   .fl-igjen{grid-column:2;grid-row:3;margin:6px 0 10px;font:600 10.5px/1.3 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(0,32,91,.62)}
   .pultk.uten-flaske .fl-igjen{display:none}
+  /* Flasken: slank og av glass, med tynn kant, stålkork og sitronskiver som flyter i vannet. */
+  .pultk .fl-kant{stroke-width:1.2;opacity:.5}
+  .pultk .fl-kork{fill:url(#fl-staal);opacity:1;stroke:rgba(0,32,91,.35);stroke-width:.6}
+  .pultk .fl-glans{opacity:.7}
   /* Knappen: samme form og skrift som «Snakk med meg», i marineblått. */
   .fl-cta{grid-column:1/-1;grid-row:4;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px;padding:15px 20px;border-radius:999px;background:var(--ink);color:#fff;
     font:600 16px/1 "Literata",Georgia,serif;box-shadow:0 8px 20px rgba(0,32,91,.22);transition:background .2s,box-shadow .2s}
@@ -1455,6 +1459,10 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
     .hoyre .sens .hp .st-l{flex:none}
     .hoyre .sens .hp .hj{width:.62em;height:.62em}
     .hoyre .sens .hp .hk{grid-column:1/-1;grid-row:2;justify-self:stretch;align-self:stretch;width:100%;height:100%;min-width:0}
+    /* Pulsen får luft: tallet litt ned fra toppen, og grafen står fritt mellom tallet og «Live fra Apple Watch» helt nederst. */
+    .hoyre .sens .hp .hp-o{padding-top:8px}
+    .hoyre .sens .hp .st-v{row-gap:20px}
+    .hoyre .sens .hp .st-l{margin-top:16px}
   }
 </style>
 </head>
@@ -1829,7 +1837,7 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   <!-- Kontoret: pult-kameraet (person, plagg, hodetelefoner) og flaske-kameraet (vannet når målingen er under 2 min). -->
   <section class="sens pultk gl" hidden aria-label="The water bottle. Open the explanation." role="button" tabindex="0" aria-expanded="false">
     <span class="mono s-t pk-t">Office · camera</span>
-    <div class="sv" data-k="pflaske"><span class="sl">Water bottle</span><span class="fl-rad"><svg class="fl-i" viewBox="8 0 68 100" aria-hidden="true"><defs><clipPath id="fl-form"><path d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/></clipPath><linearGradient id="fl-vann" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe6ff"/><stop offset="1" stop-color="#3f8fdc"/></linearGradient></defs><path class="fl-blad" d="M47 70c4-12 15-19 27-19-2 13-12 21-27 19z"/><path class="fl-bladnerve" d="M49 69c7-6 14-11 22-15"/><path class="fl-glass" d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/><g clip-path="url(#fl-form)"><g class="fl-vg"><path class="fl-vann" d="M-40 0q10-3.2 20 0t20 0 20 0 20 0 20 0 20 0 20 0v120h-140z"/></g></g><rect class="fl-glans" x="17" y="40" width="4" height="44" rx="2"/><path class="fl-kant" d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/><rect class="fl-kork" x="22" y="3" width="18" height="11" rx="3"/><g class="fl-sitron"><circle cx="58" cy="83" r="14"/><circle class="fl-s2" cx="58" cy="83" r="11.5"/><path class="fl-s3" d="M58 83V72.5M58 83l7.4 7.4M58 83l-7.4 7.4M58 83l10-3.3M58 83l-10-3.3"/></g></svg><b>–</b><span class="fl-igjen">left in the bottle</span><span class="fl-cta">How it works<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span></div>
+    <div class="sv" data-k="pflaske"><span class="sl">Water bottle</span><span class="fl-rad"><svg class="fl-i" viewBox="0 0 44 100" aria-hidden="true"><defs><clipPath id="fl-form"><path d="M16 14h12v6c0 5.5 9 7.5 9 18v50a8 8 0 0 1-8 8H15a8 8 0 0 1-8-8V38c0-10.5 9-12.5 9-18z"/></clipPath><linearGradient id="fl-vann" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe6ff"/><stop offset="1" stop-color="#3f8fdc"/></linearGradient><linearGradient id="fl-staal" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8d99a8"/><stop offset=".4" stop-color="#eef2f6"/><stop offset="1" stop-color="#7f8b9a"/></linearGradient></defs><path class="fl-glass" d="M16 14h12v6c0 5.5 9 7.5 9 18v50a8 8 0 0 1-8 8H15a8 8 0 0 1-8-8V38c0-10.5 9-12.5 9-18z"/><g clip-path="url(#fl-form)"><g class="fl-vg"><path class="fl-vann" d="M-40 0q10-3.2 20 0t20 0 20 0 20 0 20 0 20 0 20 0v120h-140z"/><g class="fl-sitron" transform="translate(28 15)"><circle r="8"/><circle class="fl-s2" r="6.6"/><path class="fl-s3" d="M0 0V-6M0 0l4.2 4.2M0 0l-4.2 4.2M0 0l5.7-1.9M0 0l-5.7-1.9"/></g><g class="fl-sitron" transform="translate(16 34) scale(.8)"><circle r="8"/><circle class="fl-s2" r="6.6"/><path class="fl-s3" d="M0 0V-6M0 0l4.2 4.2M0 0l-4.2 4.2M0 0l5.7-1.9M0 0l-5.7-1.9"/></g></g></g><rect class="fl-glans" x="10.5" y="42" width="2.2" height="40" rx="1.1"/><path class="fl-kant" d="M16 14h12v6c0 5.5 9 7.5 9 18v50a8 8 0 0 1-8 8H15a8 8 0 0 1-8-8V38c0-10.5 9-12.5 9-18z"/><rect class="fl-kork" x="15" y="3" width="14" height="11" rx="2"/></svg><b>–</b><span class="fl-igjen">left in the bottle</span><span class="fl-cta">How it works<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span></div>
     <div class="sv" data-k="pstilling"><span class="sl">At the desk</span><b>–</b></div>
     <div class="sv pk-plagg" data-k="pplagg"><span class="sl">Wearing</span><b>–</b></div>
   </section>
