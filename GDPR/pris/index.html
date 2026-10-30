@@ -1758,7 +1758,7 @@
 
         if (q.get("from") === "quota") $("kvote").hidden = false;
         var portfelt = KlartOrgfelt($("orgnr"), $("orgnr-forslag"), function (orgnr) {
-          slaaOpp(orgnr);
+          return slaaOpp(orgnr);
         });
 
         $("port-skjema").addEventListener("submit", function (e) {
@@ -1783,7 +1783,7 @@
           var knapp = $("vis");
           opptatt(knapp, true);
           knapp.textContent = "Slår opp …";
-          api("pris?orgnr=" + o)
+          return api("pris?orgnr=" + o)
             .then(function (svar) {
               if (svar.underenhet) return visUnderenhet(svar);
               visPris(svar);
@@ -2221,7 +2221,7 @@
         });
 
         var kundefelt = KlartOrgfelt($("kunde-orgnr"), $("kunde-forslag"), function (orgnr) {
-          leggTilKunde(orgnr);
+          return leggTilKunde(orgnr);
         });
 
         $("kunde-skjema").addEventListener("submit", function (e) {
@@ -2240,7 +2240,7 @@
           if (kunder.length >= 19) return feil("kunde-feil", "En leverandørlisens kan ha opptil 19 kunder her. Skriv til oss for flere.");
           var skjema = $("kunde-skjema");
           skjema.classList.add("venter");
-          api("pris?som=kunde&orgnr=" + o)
+          return api("pris?som=kunde&orgnr=" + o)
             .then(function (k) {
               if (k.underenhet) {
                 return feil("kunde-feil", "Dette er en underenhet av " + k.overordnet.navn + ". Bruk " + orgnrTekst(k.overordnet.orgnr) + ".");

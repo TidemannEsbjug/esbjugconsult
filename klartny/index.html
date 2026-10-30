@@ -1084,7 +1084,7 @@ Kontakt: <mark class="y">[E-POST_1]</mark></pre>
           function sjekk(o) {
             feil("");
             knapp.disabled = true;
-            fetch("/klart/api/sjekk?orgnr=" + o)
+            return fetch("/klart/api/sjekk?orgnr=" + o)
               .then(function (r) {
                 return r.json().then(function (j) {
                   if (!r.ok) throw new Error(j.feil || "Noe gikk galt. Prøv igjen om litt.");

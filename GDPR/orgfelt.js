@@ -2,6 +2,7 @@
 // som «123 456 789». Skriver man bokstaver, kommer forslag fra Enhetsregisteret (GET /klart/api/sok).
 //
 //   var felt = KlartOrgfelt(input, liste, function (orgnr) { … });  // kalles når et forslag velges
+//   Gir funksjonen et løfte, står feltet og forslagene urørt til det er innfridd, så ingenting blinker.
 //   felt.orgnr()   → ni gyldige sifre fra feltet, eller null
 //   felt.forste()  → org.nr. til det første forslaget, eller null
 //   felt.tom()     → tømmer feltet og forslagene
@@ -26,6 +27,7 @@
     var aktiv = -1;
     var vent = null;
     var nr = 0;
+    var velger = false;
 
     function tegn() {
       liste.innerHTML = "";
@@ -54,11 +56,18 @@
     }
 
     function velg(t) {
-      input.value = tekst(t.orgnr);
-      treff = [];
-      aktiv = -1;
-      tegn();
-      valgt(t.orgnr);
+      if (velger) return;
+      velger = true;
+      var skrevet = input.value;
+      Promise.resolve(valgt(t.orgnr)).finally(function () {
+        velger = false;
+        // Har noen skrevet eller tømt feltet i mellomtiden, får det stå.
+        if (input.value !== skrevet) return;
+        input.value = tekst(t.orgnr);
+        treff = [];
+        aktiv = -1;
+        tegn();
+      });
     }
 
     function sok(q) {
