@@ -536,10 +536,18 @@ export function enhetAv(ua = "") {
     : /Mac OS X/.test(ua) ? "Mac" : /Windows/.test(ua) ? "Windows" : "";
 }
 
-export function pageVisit(request, env, url, preloaded = false) {
+// Alle undersidene (/klart, /klartny, /jev …) teller også, med siden i varselet. side "" er forsiden (norsk og engelsk).
+export function sideAv(path) {
+  let p = path; try { p = decodeURIComponent(path); } catch {}
+  p = p.replace(/index\.html$/, "").replace(/\/+$/, "");
+  return /^(\/en|\/sherpa)?$/.test(p) ? "" : p;
+}
+
+export function pageVisit(request, env, url, preloaded = false, cf = request.cf || {}) {
   const h = request.headers;
   if (!preloaded) {
-    if (request.method !== "GET" || !/^\/((en\/)?(index\.html)?|sherpa\/|podcast\/(\d+\/)?)$/.test(url.pathname) || url.searchParams.has("speil")) return null;
+    // Bare sider (ikke filer, chatten, gamle versjoner eller speilet i appen).
+    if (request.method !== "GET" || /\.(?!html$)[a-z0-9]+$/i.test(url.pathname) || /^\/(chat|versjon|versjon-fil|klart\/api|GDPR\/api|klart\/last-ned|GDPR\/last-ned)\//.test(url.pathname) || url.searchParams.has("speil")) return null;
     if (h.get("Sec-Fetch-Mode") !== "navigate" || h.get("Sec-Fetch-Dest") !== "document") return null;
     if (/prefetch|prerender/i.test((h.get("Sec-Purpose") || "") + (h.get("Purpose") || ""))) return null;
   }
@@ -548,7 +556,6 @@ export function pageVisit(request, env, url, preloaded = false) {
   const cookie = h.get("Cookie") || "";
   if (/(?:^|;\s*)esbjug_eier=1(?:;|$)/.test(cookie) || url.searchParams.has("eier")) return null;
   const vid = /(?:^|;\s*)esbjug_samtykke=ja(?:;|$)/.test(cookie) && (cookie.match(/(?:^|;\s*)esbjug_id=([a-zA-Z0-9-]{8,64})(?:;|$)/) || [])[1] || "";
-  const cf = request.cf || {};
   // Podcastsiden telles for seg (side «podcast», med episoden hvis lenken gikk rett til en).
   const pod = url.pathname.match(/^\/podcast\/(\d+)?/);
   const body = JSON.stringify({
@@ -557,7 +564,7 @@ export function pageVisit(request, env, url, preloaded = false) {
     lat: cf.latitude == null || cf.latitude === "" ? null : Number(cf.latitude),
     lon: cf.longitude == null || cf.longitude === "" ? null : Number(cf.longitude),
     org: cf.asOrganization || "",
-    ua, side: pod ? "podcast" : "", ep: pod && pod[1] ? Number(pod[1]) : null,
+    ua, side: pod ? "podcast" : preloaded ? "" : sideAv(url.pathname), ep: pod && pod[1] ? Number(pod[1]) : null,
   });
   const hub = env.CHAT.get(env.CHAT.idFromName("hub"));
   return hub.fetch(new Request("https://hub/internal/visit", { method: "POST", headers: { "x-role": "internal" }, body })).catch(() => {});
@@ -891,6 +898,8 @@ export class ChatHub {
     // Avstemninger (/chat/poll): én stemme per besøkende (tilfeldig id fra nettleseren), siste stemme gjelder.
     this.sql.exec(`CREATE TABLE IF NOT EXISTS poll (id TEXT, velger TEXT, valg INTEGER, ts INTEGER, PRIMARY KEY (id, velger))`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS podbesok (ts INTEGER, ep INTEGER, land TEXT, enhet TEXT, ny INTEGER)`);
+    // Alle sidevisninger (forsiden er side ''): tid, siden, by, land og enhet. Ingen IP.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS sidebesok (ts INTEGER, side TEXT, by TEXT, land TEXT, enhet TEXT, ny INTEGER)`);
     if (this.setting("uniqTotal") == null) {
       // Start the counter from what the site has already seen: each browser once per day, robots and test runs left out.
       const rows = this.sql.exec(`SELECT DISTINCT CAST(first_seen / 86400000 AS INTEGER) AS d, city, ua FROM visitors`).toArray();
@@ -1081,10 +1090,13 @@ export class ChatHub {
             await this.pushVisit({ key: "pod:" + (b.vid || pokeNet(b.ip || "")), vid: known ? b.vid : null, first: !known, city: b.city, country: b.country, ua: b.ua, side: "Podcast" + (b.ep ? " · episode " + b.ep : "") });
           return new Response("ok");
         }
+        const side = typeof b.side === "string" ? b.side.slice(0, 80) : "";
+        const known = b.vid && this.sql.exec(`SELECT 1 FROM visitors WHERE vid=?`, b.vid).toArray().length > 0;
+        this.sql.exec(`INSERT INTO sidebesok (ts, side, by, land, enhet, ny) VALUES (?, ?, ?, ?, ?, ?)`, Date.now(), side, penSted(b.city), b.country || "", enhetAv(b.ua), known ? 0 : 1);
         if (this.setting("notifyVisits") === "1") {
           // A cookie id only comes with consent; without it nothing about the visitor is stored, the push is all.
-          const known = b.vid && this.sql.exec(`SELECT 1 FROM visitors WHERE vid=?`, b.vid).toArray().length > 0;
-          await this.pushVisit({ key: b.vid || "n:" + pokeNet(b.ip || ""), vid: known ? b.vid : null, first: !known, city: b.city, country: b.country, ua: b.ua });
+          // Hver side har sin egen sperre, så den som går fra forsiden til /klart gir varsel for begge.
+          await this.pushVisit({ key: side + ":" + (b.vid || "n:" + pokeNet(b.ip || "")), vid: known ? b.vid : null, first: !known, city: b.city, country: b.country, ua: b.ua, side });
         }
         return new Response("ok");
       }
@@ -1485,6 +1497,15 @@ export class ChatHub {
           .reduce((m, r) => { const d = osloDay(r.ts); m[d] = (m[d] || 0) + 1; return m; }, {}),
         land: this.sql.exec(`SELECT land, COUNT(*) AS n FROM podbesok GROUP BY land ORDER BY n DESC`).toArray(),
         enheter: this.sql.exec(`SELECT enhet, COUNT(*) AS n FROM podbesok GROUP BY enhet ORDER BY n DESC`).toArray(),
+      });
+    }
+    // Besøk per side (forsiden er «/»): totalt, i dag og siste 7 dager, pluss de siste 50 visningene.
+    if (url.pathname === "/chat/admin/sider") {
+      const idag = osloMidnight(Date.now()), uke = Date.now() - 7 * 864e5;
+      return Response.json({
+        sider: this.sql.exec(`SELECT CASE side WHEN '' THEN '/' ELSE side END AS side, COUNT(*) AS totalt,
+            SUM(ts >= ?) AS idag, SUM(ts >= ?) AS uke, MAX(ts) AS sist FROM sidebesok GROUP BY side ORDER BY sist DESC`, idag, uke).toArray(),
+        siste: this.sql.exec(`SELECT ts, CASE side WHEN '' THEN '/' ELSE side END AS side, by, land, enhet, ny FROM sidebesok ORDER BY ts DESC LIMIT 50`).toArray(),
       });
     }
     if (url.pathname === "/chat/admin/versjoner/hent" && request.method === "POST") {

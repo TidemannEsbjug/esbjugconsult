@@ -15,6 +15,15 @@ export default {
       url.protocol = "https:";
       return Response.redirect(url.toString(), 301);
     }
+    // Besøk på sidene til esbjug-jev (/jev, /merdspraket, /athena, /netkem, /vvskontakten), sendt hit over service binding,
+    // så de gir samme varsel og telling som sidene her.
+    if (url.pathname === "/intern/besok" && request.method === "POST") {
+      if (!env.INTERN_KEY || request.headers.get("x-intern") !== env.INTERN_KEY) return new Response("Forbidden", { status: 403 });
+      const b = await request.json();
+      const v = pageVisit(new Request(b.url, { headers: b.headers }), env, new URL(b.url), false, b.cf || {});
+      if (v) await v;
+      return new Response(null, { status: 204 });
+    }
     if (url.pathname.startsWith("/chat/")) return handleChat(request, env, url);
     if (url.pathname === "/bank/tilbake") return handleChat(request, env, url);
     // /monitor/ var testsiden for kameraet ved pulten. Kortet er på forsiden nå.
@@ -48,7 +57,10 @@ export default {
     if (/^\/(klart|GDPR)\/api\//.test(url.pathname)) return handleKlart(request, env, url);
     if (/^\/(klart|GDPR)\/last-ned\//.test(url.pathname)) return handleNedlasting(request, env, url);
     // /login/ er kundeportalen, /kunde/ er lukket bak innlogging.
-    if (url.pathname.startsWith("/login/") || url.pathname.startsWith("/kunde/")) return handleKunde(request, env, url);
+    if (url.pathname.startsWith("/login/") || url.pathname.startsWith("/kunde/")) {
+      try { const visit = pageVisit(request, env, url); if (visit) ctx.waitUntil(visit); } catch {}
+      return handleKunde(request, env, url);
+    }
     // /ny/ var arbeidskopien av V2. V2 er forsiden fra 7.10.2026, så gamle lenker sendes dit (spørrestrengen følger med).
     // /new2/ var arbeidskopien med kartet som hero; den er forsiden fra 22.10.2026.
     if (url.pathname === "/new2" || url.pathname.startsWith("/new2/")) {
@@ -78,12 +90,13 @@ export default {
         hoder.set("location", til.replace(/\/GDPR\//, "/klart/"));
         return new Response(svar.body, { status: svar.status, headers: hoder });
       }
-      try { const visit = pageVisit(request, env, url); if (visit) ctx.waitUntil(visit); } catch {}
+      if (svar.status === 200) try { const visit = pageVisit(request, env, url); if (visit) ctx.waitUntil(visit); } catch {}
       return svar;
     }
-    // Visit push for page loads; never allowed to break serving the page.
-    try { const visit = pageVisit(request, env, url); if (visit) ctx.waitUntil(visit); } catch {}
+    // Visit push for page loads (only pages that are actually served, so /klartny → /klartny/ counts once); never allowed
+    // to break serving the page.
     const svar = await env.ASSETS.fetch(request);
+    if (svar.status === 200) try { const visit = pageVisit(request, env, url); if (visit) ctx.waitUntil(visit); } catch {}
     if (/\.(mp4|m4v|webm|mov|mp3|m4a)$/i.test(url.pathname)) return medRange(request, svar);
     return svar;
   },
