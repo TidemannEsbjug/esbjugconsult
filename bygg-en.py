@@ -29,8 +29,8 @@ T = [
     ('<a class="sh-merke" href="/">', '<a class="sh-merke" href="/en/">'),
     ('<a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Kontakt</a>', '<a class="sh-kontakt" href="mailto:tidemann@esbjugconsult.com">Contact</a>'),
     ('<p class="sh-ey">Tidemann Esbjug – KI Sherpa</p>', '<p class="sh-ey">Tidemann Esbjug – AI Sherpa</p>'),
-    ('Jeg bruker tiden min på å prøve å bygge programvare som er nyttig for så mange mennesker som mulig.',
-     'I spend my time trying to build software that is useful to as many people as possible.'),
+    ('Jeg bruker tiden min på å bygge programvare som er nyttig for så mange mennesker som mulig.',
+     'I spend my time building software that is useful to as many people as possible.'),
     ('<a class="sh-knapp sh-p" href="mailto:tidemann@esbjugconsult.com">Snakk med meg</a>', '<a class="sh-knapp sh-p" href="mailto:tidemann@esbjugconsult.com">Talk to me</a>'),
 
     # --- toppen ---
