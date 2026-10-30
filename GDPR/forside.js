@@ -283,7 +283,7 @@ console.info(
     "08-kundeliste.xlsx",
     "09-statusmote.pptx"
   ];
-  // Reglene finner det meste i steg 1. Den lokale AI-en finner resten i steg 2.
+  // Reglene finner det meste i steg 1. Den lokale KI-en finner resten i steg 2.
   var regler = [5, 8, 4, 0, 3, 0];
   var totalt = [7, 11, 5, 0, 3, 1];
   var treff = 0;
@@ -362,7 +362,7 @@ console.info(
     tekst("skanntittel", "Går gjennom mappen");
     tekst(
       "forklaring",
-      "Hver fil sjekkes mot norske regler. Etterpå leser den lokale AI-en filene grundig."
+      "Hver fil sjekkes mot norske regler. Etterpå leser den lokale KI-en filene grundig."
     );
     tekst("ferdigetekst", "filer sjekket");
     tekst("treff", "0");
@@ -435,7 +435,7 @@ console.info(
     tekst("skanntittel", "Leser grundig");
     tekst(
       "forklaring",
-      "Den lokale AI-en leser filene på nytt og finner det reglene ikke fanger. Den kjører på denne maskinen og bruker mye prosessorkraft, så maskinen kan være treg til den er ferdig."
+      "Den lokale KI-en leser filene på nytt og finner det reglene ikke fanger. Den kjører på denne maskinen og bruker mye prosessorkraft, så maskinen kan være treg til den er ferdig."
     );
     tekst("ferdigetekst", "filer lest grundig");
     tekst("igjentekst", "igjen av steg 2");
