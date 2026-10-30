@@ -150,7 +150,7 @@
 
   var STEG = ["s-port", "s-pris", "s-oppsett", "s-testing", "s-dekker", "s-betaling", "s-nokkel", "s-bekreft", "s-ferdig", "s-kvittering"];
   // Kortet er bredere der det er mer å se.
-  var BREDDE = { "s-oppsett": "bred", "s-dekker": "middels", "s-betaling": "middels", "s-nokkel": "middels", "s-bekreft": "middels", "s-ferdig": "middels", "s-testing": "middels" };
+  var BREDDE = { "s-oppsett": "middels", "s-dekker": "middels", "s-betaling": "middels", "s-nokkel": "middels", "s-bekreft": "middels", "s-ferdig": "middels", "s-testing": "middels" };
 
   function vis(steg, tilbake) {
     STEG.forEach(function (id) {
@@ -495,7 +495,9 @@
     document.querySelectorAll("#s-oppsett [data-felt]").forEach(function (el) {
       el.textContent = felt[el.getAttribute("data-felt")];
     });
-    glid($("op-mac"), !oppsett);
+    $("book-aapne").textContent = oppsett ? "Book oppsettsdag" : t.id === "kort" ? "Book kort sprint" : "Book sprint";
+    glid($("book-skjema"), false);
+    glid($("book-start"), true);
     $("kal-etikett").textContent = oppsett ? "Velg dag" : "Velg startdato";
     $("kal-valgt").textContent = "Laster ledige datoer …";
     oppdaterKnapp();
@@ -506,6 +508,7 @@
     if (!t) return;
     var kjop = tilbud && tilbud.kjop;
     var foresp = valgtStart && forespurte && forespurte.has(valgtStart);
+    $("book-aapne").disabled = !kjop;
     $("bk-knapp").disabled = !kjop;
     $("bk-knapp").textContent = !kjop ? "Booking åpner snart" : foresp ? "Send forespørsel" : "Betal " + nok(forskudd(t) * 1.25) + " og book";
     $("bk-info").textContent = foresp
@@ -609,6 +612,15 @@
     tegnKalender();
   });
 
+  // Kalenderen og skjemaet kommer først når de har lest og trykker «Book».
+  $("book-aapne").addEventListener("click", function () {
+    glid($("book-start"), false);
+    glid($("book-skjema"), true);
+    setTimeout(function () {
+      $("book-skjema").scrollIntoView({ behavior: UTEN_BEVEGELSE ? "auto" : "smooth", block: "start" });
+    }, GLID_TID.duration);
+  });
+
   $("book-skjema").addEventListener("submit", function (e) {
     e.preventDefault();
     var data = {
@@ -618,7 +630,6 @@
       navn: $("bk-navn").value.trim(),
       epost: $("bk-epost").value.trim(),
       telefon: $("bk-tlf").value.trim(),
-      melding: $("bk-melding").value.trim(),
       nettside: $("bk-nettside").value,
     };
     if (!data.start) return feil("bk-feil", "Velg en dato.");

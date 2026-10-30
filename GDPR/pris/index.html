@@ -100,8 +100,6 @@
           <!-- Skreddersydd oppsett: hva det er, prisen åpent, og «Betal og book» (startdato + grunnhonorar i Stripe). -->
           <div class="steg" id="s-oppsett" hidden>
             <button type="button" class="tilbake" data-tilbake>← Tilbake</button>
-            <div class="oppsett-grid">
-              <div>
                 <p class="merke" id="op-merke">Oppsett hos dere</p>
                 <h2 tabindex="-1" id="op-tittel">En sprint hos dere</h2>
                 <div class="tilbudvalg" id="op-valg" role="radiogroup" aria-label="Velg tilbud" hidden></div>
@@ -149,16 +147,6 @@
                     <span data-felt="dager"></span> sammenhengende kalenderdager, og sprinten slutter den dagen
                     suksesskriteriet er nådd.
                   </p>
-                  <p class="tekst">
-                    Klart virker godt på dokumentene vi har testet det på, men hver virksomhet har sine egne dokumenter,
-                    maler, fagsystemer og måter å skrive på. I sprinten tilpasser og trener vi en modell på akkurat deres
-                    dokumenter. Går Klart glipp av noe i fasiten, retter vi det i den modellen til kriteriet er nådd.
-                  </p>
-                  <p class="tekst">
-                    <b>Hvorfor en egen, større modell:</b> Modellen som følger med Klart, er bevisst liten, så den kan kjøre
-                    på en vanlig jobb-PC, og den er allerede justert så langt den kan. En modell for én virksomhet kan være
-                    større, trent på deres dokumenter og kjøre på eget utstyr.
-                  </p>
                   <div class="sprint-pris" id="sp-pris">
                     <p class="merke" data-felt="trinn"></p>
                     <p class="pristall"><b data-felt="total"></b> <span>eks. mva, når kriteriet er nådd</span></p>
@@ -167,7 +155,19 @@
                       <b data-felt="rest"></b>, faktureres bare hvis suksesskriteriet er nådd. Ellers faller den bort.
                     </p>
                   </div>
-                  <ul class="vilkar mt-18">
+                  <h3 class="vilkar-tittel">Hvorfor en egen modell</h3>
+                  <p class="tekst">
+                    Klart virker godt på dokumentene vi har testet det på, men hver virksomhet har sine egne dokumenter,
+                    maler, fagsystemer og måter å skrive på. I sprinten tilpasser og trener vi en modell på akkurat deres
+                    dokumenter. Går Klart glipp av noe i fasiten, retter vi det i den modellen til kriteriet er nådd.
+                  </p>
+                  <p class="tekst">
+                    Modellen som følger med Klart, er bevisst liten, så den kan kjøre
+                    på en vanlig jobb-PC, og den er allerede justert så langt den kan. En modell for én virksomhet kan være
+                    større, trent på deres dokumenter og kjøre på eget utstyr.
+                  </p>
+                  <h3 class="vilkar-tittel">Slik er avtalen</h3>
+                  <ul class="vilkar">
                     <li>På stedet, under taushetserklæring og databehandleravtale</li>
                     <li data-kun="kort">Dag 1 er oppsettsdagen, og den er inkludert</li>
                     <li>Fasiten og hva som skal bort, avtales skriftlig før dag én</li>
@@ -207,7 +207,7 @@
                     kontrollerer kopiene selv, som under <a class="lenke" href="/klart/#ansvar">Ansvar</a>. Det er ikke en
                     del av kriteriet.
                   </p>
-                  <h3 class="vilkar-tittel">Leveranse: tilgang internt</h3>
+                  <h3 class="vilkar-tittel">Tilgang internt</h3>
                   <p class="tekst">
                     Klart kjører lokalt på én maskin hos dere. De som trenger det internt, kobler seg til den maskinen med
                     fjerntilgang, med de tilgangene dere gir, satt opp sammen med deres IT. Klart selv kobler seg fortsatt
@@ -224,16 +224,7 @@
                     <li>En fagperson som merker hver runde med Klarts forslag som utgangspunkt. Regn med 4–8 timer per runde</li>
                     <li>En kontakt i IT</li>
                   </ul>
-                  <p class="tekst">Alle filtypene Klart støtter, er med. Ingen pris per dokumenttype.</p>
-                  <p class="tekst"><b>Faktureres separat:</b> den årlige lisensen.</p>
-                  <p class="tekst">
-                    <b>Eierskap:</b> Dataene deres og alt som lages, er deres. Programvaren, arkitekturen og generelle
-                    forbedringer forblir hos <span class="selger-navn">[Selskap]</span> og kan gå inn i kjerneproduktet.
-                  </p>
-                </div>
-              </div>
-              <div>
-                <figure class="mac" id="op-mac">
+                  <figure class="mac" id="op-mac">
                   <!-- Egen tegning. Ikke bilder fra Apple Newsroom. Byttes gjerne med et eget foto. -->
                   <svg viewBox="0 0 560 340" role="img" aria-label="Mac Studio">
                     <defs>
@@ -274,7 +265,18 @@
                   </svg>
                   <figcaption>Mac Studio, illustrasjon</figcaption>
                 </figure>
-                <form class="skjema" id="book-skjema" novalidate>
+                  <h3 class="vilkar-tittel">Pris og eierskap</h3>
+                  <p class="tekst">Alle filtypene Klart støtter, er med. Ingen pris per dokumenttype.</p>
+                  <p class="tekst"><b>Faktureres separat:</b> den årlige lisensen.</p>
+                  <p class="tekst">
+                    <b>Eierskap:</b> Dataene deres og alt som lages, er deres. Programvaren, arkitekturen og generelle
+                    forbedringer forblir hos <span class="selger-navn">[Selskap]</span> og kan gå inn i kjerneproduktet.
+                  </p>
+                </div>
+                <div class="book-start" id="book-start">
+                  <button type="button" class="btn" id="book-aapne">Book sprint</button>
+                </div>
+                <form class="skjema" id="book-skjema" novalidate hidden>
                   <div>
                     <span class="etikett" id="kal-etikett">Velg dato</span>
                     <div class="kalender" aria-labelledby="kal-etikett">
@@ -298,10 +300,6 @@
                   <div>
                     <label for="bk-tlf">Telefon (valgfritt)</label>
                     <input id="bk-tlf" type="tel" autocomplete="tel" maxlength="40" />
-                  </div>
-                  <div>
-                    <label for="bk-melding">Hva vil dere oppnå? (valgfritt)</label>
-                    <textarea id="bk-melding" rows="3" maxlength="3000"></textarea>
                   </div>
                   <div class="skjult-felt" aria-hidden="true">
                     <label for="bk-nettside">Nettside</label>
@@ -328,7 +326,7 @@
                     <input id="sa-tlf" type="tel" autocomplete="tel" maxlength="40" />
                   </div>
                   <div>
-                    <label for="sa-melding">Hva vil dere oppnå?</label>
+                    <label for="sa-melding">Hva lurer dere på?</label>
                     <textarea id="sa-melding" rows="3" maxlength="3000"></textarea>
                   </div>
                   <div class="skjult-felt" aria-hidden="true">
@@ -342,8 +340,6 @@
                   <p class="merke ok mt-18">Sendt</p>
                   <p class="tekst">Takk. Vi svarer på e-postadressen dere oppga.</p>
                 </div>
-              </div>
-            </div>
           </div>
 
           <!-- Utvidet testing -->

@@ -558,11 +558,40 @@ textarea:focus {
 }
 
 /* ---------- Skreddersydd oppsett, utvidet testing ---------- */
-.oppsett-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
-  gap: clamp(22px, 3vw, 40px);
-  align-items: start;
+/* Én kolonne: tydelige deler nedover, og bookingen helt nederst. */
+#s-oppsett .vilkar-tittel {
+  margin-top: 32px;
+  padding-top: 26px;
+  font-family: var(--sans);
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  text-transform: none;
+  color: var(--ink);
+}
+#s-oppsett .vilkar-tittel + .tekst {
+  margin-top: 8px;
+}
+#s-oppsett .mac {
+  max-width: 320px;
+  margin-top: 18px;
+}
+#s-oppsett .skjema {
+  margin-top: 32px;
+  padding-top: 26px;
+  border-top: 1px solid var(--rule);
+}
+.book-start {
+  margin-top: 32px;
+  padding-top: 26px;
+  border-top: 1px solid var(--rule);
+}
+.book-start .btn {
+  justify-content: center;
+  width: 100%;
+  height: 56px;
+  font-size: 16px;
 }
 .tekst {
   margin-top: 14px;
@@ -801,8 +830,7 @@ textarea:focus {
 }
 
 @media (max-width: 760px) {
-  .kort.bred .pris-grid,
-  .oppsett-grid {
+  .kort.bred .pris-grid {
     grid-template-columns: 1fr;
   }
   .rad {
