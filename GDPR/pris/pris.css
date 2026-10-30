@@ -31,8 +31,6 @@ textarea {
   z-index: -1;
   background: var(--ground-2);
   opacity: 0;
-  /* Samme tid som kortet, så bakgrunn og innhold bytter i ett. */
-  transition: opacity 160ms ease-out;
   pointer-events: none;
 }
 .port.oversikt::before {
@@ -578,17 +576,11 @@ textarea:focus {
 .kort.bred:has(#s-oppsett:not([hidden])) {
   width: min(1120px, 100%);
   background: rgba(255, 255, 255, 0.97);
-  /* Bredden settes med en gang, så teksten ikke brytes om underveis. Kortet tones bare raskt inn. */
+  /* Bytter i ett, uten toning: bredde, innhold og bakgrunn kommer samtidig. */
   transition: none;
-  animation: rask-inn 160ms ease-out both;
 }
 #s-oppsett {
   animation: none;
-}
-@keyframes rask-inn {
-  from {
-    opacity: 0;
-  }
 }
 /* Toppen: tittel, innledning, valg og pris til venstre, maskinen stor til høyre. Begge starter på samme linje. */
 #s-oppsett {
