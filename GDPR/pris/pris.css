@@ -580,49 +580,36 @@ textarea:focus {
   width: min(1120px, 100%);
   background: rgba(255, 255, 255, 0.97);
 }
-/* Bildet går helt ut til kanten av kortet, og «Tilbake» ligger oppå det. */
-#s-oppsett {
-  --kant: clamp(24px, 4vw, 38px);
-  position: relative;
-}
-#s-oppsett > .tilbake {
-  position: absolute;
-  z-index: 2;
-  top: 14px;
-  left: calc(var(--kant) * -1 + 14px);
-  margin: 0;
-  padding: 7px 13px;
-  border-radius: 100px;
-  background: rgba(255, 255, 255, 0.86);
-}
-.op-bilde {
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  min-height: clamp(200px, 26vw, 320px);
-  margin: calc(var(--kant) * -1) calc(var(--kant) * -1) 0;
-  padding: 26px 20px 14px;
-  border-radius: 20px 20px 0 0;
-  background: #dfe8f2 url("../assets/hero-film-slutt-skarp.jpg") center 62% / cover no-repeat;
-}
+/* Toppen: tittel, innledning, valg og pris til venstre, maskinen stor til høyre. Begge starter på samme linje. */
 .op-hode {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: clamp(20px, 3vw, 40px);
-  align-items: start;
-  margin-top: 28px;
+  gap: clamp(20px, 3vw, 36px);
+  align-items: stretch;
 }
 #s-oppsett .op-hode .ingress {
   margin-top: 10px;
-  font-size: clamp(17px, 1.6vw, 20px);
+  font-size: clamp(17px, 1.5vw, 19px);
   line-height: 1.45;
   color: var(--ink);
+}
+.op-velg {
+  margin-top: 20px;
 }
 #s-oppsett .op-velg .tilbudvalg {
   margin-top: 0;
 }
 #s-oppsett .op-velg .sprint-pris {
   margin-top: 10px;
+}
+.op-bilde {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: clamp(240px, 30vw, 380px);
+  padding: clamp(14px, 2vw, 26px);
+  border-radius: 18px;
+  background: #dfe8f2 url("../assets/hero-film-slutt-skarp.jpg") center 62% / cover no-repeat;
 }
 .op-rutenett {
   display: grid;
@@ -661,7 +648,7 @@ textarea:focus {
   gap: 4px clamp(20px, 3vw, 40px);
 }
 #s-oppsett .mac {
-  width: clamp(240px, 30vw, 380px);
+  width: 100%;
   margin: 0;
   padding: 0;
   background: none;
@@ -705,9 +692,6 @@ textarea:focus {
   text-align: center;
 }
 @media (max-width: 760px) {
-  #s-oppsett .mac {
-    width: min(260px, 100%);
-  }
   .op-hode,
   .op-rutenett,
   .op-spalter,
@@ -719,29 +703,6 @@ textarea:focus {
     grid-column: 1;
     grid-row: auto;
   }
-}
-.tekst {
-  margin-top: 8px;
-}
-#s-oppsett .mac {
-  max-width: 320px;
-  margin-top: 18px;
-}
-#s-oppsett .skjema {
-  margin-top: 32px;
-  padding-top: 26px;
-  border-top: 1px solid var(--rule);
-}
-.book-start {
-  margin-top: 32px;
-  padding-top: 26px;
-  border-top: 1px solid var(--rule);
-}
-.book-start .btn {
-  justify-content: center;
-  width: 100%;
-  height: 56px;
-  font-size: 16px;
 }
 .tekst {
   margin-top: 14px;

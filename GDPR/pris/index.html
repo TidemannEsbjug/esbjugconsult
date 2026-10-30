@@ -100,11 +100,41 @@
           <!-- Skreddersydd oppsett: hva det er, prisen åpent, og «Betal og book» (startdato + grunnhonorar i Stripe). -->
           <div class="steg" id="s-oppsett" hidden>
             <button type="button" class="tilbake" data-tilbake>← Tilbake</button>
-                <!-- Vinterbildet øverst, med maskinen i snøen. -->
+                <div class="op-hode">
+                  <div>
+                    <p class="merke" id="op-merke">Oppsett hos dere</p>
+                    <h2 tabindex="-1" id="op-tittel">En sprint hos dere</h2>
+                    <p class="ingress" data-blokk="oppsett" hidden>
+                      Én dag, på stedet eller via fjerntilgang. Vi setter opp Klart hos dere og går gjennom det på deres egne
+                      dokumenter.
+                    </p>
+                    <p class="ingress" data-blokk="sprint" hidden>
+                      En egen modell, finjustert på deres ekte data, på maskinvare dere eier. Opptil
+                      <span data-felt="dager"></span> sammenhengende kalenderdager, og sprinten slutter den dagen
+                      suksesskriteriet er nådd.
+                    </p>
+                  <!-- Valget og prisen hører sammen: bytter de tilbud, bytter prisen rett under. -->
+                  <div class="op-velg">
+                    <div class="tilbudvalg" id="op-valg" role="radiogroup" aria-label="Velg tilbud" hidden></div>
+                    <div class="sprint-pris" data-blokk="oppsett" hidden>
+                      <p class="merke" data-felt="trinn"></p>
+                      <p class="pristall"><b data-felt="fast"></b> <span>eks. mva, fast pris</span></p>
+                      <p>Betales ved booking.</p>
+                    </div>
+                    <div class="sprint-pris" id="sp-pris" data-blokk="sprint" hidden>
+                      <p class="merke" data-felt="trinn"></p>
+                      <p class="pristall"><b data-felt="total"></b> <span>eks. mva, når kriteriet er nådd</span></p>
+                      <p>
+                        Grunnhonoraret på <b data-felt="grunn"></b> eks. mva betales ved booking og beholdes. Resten,
+                        <b data-felt="rest"></b>, faktureres bare hvis suksesskriteriet er nådd. Ellers faller den bort.
+                      </p>
+                    </div>
+                  </div>
+                  </div>
                 <div class="op-bilde">
                   <figure class="mac" id="op-mac">
                   <!-- Egen tegning. Ikke bilder fra Apple Newsroom. Byttes gjerne med et eget foto. -->
-                  <svg viewBox="0 0 560 340" role="img" aria-label="Mac Studio">
+                  <svg viewBox="70 84 420 236" role="img" aria-label="Mac Studio med Klart">
                     <defs>
                       <linearGradient id="ms-front" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0" stop-color="#f3f5f8" />
@@ -138,43 +168,13 @@
                       <rect x="162" y="200" width="22" height="8" rx="4" />
                       <rect x="386" y="202" width="42" height="4" rx="2" />
                     </g>
+                    <image href="../assets/klart-ikon.png" x="240" y="170" width="80" height="80" />
                     <circle cx="114" cy="254" r="2.4" fill="#ffffff" />
                     <circle cx="114" cy="254" r="5" fill="#ffffff" opacity="0.25" />
                   </svg>
                   <figcaption>Mac Studio, illustrasjon</figcaption>
                 </figure>
                 </div>
-                <div class="op-hode">
-                  <div>
-                    <p class="merke" id="op-merke">Oppsett hos dere</p>
-                    <h2 tabindex="-1" id="op-tittel">En sprint hos dere</h2>
-                    <p class="ingress" data-blokk="oppsett" hidden>
-                      Én dag, på stedet eller via fjerntilgang. Vi setter opp Klart hos dere og går gjennom det på deres egne
-                      dokumenter.
-                    </p>
-                    <p class="ingress" data-blokk="sprint" hidden>
-                      En egen modell, finjustert på deres ekte data, på maskinvare dere eier. Opptil
-                      <span data-felt="dager"></span> sammenhengende kalenderdager, og sprinten slutter den dagen
-                      suksesskriteriet er nådd.
-                    </p>
-                  </div>
-                  <!-- Valget og prisen hører sammen: bytter de tilbud, bytter prisen rett under. -->
-                  <div class="op-velg">
-                    <div class="tilbudvalg" id="op-valg" role="radiogroup" aria-label="Velg tilbud" hidden></div>
-                    <div class="sprint-pris" data-blokk="oppsett" hidden>
-                      <p class="merke" data-felt="trinn"></p>
-                      <p class="pristall"><b data-felt="fast"></b> <span>eks. mva, fast pris</span></p>
-                      <p>Betales ved booking.</p>
-                    </div>
-                    <div class="sprint-pris" id="sp-pris" data-blokk="sprint" hidden>
-                      <p class="merke" data-felt="trinn"></p>
-                      <p class="pristall"><b data-felt="total"></b> <span>eks. mva, når kriteriet er nådd</span></p>
-                      <p>
-                        Grunnhonoraret på <b data-felt="grunn"></b> eks. mva betales ved booking og beholdes. Resten,
-                        <b data-felt="rest"></b>, faktureres bare hvis suksesskriteriet er nådd. Ellers faller den bort.
-                      </p>
-                    </div>
-                  </div>
                 </div>
 
                 <!-- Oppsettsdag: fast pris, ingen egen modell, ingen suksesskriterier -->
