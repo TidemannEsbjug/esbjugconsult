@@ -180,13 +180,16 @@
             playsinline
             preload="auto"
             poster="/klart/assets/hero-film-start.jpg"
+            data-rot="/klart/assets/film/"
+            data-biter="15"
+            data-kodek="avc1.640028"
             aria-hidden="true"
-          >
-            <source src="/klart/assets/hero-film-16s.mp4" type="video/mp4" />
-          </video>
+          ></video>
+          <script src="/klart/film.js"></script>
+
           <div class="scene-slor" aria-hidden="true"></div>
 
-          <img class="scene-bilde" src="/klart/assets/hero-film-slutt-skarp.jpg" alt="" aria-hidden="true" />
+          <img class="scene-bilde" src="/klart/assets/hero-film-30-slutt.jpg" alt="" aria-hidden="true" />
 
           <!-- All teksten samlet, nede i snøen. Himmelen, hytta og sporet står fritt over. -->
           <div class="scene-tekst">
@@ -947,7 +950,6 @@ Kontakt: <mark class="y">[E-POST_1]</mark></pre>
           return;
         }
         film.addEventListener("ended", stille);
-        film.addEventListener("error", stille);
       })();
 
       // Menyen kommer først når man har scrollet forbi toppen av filmen.

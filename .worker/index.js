@@ -108,7 +108,7 @@ export default {
 const KLART_HODER = {
   "Strict-Transport-Security": "max-age=31536000",
   "Content-Security-Policy": [
-    "default-src 'none'", "script-src 'self'", "style-src 'self'", "font-src 'self'", "img-src 'self' data:", "media-src 'self'",
+    "default-src 'none'", "script-src 'self'", "style-src 'self'", "font-src 'self'", "img-src 'self' data:", "media-src 'self' blob:",
     "connect-src 'self'", "form-action 'self'", "base-uri 'none'", "frame-ancestors 'none'", "require-trusted-types-for 'script'",
   ].join("; "),
   "X-Content-Type-Options": "nosniff",

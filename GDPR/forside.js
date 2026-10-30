@@ -20,7 +20,6 @@ console.info(
     return;
   }
   film.addEventListener("ended", stille);
-  film.addEventListener("error", stille);
 })();
 
 // Menyen kommer først når man har scrollet forbi toppen av filmen.
