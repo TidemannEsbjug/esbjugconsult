@@ -1063,60 +1063,22 @@ section {
   width: min(880px, 100%);
 }
 
-/* De store kommer rolig fram: ingen sprett, ingen grønn. Kortene tones inn, navnet kommer samlet
-   og i vanlig farge, og resten følger sakte etter. */
-.orgport.stor .orgport-svar-hoved {
-  animation: orgport-stor-inn 1100ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
+/* De store er bare der: alt kommer samlet på et blunk, uten sprett, grønn eller rekkefølge.
+   Hastigheten er poenget. Den korte toningen holder regelen om at ingenting kommer i et hopp. */
+.orgport.stor .orgport-svar-hoved,
 .orgport.stor .orgport-oppsett {
-  animation: orgport-stor-inn 1100ms cubic-bezier(0.16, 1, 0.3, 1) 240ms both;
+  animation: orgport-stor-inn 120ms ease-out both;
 }
 
-.orgport.stor .orgport-bokstav {
-  animation: none;
-}
-
-.orgport.stor .orgport-firmanavn {
-  animation: orgport-stor-navn 1300ms cubic-bezier(0.16, 1, 0.3, 1) 280ms both;
-}
-
-.orgport.stor .orgport-orgnr {
-  animation: orgport-opp 900ms var(--ease) 760ms both;
-}
-
+.orgport.stor .orgport-bokstav,
+.orgport.stor .orgport-orgnr,
 .orgport.stor .orgport-svar-hoved > * {
-  animation-duration: 900ms;
-}
-
-.orgport.stor .orgport-svar-hoved > .orgport-prove {
-  animation-delay: 940ms;
-}
-
-.orgport.stor .orgport-svar-hoved > .orgport-pris {
-  animation-delay: 1090ms;
-}
-
-.orgport.stor .orgport-svar-hoved > .get {
-  animation-delay: 1240ms;
-}
-
-.orgport.stor .orgport-svar-hoved > .orgport-endre {
-  animation-delay: 1390ms;
+  animation: none;
 }
 
 @keyframes orgport-stor-inn {
   from {
     opacity: 0;
-    transform: translateY(14px);
-  }
-}
-
-@keyframes orgport-stor-navn {
-  from {
-    opacity: 0;
-    filter: blur(6px);
-    transform: translateY(10px);
   }
 }
 
