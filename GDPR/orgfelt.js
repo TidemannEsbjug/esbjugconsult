@@ -22,12 +22,26 @@
     return String(o).replace(/^(\d{3})(\d{3})(\d{3})$/, "$1 $2 $3");
   }
 
+  var UTEN_BEVEGELSE = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
   function KlartOrgfelt(input, liste, valgt) {
     var treff = [];
     var aktiv = -1;
     var vent = null;
     var nr = 0;
     var velger = false;
+    var pustet = null;
+
+    // Rammen puster for hvert tegn: litt sterkere og tilbake. Starter fra der den står, så raske tastetrykk ikke hakker.
+    function pust() {
+      if (UTEN_BEVEGELSE) return;
+      var naa = getComputedStyle(input).outlineColor;
+      if (pustet) pustet.cancel();
+      pustet = input.animate(
+        [{ outlineColor: naa }, { outlineColor: "rgba(36, 86, 230, 0.67)", offset: 0.2 }, { outlineColor: "rgba(36, 86, 230, 0.35)" }],
+        { duration: 520, easing: "ease-out" }
+      );
+    }
 
     function tegn() {
       liste.replaceChildren();
@@ -90,6 +104,7 @@
     input.setAttribute("aria-expanded", "false");
 
     input.addEventListener("input", function () {
+      pust();
       var v = input.value;
       clearTimeout(vent);
       if (/^[\d\s]*$/.test(v)) {
