@@ -1485,6 +1485,12 @@
 
         document.querySelectorAll("[data-tilbake]").forEach(function (b) {
           b.addEventListener("click", function () {
+            // Fra fakturafeltene går «Tilbake» først til valget mellom kort og faktura.
+            if (b.closest("#s-betaling") && betaling === "faktura") {
+              betaling = "kort";
+              visBetaling();
+              return;
+            }
             vis(historikk.pop() || "s-pris", true);
           });
         });
@@ -2139,6 +2145,13 @@
 
         // ---------- 4. Betaling ----------
 
+        /** Viser valget. Er faktura valgt, skjules kort, og bare fakturafeltene står igjen. */
+        function visBetaling() {
+          velgEn(null, "data-betaling", betaling);
+          $("faktura-felt").hidden = betaling !== "faktura";
+          document.querySelector('[data-betaling="kort"]').hidden = betaling === "faktura";
+        }
+
         /** Velger den første betalingsmåten virksomheten kan bruke. */
         function forberedBetaling() {
           var med = function (m) {
@@ -2148,16 +2161,14 @@
             b.hidden = !med(b.getAttribute("data-betaling"));
           });
           if (!betaling || !med(betaling)) betaling = ["kort", "faktura"].find(med);
-          velgEn(null, "data-betaling", betaling);
-          $("faktura-felt").hidden = betaling !== "faktura";
+          visBetaling();
           feil("betaling-feil", "");
         }
 
         document.querySelectorAll("[data-betaling]").forEach(function (b) {
           b.addEventListener("click", function () {
             betaling = b.getAttribute("data-betaling");
-            velgEn(null, "data-betaling", betaling);
-            $("faktura-felt").hidden = betaling !== "faktura";
+            visBetaling();
             if (betaling === "faktura") $("b-epost").focus();
           });
         });
