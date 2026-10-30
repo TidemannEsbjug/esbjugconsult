@@ -1387,10 +1387,10 @@ export class ChatHub {
         this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES (?, ?)`, k, JSON.stringify({ niva, siste, borte }));
         if (niva != null) ren.vann = niva;
         // Drukket i dag (Oslo-døgnet): hvert fall i det utjevnede nivået er en slurk, 1 poeng = 10 ml (flasken er 1 liter).
-        // Påfyll teller ikke. Ser to kameraer flasken, teller bare det som sist talte (eller et annet etter 10 min stille).
+        // Påfyll teller ikke. Bare iPhone 8 (fyra, flaske-kameraet) teller; pult-kameraet (fyrb) brukes ikke til flasken.
         const dag = osloDay(nå), dk = JSON.parse(this.sql.exec(`SELECT v FROM kv WHERE k='drukket'`).toArray()[0]?.v || "{}");
         if (dk.dag !== dag) Object.assign(dk, { dag, ml: 0 });
-        if (niva != null && f.niva != null && niva < f.niva && (!dk.fra || dk.fra === kilde || nå - (dk.ts || 0) > 600e3)) {
+        if (kilde === "fyra" && niva != null && f.niva != null && niva < f.niva) {
           Object.assign(dk, { ml: dk.ml + Math.round((f.niva - niva) * 10), fra: kilde, ts: nå });
         }
         this.sql.exec(`INSERT OR REPLACE INTO kv (k, v) VALUES ('drukket', ?)`, JSON.stringify(dk));

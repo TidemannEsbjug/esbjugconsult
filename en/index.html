@@ -2808,6 +2808,14 @@ function pultBilde() {
   ut.drukket = dr ? dr.drukket : 0;
   return ut;
 }
+// Vannflaske-seksjonen bruker bare iPhone 8 (fyra), som står rett mot flasken. Pult-kameraet (iPhone 8 Plus, fyrb) slår
+// den ikke på, selv om det ser flasken.
+function vannBilde() {
+  const nå = Date.now() + skew, t = tele.fyra;
+  if (!t || (t.aapen && nå - t.aapen > 15e3)) return null;
+  const idag = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Oslo' }).format(new Date(nå));
+  return { ...t, flaskeTs: t.flaskeTs || (('flaske' in t) ? t.ts : 0), drukket: t.drukketDag === idag && typeof t.drukket === 'number' ? t.drukket : 0 };
+}
 const EN_P = TX.loc.startsWith('en');
 const FARGE = EN_P ? { svart: 'Black', hvit: 'White', graa: 'Grey', blaa: 'Blue', roed: 'Red', groenn: 'Green', gul: 'Yellow', brun: 'Brown', oransje: 'Orange', rosa: 'Pink', lilla: 'Purple' }
   : { svart: 'Svart', hvit: 'Hvit', graa: 'Grå', blaa: 'Blå', roed: 'Rød', groenn: 'Grønn', gul: 'Gul', brun: 'Brun', oransje: 'Oransje', rosa: 'Rosa', lilla: 'Lilla' };
@@ -2869,7 +2877,7 @@ function tegn() {
   for (const f of ['fyra', 'fyrb']) { const t = tele[f], e = document.querySelector('.sv[data-k="' + f + '"]'); if (e) e.hidden = !t; if (t) sett(f, t.bat != null ? t.bat + ' %' : null, t.bat, t.lader); }
   for (const k of ['iphone', 'watchr', 'watchl', 'watch']) inn(k, tele[k]);
   if (MONITOR) visPult(pultBilde());
-  window.__vann = { t: pultBilde(), nå }; dispatchEvent(new Event('esbjug-vann'));   // vannflaske-seksjonen under kartet
+  window.__vann = { t: vannBilde(), nå }; dispatchEvent(new Event('esbjug-vann'));   // vannflaske-seksjonen under heroen
   if (!live) { $('.s-navn').textContent = TX.ingenPos; $('.s-live').textContent = TX.venter; document.body.classList.add('gammel'); return; }
   // Posisjonen kommer bare når han flytter seg; telefonen sender ellers hvert 5. s, så den teller som livstegn.
   const alder = nå - Math.max(live.ts, i.ts || 0), gammel = alder > 10 * 60e3;
