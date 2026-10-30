@@ -30,7 +30,7 @@
     var velger = false;
 
     function tegn() {
-      liste.innerHTML = "";
+      liste.replaceChildren();
       treff.forEach(function (t, i) {
         var li = document.createElement("li");
         var b = document.createElement("button");

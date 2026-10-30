@@ -54,8 +54,8 @@ export default {
     }   // SpareBank 1 sin BankID-innlogging kommer tilbake hit
     // Klart: prøveperiode, kjøp og aktiveringskoder (klart.js). /GDPR/api/ og /GDPR/last-ned/ virker
     // fortsatt, fordi Stripe-webhooken og eldre versjoner av appen bruker dem.
-    if (/^\/(klart|GDPR)\/api\//.test(url.pathname)) return handleKlart(request, env, url);
-    if (/^\/(klart|GDPR)\/last-ned\//.test(url.pathname)) return handleNedlasting(request, env, url);
+    if (/^\/(klart|GDPR)\/api\//.test(url.pathname)) return medHoder(await handleKlart(request, env, url));
+    if (/^\/(klart|GDPR)\/last-ned\//.test(url.pathname)) return medHoder(await handleNedlasting(request, env, url));
     // /login/ er kundeportalen, /kunde/ er lukket bak innlogging.
     if (url.pathname.startsWith("/login/") || url.pathname.startsWith("/kunde/")) {
       try { const visit = pageVisit(request, env, url); if (visit) ctx.waitUntil(visit); } catch {}
@@ -78,7 +78,7 @@ export default {
       const rest = klart[1] || "/";
       if (url.pathname !== "/klart" + rest) {
         url.pathname = "/klart" + rest;
-        return Response.redirect(url.toString(), 301);
+        return medHoder(Response.redirect(url.toString(), 301));
       }
       const fil = new URL(url);
       fil.pathname = "/GDPR" + rest;
@@ -88,10 +88,11 @@ export default {
       if (til && /^(https?:\/\/[^/]+)?\/GDPR\//.test(til)) {
         const hoder = new Headers(svar.headers);
         hoder.set("location", til.replace(/\/GDPR\//, "/klart/"));
-        return new Response(svar.body, { status: svar.status, headers: hoder });
+        return medHoder(new Response(svar.body, { status: svar.status, headers: hoder }));
       }
       if (svar.status === 200) try { const visit = pageVisit(request, env, url); if (visit) ctx.waitUntil(visit); } catch {}
-      return svar;
+      if (/\.mp4$/i.test(url.pathname)) return medHoder(await medRange(request, svar));
+      return medHoder(svar);
     }
     // Visit push for page loads (only pages that are actually served, so /klartny → /klartny/ counts once); never allowed
     // to break serving the page.
@@ -101,6 +102,28 @@ export default {
     return svar;
   },
 };
+
+// Sikkerhetshodene på alt under /klart/. Siden laster bare egne filer, uten inline-skript og inline-stil: legg nye skript og
+// stiler i egne filer. API-et brukes med fetch fra samme adresse, og appen er ikke en nettleser, så hodene stopper ikke den.
+const KLART_HODER = {
+  "Strict-Transport-Security": "max-age=31536000",
+  "Content-Security-Policy": [
+    "default-src 'none'", "script-src 'self'", "style-src 'self'", "font-src 'self'", "img-src 'self' data:", "media-src 'self'",
+    "connect-src 'self'", "form-action 'self'", "base-uri 'none'", "frame-ancestors 'none'", "require-trusted-types-for 'script'",
+  ].join("; "),
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "same-origin",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()",
+  "Cross-Origin-Opener-Policy": "same-origin",
+  "Cross-Origin-Embedder-Policy": "require-corp",
+  "Cross-Origin-Resource-Policy": "same-origin",
+};
+function medHoder(svar) {
+  const hoder = new Headers(svar.headers);
+  for (const [navn, verdi] of Object.entries(KLART_HODER)) hoder.set(navn, verdi);
+  return new Response(svar.body, { status: svar.status, statusText: svar.statusText, headers: hoder });
+}
 
 // Statiske filer svarer ikke på Range, men Safari spiller ikke video uten (og spoling trenger det overalt).
 // Videoene og lyden her er noen få MB, så hele fila leses og biten som ble bedt om sendes som 206.

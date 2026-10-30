@@ -1,0 +1,227 @@
+:root {
+  --ink: #15202e;
+  --ink-2: #4d5b6c;
+  --ink-3: #8492a4;
+  --ground: #eef3fb;
+  --card: #fff;
+  --rule: #dbe4f1;
+  --signal: #2456e6;
+  --ok: #0e7a5a;
+  --flag: #c02744;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font: 16.5px/1.62 var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 760px; margin: 0 auto; padding: clamp(28px, 6vw, 76px) clamp(16px, 5vw, 40px) 96px; }
+header { padding-bottom: 14px; }
+.kicker {
+  font: 500 12px/1 var(--mono);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--signal);
+  margin: 0 0 14px;
+}
+h1 { font-size: clamp(28px, 5vw, 40px); line-height: 1.14; letter-spacing: -0.02em; margin: 0 0 16px; }
+.lead { font-size: 18.5px; color: var(--ink-2); margin: 0; max-width: 60ch; }
+h2 {
+  font-size: 20px;
+  letter-spacing: -0.01em;
+  margin: 0 0 6px;
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+}
+h2 .n {
+  font: 500 13px/1.5 var(--mono);
+  color: var(--signal);
+  background: #e2ebfd;
+  border-radius: 6px;
+  padding: 2px 8px;
+  flex: none;
+}
+section {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  padding: 24px 26px;
+  margin-bottom: 18px;
+}
+section p, .os p { color: var(--ink-2); margin: 0 0 16px; }
+pre {
+  background: #16233a;
+  color: #e8eef8;
+  border-radius: 8px;
+  padding: 14px 16px;
+  overflow-x: auto;
+  font: 13.5px/1.62 var(--mono);
+  margin: 0;
+}
+code:not(pre code) {
+  font: 0.9em var(--mono);
+  background: #eef3fb;
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  padding: 1px 5px;
+  overflow-wrap: anywhere;
+}
+.fasit {
+  border-left: 3px solid var(--ok);
+  padding: 2px 0 2px 15px;
+  margin: 0 0 14px;
+  color: var(--ink);
+}
+.fasit b { color: var(--ok); }
+.advarsel {
+  border-left: 3px solid var(--flag);
+  padding: 2px 0 2px 15px;
+  margin: 0 0 14px;
+}
+.advarsel b { color: var(--flag); }
+.beviser {
+  font-size: 14.5px;
+  border-top: 1px dashed var(--rule);
+  margin: 16px 0 0 !important;
+  padding-top: 13px;
+}
+section .beviser { color: var(--ink-3); }
+.beviser b { color: var(--ink-2); font-weight: 600; }
+
+/* Valget: to store kort med logo. Resten av siden venter til ett er trykket. */
+.velg { margin: 34px 0 30px; text-align: center; }
+.velg-tittel { display: block; font-size: clamp(23px, 4.4vw, 30px); letter-spacing: -0.02em; margin: 0 0 20px; }
+.velg-kort { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px, 3vw, 20px); }
+.velg-kort button {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--sans);
+  color: var(--ink);
+  background: var(--card);
+  border: 2px solid var(--rule);
+  border-radius: 18px;
+  padding: clamp(24px, 5vw, 38px) 12px clamp(20px, 4vw, 30px);
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s, opacity 0.15s;
+}
+.velg-kort button:hover { border-color: #a9c0f2; box-shadow: 0 6px 20px rgba(36, 86, 230, 0.12); transform: translateY(-2px); }
+.velg-kort button:focus-visible { outline: 3px solid var(--signal); outline-offset: 3px; }
+.velg-kort svg { width: clamp(52px, 12vw, 80px); height: clamp(52px, 12vw, 80px); margin-bottom: 6px; }
+.velg-kort .navn { font-size: clamp(22px, 4.6vw, 28px); font-weight: 700; letter-spacing: -0.01em; line-height: 1.1; }
+.velg-kort .under { font-size: 14px; color: var(--ink-3); line-height: 1.3; }
+.velg-kort button[aria-pressed="true"] { border-color: var(--signal); background: #f5f8ff; box-shadow: 0 6px 22px rgba(36, 86, 230, 0.16); }
+.velg-kort button[aria-pressed="true"]::after {
+  content: "✓";
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--signal);
+  color: #fff;
+  font: 700 15px/26px var(--sans);
+}
+html[data-vis] .velg-kort button[aria-pressed="false"] { opacity: 0.55; }
+html[data-vis] .velg-kort button[aria-pressed="false"]:hover { opacity: 1; }
+.velg-hint { font-size: 14.5px; color: var(--ink-3); margin: 14px 0 0; }
+html[data-vis] .velg-hint { display: none; }
+html:not(.js) .velg { display: none; }
+html.js:not([data-vis]) #innhold { display: none; }
+
+/* Hvert OS har sin blokk. Med skript vises bare den valgte. */
+html[data-vis="mac"] .os[data-os="windows"],
+html[data-vis="windows"] .os[data-os="mac"] { display: none; }
+html:not(.js) .os::before {
+  content: attr(data-navn);
+  display: block;
+  font: 600 12px/1 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--signal);
+  margin: 18px 0 10px;
+}
+
+.start {
+  background: #e2ebfd;
+  border: 1px solid #c9d8f7;
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin-bottom: 18px;
+}
+.start h3 { font-size: 17px; letter-spacing: -0.01em; margin: 0 0 10px; }
+.start p { color: var(--ink); margin: 0 0 8px; }
+.start p:last-child { margin-bottom: 0; }
+.start ol { margin: 0 0 10px; padding-left: 22px; }
+.start li { margin-bottom: 4px; }
+kbd {
+  font: 600 0.86em var(--sans);
+  background: var(--card);
+  border: 1px solid #c9d8f7;
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+
+/* En kommando: en list med hvor den skal limes inn og kopierknappen, så koden. */
+.cmd { margin: 0 0 8px; background: #16233a; border-radius: 8px; overflow: hidden; }
+.cmd pre { background: none; border-radius: 0; }
+.cmd-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 8px 0 16px; }
+.cmd-bar span { font: 500 11.5px/1.3 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: #93a4bd; }
+/* Lange linjer brytes i stedet for å rulle. Bare visuelt: det som kopieres er uendret. */
+.js .cmd pre { padding-top: 6px; white-space: pre-wrap; overflow-wrap: anywhere; cursor: pointer; }
+.kopier {
+  flex: none;
+  font: 600 13px/1 var(--sans);
+  color: #e8eef8;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+.kopier:hover { background: rgba(255, 255, 255, 0.18); }
+.kopier:focus-visible { outline: 2px solid #8fb0ff; outline-offset: 2px; }
+.kopier.kopiert { background: var(--ok); border-color: var(--ok); color: #fff; }
+html:not(.js) .kopier { display: none; }
+.gjor { font-size: 14.5px; margin: 0 0 16px !important; }
+.gjor b { color: var(--ink); font-weight: 600; }
+
+.slutt {
+  background: #16233a;
+  color: #fff;
+  border-radius: 12px;
+  padding: 30px 32px;
+  margin-top: 34px;
+}
+.slutt p, .slutt .os p { margin: 0 0 12px; color: #ccd8ea; }
+.slutt strong { color: #fff; font-size: 19px; display: block; margin-bottom: 10px; line-height: 1.4; }
+.slutt b { color: #fff; }
+.slutt .cmd { background: #0d1626; }
+.slutt .os > .cmd:last-child { margin-bottom: 18px; }
+.slutt .gjor b { color: #fff; }
+.slutt code:not(pre code) { background: #0d1626; border-color: #2b3c58; color: #e8eef8; }
+.slutt .fasit { color: #fff; }
+.slutt .fasit b { color: #5fd3a8; }
+html:not(.js) .slutt .os::before { color: #8fb0ff; }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+td, th { text-align: left; padding: 7px 10px 7px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-3); font-weight: 600; }
+td:first-child { font-family: var(--mono); font-size: 13.5px; white-space: nowrap; padding-right: 22px; }
+footer { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--rule); color: var(--ink-3); font-size: 14.5px; }
+.skjult { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 560px) {
+  section, .start { padding: 20px 18px; }
+  .slutt { padding: 24px 20px; }
+  td:first-child { white-space: normal; overflow-wrap: anywhere; }
+}
+.mt-18 { margin-top: 18px !important; }

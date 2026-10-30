@@ -1,0 +1,42 @@
+<!doctype html>
+<!-- Prøvebenk for rammen rundt virksomhetsfeltet: pilene bytter mellom dagens ramme og fem forsøk på en animasjon mens man skriver.
+     Forsiden er ikke rørt. Når en variant er valgt, flyttes den dit og denne mappen slettes. -->
+<html lang="nb">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Rammen på feltet · Klart</title>
+    <link rel="stylesheet" href="../fonts.css" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="kant.css" />
+  </head>
+  <body class="kant-side">
+    <main>
+      <form class="orgport" data-kant="0" novalidate>
+        <p class="orgport-gratis"><b>Prøv gratis.</b> Ingen registrering, ingen kort.</p>
+        <label class="skjult-tekst" for="kant-felt">Virksomhetens organisasjonsnummer eller navn</label>
+        <div class="orgport-rad">
+          <div class="orgfelt">
+            <input id="kant-felt" type="text" autocomplete="off" spellcheck="false" placeholder="Virksomhetens org.nr. eller navn" maxlength="120" />
+            <span class="kant-lys" aria-hidden="true"></span>
+            <ul class="orgforslag" role="listbox" hidden></ul>
+          </div>
+          <button class="btn" type="submit">Prøv Klart gratis</button>
+        </div>
+      </form>
+
+      <div class="kant-velger">
+        <button type="button" class="kant-pil" id="kant-forrige" aria-label="Forrige versjon">←</button>
+        <div class="kant-tekst" aria-live="polite">
+          <p class="kant-nr" id="kant-nr"></p>
+          <p class="kant-navn" id="kant-navn"></p>
+          <p class="kant-om" id="kant-om"></p>
+        </div>
+        <button type="button" class="kant-pil" id="kant-neste" aria-label="Neste versjon">→</button>
+      </div>
+    </main>
+    <script src="../orgfelt.js"></script>
+    <script src="kant.js"></script>
+  </body>
+</html>
