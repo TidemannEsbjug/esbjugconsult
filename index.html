@@ -500,64 +500,71 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   @keyframes beat{0%,100%{transform:scale(1)}14%{transform:scale(1.3)}28%{transform:scale(.94)}42%{transform:scale(1.12)}60%{transform:scale(1)}}
   /* Pulsen i fullskjerm: stort livetall med EKG-linje i pulsens takt, hjerteslagteller, I dag / 7 dager / 30 dager. */
   html.hpp-open{overflow:hidden}
-  .hpp{position:fixed;inset:0;z-index:1000;width:100vw;height:100vh;height:100dvh;overflow:hidden;background:radial-gradient(120% 80% at 20% 0%,#1b1a12 0%,var(--ink) 55%);color:var(--y);animation:hppIn .45s cubic-bezier(.2,.8,.2,1)}
+  .hpp{position:fixed;inset:0;z-index:1000;width:100vw;height:100vh;height:100dvh;overflow:hidden;background:linear-gradient(180deg,#74a8d4 0%,#a3c8e6 34%,#d3e6f5 68%,#eef5fb 100%);color:var(--ink);animation:hppIn .45s cubic-bezier(.2,.8,.2,1)}
   .hpp[hidden],.hpp [hidden]{display:none}
+  /* Arktisk som heroen (fra 30.10.2026): himmel som går over i snø, snø som daler sakte, en snørygg nederst, marineblå tekst og flaggets rødt på hjertet. */
+  .hpp::before{content:"";position:absolute;inset:-340px 0 0;pointer-events:none;opacity:.9;animation:hppSno 42s linear infinite;background-size:340px 340px;
+    background-image:radial-gradient(circle at 30px 50px,#fff 1.6px,transparent 2.2px),radial-gradient(circle at 96px 210px,#fff 1px,transparent 1.6px),radial-gradient(circle at 150px 90px,#fff 2.2px,transparent 3px),radial-gradient(circle at 205px 300px,#fff 1.3px,transparent 1.9px),radial-gradient(circle at 262px 150px,#fff 1px,transparent 1.6px),radial-gradient(circle at 318px 40px,#fff 1.7px,transparent 2.4px),radial-gradient(circle at 60px 280px,#fff 1.2px,transparent 1.8px),radial-gradient(circle at 180px 190px,#fff .9px,transparent 1.5px)}
+  @keyframes hppSno{to{transform:translateY(340px)}}
+  html.lett .hpp::before{animation:none}
+  .hpp::after{content:"";position:absolute;left:0;right:0;bottom:0;height:clamp(130px,30vh,300px);pointer-events:none;
+    background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 300' preserveAspectRatio='none'%3E%3Cpath fill='%23dceaf7' d='M0 150C200 110 320 70 470 100s290-60 460-30 350 30 510 20V300H0z'/%3E%3Cpath fill='%23f6fafd' d='M0 220c260-30 480 20 720-15s460-75 720-35V300H0z'/%3E%3C/svg%3E") 0 0/100% 100% no-repeat}
   @keyframes hppIn{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:none}}
-  .hpp-in{height:100%;max-width:1120px;margin:0 auto;padding:clamp(12px,2.6vh,32px) clamp(16px,5vw,64px) clamp(14px,3vh,36px);display:flex;flex-direction:column;gap:clamp(8px,1.8vh,20px)}
+  .hpp-in{position:relative;z-index:1;height:100%;max-width:1120px;margin:0 auto;padding:clamp(12px,2.6vh,32px) clamp(16px,5vw,64px) clamp(14px,3vh,36px);display:flex;flex-direction:column;gap:clamp(8px,1.8vh,20px)}
   .hpp-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
   .hpp-live{display:flex;align-items:center;gap:10px}
-  .hpp-live i{width:9px;height:9px;flex:none;border-radius:50%;background:#ff3d57}
+  .hpp-live i{width:9px;height:9px;flex:none;border-radius:50%;background:var(--r)}
   .hpp.live .hpp-live i{animation:hppDot 1.6s ease-out infinite}
   .hpp:not(.live) .hpp-live{visibility:hidden}
-  @keyframes hppDot{0%{box-shadow:0 0 0 0 rgba(255,61,87,.6)}80%,100%{box-shadow:0 0 0 10px rgba(255,61,87,0)}}
-  .hpp-s{opacity:.7;font-size:11px}
+  @keyframes hppDot{0%{box-shadow:0 0 0 0 rgba(186,12,47,.55)}80%,100%{box-shadow:0 0 0 10px rgba(186,12,47,0)}}
+  .hpp-s{opacity:.8;font-size:11px}
   .hpp-tl{display:flex;flex-direction:column;gap:12px;min-width:0}
   .hpp-dt{display:flex;font:700 15px/1 "SF Mono",Menlo,monospace;letter-spacing:.04em;font-variant-numeric:tabular-nums}
-  .hpp-dt b+b{margin-left:14px;padding-left:14px;border-left:1px solid rgba(255,255,255,.3)}
-  .hpp-x{width:48px;height:48px;flex:none;border:1.5px solid rgba(255,255,255,.28);border-radius:50%;background:none;color:var(--y);font:300 30px/1 -apple-system,Arial,sans-serif;cursor:pointer;display:grid;place-items:center;transition:background .2s,transform .3s}
-  .hpp-x:hover{background:rgba(255,255,255,.12);transform:rotate(90deg)}
-  .hpp-x:focus-visible{outline:2px solid var(--y);outline-offset:3px}
+  .hpp-dt b+b{margin-left:14px;padding-left:14px;border-left:1px solid rgba(0,32,91,.3)}
+  .hpp-x{width:48px;height:48px;flex:none;border:1.5px solid rgba(255,255,255,.75);border-radius:50%;background:rgba(255,255,255,.35);color:var(--ink);font:300 30px/1 -apple-system,Arial,sans-serif;cursor:pointer;display:grid;place-items:center;transition:background .2s,transform .3s}
+  .hpp-x:hover{background:rgba(255,255,255,.75);transform:rotate(90deg)}
+  .hpp-x:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   .hpp-hero{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:10px 40px;flex:none}
   .hpp-ekg{display:block;width:100%;height:clamp(44px,9vh,104px);min-height:0;margin:0;flex:none;opacity:.8;pointer-events:none;touch-action:auto}
   .hpp-h{display:flex;align-items:center;gap:clamp(10px,2vw,24px);min-width:0}
-  .hpp-h .hj{width:clamp(36px,min(6vw,7vh),76px);height:clamp(36px,min(6vw,7vh),76px);flex:none;color:#ff3d57;filter:drop-shadow(0 0 26px rgba(255,61,87,.5));transition:color .3s}
+  .hpp-h .hj{width:clamp(36px,min(6vw,7vh),76px);height:clamp(36px,min(6vw,7vh),76px);flex:none;color:var(--r);filter:drop-shadow(0 6px 18px rgba(186,12,47,.35));transition:color .3s}
   .hpp-h .hj.slag{animation:hppSlag .34s cubic-bezier(.2,.8,.2,1)}
   @keyframes hppSlag{0%{transform:scale(1)}30%{transform:scale(1.22)}60%{transform:scale(.96)}100%{transform:scale(1)}}
-  .hpp:not(.live) .hpp-h .hj{color:rgba(255,255,255,.35);filter:none}
-  .hpp-n{font-size:clamp(64px,min(18vw,17vh),220px);font-weight:850;letter-spacing:-.055em;line-height:.82;font-variant-numeric:tabular-nums;text-shadow:0 0 70px rgba(255,255,255,.2)}
+  .hpp:not(.live) .hpp-h .hj{color:rgba(0,32,91,.3);filter:none}
+  .hpp-n{font-family:var(--serif);font-size:clamp(64px,min(18vw,17vh),220px);font-weight:640;letter-spacing:-.04em;line-height:.86;font-variant-numeric:tabular-nums;text-shadow:0 2px 40px rgba(255,255,255,.35)}
   .hpp-u{font:600 clamp(13px,1.4vw,16px)/1 "SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;opacity:.6;align-self:flex-end;margin-bottom:.9em}
-  .hpp-off{font-size:clamp(26px,min(5vw,6vh),52px);font-weight:850;letter-spacing:-.02em}
+  .hpp-off{font-family:var(--serif);font-size:clamp(26px,min(5vw,6vh),52px);font-weight:640;letter-spacing:-.02em}
   .hpp.live .hpp-off,.hpp:not(.live) .hpp-n,.hpp:not(.live) .hpp-u{display:none}
   .hpp-cnt{margin:0;display:flex;flex-direction:column;align-items:flex-end;text-align:right;gap:4px;font-size:clamp(14px,min(1.8vw,2.2vh),20px);font-weight:600}
   @media (max-width:640px){.hpp-cnt{flex-direction:row;align-items:baseline;flex-wrap:wrap;text-align:left;gap:.45em}}
-  .hpp-cn{font-size:clamp(26px,min(5vw,6vh),58px);font-weight:850;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums;display:inline-block}
+  .hpp-cn{font-family:var(--serif);font-size:clamp(26px,min(5vw,6vh),58px);font-weight:640;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums;display:inline-block}
   .hpp-cn.tikk{animation:hppTikk .3s ease-out}
   @keyframes hppTikk{0%{color:#fff3b0}100%{color:var(--y)}}
-  .hpp-cl{opacity:.7}
-  .hpp-tabs{display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(255,255,255,.08);align-self:flex-start;flex:none}
-  .hpp-tabs button{border:0;background:none;color:var(--y);opacity:.7;font:600 12px/1 "SF Mono",Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;padding:10px 14px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s,opacity .2s}
+  .hpp-cl{opacity:.8}
+  .hpp-tabs{display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(255,255,255,.42);align-self:flex-start;flex:none}
+  .hpp-tabs button{border:0;background:none;color:var(--ink);opacity:.75;font:600 12px/1 "SF Mono",Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;padding:10px 14px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s,opacity .2s}
   .hpp-tabs button:hover{opacity:1}
-  .hpp-tabs button[aria-selected="true"]{background:var(--y);color:var(--ink);opacity:1}
-  .hpp-tabs button:focus-visible{outline:2px solid var(--y);outline-offset:2px}
+  .hpp-tabs button[aria-selected="true"]{background:var(--ink);color:#fff;opacity:1}
+  .hpp-tabs button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
   .hpp-c{position:relative;flex:1 1 auto;min-height:80px;outline:none;touch-action:none;cursor:crosshair;border-radius:8px}
-  .hpp-c:focus-visible{box-shadow:0 0 0 2px var(--y)}
+  .hpp-c:focus-visible{box-shadow:0 0 0 2px var(--ink)}
   .hpp-c svg{position:absolute;inset:0;display:block;width:100%;height:100%;overflow:visible;pointer-events:none}
-  .hpp-c .ln{fill:none;stroke:var(--y);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;filter:drop-shadow(0 0 6px rgba(255,255,255,.35))}
+  .hpp-c .ln{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round}
   .hpp-c .ar{fill:url(#hppGrad);stroke:none}
-  .hpp-c .gr{stroke:rgba(255,255,255,.12);stroke-width:1}
-  .hpp-c text{fill:rgba(255,255,255,.55);font:500 10px "SF Mono",Menlo,monospace}
-  .hpp-c .xh{stroke:rgba(255,255,255,.55);stroke-width:1}
-  .hpp-c .dt{fill:var(--y);stroke:var(--ink);stroke-width:2}
-  .hpp-c .tom{fill:rgba(255,255,255,.45);font-size:12px}
-  .hpp-t{position:absolute;transform:translate(-50%,calc(-100% - 12px));background:var(--y);color:var(--ink);border-radius:8px;padding:6px 9px;font:600 11px/1.25 "SF Mono",Menlo,monospace;white-space:nowrap;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.35)}
-  .hpp-t b{font:850 16px/1 -apple-system,"SF Pro Display",Arial,sans-serif}
-  .hpp-k{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding-top:clamp(8px,1.6vh,16px);border-top:1px solid rgba(255,255,255,.12);flex:none}
-  .hpp-k span{display:block;font:600 10px/1.4 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;opacity:.55}
-  .hpp-k b{font-size:clamp(17px,min(2.6vw,3.2vh),30px);font-weight:850;letter-spacing:-.02em;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .hpp-c .gr{stroke:rgba(0,32,91,.14);stroke-width:1}
+  .hpp-c text{fill:rgba(0,32,91,.65);font:500 10px "SF Mono",Menlo,monospace}
+  .hpp-c .xh{stroke:rgba(0,32,91,.5);stroke-width:1}
+  .hpp-c .dt{fill:var(--r);stroke:#fff;stroke-width:2}
+  .hpp-c .tom{fill:rgba(0,32,91,.55);font-size:12px}
+  .hpp-t{position:absolute;transform:translate(-50%,calc(-100% - 12px));background:var(--ink);color:#fff;border-radius:8px;padding:6px 9px;font:600 11px/1.25 "SF Mono",Menlo,monospace;white-space:nowrap;pointer-events:none;box-shadow:0 8px 24px rgba(0,32,91,.3)}
+  .hpp-t b{font:640 16px/1 var(--serif)}
+  .hpp-k{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding-top:clamp(8px,1.6vh,16px);border-top:1px solid rgba(0,32,91,.18);flex:none}
+  .hpp-k span{display:block;font:600 10px/1.4 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;opacity:.7}
+  .hpp-k b{font-family:var(--serif);font-size:clamp(17px,min(2.6vw,3.2vh),30px);font-weight:640;letter-spacing:-.02em;font-variant-numeric:tabular-nums;white-space:nowrap}
   @media (max-width:520px){.hpp-k{grid-template-columns:repeat(2,1fr);row-gap:8px}}
   @media (max-height:640px){.hpp-ekg{display:none}}
   @media (max-height:500px){.hpp-k{display:none}}
-  @media (prefers-reduced-motion:reduce){.hp.live .hj,.hpp-h .hj.slag,.hpp.live .hpp-live i,.hpp-cn.tikk{animation:none}.hpp{animation:none}}
+  @media (prefers-reduced-motion:reduce){.hp.live .hj,.hpp-h .hj.slag,.hpp.live .hpp-live i,.hpp-cn.tikk{animation:none}.hpp,.hpp::before{animation:none}}
   canvas{display:block;width:100%;height:44vh;min-height:240px;margin-top:auto;touch-action:pan-y}
   /* Natt: når Tidemann har satt status «Sover» (chatten får .natt), blir kartet nederst natt (fra 29.10.2026): et dypblått
      lag med stjerner og skyer over kartet, bak panelene, månen med «Tidemann sover» over panelene, og store Z-er som stiger
@@ -1325,7 +1332,7 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .vf.av .vf-live{background:rgba(255,255,255,.16)}
   .vf.av .vf-live i{animation:none;opacity:.5}
   /* Tallet står ved vannflaten til høyre for flasken og følger den opp og ned (top settes i skriptet). */
-  .vf-maal{position:absolute;z-index:2;left:77.5%;top:50%;width:max-content;margin-top:calc(clamp(52px,4.2vw,80px) * -.42);pointer-events:none}
+  .vf-maal{position:absolute;z-index:2;left:79.5%;top:50%;width:max-content;margin-top:calc(clamp(52px,4.2vw,80px) * -.42);pointer-events:none}
   .vf-tall{margin:0;display:flex;align-items:flex-start}
   .vf-n{font:400 clamp(52px,4.2vw,80px)/.8 "Gloock",var(--serif);letter-spacing:-.045em;padding:.06em 0 0;
     background:linear-gradient(180deg,#fff 35%,#bfe8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -1343,7 +1350,7 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .vf-slurk:focus-visible{outline:3px solid #fff;outline-offset:3px}
   .vf-slurk .vf-e{font-size:20px;line-height:1}
   .vf-slurk b{min-width:1.6em;padding:6px 9px;border-radius:999px;background:#00205B;color:#ffe066;font:600 13px/1 "SF Mono",Menlo,monospace;text-align:center}
-  .vf-scene{grid-area:scene;position:relative;height:clamp(320px,48svh,560px);aspect-ratio:1120/920}
+  .vf-scene{grid-area:scene;position:relative;height:clamp(320px,48svh,560px);aspect-ratio:1210/1000}
   .vf-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;-webkit-tap-highlight-color:transparent}
   .vf-svg #vf-flaske{cursor:pointer}
   .vf-chip{position:relative;margin:0;display:inline-flex;align-items:center;gap:9px;padding:9px 15px 9px 12px;border-radius:999px;
@@ -1427,6 +1434,27 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .vf-bunn{margin:0}
   .vf-x{position:absolute;z-index:3;right:clamp(12px,2vw,28px);top:clamp(12px,2vw,28px);width:44px;height:44px;border:0;border-radius:50%;background:rgba(0,10,36,.55);color:#fff;font:400 28px/1 -apple-system,system-ui,sans-serif;cursor:pointer}
   .vf-x:focus-visible{outline:3px solid #fff;outline-offset:3px}
+  /* Flaskekortet: flasken i full høyde til venstre; navnet, tallet og hintet i en kolonne ved siden av, med navnet på linje med korken og hintet med bunnen. */
+  .pultk{padding:20px 22px}
+  .pultk [data-k="pflaske"]{grid-column:1/-1;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto 1fr auto;column-gap:18px;min-height:132px}
+  .pultk [data-k="pflaske"] .fl-rad{display:contents}
+  .pultk [data-k="pflaske"] .fl-i{grid-column:1;grid-row:1/-1;width:auto;height:132px;aspect-ratio:68/100;align-self:center}
+  .pultk [data-k="pflaske"] .sl{grid-column:2;grid-row:1;padding-top:6px}
+  .pultk [data-k="pflaske"] b{grid-column:2;grid-row:2;align-self:center;margin:0;font-size:clamp(40px,3.6vw,52px);line-height:1;letter-spacing:-.03em}
+  .pultk [data-k="pflaske"] .fl-cta{grid-column:2;grid-row:3;justify-self:start;margin:0;padding-bottom:6px}
+  /* Flaskevisningen på PC: høyere, og scenen er en ramme som i en videostrøm: LIVE og klokka i hjørnet, armen og flasken på samme gulv, tallet ved vannflaten. */
+  @media (min-width:900px) and (min-height:621px){
+    .vf.vf-aapen{min-height:clamp(600px,90svh,920px)}
+    .vf-scene{align-self:center;height:var(--sh);aspect-ratio:1210/1000;overflow:hidden;border-radius:22px;
+      border:1px solid rgba(255,255,255,.14);background:linear-gradient(180deg,rgba(0,14,48,.34),rgba(0,14,48,.12));box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 24px 60px rgba(0,8,32,.3)}
+    .vf-i{--sh:max(340px,min(clamp(460px,76svh,760px),calc((100vw - 2 * var(--g) - 491px) * 1000 / 1210)));max-width:none;padding-right:calc(var(--g) + 36px);   /* plass til × utenfor rammen */
+      grid-template-columns:minmax(0,min(460px,calc(100vw - 2 * var(--g) - 51px - clamp(24px,4vw,64px) - var(--sh) * 1210 / 1000))) auto}
+    .vf-hud{left:18px;top:18px}
+    .vf-maal{width:18.5%;margin-top:calc(clamp(56px,5vw,88px) * -.42)}
+    .vf-tall{white-space:nowrap}
+    .vf-n{font-size:clamp(56px,5vw,88px)}
+    .vf-pst{font-size:clamp(20px,1.8vw,32px)}
+  }
 </style>
 </head>
 <body>
@@ -1800,7 +1828,7 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   <!-- Kontoret: pult-kameraet (person, plagg, hodetelefoner) og flaske-kameraet (vannet når målingen er under 2 min). -->
   <section class="sens pultk gl" hidden aria-label="Vannflasken. Åpne forklaringen." role="button" tabindex="0" aria-expanded="false">
     <span class="mono s-t pk-t">Kontoret · kamera</span>
-    <div class="sv" data-k="pflaske"><span class="sl">Vannflasken</span><span class="fl-rad"><svg class="fl-i" viewBox="0 0 84 100" aria-hidden="true"><defs><clipPath id="fl-form"><path d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/></clipPath><linearGradient id="fl-vann" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe6ff"/><stop offset="1" stop-color="#3f8fdc"/></linearGradient></defs><path class="fl-blad" d="M47 70c4-12 15-19 27-19-2 13-12 21-27 19z"/><path class="fl-bladnerve" d="M49 69c7-6 14-11 22-15"/><path class="fl-glass" d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/><g clip-path="url(#fl-form)"><g class="fl-vg"><path class="fl-vann" d="M-40 0q10-3.2 20 0t20 0 20 0 20 0 20 0 20 0 20 0v120h-140z"/></g></g><rect class="fl-glans" x="17" y="40" width="4" height="44" rx="2"/><path class="fl-kant" d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/><rect class="fl-kork" x="22" y="3" width="18" height="11" rx="3"/><g class="fl-sitron"><circle cx="58" cy="83" r="14"/><circle class="fl-s2" cx="58" cy="83" r="11.5"/><path class="fl-s3" d="M58 83V72.5M58 83l7.4 7.4M58 83l-7.4 7.4M58 83l10-3.3M58 83l-10-3.3"/></g></svg><b>–</b><span class="fl-cta">Slik virker det<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span></div>
+    <div class="sv" data-k="pflaske"><span class="sl">Vannflasken</span><span class="fl-rad"><svg class="fl-i" viewBox="8 0 68 100" aria-hidden="true"><defs><clipPath id="fl-form"><path d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/></clipPath><linearGradient id="fl-vann" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe6ff"/><stop offset="1" stop-color="#3f8fdc"/></linearGradient></defs><path class="fl-blad" d="M47 70c4-12 15-19 27-19-2 13-12 21-27 19z"/><path class="fl-bladnerve" d="M49 69c7-6 14-11 22-15"/><path class="fl-glass" d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/><g clip-path="url(#fl-form)"><g class="fl-vg"><path class="fl-vann" d="M-40 0q10-3.2 20 0t20 0 20 0 20 0 20 0 20 0 20 0v120h-140z"/></g></g><rect class="fl-glans" x="17" y="40" width="4" height="44" rx="2"/><path class="fl-kant" d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/><rect class="fl-kork" x="22" y="3" width="18" height="11" rx="3"/><g class="fl-sitron"><circle cx="58" cy="83" r="14"/><circle class="fl-s2" cx="58" cy="83" r="11.5"/><path class="fl-s3" d="M58 83V72.5M58 83l7.4 7.4M58 83l-7.4 7.4M58 83l10-3.3M58 83l-10-3.3"/></g></svg><b>–</b><span class="fl-cta">Slik virker det<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span></div>
     <div class="sv" data-k="pstilling"><span class="sl">Ved pulten</span><b>–</b></div>
     <div class="sv pk-plagg" data-k="pplagg"><span class="sl">Har på seg</span><b>–</b></div>
   </section>
@@ -1872,7 +1900,7 @@ const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const smal = matchMedia('(max-width: 600px)');
 // På mobil synes hele robotarmen (foten, leddene og kameraet), så flasken blir litt mindre; scenen står nederst, og tallet i
 // det ledige feltet over den.
-const settVB = () => { svg.setAttribute('viewBox', smal.matches ? '4 50 904 885' : '40 40 1120 920'); svg.setAttribute('preserveAspectRatio', smal.matches ? 'xMidYMax meet' : 'xMidYMid meet'); };
+const settVB = () => { svg.setAttribute('viewBox', smal.matches ? '4 50 904 885' : '-50 -10 1210 1000'); svg.setAttribute('preserveAspectRatio', smal.matches ? 'xMidYMax meet' : 'xMidYMid meet'); };
 settVB(); smal.addEventListener('change', settVB);
 const kl = (v, a, b) => Math.max(a, Math.min(b, v)), f1 = v => v.toFixed(1);
 
@@ -2104,8 +2132,8 @@ function faseSteg(dt) {
 const maalEl = sek.querySelector('.vf-maal'), mobil = matchMedia('(max-width: 899px) and (orientation: portrait)');
 function merkeSteg() {
   const y = flateVed(838); merke.setAttribute('transform', `translate(0 ${f1(y)})`);
-  // På PC står tallet ved vannflaten (utsnittet går fra y 40 og er 920 høyt), litt innenfor toppen og bunnen.
-  if (!mobil.matches) maalEl.style.top = kl((y - 40) / 920 * 100, 12, 84).toFixed(2) + '%';
+  // På PC står tallet ved vannflaten (utsnittet går fra y -10 og er 1000 høyt), litt innenfor toppen og bunnen.
+  if (!mobil.matches) maalEl.style.top = kl((y + 10) / 1000 * 100, 12, 84).toFixed(2) + '%';
 }
 
 // «Be meg ta en slurk»: Tidemann får et varsel (høyst ett i minuttet, se slurkVarsel i chat.js). Den som trykker, og alle
@@ -2222,7 +2250,7 @@ function visFlaske(på) {
   document.documentElement.classList.toggle('vf-vis', på);
   kort?.setAttribute('aria-expanded', på);
   const y = (på ? sek : document.querySelector('#live')).getBoundingClientRect().top;
-  if (y < 0) scrollBy(0, y);
+  if (y < 0 || på) scrollBy(0, y);
   if (!på) dispatchEvent(new Event('resize'));   // kartet var skjult og må måle seg på nytt
 }
 const kort = document.querySelector('.pultk');
@@ -2323,7 +2351,7 @@ const drawBig=()=>{if(pp.hidden)return;pp.classList.toggle('live',!!hrBpm);if(hr
   const st=hi-lo>60?20:hi-lo>25?10:5;
   let y0=Math.floor((lo-2)/st)*st,y1=Math.ceil((hi+2)/st)*st;if(y1-y0<2*st)y1=y0+2*st;
   const X=m=>L+(m-m0)/Math.max(.01,m1-m0)*(W-L-R),Y=b=>T+(1-(b-y0)/(y1-y0))*(H-T-B);big={X,Y,m:x=>m0+(x-L)/(W-L-R)*(m1-m0)};ppS.setAttribute('viewBox','0 0 '+W+' '+H);
-  const g=svgEl('linearGradient',{id:'hppGrad',x1:0,y1:0,x2:0,y2:1},svgEl('defs',{},ppS));svgEl('stop',{offset:0,'stop-color':'#fff','stop-opacity':.28},g);svgEl('stop',{offset:1,'stop-color':'#fff','stop-opacity':0},g);
+  const g=svgEl('linearGradient',{id:'hppGrad',x1:0,y1:0,x2:0,y2:1},svgEl('defs',{},ppS));svgEl('stop',{offset:0,'stop-color':'#00205B','stop-opacity':.22},g);svgEl('stop',{offset:1,'stop-color':'#00205B','stop-opacity':0},g);
   for(let v=y0;v<=y1;v+=st){svgEl('line',{class:'gr',x1:L,x2:W-R,y1:Y(v),y2:Y(v)},ppS);svgEl('text',{x:L-6,y:Y(v)+3.5,'text-anchor':'end'},ppS).textContent=v}
   const xs=grafSteg(m1-m0,W);
   for(let m=Math.ceil(m0/xs)*xs;m<=m1;m+=xs){const x=X(m),t=c.start+m*60000;svgEl('text',{x,y:H-6,'text-anchor':x<L+18?'start':x>W-R-18?'end':'middle'},ppS).textContent=xs<1440?hhmm.format(t):rng==='uke'?wd.format(t):dm.format(t)}
@@ -2351,9 +2379,9 @@ const pqrst=t=>{const G=(c,w,a)=>a*Math.exp(-(((t-c)/w)**2));return G(.06,.025,.
 const onR=()=>{hj.classList.remove('slag');void hj.offsetWidth;hj.classList.add('slag');cnt++;if(cntDone){cn.textContent=fmt(cnt);cn.classList.remove('tikk');void cn.offsetWidth;cn.classList.add('tikk')}};
 const frame=ts=>{raf=requestAnimationFrame(frame);const dt=Math.min(.05,(ts-(lastF||ts))/1000);lastF=ts;if(!buf)return;
   if(hrBpm){const iv=60/hrBpm,sp=ew/4.5;acc+=dt*sp;while(acc>=1){acc--;const p0=ph;ph+=1/sp;if(ph>=iv)ph-=iv;if(p0<.175&&ph>=.175)onR();buf[ei]=pqrst(ph);ei=(ei+1)%ew;for(let k=1;k<=18;k++)buf[(ei+k)%ew]=NaN}}
-  ex.clearRect(0,0,ew,eh);if(!hrBpm)return;const base=eh*.62,amp=eh*.46;ex.lineWidth=2;ex.lineJoin='round';ex.strokeStyle='#fff';ex.shadowColor='rgba(255,255,255,.7)';ex.shadowBlur=10;ex.beginPath();let on=false;
+  ex.clearRect(0,0,ew,eh);if(!hrBpm)return;const base=eh*.62,amp=eh*.46;ex.lineWidth=2;ex.lineJoin='round';ex.strokeStyle='#00205B';ex.shadowColor='rgba(255,255,255,.8)';ex.shadowBlur=6;ex.beginPath();let on=false;
   for(let x=0;x<ew;x++){const v=buf[x];if(Number.isNaN(v)){on=false;continue}const y=base-v*amp;if(on)ex.lineTo(x,y);else{ex.moveTo(x,y);on=true}}ex.stroke();
-  const hx=(ei-1+ew)%ew,hv=buf[hx];if(!Number.isNaN(hv)){ex.shadowBlur=18;ex.fillStyle='#fff6c4';ex.beginPath();ex.arc(hx,base-hv*amp,3,0,7);ex.fill()}};
+  const hx=(ei-1+ew)%ew,hv=buf[hx];if(!Number.isNaN(hv)){ex.shadowBlur=12;ex.fillStyle='#BA0C2F';ex.beginPath();ex.arc(hx,base-hv*amp,3,0,7);ex.fill()}};
 // Perioder: 7 og 30 dager hentes når fanen velges (serveren regner snitt per 10 min / per time).
 const loadR=r=>{if(rdata[r]&&Date.now()-rdata[r].at<(r==='fin'?4000:120000))return Promise.resolve();return fetch('/chat/hr?r='+r).then(x=>x.ok?x.json():Promise.reject()).then(j=>{rdata[r]={start:j.start,step:j.step,pts:j.pts,beats:j.beats,mins:j.mins,lo:j.lo,hi:j.hi,at:Date.now()}}).catch(()=>{})};
 // Hele perioden i minutter: i dag fra første måling til nå, ellers fra periodens start til nå.
