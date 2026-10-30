@@ -889,18 +889,41 @@ section {
 }
 
 .orgport-pris-celle {
+  display: block;
   padding: 16px 18px;
   border-radius: 14px;
   border: 1px solid var(--rule);
   font-size: 14.5px;
   line-height: 1.45;
   color: var(--ink-2);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 160ms var(--ease), border-color 160ms var(--ease), box-shadow 160ms var(--ease), transform 160ms var(--ease);
 }
 
-.orgport-pris-celle.valgt {
+/* Hele boksen er klikkbar. Hover gir samme blåfarge som den valgte boksen. */
+.orgport-pris-celle.valgt,
+.orgport-pris-celle:hover,
+.orgport-pris-celle:focus-visible {
   background: var(--signal-soft);
   border-color: var(--signal);
   box-shadow: inset 0 0 0 1px var(--signal);
+}
+
+.orgport-pris-celle:hover {
+  transform: translateY(-1px);
+}
+
+/* Bare én boks er blå om gangen: holder de over den andre, slipper «Gratis prøve» fargen. */
+.orgport-pris:has(.orgport-pris-celle:not(.valgt):hover) .orgport-pris-celle.valgt {
+  background: transparent;
+  border-color: var(--rule);
+  box-shadow: none;
+}
+
+.orgport-pris-celle:focus-visible {
+  outline: 2px solid var(--signal-lit);
+  outline-offset: 2px;
 }
 
 .orgport-pris-merke {
@@ -923,11 +946,30 @@ section {
   color: var(--signal-deep);
 }
 
-.orgport-pris-celle a {
+.orgport-pris:has(.orgport-pris-celle:not(.valgt):hover) .orgport-pris-celle.valgt .orgport-belop {
+  color: var(--ink);
+}
+
+.orgport-pris-celle:hover .orgport-belop {
+  color: var(--signal-deep);
+}
+
+.orgport-pris-lenke {
   display: inline-block;
   margin-top: 6px;
   font-weight: 600;
   color: var(--signal);
+}
+
+/* Klikk på «Gratis prøve»: knappene pulserer, så det er tydelig hvor de laster ned. */
+.orgport .get.pek .btn {
+  animation: orgport-pek 700ms var(--ease) 2;
+}
+
+@keyframes orgport-pek {
+  50% {
+    box-shadow: 0 0 0 6px rgba(36, 86, 230, 0.22);
+  }
 }
 
 @keyframes orgport-kort {

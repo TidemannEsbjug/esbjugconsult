@@ -260,17 +260,17 @@
                       <p>Prøv Klart gratis på dine egne filer før du tar et valg. Gratisversjonen er helt lik fullversjonen, men lar deg maksimalt rense 10 dokumenter av hver filtype.</p>
                     </div>
                     <div class="orgport-pris" data-pris hidden>
-                      <div class="orgport-pris-celle valgt">
+                      <a class="orgport-pris-celle valgt" href="#" data-til-knapper>
                         <p class="orgport-pris-merke">Nå</p>
                         <p class="orgport-belop">Gratis prøve</p>
                         <p>Ingen registrering, ingen kort.</p>
-                      </div>
-                      <div class="orgport-pris-celle">
+                      </a>
+                      <a class="orgport-pris-celle" data-prislenke href="pris/">
                         <p class="orgport-pris-merke">Fullversjonen koster</p>
                         <p class="orgport-belop" data-prisbelop></p>
                         <p>Per år eks. mva for <span data-prishvem></span>, uten filgrense.</p>
-                        <a data-prislenke href="pris/">Se hva som er med →</a>
-                      </div>
+                        <span class="orgport-pris-lenke">Se hva som er med →</span>
+                      </a>
                     </div>
                     <div class="get">
                       <a class="btn" href="/klart/last-ned/mac" download>Last ned for Mac</a>
@@ -1054,17 +1054,17 @@ Vergehaver er diagnostisert med <mark class="seal lit"><span class="o">depresjon
                   <p>Prøv Klart gratis på dine egne filer før du tar et valg. Gratisversjonen er helt lik fullversjonen, men lar deg maksimalt rense 10 dokumenter av hver filtype.</p>
                 </div>
                 <div class="orgport-pris" data-pris hidden>
-                  <div class="orgport-pris-celle valgt">
+                  <a class="orgport-pris-celle valgt" href="#" data-til-knapper>
                     <p class="orgport-pris-merke">Nå</p>
                     <p class="orgport-belop">Gratis prøve</p>
                     <p>Ingen registrering, ingen kort.</p>
-                  </div>
-                  <div class="orgport-pris-celle">
+                  </a>
+                  <a class="orgport-pris-celle" data-prislenke href="pris/">
                     <p class="orgport-pris-merke">Fullversjonen koster</p>
                     <p class="orgport-belop" data-prisbelop></p>
                     <p>Per år eks. mva for <span data-prishvem></span>, uten filgrense.</p>
-                    <a data-prislenke href="pris/">Se hva som er med →</a>
-                  </div>
+                    <span class="orgport-pris-lenke">Se hva som er med →</span>
+                  </a>
                 </div>
                 <div class="get">
                   <a class="btn" href="/klart/last-ned/mac" download>Last ned for Mac</a>
@@ -1277,6 +1277,17 @@ Vergehaver er diagnostisert med <mark class="seal lit"><span class="o">depresjon
               return;
             }
             sjekk(o);
+          });
+
+          // «Gratis prøve»: hele boksen peker på nedlastingsknappene.
+          skjema.querySelector("[data-til-knapper]").addEventListener("click", function (e) {
+            e.preventDefault();
+            var get = skjema.querySelector(".get");
+            get.scrollIntoView({ block: "nearest", behavior: "smooth" });
+            get.classList.remove("pek");
+            void get.offsetWidth;
+            get.classList.add("pek");
+            get.querySelector("a").focus({ preventScroll: true });
           });
 
           skjema.querySelector("[data-endre]").addEventListener("click", function () {
