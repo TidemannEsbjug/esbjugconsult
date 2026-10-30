@@ -1159,14 +1159,16 @@
   /* H1 vokser med bredden, men ikke over 16 % av høyden (bare vinduer bredere enn ca. 2:1 merker det). */
   .sh-hero h1{margin:0 0 .34em;font:400 clamp(46px,min(calc(7.6vw / var(--z,1)),calc(16vh / var(--z,1))),150px)/1.02 "Gloock",var(--serif);letter-spacing:-.022em;font-variation-settings:"opsz" 144}
   .sh-hero h1 i{font-style:italic;font-weight:400}
-  /* Is og flagg (bare PC): bare der pekeren er på «Esbjug Consult», fryser bokstavene til is (blank is med rim øverst,
-     frostkorn og et isglimt), som knappen. Resten av tittelen er uendret. I slutten av «Consult» ligger et norsk flagg i
+  /* Is og flagg (bare PC): bare der pekeren er på «Esbjug Consult», fryser bokstavene til is i hele høyden (blank is med
+     rim øverst, frostkorn og et isglimt), som knappen. Resten av tittelen er uendret. I slutten av «Consult» ligger et norsk flagg i
      riktige proporsjoner (22:16, like høyt som linjen), som fryser fram på samme måte når pekeren kommer dit; kanten mot
      isen tones ut. Flekkene der det fryser, kommer fra skriptet («Is i tittelen») som masker i --is (og --isk/--iskw for
      å legge dem sammen i flagget). Lagene er kopier av teksten (data-flagg) over den hvite. */
   @media (min-width:900px) and (hover:hover) and (pointer:fine){
     .sh-hero h1{position:relative;width:fit-content}
-    .sh-hero h1::before,.sh-hero h1::after{content:attr(data-flagg);position:absolute;inset:0;pointer-events:none;color:transparent;text-shadow:none}
+    /* Boksen går .25em over og under linjen, så isen også fyller det som stikker ut (halen på g og j). Bare bokstavene fylles,
+       uten glød eller skygge. */
+    .sh-hero h1::before,.sh-hero h1::after{content:attr(data-flagg);position:absolute;inset:-.25em 0;padding-top:.25em;pointer-events:none;color:transparent;text-shadow:none}
     .sh-hero h1::before{
       background:
         linear-gradient(100deg,transparent 42%,rgba(255,255,255,.85) 50%,transparent 58%) 120% 0/260% 100% no-repeat,
@@ -1174,7 +1176,7 @@
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1.6 0 0 0 -.9'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23f)'/%3E%3C/svg%3E") 0 0/180px 180px,
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='100' preserveAspectRatio='none'%3E%3Cfilter id='i'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.005 .04' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1.5 0 0 0 -.55'/%3E%3C/filter%3E%3Crect width='600' height='100' filter='url(%23i)'/%3E%3C/svg%3E") 0 0/100% 100%,
         linear-gradient(#f6fbff 0%,#d3eaf9 45%,#92c0e7 82%,#6ea5d8 100%);
-      -webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 .05em rgba(235,246,255,.85));
+      -webkit-background-clip:text;background-clip:text;
       -webkit-mask-image:var(--is,linear-gradient(transparent,transparent));mask-image:var(--is,linear-gradient(transparent,transparent));
       animation:isGlimt 7s linear infinite paused}
     /* Flagget: alle lag i en boks på 22:16 helt til høyre. Korset står der det skal: 6 rødt, 1 hvitt, 2 blått, 1 hvitt. */
@@ -1187,8 +1189,8 @@
         linear-gradient(90deg,transparent 27.27%,#f4f9ff 0 45.45%,transparent 0),
         linear-gradient(transparent 37.5%,#f4f9ff 0 62.5%,transparent 0),
         linear-gradient(#c8183a,#9e0a28);
-      background-size:var(--fb) 100%;background-position:100% 0;background-repeat:no-repeat;
-      -webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 .04em rgba(235,246,255,.7));
+      background-size:var(--fb) 1.02em;background-position:100% .25em;background-repeat:no-repeat;
+      -webkit-background-clip:text;background-clip:text;
       -webkit-mask-image:linear-gradient(90deg,transparent calc(100% - var(--fb)),#000 calc(100% - var(--fb) * .74)),var(--is,linear-gradient(transparent,transparent));
       mask-image:linear-gradient(90deg,transparent calc(100% - var(--fb)),#000 calc(100% - var(--fb) * .74)),var(--is,linear-gradient(transparent,transparent));
       -webkit-mask-composite:var(--iskw,source-in);mask-composite:var(--isk,intersect)}
@@ -1218,6 +1220,14 @@
     mask-image:radial-gradient(circle at var(--fx,50%) var(--fy,50%),#000 calc(var(--fr,0px) - 40px),rgba(0,0,0,.55) calc(var(--fr,0px) - 14px),transparent var(--fr,0px))}
   .sh-frost{z-index:-1}
   .sh-vind{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1}
+  /* Flagget i slutten av knappen (22:16, like høyt som knappen), med rim over. Det synes bare der isen er (samme maske som
+     .sh-is), og kanten mot isen tones ut, som flagget i tittelen. --fbw er flaggets bredde, satt fra skriptet. */
+  .sh-flagg{position:absolute;inset:0;pointer-events:none;z-index:-2;
+    background:linear-gradient(rgba(255,255,255,.38),rgba(255,255,255,0) 45%,rgba(255,255,255,0) 72%,rgba(175,212,245,.3)),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 16' preserveAspectRatio='none'%3E%3Cpath fill='%23BA0C2F' d='M0 0h22v16H0z'/%3E%3Cpath fill='%23fff' d='M6 0h4v16H6zM0 6h22v4H0z'/%3E%3Cpath fill='%2300205B' d='M7 0h2v16H7zM0 7h22v2H0z'/%3E%3C/svg%3E") 100% 0/var(--fbw,66px) 100% no-repeat;
+    -webkit-mask-image:linear-gradient(90deg,transparent calc(100% - var(--fbw,66px)),#000 calc(100% - var(--fbw,66px) * .74)),radial-gradient(circle at var(--fx,50%) var(--fy,50%),#000 calc(var(--fr,0px) - 40px),rgba(0,0,0,.55) calc(var(--fr,0px) - 14px),transparent var(--fr,0px));
+    mask-image:linear-gradient(90deg,transparent calc(100% - var(--fbw,66px)),#000 calc(100% - var(--fbw,66px) * .74)),radial-gradient(circle at var(--fx,50%) var(--fy,50%),#000 calc(var(--fr,0px) - 40px),rgba(0,0,0,.55) calc(var(--fr,0px) - 14px),transparent var(--fr,0px));
+    -webkit-mask-composite:source-in;mask-composite:intersect}
   /* Det røde maskeres bort der isen er, og tones i tillegg ut med isen totalt (--rod), så ingen rød kant blir igjen rundt
      knappen mens den fryser. */
   .sh-knapp.sh-p::before{content:"";position:absolute;inset:0;z-index:-3;background:#BA0C2F;opacity:var(--rod,1);
@@ -4198,17 +4208,21 @@ setInterval(tegn, 1000);
     tegn();
   }
 
-  // Frost: ispilen har en aura. Styrken er 1 når pekeren er på knappen og faller til 0 AURA px unna. Isen (f) går raskt
-  // mot styrken og brer seg fra punktet på knappen nærmest pekeren. Iskrystallene vokser i seks retninger med greiner
+  // Frost: ispilen har en aura. Styrken er 1 når pekeren er på knappen og faller til 0 aura() px unna, samme radius som isen i
+  // tittelen (0,75 em av tittelen). Isen (f) går raskt mot styrken og brer seg fra punktet på knappen nærmest pekeren. Den
+  // fryser fort, men tiner sakte: når pekeren er utenfor auraen, står isen i 2,5 s og tiner så over 7 s. I slutten av
+  // knappen ligger et norsk flagg som kommer fram der isen er. Iskrystallene vokser i seks retninger med greiner
   // parvis i 60°, som et snøkrystall, og bare litt foran iskanten. Når isen er halvveis, begynner det også å rime fra kantene.
   const kn = $('.sh-knapp.sh-p');
   if (kn && matchMedia('(hover:hover) and (pointer:fine)').matches) {
-    const AURA = 140;
+    const tittel = $('.sh-hero h1');
+    const aura = () => { if (!tittel) return 90; const b = tittel.getBoundingClientRect(); return parseFloat(getComputedStyle(tittel).fontSize) * .75 * (b.width / (tittel.offsetWidth || b.width) || 1); };
     const is = document.createElement('i'); is.className = 'sh-is'; is.setAttribute('aria-hidden', 'true');
-    const fc = document.createElement('canvas'); fc.className = 'sh-frost'; fc.setAttribute('aria-hidden', 'true'); kn.prepend(is, fc);
+    const fl = document.createElement('i'); fl.className = 'sh-flagg'; fl.setAttribute('aria-hidden', 'true');
+    const fc = document.createElement('canvas'); fc.className = 'sh-frost'; fc.setAttribute('aria-hidden', 'true'); kn.prepend(is, fl, fc);
     const vc = document.createElement('canvas'); vc.className = 'sh-vind'; vc.setAttribute('aria-hidden', 'true'); kn.prepend(vc);
     const fx = fc.getContext('2d'), vx = vc.getContext('2d');
-    let fw = 0, fh = 0, diag = 0, ox = 0, oy = 0, tx = 0, ty = 0, f = 0, maal = 0, tupper = [], frø = [], kanter = false, tid = 0;
+    let fw = 0, fh = 0, diag = 0, ox = 0, oy = 0, tx = 0, ty = 0, f = 0, maal = 0, tupper = [], frø = [], kanter = false, tid = 0, kaldSist = 0;
     // Vinden: styrke fra avstanden, retning fra pekeren mot knappen, kast fra en langsom sum av sinuser og fra farten
     // pekeren har mot knappen. Fokk er små korn og streker som blåser over knappen.
     let styrke = 0, retning = 0, kast = 0, fokk = [], sist = null;
@@ -4223,6 +4237,7 @@ setInterval(tegn, 1000);
     const sett = () => {
       const z = fw / (kn.offsetWidth || fw) || 1;  // zoom på store skjermer
       kn.style.setProperty('--fx', ox / z + 'px'); kn.style.setProperty('--fy', oy / z + 'px'); kn.style.setProperty('--fr', front() / z + 'px');
+      kn.style.setProperty('--fbw', fh * 22 / 16 / z + 'px');
       fc.style.opacity = Math.min(1, f * 1.8) ** .8;
       kn.style.setProperty('--rod', Math.max(0, 1 - f * 1.6).toFixed(3));
       kn.classList.toggle('frosset', f > .55);
@@ -4233,7 +4248,7 @@ setInterval(tegn, 1000);
       if (r.bottom < 0 || r.top > innerHeight) { maal = 0; return; }
       const nx = Math.max(r.left, Math.min(r.right, e.clientX)), ny = Math.max(r.top, Math.min(r.bottom, e.clientY));
       const d = Math.hypot(e.clientX - nx, e.clientY - ny);
-      styrke = Math.max(0, 1 - d / AURA) ** 1.6;
+      styrke = Math.max(0, 1 - d / aura()) ** 1.6;
       if (d > 1) retning = Math.atan2(ny - e.clientY, nx - e.clientX);
       else if (sist && (e.clientX !== sist[0] || e.clientY !== sist[1])) retning = Math.atan2(e.clientY - sist[1], e.clientX - sist[0]);
       if (sist && d > 1) {  // fart mot knappen gir et kast
@@ -4261,8 +4276,9 @@ setInterval(tegn, 1000);
       kast *= .96;
       // Vindkast: isen puster med vinden, og pekeren går ikke helt fram til full is før den står på knappen.
       maal = styrke ? Math.min(1, styrke * (.72 + .5 * pust(tn)) + kast * styrke * .5) : 0;
-      f += (maal - f) * (maal > f ? .08 : .04);
-      if (Math.abs(maal - f) < .003) f = maal;
+      if (styrke) kaldSist = tn;
+      if (!styrke) { if (tn - kaldSist > 2500) f = Math.max(0, f - 1 / 60 / 7); }   // fryser fort, tiner sakte
+      else { f += (maal - f) * (maal > f ? .08 : .04); if (Math.abs(maal - f) < .003) f = maal; }
       ox += (tx - ox) * .08; oy += (ty - oy) * .08;
       // Kanten av isen vaier litt med vinden.
       const vo = (pust(tn * 1.7) - .5) * 10 * f;
@@ -4334,10 +4350,11 @@ setInterval(tegn, 1000);
     };
   }
 
-  // Is i tittelen (bare PC): bare der pekeren er, fryser bokstavene, som om den iskalde pekeren rører ved dem. Flekken vokser
-  // raskt til R0, og holder man pekeren i ro, brer isen seg videre, fortere i starten og saktere mot RMAKS. Flekker pekeren
-  // har forlatt, tiner på drøyt ett sekund, så isen følger pekeren og resten av tittelen er uendret. Flagget i «ult» fryser
-  // fram på samme måte. Flekkene blir masker i --is; --isk/--iskw legger dem sammen og snitter med flaggets toning i CSS.
+  // Is i tittelen (bare PC): bare der pekeren er, fryser bokstavene i hele høyden (et loddrett bånd, så halen på g og j
+  // blir med), som om den iskalde pekeren rører ved dem. Båndet vokser
+  // raskt til R0, og holder man pekeren i ro, brer isen seg videre, fortere i starten og saktere mot RMAKS. Den fryser fort,
+  // men tiner sakte: en flekk pekeren har forlatt, står frosset i 2,5 s og tiner så over 7 s. Kommer pekeren tilbake til
+  // is som ikke har tint, fryser den videre derfra. Resten av tittelen er uendret. Flagget i «ult» fryser fram på samme måte. Flekkene blir masker i --is; --isk/--iskw legger dem sammen og snitter med flaggets toning i CSS.
   const h1 = $('.sh-hero h1');
   if (h1 && matchMedia('(min-width:900px) and (hover:hover) and (pointer:fine)').matches) {
     let flekker = [], inne = null, rf = 0, sistT = 0;
@@ -4345,8 +4362,8 @@ setInterval(tegn, 1000);
     const tegnIs = () => {
       if (!flekker.length) { for (const k of ['--is', '--isk', '--iskw']) h1.style.removeProperty(k); return; }
       const kant = em() * R0 * .45, f = n => n.toFixed(1) + 'px';
-      h1.style.setProperty('--is', flekker.map(p => { const e = Math.min(p.r * .5, kant);
-        return `radial-gradient(circle at ${f(p.x)} ${f(p.y)},#000 ${f(p.r - e)},rgba(0,0,0,.55) ${f(p.r - e * .45)},transparent ${f(p.r)})`; }).join(','));
+      h1.style.setProperty('--is', flekker.map(p => { const e = Math.min(p.r * .5, kant), a = p.x - p.r, b = p.x + p.r;
+        return `linear-gradient(90deg,transparent ${f(a)},rgba(0,0,0,.55) ${f(a + e * .55)},#000 ${f(a + e)},#000 ${f(b - e)},rgba(0,0,0,.55) ${f(b - e * .55)},transparent ${f(b)})`; }).join(','));
       h1.style.setProperty('--isk', 'intersect' + ',add'.repeat(flekker.length));
       h1.style.setProperty('--iskw', 'source-in' + ',source-over'.repeat(flekker.length));
     };
@@ -4358,9 +4375,9 @@ setInterval(tegn, 1000);
           p.holdt += dt;
           const maal = e * (rolig ? R0 : R0 + (RMAKS - R0) * (1 - Math.exp(-p.holdt / 3.5)));
           p.r = rolig ? maal : p.r + (maal - p.r) * Math.min(1, dt * 7);
-        } else {
+        } else if ((p.borte = (p.borte || 0) + dt) > 2.5) {
           p.fra ??= p.r;
-          p.r = rolig ? 0 : p.r - p.fra * dt / 1.2;
+          p.r = rolig ? 0 : p.r - p.fra * dt / 7;
         }
       }
       flekker = flekker.filter(p => p === inne || p.r > .5);
@@ -4371,9 +4388,12 @@ setInterval(tegn, 1000);
       if (e.pointerType !== 'mouse') return;
       const b = h1.getBoundingClientRect(), z = b.width / (h1.offsetWidth || b.width) || 1;   // zoom på store skjermer
       const x = (e.clientX - b.left) / z, y = (e.clientY - b.top) / z;
-      // Små bevegelser innenfor flekken teller som å holde i ro.
-      if (!inne || Math.hypot(x - inne.x, y - inne.y) > Math.max(em() * R0 * .5, inne.r * .35)) {
-        inne = { x, y, r: 0, holdt: 0 }; flekker.push(inne); if (flekker.length > 40) flekker.shift();
+      // Små bevegelser innenfor flekken teller som å holde i ro. Is som ikke har tint, fryser videre.
+      const nær = p => Math.abs(x - p.x) <= Math.max(em() * R0 * .5, p.r * .35);
+      if (!inne || !nær(inne)) {
+        inne = flekker.filter(nær).sort((a, b) => b.r - a.r)[0];
+        if (inne) { inne.borte = 0; inne.fra = undefined; }
+        else { inne = { x, y, r: 0, holdt: 0 }; flekker.push(inne); if (flekker.length > 60) flekker.shift(); }
       }
       if (!rf) rf = requestAnimationFrame(steg);
     });
