@@ -26,7 +26,10 @@ console.info(
   var boks = tekst && tekst.querySelector(".lokal");
   var toppskjema = tekst && tekst.querySelector("[data-orgport]");
   // På desktop står markøren i feltet med en gang, så det er tydelig hvor man skal skrive.
-  if (toppskjema && window.matchMedia("(pointer: fine)").matches) {
+  // Virksomheten i adressen: de kommer tilbake fra prissiden, og kortet deres skal stå der.
+  var fraAdressen = String(new URLSearchParams(location.search).get("orgnr") || "").replace(/\D/g, "");
+  if (!KlartOrgfelt.gyldig(fraAdressen)) fraAdressen = null;
+  if (toppskjema && !fraAdressen && window.matchMedia("(pointer: fine)").matches) {
     toppskjema.querySelector("input").focus({ preventScroll: true });
   }
   var harSvar = false;
@@ -69,6 +72,7 @@ console.info(
 
   function visSvar(svar) {
     harSvar = true;
+    history.replaceState(null, "", location.pathname + "?orgnr=" + svar.orgnr);
     // Svaret tar hele plassen: overskriften og boksen viker, og kortet står alene midt i bildet.
     if (tekst) {
       tekst.classList.remove("skriver");
@@ -90,14 +94,14 @@ console.info(
       });
       boks.querySelector("[data-stor]").hidden = !svar.stor;
       if (svar.stor) new Image().src = "assets/klart-maskin-sno.jpg"; // Klart når de trykker «Les om skreddersydd oppsett».
-      boks.querySelector("[data-oppsett]").href = "pris/?orgnr=" + svar.orgnr + "&vis=oppsett";
+      boks.querySelector("[data-oppsett]").href = "pris/?orgnr=" + svar.orgnr + "&vis=oppsett&fra=forside";
       var pris = boks.querySelector("[data-pris]");
       pris.hidden = !svar.pris;
       if (svar.pris) {
         boks.querySelector("[data-prisbelop]").textContent =
           new Intl.NumberFormat("nb-NO").format(svar.pris) + " kr";
         boks.querySelector("[data-prishvem]").textContent = svar.konsern ? svar.navn + " og hele konsernet" : svar.navn;
-        boks.querySelector("[data-prislenke]").href = "pris/?orgnr=" + svar.orgnr;
+        boks.querySelector("[data-prislenke]").href = "pris/?orgnr=" + svar.orgnr + "&fra=forside";
       }
       boks.hidden = false;
     });
@@ -105,6 +109,8 @@ console.info(
 
   function nullstill() {
     harSvar = false;
+    history.replaceState(null, "", location.pathname);
+    document.documentElement.classList.remove("uten-feiring");
     skjemaer.forEach(function (s) {
       s.classList.remove("stor", "svar");
       s.querySelector("[data-orgport-svar]").hidden = true;
@@ -190,6 +196,13 @@ console.info(
       felt.tom();
       input.focus();
     });
+
+    if (skjema === toppskjema && fraAdressen) {
+      input.value = KlartOrgfelt.tekst(fraAdressen);
+      sjekk(fraAdressen).finally(function () {
+        document.documentElement.classList.remove("kommer-tilbake");
+      });
+    }
   });
 })();
 

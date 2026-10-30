@@ -195,9 +195,19 @@
         visBetaling();
         return;
       }
-      vis(historikk.pop() || "s-pris");
+      var forrige = historikk.pop();
+      if (!forrige && FRA_FORSIDEN) return tilForsiden();
+      vis(forrige || "s-pris");
     });
   });
+
+  // Kom de fra forsiden, går «Tilbake» dit igjen, med virksomheten deres valgt.
+  var FRA_FORSIDEN = q.get("fra") === "forside";
+  function tilForsiden() {
+    location.href = "../?orgnr=" + tilbud.orgnr;
+  }
+  $("r-tilbake").hidden = !FRA_FORSIDEN;
+  $("r-tilbake").addEventListener("click", tilForsiden);
 
   /** Stegraden øverst: Pris · (Lisensen) · Betaling · Bekreft. «Lisensen» er bare med når den er et steg. */
   function tegnStegrad(steg) {
@@ -374,7 +384,7 @@
     settAdresse(d.orgnr);
     // Fra forsiden («Les om skreddersydd oppsett») går vi rett dit.
     if (q.get("vis") === "oppsett" && d.stor) {
-      historikk = ["s-pris"];
+      historikk = FRA_FORSIDEN ? [] : ["s-pris"];
       vis("s-oppsett");
     } else {
       vis("s-pris");
