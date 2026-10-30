@@ -1332,7 +1332,7 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .vf.av .vf-live{background:rgba(255,255,255,.16)}
   .vf.av .vf-live i{animation:none;opacity:.5}
   /* Tallet står ved vannflaten til høyre for flasken og følger den opp og ned (top settes i skriptet). */
-  .vf-maal{position:absolute;z-index:2;left:79.5%;top:50%;width:max-content;margin-top:calc(clamp(52px,4.2vw,80px) * -.42);pointer-events:none}
+  .vf-maal{position:absolute;z-index:2;left:77.5%;top:50%;width:max-content;margin-top:calc(clamp(52px,4.2vw,80px) * -.42);pointer-events:none}
   .vf-tall{margin:0;display:flex;align-items:flex-start}
   .vf-n{font:400 clamp(52px,4.2vw,80px)/.8 "Gloock",var(--serif);letter-spacing:-.045em;padding:.06em 0 0;
     background:linear-gradient(180deg,#fff 35%,#bfe8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -1350,7 +1350,7 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .vf-slurk:focus-visible{outline:3px solid #fff;outline-offset:3px}
   .vf-slurk .vf-e{font-size:20px;line-height:1}
   .vf-slurk b{min-width:1.6em;padding:6px 9px;border-radius:999px;background:#00205B;color:#ffe066;font:600 13px/1 "SF Mono",Menlo,monospace;text-align:center}
-  .vf-scene{grid-area:scene;position:relative;height:clamp(320px,48svh,560px);aspect-ratio:1210/1000}
+  .vf-scene{grid-area:scene;position:relative;height:clamp(320px,48svh,560px);aspect-ratio:1120/920}
   .vf-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;-webkit-tap-highlight-color:transparent}
   .vf-svg #vf-flaske{cursor:pointer}
   .vf-chip{position:relative;margin:0;display:inline-flex;align-items:center;gap:9px;padding:9px 15px 9px 12px;border-radius:999px;
@@ -1419,13 +1419,8 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   footer.hero,.vf.vf-aapen{min-height:clamp(420px,70svh,720px)}
   .pultk{grid-template-columns:minmax(0,1fr)!important;cursor:pointer}
   .pultk [data-k="pflaske"]{grid-row:auto}
-  /* Hintet om at kortet kan trykkes: stille tekst i samme stil som etikettene, og en pil som våkner på hover. */
-  .fl-cta{flex:none;margin-left:auto;display:inline-flex;align-items:center;gap:8px;color:rgba(0,32,91,.62);font:600 11px/1 "SF Mono",Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;transition:color .2s}
-  .fl-cta svg{flex:none;width:16px;height:16px;transition:transform .2s}
   .pultk{transition:transform .2s ease,box-shadow .2s ease}
   .pultk:hover,.pultk:focus-visible{transform:translateY(-2px);box-shadow:0 16px 36px rgba(0,20,60,.2)}
-  .pultk:hover .fl-cta,.pultk:focus-visible .fl-cta{color:#00205B}
-  .pultk:hover .fl-cta svg,.pultk:focus-visible .fl-cta svg{transform:translateX(4px)}
   @media (max-width:760px){.pultk{order:8}}
   /* Trykk på vannflasken: seksjonen tar plassen til kartet, med teksten og flasken samlet. × går tilbake. */
   .vf:not(.vf-aapen){display:none}
@@ -1434,26 +1429,32 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .vf-bunn{margin:0}
   .vf-x{position:absolute;z-index:3;right:clamp(12px,2vw,28px);top:clamp(12px,2vw,28px);width:44px;height:44px;border:0;border-radius:50%;background:rgba(0,10,36,.55);color:#fff;font:400 28px/1 -apple-system,system-ui,sans-serif;cursor:pointer}
   .vf-x:focus-visible{outline:3px solid #fff;outline-offset:3px}
-  /* Flaskekortet: flasken i full høyde til venstre; navnet, tallet og hintet i en kolonne ved siden av, med navnet på linje med korken og hintet med bunnen. */
-  .pultk{padding:20px 22px}
-  .pultk [data-k="pflaske"]{grid-column:1/-1;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto 1fr auto;column-gap:18px;min-height:132px}
+  /* Flaskekortet: flasken stor til venstre, navnet og det store tallet ved siden av, og en tydelig knapp over hele bredden under. */
+  .pultk{padding:20px 20px 18px}
+  .pultk [data-k="pflaske"]{grid-column:1/-1;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto 1fr auto auto;column-gap:18px}
   .pultk [data-k="pflaske"] .fl-rad{display:contents}
-  .pultk [data-k="pflaske"] .fl-i{grid-column:1;grid-row:1/-1;width:auto;height:132px;aspect-ratio:68/100;align-self:center}
-  .pultk [data-k="pflaske"] .sl{grid-column:2;grid-row:1;padding-top:6px}
-  .pultk [data-k="pflaske"] b{grid-column:2;grid-row:2;align-self:center;margin:0;font-size:clamp(40px,3.6vw,52px);line-height:1;letter-spacing:-.03em}
-  .pultk [data-k="pflaske"] .fl-cta{grid-column:2;grid-row:3;justify-self:start;margin:0;padding-bottom:6px}
-  /* Flaskevisningen på PC: høyere, og scenen er en ramme som i en videostrøm: LIVE og klokka i hjørnet, armen og flasken på samme gulv, tallet ved vannflaten. */
-  @media (min-width:900px) and (min-height:621px){
-    .vf.vf-aapen{min-height:clamp(600px,90svh,920px)}
-    .vf-scene{align-self:center;height:var(--sh);aspect-ratio:1210/1000;overflow:hidden;border-radius:22px;
-      border:1px solid rgba(255,255,255,.14);background:linear-gradient(180deg,rgba(0,14,48,.34),rgba(0,14,48,.12));box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 24px 60px rgba(0,8,32,.3)}
-    .vf-i{--sh:max(340px,min(clamp(460px,76svh,760px),calc((100vw - 2 * var(--g) - 491px) * 1000 / 1210)));max-width:none;padding-right:calc(var(--g) + 36px);   /* plass til × utenfor rammen */
-      grid-template-columns:minmax(0,min(460px,calc(100vw - 2 * var(--g) - 51px - clamp(24px,4vw,64px) - var(--sh) * 1210 / 1000))) auto}
-    .vf-hud{left:18px;top:18px}
-    .vf-maal{width:18.5%;margin-top:calc(clamp(56px,5vw,88px) * -.42)}
-    .vf-tall{white-space:nowrap}
-    .vf-n{font-size:clamp(56px,5vw,88px)}
-    .vf-pst{font-size:clamp(20px,1.8vw,32px)}
+  .pultk [data-k="pflaske"] .fl-i{grid-column:1;grid-row:1/4;width:auto;height:150px;aspect-ratio:68/100}
+  .pultk [data-k="pflaske"] .sl{grid-column:2;grid-row:1;padding-top:8px;font-size:11px}
+  .pultk [data-k="pflaske"] b{grid-column:2;grid-row:2;align-self:end;margin:0;font-size:clamp(58px,5vw,72px);line-height:1;letter-spacing:-.035em}
+  .pultk.uten-flaske [data-k="pflaske"] b{grid-row:2/4;align-self:center;font-size:22px}
+  .fl-igjen{grid-column:2;grid-row:3;margin:6px 0 10px;font:600 10.5px/1.3 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(0,32,91,.62)}
+  .pultk.uten-flaske .fl-igjen{display:none}
+  /* Knappen: samme form og skrift som «Snakk med meg», i marineblått. */
+  .fl-cta{grid-column:1/-1;grid-row:4;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px;padding:15px 20px;border-radius:999px;background:var(--ink);color:#fff;
+    font:600 16px/1 "Literata",Georgia,serif;box-shadow:0 8px 20px rgba(0,32,91,.22);transition:background .2s,box-shadow .2s}
+  .fl-cta svg{flex:none;width:20px;height:20px;transition:transform .2s}
+  .pultk:hover .fl-cta,.pultk:focus-visible .fl-cta{background:#0b3a8f;color:#fff;box-shadow:0 12px 26px rgba(0,32,91,.32)}
+  .pultk:hover .fl-cta svg,.pultk:focus-visible .fl-cta svg{transform:translateX(5px)}
+  /* PC: panelene er like høye. Høyre panel fyller høyden til venstre, og det er pulsen som vokser: større tall og en høyere graf. */
+  @media (min-width:761px){
+    .paneler{flex:0 0 auto;align-items:stretch}
+    .hoyre .sens{flex:1;grid-template-rows:minmax(0,1fr)}
+    .hoyre .sens .hp{flex-direction:column;flex-wrap:nowrap;align-items:stretch;justify-content:flex-start;min-height:0}
+    .hoyre .sens .hp .hp-o{flex:1 1 auto;display:flex;align-items:stretch;min-height:0}
+    .hoyre .sens .hp .st-v{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto minmax(56px,1fr);align-items:center;justify-items:start;gap:12px;width:100%;font-size:clamp(46px,4vw,60px)}
+    .hoyre .sens .hp .st-l{flex:none}
+    .hoyre .sens .hp .hj{width:.62em;height:.62em}
+    .hoyre .sens .hp .hk{grid-column:1/-1;grid-row:2;justify-self:stretch;align-self:stretch;width:100%;height:100%;min-width:0}
   }
 </style>
 </head>
@@ -1828,7 +1829,7 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   <!-- Kontoret: pult-kameraet (person, plagg, hodetelefoner) og flaske-kameraet (vannet når målingen er under 2 min). -->
   <section class="sens pultk gl" hidden aria-label="The water bottle. Open the explanation." role="button" tabindex="0" aria-expanded="false">
     <span class="mono s-t pk-t">Office · camera</span>
-    <div class="sv" data-k="pflaske"><span class="sl">Water bottle</span><span class="fl-rad"><svg class="fl-i" viewBox="8 0 68 100" aria-hidden="true"><defs><clipPath id="fl-form"><path d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/></clipPath><linearGradient id="fl-vann" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe6ff"/><stop offset="1" stop-color="#3f8fdc"/></linearGradient></defs><path class="fl-blad" d="M47 70c4-12 15-19 27-19-2 13-12 21-27 19z"/><path class="fl-bladnerve" d="M49 69c7-6 14-11 22-15"/><path class="fl-glass" d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/><g clip-path="url(#fl-form)"><g class="fl-vg"><path class="fl-vann" d="M-40 0q10-3.2 20 0t20 0 20 0 20 0 20 0 20 0 20 0v120h-140z"/></g></g><rect class="fl-glans" x="17" y="40" width="4" height="44" rx="2"/><path class="fl-kant" d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/><rect class="fl-kork" x="22" y="3" width="18" height="11" rx="3"/><g class="fl-sitron"><circle cx="58" cy="83" r="14"/><circle class="fl-s2" cx="58" cy="83" r="11.5"/><path class="fl-s3" d="M58 83V72.5M58 83l7.4 7.4M58 83l-7.4 7.4M58 83l10-3.3M58 83l-10-3.3"/></g></svg><b>–</b><span class="fl-cta">How it works<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span></div>
+    <div class="sv" data-k="pflaske"><span class="sl">Water bottle</span><span class="fl-rad"><svg class="fl-i" viewBox="8 0 68 100" aria-hidden="true"><defs><clipPath id="fl-form"><path d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/></clipPath><linearGradient id="fl-vann" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe6ff"/><stop offset="1" stop-color="#3f8fdc"/></linearGradient></defs><path class="fl-blad" d="M47 70c4-12 15-19 27-19-2 13-12 21-27 19z"/><path class="fl-bladnerve" d="M49 69c7-6 14-11 22-15"/><path class="fl-glass" d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/><g clip-path="url(#fl-form)"><g class="fl-vg"><path class="fl-vann" d="M-40 0q10-3.2 20 0t20 0 20 0 20 0 20 0 20 0 20 0v120h-140z"/></g></g><rect class="fl-glans" x="17" y="40" width="4" height="44" rx="2"/><path class="fl-kant" d="M24 13h14v5c0 3 7 5.5 9.5 11 1.6 3.5 2.2 6.5 2.2 10.5V88a8 8 0 0 1-8 8H20.3a8 8 0 0 1-8-8V39.5c0-4 .6-7 2.2-10.5C17 23.5 24 21 24 18z"/><rect class="fl-kork" x="22" y="3" width="18" height="11" rx="3"/><g class="fl-sitron"><circle cx="58" cy="83" r="14"/><circle class="fl-s2" cx="58" cy="83" r="11.5"/><path class="fl-s3" d="M58 83V72.5M58 83l7.4 7.4M58 83l-7.4 7.4M58 83l10-3.3M58 83l-10-3.3"/></g></svg><b>–</b><span class="fl-igjen">left in the bottle</span><span class="fl-cta">How it works<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span></div>
     <div class="sv" data-k="pstilling"><span class="sl">At the desk</span><b>–</b></div>
     <div class="sv pk-plagg" data-k="pplagg"><span class="sl">Wearing</span><b>–</b></div>
   </section>
@@ -1900,7 +1901,7 @@ const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const smal = matchMedia('(max-width: 600px)');
 // På mobil synes hele robotarmen (foten, leddene og kameraet), så flasken blir litt mindre; scenen står nederst, og tallet i
 // det ledige feltet over den.
-const settVB = () => { svg.setAttribute('viewBox', smal.matches ? '4 50 904 885' : '-50 -10 1210 1000'); svg.setAttribute('preserveAspectRatio', smal.matches ? 'xMidYMax meet' : 'xMidYMid meet'); };
+const settVB = () => { svg.setAttribute('viewBox', smal.matches ? '4 50 904 885' : '40 40 1120 920'); svg.setAttribute('preserveAspectRatio', smal.matches ? 'xMidYMax meet' : 'xMidYMid meet'); };
 settVB(); smal.addEventListener('change', settVB);
 const kl = (v, a, b) => Math.max(a, Math.min(b, v)), f1 = v => v.toFixed(1);
 
@@ -2132,8 +2133,8 @@ function faseSteg(dt) {
 const maalEl = sek.querySelector('.vf-maal'), mobil = matchMedia('(max-width: 899px) and (orientation: portrait)');
 function merkeSteg() {
   const y = flateVed(838); merke.setAttribute('transform', `translate(0 ${f1(y)})`);
-  // På PC står tallet ved vannflaten (utsnittet går fra y -10 og er 1000 høyt), litt innenfor toppen og bunnen.
-  if (!mobil.matches) maalEl.style.top = kl((y + 10) / 1000 * 100, 12, 84).toFixed(2) + '%';
+  // På PC står tallet ved vannflaten (utsnittet går fra y 40 og er 920 høyt), litt innenfor toppen og bunnen.
+  if (!mobil.matches) maalEl.style.top = kl((y - 40) / 920 * 100, 12, 84).toFixed(2) + '%';
 }
 
 // «Be meg ta en slurk»: Tidemann får et varsel (høyst ett i minuttet, se slurkVarsel i chat.js). Den som trykker, og alle
@@ -2250,7 +2251,7 @@ function visFlaske(på) {
   document.documentElement.classList.toggle('vf-vis', på);
   kort?.setAttribute('aria-expanded', på);
   const y = (på ? sek : document.querySelector('#live')).getBoundingClientRect().top;
-  if (y < 0 || på) scrollBy(0, y);
+  if (y < 0) scrollBy(0, y);
   if (!på) dispatchEvent(new Event('resize'));   // kartet var skjult og må måle seg på nytt
 }
 const kort = document.querySelector('.pultk');
@@ -3079,7 +3080,8 @@ function tegnPuls() {
   if (pts.length < 2) { l.setAttribute('d', ''); p.setAttribute('cx', -9); return; }
   let lo = Math.min(...pts.map(q => q[1])), hi = Math.max(...pts.map(q => q[1]));
   const midt = (lo + hi) / 2, h = Math.max(20, hi - lo + 6); lo = midt - h / 2; hi = midt + h / 2;
-  const X = t => (t - fra) / (5 * 60e3) * 200, Y = b => 38 - (b - lo) / (hi - lo) * 36;
+  const svg = l.ownerSVGElement, W = svg.clientWidth || 200, H = svg.clientHeight || 40; svg.setAttribute('viewBox', `0 0 ${W} ${H}`);   // grafen er så høy som panelet gir plass til
+  const X = t => (t - fra) / (5 * 60e3) * W, Y = b => H - 2 - (b - lo) / (hi - lo) * (H - 4);
   let d = '', forr = 0;
   for (const [t, b] of pts) { d += (d && t - forr < 30e3 ? 'L' : 'M') + X(t).toFixed(1) + ' ' + Y(b).toFixed(1); forr = t; }
   l.setAttribute('d', d);

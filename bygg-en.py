@@ -295,6 +295,7 @@ T_NY = [
     ('<p class="vf-forklar">Kameraet følger flasken og måler hvor mye som er igjen, nå mens du ser på.</p>',
      '<p class="vf-forklar">The camera follows the bottle and measures how much is left, right now as you watch.</p>'),
     ('<span class="fl-cta">Slik virker det', '<span class="fl-cta">How it works'),
+    ('<span class="fl-igjen">igjen i flasken</span>', '<span class="fl-igjen">left in the bottle</span>'),
     ('aria-label="Lukk vannflasken"', 'aria-label="Close the water bottle"'),
     ('aria-label="Vannflasken. Åpne forklaringen."', 'aria-label="The water bottle. Open the explanation."'),
     ('<span class="vf-tl" aria-hidden="true">igjen i flasken</span>', '<span class="vf-tl" aria-hidden="true">left in the bottle</span>'),
