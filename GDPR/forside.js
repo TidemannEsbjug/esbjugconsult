@@ -105,6 +105,7 @@ console.info(
         el.hidden = Boolean(svar.stor);
       });
       boks.querySelector("[data-stor]").hidden = !svar.stor;
+      if (svar.stor) new Image().src = "assets/klart-maskin-sno.jpg"; // Klart når de trykker «Les om skreddersydd oppsett».
       boks.querySelector("[data-oppsett]").href = "pris/?orgnr=" + svar.orgnr + "&vis=oppsett";
       var pris = boks.querySelector("[data-pris]");
       pris.hidden = !svar.pris;

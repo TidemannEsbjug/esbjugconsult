@@ -33,8 +33,13 @@ textarea {
   opacity: 0;
   pointer-events: none;
 }
-.port.oversikt::before {
+.port.oversikt::before,
+.til-oversikt .port::before {
   opacity: 1;
+}
+/* Mens virksomheten fra adressen slås opp, vises ikke skjemaet. */
+.slaar-opp .kort {
+  visibility: hidden;
 }
 .kort {
   width: min(560px, 100%);
@@ -596,12 +601,15 @@ textarea:focus {
   margin-top: 10px;
 }
 /* Maskinen i snøen fyller hele kolonnen. Uten maskin (oppsettsdag) står bare vinterbildet. */
+.op-bilde:has(#op-mac[hidden]) {
+  background: #dfe8f2 url("../assets/hero-film-slutt-skarp.jpg") center 62% / cover no-repeat;
+}
 .op-bilde {
   position: relative;
   overflow: hidden;
   min-height: clamp(260px, 30vw, 400px);
   border-radius: 18px;
-  background: #dfe8f2 url("../assets/hero-film-slutt-skarp.jpg") center 62% / cover no-repeat;
+  background: var(--ground-2);
 }
 .op-rutenett {
   display: grid;

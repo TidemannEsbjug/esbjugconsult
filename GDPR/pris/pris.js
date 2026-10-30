@@ -152,7 +152,13 @@
   // Kortet er bredere der det er mer å se.
   var BREDDE = { "s-oppsett": "bred", "s-dekker": "middels", "s-betaling": "middels", "s-nokkel": "middels", "s-bekreft": "middels", "s-ferdig": "middels", "s-testing": "middels" };
 
+  /** Slår opp virksomheten fra adressen: kortet er skjult til svaret er her (pris-tidlig.js). */
+  function ferdigStartet() {
+    document.documentElement.classList.remove("slaar-opp", "til-oversikt");
+  }
+
   function vis(steg) {
+    ferdigStartet();
     STEG.forEach(function (id) {
       $(id).hidden = id !== steg;
     });
@@ -287,6 +293,7 @@
         feil("port-feil", err.message);
       })
       .finally(function () {
+        ferdigStartet();
         opptatt(knapp, false);
         knapp.textContent = "Vis prisen";
       });
@@ -1087,6 +1094,8 @@
     if (KlartOrgfelt.gyldig(start)) {
       $("orgnr").value = orgnrTekst(start);
       slaaOpp(start);
+    } else {
+      ferdigStartet();
     }
   }
 })();

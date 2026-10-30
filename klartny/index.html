@@ -1034,6 +1034,7 @@ Kontakt: <mark class="y">[E-POST_1]</mark></pre>
               el.hidden = Boolean(svar.stor);
             });
             boks.querySelector("[data-stor]").hidden = !svar.stor;
+            if (svar.stor) new Image().src = "/klart/assets/klart-maskin-sno.jpg"; // Klart når de trykker «Les om skreddersydd oppsett».
             boks.querySelector("[data-oppsett]").href = "pris/?orgnr=" + svar.orgnr + "&vis=oppsett";
             var pris = boks.querySelector("[data-pris]");
             pris.hidden = !svar.pris;
