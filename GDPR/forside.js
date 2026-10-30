@@ -25,6 +25,10 @@ console.info(
   var tekst = document.querySelector(".hero .scene-tekst");
   var boks = tekst && tekst.querySelector(".lokal");
   var toppskjema = tekst && tekst.querySelector("[data-orgport]");
+  // På desktop står markøren i feltet med en gang, så det er tydelig hvor man skal skrive.
+  if (toppskjema && window.matchMedia("(pointer: fine)").matches) {
+    toppskjema.querySelector("input").focus({ preventScroll: true });
+  }
   var harSvar = false;
 
   function maalLoft() {

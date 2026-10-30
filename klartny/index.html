@@ -187,7 +187,7 @@
                 <label class="skjult-tekst" for="orgport-topp">Virksomhetens organisasjonsnummer eller navn</label>
                 <div class="orgport-rad">
                   <div class="orgfelt">
-                    <input id="orgport-topp" type="text" autocomplete="off" spellcheck="false" placeholder="Virksomhetens org.nr. eller navn" maxlength="80" />
+                    <input id="orgport-topp" type="text" autocomplete="off" spellcheck="false" placeholder="Skriv inn virksomhetens navn eller org.nr." maxlength="80" />
                     <ul class="orgforslag" role="listbox" hidden></ul>
                   </div>
                   <button class="btn" type="submit">Prøv Klart Gratis</button>
@@ -819,7 +819,7 @@ Kontakt: <mark class="y">[E-POST_1]</mark></pre>
               <label class="skjult-tekst" for="orgport-bunn">Virksomhetens organisasjonsnummer eller navn</label>
               <div class="orgport-rad">
                 <div class="orgfelt">
-                  <input id="orgport-bunn" type="text" autocomplete="off" spellcheck="false" placeholder="Virksomhetens org.nr. eller navn" maxlength="80" />
+                  <input id="orgport-bunn" type="text" autocomplete="off" spellcheck="false" placeholder="Skriv inn virksomhetens navn eller org.nr." maxlength="80" />
                   <ul class="orgforslag" role="listbox" hidden></ul>
                 </div>
                 <button class="btn" type="submit">Prøv Klart Gratis</button>
@@ -934,6 +934,10 @@ Kontakt: <mark class="y">[E-POST_1]</mark></pre>
         var tekst = document.querySelector(".hero .scene-tekst");
         var boks = tekst && tekst.querySelector(".lokal");
         var toppskjema = tekst && tekst.querySelector("[data-orgport]");
+        // På desktop står markøren i feltet med en gang, så det er tydelig hvor man skal skrive.
+        if (toppskjema && window.matchMedia("(pointer: fine)").matches) {
+          toppskjema.querySelector("input").focus({ preventScroll: true });
+        }
         var harSvar = false;
 
         function maalLoft() {

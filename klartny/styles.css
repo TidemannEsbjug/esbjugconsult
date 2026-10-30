@@ -687,19 +687,39 @@ section {
 /* Heroen har én oppgave: feltet og knappen, store og midt i bildet. Forklaringen står rett under bildet. */
 @media (min-width: 561px) {
   .hero .scene .orgport:not(.svar) {
-    width: min(780px, 100%);
+    width: min(1040px, 100%);
   }
 
   .hero .scene .orgport:not(.svar) input {
-    height: 76px;
-    padding: 0 30px;
-    font-size: 21px;
+    height: 104px;
+    padding: 0 40px 0 88px;
+    font-size: 28px;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232456e6' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M16.5 16.5 21 21'/%3E%3C/svg%3E") 36px center / 34px no-repeat;
+    border: 2px solid var(--signal);
+    box-shadow: 0 18px 44px -14px rgba(21, 32, 46, 0.55);
+    animation: felt-puls 2200ms ease-out 3;
+  }
+
+  .hero .scene .orgport:not(.svar) input::placeholder {
+    color: var(--ink-2);
+    opacity: 1;
   }
 
   .hero .scene .orgport:not(.svar) .btn {
-    height: 76px;
-    padding: 0 36px;
-    font-size: 19px;
+    height: 104px;
+    padding: 0 48px;
+    font-size: 24px;
+  }
+}
+
+/* Feltet trekker blikket til seg de første sekundene, så stopper pulsen. */
+@keyframes felt-puls {
+  0% {
+    box-shadow: 0 18px 44px -14px rgba(21, 32, 46, 0.55), 0 0 0 0 rgba(36, 86, 230, 0.55);
+  }
+  70%,
+  100% {
+    box-shadow: 0 18px 44px -14px rgba(21, 32, 46, 0.55), 0 0 0 20px rgba(36, 86, 230, 0);
   }
 }
 
