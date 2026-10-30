@@ -1530,9 +1530,81 @@
           var d = iso.split("-");
           return new Date(+d[0], +d[1] - 1, +d[2]).toLocaleDateString("nb-NO", { day: "numeric", month: "long", year: "numeric" });
         }
+        // Ingenting dukker opp eller forsvinner i et hopp på denne siden: det som åpnes, glir opp og tones inn.
+        var GLID_TID = { duration: 360, easing: "cubic-bezier(0.4, 0, 0.2, 1)" };
+        var UTEN_BEVEGELSE = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        /** Spiller animasjonen og rydder opp på tid, så sluttilstanden kommer også i en fane som ligger i bakgrunnen. */
+        function spill(el, bilder, ferdig) {
+          var a = el.animate(bilder, { duration: GLID_TID.duration, easing: GLID_TID.easing, fill: "forwards" });
+          var t = setTimeout(function () {
+            el._glid = null;
+            ferdig();
+            a.cancel();
+          }, GLID_TID.duration);
+          el._glid = {
+            cancel: function () {
+              clearTimeout(t);
+              a.cancel();
+            },
+          };
+        }
+
+        /** Viser eller skjuler et element med høyden og fargen i bevegelse. Skjult forelder gir ingen animasjon. */
+        function glid(el, vis) {
+          if (el._glid) {
+            el._glid.cancel();
+            el._glid = null;
+          } else if (el.hidden === !vis) {
+            return;
+          }
+          el.hidden = false;
+          if (UTEN_BEVEGELSE || !el.offsetHeight) {
+            el.hidden = !vis;
+            return;
+          }
+          var s = getComputedStyle(el);
+          var aapen = {
+            height: el.offsetHeight + "px",
+            marginTop: s.marginTop,
+            marginBottom: s.marginBottom,
+            paddingTop: s.paddingTop,
+            paddingBottom: s.paddingBottom,
+            opacity: 1,
+          };
+          var lukket = { height: "0px", marginTop: "0px", marginBottom: "0px", paddingTop: "0px", paddingBottom: "0px", opacity: 0 };
+          el.style.overflow = "hidden";
+          el.style.boxSizing = "border-box";
+          spill(el, vis ? [lukket, aapen] : [aapen, lukket], function () {
+            el.style.overflow = "";
+            el.style.boxSizing = "";
+            el.hidden = !vis;
+          });
+        }
+
+        // Spørsmålene og andre <details> åpnes og lukkes på samme måte.
+        document.querySelectorAll("details").forEach(function (d) {
+          var sum = d.querySelector("summary");
+          sum.addEventListener("click", function (e) {
+            if (UTEN_BEVEGELSE) return;
+            e.preventDefault();
+            if (d._glid) d._glid.cancel();
+            var fra = d.offsetHeight;
+            var aapner = !d.open;
+            d.open = true;
+            var full = d.offsetHeight;
+            var til = aapner ? full : sum.offsetHeight + (full - d.clientHeight);
+            d.style.overflow = "hidden";
+            spill(d, { height: [fra + "px", til + "px"] }, function () {
+              d.style.overflow = "";
+              d.open = aapner;
+            });
+          });
+        });
+
         function feil(id, tekst) {
-          $(id).textContent = tekst || "";
-          $(id).hidden = !tekst;
+          if (tekst) $(id).textContent = tekst;
+          glid($(id), Boolean(tekst));
         }
         function api(sti, data) {
           return fetch(
@@ -1733,7 +1805,7 @@
             $("underenhet").hidden = true;
             slaaOpp(svar.overordnet.orgnr);
           };
-          $("underenhet").hidden = false;
+          glid($("underenhet"), true);
         }
 
         // ---------- 2. Prisen ----------
@@ -1909,10 +1981,10 @@
           $("op-tittel").textContent = oppsett ? "Oppsettsdag hos dere" : t.id === "kort" ? "En kort sprint hos dere" : "En sprint hos dere";
           $("op-merke").textContent = oppsett ? "Oppsettsdag" : "Skreddersydd oppsett";
           document.querySelectorAll("#s-oppsett [data-blokk]").forEach(function (el) {
-            el.hidden = el.getAttribute("data-blokk") !== (oppsett ? "oppsett" : "sprint");
+            glid(el, el.getAttribute("data-blokk") === (oppsett ? "oppsett" : "sprint"));
           });
           document.querySelectorAll("#s-oppsett [data-kun]").forEach(function (el) {
-            el.hidden = el.getAttribute("data-kun") !== t.id;
+            glid(el, el.getAttribute("data-kun") === t.id);
           });
           var felt = {
             trinn: "Pris",
@@ -1926,7 +1998,7 @@
           document.querySelectorAll("#s-oppsett [data-felt]").forEach(function (el) {
             el.textContent = felt[el.getAttribute("data-felt")];
           });
-          $("op-mac").hidden = oppsett;
+          glid($("op-mac"), !oppsett);
           $("kal-etikett").textContent = oppsett ? "Velg dag" : "Velg startdato";
           $("kal-valgt").textContent = "Laster ledige datoer …";
           oppdaterKnapp();
@@ -2059,8 +2131,8 @@
           api("sprint/book", data)
             .then(function (svar) {
               if (svar.forespurt) {
-                $("book-skjema").hidden = true;
-                $("samtale-ferdig").hidden = false;
+                glid($("book-skjema"), false);
+                glid($("samtale-ferdig"), true);
                 $("samtale-ferdig").querySelector(".merke").textContent = "Forespørsel sendt";
                 $("samtale-ferdig").querySelector(".tekst").textContent =
                   "Vi flytter oppsettsdagen som ligger i perioden, og sender en betalingslenke til " + data.epost +
@@ -2080,7 +2152,7 @@
         });
 
         $("til-samtale").addEventListener("click", function () {
-          $("samtale-skjema").hidden = !$("samtale-skjema").hidden;
+          glid($("samtale-skjema"), $("samtale-skjema").hidden);
         });
 
         // Tilbake fra Stripe uten å betale: økten avsluttes, og datoen blir ledig igjen med en gang.
@@ -2116,8 +2188,8 @@
           skjema.classList.add("venter");
           api("sprint", data)
             .then(function () {
-              skjema.hidden = true;
-              $("samtale-ferdig").hidden = false;
+              glid(skjema, false);
+              glid($("samtale-ferdig"), true);
             })
             .catch(function (err) {
               feil("sa-feil", err.message);
@@ -2141,7 +2213,7 @@
           b.addEventListener("click", function () {
             dekker = b.getAttribute("data-dekker");
             velgEn(null, "data-dekker", dekker);
-            $("kunde-panel").hidden = dekker !== "kunder";
+            glid($("kunde-panel"), dekker === "kunder");
             if (dekker === "kunder") $("kunde-orgnr").focus();
             tegnKunder();
             tegnStegrad("s-dekker");
@@ -2224,7 +2296,7 @@
             $("sum-kunder").textContent = nok(kundesum());
             $("sum-totalt").textContent = nok(tilbud.pris + kundesum());
           }
-          $("kunde-sum").hidden = !kunder.length;
+          glid($("kunde-sum"), Boolean(kunder.length));
           $("dekker-videre").disabled = dekker === "kunder" && !kunder.length;
         }
 
@@ -2275,8 +2347,8 @@
         /** Viser valget. Er faktura valgt, skjules kort, og bare fakturafeltene står igjen. */
         function visBetaling() {
           velgEn(null, "data-betaling", betaling);
-          $("faktura-felt").hidden = betaling !== "faktura";
-          document.querySelector('[data-betaling="kort"]').hidden = betaling === "faktura";
+          glid($("faktura-felt"), betaling === "faktura");
+          glid(document.querySelector('[data-betaling="kort"]'), betaling !== "faktura");
         }
 
         /** Velger den første betalingsmåten virksomheten kan bruke. */
@@ -2305,7 +2377,7 @@
         document.querySelectorAll("[data-nokkel]").forEach(function (b) {
           b.addEventListener("click", function () {
             velgEn(null, "data-nokkel", b.getAttribute("data-nokkel"));
-            $("nokkel-felt").hidden = !annenNokkelEpost();
+            glid($("nokkel-felt"), annenNokkelEpost());
             if (annenNokkelEpost()) $("b-nokkel").focus();
           });
         });

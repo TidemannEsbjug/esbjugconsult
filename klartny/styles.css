@@ -978,6 +978,12 @@ section {
   animation: orgport-pek 700ms var(--ease) 2;
 }
 
+/* Ingenting dukker opp i et hopp: feilmeldinger og forslag tones inn. */
+.orgport-feil:not([hidden]),
+.orgforslag:not([hidden]) {
+  animation: orgport-opp 260ms var(--ease) both;
+}
+
 @keyframes orgport-pek {
   50% {
     box-shadow: 0 0 0 6px rgba(36, 86, 230, 0.22);
