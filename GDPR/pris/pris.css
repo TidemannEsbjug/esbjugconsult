@@ -23,13 +23,15 @@ textarea {
   background: #dfe8f2 url("../assets/hero-film-slutt.jpg") center 38% / cover no-repeat;
   position: relative;
   isolation: isolate;
+  /* Klipper det faste bildet til seksjonen, så det ikke legger seg over bunnen. */
+  clip-path: inset(0);
 }
 .port::before {
   content: "";
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(165deg, #6f9bf5 0%, #2456e6 38%, #1a3fb0 72%, #102a66 100%);
+  background: #dfe8f2 url("../assets/hero-film-slutt-skarp.jpg") center 38% / cover no-repeat;
   opacity: 0;
   transition: opacity 500ms var(--ease);
   pointer-events: none;
@@ -578,20 +580,49 @@ textarea:focus {
   width: min(1120px, 100%);
   background: rgba(255, 255, 255, 0.97);
 }
-.op-topp {
+/* Bildet går helt ut til kanten av kortet, og «Tilbake» ligger oppå det. */
+#s-oppsett {
+  --kant: clamp(24px, 4vw, 38px);
+  position: relative;
+}
+#s-oppsett > .tilbake {
+  position: absolute;
+  z-index: 2;
+  top: 14px;
+  left: calc(var(--kant) * -1 + 14px);
+  margin: 0;
+  padding: 7px 13px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.86);
+}
+.op-bilde {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: clamp(200px, 26vw, 320px);
+  margin: calc(var(--kant) * -1) calc(var(--kant) * -1) 0;
+  padding: 26px 20px 14px;
+  border-radius: 20px 20px 0 0;
+  background: #dfe8f2 url("../assets/hero-film-slutt-skarp.jpg") center 62% / cover no-repeat;
+}
+.op-hode {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: clamp(20px, 3vw, 40px);
   align-items: start;
-  margin-top: 22px;
+  margin-top: 28px;
 }
-#s-oppsett .op-topp .ingress {
+#s-oppsett .op-hode .ingress {
+  margin-top: 10px;
   font-size: clamp(17px, 1.6vw, 20px);
   line-height: 1.45;
   color: var(--ink);
 }
-#s-oppsett .op-topp .sprint-pris {
+#s-oppsett .op-velg .tilbudvalg {
   margin-top: 0;
+}
+#s-oppsett .op-velg .sprint-pris {
+  margin-top: 10px;
 }
 .op-rutenett {
   display: grid;
@@ -630,14 +661,14 @@ textarea:focus {
   gap: 4px clamp(20px, 3vw, 40px);
 }
 #s-oppsett .mac {
-  max-width: 260px;
-  margin: 18px auto 0;
+  width: clamp(240px, 30vw, 380px);
+  margin: 0;
   padding: 0;
   background: none;
   border: 0;
 }
 #s-oppsett .mac figcaption {
-  margin-top: 2px;
+  display: none;
 }
 .book-start {
   display: flex;
@@ -674,7 +705,10 @@ textarea:focus {
   text-align: center;
 }
 @media (max-width: 760px) {
-  .op-topp,
+  #s-oppsett .mac {
+    width: min(260px, 100%);
+  }
+  .op-hode,
   .op-rutenett,
   .op-spalter,
   #s-oppsett #book-skjema {

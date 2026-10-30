@@ -164,7 +164,7 @@
     var bredde = steg === "s-pris" ? (tilbud && tilbud.stor ? "bred" : "middels") : BREDDE[steg];
     $("kort").classList.toggle("bred", bredde === "bred");
     $("kort").classList.toggle("middels", bredde === "middels");
-    // Oversikten over oppsett og sprint er for høy til vinterbildet: der er bakgrunnen en blå flate.
+    // Oversikten over oppsett og sprint er høy: der står vinterbildet fast i skjermen, så det ikke forstørres.
     $("port").classList.toggle("oversikt", steg === "s-oppsett");
     tegnStegrad(steg);
     if (steg === "s-oppsett") lastLedige();
@@ -498,6 +498,7 @@
       el.textContent = felt[el.getAttribute("data-felt")];
     });
     $("book-aapne").textContent = oppsett ? "Book oppsettsdag" : t.id === "kort" ? "Book kort sprint" : "Book sprint";
+    glid($("op-mac"), !oppsett);
     glid($("book-skjema"), false);
     glid($("book-start"), true);
     $("kal-etikett").textContent = oppsett ? "Velg dag" : "Velg startdato";
