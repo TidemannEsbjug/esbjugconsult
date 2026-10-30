@@ -292,8 +292,7 @@ section {
 }
 
 /* Scenen: vinterbildet fra appen over hele bredden, med mye himmel og luft.
-   All teksten står samlet midt i bildet, med et lyst slør bak så den er lett å
-   lese. */
+   All teksten står samlet midt i bildet, uten slør over. */
 .scene {
   position: relative;
   display: flex;
@@ -321,31 +320,8 @@ section {
   pointer-events: none;
 }
 
-.scene-slor {
-  position: absolute;
-  inset: 0 0 -2px;
-  z-index: -1;
-  pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    rgba(238, 243, 251, 0) 0%,
-    rgba(238, 243, 251, 0) 78%,
-    var(--ground) 100%
-  );
-}
-
 .scene-tekst {
   position: relative;
-}
-
-/* Et ekstra mykt lys bak teksten, så den står tydelig også der snøen har skygger. */
-.scene-tekst::before {
-  content: "";
-  position: absolute;
-  inset: -18% -12% -10%;
-  z-index: -1;
-  pointer-events: none;
-  background: radial-gradient(closest-side, rgba(246, 249, 253, 0.28), rgba(246, 249, 253, 0.14) 55%, transparent);
 }
 
 .hero .scene .tag {
