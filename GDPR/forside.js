@@ -3,26 +3,7 @@ console.info(
   "Hei, du som sjekker. Bra.\nProgrammet: /klart/til-it\nFant du noe? tidemann@esbjugconsult.com (/.well-known/security.txt)"
 );
 
-// Filmen i toppen spilles én gang, og så toner det skarpe stillbildet inn: siste
-// bilde i filmen, hentet fra originalen og forstørret til 2336 px. Med redusert
-// bevegelse vises bildet med en gang.
-(function () {
-  var scene = document.querySelector(".scene");
-  var film = document.querySelector(".scene-film");
-  if (!scene || !film) return;
-  function stille() {
-    scene.classList.add("stille");
-  }
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    film.removeAttribute("autoplay");
-    film.pause();
-    stille();
-    return;
-  }
-  film.addEventListener("ended", stille);
-})();
-
-// Menyen kommer først når man har scrollet forbi toppen av filmen.
+// Menyen kommer først når man har scrollet forbi toppen av bildet.
 (function () {
   var topp = document.querySelector(".topbar");
   if (!topp) return;
