@@ -932,7 +932,6 @@ Kontakt: <mark class="y">[E-POST_1]</mark></pre>
         // I heroen: når de begynner å skrive, er de klare. Boksen over glir bort og feltet glir opp dit
         // den sto, mens overskriften står stille (CSS: .scene-tekst.skriver og --loft).
         var tekst = document.querySelector(".hero .scene-tekst");
-        var boks = tekst && tekst.querySelector(".lokal");
         var toppskjema = tekst && tekst.querySelector("[data-orgport]");
         // På desktop står markøren i feltet med en gang, så det er tydelig hvor man skal skrive.
         if (toppskjema && window.matchMedia("(pointer: fine)").matches) {
@@ -940,20 +939,9 @@ Kontakt: <mark class="y">[E-POST_1]</mark></pre>
         }
         var harSvar = false;
 
-        function maalLoft() {
-          // offsetTop regner ikke med transform, så målet blir det samme om feltet alt er løftet.
-          tekst.style.setProperty("--loft", boks.offsetTop - toppskjema.offsetTop + "px");
-        }
-
         function skriver(ja) {
-          if (!tekst || !boks || !toppskjema) return;
-          if (ja) maalLoft();
-          tekst.classList.toggle("skriver", ja);
+          if (tekst) tekst.classList.toggle("skriver", ja);
         }
-
-        window.addEventListener("resize", function () {
-          if (tekst && tekst.classList.contains("skriver")) maalLoft();
-        });
 
         // Navnet er det de har ventet på: bokstavene spretter inn én og én, hele ord holdes samlet.
         function spreNavn(el, navn) {
@@ -1031,7 +1019,7 @@ Kontakt: <mark class="y">[E-POST_1]</mark></pre>
 
           if (skjema === toppskjema) {
             input.addEventListener("input", function () {
-              if (input.value.trim()) skriver(true);
+              skriver(Boolean(input.value.trim()));
             });
             // Tømmer de feltet og går videre uten å ha valgt noe, kommer boksen tilbake.
             input.addEventListener("blur", function () {

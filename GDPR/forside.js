@@ -20,34 +20,22 @@ console.info(
 (function () {
   var skjemaer = document.querySelectorAll("[data-orgport]");
 
-  // I heroen: når de begynner å skrive, er de klare. Boksen over glir bort og feltet glir opp dit
-  // den sto, mens overskriften står stille (CSS: .scene-tekst.skriver og --loft).
+  // I heroen: når de begynner å skrive, vet vi hva de vil. Overskriften viker, og feltet glir opp
+  // (CSS: .scene-tekst.skriver).
   var tekst = document.querySelector(".hero .scene-tekst");
-  var boks = tekst && tekst.querySelector(".lokal");
   var toppskjema = tekst && tekst.querySelector("[data-orgport]");
-  // På desktop står markøren i feltet med en gang, så det er tydelig hvor man skal skrive.
   // Virksomheten i adressen: de kommer tilbake fra prissiden, og kortet deres skal stå der.
   var fraAdressen = String(new URLSearchParams(location.search).get("orgnr") || "").replace(/\D/g, "");
   if (!KlartOrgfelt.gyldig(fraAdressen)) fraAdressen = null;
+  // På desktop står markøren i feltet med en gang, så det er tydelig hvor man skal skrive.
   if (toppskjema && !fraAdressen && window.matchMedia("(pointer: fine)").matches) {
     toppskjema.querySelector("input").focus({ preventScroll: true });
   }
   var harSvar = false;
 
-  function maalLoft() {
-    // offsetTop regner ikke med transform, så målet blir det samme om feltet alt er løftet.
-    tekst.style.setProperty("--loft", boks.offsetTop - toppskjema.offsetTop + "px");
-  }
-
   function skriver(ja) {
-    if (!tekst || !boks || !toppskjema) return;
-    if (ja) maalLoft();
-    tekst.classList.toggle("skriver", ja);
+    if (tekst) tekst.classList.toggle("skriver", ja);
   }
-
-  window.addEventListener("resize", function () {
-    if (tekst && tekst.classList.contains("skriver")) maalLoft();
-  });
 
   // Navnet er det de har ventet på: bokstavene spretter inn én og én, hele ord holdes samlet.
   function spreNavn(el, navn) {
@@ -117,7 +105,7 @@ console.info(
       s.querySelector("[data-orgport-sok]").hidden = false;
     });
     if (tekst) tekst.classList.remove("har-svar");
-    skriver(true);
+    skriver(false);
   }
 
   skjemaer.forEach(function (skjema) {
@@ -128,7 +116,7 @@ console.info(
 
     if (skjema === toppskjema) {
       input.addEventListener("input", function () {
-        if (input.value.trim()) skriver(true);
+        skriver(Boolean(input.value.trim()));
       });
       // Tømmer de feltet og går videre uten å ha valgt noe, kommer boksen tilbake.
       input.addEventListener("blur", function () {
