@@ -1350,27 +1350,44 @@
                 <input id="b-epost" type="email" autocomplete="email" placeholder="faktura@virksomhet.no" />
               </div>
               <div>
-                <span class="etikett">Hvor skal lisensnøkkelen sendes?</span>
-                <div class="valgliste" role="radiogroup" aria-label="Hvor lisensnøkkelen skal sendes" style="margin-top: 0; grid-template-columns: 1fr 1fr">
-                  <button type="button" class="valg" role="radio" data-nokkel="samme" aria-checked="true"><strong>Samme e-post</strong></button>
-                  <button type="button" class="valg" role="radio" data-nokkel="annen" aria-checked="false"><strong>En annen e-post</strong></button>
-                </div>
-              </div>
-              <div id="nokkel-felt" hidden>
-                <label for="b-nokkel">E-post lisensnøkkelen skal til</label>
-                <input id="b-nokkel" type="email" autocomplete="off" placeholder="it@virksomhet.no" />
-              </div>
-              <div>
                 <span class="etikett">EHF-faktura</span>
                 <div class="valgliste" role="radiogroup" aria-label="EHF-faktura" style="margin-top: 0; grid-template-columns: 1fr 1fr">
-                  <button type="button" class="valg" role="radio" data-ehf="nei" aria-checked="true"><strong>Nei</strong></button>
                   <button type="button" class="valg" role="radio" data-ehf="ja" aria-checked="false"><strong>Ja, vi trenger EHF</strong></button>
+                  <button type="button" class="valg" role="radio" data-ehf="nei" aria-checked="true"><strong>Nei</strong></button>
                 </div>
               </div>
             </div>
             <p class="feil" id="betaling-feil" role="alert" hidden></p>
             <div class="knapper">
               <button type="button" class="btn" id="betaling-videre">Gå videre</button>
+            </div>
+          </div>
+
+          <!-- 4b. Faktura: hvor nøkkelen skal sendes. Eget steg, så det er én beslutning om gangen. -->
+          <div class="steg" id="s-nokkel" hidden>
+            <button type="button" class="tilbake" data-tilbake>← Tilbake</button>
+            <p class="merke">Lisensnøkkelen</p>
+            <h2 tabindex="-1">Hvor skal lisensnøkkelen sendes?</h2>
+            <p class="ingress">Den kommer på e-post så snart fakturaen er betalt.</p>
+            <div class="valgliste" role="radiogroup" aria-label="Hvor lisensnøkkelen skal sendes">
+              <button type="button" class="valg" role="radio" data-nokkel="samme" aria-checked="true">
+                <strong>Samme e-post som fakturaen</strong>
+                <span id="nokkel-samme"></span>
+              </button>
+              <button type="button" class="valg" role="radio" data-nokkel="annen" aria-checked="false">
+                <strong>En annen e-post</strong>
+                <span>For eksempel til den som skal installere Klart.</span>
+              </button>
+            </div>
+            <div class="underpanel skjema" id="nokkel-felt" hidden>
+              <div>
+                <label for="b-nokkel">E-post lisensnøkkelen skal til</label>
+                <input id="b-nokkel" type="email" autocomplete="off" placeholder="it@virksomhet.no" />
+              </div>
+            </div>
+            <p class="feil" id="nokkel-feil" role="alert" hidden></p>
+            <div class="knapper">
+              <button type="button" class="btn" id="nokkel-videre">Gå videre</button>
             </div>
           </div>
 
@@ -1562,9 +1579,9 @@
 
         // ---------- Stegene: ett om gangen i samme kort ----------
 
-        var STEG = ["s-port", "s-pris", "s-oppsett", "s-testing", "s-dekker", "s-betaling", "s-bekreft", "s-ferdig", "s-kvittering"];
+        var STEG = ["s-port", "s-pris", "s-oppsett", "s-testing", "s-dekker", "s-betaling", "s-nokkel", "s-bekreft", "s-ferdig", "s-kvittering"];
         // Kortet er bredere der det er mer å se.
-        var BREDDE = { "s-oppsett": "bred", "s-dekker": "middels", "s-betaling": "middels", "s-bekreft": "middels", "s-ferdig": "middels", "s-testing": "middels" };
+        var BREDDE = { "s-oppsett": "bred", "s-dekker": "middels", "s-betaling": "middels", "s-nokkel": "middels", "s-bekreft": "middels", "s-ferdig": "middels", "s-testing": "middels" };
 
         function vis(steg, tilbake) {
           STEG.forEach(function (id) {
@@ -1612,7 +1629,7 @@
           var med = rekke.filter(function (s) {
             return s !== "s-dekker" || (tilbud && (tilbud.leverandorAktuell || dekker === "kunder" || steg === "s-dekker"));
           });
-          var i = med.indexOf(steg);
+          var i = med.indexOf(steg === "s-nokkel" ? "s-betaling" : steg);
           var rad = $("stegrad");
           rad.hidden = i < 0 || kjop === "testing";
           rad.innerHTML = "";
@@ -2304,12 +2321,24 @@
             $("b-epost").focus();
             return;
           }
-          if (betaling === "faktura" && annenNokkelEpost() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($("b-nokkel").value.trim())) {
-            feil("betaling-feil", "Skriv inn e-postadressen lisensnøkkelen skal sendes til.");
+          feil("betaling-feil", "");
+          kjop = "lisens";
+          if (betaling === "faktura") {
+            $("nokkel-samme").textContent = $("b-epost").value.trim();
+            feil("nokkel-feil", "");
+            gaaTil("s-nokkel");
+            return;
+          }
+          visBekreft();
+        });
+
+        $("nokkel-videre").addEventListener("click", function () {
+          if (annenNokkelEpost() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($("b-nokkel").value.trim())) {
+            feil("nokkel-feil", "Skriv inn e-postadressen lisensnøkkelen skal sendes til.");
             $("b-nokkel").focus();
             return;
           }
-          kjop = "lisens";
+          feil("nokkel-feil", "");
           visBekreft();
         });
 
