@@ -9,6 +9,12 @@
   var hvile = null;
   var maaler = document.createElement("canvas").getContext("2d");
 
+  function stoppAnimasjoner() {
+    lys.getAnimations().forEach(function (a) {
+      a.cancel();
+    });
+  }
+
   function etterHvile() {
     clearTimeout(hvile);
     hvile = setTimeout(function () {
@@ -54,7 +60,10 @@
       om: "Hele rammen blir et hint sterkere for hvert tegn og slipper igjen.",
       tegn: function () {
         if (UTEN_BEVEGELSE) return;
-        lys.animate([{ opacity: 0.5 }, { opacity: 0 }], { duration: 460, easing: "ease-out" });
+        // Fra der pustet står nå, så raske tastetrykk ikke hakker.
+        var naa = getComputedStyle(lys).opacity;
+        stoppAnimasjoner();
+        lys.animate([{ opacity: naa }, { opacity: 0.5, offset: 0.2 }, { opacity: 0 }], { duration: 520, easing: "ease-out" });
       },
     },
     {
@@ -102,6 +111,7 @@
     valgt = (n + VARIANTER.length) % VARIANTER.length;
     var v = VARIANTER[valgt];
     clearTimeout(hvile);
+    stoppAnimasjoner();
     energi = 0;
     lys.style.opacity = 0;
     skjema.setAttribute("data-kant", valgt);
