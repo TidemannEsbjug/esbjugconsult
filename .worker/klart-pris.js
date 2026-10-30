@@ -236,19 +236,9 @@ function tusen(n) {
   return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "\u00a0");
 }
 
-/** Hva virksomheten kan betale med. Faktura er for de store, avdrag for de små som vil spre
-    kostnaden. Får de registrerte ansatte, ikke de talte: et rørleggerfirma med 144 ansatte har
-    regnskapsavdeling og råd, selv om prisen er satt etter kontorfolket. Kvartalsbeløpet regnes i
-    øre, så fire avdrag går opp i årsprisen. */
-export function betalingFor(priser, ansatte, pris) {
-  return {
-    kort: true,
-    faktura: priser.fakturaFra != null && ansatte >= priser.fakturaFra,
-    avdrag: priser.avdragTil != null && ansatte <= priser.avdragTil,
-    kvartal: Math.round((pris * 100) / 4) / 100,
-    fakturaFra: priser.fakturaFra ?? null,
-    avdragTil: priser.avdragTil ?? null,
-  };
+/** Hva virksomheten kan betale med. Alle kan velge kort eller faktura, uansett størrelse. */
+export function betalingFor() {
+  return { kort: true, faktura: true };
 }
 
 /** En enhet fra Enhetsregisteret kan kjøpe når den ikke er slettet, konkurs eller under avvikling. */

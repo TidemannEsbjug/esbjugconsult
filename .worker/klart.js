@@ -685,8 +685,7 @@ async function pris(env, url) {
     ansatte: v.ansatte,
     konsern: g.konsern,
     pris: l.pris,
-    // Et konsern betaler som et konsern: faktura og avdrag følger størrelsen på konsernet.
-    betaling: betalingFor(p, g.v.ansatte, l.pris),
+    betaling: betalingFor(),
     testing: testet ? null : { pris: p.testing.pris, eksporter: p.testing.eksporter, apen: testmodus(env) || TESTING_I_APPEN },
     // Oppsettsdag og sprinter som gjelder (tom liste for de små), med prisene åpent.
     stor: sprintTilbud(p, g).length > 0,
@@ -850,7 +849,7 @@ async function kasse(request, env, url) {
   if (!p || !kjopApent(env)) return json({ feil: "Kjøp er ikke åpnet ennå." }, 503);
   const inn = await body(request);
   const type = ["lisens", "testing", "leverandor"].includes(inn.type) ? inn.type : null;
-  let betaling = ["kort", "faktura", "avdrag"].includes(inn.betaling) ? inn.betaling : "kort";
+  let betaling = ["kort", "faktura"].includes(inn.betaling) ? inn.betaling : "kort";
   const orgnr = orgnrFra(inn.orgnr);
   if (!type || !orgnr) return json({ feil: "Skriv inn et gyldig organisasjonsnummer." }, 400);
   // Alt slås opp på nytt her. Siden viser bare det samme som kommer tilbake.
@@ -860,11 +859,7 @@ async function kasse(request, env, url) {
   const v = o.virksomhet;
   const g = grunnlag(p, o);
   const l = lisenspris(p, g.v, g.regnskap);
-  const kan = betalingFor(p, g.v.ansatte, l.pris);
   if (type === "testing") betaling = "kort";
-  if (type === "leverandor" && betaling === "avdrag") return json({ feil: "Leverandørlisensen betales med kort eller faktura." }, 400);
-  if (betaling === "faktura" && !kan.faktura) return json({ feil: `Faktura gjelder virksomheter fra ${p.fakturaFra} ansatte.` }, 400);
-  if (betaling === "avdrag" && !kan.avdrag) return json({ feil: `Kvartalsvise avdrag gjelder virksomheter med opptil ${p.avdragTil} ansatte.` }, 400);
   const epost = epostFra(inn.epost);
   if (betaling === "faktura" && !epost) return json({ feil: "Skriv inn e-postadressen fakturaen skal sendes til." }, 400);
 
@@ -876,13 +871,12 @@ async function kasse(request, env, url) {
     linjer = [{ produkt: await produkt(env, PRODUKT_TESTING, "Klart – utvidet testing", { klart: "testing" }), belop: p.testing.pris * 100 }];
     beskrivelse = `Utvidet testing av Klart for ${v.navn} (org.nr ${orgnrTekst(v.orgnr)}): ${p.testing.eksporter} eksporter, uten tidsgrense. Beløpet godskrives lisensen.`;
   } else if (type === "lisens") {
-    const belop = betaling === "avdrag" ? Math.round((l.pris * 100) / 4) : l.pris * 100;
+    const belop = l.pris * 100;
     linjer = [{ produkt: await produkt(env, PRODUKT_LISENS, "Klart – lisens for virksomheten", { klart: "lisens" }), belop }];
     beskrivelse =
       (g.konsern
         ? `Klart for ${v.navn} (org.nr ${orgnrTekst(v.orgnr)}) og hele konsernet. Alle brukere og enheter, konsernets egne data.`
-        : `Klart for ${v.navn} (org.nr ${orgnrTekst(v.orgnr)}). Alle brukere og enheter, virksomhetens egne data.`) +
-      (betaling === "avdrag" ? " Fire kvartalsvise betalinger på en lisens over 12 måneder." : "");
+        : `Klart for ${v.navn} (org.nr ${orgnrTekst(v.orgnr)}). Alle brukere og enheter, virksomhetens egne data.`);
   } else {
     // Egne data og kunders data i ett abonnement: virksomhetens egen lisens, og én linje per kunde.
     const k = await kunderFra(env, p, v, inn.kunder);
@@ -935,8 +929,8 @@ async function kasse(request, env, url) {
     felt[`${f}[price_data][product]`] = linje.produkt;
     felt[`${f}[price_data][unit_amount]`] = String(linje.belop);
     if (abonnement) {
-      felt[`${f}[price_data][recurring][interval]`] = betaling === "avdrag" ? "month" : "year";
-      felt[`${f}[price_data][recurring][interval_count]`] = betaling === "avdrag" ? "3" : "1";
+      felt[`${f}[price_data][recurring][interval]`] = "year";
+      felt[`${f}[price_data][recurring][interval_count]`] = "1";
     }
     felt[`${f}[quantity]`] = "1";
     felt[`${f}[tax_rates][0]`] = mva;
@@ -954,7 +948,7 @@ async function kasse(request, env, url) {
   return json({ adresse: okt.url });
 }
 
-/** Faktura fra 51 ansatte: abonnement som sendes som faktura med 30 dagers frist. Nøkkelen gis når fakturaen er sendt. */
+/** Faktura: abonnement som sendes som faktura med 30 dagers frist. Nøkkelen gis når fakturaen er sendt. */
 async function fakturer(env, { kunde, meta, linjer, mva, beskrivelse }) {
   const felt = {
     customer: kunde.id,

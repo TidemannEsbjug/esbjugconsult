@@ -178,11 +178,8 @@ const gammel = { sprint: { fra: 251, trinn: [{ til: 1000, navn: "x", grunn: 5000
 assert.equal(sprintFor(gammel, 5000).total, 400000);
 assert.equal(sprintFor(gammel, 250), null);
 
-// Betaling: avdrag for de små, faktura for de store, etter registrerte ansatte
-const grenser = { fakturaFra: 51, avdragTil: 50 };
-assert.deepEqual(betalingFor(P, 0, 3000), { kort: true, faktura: false, avdrag: true, kvartal: 750, ...grenser });
-assert.deepEqual(betalingFor(P, 50, 72500), { kort: true, faktura: false, avdrag: true, kvartal: 18125, ...grenser });
-assert.deepEqual(betalingFor(P, 51, 73500), { kort: true, faktura: true, avdrag: false, kvartal: 18375, ...grenser });
+// Betaling: kort eller faktura for alle, uansett størrelse
+assert.deepEqual(betalingFor(), { kort: true, faktura: true });
 
 // Ugyldig kurve stoppes
 assert.throws(() => lesPriser(JSON.stringify({ kurve: { solo: 3000, punkter: [[1, 5000], [1, 6000]] } })));

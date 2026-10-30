@@ -1196,15 +1196,15 @@
           <div class="steg" id="s-dekker" hidden>
             <button type="button" class="tilbake" data-tilbake>← Tilbake</button>
             <p class="merke">Lisensen</p>
-            <h2 tabindex="-1">Hvem sine data skal Klart rense?</h2>
+            <h2 tabindex="-1">Renser dere dokumenter for andre virksomheter?</h2>
             <div class="valgliste" role="radiogroup" aria-label="Hvem lisensen dekker">
               <button type="button" class="valg" role="radio" data-dekker="egen" aria-checked="true">
-                <strong>Bare våre egne data</strong>
-                <span>Dokumenter virksomheten selv har.</span>
+                <strong>Nei, bare for oss selv</strong>
+                <span>Dokumentene i vår egen virksomhet, også de som handler om kundene våre.</span>
               </button>
               <button type="button" class="valg" role="radio" data-dekker="kunder" aria-checked="false">
-                <strong>Våre egne og kunders data</strong>
-                <span>Vi renser også filer på vegne av andre virksomheter. Hver kunde prises for seg.</span>
+                <strong>Ja, også på vegne av andre</strong>
+                <span>Vi renser dokumenter for andre virksomheter. Hver av dem prises for seg.</span>
               </button>
             </div>
             <div class="underpanel" id="kunde-panel" hidden>
@@ -1247,15 +1247,11 @@
             <div class="valgliste" role="radiogroup" aria-label="Betaling">
               <button type="button" class="valg" role="radio" data-betaling="kort" aria-checked="false">
                 <strong>Kort</strong>
-                <span>Årlig, fornyes automatisk.</span>
+                <span>Betales årlig.</span>
               </button>
               <button type="button" class="valg" role="radio" data-betaling="faktura" aria-checked="false">
                 <strong>Faktura</strong>
-                <span>30 dagers betalingsfrist. EHF for offentlige kjøpere.</span>
-              </button>
-              <button type="button" class="valg" role="radio" data-betaling="avdrag" aria-checked="false">
-                <strong>Kvartalsvise avdrag</strong>
-                <span id="avdrag-tekst">Fire kvartalsvise betalinger på en lisens over 12 måneder.</span>
+                <span>30 dagers betalingsfrist. Også som EHF.</span>
               </button>
             </div>
             <div class="underpanel skjema" id="faktura-felt" hidden>
@@ -1345,8 +1341,8 @@
           <details>
             <summary>Hva dekker en lisens?</summary>
             <p>
-              Virksomhetens egne data, for alle brukere og enheter, i ett år. Behandling for kunder krever en
-              tjenesteleverandørlisens.
+              Dokumentene i virksomheten, for alle brukere og enheter, i ett år. Renser dere dokumenter på vegne av
+              andre virksomheter, trengs en tjenesteleverandørlisens.
             </p>
           </details>
           <details>
@@ -1391,7 +1387,7 @@
         var tilbud = null; // svaret fra /klart/api/pris
         var dekker = "egen"; // «egen» eller «kunder»
         var kunder = []; // { orgnr, navn, ansatte, konsern, pris }
-        var betaling = null; // «kort», «faktura» eller «avdrag»
+        var betaling = null; // «kort» eller «faktura»
         var kjop = null; // «lisens» eller «testing»
         var historikk = []; // stegene vi har vært på, for «Tilbake»
 
@@ -1634,10 +1630,8 @@
           var v = $("r-vilkar");
           v.innerHTML = "";
           v.appendChild(li("Gjelder alle brukere og enheter i " + hvem + "."));
-          v.appendChild(li(d.konsern ? "Dekker egne data i hele konsernet." : "Dekker virksomhetens egne data."));
-          v.appendChild(li("Faktureres årlig og fornyes automatisk, med påminnelse 14 dager før."));
-          v.appendChild(li("Ny signert lisensnøkkel på e-post ved hver fornyelse. Appen går aldri på nett."));
-          v.appendChild(li("14 dager ekstra etter utløp."));
+          v.appendChild(li((d.konsern ? "Dekker dokumentene i hele konsernet" : "Dekker dokumentene i virksomheten") + ", også de som handler om kundene."));
+          v.appendChild(li("Årlig lisens. Dere får påminnelse 14 dager før den fornyes."));
 
           $("pris-videre").disabled = !d.kjop;
           $("kjop-stengt").hidden = d.kjop;
@@ -1661,8 +1655,6 @@
           document.querySelectorAll("[data-betaling]").forEach(function (b) {
             b.hidden = !d.betaling[b.getAttribute("data-betaling")];
           });
-          $("avdrag-tekst").textContent =
-            "Fire kvartalsvise betalinger på " + nok(d.betaling.kvartal) + " på en lisens over 12 måneder.";
 
           velgEn(null, "data-dekker", "egen");
           $("kunde-panel").hidden = true;
@@ -2148,15 +2140,15 @@
 
         // ---------- 4. Betaling ----------
 
-        /** Velger den første betalingsmåten virksomheten kan bruke, og skjuler avdrag for kunder. */
+        /** Velger den første betalingsmåten virksomheten kan bruke. */
         function forberedBetaling() {
           var med = function (m) {
-            return tilbud.betaling[m] && !(m === "avdrag" && dekker === "kunder");
+            return tilbud.betaling[m];
           };
           document.querySelectorAll("[data-betaling]").forEach(function (b) {
             b.hidden = !med(b.getAttribute("data-betaling"));
           });
-          if (!betaling || !med(betaling)) betaling = ["kort", "faktura", "avdrag"].find(med);
+          if (!betaling || !med(betaling)) betaling = ["kort", "faktura"].find(med);
           velgEn(null, "data-betaling", betaling);
           $("faktura-felt").hidden = betaling !== "faktura";
           feil("betaling-feil", "");
@@ -2188,7 +2180,7 @@
 
         // ---------- 5. Bekreft ----------
 
-        var BETALING = { kort: "Kort, årlig", faktura: "Faktura, 30 dagers betalingsfrist", avdrag: "Kvartalsvise avdrag" };
+        var BETALING = { kort: "Kort, årlig", faktura: "Faktura, 30 dagers betalingsfrist" };
 
         function visBekreft() {
           var rader = [
@@ -2221,7 +2213,7 @@
             } else {
               data.type = "lisens";
             }
-            rader.push(["Betaling", betaling === "avdrag" ? "Fire kvartalsvise betalinger på " + nok(tilbud.betaling.kvartal) : BETALING[betaling]]);
+            rader.push(["Betaling", BETALING[betaling]]);
             rader.push(["Pris per år, eks. mva", nok(sum), "sum-rad"]);
             if (betaling === "faktura") {
               data.epost = $("b-epost").value.trim();
