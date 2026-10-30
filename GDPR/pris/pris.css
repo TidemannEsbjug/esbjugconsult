@@ -616,15 +616,13 @@ textarea:focus {
 #s-oppsett .op-velg .sprint-pris {
   margin-top: 10px;
 }
+/* Maskinen i snøen fyller hele kolonnen. Uten maskin (oppsettsdag) står bare vinterbildet. */
 .op-bilde {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: clamp(240px, 30vw, 380px);
-  padding: clamp(14px, 2vw, 26px);
+  position: relative;
+  overflow: hidden;
+  min-height: clamp(260px, 30vw, 400px);
   border-radius: 18px;
-  background: radial-gradient(120% 90% at 80% 70%, #2456e6 0%, transparent 60%), linear-gradient(160deg, #1a3fb0, #102a66);
-  box-shadow: 0 26px 56px -26px rgba(26, 63, 176, 0.85);
+  background: #dfe8f2 url("../assets/hero-film-slutt-skarp.jpg") center 62% / cover no-repeat;
 }
 .op-rutenett {
   display: grid;
@@ -663,14 +661,20 @@ textarea:focus {
   gap: 4px clamp(20px, 3vw, 40px);
 }
 #s-oppsett .mac {
-  width: 100%;
+  position: absolute;
+  inset: 0;
   margin: 0;
   padding: 0;
   background: none;
   border: 0;
+  border-radius: 0;
 }
-#s-oppsett .mac figcaption {
-  display: none;
+#s-oppsett .mac img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 60%;
 }
 .book-start {
   display: flex;
