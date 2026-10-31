@@ -572,6 +572,14 @@ textarea:focus {
 #s-oppsett {
   --modul-luft: clamp(18px, 2vw, 28px);
 }
+/* Bak hele sprintvisningen: dyp blå i samme toner som den blå modulen på forsiden, med et mykt lys
+   øverst, så de hvite modulene står tydelig fram. Gjelder bare mens oppsettet vises. */
+.port:has(#s-oppsett:not([hidden]))::before {
+  opacity: 1;
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 0%, rgba(111, 155, 245, 0.42), transparent 70%),
+    linear-gradient(175deg, #1a3fb0 0%, #12307f 35%, #0d2159 70%, #0a1a46 100%);
+}
 #s-oppsett .op-hode,
 #s-oppsett .op-del,
 #s-oppsett .op-book {
@@ -583,43 +591,48 @@ textarea:focus {
 #s-oppsett .op-hode {
   padding: clamp(22px, 2.8vw, 36px);
 }
-/* «Tilbake» står rett på bakgrunnen over den første modulen, som en liten pille. */
+/* «Tilbake» står rett på den mørkeblå bakgrunnen over den første modulen, som en lys pille. */
 #s-oppsett > .tilbake {
   margin: 0 0 14px;
   padding: 7px 14px;
   border-radius: 100px;
-  background: rgba(255, 255, 255, 0.88);
-  color: var(--ink-2);
-  box-shadow: 0 1px 0 var(--rule);
+  background: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.9);
 }
 #s-oppsett > .tilbake:hover {
-  color: var(--signal);
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
 }
-/* Bookingen: en stor blå modul over hele bredden nederst, i samme blåstil som «Skreddersydd oppsett»
-   på forsiden (.orgport-oppsett i styles.css): dyp blå gradient, lys bak, hvit tekst og hvit knapp. */
+/* Bookingen: en stor hvit modul over hele bredden nederst, mot den mørkeblå bakgrunnen. Krystallogoen
+   øverst, merket med valgt tilbud, stor overskrift og en stor blå knapp. */
 #s-oppsett .op-book {
   position: relative;
   isolation: isolate;
   overflow: hidden;
   margin-top: calc(var(--modul-luft) * 1.6);
-  padding: clamp(40px, 6vw, 88px) clamp(24px, 5vw, 72px);
-  border: 0;
-  color: #fff;
+  padding: clamp(40px, 5vw, 72px) clamp(24px, 5vw, 72px) clamp(44px, 6vw, 88px);
   text-align: center;
-  background: linear-gradient(165deg, #1f49c4 0%, #16348f 52%, #0d2159 100%);
-  box-shadow: 0 30px 70px -30px rgba(26, 63, 176, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  box-shadow: 0 30px 80px -30px rgba(3, 10, 40, 0.7);
 }
+/* Et svakt blått lys bak logoen, så den ikke står flatt på det hvite. */
 #s-oppsett .op-book::before {
   content: "";
   position: absolute;
   z-index: -1;
   left: 50%;
-  top: 30%;
-  width: min(900px, 140%);
+  top: 0;
+  width: min(720px, 120%);
   aspect-ratio: 1;
   transform: translate(-50%, -50%);
-  background: radial-gradient(closest-side, rgba(111, 155, 245, 0.5), rgba(111, 155, 245, 0.14) 55%, transparent);
+  background: radial-gradient(closest-side, rgba(111, 155, 245, 0.22), rgba(111, 155, 245, 0.06) 60%, transparent);
   pointer-events: none;
+}
+#s-oppsett .op-book-logo {
+  display: block;
+  width: clamp(96px, 9vw, 132px);
+  height: auto;
+  margin: 0 auto 18px;
+  filter: drop-shadow(0 14px 22px rgba(20, 40, 90, 0.18));
 }
 #s-oppsett .op-book .merke {
   display: inline-block;
@@ -629,23 +642,23 @@ textarea:focus {
   font-size: 12px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.92);
-  background: rgba(255, 255, 255, 0.13);
+  color: var(--signal-deep);
+  background: var(--signal-soft);
 }
 #s-oppsett .op-book-tittel {
-  margin-top: 18px;
+  margin-top: 16px;
   font-size: clamp(32px, 4vw, 54px);
   font-weight: 700;
   line-height: 1.05;
   letter-spacing: -0.03em;
-  color: #fff;
+  color: var(--ink);
 }
 #s-oppsett .op-book-tekst {
   max-width: 46ch;
   margin: 16px auto 0;
   font-size: clamp(16.5px, 1.4vw, 19px);
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.86);
+  color: var(--ink-2);
 }
 #s-oppsett .op-book .book-start {
   margin-top: clamp(28px, 3vw, 40px);
@@ -654,14 +667,7 @@ textarea:focus {
   width: min(440px, 100%);
   height: 66px;
   font-size: 18px;
-  color: var(--signal-deep);
-  background: #fff;
-  border-color: #fff;
-  box-shadow: 0 14px 34px -14px rgba(5, 15, 50, 0.6);
-}
-#s-oppsett .op-book .book-start .btn:hover:not(:disabled) {
-  background: var(--signal-soft);
-  border-color: var(--signal-soft);
+  box-shadow: 0 16px 34px -14px rgba(36, 86, 230, 0.6);
 }
 #s-oppsett .op-book .ekstra {
   justify-content: center;
@@ -670,21 +676,15 @@ textarea:focus {
 }
 #s-oppsett .op-book .ekstra .lenke {
   font-size: 15px;
-  color: rgba(255, 255, 255, 0.85);
-  text-decoration-color: rgba(255, 255, 255, 0.4);
 }
-#s-oppsett .op-book .ekstra .lenke:hover {
-  color: #fff;
-}
-/* Skjemaet for spørsmål åpner seg i et hvitt felt inne i den blå modulen. */
+/* Skjemaet for spørsmål åpner seg i et lyst felt inne i den hvite modulen. */
 #s-oppsett .op-book #samtale-skjema,
 #s-oppsett .op-book #samtale-ferdig:not([hidden]) {
   width: min(560px, 100%);
   margin: 22px auto 0;
   padding: 24px;
   border-radius: 18px;
-  background: #fff;
-  color: var(--ink);
+  background: var(--ground);
   text-align: left;
 }
 /* Toppen: tittel, innledning, valg og pris til venstre, maskinen stor til høyre. Begge starter på samme linje. */
