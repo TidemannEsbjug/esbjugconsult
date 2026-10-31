@@ -7,7 +7,6 @@
 <meta name="theme-color" content="#000a1f">
 <title>Matrix · Esbjug Consult</title>
 <style>
-  @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces.woff2) format("woff2");font-weight:100 900;font-style:normal;font-display:block}
   @font-face{font-family:"Runer";src:url(/media/fonts/noto-sans-runic.woff2) format("woff2");unicode-range:U+16A0-16F8;font-display:block}
   html,body{margin:0;height:100%;background:#000a1f;overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
   body.stille{cursor:none}
@@ -22,13 +21,16 @@
 // (fjernt og nært), og nordlyset beveger seg øverst. Ingen tekst på skjermen.
 // Maskinene styrer regnet: hver søyle hører til én av Starbase, Starship og Falcon 9 (annenhver).
 // «I bruk» gir tett, raskt regn; «På» rolig; «Av» ingenting.
-// Av og til fanges regnet: der en strøm passerer en bestemt rad, blir tegnet stående som en bokstav, til
-// «Esbjug Consult» står i regnet. Litt etter tar de neste strømmene bokstavene med seg igjen.
+// Av og til fanges regnet: der en strøm passerer en bestemt rad, blir tegnet stående som en bokstav, til et
+// ord står i regnet: et selvhypnoseord fra lista ORD, og hver fjerde gang «Esbjug Consult». Litt etter tar de
+// neste strømmene bokstavene med seg igjen. Siden står på pulten hele tiden.
 // Klikk: fullskjerm og skjermen holdes våken.
 const RUNER = 'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛊᛏᛒᛖᛗᛚᛜᛞᛟᚼᛅᛆᛋᛌᛐᛑᛘᛙᛦᛧᛨᛩᛪ';
 const LATIN = 'ÆØÅæøå0123456789';
 const tegn = () => Math.random() < .78 ? RUNER[Math.random() * RUNER.length | 0] : LATIN[Math.random() * LATIN.length | 0];
 const MASKINER = ['starbase', 'starship', 'falcon'];
+// Bokstavene i regnet og ordene: maskinens egen monospace, som i en terminal.
+const MONO = 'ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace';
 const lett = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const hc = document.getElementById('himmel'), h = hc.getContext('2d');
@@ -75,21 +77,30 @@ function start(l, k, dt, midt) {
   k.rod = l.naer && Math.random() < .05;        // av og til en strøm med rødt hode, flaggets rødt
 }
 
-// Ordet: en rad og fjorten søyler et sted i regnet. Fase «fanger»: hodet til en strøm som når ruta, blir
+// Ordet: en rad og én søyle per bokstav et sted i regnet. Fase «fanger»: hodet til en strøm som når ruta, blir
 // stående som bokstaven. «Holder»: ordet står i regnet. «Slipper»: neste hode tar bokstaven med seg.
-const ORD = 'Esbjug Consult';
-let ord = null, nesteOrd = performance.now() + 9000;
+const ORD = ['USTOPPELIG', 'DYKTIG', 'ENERGISK', 'SMART', 'KLAR', 'FREMRAGENDE', 'VÅKEN', 'LANGSIKTIG',
+  'FOKUSERT', 'ROLIG', 'STERK', 'MODIG', 'DISIPLINERT', 'UTHOLDENDE', 'SKARP', 'TRYGG', 'KREATIV', 'MÅLRETTET',
+  'UREDD', 'SAMLET', 'PRESIS', 'STØDIG', 'TÅLMODIG', 'VILJESTERK', 'NYSGJERRIG', 'GRENSELØS', 'SULTEN',
+  'KOMPROMISSLØS', 'BESLUTTSOM', 'HANDLEKRAFTIG', 'FRI', 'ROBUST', 'TILSTEDE', 'SKAPENDE', 'FRYKTLØS'];
+let ord = null, nesteOrd = performance.now() + 9000, antallOrd = 0, pose = [];
+// Ordene trekkes fra en stokket pose, så ingen kommer igjen før alle har vært der.
+function velgOrd() {
+  if (++antallOrd % 4 === 0) return 'Esbjug Consult';
+  if (!pose.length) pose = ORD.slice().sort(() => Math.random() - .5);
+  return pose.pop();
+}
 function nyttOrd(t) {
-  const n = LAG[1].kol.length, rader = Math.floor(H / fs);
-  const c0 = n <= ORD.length + 4 ? Math.max(0, (n - ORD.length) >> 1) : 2 + Math.floor(Math.random() * (n - ORD.length - 4));
-  const rad = Math.floor(rader * (.3 + Math.random() * .35));
-  ord = { rad, fase: 'fanger', t, bokst: [...ORD].map((ch, i) => ({ ch, c: c0 + i })).filter(b => b.ch !== ' ') };
+  const tekst = velgOrd(), n = LAG[1].kol.length, rader = Math.floor(H / fs);
+  const c0 = n <= tekst.length + 4 ? Math.max(0, (n - tekst.length) >> 1) : 2 + Math.floor(Math.random() * (n - tekst.length - 4));
+  const rad = Math.floor(rader * (.25 + Math.random() * .45));
+  ord = { rad, fase: 'fanger', t, bokst: [...tekst].map((ch, i) => ({ ch, c: c0 + i })).filter(b => b.ch !== ' ') };
 }
 function ordSteg(t) {
   const o = ord;
   if (o.fase === 'fanger' && o.bokst.every(b => b.fanget)) { o.fase = 'holder'; o.t = t; }
   else if (o.fase === 'holder' && t - o.t > 7000) { o.fase = 'slipper'; o.t = t; }
-  else if (o.fase === 'slipper' && (o.bokst.every(b => b.borte) || t - o.t > 15000)) { ord = null; nesteOrd = t + 45000 + Math.random() * 45000; }
+  else if (o.fase === 'slipper' && (o.bokst.every(b => b.borte) || t - o.t > 15000)) { ord = null; nesteOrd = t + 15000 + Math.random() * 20000; }
 }
 const bokstavI = (c, rad) => ord && rad === ord.rad ? ord.bokst.find(b => b.c === c) : null;
 
@@ -133,7 +144,7 @@ function himmel(t) {
 
 function regnLag(l, dt, t) {
   const f = l.fs;
-  r.font = `${l.naer ? 500 : 400} ${f}px Runer, "Fraunces", Georgia, serif`;
+  r.font = `${l.naer ? 500 : 400} ${f}px Runer, ${MONO}`;
   for (const k of l.kol) {
     if (!k.aktiv) { start(l, k, dt); continue; }
     const forY = k.y;
@@ -171,7 +182,7 @@ function regnLag(l, dt, t) {
 // Bokstavene som er fanget. Rett etter fangsten lyser de som et hode og roer seg til isblått-hvitt;
 // når de slippes, tones de ut på et halvt sekund mens strømmen fortsetter.
 function tegnOrd(t) {
-  r.font = `600 ${fs}px "Fraunces", Georgia, serif`;
+  r.font = `700 ${fs}px ${MONO}`;
   for (const b of ord.bokst) {
     if (!b.fanget) continue;
     const alder = t - b.t, x = b.c * fs + fs / 2, y = ord.rad * fs;
@@ -236,7 +247,7 @@ addEventListener('resize', stoerrelse);
 stoerrelse();
 // Skjermen er full fra første stund: halvparten av søylene starter midt i et fall.
 for (const l of LAG) for (const k of l.kol) if (Math.random() < .5) start(l, k, 0, true);
-Promise.all([document.fonts.load('20px Runer', 'ᚠ'), document.fonts.load('600 20px Fraunces', 'E')]).finally(() => requestAnimationFrame(steg));
+document.fonts.load('20px Runer', 'ᚠ').finally(() => requestAnimationFrame(steg));
 </script>
 </body>
 </html>
