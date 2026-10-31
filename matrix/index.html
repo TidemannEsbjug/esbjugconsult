@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#000a1f">
+<title>Matrix · Esbjug Consult</title>
+<style>
+  @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces.woff2) format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+  @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces-italic.woff2) format("woff2");font-weight:100 900;font-style:italic;font-display:swap}
+  @font-face{font-family:"Runer";src:url(/media/fonts/noto-sans-runic.woff2) format("woff2");unicode-range:U+16A0-16F8;font-display:block}
+  :root{--ink:#00205B;--natt:#000a1f;--r:#BA0C2F;--is:#cfe4f6;--sno:#eef5fb;--serif:"Fraunces",Georgia,serif}
+  html,body{margin:0;height:100%;background:var(--natt);overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+  body.stille{cursor:none}
+  canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+  /* Maskinene står midt nede, aldri i et hjørne. */
+  .maskiner{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:clamp(18px,4vw,48px);
+    font:italic 400 clamp(13px,1.4vw,17px)/1 var(--serif);color:var(--ink);letter-spacing:.02em;white-space:nowrap;transition:opacity 1.2s}
+  .m{display:flex;align-items:center;gap:8px;opacity:.45;transition:opacity .8s}
+  .m i{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.5}
+  .m b{font-weight:400;font-style:normal;font-size:.82em;letter-spacing:.08em;text-transform:uppercase;opacity:.8}
+  .m.paa{opacity:.8}
+  .m.bruk{opacity:1}
+  .m.bruk i{background:var(--r);opacity:1;box-shadow:0 0 0 0 rgba(186,12,47,.5);animation:puls 2.4s infinite}
+  @keyframes puls{70%{box-shadow:0 0 0 7px rgba(186,12,47,0)}100%{box-shadow:0 0 0 0 rgba(186,12,47,0)}}
+  body.stille .maskiner{opacity:.55}
+  @media (max-width:520px){.maskiner{gap:14px}.m b{display:none}}
+</style>
+</head>
+<body>
+<canvas id="himmel"></canvas>
+<canvas id="regn"></canvas>
+<div class="maskiner">
+  <span class="m" data-k="starbase"><i></i>Starbase <b>–</b></span>
+  <span class="m" data-k="starship"><i></i>Starship <b>–</b></span>
+  <span class="m" data-k="falcon"><i></i>Falcon 9 <b>–</b></span>
+</div>
+<script>
+// /matrix: skjermen mens maskinene jobber. Matrix-regnet i polarnatt: runer og ÆØÅ snør ned i søyler,
+// nordlyset beveger seg øverst, og fonna nederst vokser med arbeidet og smelter sakte når det er stille.
+// Hver søyle hører til én maskin (annenhver). «I bruk» gir tett, raskt regn; «På» rolig; «Av» ingenting.
+// Klikk: fullskjerm og skjermen holdes våken.
+const RUNER = 'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛊᛏᛒᛖᛗᛚᛜᛞᛟᚼᛅᛆᛋᛌᛐᛑᛘᛙᛦᛧᛨᛩᛪ';
+const LATIN = 'ÆØÅæøå0123456789';
+const tegn = () => Math.random() < .78 ? RUNER[Math.random() * RUNER.length | 0] : LATIN[Math.random() * LATIN.length | 0];
+const MASKINER = ['starbase', 'starship', 'falcon'];
+const TX = { bruk: 'I bruk', paa: 'På', av: 'Av' };
+const lett = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const hc = document.getElementById('himmel'), h = hc.getContext('2d');
+const rc = document.getElementById('regn'), r = rc.getContext('2d');
+let W, H, dpr, fs, kol = [], fonn = [], fnugg = [];
+
+// Tilstand per maskin: 'bruk' | 'paa' | 'av'. Før første svar regner det rolig, så siden aldri står tom.
+const tilstand = { starbase: 'paa', starship: 'paa', falcon: 'paa' };
+const FART = { bruk: 1, paa: .45, av: 0 };      // fallfart i forhold til full
+const TETT = { bruk: .9, paa: .35, av: 0 };     // sjanse for at en ledig søyle starter en ny strøm
+
+function stoerrelse() {
+  dpr = Math.min(devicePixelRatio || 1, 2);
+  W = innerWidth; H = innerHeight;
+  for (const c of [hc, rc]) { c.width = W * dpr; c.height = H * dpr; }
+  h.setTransform(dpr, 0, 0, dpr, 0, 0); r.setTransform(dpr, 0, 0, dpr, 0, 0);
+  fs = Math.round(Math.max(14, Math.min(22, W / 70)));
+  const n = Math.ceil(W / fs), gml = kol;
+  kol = Array.from({ length: n }, (_, i) => gml[i] || ny(i));
+  fonn = Array.from({ length: n }, (_, i) => fonn[i] ?? bunnMin());
+  fnugg = Array.from({ length: Math.round(W * H / 9000) }, () => ({ x: Math.random() * W, y: Math.random() * H, r: Math.random() * 1.6 + .4, v: Math.random() * .35 + .15, f: Math.random() * 6 }));
+}
+// Fonna er aldri lavere enn at maskinene nederst står på snøen.
+const bunnMin = () => Math.max(64, H * .085);
+function ny(i) {
+  return { i, m: MASKINER[i % 3], y: -Math.random() * H, len: 0, aktiv: false, v: 0, spor: [], neste: performance.now() + Math.random() * 4000 };
+}
+function start(k, dt, midt) {
+  const st = tilstand[k.m];
+  if (st === 'av' || (!midt && Math.random() > TETT[st] * .03 * dt)) return;
+  k.aktiv = true; k.y = midt ? Math.random() * H * .8 : -fs * (Math.random() * 8);
+  k.len = 8 + Math.random() * 22 | 0;
+  k.v = (0.18 + Math.random() * .22) * FART[st] * fs;
+  k.spor = midt ? Array.from({ length: k.len }, (_, j) => ({ c: tegn(), y: (Math.floor(k.y / fs) - j) * fs })) : [];
+  k.rod = Math.random() < .06;                  // av og til en strøm med rødt hode, flaggets rødt
+}
+
+// Nordlyset: tre bånd i isblått og hvitt med en rød kant, tegnet på eget lerret hver fjerde ramme.
+function himmel(t) {
+  const g = h.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, '#000816'); g.addColorStop(.55, '#001437'); g.addColorStop(1, '#00296f');
+  h.fillStyle = g; h.fillRect(0, 0, W, H);
+  h.globalCompositeOperation = 'lighter';
+  const s = t / 1000;
+  const baand = [
+    { y: .16, a: .10, f: .0016, fart: .05, farge: '160,205,240', tykk: .22 },
+    { y: .24, a: .07, f: .0024, fart: -.035, farge: '220,236,250', tykk: .14 },
+    { y: .12, a: .045, f: .0011, fart: .025, farge: '186,12,47', tykk: .10 }
+  ];
+  for (const b of baand) {
+    for (let x = -20; x < W + 20; x += 4) {
+      const bolge = Math.sin(x * b.f + s * b.fart * 6) * 40 + Math.sin(x * b.f * 2.7 - s * b.fart * 9) * 18;
+      const y = H * b.y + bolge;
+      const lys = (Math.sin(x * .011 + s * .7) * .5 + .5) * .7 + .3;
+      const hoy = H * b.tykk * (0.6 + .4 * Math.sin(x * .004 + s * .3));
+      const lg = h.createLinearGradient(0, y - hoy, 0, y + 20);
+      lg.addColorStop(0, `rgba(${b.farge},0)`);
+      lg.addColorStop(.85, `rgba(${b.farge},${b.a * lys})`);
+      lg.addColorStop(1, `rgba(${b.farge},0)`);
+      h.fillStyle = lg; h.fillRect(x, y - hoy, 4, hoy + 20);
+    }
+  }
+  h.globalCompositeOperation = 'source-over';
+  // Stjerner som så vidt blinker.
+  for (let i = 0; i < 70; i++) {
+    const x = (i * 7919 % 1000) / 1000 * W, y = (i * 104729 % 1000) / 1000 * H * .55;
+    h.fillStyle = `rgba(238,245,251,${.15 + .25 * (Math.sin(s * 1.3 + i) * .5 + .5)})`;
+    h.fillRect(x, y, 1.2, 1.2);
+  }
+}
+
+let sist = performance.now(), ramme = 0;
+function steg(t) {
+  const dt = Math.min(50, t - sist) / 16.67; sist = t; ramme++;
+  if (ramme % 4 === 1 || lett) himmel(t);
+  r.clearRect(0, 0, W, H);
+
+  // Vanlig snø bak runene, alltid, også når alt er av.
+  r.fillStyle = 'rgba(238,245,251,.55)';
+  for (const f of fnugg) {
+    f.y += f.v * dt; f.x += Math.sin(t / 1400 + f.f) * .25 * dt;
+    if (f.y > H) { f.y = -4; f.x = Math.random() * W; }
+    r.beginPath(); r.arc(f.x, f.y, f.r, 0, 6.283); r.fill();
+  }
+
+  r.font = `${fs}px Runer, "Fraunces", Georgia, serif`;
+  r.textAlign = 'center'; r.textBaseline = 'top';
+  for (const k of kol) {
+    if (!k.aktiv) { start(k, dt); continue; }
+    const st = tilstand[k.m];
+    const v = k.v * (st === 'av' ? .6 : 1);   // en strøm som er i gang, faller ferdig selv om maskinen går av
+    const forY = k.y;
+    k.y += v * dt;
+    // Nytt tegn hver gang hodet passerer en rute.
+    if (Math.floor(k.y / fs) !== Math.floor(forY / fs)) {
+      k.spor.unshift({ c: tegn(), y: Math.floor(k.y / fs) * fs });
+      if (k.spor.length > k.len) k.spor.pop();
+    }
+    const x = k.i * fs + fs / 2, bunn = H - fonn[k.i];
+    for (let j = 0; j < k.spor.length; j++) {
+      const s = k.spor[j];
+      if (s.y > bunn - fs * .6) continue;
+      if (Math.random() < .015) s.c = tegn();   // tegnene i halen bytter seg av og til, som i Matrix
+      const a = 1 - j / k.len;
+      if (j === 0) {
+        r.shadowColor = k.rod ? 'rgba(186,12,47,.9)' : 'rgba(207,228,246,.95)'; r.shadowBlur = fs * .9;
+        r.fillStyle = k.rod ? '#ff5a6e' : '#ffffff';
+      } else {
+        r.shadowBlur = 0;
+        r.fillStyle = j < 3 ? `rgba(207,228,246,${a})` : `rgba(120,170,220,${a * .85})`;
+      }
+      r.fillText(s.c, x, s.y);
+    }
+    r.shadowBlur = 0;
+    // Hodet treffer fonna: et lite snøsprut, og fonna blir litt høyere.
+    if (k.y >= bunn - fs * .6 && !k.landet) {
+      k.landet = true;
+      fonn[k.i] = Math.min(H * .2, fonn[k.i] + fs * .1);
+      sprut.push({ x, y: bunn, t });
+    }
+    if (k.y - k.len * fs > bunn) { k.aktiv = false; k.landet = false; }
+  }
+
+  // Fonna smelter sakte og glattes mot naboene, så den blir en jevn drive.
+  const glatt = fonn.slice();
+  for (let i = 0; i < fonn.length; i++) {
+    const n = ((fonn[i - 1] ?? fonn[i]) + fonn[i] * 2 + (fonn[i + 1] ?? fonn[i])) / 4;
+    glatt[i] = Math.max(bunnMin(), n - .004 * dt);
+  }
+  fonn = glatt;
+  const fg = r.createLinearGradient(0, H * .78, 0, H);
+  fg.addColorStop(0, '#eef5fb'); fg.addColorStop(1, '#cfe4f6');
+  r.fillStyle = fg;
+  // Drivene: fonna pluss et par lange bølger, så kanten ikke er rett.
+  const kant = i => H - fonn[Math.max(0, Math.min(fonn.length - 1, i))] - Math.sin(i * fs * .006) * 9 - Math.sin(i * fs * .017 + 1) * 4;
+  r.shadowColor = 'rgba(207,228,246,.5)'; r.shadowBlur = 24;
+  r.beginPath(); r.moveTo(0, H); r.lineTo(0, kant(0));
+  for (let i = 0; i < fonn.length; i++) r.lineTo(i * fs + fs / 2, kant(i));
+  r.lineTo(W, kant(fonn.length - 1)); r.lineTo(W, H); r.closePath(); r.fill();
+  r.shadowBlur = 0;
+
+  for (let i = sprut.length - 1; i >= 0; i--) {
+    const p = sprut[i], a = (t - p.t) / 700;
+    if (a >= 1) { sprut.splice(i, 1); continue; }
+    r.strokeStyle = `rgba(255,255,255,${.7 * (1 - a)})`; r.lineWidth = 1.2;
+    r.beginPath(); r.ellipse(p.x, p.y, fs * (.3 + a * 1.1), fs * (.12 + a * .3), 0, Math.PI, 0); r.stroke();
+  }
+  requestAnimationFrame(steg);
+}
+const sprut = [];
+
+// Maskinene: samme kilde og samme regel som forsiden. Tre minutter uten puls er «Av»; rørt siste 2 min er «I bruk».
+async function hent() {
+  try {
+    const j = await (await fetch('/chat/spor', { cache: 'no-store' })).json();
+    for (const k of MASKINER) {
+      const m = j.tele?.[k], paa = !!m && j.now - m.ts < 180e3;
+      tilstand[k] = !paa ? 'av' : m.ledig != null && m.ledig < 120 ? 'bruk' : 'paa';
+      const e = document.querySelector(`.m[data-k="${k}"]`);
+      e.className = 'm ' + (tilstand[k] === 'av' ? '' : tilstand[k]);
+      e.querySelector('b').textContent = TX[tilstand[k]];
+    }
+  } catch {}
+}
+hent(); setInterval(() => { if (document.visibilityState === 'visible') hent(); }, 20000);
+
+// Klikk: fullskjerm og hold skjermen våken. Pekeren forsvinner etter tre sekunder i ro.
+let vakt = null;
+async function vaaken() { try { vakt = await navigator.wakeLock?.request('screen'); } catch {} }
+addEventListener('click', () => {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(() => {});
+  else document.exitFullscreen?.();
+  vaaken();
+});
+document.addEventListener('visibilitychange', () => { if (vakt && document.visibilityState === 'visible') vaaken(); });
+let ro;
+const bevegelse = () => { document.body.classList.remove('stille'); clearTimeout(ro); ro = setTimeout(() => document.body.classList.add('stille'), 3000); };
+addEventListener('mousemove', bevegelse); bevegelse();
+
+addEventListener('resize', stoerrelse);
+stoerrelse();
+// Skjermen er full fra første stund: halvparten av søylene starter midt i et fall.
+for (const k of kol) if (Math.random() < .5) start(k, 0, true);
+document.fonts.load(`20px Runer`, 'ᚠ').finally(() => requestAnimationFrame(steg));
+</script>
+</body>
+</html>
