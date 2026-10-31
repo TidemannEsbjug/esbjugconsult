@@ -335,59 +335,49 @@ section {
   margin-top: 20px;
 }
 
-/* Ingressen og forklaringen av «lokal AI», samlet i én hvit boks under overskriften.
-   Like bred som filtypene under. Ingressen stor til venstre, to fakta med ikon til høyre. */
-.hero .lokal {
-  display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-  gap: clamp(28px, 4vw, 56px);
-  align-items: center;
-  max-width: 1120px;
-  margin: clamp(40px, 5vw, 64px) auto 0;
-  padding: clamp(24px, 3vw, 40px) clamp(24px, 3.4vw, 48px);
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 1px 0 var(--rule), 0 18px 40px -18px rgba(26, 63, 176, 0.2);
-  color: var(--ink-2);
-  font-size: 15.5px;
-  line-height: 1.55;
-  text-align: left;
-}
-
-.hero .lokal .hva {
+/* Ingressen alene under bildet: stor, midtstilt tekst rett på bakgrunnen, uten boks. */
+.hero .hva {
+  max-width: 40ch;
+  margin: clamp(48px, 6vw, 88px) auto 0;
   color: var(--ink);
-  font-size: clamp(19px, 1.7vw, 24px);
+  font-size: clamp(20px, 2vw, 28px);
   line-height: 1.45;
-  letter-spacing: -0.005em;
-  text-wrap: pretty;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
 }
 
-.hero .lokal b {
-  color: var(--ink);
-}
-
-.hero .lokal .hva b {
+.hero .hva b {
   color: var(--signal-deep);
 }
 
-.hero .lokal-fakta {
-  display: grid;
-  gap: 18px;
-  margin: 0;
-  padding: 0 0 0 clamp(28px, 4vw, 56px);
-  border-left: 1px solid var(--rule);
-  list-style: none;
-}
-
-.hero .lokal-fakta li {
+/* To korte fakta, hver for seg: «ingen nett» over filtypene, «lokal KI» under dem.
+   Ikonet i en lys rute til venstre, teksten ved siden av, midtstilt som en liten stripe. */
+.hero .fakta {
   display: flex;
   gap: 14px;
-  align-items: flex-start;
+  align-items: center;
+  width: fit-content;
+  max-width: min(100%, 76ch);
+  margin: clamp(36px, 4.4vw, 56px) auto 0;
+  padding: 12px 22px 12px 12px;
+  border-radius: 16px;
+  background: var(--card);
+  box-shadow: 0 1px 0 var(--rule), 0 10px 26px -16px rgba(26, 63, 176, 0.22);
+  color: var(--ink-2);
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: left;
 }
 
-/* Ikonet i en lys rute, samme farge som resten av siden. Bare streken over
-   wifi-symbolet er rød. */
-.hero .lokal-fakta svg {
+.hero .fakta b {
+  color: var(--ink);
+}
+
+.hero .fakta a {
+  color: var(--signal-deep);
+}
+
+.hero .fakta svg {
   flex: none;
   width: 40px;
   height: 40px;
@@ -401,32 +391,24 @@ section {
   stroke-linejoin: round;
 }
 
-.hero .lokal .avskaaret circle {
+/* Bare streken over wifi-symbolet er rød. */
+.hero .avskaaret circle {
   fill: var(--signal-deep);
   stroke: none;
 }
 
-.hero .lokal .avskaaret .kryss {
+.hero .avskaaret .kryss {
   stroke: var(--flag);
   stroke-width: 2.4;
 }
 
-.hero .lokal a {
-  color: var(--signal-deep);
+/* «Ingen nett» står tett over filtypene, «lokal KI» litt lenger ned under dem. */
+.hero .fakta.avskaaret + .formats {
+  margin-top: clamp(40px, 5vw, 64px);
 }
 
-/* Smalere enn filtypene: ingressen over faktaene, skilt med en strek. */
-@media (max-width: 820px) {
-  .hero .lokal {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 20px;
-  }
-
-  .hero .lokal-fakta {
-    padding: 20px 0 0;
-    border-left: 0;
-    border-top: 1px solid var(--rule);
-  }
+.hero .fakta.lokal-ki {
+  margin-top: clamp(32px, 4vw, 48px);
 }
 
 .hero .scene .get {
@@ -471,9 +453,12 @@ section {
     margin-top: 28px;
   }
 
-  .hero .lokal {
-    max-width: 1120px;
-    font-size: clamp(15.5px, 0.95vw, 18px);
+  .hero .hva {
+    font-size: clamp(28px, 1.6vw, 34px);
+  }
+
+  .hero .fakta {
+    font-size: clamp(15px, 0.85vw, 17px);
   }
 
   .hero .scene .tag {
@@ -3786,17 +3771,19 @@ footer {
     margin-top: 14px;
   }
 
-  .hero .lokal {
+  .hero .hva {
+    font-size: 18px;
+    margin-top: 36px;
+  }
+
+  .hero .fakta {
+    align-items: flex-start;
+    width: auto;
     font-size: 14.5px;
-    padding: 20px 18px;
-    margin-top: 14px;
+    padding: 12px 16px 12px 12px;
   }
 
-  .hero .lokal .hva {
-    font-size: 17px;
-  }
-
-  .hero .lokal-fakta svg {
+  .hero .fakta svg {
     width: 34px;
     height: 34px;
     padding: 7px;
