@@ -595,23 +595,96 @@ textarea:focus {
 #s-oppsett > .tilbake:hover {
   color: var(--signal);
 }
-/* Bookingen: en liten, smal modul for seg selv, med knappen og «Spørsmål først?» under. */
+/* Bookingen: en stor blå modul over hele bredden nederst, i samme blåstil som «Skreddersydd oppsett»
+   på forsiden (.orgport-oppsett i styles.css): dyp blå gradient, lys bak, hvit tekst og hvit knapp. */
 #s-oppsett .op-book {
-  width: min(560px, 100%);
-  margin: var(--modul-luft) auto 0;
-  padding: clamp(24px, 3vw, 36px);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin-top: calc(var(--modul-luft) * 1.6);
+  padding: clamp(40px, 6vw, 88px) clamp(24px, 5vw, 72px);
+  border: 0;
+  color: #fff;
   text-align: center;
+  background: linear-gradient(165deg, #1f49c4 0%, #16348f 52%, #0d2159 100%);
+  box-shadow: 0 30px 70px -30px rgba(26, 63, 176, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+#s-oppsett .op-book::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 30%;
+  width: min(900px, 140%);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, rgba(111, 155, 245, 0.5), rgba(111, 155, 245, 0.14) 55%, transparent);
+  pointer-events: none;
+}
+#s-oppsett .op-book .merke {
+  display: inline-block;
+  padding: 6px 13px;
+  border-radius: 100px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.13);
+}
+#s-oppsett .op-book-tittel {
+  margin-top: 18px;
+  font-size: clamp(32px, 4vw, 54px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: #fff;
+}
+#s-oppsett .op-book-tekst {
+  max-width: 46ch;
+  margin: 16px auto 0;
+  font-size: clamp(16.5px, 1.4vw, 19px);
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.86);
 }
 #s-oppsett .op-book .book-start {
-  margin-top: 0;
+  margin-top: clamp(28px, 3vw, 40px);
+}
+#s-oppsett .op-book .book-start .btn {
+  width: min(440px, 100%);
+  height: 66px;
+  font-size: 18px;
+  color: var(--signal-deep);
+  background: #fff;
+  border-color: #fff;
+  box-shadow: 0 14px 34px -14px rgba(5, 15, 50, 0.6);
+}
+#s-oppsett .op-book .book-start .btn:hover:not(:disabled) {
+  background: var(--signal-soft);
+  border-color: var(--signal-soft);
 }
 #s-oppsett .op-book .ekstra {
   justify-content: center;
+  margin-top: 20px;
   padding-left: 0;
 }
-#s-oppsett .op-book #samtale-skjema {
-  padding-left: 0;
-  padding-right: 0;
+#s-oppsett .op-book .ekstra .lenke {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration-color: rgba(255, 255, 255, 0.4);
+}
+#s-oppsett .op-book .ekstra .lenke:hover {
+  color: #fff;
+}
+/* Skjemaet for spørsmål åpner seg i et hvitt felt inne i den blå modulen. */
+#s-oppsett .op-book #samtale-skjema,
+#s-oppsett .op-book #samtale-ferdig:not([hidden]) {
+  width: min(560px, 100%);
+  margin: 22px auto 0;
+  padding: 24px;
+  border-radius: 18px;
+  background: #fff;
+  color: var(--ink);
   text-align: left;
 }
 /* Toppen: tittel, innledning, valg og pris til venstre, maskinen stor til høyre. Begge starter på samme linje. */
