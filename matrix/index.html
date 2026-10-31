@@ -7,55 +7,45 @@
 <meta name="theme-color" content="#000a1f">
 <title>Matrix · Esbjug Consult</title>
 <style>
-  @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces.woff2) format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
-  @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces-italic.woff2) format("woff2");font-weight:100 900;font-style:italic;font-display:swap}
+  @font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces.woff2) format("woff2");font-weight:100 900;font-style:normal;font-display:block}
   @font-face{font-family:"Runer";src:url(/media/fonts/noto-sans-runic.woff2) format("woff2");unicode-range:U+16A0-16F8;font-display:block}
-  :root{--ink:#00205B;--natt:#000a1f;--r:#BA0C2F;--is:#cfe4f6;--sno:#eef5fb;--serif:"Fraunces",Georgia,serif}
-  html,body{margin:0;height:100%;background:var(--natt);overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%;background:#000a1f;overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
   body.stille{cursor:none}
   canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
-  /* Maskinene står midt nede, aldri i et hjørne. */
-  .maskiner{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:clamp(18px,4vw,48px);
-    font:italic 400 clamp(13px,1.4vw,17px)/1 var(--serif);color:var(--is);letter-spacing:.02em;white-space:nowrap;transition:opacity 1.2s}
-  .m{display:flex;align-items:center;gap:8px;opacity:.45;transition:opacity .8s}
-  .m i{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.5}
-  .m b{font-weight:400;font-style:normal;font-size:.82em;letter-spacing:.08em;text-transform:uppercase;opacity:.8}
-  .m.paa{opacity:.8}
-  .m.bruk{opacity:1}
-  .m.bruk i{background:var(--r);opacity:1;box-shadow:0 0 0 0 rgba(186,12,47,.5);animation:puls 2.4s infinite}
-  @keyframes puls{70%{box-shadow:0 0 0 7px rgba(186,12,47,0)}100%{box-shadow:0 0 0 0 rgba(186,12,47,0)}}
-  body.stille .maskiner{opacity:.55}
-  @media (max-width:520px){.maskiner{gap:14px}.m b{display:none}}
 </style>
 </head>
 <body>
 <canvas id="himmel"></canvas>
 <canvas id="regn"></canvas>
-<div class="maskiner">
-  <span class="m" data-k="starbase"><i></i>Starbase <b>–</b></span>
-  <span class="m" data-k="starship"><i></i>Starship <b>–</b></span>
-  <span class="m" data-k="falcon"><i></i>Falcon 9 <b>–</b></span>
-</div>
 <script>
-// /matrix: skjermen mens maskinene jobber. Matrix-regnet i polarnatt: runer og ÆØÅ snør ned i søyler,
-// nordlyset beveger seg øverst. Av og til fanges strømmene i en rad og blir til «Esbjug Consult».
-// Hver søyle hører til én maskin (annenhver). «I bruk» gir tett, raskt regn; «På» rolig; «Av» ingenting.
+// /matrix: skjermen mens maskinene jobber. Matrix-regnet i polarnatt: runer og ÆØÅ faller i søyler i to lag
+// (fjernt og nært), og nordlyset beveger seg øverst. Ingen tekst på skjermen.
+// Maskinene styrer regnet: hver søyle hører til én av Starbase, Starship og Falcon 9 (annenhver).
+// «I bruk» gir tett, raskt regn; «På» rolig; «Av» ingenting.
+// Av og til fanges regnet: der en strøm passerer en bestemt rad, blir tegnet stående som en bokstav, til
+// «Esbjug Consult» står i regnet. Litt etter tar de neste strømmene bokstavene med seg igjen.
 // Klikk: fullskjerm og skjermen holdes våken.
 const RUNER = 'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛊᛏᛒᛖᛗᛚᛜᛞᛟᚼᛅᛆᛋᛌᛐᛑᛘᛙᛦᛧᛨᛩᛪ';
 const LATIN = 'ÆØÅæøå0123456789';
 const tegn = () => Math.random() < .78 ? RUNER[Math.random() * RUNER.length | 0] : LATIN[Math.random() * LATIN.length | 0];
 const MASKINER = ['starbase', 'starship', 'falcon'];
-const TX = { bruk: 'I bruk', paa: 'På', av: 'Av' };
 const lett = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const hc = document.getElementById('himmel'), h = hc.getContext('2d');
 const rc = document.getElementById('regn'), r = rc.getContext('2d');
-let W, H, dpr, fs, kol = [], fnugg = [];
+let W, H, dpr, fnugg = [];
 
 // Tilstand per maskin: 'bruk' | 'paa' | 'av'. Før første svar regner det rolig, så siden aldri står tom.
 const tilstand = { starbase: 'paa', starship: 'paa', falcon: 'paa' };
 const FART = { bruk: 1, paa: .45, av: 0 };      // fallfart i forhold til full
 const TETT = { bruk: .9, paa: .35, av: 0 };     // sjanse for at en ledig søyle starter en ny strøm
+
+// To lag: det fjerne er mindre, mørkere og tregere, og gir dybde bak det nære.
+const LAG = [
+  { skala: .6, lys: .32, fart: .55, kol: [] },
+  { skala: 1, lys: 1, fart: 1, kol: [], naer: true }
+];
+let fs;   // tegnstørrelsen i det nære laget
 
 function stoerrelse() {
   dpr = Math.min(devicePixelRatio || 1, 2);
@@ -63,82 +53,45 @@ function stoerrelse() {
   for (const c of [hc, rc]) { c.width = W * dpr; c.height = H * dpr; }
   h.setTransform(dpr, 0, 0, dpr, 0, 0); r.setTransform(dpr, 0, 0, dpr, 0, 0);
   fs = Math.round(Math.max(14, Math.min(22, W / 70)));
-  const n = Math.ceil(W / fs), gml = kol;
-  kol = Array.from({ length: n }, (_, i) => gml[i] || ny(i));
-  fnugg = Array.from({ length: Math.round(W * H / 9000) }, () => ({ x: Math.random() * W, y: Math.random() * H, r: Math.random() * 1.6 + .4, v: Math.random() * .35 + .15, f: Math.random() * 6 }));
-}
-function ny(i) {
-  return { i, m: MASKINER[i % 3], y: -Math.random() * H, len: 0, aktiv: false, v: 0, spor: [], neste: performance.now() + Math.random() * 4000 };
-}
-function start(k, dt, midt) {
-  const st = tilstand[k.m];
-  if (st === 'av' || (!midt && Math.random() > TETT[st] * .03 * dt)) return;
-  k.aktiv = true; k.y = midt ? Math.random() * H * .8 : -fs * (Math.random() * 8);
-  k.len = 8 + Math.random() * 22 | 0;
-  k.v = (0.18 + Math.random() * .22) * FART[st] * fs;
-  k.spor = midt ? Array.from({ length: k.len }, (_, j) => ({ c: tegn(), y: (Math.floor(k.y / fs) - j) * fs })) : [];
-  k.rod = Math.random() < .06;                  // av og til en strøm med rødt hode, flaggets rødt
-  k.ord = null;
+  for (const l of LAG) {
+    l.fs = Math.round(fs * l.skala);
+    const n = Math.ceil(W / l.fs), gml = l.kol;
+    l.kol = Array.from({ length: n }, (_, i) => gml[i] || { i, m: MASKINER[i % 3], aktiv: false, spor: [] });
+  }
+  fnugg = Array.from({ length: Math.round(W * H / 14000) }, () => ({ x: Math.random() * W, y: Math.random() * H, r: Math.random() * 1.3 + .3, v: Math.random() * .3 + .12, f: Math.random() * 6 }));
+  ord = null;
 }
 
-// «Esbjug Consult»: én strøm per bokstav sendes ned. Når hodet når raden, flimrer ruta i runer og låses
-// til bokstaven. Ordet står i fem sekunder med en rød strek under, så smelter bokstavene tilbake til regn.
+function start(l, k, dt, midt) {
+  let st = tilstand[k.m];
+  // Søyler som har en bokstav å fange eller slippe, regner alltid, ellers blir ordet aldri ferdig.
+  const b = l.naer && ord && ord.bokst.find(b => b.c === k.i && (ord.fase === 'fanger' ? !b.fanget : ord.fase === 'slipper' && !b.borte));
+  if (b) st = 'bruk';
+  if (st === 'av' || (!midt && Math.random() > TETT[st] * .03 * dt)) return;
+  k.aktiv = true; k.y = midt ? Math.random() * H * .8 : -l.fs * (Math.random() * 8);
+  k.len = 8 + Math.random() * 22 | 0;
+  k.v = (0.18 + Math.random() * .22) * FART[st] * l.fart * l.fs;
+  k.spor = midt ? Array.from({ length: k.len }, (_, j) => ({ c: tegn(), y: (Math.floor(k.y / l.fs) - j) * l.fs })) : [];
+  k.rod = l.naer && Math.random() < .05;        // av og til en strøm med rødt hode, flaggets rødt
+}
+
+// Ordet: en rad og fjorten søyler et sted i regnet. Fase «fanger»: hodet til en strøm som når ruta, blir
+// stående som bokstaven. «Holder»: ordet står i regnet. «Slipper»: neste hode tar bokstaven med seg.
 const ORD = 'Esbjug Consult';
-let ord = null, nesteOrd = performance.now() + 8000;
+let ord = null, nesteOrd = performance.now() + 9000;
 function nyttOrd(t) {
-  // Bokstavavstanden følger skjermen (høyst to søyler), og hver bokstav tar søylen nærmest seg.
-  const avst = Math.min(fs * 2, W * .88 / ORD.length), x0 = (W - ORD.length * avst) / 2, y = Math.round(H * .42 / fs) * fs;
-  const bokst = [];
-  [...ORD].forEach((ch, i) => {
-    if (ch === ' ') return;
-    const c = Math.round((x0 + (i + .5) * avst - fs / 2) / fs), k = kol[c]; if (!k) return;
-    const b = { ch, x: x0 + (i + .5) * avst, i, t0: null };
-    k.aktiv = true; k.y = -fs * 2 - Math.random() * H * .3; k.v = .42 * fs; k.len = 14 + Math.random() * 10 | 0;
-    k.spor = []; k.rod = false; k.ord = b;
-    bokst.push(b);
-  });
-  ord = { y, bokst, str: avst * 1.05, x0, x1: x0 + ORD.length * avst, laast: null, slutt: null };
+  const n = LAG[1].kol.length, rader = Math.floor(H / fs);
+  const c0 = n <= ORD.length + 4 ? Math.max(0, (n - ORD.length) >> 1) : 2 + Math.floor(Math.random() * (n - ORD.length - 4));
+  const rad = Math.floor(rader * (.3 + Math.random() * .35));
+  ord = { rad, fase: 'fanger', t, bokst: [...ORD].map((ch, i) => ({ ch, c: c0 + i })).filter(b => b.ch !== ' ') };
 }
-function tegnOrd(t) {
-  const o = ord, alle = o.bokst.every(b => b.t0 != null && t - b.t0 > 600);
-  if (alle && !o.laast) o.laast = t;
-  if (o.laast && !o.slutt && t - o.laast > 5000) o.slutt = t;
-  r.textAlign = 'center'; r.textBaseline = 'middle';
-  for (const b of o.bokst) {
-    if (b.t0 == null) continue;
-    const alder = t - b.t0, ut = o.slutt ? (t - o.slutt - b.i * 50) / 1400 : 0;
-    if (ut >= 1) continue;
-    const runer = alder < 600 || ut > .15;            // flimrer inn og flimrer ut
-    const a = ut > 0 ? 1 - ut : 1;
-    if (runer) {
-      if (!b.r || t - b.rt > 60) { b.r = tegn(); b.rt = t; }
-      r.font = `${o.str * .8}px Runer, "Fraunces", serif`;
-      r.fillStyle = `rgba(207,228,246,${a})`; r.shadowColor = 'rgba(207,228,246,.9)'; r.shadowBlur = fs;
-      r.fillText(b.r, b.x, o.y);
-    } else {
-      const glod = Math.max(0, 1 - (alder - 600) / 900);  // et lysblaff idet bokstaven låses
-      r.font = `500 ${o.str}px "Fraunces", Georgia, serif`;
-      r.shadowColor = 'rgba(207,228,246,.95)'; r.shadowBlur = fs * (.8 + glod * 2.2);
-      r.fillStyle = `rgba(255,255,255,${a})`;
-      r.fillText(b.ch, b.x, o.y);
-    }
-    // Ut: bokstaven slipper en strøm som faller videre ned fra raden.
-    if (ut > .15 && !b.sluppet) {
-      b.sluppet = true;
-      const k = kol.find(k => k.ord === b);
-      if (k) { k.aktiv = true; k.ord = null; k.y = o.y; k.v = .3 * fs; k.len = 16; k.spor = []; k.rod = false; }
-    }
-  }
-  r.shadowBlur = 0;
-  // Den røde streken under ordet tegnes fra venstre når alle bokstavene står.
-  if (o.laast) {
-    const inn = Math.min(1, (t - o.laast) / 700), a = o.slutt ? Math.max(0, 1 - (t - o.slutt) / 900) : 1;
-    r.fillStyle = `rgba(186,12,47,${.9 * a})`;
-    r.fillRect(o.x0, o.y + o.str * .62, (o.x1 - o.x0) * inn, Math.max(2, fs * .12));
-  }
-  if (o.slutt && t - o.slutt > 1400 + o.bokst.length * 50) { ord = null; nesteOrd = t + 50000 + Math.random() * 60000; }
-  r.textAlign = 'center'; r.textBaseline = 'top';
+function ordSteg(t) {
+  const o = ord;
+  if (o.fase === 'fanger' && o.bokst.every(b => b.fanget)) { o.fase = 'holder'; o.t = t; }
+  else if (o.fase === 'holder' && t - o.t > 7000) { o.fase = 'slipper'; o.t = t; }
+  else if (o.fase === 'slipper' && (o.bokst.every(b => b.borte) || t - o.t > 15000)) { ord = null; nesteOrd = t + 45000 + Math.random() * 45000; }
 }
+const bokstavI = (c, rad) => ord && rad === ord.rad ? ord.bokst.find(b => b.c === c) : null;
 
 // Nordlyset: tre bånd i isblått og hvitt med en rød kant, tegnet på eget lerret hver fjerde ramme.
 function himmel(t) {
@@ -172,6 +125,64 @@ function himmel(t) {
     h.fillStyle = `rgba(238,245,251,${.15 + .25 * (Math.sin(s * 1.3 + i) * .5 + .5)})`;
     h.fillRect(x, y, 1.2, 1.2);
   }
+  // Mørkere kanter, så blikket havner i midten.
+  const v = h.createRadialGradient(W / 2, H * .45, Math.min(W, H) * .3, W / 2, H * .5, Math.max(W, H) * .8);
+  v.addColorStop(0, 'rgba(0,6,20,0)'); v.addColorStop(1, 'rgba(0,6,20,.55)');
+  h.fillStyle = v; h.fillRect(0, 0, W, H);
+}
+
+function regnLag(l, dt, t) {
+  const f = l.fs;
+  r.font = `${l.naer ? 500 : 400} ${f}px Runer, "Fraunces", Georgia, serif`;
+  for (const k of l.kol) {
+    if (!k.aktiv) { start(l, k, dt); continue; }
+    const forY = k.y;
+    k.y += k.v * (tilstand[k.m] === 'av' ? .6 : 1) * dt;   // en strøm som er i gang, faller ferdig selv om maskinen går av
+    // Nytt tegn hver gang hodet passerer en rute.
+    const rad = Math.floor(k.y / f);
+    if (rad !== Math.floor(forY / f)) {
+      k.spor.unshift({ c: tegn(), y: rad * f });
+      if (k.spor.length > k.len) k.spor.pop();
+      const b = l.naer && bokstavI(k.i, rad);
+      if (b && ord.fase === 'fanger' && !b.fanget) { b.fanget = true; b.t = t; }
+      else if (b && ord.fase === 'slipper' && b.fanget && !b.borte) { b.borte = true; b.t = t; }
+    }
+    const x = k.i * f + f / 2;
+    for (let j = 0; j < k.spor.length; j++) {
+      const s = k.spor[j];
+      const b = l.naer && bokstavI(k.i, s.y / f);
+      if (b && b.fanget && !b.borte) continue;   // bokstaven står der; regnet går bak den
+      if (Math.random() < .015) s.c = tegn();     // tegnene i halen bytter seg av og til, som i Matrix
+      const a = (1 - j / k.len) * l.lys;
+      if (j === 0 && l.naer) {
+        r.shadowColor = k.rod ? 'rgba(186,12,47,.9)' : 'rgba(207,228,246,.95)'; r.shadowBlur = f * .9;
+        r.fillStyle = k.rod ? '#ff5a6e' : '#ffffff';
+      } else {
+        r.shadowBlur = 0;
+        r.fillStyle = j === 0 ? `rgba(207,228,246,${l.lys * 1.4})` : j < 3 ? `rgba(207,228,246,${a})` : `rgba(120,170,220,${a * .85})`;
+      }
+      r.fillText(s.c, x, s.y);
+    }
+    r.shadowBlur = 0;
+    if (k.y - k.len * f > H) k.aktiv = false;
+  }
+}
+
+// Bokstavene som er fanget. Rett etter fangsten lyser de som et hode og roer seg til isblått-hvitt;
+// når de slippes, tones de ut på et halvt sekund mens strømmen fortsetter.
+function tegnOrd(t) {
+  r.font = `600 ${fs}px "Fraunces", Georgia, serif`;
+  for (const b of ord.bokst) {
+    if (!b.fanget) continue;
+    const alder = t - b.t, x = b.c * fs + fs / 2, y = ord.rad * fs;
+    let a = 1, glod = 0;
+    if (b.borte) { a = 1 - alder / 500; if (a <= 0) continue; }
+    else glod = Math.max(0, 1 - alder / 1200);
+    r.shadowColor = 'rgba(207,228,246,.9)'; r.shadowBlur = fs * (.45 + glod * .8);
+    r.fillStyle = `rgba(${235 + 20 * glod | 0},${245 + 10 * glod | 0},255,${a})`;
+    r.fillText(b.ch, x, y);
+  }
+  r.shadowBlur = 0;
 }
 
 let sist = performance.now(), ramme = 0;
@@ -179,50 +190,19 @@ function steg(t) {
   const dt = Math.min(50, t - sist) / 16.67; sist = t; ramme++;
   if (ramme % 4 === 1 || lett) himmel(t);
   r.clearRect(0, 0, W, H);
+  r.textAlign = 'center'; r.textBaseline = 'top';
 
-  // Vanlig snø bak runene, alltid, også når alt er av.
-  r.fillStyle = 'rgba(238,245,251,.55)';
+  regnLag(LAG[0], dt, t);
+  // Snøen faller mellom det fjerne og det nære regnet.
+  r.fillStyle = 'rgba(238,245,251,.4)';
   for (const f of fnugg) {
     f.y += f.v * dt; f.x += Math.sin(t / 1400 + f.f) * .25 * dt;
     if (f.y > H) { f.y = -4; f.x = Math.random() * W; }
     r.beginPath(); r.arc(f.x, f.y, f.r, 0, 6.283); r.fill();
   }
-
-  r.font = `${fs}px Runer, "Fraunces", Georgia, serif`;
-  r.textAlign = 'center'; r.textBaseline = 'top';
-  for (const k of kol) {
-    if (!k.aktiv) { start(k, dt); continue; }
-    const st = tilstand[k.m];
-    const v = k.v * (st === 'av' ? .6 : 1);   // en strøm som er i gang, faller ferdig selv om maskinen går av
-    const forY = k.y;
-    k.y += v * dt;
-    // Nytt tegn hver gang hodet passerer en rute.
-    if (Math.floor(k.y / fs) !== Math.floor(forY / fs)) {
-      k.spor.unshift({ c: tegn(), y: Math.floor(k.y / fs) * fs });
-      if (k.spor.length > k.len) k.spor.pop();
-    }
-    const x = k.i * fs + fs / 2;
-    if (k.ord && ord && k.ord.t0 == null && k.y >= ord.y) k.ord.t0 = t;
-    // Raden med ordet holdes ren for regn mens ordet står.
-    const fri = ord && x > ord.x0 - fs && x < ord.x1 + fs ? ord : null;
-    for (let j = 0; j < k.spor.length; j++) {
-      const s = k.spor[j];
-      if (fri && Math.abs(s.y + fs / 2 - fri.y) < fri.str * .75) continue;
-      if (Math.random() < .015) s.c = tegn();   // tegnene i halen bytter seg av og til, som i Matrix
-      const a = 1 - j / k.len;
-      if (j === 0) {
-        r.shadowColor = k.rod ? 'rgba(186,12,47,.9)' : 'rgba(207,228,246,.95)'; r.shadowBlur = fs * .9;
-        r.fillStyle = k.rod ? '#ff5a6e' : '#ffffff';
-      } else {
-        r.shadowBlur = 0;
-        r.fillStyle = j < 3 ? `rgba(207,228,246,${a})` : `rgba(120,170,220,${a * .85})`;
-      }
-      r.fillText(s.c, x, s.y);
-    }
-    r.shadowBlur = 0;
-    if (k.y - k.len * fs > H) k.aktiv = false;
-  }
   if (!ord && t > nesteOrd) nyttOrd(t);
+  if (ord) ordSteg(t);
+  regnLag(LAG[1], dt, t);
   if (ord) tegnOrd(t);
   requestAnimationFrame(steg);
 }
@@ -234,9 +214,6 @@ async function hent() {
     for (const k of MASKINER) {
       const m = j.tele?.[k], paa = !!m && j.now - m.ts < 180e3;
       tilstand[k] = !paa ? 'av' : m.ledig != null && m.ledig < 120 ? 'bruk' : 'paa';
-      const e = document.querySelector(`.m[data-k="${k}"]`);
-      e.className = 'm ' + (tilstand[k] === 'av' ? '' : tilstand[k]);
-      e.querySelector('b').textContent = TX[tilstand[k]];
     }
   } catch {}
 }
@@ -258,8 +235,8 @@ addEventListener('mousemove', bevegelse); bevegelse();
 addEventListener('resize', stoerrelse);
 stoerrelse();
 // Skjermen er full fra første stund: halvparten av søylene starter midt i et fall.
-for (const k of kol) if (Math.random() < .5) start(k, 0, true);
-document.fonts.load(`20px Runer`, 'ᚠ').finally(() => requestAnimationFrame(steg));
+for (const l of LAG) for (const k of l.kol) if (Math.random() < .5) start(l, k, 0, true);
+Promise.all([document.fonts.load('20px Runer', 'ᚠ'), document.fonts.load('600 20px Fraunces', 'E')]).finally(() => requestAnimationFrame(steg));
 </script>
 </body>
 </html>
