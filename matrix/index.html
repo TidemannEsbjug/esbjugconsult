@@ -16,7 +16,7 @@
   canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
   /* Maskinene står midt nede, aldri i et hjørne. */
   .maskiner{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:clamp(18px,4vw,48px);
-    font:italic 400 clamp(13px,1.4vw,17px)/1 var(--serif);color:var(--ink);letter-spacing:.02em;white-space:nowrap;transition:opacity 1.2s}
+    font:italic 400 clamp(13px,1.4vw,17px)/1 var(--serif);color:var(--is);letter-spacing:.02em;white-space:nowrap;transition:opacity 1.2s}
   .m{display:flex;align-items:center;gap:8px;opacity:.45;transition:opacity .8s}
   .m i{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.5}
   .m b{font-weight:400;font-style:normal;font-size:.82em;letter-spacing:.08em;text-transform:uppercase;opacity:.8}
@@ -38,7 +38,7 @@
 </div>
 <script>
 // /matrix: skjermen mens maskinene jobber. Matrix-regnet i polarnatt: runer og ÆØÅ snør ned i søyler,
-// nordlyset beveger seg øverst, og fonna nederst vokser med arbeidet og smelter sakte når det er stille.
+// nordlyset beveger seg øverst. Av og til fanges strømmene i en rad og blir til «Esbjug Consult».
 // Hver søyle hører til én maskin (annenhver). «I bruk» gir tett, raskt regn; «På» rolig; «Av» ingenting.
 // Klikk: fullskjerm og skjermen holdes våken.
 const RUNER = 'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛊᛏᛒᛖᛗᛚᛜᛞᛟᚼᛅᛆᛋᛌᛐᛑᛘᛙᛦᛧᛨᛩᛪ';
@@ -50,7 +50,7 @@ const lett = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const hc = document.getElementById('himmel'), h = hc.getContext('2d');
 const rc = document.getElementById('regn'), r = rc.getContext('2d');
-let W, H, dpr, fs, kol = [], fonn = [], fnugg = [];
+let W, H, dpr, fs, kol = [], fnugg = [];
 
 // Tilstand per maskin: 'bruk' | 'paa' | 'av'. Før første svar regner det rolig, så siden aldri står tom.
 const tilstand = { starbase: 'paa', starship: 'paa', falcon: 'paa' };
@@ -65,11 +65,8 @@ function stoerrelse() {
   fs = Math.round(Math.max(14, Math.min(22, W / 70)));
   const n = Math.ceil(W / fs), gml = kol;
   kol = Array.from({ length: n }, (_, i) => gml[i] || ny(i));
-  fonn = Array.from({ length: n }, (_, i) => fonn[i] ?? bunnMin());
   fnugg = Array.from({ length: Math.round(W * H / 9000) }, () => ({ x: Math.random() * W, y: Math.random() * H, r: Math.random() * 1.6 + .4, v: Math.random() * .35 + .15, f: Math.random() * 6 }));
 }
-// Fonna er aldri lavere enn at maskinene nederst står på snøen.
-const bunnMin = () => Math.max(64, H * .085);
 function ny(i) {
   return { i, m: MASKINER[i % 3], y: -Math.random() * H, len: 0, aktiv: false, v: 0, spor: [], neste: performance.now() + Math.random() * 4000 };
 }
@@ -81,6 +78,66 @@ function start(k, dt, midt) {
   k.v = (0.18 + Math.random() * .22) * FART[st] * fs;
   k.spor = midt ? Array.from({ length: k.len }, (_, j) => ({ c: tegn(), y: (Math.floor(k.y / fs) - j) * fs })) : [];
   k.rod = Math.random() < .06;                  // av og til en strøm med rødt hode, flaggets rødt
+  k.ord = null;
+}
+
+// «Esbjug Consult»: én strøm per bokstav sendes ned. Når hodet når raden, flimrer ruta i runer og låses
+// til bokstaven. Ordet står i fem sekunder med en rød strek under, så smelter bokstavene tilbake til regn.
+const ORD = 'Esbjug Consult';
+let ord = null, nesteOrd = performance.now() + 8000;
+function nyttOrd(t) {
+  // Bokstavavstanden følger skjermen (høyst to søyler), og hver bokstav tar søylen nærmest seg.
+  const avst = Math.min(fs * 2, W * .88 / ORD.length), x0 = (W - ORD.length * avst) / 2, y = Math.round(H * .42 / fs) * fs;
+  const bokst = [];
+  [...ORD].forEach((ch, i) => {
+    if (ch === ' ') return;
+    const c = Math.round((x0 + (i + .5) * avst - fs / 2) / fs), k = kol[c]; if (!k) return;
+    const b = { ch, x: x0 + (i + .5) * avst, i, t0: null };
+    k.aktiv = true; k.y = -fs * 2 - Math.random() * H * .3; k.v = .42 * fs; k.len = 14 + Math.random() * 10 | 0;
+    k.spor = []; k.rod = false; k.ord = b;
+    bokst.push(b);
+  });
+  ord = { y, bokst, str: avst * 1.05, x0, x1: x0 + ORD.length * avst, laast: null, slutt: null };
+}
+function tegnOrd(t) {
+  const o = ord, alle = o.bokst.every(b => b.t0 != null && t - b.t0 > 600);
+  if (alle && !o.laast) o.laast = t;
+  if (o.laast && !o.slutt && t - o.laast > 5000) o.slutt = t;
+  r.textAlign = 'center'; r.textBaseline = 'middle';
+  for (const b of o.bokst) {
+    if (b.t0 == null) continue;
+    const alder = t - b.t0, ut = o.slutt ? (t - o.slutt - b.i * 50) / 1400 : 0;
+    if (ut >= 1) continue;
+    const runer = alder < 600 || ut > .15;            // flimrer inn og flimrer ut
+    const a = ut > 0 ? 1 - ut : 1;
+    if (runer) {
+      if (!b.r || t - b.rt > 60) { b.r = tegn(); b.rt = t; }
+      r.font = `${o.str * .8}px Runer, "Fraunces", serif`;
+      r.fillStyle = `rgba(207,228,246,${a})`; r.shadowColor = 'rgba(207,228,246,.9)'; r.shadowBlur = fs;
+      r.fillText(b.r, b.x, o.y);
+    } else {
+      const glod = Math.max(0, 1 - (alder - 600) / 900);  // et lysblaff idet bokstaven låses
+      r.font = `500 ${o.str}px "Fraunces", Georgia, serif`;
+      r.shadowColor = 'rgba(207,228,246,.95)'; r.shadowBlur = fs * (.8 + glod * 2.2);
+      r.fillStyle = `rgba(255,255,255,${a})`;
+      r.fillText(b.ch, b.x, o.y);
+    }
+    // Ut: bokstaven slipper en strøm som faller videre ned fra raden.
+    if (ut > .15 && !b.sluppet) {
+      b.sluppet = true;
+      const k = kol.find(k => k.ord === b);
+      if (k) { k.aktiv = true; k.ord = null; k.y = o.y; k.v = .3 * fs; k.len = 16; k.spor = []; k.rod = false; }
+    }
+  }
+  r.shadowBlur = 0;
+  // Den røde streken under ordet tegnes fra venstre når alle bokstavene står.
+  if (o.laast) {
+    const inn = Math.min(1, (t - o.laast) / 700), a = o.slutt ? Math.max(0, 1 - (t - o.slutt) / 900) : 1;
+    r.fillStyle = `rgba(186,12,47,${.9 * a})`;
+    r.fillRect(o.x0, o.y + o.str * .62, (o.x1 - o.x0) * inn, Math.max(2, fs * .12));
+  }
+  if (o.slutt && t - o.slutt > 1400 + o.bokst.length * 50) { ord = null; nesteOrd = t + 50000 + Math.random() * 60000; }
+  r.textAlign = 'center'; r.textBaseline = 'top';
 }
 
 // Nordlyset: tre bånd i isblått og hvitt med en rød kant, tegnet på eget lerret hver fjerde ramme.
@@ -144,10 +201,13 @@ function steg(t) {
       k.spor.unshift({ c: tegn(), y: Math.floor(k.y / fs) * fs });
       if (k.spor.length > k.len) k.spor.pop();
     }
-    const x = k.i * fs + fs / 2, bunn = H - fonn[k.i];
+    const x = k.i * fs + fs / 2;
+    if (k.ord && ord && k.ord.t0 == null && k.y >= ord.y) k.ord.t0 = t;
+    // Raden med ordet holdes ren for regn mens ordet står.
+    const fri = ord && x > ord.x0 - fs && x < ord.x1 + fs ? ord : null;
     for (let j = 0; j < k.spor.length; j++) {
       const s = k.spor[j];
-      if (s.y > bunn - fs * .6) continue;
+      if (fri && Math.abs(s.y + fs / 2 - fri.y) < fri.str * .75) continue;
       if (Math.random() < .015) s.c = tegn();   // tegnene i halen bytter seg av og til, som i Matrix
       const a = 1 - j / k.len;
       if (j === 0) {
@@ -160,42 +220,12 @@ function steg(t) {
       r.fillText(s.c, x, s.y);
     }
     r.shadowBlur = 0;
-    // Hodet treffer fonna: et lite snøsprut, og fonna blir litt høyere.
-    if (k.y >= bunn - fs * .6 && !k.landet) {
-      k.landet = true;
-      fonn[k.i] = Math.min(H * .2, fonn[k.i] + fs * .1);
-      sprut.push({ x, y: bunn, t });
-    }
-    if (k.y - k.len * fs > bunn) { k.aktiv = false; k.landet = false; }
+    if (k.y - k.len * fs > H) k.aktiv = false;
   }
-
-  // Fonna smelter sakte og glattes mot naboene, så den blir en jevn drive.
-  const glatt = fonn.slice();
-  for (let i = 0; i < fonn.length; i++) {
-    const n = ((fonn[i - 1] ?? fonn[i]) + fonn[i] * 2 + (fonn[i + 1] ?? fonn[i])) / 4;
-    glatt[i] = Math.max(bunnMin(), n - .004 * dt);
-  }
-  fonn = glatt;
-  const fg = r.createLinearGradient(0, H * .78, 0, H);
-  fg.addColorStop(0, '#eef5fb'); fg.addColorStop(1, '#cfe4f6');
-  r.fillStyle = fg;
-  // Drivene: fonna pluss et par lange bølger, så kanten ikke er rett.
-  const kant = i => H - fonn[Math.max(0, Math.min(fonn.length - 1, i))] - Math.sin(i * fs * .006) * 9 - Math.sin(i * fs * .017 + 1) * 4;
-  r.shadowColor = 'rgba(207,228,246,.5)'; r.shadowBlur = 24;
-  r.beginPath(); r.moveTo(0, H); r.lineTo(0, kant(0));
-  for (let i = 0; i < fonn.length; i++) r.lineTo(i * fs + fs / 2, kant(i));
-  r.lineTo(W, kant(fonn.length - 1)); r.lineTo(W, H); r.closePath(); r.fill();
-  r.shadowBlur = 0;
-
-  for (let i = sprut.length - 1; i >= 0; i--) {
-    const p = sprut[i], a = (t - p.t) / 700;
-    if (a >= 1) { sprut.splice(i, 1); continue; }
-    r.strokeStyle = `rgba(255,255,255,${.7 * (1 - a)})`; r.lineWidth = 1.2;
-    r.beginPath(); r.ellipse(p.x, p.y, fs * (.3 + a * 1.1), fs * (.12 + a * .3), 0, Math.PI, 0); r.stroke();
-  }
+  if (!ord && t > nesteOrd) nyttOrd(t);
+  if (ord) tegnOrd(t);
   requestAnimationFrame(steg);
 }
-const sprut = [];
 
 // Maskinene: samme kilde og samme regel som forsiden. Tre minutter uten puls er «Av»; rørt siste 2 min er «I bruk».
 async function hent() {
