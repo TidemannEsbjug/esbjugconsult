@@ -557,10 +557,62 @@ textarea:focus {
 }
 
 /* ---------- Skreddersydd oppsett, utvidet testing ---------- */
-/* Oversikten: hele bredden, prisen ved siden av innledningen, og delene i kort. Bookingen helt nederst. */
+/* Oversikten: delt opp i egne moduler i stedet for ett stort kort. Toppen (tittel, pris og maskinen)
+   er én modul, hver del under er sin egen modul, og bookingen står i en liten modul helt nederst.
+   Det store kortet rundt blir bare en usynlig ramme for bredden. */
 .kort.bred:has(#s-oppsett:not([hidden])) {
   width: min(1120px, 100%);
-  background: rgba(255, 255, 255, 0.97);
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+#s-oppsett {
+  --modul-luft: clamp(18px, 2vw, 28px);
+}
+#s-oppsett .op-hode,
+#s-oppsett .op-del,
+#s-oppsett .op-book {
+  border-radius: 24px;
+  background: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 1px 0 var(--rule), 0 22px 50px -26px rgba(20, 40, 70, 0.28);
+}
+#s-oppsett .op-hode {
+  padding: clamp(22px, 2.8vw, 36px);
+}
+/* «Tilbake» står rett på bakgrunnen over den første modulen, som en liten pille. */
+#s-oppsett > .tilbake {
+  margin: 0 0 14px;
+  padding: 7px 14px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--ink-2);
+  box-shadow: 0 1px 0 var(--rule);
+}
+#s-oppsett > .tilbake:hover {
+  color: var(--signal);
+}
+/* Bookingen: en liten, smal modul for seg selv, med knappen og «Spørsmål først?» under. */
+#s-oppsett .op-book {
+  width: min(560px, 100%);
+  margin: var(--modul-luft) auto 0;
+  padding: clamp(24px, 3vw, 36px);
+  text-align: center;
+}
+#s-oppsett .op-book .book-start {
+  margin-top: 0;
+}
+#s-oppsett .op-book .ekstra {
+  justify-content: center;
+  padding-left: 0;
+}
+#s-oppsett .op-book #samtale-skjema {
+  padding-left: 0;
+  padding-right: 0;
+  text-align: left;
 }
 /* Toppen: tittel, innledning, valg og pris til venstre, maskinen stor til høyre. Begge starter på samme linje. */
 #s-oppsett {
@@ -613,15 +665,12 @@ textarea:focus {
 .op-rutenett {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 16px;
-  margin-top: 26px;
+  gap: var(--modul-luft);
+  margin-top: var(--modul-luft);
 }
 #s-oppsett .op-del {
   /* #s-oppsett, fordi den generelle regelen for section på store skjermer ellers gir 104 px innrykk. */
-  padding: calc(var(--inn) - 1px);
-  border-radius: 16px;
-  background: var(--ground);
-  border: 1px solid var(--rule-2);
+  padding: clamp(22px, 2.6vw, 34px);
 }
 .op-del.hel {
   grid-column: 1 / -1;
