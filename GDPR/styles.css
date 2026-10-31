@@ -335,54 +335,74 @@ section {
   margin-top: 20px;
 }
 
-/* Ingressen og forklaringen av «lokal AI», samlet i én hvit boks under overskriften. */
+/* Ingressen og forklaringen av «lokal AI», samlet i én hvit boks under overskriften.
+   Like bred som filtypene under. Ingressen stor til venstre, to fakta med ikon til høyre. */
 .hero .lokal {
-  max-width: 60ch;
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 56px);
+  align-items: center;
+  max-width: 1120px;
   margin: clamp(40px, 5vw, 64px) auto 0;
-  padding: 18px 22px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 1px 0 var(--rule), 0 10px 30px rgba(21, 32, 46, 0.06);
+  padding: clamp(24px, 3vw, 40px) clamp(24px, 3.4vw, 48px);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 1px 0 var(--rule), 0 18px 40px -18px rgba(26, 63, 176, 0.2);
   color: var(--ink-2);
   font-size: 15.5px;
+  line-height: 1.55;
   text-align: left;
-}
-
-.hero .lokal p + p {
-  margin-top: 10px;
 }
 
 .hero .lokal .hva {
   color: var(--ink);
-  font-size: 1.08em;
+  font-size: clamp(19px, 1.7vw, 24px);
+  line-height: 1.45;
+  letter-spacing: -0.005em;
+  text-wrap: pretty;
 }
 
 .hero .lokal b {
   color: var(--ink);
 }
 
-.hero .lokal .avskaaret {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid var(--rule);
+.hero .lokal .hva b {
+  color: var(--signal-deep);
 }
 
-.hero .lokal .avskaaret svg {
+.hero .lokal-fakta {
+  display: grid;
+  gap: 18px;
+  margin: 0;
+  padding: 0 0 0 clamp(28px, 4vw, 56px);
+  border-left: 1px solid var(--rule);
+  list-style: none;
+}
+
+.hero .lokal-fakta li {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+/* Ikonet i en lys rute, samme farge som resten av siden. Bare streken over
+   wifi-symbolet er rød. */
+.hero .lokal-fakta svg {
   flex: none;
-  width: 26px;
-  height: 26px;
-  margin-top: 1px;
+  width: 40px;
+  height: 40px;
+  padding: 9px;
+  border-radius: 11px;
+  background: var(--signal-soft);
   fill: none;
-  stroke: var(--ink-3);
-  stroke-width: 2;
+  stroke: var(--signal-deep);
+  stroke-width: 1.9;
   stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .hero .lokal .avskaaret circle {
-  fill: var(--ink-3);
+  fill: var(--signal-deep);
   stroke: none;
 }
 
@@ -391,13 +411,22 @@ section {
   stroke-width: 2.4;
 }
 
-.hero .lokal .avskaaret b {
-  display: block;
-  color: var(--flag);
-}
-
 .hero .lokal a {
   color: var(--signal-deep);
+}
+
+/* Smalere enn filtypene: ingressen over faktaene, skilt med en strek. */
+@media (max-width: 820px) {
+  .hero .lokal {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .hero .lokal-fakta {
+    padding: 20px 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--rule);
+  }
 }
 
 .hero .scene .get {
@@ -443,8 +472,8 @@ section {
   }
 
   .hero .lokal {
-    max-width: 62ch;
-    font-size: clamp(15.5px, 0.95vw, 20px);
+    max-width: 1120px;
+    font-size: clamp(15.5px, 0.95vw, 18px);
   }
 
   .hero .scene .tag {
@@ -3758,9 +3787,19 @@ footer {
   }
 
   .hero .lokal {
-    font-size: 14px;
-    padding: 12px 16px;
+    font-size: 14.5px;
+    padding: 20px 18px;
     margin-top: 14px;
+  }
+
+  .hero .lokal .hva {
+    font-size: 17px;
+  }
+
+  .hero .lokal-fakta svg {
+    width: 34px;
+    height: 34px;
+    padding: 7px;
   }
 
   .hero .scene .get {
