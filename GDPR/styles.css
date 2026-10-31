@@ -335,61 +335,95 @@ section {
   margin-top: 20px;
 }
 
-/* Hva Klart er, under filtypene: tre egne hvite kort side om side, like bredt som
-   programvinduet. Hvert kort har et ikon fra Midjourney øverst (hvit bakgrunn, så
-   «multiply» lar det gli inn i kortet), så overskrift og tekst. Stables under 820px. */
+/* Hva Klart er, under filtypene: tre hvite kort etter hverandre med god luft mellom.
+   Ikonet på den ene siden og teksten på den andre; annethvert kort bytter side.
+   Ikonene har helt hvit bakgrunn, så de glir inn i kortet uten kant. Stables under 760px. */
 .hero .om {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(16px, 1.8vw, 24px);
-  margin-top: clamp(40px, 4.6vw, 64px);
-  text-align: center;
+  gap: clamp(28px, 3.4vw, 48px);
+  max-width: 960px;
+  margin: clamp(64px, 7vw, 112px) auto 0;
+  text-align: left;
 }
 
 .hero .om-del {
-  display: flex;
-  flex-direction: column;
-  padding: clamp(22px, 2.4vw, 32px) clamp(22px, 2.4vw, 32px) clamp(26px, 2.8vw, 36px);
-  border-radius: 22px;
-  background: var(--card);
-  box-shadow: 0 1px 0 var(--rule), 0 18px 40px -20px rgba(26, 63, 176, 0.22);
+  display: grid;
+  grid-template-columns: clamp(160px, 17vw, 240px) minmax(0, 1fr);
+  grid-template-areas: "bilde tekst";
+  gap: clamp(32px, 4.4vw, 72px);
+  align-items: center;
+  padding: clamp(32px, 4vw, 56px) clamp(32px, 4.6vw, 72px);
+  border-radius: 28px;
+  background: #fff;
+  box-shadow: 0 1px 0 var(--rule), 0 24px 56px -28px rgba(26, 63, 176, 0.24);
+}
+
+.hero .om-del:nth-child(even) {
+  grid-template-columns: minmax(0, 1fr) clamp(160px, 17vw, 240px);
+  grid-template-areas: "tekst bilde";
 }
 
 .hero .om img {
+  grid-area: bilde;
   display: block;
-  width: clamp(120px, 11vw, 168px);
+  width: 100%;
   height: auto;
   aspect-ratio: 1;
-  margin: 0 auto 6px;
-  mix-blend-mode: multiply;
+}
+
+.hero .om-tekst {
+  grid-area: tekst;
+  max-width: 44ch;
 }
 
 .hero .om h3 {
-  margin-top: 14px;
   color: var(--ink);
-  font-size: clamp(18px, 1.5vw, 21px);
-  font-weight: 650;
-  letter-spacing: -0.01em;
-  line-height: 1.25;
+  font-size: clamp(24px, 2.4vw, 34px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  text-wrap: balance;
 }
 
 .hero .om p {
-  margin-top: 8px;
+  margin-top: 14px;
   color: var(--ink-2);
-  font-size: 15.5px;
-  line-height: 1.55;
+  font-size: clamp(16.5px, 1.25vw, 19px);
+  line-height: 1.65;
   text-wrap: pretty;
+}
+
+.hero .om h3 + p {
+  margin-top: 18px;
 }
 
 .hero .om a {
   color: var(--signal-deep);
   font-weight: 600;
-  white-space: nowrap;
+  text-decoration: none;
 }
 
-@media (max-width: 820px) {
-  .hero .om {
+.hero .om a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 760px) {
+  .hero .om-del,
+  .hero .om-del:nth-child(even) {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "bilde" "tekst";
+    gap: 20px;
+    padding: 32px 24px 36px;
+    text-align: center;
+  }
+
+  .hero .om img {
+    width: 150px;
+    margin: 0 auto;
+  }
+
+  .hero .om-tekst {
+    margin: 0 auto;
   }
 }
 
@@ -435,13 +469,6 @@ section {
     margin-top: 28px;
   }
 
-  .hero .om h3 {
-    font-size: clamp(21px, 1.2vw, 25px);
-  }
-
-  .hero .om p {
-    font-size: clamp(15.5px, 0.9vw, 18px);
-  }
 
   .hero .scene .tag {
     font-size: clamp(11.5px, 0.7vw, 14px);
@@ -3850,10 +3877,6 @@ footer {
     margin-top: 14px;
   }
 
-  .hero .om p {
-    font-size: 15px;
-  }
-
   .hero .scene .get {
     margin-top: 22px;
   }
@@ -3924,7 +3947,6 @@ footer {
 
   .hero > .window,
   .hero > .ka,
-  .hero > .om,
   .hero > .formats {
     max-width: var(--innhold);
     margin-left: auto;
