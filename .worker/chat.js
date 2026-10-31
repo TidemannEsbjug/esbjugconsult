@@ -52,6 +52,9 @@
 //
 // Location is Cloudflare's IP lookup (city/region/country/lat/lon), never the browser's GPS.
 
+// All alert pushes to the owner's phone and watch are off while this is true (see push()). Calls are not affected.
+const PUSH_PAUSET = true;
+
 // Samlet kontor-bilde. «vann» (utjevnet) tas fra flaske-kameraet når det har målt de siste 2 min,
 // ellers fra pult-kameraet. Person, plagg og hodetelefoner tas fra pult-kameraet. Forsiden bruker samme regel.
 function kontorAv(kilder, nå) {
@@ -2905,6 +2908,9 @@ export class ChatHub {
 
   async push(title, body, vid, opt = {}) {
     if (!this.env.APNS_KEY || !this.env.APNS_KEY_ID) return [{ error: "APNs not configured" }];
+    // Pushes paused for now (owner's wish, 2026-10-31): nothing from the site reaches the phone or watch. Calls (pushCall)
+    // still ring. Set PUSH_PAUSET to false to turn them back on.
+    if (PUSH_PAUSET) return [{ skipped: "paused" }];
     // Anti-spam: one push per visitor per 20 s, at most 30 pushes per 10 minutes in total.
     const now = Date.now();
     if (vid && opt.throttle !== false) {
