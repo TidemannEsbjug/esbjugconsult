@@ -1385,6 +1385,152 @@ section {
   .orgport input {
     font-size: clamp(17.5px, 1vw, 20px);
   }
+
+  /* Kortet etter oppslaget: større på store skjermer, og alt inni vokser med. */
+  .orgport.svar {
+    width: min(880px, 100%);
+  }
+
+  .orgport-svar-hoved {
+    padding: 52px 56px;
+    border-radius: 26px;
+  }
+
+  .orgport-segl {
+    width: 96px;
+    height: 96px;
+  }
+
+  .orgport-ok {
+    font-size: 19px;
+  }
+
+  .orgport-firmanavn {
+    font-size: 52px;
+  }
+
+  .orgport-orgnr {
+    font-size: 15px;
+  }
+
+  .orgport-prove {
+    margin-top: 22px;
+    padding-top: 22px;
+    font-size: 18px;
+  }
+
+  .orgport-prove .orgport-prove-tittel {
+    font-size: 24px;
+  }
+
+  .orgport-pris {
+    gap: 14px;
+    margin-top: 26px;
+  }
+
+  .orgport-pris-celle {
+    padding: 20px 22px;
+    border-radius: 16px;
+    font-size: 16px;
+  }
+
+  .orgport-pris-merke {
+    font-size: 15px;
+  }
+
+  .orgport-belop {
+    font-size: 44px;
+  }
+
+  .orgport .orgport-svar .get {
+    margin-top: 28px;
+  }
+
+  .orgport .orgport-svar .get .btn {
+    height: 60px;
+    padding: 0 30px;
+    font-size: 17px;
+  }
+
+  .orgport-endre {
+    margin-top: 18px;
+    font-size: 15px;
+  }
+
+  /* Store virksomheter: to kort side om side, begge større. */
+  .orgport.stor {
+    width: min(1180px, 100%);
+  }
+
+  .orgport.stor .orgport-svar-grid {
+    gap: 24px;
+  }
+
+  .orgport.stor .orgport-svar-hoved,
+  .orgport-oppsett {
+    padding: 40px 44px;
+    border-radius: 26px;
+  }
+
+  .orgport.stor .orgport-firmanavn {
+    font-size: 40px;
+  }
+
+  .orgport.stor .orgport-firmatekst {
+    font-size: 18px;
+  }
+
+  .orgport.stor .orgport-prove {
+    font-size: 17px;
+  }
+
+  .orgport.stor .orgport-prove .orgport-prove-tittel {
+    font-size: 21px;
+  }
+
+  .orgport.stor .orgport-pris {
+    margin-top: 20px;
+  }
+
+  .orgport.stor .orgport-pris-celle {
+    padding: 18px 22px;
+    font-size: 16px;
+  }
+
+  .orgport.stor .orgport-belop {
+    font-size: 40px;
+  }
+
+  .orgport.stor .orgport-svar .get {
+    margin-top: 22px;
+  }
+
+  .orgport.stor .get .btn,
+  .orgport-oppsett .btn {
+    height: 58px;
+    padding: 0 26px;
+    font-size: 17px;
+  }
+
+  .orgport-merke {
+    padding: 6px 13px;
+    font-size: 12.5px;
+  }
+
+  .orgport-oppsett h3 {
+    margin-top: 16px;
+    font-size: 40px;
+  }
+
+  .orgport-oppsett p:not(.orgport-merke) {
+    margin-top: 10px;
+    font-size: 17.5px;
+  }
+
+  .orgport-mac {
+    max-width: 360px;
+    padding: 18px 0;
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -3799,10 +3945,11 @@ footer {
 
 /* Store skjermer (1920 × 1080 og opp), alt under heroen: innholdet holder seg
    innenfor --innhold i stedet for å fylle bredden, og teksten er litt større.
-   Står sist så den slår grunnreglene over. */
+   1200px gir god luft på sidene på 1920 og lesbare linjer. Programvinduet, boksen
+   og filtypene under bildet følger samme bredde. Står sist så den slår grunnreglene over. */
 @media (min-width: 1500px) {
   :root {
-    --innhold: 1360px;
+    --innhold: 1200px;
   }
 
   section:not(.hero),
@@ -3811,7 +3958,10 @@ footer {
     padding-right: max(var(--gut), calc((100% - var(--innhold)) / 2));
   }
 
-  .hero > .window {
+  .hero > .window,
+  .hero > .ka,
+  .hero > .om,
+  .hero > .formats {
     max-width: var(--innhold);
     margin-left: auto;
     margin-right: auto;
