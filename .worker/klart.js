@@ -1242,7 +1242,7 @@ async function sprint(request, env) {
 //
 // Tre tilbud etter talte ansatte (KLART_PRISER.sprint, se sprintTilbudFor i klart-pris.js): oppsettsdag
 // (fast pris), kort sprint (5 dager) og sprint (10 dager), begge med grunnhonorar. Egen enkel kalender i
-// lageret, ingen ekstern tjeneste. Kunden velger en hverdag tidligst SPRINT_VARSEL dager fram.
+// lageret, ingen ekstern tjeneste. Kunden velger en dag, helg eller ikke, tidligst SPRINT_VARSEL dager fram.
 //
 // Reglene i kalenderen (ledigFor):
 // - To sprinter kan ikke overlappe. En oppsettsdag kan ikke ligge på samme dag som en annen.
@@ -1278,10 +1278,6 @@ const OPPSETT_INNHOLD =
   "deres egne dokumenter som vi går gjennom sammen, dere og jeg. Ingen egen modell og ingen suksesskriterier. Er ikke " +
   "sjekklisten klar (maskin, IT-kontakt, tilganger, testdokumenter), flyttes dagen. Mer enn én dag faktureres per time.";
 
-function ukedag(iso) {
-  return new Date(`${iso}T00:00:00Z`).getUTCDay();
-}
-
 function sluttFor(start, dager) {
   return omDager(dager - 1, Date.parse(`${start}T00:00:00Z`));
 }
@@ -1314,8 +1310,8 @@ function ledigFor(rader, type, start, slutt) {
   return { ok: true, forespurt };
 }
 
-/** Startdager for tilbudet: hverdager fra SPRINT_VARSEL til SPRINT_HORISONT dager fram. «forespurt» er de
-    som blir en forespørsel fordi en oppsettsdag ligger i perioden. */
+/** Startdager for tilbudet: alle dager, også helg, fra SPRINT_VARSEL til SPRINT_HORISONT dager fram.
+    «forespurt» er de som blir en forespørsel fordi en oppsettsdag ligger i perioden. */
 async function ledigeStarter(env, tilbud, reise = false) {
   const type = kalenderType(tilbud.id);
   const rader = await lager(env).sprintOpptatt(omDager(SPRINT_VARSEL - 1), sluttFor(omDager(SPRINT_HORISONT), tilbud.dager), new Date().toISOString());
@@ -1323,8 +1319,6 @@ async function ledigeStarter(env, tilbud, reise = false) {
   const forespurt = [];
   for (let d = SPRINT_VARSEL; d <= SPRINT_HORISONT; d++) {
     const start = omDager(d);
-    const dag = ukedag(start);
-    if (dag === 0 || dag === 6) continue;
     const l = ledigFor(rader, type, reise ? forrigeDag(start) : start, sluttFor(start, tilbud.dager));
     if (l.ok) (l.forespurt ? forespurt : ledige).push(start);
   }
