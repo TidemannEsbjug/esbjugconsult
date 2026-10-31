@@ -262,27 +262,8 @@
           </div>
         </div>
 
-        <!-- Ingressen alene, stor og midtstilt rett under bildet. Så at Klart ikke kan
-             koble seg til nett (ingen HTTP- eller TLS-klient i appen; se til-it.html for
-             hvordan IT sjekker det) rett over filtypene, og «lokal KI» rett under dem. -->
-        <p class="hva rise d-120">
-          <b>Klart</b> finner navn, fødselsnummer og andre personopplysninger i
-          alle filene i en mappe, og pikselerer ansikter i bilder. Du får
-          en renset kopi som du ser over før den brukes videre.
-        </p>
-
-        <p class="fakta avskaaret rise d-180">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M2 8.5a15 15 0 0 1 20 0M5.5 12a10 10 0 0 1 13 0M9 15.5a5 5 0 0 1 6 0" />
-            <circle cx="12" cy="19" r="1.2" />
-            <path class="kryss" d="M3 3l18 18" />
-          </svg>
-          <span>
-            <b>Klart kan ikke koble seg til internett.</b> Dokumentene har
-            ingen vei ut. <a href="til-it.html">IT kan sjekke det selv</a>.
-          </span>
-        </p>
-
+        <!-- Vis først, forklar etterpå: filtypene rett under bildet, så programvinduet,
+             og til slutt hva Klart er (boksen «om» under vinduet). -->
         <!-- Filtypene tidlig. Dette er det folk lurer på først. -->
         <div class="formats rise d-290">
           <p>Leser filene du allerede jobber i</p>
@@ -328,18 +309,6 @@
             PowerPoint.
           </p>
         </div>
-
-        <p class="fakta lokal-ki rise d-290">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="3" y="4.5" width="18" height="12" rx="2" />
-            <path d="M8 20h8M12 16.5V20" />
-          </svg>
-          <span>
-            <b>Lokal KI</b> betyr at KI-en følger med i programmet og
-            jobber på din egen maskin. Den er laget lett, så en helt vanlig
-            jobb-PC eller Mac holder.
-          </span>
-        </p>
 
         <!-- Programvindu: en kopi av Klart slik appen ser ut (src/styles.css og App.tsx i appen),
              som spiller av flyten: velg mappe, velg filer, skanning, gjennomgang og ferdig.
@@ -559,27 +528,48 @@ Vergehaver er diagnostisert med <mark class="seal lit"><span class="o">depresjon
             det tregere.
           </figcaption>
         </figure>
-      </section>
 
-      <!-- ================= Nøkkeltall ================= -->
-      <div class="readout">
-        <div>
-          <b class="zero">0</b>
-          <span>nettverkskall</span>
+        <!-- Hva Klart er, i tre like deler i én boks like bred som programvinduet:
+             hva det gjør, at KI-en er lokal, og at det ikke har nett (ingen HTTP- eller
+             TLS-klient i appen; se til-it.html for hvordan IT sjekker det). -->
+        <div class="om rise">
+          <div class="om-del">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 3h8l4 4v14H6z" />
+              <path d="M14 3v4h4M9 12h6M9 16h4" />
+            </svg>
+            <h3>Renser en hel mappe</h3>
+            <p>
+              Klart finner navn, fødselsnummer og andre personopplysninger i
+              alle filene i en mappe, og pikselerer ansikter i bilder. Du får
+              en renset kopi som du ser over før den brukes videre.
+            </p>
+          </div>
+          <div class="om-del">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3" y="4.5" width="18" height="12" rx="2" />
+              <path d="M8 20h8M12 16.5V20" />
+            </svg>
+            <h3>Lokal KI</h3>
+            <p>
+              KI-en følger med i programmet og jobber på din egen maskin. Den
+              er laget lett, så en helt vanlig jobb-PC eller Mac holder.
+            </p>
+          </div>
+          <div class="om-del avskaaret">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M2 8.5a15 15 0 0 1 20 0M5.5 12a10 10 0 0 1 13 0M9 15.5a5 5 0 0 1 6 0" />
+              <circle cx="12" cy="19" r="1.2" />
+              <path class="kryss" d="M3 3l18 18" />
+            </svg>
+            <h3>Kan ikke koble seg til internett</h3>
+            <p>
+              Dokumentene har ingen vei ut av maskinen.
+              <a href="til-it.html">IT kan sjekke det selv →</a>
+            </p>
+          </div>
         </div>
-        <div>
-          <b>12</b>
-          <span>filtyper leses</span>
-        </div>
-        <div>
-          <b>14</b>
-          <span>typer opplysninger</span>
-        </div>
-        <div>
-          <b>2</b>
-          <span>plattformer</span>
-        </div>
-      </div>
+      </section>
 
       <!-- ================= Problemet ================= -->
       <section>
