@@ -80,8 +80,14 @@ export default {
         url.pathname = "/klart" + rest;
         return medHoder(Response.redirect(url.toString(), 301));
       }
+      // Mens Klart bygges ferdig står bare «Kommer snart» ute. Sidene ligger
+      // urørt i GDPR/; de serveres bare ikke. Aktiveringen må fortsette å virke,
+      // ellers står en kunde med en lisenskode og kommer ingen vei — og siden
+      // trenger fonten, ikonet og bildet sitt. Alt annet får forsiden.
+      // Åpne igjen: fjern KLART_SNART og de to linjene som bruker den.
+      const ÅPENT = /^\/(?:aktiver(?:\/.*)?|favicon\.png|fonts\.css|fonts\/.*|assets\/hero-vinter\.jpg)$/;
       const fil = new URL(url);
-      fil.pathname = "/GDPR" + rest;
+      fil.pathname = "/GDPR" + (env.KLART_SNART === "ja" && !ÅPENT.test(rest) ? "/kommer-snart.html" : rest);
       const svar = await env.ASSETS.fetch(new Request(fil, request));
       // Assets legger til / på mapper (/klart/aktiver → /GDPR/aktiver/). Pek det tilbake til /klart.
       const til = svar.headers.get("location");
