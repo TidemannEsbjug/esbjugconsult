@@ -194,7 +194,21 @@
               Sladdede dokumenter,
               <span>med lokal KI.</span>
             </h1>
-            <!-- Nedlasting: virksomheten først (orgfelt.js og skriptet nederst). Etter oppslaget: gratis prøve og hva lisensen koster etterpå. -->
+            <!-- Privatpersoner laster ned og bruker Klart gratis; de skal ikke gjennom noe felt.
+                 Virksomheter går gjennom feltet under: 30 dager, så lisens. Blokka ligger rett over
+                 feltet (transform: translateY(-100%)), så feltet blir stående ved hytta som før,
+                 og viker når de begynner å skrive virksomhetsnavnet. -->
+            <div class="privat rise d-120">
+              <div class="get">
+                <a class="btn" href="/klart/last-ned/mac" download>Last ned for Mac</a>
+                <a class="btn ghost" href="/klart/last-ned/windows" download>Last ned for Windows</a>
+              </div>
+              <p class="privat-linje">
+                <span><b>Gratis for privatpersoner.</b> Hele programmet, uten tidsgrense.</span>
+              </p>
+              <p class="eller"><span>eller</span></p>
+            </div>
+            <!-- Nedlasting: virksomheten (orgfelt.js og skriptet nederst). Etter oppslaget: 30 dager gratis og hva lisensen koster etterpå. -->
             <form class="orgport rise d-180" data-orgport novalidate>
               <div data-orgport-sok>
                 <label class="skjult-tekst" for="orgport-topp">Virksomhetens organisasjonsnummer eller navn</label>
@@ -206,6 +220,9 @@
                   <button class="btn" type="submit">Prøv Klart Gratis</button>
                 </div>
                 <p class="orgport-feil" role="alert" hidden></p>
+                <p class="virk-linje">
+                  <span>For virksomheter: <b>30 dager gratis</b>, så lisens.</span>
+                </p>
               </div>
               <!-- Små: stort kort med navnet, «godkjent» og knappene. Store: bredere, med navnet og gratis prøve til venstre og
                    skreddersydd oppsett med Mac Studio til høyre (klassen «stor» på skjemaet). -->
@@ -227,19 +244,19 @@
                     </div>
                     <!-- At dette er fullversjonen, så hva det koster, så knappene. Ingen sperre: knappene står som før. -->
                     <div class="orgport-prove">
-                      <p class="orgport-prove-tittel">Prøv fullversjonen av Klart.</p>
-                      <p>Prøv Klart gratis på dine egne filer før du tar et valg. Gratisversjonen er helt lik fullversjonen, men lar deg maksimalt rense 10 dokumenter av hver filtype.</p>
+                      <p class="orgport-prove-tittel">30 dager med hele Klart.</p>
+                      <p>Prøv Klart på deres egne filer i 30 dager før dere tar et valg. Ingen filgrense og ingen deler som er slått av — det er fullversjonen, hele måneden.</p>
                     </div>
                     <div class="orgport-pris" data-pris hidden>
                       <a class="orgport-pris-celle valgt" href="#" data-til-knapper>
-                        <p class="orgport-pris-merke">Nå</p>
-                        <p class="orgport-belop">Gratis prøve</p>
+                        <p class="orgport-pris-merke">De første 30 dagene</p>
+                        <p class="orgport-belop">Gratis</p>
                         <p>Ingen registrering, ingen kort.</p>
                       </a>
                       <a class="orgport-pris-celle" data-prislenke href="pris/">
-                        <p class="orgport-pris-merke">Fullversjonen koster</p>
+                        <p class="orgport-pris-merke">Etter 30 dager</p>
                         <p class="orgport-belop" data-prisbelop></p>
-                        <p>Per år eks. mva for <span data-prishvem></span>, uten filgrense.</p>
+                        <p>Per år eks. mva for <span data-prishvem></span>. Dere bestemmer etter prøven.</p>
                         <span class="orgport-pris-lenke">Se hva som er med →</span>
                       </a>
                     </div>
@@ -996,10 +1013,19 @@ Vergehaver er diagnostisert med <mark class="seal lit"><span class="o">depresjon
       <section id="last-ned" class="download">
         <h2 class="title rise">Legg det på maskinen, og prøv på en mappe.</h2>
         <p class="sub rise">
-          Gratis å laste ned og prøve, uten kode. Pek på en mappe og se alt
-          Klart finner i dine egne dokumenter, og lagre ti rensede filer av
-          hver filtype. Lisenser selges til bedrifter.
+          Ingen kode å taste inn. Pek på en mappe og se alt Klart finner i
+          dine egne dokumenter, før noe av det går videre.
         </p>
+        <div class="privat rise">
+          <div class="get">
+            <a class="btn" href="/klart/last-ned/mac" download>Last ned for Mac</a>
+            <a class="btn ghost" href="/klart/last-ned/windows" download>Last ned for Windows</a>
+          </div>
+          <p class="privat-linje">
+            <span><b>Gratis for privatpersoner.</b> Hele programmet, uten tidsgrense.</span>
+          </p>
+          <p class="eller"><span>eller</span></p>
+        </div>
         <form class="orgport rise" data-orgport novalidate>
           <div data-orgport-sok>
             <label class="skjult-tekst" for="orgport-bunn">Virksomhetens organisasjonsnummer eller navn</label>
@@ -1011,6 +1037,9 @@ Vergehaver er diagnostisert med <mark class="seal lit"><span class="o">depresjon
               <button class="btn" type="submit">Prøv Klart Gratis</button>
             </div>
             <p class="orgport-feil" role="alert" hidden></p>
+            <p class="virk-linje">
+              <span>For virksomheter: <b>30 dager gratis</b>, så lisens.</span>
+            </p>
           </div>
           <div class="orgport-svar" data-orgport-svar hidden aria-live="polite">
             <div class="orgport-svar-grid">
@@ -1030,19 +1059,19 @@ Vergehaver er diagnostisert med <mark class="seal lit"><span class="o">depresjon
                 </div>
                 <!-- At dette er fullversjonen, så hva det koster, så knappene. Ingen sperre: knappene står som før. -->
                 <div class="orgport-prove">
-                  <p class="orgport-prove-tittel">Prøv fullversjonen av Klart.</p>
-                  <p>Prøv Klart gratis på dine egne filer før du tar et valg. Gratisversjonen er helt lik fullversjonen, men lar deg maksimalt rense 10 dokumenter av hver filtype.</p>
+                  <p class="orgport-prove-tittel">30 dager med hele Klart.</p>
+                  <p>Prøv Klart på deres egne filer i 30 dager før dere tar et valg. Ingen filgrense og ingen deler som er slått av — det er fullversjonen, hele måneden.</p>
                 </div>
                 <div class="orgport-pris" data-pris hidden>
                   <a class="orgport-pris-celle valgt" href="#" data-til-knapper>
-                    <p class="orgport-pris-merke">Nå</p>
-                    <p class="orgport-belop">Gratis prøve</p>
+                    <p class="orgport-pris-merke">De første 30 dagene</p>
+                    <p class="orgport-belop">Gratis</p>
                     <p>Ingen registrering, ingen kort.</p>
                   </a>
                   <a class="orgport-pris-celle" data-prislenke href="pris/">
-                    <p class="orgport-pris-merke">Fullversjonen koster</p>
+                    <p class="orgport-pris-merke">Etter 30 dager</p>
                     <p class="orgport-belop" data-prisbelop></p>
-                    <p>Per år eks. mva for <span data-prishvem></span>, uten filgrense.</p>
+                    <p>Per år eks. mva for <span data-prishvem></span>. Dere bestemmer etter prøven.</p>
                     <span class="orgport-pris-lenke">Se hva som er med →</span>
                   </a>
                 </div>

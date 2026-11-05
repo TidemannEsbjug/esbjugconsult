@@ -482,9 +482,9 @@ section {
   }
 
   .hero .scene .btn {
-    height: clamp(46px, 2.9vw, 60px);
-    padding: 0 clamp(22px, 1.6vw, 32px);
-    font-size: clamp(14.5px, 0.88vw, 18px);
+    height: clamp(52px, 3.6vw, 66px);
+    padding: 0 clamp(24px, 1.9vw, 38px);
+    font-size: clamp(15px, 0.95vw, 19px);
   }
 
   .hero .scene .fineprint {
@@ -663,10 +663,94 @@ section {
   white-space: nowrap;
 }
 
-/* Komposisjonen: overskriften i himmelen, feltet nede i snøen og hytta fri mellom dem. */
+/* --------------------------------------------------------------------------
+   To veier videre. Privatpersoner laster ned og bruker Klart gratis, uten å
+   fylle ut noe; virksomheter går gjennom org.nr-feltet og får 30 dager.
+   Blokka står alltid rett over feltet, både i heroen og i bunnen.
+   -------------------------------------------------------------------------- */
+
+.privat {
+  width: min(580px, 100%);
+  margin: 22px auto 0;
+  text-align: center;
+}
+
+.privat .get {
+  margin-top: 0;
+}
+
+.privat-linje,
+.virk-linje {
+  margin: 12px 0 0;
+  font-size: 15.5px;
+  color: var(--ink-2);
+  text-align: center;
+}
+
+.privat-linje b,
+.virk-linje b {
+  color: var(--ink);
+  font-weight: 650;
+}
+
+/* Skillet mellom de to veiene: en tynn strek med ordet midt i. */
+.eller {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 20px 0 0;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.eller::before,
+.eller::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+}
+
+/* Over vinterbildet er lys tekst på lys snø. Linjene får samme glass som
+   merkelappen øverst, så de kan leses uansett hva de ligger over. */
+.hero .scene .privat-linje span,
+.hero .scene .virk-linje span,
+.hero .scene .eller span {
+  display: inline-block;
+  padding: 6px 16px 7px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 10px 26px -18px rgba(21, 32, 46, 0.5);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+/* Streken ville skåret tvers over hytta. I bildet står ordet alene. */
+.hero .scene .eller::before,
+.hero .scene .eller::after {
+  display: none;
+}
+
+.hero .scene .eller {
+  justify-content: center;
+  /* Luften her løfter knappene og linja klar av hytta. */
+  margin-top: 46px;
+}
+
+/* Er virksomheten slått opp, er privatveien bare støy over kortet deres. */
+.privat:has(+ .orgport.svar) {
+  display: none;
+}
+
+/* Komposisjonen: overskriften i himmelen, feltet nede i snøen og hytta fri mellom dem.
+   Overskriften står høyere enn før, så de to veiene får plass mellom den og feltet. */
 .hero .scene {
   justify-content: flex-start;
-  padding-top: clamp(84px, 18vh, 190px);
+  padding-top: clamp(48px, 9vh, 112px);
   padding-bottom: clamp(84px, 16vh, 190px);
 }
 
@@ -692,19 +776,37 @@ section {
   margin-top: auto;
 }
 
-/* På desktop står feltet rett under hytta. Hyttas plass i bildet følger av bredde og høyde (object-fit: cover). */
+/* På desktop står feltet rett under hytta. Hyttas plass i bildet følger av bredde og høyde (object-fit: cover).
+   Privatblokka henger i samme punkt, men over streken (translateY(-100%)), så høyden på den aldri må gjettes. */
 @media (min-width: 761px) {
   .hero .scene-tekst:not(.har-svar) {
     position: static;
   }
 
-  .hero .scene-tekst:not(.har-svar) > .orgport {
+  .hero .scene-tekst:not(.har-svar) > .orgport,
+  .hero .scene-tekst:not(.har-svar) > .privat {
     position: absolute;
-    top: calc(23vw + 8vh + 30px);
+    /* 30px før privatveien kom til. Feltet står litt lenger ned nå, så «eller»
+       får plass mellom hytta og feltet i stedet for å ligge over hytta. */
+    top: calc(23vw + 8vh + 76px);
     left: 0;
     right: 0;
     margin: 0 auto;
   }
+
+  .hero .scene-tekst:not(.har-svar) > .privat {
+    transform: translateY(-100%);
+    padding-bottom: 26px;
+  }
+}
+
+/* På mobil står de to sammen nederst i bildet, ikke hver for seg. */
+.hero .scene-tekst:not(.har-svar) > .privat {
+  margin-top: auto;
+}
+
+.hero .scene-tekst:not(.har-svar) > .privat + .orgport {
+  margin-top: 14px;
 }
 
 /* Tilbake fra prissiden: kortet står der med en gang, uten feltet først og uten animasjon. */
@@ -721,8 +823,16 @@ section {
 
 /* Heroen har én oppgave: feltet og knappen, store og midt i bildet. Forklaringen står rett under bildet. */
 @media (min-width: 561px) {
-  .hero .scene .orgport:not(.svar) {
+  .hero .scene .orgport:not(.svar),
+  .hero .scene .privat {
     width: min(860px, 100%);
+  }
+
+  /* Gratis for privatpersoner er hovedtilbudet nå; knappene skal ikke være de minste i bildet. */
+  .hero .scene .privat .btn {
+    height: 60px;
+    padding: 0 32px;
+    font-size: 16.5px;
   }
 
   /* Knappen ligger inne i feltet, så de leses som én ting. */
@@ -806,6 +916,17 @@ section {
   visibility: hidden;
 }
 
+/* De skriver inn en virksomhet: da har de valgt vei, og privatveien viker med overskriften. */
+.hero .scene .privat.in {
+  transition: opacity 320ms var(--ease), visibility 320ms;
+  transition-delay: 0ms;
+}
+
+.hero .scene .scene-tekst.skriver > .privat {
+  opacity: 0;
+  visibility: hidden;
+}
+
 @media (min-width: 761px) {
   .hero .scene-tekst.skriver:not(.har-svar) > .orgport {
     top: clamp(48px, 11vh, 120px);
@@ -831,6 +952,7 @@ section {
 /* Svaret tar hele plassen i heroen: overskriften og boksen viker, og kortet står alene og større. */
 .hero .scene .scene-tekst.har-svar > .tag,
 .hero .scene .scene-tekst.har-svar > h1,
+.hero .scene .scene-tekst.har-svar > .privat,
 .hero .scene .scene-tekst.har-svar > .lokal {
   display: none;
 }
@@ -3909,6 +4031,36 @@ footer {
   .get .btn {
     flex: 1 1 100%;
     justify-content: center;
+  }
+
+  /* I heroen står de to nedlastingsknappene ved siden av hverandre. Stablet ville
+     gruppa blitt så høy at den la seg over hytta. */
+  .hero .scene .privat .get {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .hero .scene .privat .get .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 10px;
+    font-size: 13.5px;
+    white-space: nowrap;
+  }
+
+  .hero .scene .eller {
+    margin-top: 26px;
+  }
+
+  .privat-linje,
+  .virk-linje {
+    font-size: 14px;
+  }
+
+  .hero .scene .privat-linje span,
+  .hero .scene .virk-linje span,
+  .hero .scene .eller span {
+    padding: 5px 13px 6px;
   }
 }
 
