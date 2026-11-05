@@ -85,7 +85,7 @@ export default {
       // ellers står en kunde med en lisenskode og kommer ingen vei — og siden
       // trenger fonten, ikonet og bildet sitt. Alt annet får forsiden.
       // Åpne igjen: fjern KLART_SNART og de to linjene som bruker den.
-      const ÅPENT = /^\/(?:aktiver(?:\/.*)?|favicon\.png|fonts\.css|fonts\/.*|assets\/hero-vinter\.jpg)$/;
+      const ÅPENT = /^\/(?:aktiver(?:\/.*)?|favicon\.png|fonts\.css|fonts\/.*|kommer-snart\.css|assets\/hero-vinter\.jpg)$/;
       const fil = new URL(url);
       // Uten .html: Assets svarer 307 til adressa uten endelse, og den ville
       // kommet hit igjen og blitt skrevet om på nytt — en evig runddans.

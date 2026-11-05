@@ -1,0 +1,90 @@
+/* Siden som står ute mens Klart bygges ferdig. Egen fil, ikke <style> i
+   hodet: siden svarer med style-src 'self', så innebygd CSS blir blokkert. */
+
+:root {
+  --ink: #15202e;
+  --ground: #eef3fb;
+  --sans: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Bildet fyller flata, teksten står i himmelen over fjellet. */
+.scene {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  grid-template-rows: auto minmax(24px, 1fr);
+  justify-items: center;
+  padding: clamp(64px, 14vh, 190px) clamp(20px, 5vw, 48px) clamp(40px, 8vh, 96px);
+  overflow: hidden;
+  isolation: isolate;
+  background: #dfe8f2;
+}
+
+.bilde {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 8%;
+  pointer-events: none;
+}
+
+.ord {
+  display: grid;
+  justify-items: center;
+  gap: clamp(18px, 2.6vh, 30px);
+  text-align: center;
+}
+
+.merke {
+  font-family: var(--mono);
+  font-size: clamp(11px, 0.78vw, 13px);
+  font-weight: 500;
+  letter-spacing: 0.34em;
+  text-indent: 0.34em;
+  text-transform: uppercase;
+  color: var(--ink);
+  opacity: 0.72;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(38px, 6.4vw, 92px);
+  line-height: 1.02;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+
+/* Litt luft rundt ordene der bildet er lyst, uten en firkant rundt dem. */
+.ord::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: clamp(40px, 10vh, 140px) 0 auto;
+  height: clamp(220px, 40vh, 420px);
+  background: radial-gradient(
+    ellipse 60% 70% at 50% 40%,
+    rgba(238, 243, 251, 0.82),
+    rgba(238, 243, 251, 0) 70%
+  );
+}
