@@ -87,8 +87,23 @@ export default {
       // Åpne igjen: fjern KLART_SNART og de to linjene som bruker den.
       const ÅPENT = /^\/(?:aktiver(?:\/.*)?|favicon\.png|fonts\.css|fonts\/.*|assets\/hero-vinter\.jpg)$/;
       const fil = new URL(url);
-      fil.pathname = "/GDPR" + (env.KLART_SNART === "ja" && !ÅPENT.test(rest) ? "/kommer-snart.html" : rest);
-      const svar = await env.ASSETS.fetch(new Request(fil, request));
+      // Uten .html: Assets svarer 307 til adressa uten endelse, og den ville
+      // kommet hit igjen og blitt skrevet om på nytt — en evig runddans.
+      const snart = env.KLART_SNART === "ja" && !ÅPENT.test(rest);
+      fil.pathname = "/GDPR" + (snart ? "/kommer-snart" : rest);
+      let svar = await env.ASSETS.fetch(new Request(fil, request));
+      if (snart) {
+        // Siden står for alt som er skjult, så adressa blir stående og svaret
+        // er sida selv. En omdirigering her ville bare sendt dem i ring.
+        if (svar.status >= 300 && svar.status < 400) {
+          const til = new URL(svar.headers.get("location") || "/GDPR/kommer-snart", url);
+          svar = await env.ASSETS.fetch(new Request(til, request));
+        }
+        const hoder = new Headers(svar.headers);
+        hoder.delete("location");
+        hoder.set("cache-control", "no-store");
+        return medHoder(new Response(svar.body, { status: svar.status === 200 ? 200 : svar.status, headers: hoder }));
+      }
       // Assets legger til / på mapper (/klart/aktiver → /GDPR/aktiver/). Pek det tilbake til /klart.
       const til = svar.headers.get("location");
       if (til && /^(https?:\/\/[^/]+)?\/GDPR\//.test(til)) {
