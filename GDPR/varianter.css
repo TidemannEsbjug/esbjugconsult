@@ -295,6 +295,24 @@
   }
 }
 
+/* Når de skriver, viker privatdelen — men raden den sto i blir stående, og
+   da står kortet igjen med en tom hvit flate over feltet. Raden må falle
+   sammen den også, så kortet krymper ned til feltet. */
+.v4 .hero .scene-tekst.skriver:not(.har-svar) {
+  grid-template-rows: 0fr minmax(0, 0fr) 0fr auto 1fr;
+}
+
+.v4 .hero .scene-tekst.skriver:not(.har-svar) > .privat {
+  min-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  overflow: hidden;
+}
+
+.v4 .hero .scene-tekst.skriver:not(.har-svar) > .orgport {
+  padding-top: 30px;
+}
+
 /* ==========================================================================
    5 · Smal
    Én smal søyle midt i bildet. Knappene stablet, feltet like bredt som dem,
