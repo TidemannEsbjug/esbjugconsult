@@ -57,6 +57,8 @@
 import { DurableObject } from "cloudflare:workers";
 import {
   orgnrFra,
+  epostPaaDomene,
+  domeneFra,
   lesPriser,
   lisenspris,
   kundepris,
@@ -72,6 +74,12 @@ import {
   telteAnsatte,
   leverandorAktuell,
 } from "./klart-pris.js";
+// Org.nr → innbyggere (SSB) og ansatte i hele kommunen (Enhetsregisteret) for kommuner og fylkeskommuner,
+// og ansatte i hele virksomheten for statlige etater og helseforetak. Lages med node bygg-innbyggere.mjs.
+import INNBYGGERE from "./innbyggere.json";
+import KOMMUNEANSATTE from "./kommuneansatte.json";
+import STATSANSATTE from "./statsansatte.json";
+import { ansatteITre, delAvKommunen, statlig, SAMLET_STAT } from "./kommunetre.js";
 
 const NADE_DAGER = 14; // lisensen varer så mange dager etter at perioden er betalt til
 const MASKINKODE = /^[0-9A-HJKMNP-TV-Z]{4}(-[0-9A-HJKMNP-TV-Z]{4}){3}$/;
@@ -593,17 +601,83 @@ function grunnlag(p, o) {
   return grunnlagFra(p, o.virksomhet, o.regnskap);
 }
 
+const KOMMUNEFORMER = new Set(["KOMM", "FYLK"]);
+
+/** Kommunen, fylkeskommunen eller den statlige virksomheten en enhet hører til, eller enheten selv når den er
+    det: oppover i Enhetsregisteret (overordnetEnhet) gjennom organisasjonsledd og kommunale foretak, aldri
+    gjennom et eget rettssubjekt (AS, IKS …). I staten er kjøperen leddet rett under et departement (en etat),
+    et helseforetak, departementet selv, eller STAT-enheten der leddene kjøper samlet (SAMLET_STAT: domstolene).
+    { orgnr, navn, form, innbyggere, ansatte, domene, stat } eller null. */
+async function offentligRot(enhet, fersk) {
+  let e = enhet;
+  for (let i = 0; i < 7; i++) {
+    const form = e.organisasjonsform?.kode;
+    if (KOMMUNEFORMER.has(form)) return rotFra(e, false);
+    if (form === "STAT" || !e.overordnetEnhet || !delAvKommunen(e)) return statlig(e) ? rotFra(e, true) : null;
+    const over = await brreg(`enheter/${e.overordnetEnhet}`, fersk);
+    if (over.status !== 200 || !aktiv(over.data)) return null;
+    if (over.data.organisasjonsform?.kode === "STAT" && statlig(e) && !SAMLET_STAT.has(over.data.organisasjonsnummer)) {
+      return rotFra(e, true);
+    }
+    e = over.data;
+  }
+  return null;
+}
+
+/** En kommune eller statlig virksomhet som kjøper for seg og alt under seg. De ansatte i hele treet er telt
+    på forhånd (bygg-innbyggere.mjs); en ny etat telles nå. Et departement teller bare sine egne, ikke etatene. */
+async function rotFra(e, stat) {
+  const orgnr = e.organisasjonsnummer;
+  const form = e.organisasjonsform.kode;
+  let ansatte;
+  if (!stat) ansatte = KOMMUNEANSATTE[orgnr] || e.antallAnsatte || 0;
+  else if (STATSANSATTE[orgnr]) ansatte = STATSANSATTE[orgnr];
+  else if (form === "STAT" && !SAMLET_STAT.has(orgnr)) ansatte = e.antallAnsatte || 0;
+  else ansatte = await ansatteITre(e, enheterUnder, 60);
+  return { orgnr, navn: e.navn, form, innbyggere: stat ? 0 : INNBYGGERE[orgnr] || 0, ansatte, domene: domeneFra(e), stat };
+}
+
+/** «kommunen» eller «virksomheten», for tekstene om hele kommunen eller hele den statlige virksomheten. */
+function helhet(stat) {
+  return stat ? "virksomheten" : "kommunen";
+}
+
+/** Enhetene rett under et org.nr, for å telle de ansatte i en bydel eller etat med alt under den. */
+async function enheterUnder(orgnr) {
+  const svar = await brreg(`enheter?overordnetEnhet=${orgnr}&size=100`);
+  return svar.status === 200 ? svar.data._embedded?.enheter || [] : [];
+}
+
 /** { virksomhet, regnskap } når org.nr er aktivt, { underenhet, overordnet } for en underenhet, ellers
     { feil, kode }. Regnskapene hentes samtidig, så prisen kan ta hensyn til konsern og hva virksomheten
-    tjener. */
+    tjener. En kommune får innbyggertallet og de ansatte i hele kommunen, en statlig virksomhet de ansatte i hele
+    virksomheten og virksomhet.stat. En del av en kommune eller statlig virksomhet (bydel, etat, skole, kontor)
+    er en virksomhet med virksomhet.kommune: den kan kjøpe selv, for sin andel. */
 async function slaaOppVirksomhet(orgnr, fersk = false) {
   const [e, regnskap] = await Promise.all([brreg(`enheter/${orgnr}`, fersk), regnskapFor(orgnr, fersk)]);
-  if (e.status === 200) return aktiv(e.data) ? { virksomhet: virksomhetFra(e.data), regnskap } : { feil: IKKE_AKTIV, kode: 409 };
+  if (e.status === 200) {
+    if (!aktiv(e.data)) return { feil: IKKE_AKTIV, kode: 409 };
+    const virksomhet = virksomhetFra(e.data);
+    const rot = await offentligRot(e.data, fersk);
+    if (rot?.orgnr === orgnr) {
+      virksomhet.ansatte = rot.ansatte;
+      if (rot.stat) virksomhet.stat = true;
+      else if (rot.innbyggere) virksomhet.innbyggere = rot.innbyggere;
+    } else if (rot) {
+      virksomhet.kommune = rot;
+      virksomhet.ansatte = await ansatteITre(e.data, enheterUnder, 60);
+    }
+    return { virksomhet, regnskap };
+  }
   if (e.status === 410) return { feil: IKKE_AKTIV, kode: 410 };
   const u = await brreg(`underenheter/${orgnr}`, fersk);
   if (u.status === 200 && u.data.overordnetEnhet && !u.data.slettedato) {
     const over = await brreg(`enheter/${u.data.overordnetEnhet}`, fersk);
     if (over.status === 200 && aktiv(over.data)) {
+      // En skole eller et sykehjem i en kommune, eller et sykehus eller kontor i staten, kan kjøpe selv.
+      // Andre underenheter kjøper gjennom hovedenheten.
+      const kommune = await offentligRot({ overordnetEnhet: over.data.organisasjonsnummer, organisasjonsform: { kode: "BEDR" } }, fersk);
+      if (kommune) return { virksomhet: { ...virksomhetFra(u.data), kommune }, regnskap: null };
       return {
         underenhet: { orgnr, navn: u.data.navn },
         overordnet: { orgnr: over.data.organisasjonsnummer, navn: over.data.navn },
@@ -615,6 +689,14 @@ async function slaaOppVirksomhet(orgnr, fersk = false) {
 
 /** Hva prisen bygger på, for metadata i Stripe (vises ikke for kunden). */
 function prisgrunnlag(l, g) {
+  if (l.fireAar) {
+    return (
+      (l.stat ? `${(g.v.kommune || g.v).ansatte} ansatte i virksomheten, statlig fireårslisens` : `${l.innbyggere} innbyggere, fireårslisens`) +
+      (l.verdi > 1 ? `, påslag ${l.verdi}` : "") +
+      (l.del ? `, del av ${helhet(l.stat)} (${(l.andel * 100).toFixed(1)} % av de ansatte)` : "") +
+      (l.betalt ? `, ${l.betalt} kr trukket fra` : "")
+    );
+  }
   return (
     `${l.ansatte} talte ansatte${g.konsern ? " i konsernet" : ""}, faktor ${l.faktor.toFixed(2)}` +
     (l.kundedata ? ", satt av kundedata" : "") +
@@ -625,6 +707,100 @@ function prisgrunnlag(l, g) {
 
 function underenhetTekst(o) {
   return `Dette er en underenhet av ${o.overordnet.navn}. Fortsett med ${orgnrTekst(o.overordnet.orgnr)}.`;
+}
+
+// --- EHF ------------------------------------------------------------------------------
+
+const EHF_FAKTURA = "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1";
+
+/** Om virksomheten tar imot EHF-faktura: registrert i PEPPOL-katalogen med org.nr (0192) for faktura
+    etter BIS Billing 3.0. null når katalogen ikke svarer; da kan de velge selv. */
+async function kanEhf(orgnr) {
+  try {
+    const svar = await fetch(`https://directory.peppol.eu/search/1.0/json?participant=iso6523-actorid-upis::0192:${orgnr}`, {
+      headers: { accept: "application/json" },
+      cf: { cacheEverything: true, cacheTtlByStatus: { "200-299": 86400, "500-599": 0 } },
+    });
+    if (!svar.ok) return null;
+    const d = await svar.json();
+    return (d.matches || []).some((m) => (m.docTypes || []).some((t) => t.value === EHF_FAKTURA));
+  } catch (err) {
+    console.error("klart ehf", orgnr, err.message);
+    return null;
+  }
+}
+
+/** Domenene en lisensnøkkel kan sendes til før betaling: virksomhetens eget, og kommunens for en del av
+    en kommune. Fra hjemmeside og e-post i Enhetsregisteret. */
+function egneDomener(v) {
+  return [v.domene, v.kommune?.domene].filter(Boolean);
+}
+
+// --- Kommuner: hva som alt er kjøpt -------------------------------------------------
+
+/** For en kommune eller statlig virksomhet, eller en del av en: det som alt er betalt i kommunen (virksomheten)
+    for lisenser som gjelder nå (trekkes fra prisen), om kommunen selv har en lisens (den gjelder da alle delene),
+    og om enheten har en. null for alle andre. */
+async function kommunestatus(env, v) {
+  if (!v.kommune && !v.stat && !KOMMUNEFORMER.has(v.form)) return null;
+  const rot = v.kommune ? v.kommune.orgnr : v.orgnr;
+  const stat = Boolean(v.kommune ? v.kommune.stat : v.stat);
+  return { rot, stat, navn: v.kommune ? v.kommune.navn : v.navn, ...(await lager(env).kommunekjop(rot, v.orgnr, idag())) };
+}
+
+/** Hvorfor en kommune eller del ikke kan kjøpe nå, eller null. Har delene betalt hele kommunens pris,
+    får kommunen selv nøkkelen for 0 kr (kommuneGratis); en del blir bedt om å la kommunen hente den. */
+function kommuneHinder(k, l) {
+  if (!k) return null;
+  if (k.egen) return "Dere har allerede en lisens som gjelder nå.";
+  if (k.rotHar) return `${k.navn} har en lisens som gjelder hele ${helhet(k.stat)}, også dere.`;
+  if (l.pris <= 0 && l.del) {
+    const h = helhet(k.stat);
+    return `Delene av ${k.navn} har betalt hele prisen. ${k.navn} henter nøkkelen for hele ${h}, også dere, gratis på denne siden.`;
+  }
+  return null;
+}
+
+/** Kommunen selv, når delene har betalt hele prisen: nøkkelen for hele kommunen, uten betaling, til den
+    første av delenes lisenser går ut (da er ikke hele prisen betalt lenger). */
+async function kommuneGratis(env, v, k, epost) {
+  const lisens = await lager(env).lagreLisens({
+    id: `kommune-${k.rot}-${idag()}`,
+    epost,
+    navn: v.navn,
+    orgnr: v.orgnr,
+    kunde: null,
+    utloper: k.forsteSlutt,
+    maks: 0,
+    plan: "org",
+    forsteMaskin: null,
+  });
+  await lager(env).nyttKommunekjop(lisens.id, k.rot, v.orgnr, 0, k.forsteSlutt);
+  await sendNokkel(env, lisens);
+  await sendEpost(env, {
+    til: EIER,
+    emne: `Klart: ${v.navn} hentet nøkkelen for hele ${helhet(k.stat)}`,
+    tekst: `${v.navn} (org.nr ${orgnrTekst(v.orgnr)}) hentet nøkkelen gratis, sendt til ${epost}. Delene har betalt ${kroner(k.betalt)}. Gjelder til og med ${datoTekst(k.forsteSlutt)}.`,
+  });
+  // Nøkkelen er bare på e-post, ikke på siden.
+  return { type: "lisens", fireAar: true, gratis: true, navn: lisens.navn, orgnr: lisens.orgnr, epost: lisens.epost, utloper: lisens.utloper };
+}
+
+/** Hvorfor en lisensnøkkel ikke kan sendes til e-postadressen før betaling, eller null. */
+function domeneFeil(v, epost) {
+  const domener = egneDomener(v);
+  if (!domener.length) {
+    return `Fant ikke deres domene i Enhetsregisteret (hjemmeside eller e-post), så vi kan ikke sende nøkkelen før betaling. Skriv til ${EIER}.`;
+  }
+  if (!epostPaaDomene(epost, domener)) {
+    return `Lisensnøkkelen sendes bare til en e-postadresse på deres eget domene (…@${domener[domener.length - 1]}).`;
+  }
+  return null;
+}
+
+/** Til og med-datoen for en fireårslisens som starter nå. */
+function fireAarFra(ms = Date.now()) {
+  return dato(leggTilMaaneder(ms, 12 * 4) - 86400000);
 }
 
 // --- Søk og sjekk (feltet på forsiden og prissiden) -------------------------------
@@ -691,12 +867,15 @@ async function sjekk(env, url) {
   if (o.feil) return json({ feil: o.feil }, o.kode);
   if (o.underenhet) return json({ underenhet: o.underenhet, overordnet: o.overordnet });
   const g = p ? grunnlag(p, o) : null;
+  const k = g ? await kommunestatus(env, g.v) : null;
+  const l = g ? lisenspris(p, g.v, g.regnskap, k?.betalt || 0) : null;
   return json({
     orgnr: o.virksomhet.orgnr,
     navn: o.virksomhet.navn,
     stor: Boolean(g && sprintFor(p, telteAnsatte(p, g.v))),
     konsern: Boolean(g?.konsern),
-    pris: g ? lisenspris(p, g.v, g.regnskap).pris : null,
+    pris: l ? l.pris : null,
+    fireAar: Boolean(l?.fireAar),
   });
 }
 
@@ -716,8 +895,8 @@ async function pris(env, url) {
   if (url.searchParams.get("som") === "kunde") {
     return json({ orgnr: v.orgnr, navn: v.navn, ansatte: v.ansatte, konsern: g.konsern, pris: kundepris(p, g.v, g.regnskap) });
   }
-  const l = lisenspris(p, g.v, g.regnskap);
-  const testet = await lager(env).harTestet(v.orgnr);
+  const [k, ehf, testet] = await Promise.all([kommunestatus(env, g.v), kanEhf(v.orgnr), lager(env).harTestet(v.orgnr)]);
+  const l = lisenspris(p, g.v, g.regnskap, k?.betalt || 0);
   // Hva prisen bygger på (antall som telles, regnskap, påslag), sendes ikke ut. Siden viser bare prisen.
   return json({
     orgnr: v.orgnr,
@@ -725,9 +904,27 @@ async function pris(env, url) {
     ansatte: v.ansatte,
     konsern: g.konsern,
     pris: l.pris,
+    // Kommuner og delene av dem kjøper for fire år, på forskudd eller per år.
+    fireAar: Boolean(l.fireAar),
+    kommune: l.fireAar
+      ? {
+          aar: l.aar,
+          til: fireAarFra(),
+          hel: l.hel,
+          betalt: l.betalt,
+          del: l.del ? { navn: g.v.kommune.navn, orgnr: g.v.kommune.orgnr } : null,
+          // «kommunen» eller «virksomheten» i tekstene på siden.
+          ord: helhet(l.stat),
+          hinder: kommuneHinder(k, l),
+          // Delene har betalt hele prisen: kommunen henter nøkkelen gratis, til den første av dem går ut.
+          gratis: l.pris === 0 && !l.del && !kommuneHinder(k, l) ? { til: k.forsteSlutt } : null,
+        }
+      : null,
     betaling: betalingFor(),
     besoksadresse: v.adresse?.postnummer ? `${(v.adresse.linjer || []).join(" ")}, ${v.adresse.postnummer} ${v.adresse.poststed}`.trim() : "",
-    ehf: ehfForvalgt(v.form, g.v.ansatte),
+    // Tar de imot EHF, og hvilke domener lisensnøkkelen kan sendes til ved faktura.
+    ehf,
+    domener: egneDomener(g.v),
     testing: testet ? null : { pris: p.testing.pris, eksporter: p.testing.eksporter, apen: testmodus(env) || TESTING_I_APPEN },
     // Oppsettsdag og sprinter som gjelder (tom liste for de små), med prisene åpent.
     stor: sprintTilbud(p, g).length > 0,
@@ -900,13 +1097,40 @@ async function kasse(request, env, url) {
   if (o.underenhet) return json({ feil: underenhetTekst(o) }, 409);
   const v = o.virksomhet;
   const g = grunnlag(p, o);
-  const l = lisenspris(p, g.v, g.regnskap);
+  const k = await kommunestatus(env, g.v);
+  const l = lisenspris(p, g.v, g.regnskap, k?.betalt || 0);
+  // En kommune, eller en del av den, kjøper en lisens for fire år: på forskudd (én betaling eller én
+  // faktura) eller per år (fire betalinger). Det som er betalt i kommunen før, er trukket fra prisen.
+  const fireAar = type === "lisens" && Boolean(l.fireAar);
+  const perAar = fireAar && inn.perAar === true;
   if (type === "testing") betaling = "kort";
+  if (type === "leverandor" && l.fireAar) {
+    return json({ feil: "Kommuner og statlige virksomheter kjøper en lisens for fire år. Behandler dere data for andre, skriv til oss." }, 400);
+  }
+  if (fireAar) {
+    const hinder = kommuneHinder(k, l);
+    if (hinder) return json({ feil: hinder }, 409);
+    // Gratis når delene har betalt alt: nøkkelen bare på e-post, til kommunens eget domene (se under).
+    if (l.pris === 0) {
+      const feil = domeneFeil(v, epostFra(inn.epost));
+      if (feil) return json({ feil }, 400);
+      return json(await kommuneGratis(env, v, k, epostFra(inn.epost)));
+    }
+  }
   const epost = epostFra(inn.epost);
   if (betaling === "faktura" && !epost) return json({ feil: "Skriv inn e-postadressen fakturaen skal sendes til." }, 400);
-  // Nøkkelen kan gå til en annen adresse enn fakturaen. Tomt felt betyr samme adresse.
-  const nokkelEpost = betaling === "faktura" && inn.nokkelEpost ? epostFra(inn.nokkelEpost) : null;
-  if (betaling === "faktura" && inn.nokkelEpost && !nokkelEpost) return json({ feil: "Skriv inn en gyldig e-postadresse for lisensnøkkelen." }, 400);
+  // Med faktura gis nøkkelen før betaling. Da sendes den bare til en adresse på virksomhetens eget
+  // domene fra Enhetsregisteret. Ellers kunne hvem som helst bestilt en faktura i et annet firmas
+  // navn og fått nøkkelen med en gang. Fakturaen kan gå hvor som helst (ofte en skannetjeneste).
+  // Tomt felt betyr samme adresse som fakturaen — og da er det den som må stå på eget domene.
+  const nokkelEpost = betaling === "faktura" ? (inn.nokkelEpost ? epostFra(inn.nokkelEpost) : epost) : null;
+  if (betaling === "faktura" && inn.nokkelEpost && !nokkelEpost) {
+    return json({ feil: "Skriv inn en gyldig e-postadresse for lisensnøkkelen." }, 400);
+  }
+  if (betaling === "faktura") {
+    const feil = domeneFeil(v, nokkelEpost);
+    if (feil) return json({ feil }, 400);
+  }
 
   let linjer;
   let beskrivelse;
@@ -916,12 +1140,19 @@ async function kasse(request, env, url) {
     linjer = [{ produkt: await produkt(env, PRODUKT_TESTING, "Klart – utvidet testing", { klart: "testing" }), belop: p.testing.pris * 100 }];
     beskrivelse = `Utvidet testing av Klart for ${v.navn} (org.nr ${orgnrTekst(v.orgnr)}): ${p.testing.eksporter} eksporter, uten tidsgrense. Beløpet godskrives lisensen.`;
   } else if (type === "lisens") {
-    const belop = l.pris * 100;
+    // En fireårslisens betalt per år: fire like beløp. Ellers hele summen.
+    const belop = perAar ? Math.round((l.pris * 100) / 4) : l.pris * 100;
     linjer = [{ produkt: await produkt(env, PRODUKT_LISENS, "Klart – lisens for virksomheten", { klart: "lisens" }), belop }];
     beskrivelse =
       (g.konsern
         ? `Klart for ${v.navn} (org.nr ${orgnrTekst(v.orgnr)}) og hele konsernet. Alle brukere og enheter, konsernets egne data.`
-        : `Klart for ${v.navn} (org.nr ${orgnrTekst(v.orgnr)}). Alle brukere og enheter, virksomhetens egne data.`);
+        : `Klart for ${v.navn} (org.nr ${orgnrTekst(v.orgnr)}). Alle brukere og enheter, virksomhetens egne data.`) +
+      (fireAar
+        ? ` Lisens for fire år, til og med ${datoTekst(fireAarFra())}, ` +
+          (perAar ? "betalt med fire årlige beløp." : "betalt på forskudd.") +
+          (l.del ? ` En del av ${g.v.kommune.navn} (org.nr ${orgnrTekst(g.v.kommune.orgnr)}).` : "") +
+          (l.betalt ? ` ${kroner(l.betalt)} som er betalt i ${helhet(l.stat)} før, er trukket fra.` : "")
+        : "");
   } else {
     // Egne data og kunders data i ett abonnement: virksomhetens egen lisens, og én linje per kunde.
     const k = await kunderFra(env, p, v, inn.kunder);
@@ -945,6 +1176,13 @@ async function kasse(request, env, url) {
     scope: g.konsern && type !== "testing" ? "konsern" : "virksomhet",
     license_type: type,
     betaling,
+    // Fireårslisens: «forskudd» eller «aarlig», kommunen den hører til, og hele beløpet eks. mva, så det kan
+    // trekkes fra når andre i kommunen kjøper.
+    fire_aar: fireAar ? (perAar ? "aarlig" : "forskudd") : "",
+    kommune_rot: fireAar ? k.rot : "",
+    kommune_belop: fireAar ? String(l.pris) : "",
+    // Faktura: nøkkelen går hit (eget domene), fakturaen til kundens e-post.
+    nokkel_epost: nokkelEpost || "",
   };
   if (nokkelEpost) meta.nokkel_epost = nokkelEpost;
   const kunde = await stripeKunde(env, v, meta, {
@@ -953,10 +1191,15 @@ async function kasse(request, env, url) {
     ehf: betaling === "faktura" ? Boolean(inn.ehf) : undefined,
   });
   const mva = await mvaSats(env);
-  if (betaling === "faktura") return json(await fakturer(env, { kunde, meta, linjer, mva, beskrivelse }));
+  if (betaling === "faktura") {
+    const svar = await (fireAar && !perAar ? fakturerForskudd : fakturer)(env, { kunde, meta, linjer, mva, beskrivelse });
+    // Nøkkelen er bare på e-post (til virksomhetens eget domene), ikke på siden.
+    delete svar.kode;
+    return json(svar);
+  }
 
   const side = sideFor(url);
-  const abonnement = type !== "testing";
+  const abonnement = type !== "testing" && !(fireAar && !perAar);
   const felt = {
     mode: abonnement ? "subscription" : "payment",
     customer: kunde.id,
@@ -1005,6 +1248,8 @@ async function fakturer(env, { kunde, meta, linjer, mva, beskrivelse }) {
     "expand[0]": "latest_invoice",
   };
   leggPaa(felt, "metadata", meta);
+  // En fireårslisens betalt per år stopper etter fire år.
+  if (meta.fire_aar === "aarlig") felt.cancel_at = String(Math.floor(leggTilMaaneder(Date.now(), 48) / 1000));
   linjer.forEach((linje, i) => {
     const f = `items[${i}]`;
     felt[`${f}[price_data][currency]`] = "nok";
@@ -1014,6 +1259,7 @@ async function fakturer(env, { kunde, meta, linjer, mva, beskrivelse }) {
     felt[`${f}[tax_rates][0]`] = mva;
   });
   const abo = await stripe(env, "POST", "subscriptions", felt);
+  if (meta.fire_aar) await registrerKommunekjop(env, abo.id, meta);
   let faktura = abo.latest_invoice;
   // Med auto_advance sender Stripe fakturaen selv når den er ferdigstilt.
   if (faktura.status === "draft") faktura = await stripe(env, "POST", `invoices/${faktura.id}/finalize`);
@@ -1033,12 +1279,81 @@ async function fakturer(env, { kunde, meta, linjer, mva, beskrivelse }) {
   };
 }
 
+/** Faktura for en fireårslisens betalt på forskudd (kommuner): én faktura med 30 dagers frist, ikke et
+    abonnement. Nøkkelen, for alle fire årene, gis når fakturaen er sendt, som for årslisensene. */
+async function fakturerForskudd(env, { kunde, meta, linjer, mva, beskrivelse }) {
+  const felt = {
+    customer: kunde.id,
+    collection_method: "send_invoice",
+    days_until_due: "30",
+    description: beskrivelse,
+    pending_invoice_items_behavior: "exclude",
+    "payment_settings[payment_method_types][0]": "card",
+  };
+  leggPaa(felt, "metadata", meta);
+  let faktura = await stripe(env, "POST", "invoices", felt);
+  for (const linje of linjer) {
+    await stripe(env, "POST", "invoiceitems", {
+      customer: kunde.id,
+      invoice: faktura.id,
+      currency: "nok",
+      amount: String(linje.belop),
+      description: "Klart – lisens for virksomheten, fire år",
+      "tax_rates[0]": mva,
+    });
+  }
+  faktura = await stripe(env, "POST", `invoices/${faktura.id}/finalize`);
+  if (faktura.auto_advance === false) faktura = await stripe(env, "POST", `invoices/${faktura.id}/send`);
+  const lisens = await forskuddsLisens(env, faktura.id, meta, kunde.email, kunde.id);
+  const kode = await sendNokkel(env, lisens);
+  return {
+    kode,
+    type: meta.license_type,
+    fireAar: true,
+    navn: lisens.navn,
+    orgnr: lisens.orgnr,
+    epost: lisens.epost,
+    fakturaEpost: kunde.email,
+    utloper: lisens.utloper,
+    faktura: {
+      nummer: faktura.number,
+      belop: faktura.total / 100,
+      forfall: faktura.due_date ? dato(faktura.due_date * 1000) : null,
+      adresse: faktura.hosted_invoice_url || null,
+    },
+  };
+}
+
+/** Hele beløpet for en fireårslisens lagres på kommunen, så det trekkes fra når andre i kommunen kjøper. */
+async function registrerKommunekjop(env, id, m) {
+  await lager(env).nyttKommunekjop(id, m.kommune_rot, orgnrFra(m.orgnr), Number(m.kommune_belop) || 0, fireAarFra());
+}
+
+/** Lisensen for en fireårslisens betalt på forskudd: hele virksomheten, uten maskingrense, i fire år. */
+async function forskuddsLisens(env, id, m, epost, kunde) {
+  const finnes = await lager(env).finnLisens(id);
+  if (!finnes) await registrerKommunekjop(env, id, m);
+  return lager(env).lagreLisens({
+    id,
+    epost: String(m.nokkel_epost || epost || "").toLowerCase(),
+    navn: m.company_name || "Klart-kunde",
+    orgnr: orgnrFra(m.orgnr),
+    kunde,
+    // Samme dato hver gang kvitteringen eller webhooken kommer, ikke fire år fra den siste.
+    utloper: finnes?.utloper || fireAarFra(),
+    maks: 0,
+    plan: m.scope === "konsern" ? "konsern" : "org",
+    forsteMaskin: null,
+  });
+}
+
 /** Lisensen for et abonnement fra prissiden: hele virksomheten, uten maskingrense. */
 async function orgLisens(env, abo, epost) {
   const m = abo.metadata || {};
   return lager(env).lagreLisens({
     id: abo.id,
-    epost: String(epost || "").toLowerCase(),
+    // Med faktura går nøkkelen til adressen på eget domene, ikke til fakturaadressen.
+    epost: String(m.nokkel_epost || epost || "").toLowerCase(),
     navn: m.company_name || "Klart-kunde",
     orgnr: orgnrFra(m.orgnr),
     kunde: typeof abo.customer === "string" ? abo.customer : abo.customer?.id || null,
@@ -1087,8 +1402,18 @@ async function ordreFullfort(env, okt) {
       plan: "testing",
       forsteMaskin: null,
     });
+  } else if (m.fire_aar === "forskudd") {
+    lisens = await forskuddsLisens(env, okt.id, m, epost, kunde);
   } else {
-    const abo = typeof okt.subscription === "string" ? await stripe(env, "GET", `subscriptions/${okt.subscription}`) : okt.subscription;
+    let abo = typeof okt.subscription === "string" ? await stripe(env, "GET", `subscriptions/${okt.subscription}`) : okt.subscription;
+    // Checkout kan ikke sette en sluttdato. En fireårslisens betalt per år får den her, fire år etter start.
+    if (m.fire_aar === "aarlig" && !abo.cancel_at) {
+      abo = await stripe(env, "POST", `subscriptions/${abo.id}`, {
+        cancel_at: String(Math.floor(leggTilMaaneder(abo.start_date * 1000, 48) / 1000)),
+        proration_behavior: "none",
+      });
+      await registrerKommunekjop(env, abo.id, m);
+    }
     lisens = await orgLisens(env, abo, epost);
   }
   return { lisens, kode: await sendNokkel(env, lisens) };
@@ -1136,8 +1461,12 @@ function nokkelEpost(lisens, kode) {
   if (testing) {
     linjer.push("Koden gir 50 eksporter, uten tidsgrense. Hele beløpet godskrives lisensen når dere kjøper.");
   } else {
+    // Abonnementer får en ny nøkkel for hver periode. En fireårslisens betalt på forskudd har én nøkkel.
+    const fornyes = String(lisens.id).startsWith("sub_");
     linjer.push(
-      `Nøkkelen gjelder alle brukere og enheter i ${lisens.plan === "konsern" ? "hele konsernet" : "virksomheten"}${lisens.utloper ? `, til og med ${datoTekst(lisens.utloper)}` : ""}. Ved hver fornyelse kommer en ny nøkkel på e-post.`
+      `Nøkkelen gjelder alle brukere og enheter i ${lisens.plan === "konsern" ? "hele konsernet" : "virksomheten"}` +
+        `, til og med ${datoTekst(lisens.utloper)}.` +
+        (fornyes ? " Ved hver fornyelse kommer en ny nøkkel på e-post." : "")
     );
     if (lisens.plan === "leverandor") {
       linjer.push("", "Når dere legger til kunder, får dere en ny nøkkel som erstatter denne.");
@@ -1162,6 +1491,8 @@ async function ordre(env, url) {
   return json({
     kode: r.kode,
     type: okt.metadata.license_type,
+    fireAar: Boolean(okt.metadata.fire_aar),
+    perAar: okt.metadata.fire_aar === "aarlig",
     navn: r.lisens.navn,
     orgnr: r.lisens.orgnr,
     epost: r.lisens.epost,
@@ -1737,6 +2068,28 @@ async function fornyelsesvarsel(env, faktura) {
   if (!m.license_type || !p || abo.status === "canceled" || abo.cancel_at_period_end) return;
   // Avdrag varsles foran hvert nytt bindingsår, ikke hvert kvartal.
   if (m.betaling === "avdrag" && !nyttAar(abo)) return;
+  // En fireårslisens betalt per år har fast pris i hele perioden: bare et varsel om neste betaling.
+  if (m.fire_aar) {
+    const til = abo.customer?.email;
+    if (!til) return;
+    const belop = abo.items.data.reduce((s, item) => s + item.price.unit_amount * (item.quantity || 1), 0) / 100;
+    await sendEpost(env, {
+      til,
+      emne: `Klart: neste årlige betaling ${datoTekst(dato(periodeSlutt(abo) * 1000))}`,
+      tekst: [
+        "Hei,",
+        "",
+        `neste årlige betaling for fireårslisensen til Klart for ${m.company_name} (org.nr ${orgnrTekst(m.orgnr)}) er ${datoTekst(dato(periodeSlutt(abo) * 1000))}: ${kroner(belop)}, eks. mva. Prisen er den samme alle fire årene.`,
+        "",
+        "Når betalingen er gjort, kommer en ny lisensnøkkel på e-post.",
+        "",
+        `Spørsmål? Svar på denne e-posten, eller skriv til ${EIER}.`,
+        "",
+        "Klart",
+      ].join("\n"),
+    });
+    return;
+  }
   let foer = 0;
   let etter = 0;
   const avvik = [];
@@ -1981,6 +2334,33 @@ export class KlartLager extends DurableObject {
     // «type» kom med oppsettsdagen: «oppsett» eller «sprint» (kort og full). Rader fra før er sprinter.
     const sprintKolonner = this.sql.exec(`PRAGMA table_info(sprinter)`).toArray().map((k) => k.name);
     if (!sprintKolonner.includes("type")) this.sql.exec(`ALTER TABLE sprinter ADD COLUMN type TEXT DEFAULT 'sprint'`);
+    // Fireårslisenser til kommuner og delene av dem: hele beløpet eks. mva per kjøp, på kommunen («rot»),
+    // så det trekkes fra når andre i samme kommune kjøper.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS kommunekjop (
+      id TEXT PRIMARY KEY, rot TEXT, orgnr TEXT, belop INTEGER, til TEXT, laget TEXT)`);
+  }
+
+  nyttKommunekjop(id, rot, orgnr, belop, til) {
+    this.sql.exec(
+      `INSERT OR IGNORE INTO kommunekjop (id, rot, orgnr, belop, til, laget) VALUES (?, ?, ?, ?, ?, ?)`,
+      id,
+      rot,
+      orgnr,
+      belop,
+      til,
+      new Date().toISOString()
+    );
+  }
+
+  /** Kjøp i kommunen som gjelder på dagen: summen, om kommunen selv har kjøpt, og om org.nr har. */
+  kommunekjop(rot, orgnr, dag) {
+    const rader = this.sql.exec(`SELECT orgnr, belop, til FROM kommunekjop WHERE rot = ? AND til >= ?`, rot, dag).toArray();
+    return {
+      betalt: rader.reduce((s, r) => s + r.belop, 0),
+      forsteSlutt: rader.map((r) => r.til).sort()[0] || null,
+      rotHar: rader.some((r) => r.orgnr === rot),
+      egen: rader.some((r) => r.orgnr === orgnr),
+    };
   }
 
   /** Bookinger og sperringer som overlapper fra–til. Holdte datoer bare til de går ut. */

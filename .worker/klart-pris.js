@@ -25,6 +25,16 @@
 //   ansatte. Der er prisen den høyeste av det de ansatte gir og det omsetningen gir. «kundedata».
 // - Påslag for bransjer med mye eller følsom data (luftfart: pass og helseopplysninger), på sluttprisen.
 //   «sektorer».
+//
+// Kommuner og fylkeskommuner er unntaket: de kjøper en lisens for fire år (kommune.aar), betalt på forskudd
+// eller per år, og prisen følger innbyggertallet fra SSB (innbyggere.json), ikke de ansatte. Hele perioden
+// koster aldri mer enn kommune.tak, så de kan kjøpe uten anbud. Bydeler, etater og andre deler av kommunen
+// kan kjøpe selv, for sin andel av kommunens ansatte (kommuneansatte.json). Det delene har betalt, trekkes
+// fra når andre deler eller kommunen kjøper, så hele kommunen aldri betaler mer enn kommunens pris. «kommune».
+//
+// Statlige virksomheter (etater, helseforetak, departementer) kjøper på samme måte, for fire år under samme
+// grense, men prisen følger de ansatte: en grunnpris og et beløp per ansatt per år, med et påslag der
+// personopplysninger er kjernen i arbeidet. Kontorer og ledd under en etat kjøper for sin andel. «stat».
 
 /** Norsk org.nr: ni sifre, MOD11 med vektene 3 2 7 6 5 4 3 2. Rest 11 gir 0, rest 10 er ugyldig. */
 export function orgnrFra(verdi) {
@@ -50,6 +60,9 @@ export function lesPriser(tekst) {
   if (p.kundedata && (!stigende(p.kundedata.punkter) || !Array.isArray(p.kundedata.nace))) {
     throw new Error("KLART_PRISER: kundedata trenger nace og minst to stigende punkter [omsetning, pris]");
   }
+  if (p.kommune && (!stigende(p.kommune.punkter) || !Number.isFinite(p.kommune.tak) || !p.kommune.former)) {
+    throw new Error("KLART_PRISER: kommune trenger former, tak og minst to stigende punkter [innbyggere, pris]");
+  }
   lest = { tekst, priser: p };
   return p;
 }
@@ -63,11 +76,13 @@ function stigende(punkter) {
 }
 
 /** Mellom punktene en rett linje i log-log (samme prosent mer for hver prosent mer), og etter det siste
-    videre med den siste stigningen, uten tak. Før det første: første verdi. */
-function loglog(punkter, x) {
-  if (x <= punkter[0][0]) return punkter[0][1];
+    videre med den siste stigningen, uten tak. Før det første: første verdi, eller uten gulv videre ned med
+    den første stigningen. */
+function loglog(punkter, x, gulv = true) {
+  if (gulv && x <= punkter[0][0]) return punkter[0][1];
   let i = punkter.findIndex(([px]) => px >= x);
   if (i === -1) i = punkter.length - 1;
+  if (i === 0) i = 1;
   const [x0, y0] = punkter[i - 1];
   const [x1, y1] = punkter[i];
   return y0 * Math.exp((Math.log(x / x0) / Math.log(x1 / x0)) * Math.log(y1 / y0));
@@ -168,10 +183,63 @@ export function telteAnsatte(priser, v) {
   return Math.ceil(Math.round(v.ansatte * andelFor(priser, v) * 1e6) / 1e6);
 }
 
-/** Årsprisen for lisensen, i hele kroner eks. mva: det høyeste av det de ansatte gir (kurven, justert
-    for hva de tjener) og det kundedataene gir, ganger påslaget for bransjen. «v» og «regnskap» er fra
-    grunnlagFra (eller regnskapFra), og regnskap kan være null. */
-export function lisenspris(priser, v, regnskap = null) {
+/** Hva hele kommunen koster for fire år: innbyggertallet ganger andelen for organisasjonsformen
+    (kommune.former, 1 for begge nå) gir prisen på kurven, uten gulv nederst og aldri over kommune.tak.
+    k.innbyggere er fra SSB; mangler det (en ny kommune), anslås det fra de ansatte med
+    kommune.innbyggerePerAnsatt. null når k ikke er en kommune eller fylkeskommune. */
+export function helKommunepris(priser, k) {
+  if (k.stat) return helStatspris(priser, k);
+  const kp = priser.kommune;
+  const andel = kp?.former?.[k.form];
+  if (andel == null) return null;
+  const innbyggere = k.innbyggere > 0 ? k.innbyggere : Math.round(k.ansatte * (kp.innbyggerePerAnsatt?.[k.form] ?? 0));
+  return { innbyggere, pris: Math.min(kp.tak, rund(loglog(kp.punkter, innbyggere * andel, false))) };
+}
+
+/** Hva en hel statlig virksomhet (etat, helseforetak, departement; k.stat) koster for fire år: en grunnpris
+    og et beløp per ansatt per år, aldri over stat.takAar per år. Der personopplysninger om folk er kjernen i
+    arbeidet (tilsyn, ombud, klagenemnder: stat.verdi), er verktøyet verdt mer, og årsprisen ganges med
+    stat.verdi.faktor. Fire år under taket holder seg under 500 000-grensen i anskaffelsesloven. */
+export function helStatspris(priser, k) {
+  const s = priser.stat;
+  if (!s) return null;
+  const faktor = s.verdi?.orgnr?.includes(k.orgnr) ? s.verdi.faktor : 1;
+  const perAar = Math.min(s.takAar, rund((s.grunn + s.perAnsatt * k.ansatte) * faktor));
+  return { innbyggere: 0, pris: perAar * (s.aar || 4), faktor };
+}
+
+/** Fireårsprisen for en kommune, fylkeskommune eller statlig virksomhet, eller en del av en (v.kommune er
+    da kommunen eller virksomheten den hører til; for staten står v.stat eller v.kommune.stat), eller null
+    for alle andre. «betalt» er det kommunen og delene av den alt har betalt for lisenser som
+    gjelder nå; det trekkes fra, så hele kommunen aldri betaler mer enn kommunens pris. En del betaler sin
+    andel av kommunens ansatte (v.ansatte av v.kommune.ansatte), minst kommune.delMin, og aldri mer enn
+    det som er igjen av kommunens pris. */
+export function kommunepris(priser, v, betalt = 0) {
+  const del = Boolean(v.kommune);
+  const kommune = del ? v.kommune : v;
+  const hel = helKommunepris(priser, kommune);
+  if (!hel) return null;
+  const igjen = Math.max(0, hel.pris - betalt);
+  const andel = del ? Math.min(1, kommune.ansatte > 0 ? v.ansatte / kommune.ansatte : 1) : 1;
+  const regler = kommune.stat ? priser.stat : priser.kommune;
+  const egen = del ? Math.max(regler.delMin || 0, rund(hel.pris * andel)) : hel.pris;
+  return { innbyggere: hel.innbyggere, hel: hel.pris, andel, betalt, pris: Math.min(egen, igjen), aar: regler.aar || 4, stat: Boolean(kommune.stat), verdi: hel.faktor || 1 };
+}
+
+/** Prisen for lisensen, i hele kroner eks. mva. For kommuner og delene av dem prisen for hele perioden
+    (kommunepris, fireAar: true), for alle andre årsprisen. «v» og «regnskap» er fra grunnlagFra (eller
+    regnskapFra), og regnskap kan være null. «betalt»: se kommunepris. */
+export function lisenspris(priser, v, regnskap = null, betalt = 0) {
+  const k = kommunepris(priser, v, betalt);
+  if (k) {
+    return { ansatte: telteAnsatte(priser, v), faktor: 1, kundedata: false, sektor: null, ...k, fireAar: true, del: Boolean(v.kommune) };
+  }
+  return aarspris(priser, v, regnskap);
+}
+
+/** Årsprisen: det høyeste av det de ansatte gir (kurven, justert for hva de tjener) og det kundedataene
+    gir, ganger påslaget for bransjen. */
+export function aarspris(priser, v, regnskap = null) {
   const ansatte = telteAnsatte(priser, v);
   const faktor = verdifaktor(priser, v.ansatte, regnskap);
   const fraAnsatte = kurvepris(priser, ansatte) * faktor;
@@ -185,9 +253,10 @@ export function lisenspris(priser, v, regnskap = null) {
   return { ansatte, faktor, kundedata: fraKunder > fraAnsatte, sektor: sektor !== 1 ? s : null, pris: Math.max(priser.kurve.solo, pris) };
 }
 
-/** Prisen en tjenesteleverandør betaler per år for én kunde, ut fra kundens egen størrelse og regnskap. */
+/** Prisen en tjenesteleverandør betaler per år for én kunde, ut fra kundens egen størrelse og regnskap.
+    Alltid årsprisen, også når kunden er en kommune. */
 export function kundepris(priser, v, regnskap = null) {
-  return lisenspris(priser, v, regnskap).pris * (priser.leverandorFaktor || 1);
+  return aarspris(priser, v, regnskap).pris * (priser.leverandorFaktor || 1);
 }
 
 /** Om virksomheten trolig behandler data for andre (IT, regnskap, rådgivning, HR-tjenester …). Da spør
@@ -261,6 +330,21 @@ export function ehfForvalgt(form, ansatte) {
   return OFFENTLIG.has(form) || ansatte >= 5;
 }
 
+/** Domenet virksomheten selv har oppgitt i Enhetsregisteret (hjemmeside, ellers e-post), uten «www.»:
+    «oslo.kommune.no». null uten noe av det. */
+export function domeneFra(enhet) {
+  const kilde = enhet.hjemmeside || String(enhet.epostadresse || "").split("@")[1] || "";
+  const d = String(kilde).toLowerCase().trim().replace(/^[a-z]+:\/\//, "").split(/[/?#:]/)[0].replace(/^www\./, "");
+  return /^[a-z0-9.-]+\.[a-z]{2,}$/.test(d) ? d : null;
+}
+
+/** Om e-postadressen er på et av domenene, eller et underdomene av dem (navn@bga.oslo.kommune.no hører
+    til oslo.kommune.no). Slik vet vi at en nøkkel som gis før betaling, havner hos virksomheten selv. */
+export function epostPaaDomene(epost, domener) {
+  const d = String(epost || "").toLowerCase().split("@")[1];
+  return Boolean(d) && domener.some((x) => x && (d === x || d.endsWith(`.${x}`)));
+}
+
 /** En enhet fra Enhetsregisteret kan kjøpe når den ikke er slettet, konkurs eller under avvikling. */
 export function aktiv(enhet) {
   return Boolean(
@@ -274,13 +358,15 @@ export function aktiv(enhet) {
 
 /** Feltene vi bruker fra en enhet. Mangler antall ansatte, regnes det som 0. */
 export function virksomhetFra(enhet) {
-  const adr = enhet.forretningsadresse || enhet.postadresse || null;
+  // Underenheter (en skole i en kommune) har beliggenhetsadresse i stedet for forretningsadresse.
+  const adr = enhet.forretningsadresse || enhet.beliggenhetsadresse || enhet.postadresse || null;
   return {
     orgnr: enhet.organisasjonsnummer,
     navn: enhet.navn,
     form: enhet.organisasjonsform?.kode || null,
     ansatte: Number.isFinite(enhet.antallAnsatte) ? enhet.antallAnsatte : 0,
     naering: enhet.naeringskode1?.kode || null,
+    domene: domeneFra(enhet),
     mva: Boolean(enhet.registrertIMvaregisteret),
     adresse: adr
       ? {

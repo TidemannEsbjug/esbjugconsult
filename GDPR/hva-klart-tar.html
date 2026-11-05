@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="nb">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Klart — hva det tar, og hva det ikke tar</title>
+    <meta
+      name="description"
+      content="En ærlig oversikt over hva Klart fjerner fra dokumentene dine, hva som oftere slipper gjennom, og hva du må gjøre selv. Med tall fra testmapper Klart ikke var tilpasset."
+    />
+    <!--
+      Én fil. Ingen skrifter, bilder eller skript utenfra, som til-it.html.
+      Tre lag: kort og lettlest øverst, tallene i ord, og de tekniske detaljene
+      foldet sammen nederst. Innholdet er sjekket mot den låste motoren
+      (3. november 2026) og sluttmålingen av den.
+    -->
+    <style>
+      :root {
+        --ink: #15202e;
+        --ink-2: #4d5b6c;
+        --ink-3: #8492a4;
+        --ground: #eef3fb;
+        --card: #fff;
+        --rule: #dbe4f1;
+        --signal: #2456e6;
+        --ok: #0e7a5a;
+        --ok-bg: #e3f4ec;
+        --blaa: #2456e6;
+        --blaa-bg: #e2ebfd;
+        --gul: #a15c00;
+        --gul-bg: #fdf0dc;
+        --flag: #c02744;
+        --flag-bg: #fbe4e8;
+        --graa: #4d5b6c;
+        --graa-bg: #e9edf3;
+        --lilla: #6a3fc1;
+        --lilla-bg: #eee7fb;
+        --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        background: var(--ground);
+        color: var(--ink);
+        font: 16.5px/1.62 var(--sans);
+        -webkit-font-smoothing: antialiased;
+      }
+      a { color: var(--signal); }
+      .wrap { max-width: 780px; margin: 0 auto; padding: clamp(28px, 6vw, 76px) clamp(16px, 5vw, 40px) 96px; }
+      header { padding-bottom: 14px; }
+      .kicker {
+        font: 500 12px/1 var(--mono);
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: var(--signal);
+        margin: 0 0 14px;
+      }
+      .kicker a { color: inherit; text-decoration: none; }
+      .kicker a:hover { text-decoration: underline; }
+      h1 { font-size: clamp(28px, 5vw, 40px); line-height: 1.14; letter-spacing: -0.02em; margin: 0 0 16px; }
+      .lead { font-size: 18.5px; color: var(--ink-2); margin: 0 0 14px; max-width: 62ch; }
+      .stempel { font-size: 14px; color: var(--ink-3); margin: 0; }
+
+      .start {
+        background: var(--blaa-bg);
+        border: 1px solid #c9d8f7;
+        border-radius: 12px;
+        padding: 20px 24px;
+        margin: 26px 0 18px;
+      }
+      .start h2 { font-size: 19px; letter-spacing: -0.01em; margin: 0 0 10px; }
+      .start ul { margin: 0; padding-left: 20px; }
+      .start li { margin-bottom: 7px; }
+      .start li:last-child { margin-bottom: 0; }
+
+      nav.hopp { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 26px; }
+      nav.hopp a {
+        font: 600 13.5px/1 var(--sans);
+        text-decoration: none;
+        color: var(--ink-2);
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-radius: 999px;
+        padding: 8px 13px;
+      }
+      nav.hopp a:hover { border-color: #a9c0f2; color: var(--ink); }
+      nav.hopp a::before {
+        content: "";
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--signal);
+        margin-right: 7px;
+        vertical-align: 1px;
+      }
+      nav.hopp a.ok::before { background: var(--ok); }
+      nav.hopp a.blaa::before { background: var(--blaa); }
+      nav.hopp a.gul::before { background: var(--gul); }
+      nav.hopp a.graa::before { background: var(--graa); }
+      nav.hopp a.lilla::before { background: var(--lilla); }
+
+      section {
+        background: var(--card);
+        border: 1px solid var(--rule);
+        border-radius: 12px;
+        padding: 24px 26px;
+        margin-bottom: 18px;
+        scroll-margin-top: 16px;
+      }
+      section h2 { font-size: clamp(21px, 3.6vw, 25px); line-height: 1.25; letter-spacing: -0.015em; margin: 0 0 8px; }
+      section p { color: var(--ink-2); margin: 0 0 14px; }
+      .merke {
+        display: inline-block;
+        font: 600 11.5px/1 var(--mono);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-radius: 6px;
+        padding: 5px 8px;
+        margin: 0 0 12px !important;
+        color: var(--signal) !important;
+        background: var(--blaa-bg);
+      }
+      .sek { border-top: 4px solid var(--signal); }
+      .sek.ok { border-top-color: var(--ok); }
+      .sek.ok .merke { color: var(--ok) !important; background: var(--ok-bg); }
+      .sek.blaa { border-top-color: var(--blaa); }
+      .sek.gul { border-top-color: var(--gul); }
+      .sek.gul .merke { color: var(--gul) !important; background: var(--gul-bg); }
+      .sek.graa { border-top-color: var(--graa); }
+      .sek.graa .merke { color: var(--graa) !important; background: var(--graa-bg); }
+      .sek.lilla { border-top-color: var(--lilla); }
+      .sek.lilla .merke { color: var(--lilla) !important; background: var(--lilla-bg); }
+      .intro { font-size: 16.5px; }
+
+      .punkt { border-top: 1px solid var(--rule); padding: 16px 0 2px; }
+      .punkt h3 { font-size: 17px; letter-spacing: -0.005em; margin: 0 0 5px; color: var(--ink); }
+      .punkt p { margin: 0 0 10px; }
+      .eks {
+        font-size: 15px;
+        background: #f6f8fc;
+        border-left: 3px solid var(--rule);
+        border-radius: 0 8px 8px 0;
+        padding: 9px 13px;
+        color: var(--ink-2) !important;
+      }
+      .eks span {
+        display: block;
+        font: 600 11px/1.4 var(--mono);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        margin-bottom: 2px;
+      }
+
+
+      /* Grafen: én liggende stolpe per type, sterkest først. Én farge; tallet står ved stolpen. */
+      .graf { position: relative; margin: 18px 0 4px; }
+      .rad, .akse {
+        display: grid;
+        grid-template-columns: minmax(7.5rem, 13rem) 1fr 6.2rem;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+      }
+      .rad {
+        position: relative;
+        font: inherit;
+        color: inherit;
+        text-align: left;
+        background: none;
+        border: 0;
+        border-radius: 8px;
+        padding: 0 8px;
+        min-height: 40px;
+        cursor: help;
+      }
+      .rad:hover, .rad:focus-visible, .rad.apen { background: #f3f6fc; }
+      .rad:focus-visible { outline: 2px solid var(--signal); outline-offset: 1px; }
+      .rad .navn { font-size: 15px; font-weight: 600; line-height: 1.25; padding: 8px 0; }
+      .spor {
+        align-self: stretch;
+        position: relative;
+        border-left: 1px solid var(--ink-3);
+        background-image: linear-gradient(to right, var(--rule) 1px, transparent 1px);
+        background-size: 20% 100%;
+        background-position: -1px 0;
+      }
+      .stolpe {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        height: 14px;
+        transform: translateY(-50%);
+        background: var(--signal);
+        border-radius: 0 4px 4px 0;
+      }
+      .verdi { font-size: 14px; color: var(--ink-2); white-space: nowrap; font-variant-numeric: tabular-nums; }
+      .verdi b { font-size: 16px; color: var(--ink); }
+      .akse { padding: 0 8px; margin-top: 2px; }
+      .merker { position: relative; height: 18px; }
+      .merker span {
+        position: absolute;
+        transform: translateX(-50%);
+        font: 12px/18px var(--sans);
+        color: var(--ink-3);
+        font-variant-numeric: tabular-nums;
+      }
+      .forklaring {
+        display: none;
+        position: absolute;
+        z-index: 5;
+        top: calc(100% + 4px);
+        left: 8px;
+        width: min(400px, calc(100% - 16px));
+        background: #16233a;
+        color: #dbe5f3;
+        font-size: 14.5px;
+        line-height: 1.5;
+        border-radius: 10px;
+        padding: 12px 14px;
+        box-shadow: 0 10px 28px rgba(21, 32, 46, 0.22);
+        pointer-events: none;
+      }
+      .forklaring strong { display: block; color: #fff; font-size: 15px; margin-bottom: 4px; }
+      .forklaring em { display: block; font-style: normal; color: #a9bbd4; margin-top: 8px; padding-left: 10px; border-left: 2px solid #3b5277; }
+      .rad:hover .forklaring, .rad:focus-visible .forklaring, .rad.apen .forklaring { display: block; }
+      /* De nederste radene viser forklaringen over seg, så den ikke dekker teksten under grafen. */
+      .graf .rad:nth-last-of-type(-n+2) .forklaring { top: auto; bottom: calc(100% + 4px); }
+      .grafnote { font-size: 14px; color: var(--ink-3) !important; margin: 10px 0 0 !important; }
+      .hint { font-size: 14px; color: var(--ink-3) !important; margin: 0 0 4px !important; }
+
+      /* Oppsummeringen: gjør bra / gjør dårlig. */
+      .oppsum { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+      .oppsum section { margin: 0; }
+      .oppsum h2 { display: flex; align-items: center; gap: 10px; }
+      .oppsum h2 i {
+        flex: none;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        font: 700 16px/28px var(--sans);
+        text-align: center;
+        font-style: normal;
+        color: #fff;
+      }
+      .bra { border-top: 4px solid var(--ok); }
+      .bra h2 i { background: var(--ok); }
+      .daarlig { border-top: 4px solid var(--flag); }
+      .daarlig h2 i { background: var(--flag); }
+      .oppsum ul { margin: 0; padding-left: 20px; color: var(--ink-2); }
+      .oppsum li { margin-bottom: 9px; }
+      .oppsum li:last-child { margin-bottom: 0; }
+
+      /* Les mer: alt det lange er foldet sammen. */
+      .lesmer > h2 { margin-bottom: 4px; }
+      .lesmer details.sek { border-top: 1px solid var(--rule) !important; }
+      details.sek > summary { font-size: 17px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+      details.sek > summary .merke { margin: 0 !important; }
+      details.sek[open] { padding-bottom: 10px; }
+
+      /* Tallene: tabell på bred skjerm, kort på smal. */
+      table { border-collapse: collapse; width: 100%; font-size: 15px; margin: 6px 0 22px; }
+      th, td { text-align: left; padding: 10px 12px 10px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+      thead th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-3); font-weight: 600; }
+      tbody th { font-weight: 600; color: var(--ink); width: 30%; }
+      td { color: var(--ink-2); }
+      td.tall { font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink); }
+      .styrke {
+        display: inline-block;
+        font: 600 12px/1 var(--sans);
+        border-radius: 999px;
+        padding: 5px 10px;
+        white-space: nowrap;
+      }
+      .styrke.sterk { color: var(--ok); background: var(--ok-bg); }
+      .styrke.god { color: var(--blaa); background: var(--blaa-bg); }
+      .styrke.middels { color: var(--gul); background: var(--gul-bg); }
+      .styrke.svak { color: var(--flag); background: var(--flag-bg); }
+      section h3.under { font-size: 17px; margin: 22px 0 6px; }
+
+      /* Teknisk: foldet sammen. */
+      .teknisk { background: #f8fafd; }
+      details { border-top: 1px solid var(--rule); }
+      details:last-of-type { border-bottom: 1px solid var(--rule); }
+      summary {
+        cursor: pointer;
+        list-style: none;
+        font-weight: 600;
+        padding: 14px 28px 14px 0;
+        position: relative;
+      }
+      summary::-webkit-details-marker { display: none; }
+      summary::after {
+        content: "+";
+        position: absolute;
+        right: 4px;
+        top: 11px;
+        font: 400 22px/1 var(--sans);
+        color: var(--signal);
+      }
+      details[open] summary::after { content: "–"; }
+      summary:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; border-radius: 4px; }
+      details ul { margin: 0 0 16px; padding-left: 20px; font-size: 15px; color: var(--ink-2); }
+      details li { margin-bottom: 9px; }
+
+      .slutt {
+        background: #16233a;
+        color: #ccd8ea;
+        border-radius: 12px;
+        padding: 26px 28px;
+        margin-top: 28px;
+      }
+      .slutt strong { color: #fff; font-size: 19px; display: block; margin-bottom: 8px; line-height: 1.4; }
+      .slutt p { margin: 0 0 10px; }
+      .slutt a { color: #9fbcff; }
+      footer { margin-top: 36px; padding-top: 20px; border-top: 1px solid var(--rule); color: var(--ink-3); font-size: 14.5px; }
+      footer a { color: var(--ink-2); }
+
+      @media (max-width: 600px) {
+        section, .start { padding: 20px 18px; }
+        .oppsum { grid-template-columns: 1fr; }
+        .rad, .akse { grid-template-columns: 6.6rem 1fr 3.6rem; gap: 8px; padding: 0 4px; }
+        .rad .navn { font-size: 14px; }
+        .verdi { font-size: 12.5px; }
+        .verdi b { font-size: 15px; }
+        .forklaring { left: 4px; width: calc(100% - 8px); }
+        .slutt { padding: 22px 20px; }
+        thead { display: none; }
+        table, tbody, tr, th, td { display: block; width: 100%; }
+        tbody tr { border-bottom: 1px solid var(--rule); padding: 12px 0; }
+        tbody th, td { border: 0; padding: 2px 0; }
+        tbody th { width: 100%; font-size: 15.5px; }
+        td.tall { white-space: normal; }
+        td:last-child { padding-top: 6px; }
+      }
+      @media print {
+        body { background: #fff; }
+        nav.hopp { display: none; }
+        details > * { display: block; }
+        section { break-inside: avoid-page; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <p class="kicker"><a href="./">Klart</a> · ærlig oversikt</p>
+        <h1>Hva Klart tar, og hva det ikke tar</h1>
+        <p class="lead">
+          Klart bytter ut personopplysninger i en kopi av dokumentene dine, på
+          din egen maskin. Noe fanger den nesten alltid, annet slipper oftere
+          gjennom. Grafene viser hvor mange prosent som slipper gjennom, med det
+          Klart er best på først.
+        </p>
+        <p class="stempel">Gjelder Klart slik programmet var 3. november 2026. Målt på Mac med Full rens, i 415 filer fordelt på 15 oppdiktede kontormapper, blant annet fra NAV, legekontor, krisesenter, fagforening og regnskap: Word, PDF, e-post, Excel, CSV og bilder. Mappene ble laget uten at Klart var tilpasset dem. Noen rettelser er gjort etter at vi så resultatene, så tallene kan være litt bedre enn på helt nye dokumenter.</p>
+      </header>
+
+      <main>
+        <section id="tekst">
+          <h2>Hvor mange prosent som slipper gjennom i tekst</h2>
+          <p class="hint">Skalaen går fra 0 til 100 %. Kortere stolpe er bedre. Hold musen over en linje, eller trykk på den, for å se en forklaring og et eksempel.</p>
+          <div class="graf"><button type="button" class="rad" aria-describedby="t-0"><span class="navn">Fødselsnummer</span><span class="spor"><span class="stolpe" style="width:0.00%"></span></span><span class="verdi"><b>0 %</b></span><span class="forklaring" id="t-0" role="tooltip"><strong>0 av 780 sto igjen</strong>Klart sjekker kontrollsifrene i nummeret. Står det «Fnr» foran, blir nummeret byttet selv om det har en skrivefeil.<em>En søknad med barnets fødselsnummer øverst får nummeret byttet med en merkelapp.</em></span></button><button type="button" class="rad" aria-describedby="t-1"><span class="navn">E-post</span><span class="spor"><span class="stolpe" style="width:0.00%"></span></span><span class="verdi"><b>0 %</b></span><span class="forklaring" id="t-1" role="tooltip"><strong>0 av 592 sto igjen</strong>Alle e-postadresser til personer ble byttet. Kontorets egne fellesadresser kan få stå.<em>kari.hansen@gmail.com blir byttet med en merkelapp, mens post@kontoret.no kan stå.</em></span></button><button type="button" class="rad" aria-describedby="t-2"><span class="navn">Kontonummer</span><span class="spor"><span class="stolpe" style="width:0.00%"></span></span><span class="verdi"><b>0 %</b></span><span class="forklaring" id="t-2" role="tooltip"><strong>0 av 363 sto igjen</strong>Klart sjekker kontrollsifrene. Kontorets egen driftskonto kan få stå.<em>Kontonummeret en forelder oppgir for refusjon, blir byttet.</em></span></button><button type="button" class="rad" aria-describedby="t-3"><span class="navn">Telefon</span><span class="spor"><span class="stolpe" style="width:0.12%;min-width:3px"></span></span><span class="verdi"><b>0,1 %</b></span><span class="forklaring" id="t-3" role="tooltip"><strong>1 av 809 sto igjen</strong>Nesten alle ble byttet. Kontorets sentralbord kan få stå. Men omtrent 20 % av de ufarlige numrene ble byttet likevel.<em>Et mobilnummer i en e-post fra en klient blir byttet.</em></span></button><button type="button" class="rad" aria-describedby="t-4"><span class="navn">Navn</span><span class="spor"><span class="stolpe" style="width:0.68%;min-width:3px"></span></span><span class="verdi"><b>0,7 %</b></span><span class="forklaring" id="t-4" role="tooltip"><strong>21 av 3 078 sto igjen</strong>I tillegg ble 28 navn bare delvis byttet. Et navn som er funnet ett sted, byttes overalt i mappen. Initialer uten punktum, og fornavn som også er vanlige ord, kan bli stående.<em>«Kari Berg» og «K.B.» blir byttet, mens «Snakket med KB» kan stå.</em></span></button><button type="button" class="rad" aria-describedby="t-5"><span class="navn">Adresse</span><span class="spor"><span class="stolpe" style="width:1.29%;min-width:3px"></span></span><span class="verdi"><b>1,3 %</b></span><span class="forklaring" id="t-5" role="tooltip"><strong>5 av 388 sto igjen</strong>Tallet gjelder når Adresse er slått på, som i Full rens. Velger du «Egendefinert», er Adresse av fra start, og da står nesten alle adresser igjen. Full rens bytter også over 50 % av de ufarlige adressene.<em>En hjemmeadresse blir byttet, men ofte også adressen til legekontoret.</em></span></button><button type="button" class="rad" aria-describedby="t-6"><span class="navn">Saksnummer</span><span class="spor"><span class="stolpe" style="width:3.20%;min-width:3px"></span></span><span class="verdi"><b>3,2 %</b></span><span class="forklaring" id="t-6" role="tooltip"><strong>7 av 219 sto igjen</strong>Tallet gjelder når Saksnummer er slått på, som i Full rens. Velger du «Egendefinert», er det av fra start. Full rens bytter også mange ufarlige saksnumre.<em>Et ufarlig saksnummer fra en annen etat kan også bli byttet.</em></span></button><button type="button" class="rad" aria-describedby="t-7"><span class="navn">Andre ID-numre</span><span class="spor"><span class="stolpe" style="width:4.91%;min-width:3px"></span></span><span class="verdi"><b>4,9 %</b></span><span class="forklaring" id="t-7" role="tooltip"><strong>21 av 428 sto igjen</strong>Gjelder passnummer, bilnummer og kunde-, ansatt- og pasientnummer. Kunde- og ansattnumre blir bare byttet når Saksnummer er slått på.<em>«Ansattnr. 20418» blir byttet i Full rens, men står hvis Saksnummer er av.</em></span></button><button type="button" class="rad" aria-describedby="t-8"><span class="navn">Helse</span><span class="spor"><span class="stolpe" style="width:5.68%;min-width:3px"></span></span><span class="verdi"><b>5,7 %</b></span><span class="forklaring" id="t-8" role="tooltip"><strong>33 av 581 sto igjen</strong>Diagnoser, sykmelding og medisiner blir oftest tatt. Plager beskrevet med egne ord kan bli stående.<em>«Hun har diabetes type 2» blir tatt. «Magen tåler ikke stress» kan stå.</em></span></button><button type="button" class="rad" aria-describedby="t-9"><span class="navn">Andre private opplysninger</span><span class="spor"><span class="stolpe" style="width:8.06%;min-width:3px"></span></span><span class="verdi"><b>8,1 %</b></span><span class="forklaring" id="t-9" role="tooltip"><strong>27 av 335 sto igjen</strong>Familiekonflikter, hvem barnet bor hos og trang økonomi. Klart leser bare setningene i filer der det står et navn.<em>«Mor og far krangler hver helg» kan stå igjen selv om navnene er byttet.</em></span></button><div class="akse" aria-hidden="true"><span class="navn"></span><span class="merker"><span style="left:0%">0</span><span style="left:20%">20</span><span style="left:40%">40</span><span style="left:60%">60</span><span style="left:80%">80</span><span style="left:100%">100 %</span></span><span class="verdi"></span></div></div>
+          <p class="grafnote">Antallet varierer fra type til type fordi vanlige dokumenter er slik: et navn står mange ganger, en adresse ofte bare én gang. Derfor testet vi 3 078 navn, men bare 388 adresser. Prosenten gjør typene sammenlignbare, men tall som bygger på få eksempler er mer usikre. Hold musen over en linje for å se antallet.</p>
+          <p class="grafnote">Adresse og saksnummer er av fra start hvis du velger «Egendefinert». Tallene gjelder når de er slått på, som i Full rens.</p>
+        </section>
+
+        <section id="bilder">
+          <h2>… og i bilder og skannede sider</h2>
+          <p class="hint">Samme skala som over, fra 0 til 100 %, så du kan sammenligne direkte.</p>
+          <div class="graf"><button type="button" class="rad" aria-describedby="b-0"><span class="navn">E-post</span><span class="spor"><span class="stolpe" style="width:0.00%"></span></span><span class="verdi"><b>0 %</b></span><span class="forklaring" id="b-0" role="tooltip"><strong>0 av 55 sto igjen</strong>Klart leser først teksten i bildet, og bruker så de samme reglene som for tekst.<em>Et skjermbilde av en kontaktliste får e-postadressene byttet.</em></span></button><button type="button" class="rad" aria-describedby="b-1"><span class="navn">Telefon</span><span class="spor"><span class="stolpe" style="width:0.92%;min-width:3px"></span></span><span class="verdi"><b>0,9 %</b></span><span class="forklaring" id="b-1" role="tooltip"><strong>1 av 109 sto igjen</strong>Nesten alle ble byttet.<em>Et telefonnummer i et skannet brev blir byttet.</em></span></button><button type="button" class="rad" aria-describedby="b-2"><span class="navn">Fødselsnummer</span><span class="spor"><span class="stolpe" style="width:0.97%;min-width:3px"></span></span><span class="verdi"><b>1,0 %</b></span><span class="forklaring" id="b-2" role="tooltip"><strong>1 av 103 sto igjen</strong>Ett av 103 slapp gjennom.<em>Et bilde av et pass kan få navn og fødselsnummer dekket.</em></span></button><button type="button" class="rad" aria-describedby="b-3"><span class="navn">Navn</span><span class="spor"><span class="stolpe" style="width:1.91%;min-width:3px"></span></span><span class="verdi"><b>1,9 %</b></span><span class="forklaring" id="b-3" role="tooltip"><strong>8 av 418 sto igjen</strong>Litt flere står igjen enn i vanlig tekst, fordi Klart først må lese teksten i bildet.<em>De trykte navnene i en skannet kontrakt blir byttet.</em></span></button><button type="button" class="rad" aria-describedby="b-4"><span class="navn">Adresse</span><span class="spor"><span class="stolpe" style="width:4.17%;min-width:3px"></span></span><span class="verdi"><b>4,2 %</b></span><span class="forklaring" id="b-4" role="tooltip"><strong>1 av 24 sto igjen</strong>Det var få adresser i testbildene, så tallet er usikkert.<em>En adresse i et skannet brev blir som regel byttet.</em></span></button><button type="button" class="rad" aria-describedby="b-5"><span class="navn">Kontonummer</span><span class="spor"><span class="stolpe" style="width:5.26%;min-width:3px"></span></span><span class="verdi"><b>5,3 %</b></span><span class="forklaring" id="b-5" role="tooltip"><strong>2 av 38 sto igjen</strong>I tillegg kunne to ikke leses i det hele tatt. Det var få kontonumre i testbildene, så tallet er usikkert.<em>Et kontonummer i en fotografert faktura blir som regel byttet.</em></span></button><button type="button" class="rad" aria-describedby="b-6"><span class="navn">Andre ID-numre</span><span class="spor"><span class="stolpe" style="width:21.78%;min-width:3px"></span></span><span class="verdi"><b>22 %</b></span><span class="forklaring" id="b-6" role="tooltip"><strong>22 av 101 sto igjen</strong>22 % sto igjen, og tre kunne ikke leses. Bilder av pass og ID-kort må du alltid sjekke selv.<em>Passnummeret som er stanset inn i passet, blir stående.</em></span></button><button type="button" class="rad" aria-describedby="b-7"><span class="navn">Helse</span><span class="spor"><span class="stolpe" style="width:28.57%;min-width:3px"></span></span><span class="verdi"><b>29 %</b></span><span class="forklaring" id="b-7" role="tooltip"><strong>16 av 56 sto igjen</strong>Står oftere igjen i bilder, trolig fordi Klart leser bilder som linjer og bruddstykker, ikke hele setninger. Tre kunne ikke leses. Det var få eksempler i testbildene, så tallet er usikkert.<em>Et skannet legeskjema kan få navnet byttet, men diagnosen stående.</em></span></button><button type="button" class="rad" aria-describedby="b-8"><span class="navn">Andre private opplysninger</span><span class="spor"><span class="stolpe" style="width:45.45%;min-width:3px"></span></span><span class="verdi"><b>45 %</b></span><span class="forklaring" id="b-8" role="tooltip"><strong>10 av 22 sto igjen</strong>Det var svært få eksempler i testbildene, så tallet er usikkert. Også når alle testbildene telles med, står denne gruppen oftest igjen.<em>En fotografert lapp om familieforhold kan bli stående.</em></span></button><div class="akse" aria-hidden="true"><span class="navn"></span><span class="merker"><span style="left:0%">0</span><span style="left:20%">20</span><span style="left:40%">40</span><span style="left:60%">60</span><span style="left:80%">80</span><span style="left:100%">100 %</span></span><span class="verdi"></span></div></div>
+          <p class="grafnote">Bildetallene kommer fra bildene og de skannede sidene i 12 av mappene. Til sammen sto omtrent 6,5 % igjen, og noen få kunne ikke leses. Ansikter blir pikselert, men vi har ikke målt hvor godt det virker.</p>
+        </section>
+
+        <div class="oppsum">
+          <section class="bra">
+            <h2><i aria-hidden="true">✓</i> Gjør bra</h2>
+            <ul><li>Fødselsnummer, kontonummer og e-post: ingen sto igjen i vanlig tekst i testene.</li><li>Telefonnumre: 0,1 % sto igjen i testene (1 av 809).</li><li>Navn: under 1 % sto helt igjen, og samme person får samme merkelapp i hele mappen.</li><li>Renser også det du ikke ser: kommentarer, sporede endringer og dokumentegenskaper.</li><li>Alt skjer på din egen maskin, og originalene blir ikke rørt.</li></ul>
+          </section>
+          <section class="daarlig">
+            <h2><i aria-hidden="true">!</i> Gjør dårlig</h2>
+            <ul><li>Andre private opplysninger, som familie, økonomi og konflikter: rundt 8 % står igjen.</li><li>Helse: nesten 6 % står igjen i tekst, og 29 % i bilder.</li><li>Bilder og skannede sider: flere feil enn i tekst. Underskrifter og QR-koder blir stående, og håndskrift blir bare byttet hvis Klart klarer å lese den.</li><li>Bytter for mye: litt over 20 % av de ufarlige opplysningene blir også byttet.</li><li>Fjerner ikke det som kan peke ut en person indirekte, som stilling, sted, alder og en hendelse.</li><li>Helse og private setninger på nynorsk og andre språk fanges dårligere enn på bokmål.</li></ul>
+          </section>
+        </div>
+
+        <section class="lesmer">
+          <h2>Les mer</h2>
+          <p>Trykk på en overskrift for å åpne den.</p>
+          <details class="sek ok" id="virker_godt"><summary><span class="merke">Nesten alltid</span>Dette tar Klart nesten alltid</summary><p class="intro">Dette sto nesten aldri igjen i vanlig tekst i blindprøven med Full rens.</p><div class="punkt"><h3>Fødselsnummer og D-nummer</h3><p>Klart sjekker kontrollsifrene i nummeret. Står det «Fnr» eller «Fødselsnr.» foran, tas nummeret også når det har en skrivefeil. I vanlig tekst i blindprøven sto ikke ett eneste igjen. I bilder og skannede sider slapp ett av 190 gjennom.</p><p class="eks"><span>Eksempel</span>En søknad om barnehageplass har barnets fødselsnummer øverst. I kopien står det en merkelapp der nummeret sto.</p></div><div class="punkt"><h3>Telefon, e-post og kontonummer</h3><p>Disse blir nesten alltid byttet. I blindprøven sto ett telefonnummer igjen, og ingen e-postadresser eller kontonumre.</p><p class="eks"><span>Eksempel</span>En e-post fra en forelder med mobilnummer, e-postadresse og kontonummer for refusjon får normalt alle tre byttet i kopien.</p></div><div class="punkt"><h3>Personnavn</h3><p>Navn blir som regel byttet. Et navn som er funnet ett sted, byttes overalt i mappen. Under ett av hundre navn sto helt igjen, men i noen få tilfeller ble en del av navnet stående.</p><p class="eks"><span>Eksempel</span>«Samtale med Ola Nordmann og moren hans» blir «Samtale med [PERSON_1] og moren hans».</p></div><div class="punkt"><h3>Samme person, samme merkelapp</h3><p>Opplysningene byttes med merkelapper som [PERSON_1], så kopien fortsatt kan leses. Samme person får samme merkelapp i hele mappen. Neste gang du renser, kan nummeret bli et annet.</p><p class="eks"><span>Eksempel</span>«Kari» og «Kari Nordmann» blir begge [PERSON_1] i samme mappe, men kan bli [PERSON_4] neste gang. Er det to Kari-er i mappen, får «Kari» alene merkelappen til den som er nevnt flest ganger.</p></div><div class="punkt"><h3>Steder du ikke ser</h3><p>Klart renser også det du ikke ser når du åpner filen: hvem som skrev en kommentar, sporede endringer, dokumentegenskaper og forhåndsvisningsbildet. I bilder inne i Word-, Excel- og PowerPoint-filer fjernes skjult informasjon, som hvem som tok bildet og hvor. Dette er ikke målt for seg.</p><p class="eks"><span>Eksempel</span>En Word-fil der saksbehandleren har skrevet en kommentar, får navnet byttet i kommentaren også, ikke bare i teksten.</p></div><div class="punkt"><h3>Originalene og din egen maskin</h3><p>Originalene blir ikke rørt. Klart lager en ny mappe med rensede kopier ved siden av, og dokumentene sendes ikke noe sted. Kopien havner alltid ved siden av originalen, så ligger mappen i OneDrive eller Teams, havner kopien der også.</p><p class="eks"><span>Eksempel</span>Du velger mappen «Saker». Klart lager «Saker-klar» ved siden av, og «Saker» er som før.</p></div></details><details class="sek blaa" id="virker_ofte"><summary><span class="merke">Som regel</span>Dette tar Klart som regel</summary><p class="intro">Dette blir tatt i de fleste tilfeller, men noe slipper gjennom, eller det kommer an på hva du har valgt.</p><div class="punkt"><h3>Helse skrevet med vanlige fagord</h3><p>Diagnoser, sykmelding og medisiner blir oftest tatt. Likevel sto nesten 6 % av helseopplysningene igjen i blindprøven. Velger du «Bare identitet», tas ingen helseopplysninger.</p><p class="eks"><span>Eksempel</span>«Hun har diabetes type 2» blir tatt. «Han er mye borte fordi magen ikke tåler stress» kan bli stående.</p></div><div class="punkt"><h3>Andre ID-numre</h3><p>Passnummer, bilnummer og kunde-, ansatt- eller pasientnummer blir som regel tatt i Full rens, men rundt 5 % sto igjen. Kunde-, ansatt-, pasient- og medlemsnumre hører til valget «Saksnummer», ikke «Fødselsnummer». Er Saksnummer av, står de, og da varsler heller ikke risikovurderingen i rapporten om dem.</p><p class="eks"><span>Eksempel</span>«Ansattnr. 20418» blir byttet i Full rens, men står igjen hvis du har valgt «Egendefinert» uten å slå på Saksnummer.</p></div><div class="punkt"><h3>Adresser og saksnumre, når de er slått på</h3><p>Adresse og saksnummer er av i standardvalgene. Slår du dem på, eller velger Full rens, blir de nesten alltid tatt. Men da byttes også over 50 % av adressene og saksnumrene som kunne fått stå.</p><p class="eks"><span>Eksempel</span>En hjemmeadresse i et vedtak blir byttet, men ofte også adressen til legekontoret eller et saksnummer fra en annen etat. Med standardvalgene står både hjemmeadressen og saksnummeret igjen.</p></div></details><details class="sek gul" id="svakt"><summary><span class="merke">Oftere bom</span>Her bommer Klart oftere</summary><p class="intro">Her står mer igjen, eller Klart bytter mer enn det trenger.</p><div class="punkt"><h3>Private ting skrevet med hverdagsord</h3><p>Familiekonflikter, hvem barnet bor hos, trang økonomi, advarsler til ansatte og plager beskrevet med egne ord blir oftere stående enn navn og numre. Rundt 8 % av slike opplysninger sto igjen i blindprøven. Står det ikke noe navn i filen, leser Klart ikke setningene for private opplysninger i det hele tatt. Ord som «vedkommende» eller «de» er som regel ikke nok til å vise hvem det gjelder.</p><p class="eks"><span>Eksempel</span>«Mor og far krangler hver helg, og pengene tok slutt i mars» kan stå igjen selv om navnene er byttet. Et notat som bare sier «Eleven har vært utagerende og bor nå hos besteforeldre», blir ikke lest som privat hvis det ikke står et navn noe sted i filen.</p></div><div class="punkt"><h3>Andre språk enn bokmål</h3><p>Klart er laget for norsk bokmål, og nynorsk dekkes ikke like godt. Navn, numre og e-post tas også på andre språk. Helse og private setninger på engelsk fanges bare når et av noen få kjente ord står der. På polsk, arabisk og andre språk fanges de nesten ikke.</p><p class="eks"><span>Eksempel</span>En e-post på engelsk om at en ansatt «has panic attacks» kan beholde helseopplysningen, mens navnet og telefonnummeret blir byttet.</p></div><div class="punkt"><h3>Navn som er vanskelige å kjenne igjen</h3><p>Initialer uten punktum, korte utenlandske fornavn, fornavn som også er vanlige ord, navn med liten forbokstav i en chat og sjeldne navn midt i en setning kan bli stående. Navn i kyrillisk eller arabisk skrift blir ikke kjent igjen i vanlig tekst.</p><p class="eks"><span>Eksempel</span>«Snakket med KB om saken» og «ring liv i morgen» kan stå igjen, mens «Kari Berg» og «K.B.» blir byttet.</p></div><div class="punkt"><h3>Full rens bytter mye som kunne stått</h3><p>Appen starter i «Full rens» for hver ny mappe, og den husker ikke hva du valgte sist. Full rens bytter også litt over 20 % av de ufarlige opplysningene, så kopien blir mindre nyttig. Det gjelder blant annet omtrent 20 % av telefon- og kontonumrene som skulle fått stå, for eksempel kontorets egne. Velger du færre grupper, blir det færre slike bytter, men mer privat blir stående.</p><p class="eks"><span>Eksempel</span>Navnet på kommunen, et varenummer som ligner et bilskilt og adressen til legevakten kan bli byttet sammen med det private. Står sentralbordnummeret alene i en tabell og aldri ved kontorets navn, kan det også bli byttet.</p></div><div class="punkt"><h3>Et navn byttes overalt</h3><p>Et navn byttes i hele mappen, også navn på kontorets egne ansatte og kjente personer, som forfattere. Heter noen det samme som et firma eller et sted, kan firmaet eller stedet også bli byttet.</p><p class="eks"><span>Eksempel</span>Heter en klient Berg, kan «Berg kommune» også bli byttet. Saksbehandlerens navn under «Med hilsen» blir byttet. Vil du la det stå, må du sette hvert treff til «Beholdes», ett for ett.</p></div><div class="punkt"><h3>Merknader og saksdokumenter om én person</h3><p>I tabeller blir hele cellen under «Merknad», «Notat» eller «Kommentar» byttet når raden handler om en person, også når merknaden er ufarlig. I bekymringsmeldinger og brev til retten kan så mye bli byttet at selve saken ikke går fram av kopien.</p><p class="eks"><span>Eksempel</span>I en elevliste blir «Glemte gymtøy» under Merknad byttet fordi elevens navn står på samme rad. Slår du av «Private setninger», får slike celler og setninger stå, mens navn og numre byttes. Hele setninger om helse følger valget «Helse» og byttes fortsatt.</p></div><div class="punkt"><h3>«Helse» tar mer enn helse</h3><p>Valget «Helse» tar også fagforening, religion, politikk, legning, straffesaker og gjeld som inkasso og bostøtte, og alt merkes som helse. Et HR-, regnskaps- eller inkassokontor kan derfor få vanlige fagord byttet når en person er nevnt. Du kan ikke slå av bare en del av gruppen.</p><p class="eks"><span>Eksempel</span>I et inkassobrev blir «inkasso» byttet fordi skyldneren er nevnt i samme setning.</p></div></details><details class="sek graa" id="gjor_ikke"><summary><span class="merke">Ikke med</span>Dette gjør ikke Klart</summary><p class="intro">Dette er ikke med i rensingen, enten med vilje eller fordi Klart ikke har regler for det.</p><div class="punkt"><h3>Noen tall får stå</h3><p>Faktura-, ordre- og KID-numre, beløp og lønn får stå med vilje. De kan likevel noen ganger spores tilbake til en kunde eller en ansatt. Betalingskortnumre, IP-adresser, kartkoordinater og gårds- og bruksnummer har ingen egen regel og blir som regel stående.</p><p class="eks"><span>Eksempel</span>I en lønnsliste blir navnet byttet, men «kr 612 000» står, og sammen med stillingen kan det ofte peke ut hvem det er. Et skjøte med «gnr. 12 bnr. 34» beholder tallene.</p></div><div class="punkt"><h3>Datoer og stedsnavn</h3><p>Klart leter bare etter fødselsdatoer, og bare når «Datoer» er på. Andre datoer, som når noen ble innlagt, flyttet eller sluttet, og stedsnavn som står alene, blir som regel stående, også i Full rens. Unntaket er når hele setningen blir tatt som en privat setning. Da forsvinner datoen med den.</p><p class="eks"><span>Eksempel</span>«Innlagt 3. mars, kom fra Båtsfjord» står igjen hvis setningen ikke blir tatt som privat, mens «født 12.04.1987» blir byttet når Datoer er på.</p></div><div class="punkt"><h3>Yrke, alder og sammenhengen</h3><p>Valgene «Yrke og relasjon» og «Alder» gjør nesten ingenting i dag. Stilling, familieroller og alder blir stående selv om du slår dem på. Det eneste som tas, er når det står at en person er skilt. Selv uten navn kan den som kjenner saken, ofte skjønne hvem det gjelder ut fra stilling, sted, alder og hva som skjedde.</p><p class="eks"><span>Eksempel</span>«Seniorrådgiver, 54 år» står igjen også med Full rens. «Rektor ved den eneste skolen i bygda ble sykmeldt etter brannen i mai» peker ut én person selv uten navn.</p></div><div class="punkt"><h3>Filer og vedlegg som ikke blir med</h3><p>Gamle Word- og PowerPoint-filer (.doc, .ppt), OpenOffice, Pages, Numbers, iPhone-bilder (HEIC), zip, Outlook-arkiv (.pst), lyd, video og passordbeskyttede filer blir ikke lest og kommer ikke med i kopien. De står i rapporten. I e-post blir tekstvedlegg som .txt, .csv og kalenderinvitasjoner renset, men vedlegg som PDF, Word og bilder tas ut og må renses som egne filer.</p><p class="eks"><span>Eksempel</span>Et møteopptak og en gammel .doc-fil står i rapporten, men ikke i kopien. Et lydopptak inne i en PowerPoint blir med i kopien, men det som blir sagt i det, er ikke sjekket.</p></div><div class="punkt"><h3>Noen filer endrer form</h3><p>Gamle Excel-filer blir .xlsx og mister formatering og bilder. RTF blir ren tekst, Outlook- og Apple Mail-meldinger blir .eml, TIFF-bilder blir PNG, og makroer tas ut. En renset PDF ser ut som originalen, men hver side er et bilde med renset tekst under, og først kommer en forklarende forside.</p><p class="eks"><span>Eksempel</span>En PDF med et utfylt skjema kan fortsatt søkes i, og du kan kopiere den rensede teksten, men feltene kan ikke fylles ut på nytt.</p></div><div class="punkt"><h3>Kopien er ikke automatisk anonym</h3><p>En renset kopi er ikke automatisk anonym etter loven. Kontoret er fortsatt ansvarlig og må selv vurdere om kopien kan deles. Velger du pseudonymer, kan kopien gjøres om med nøkkelen, og da er den fortsatt personopplysninger.</p><p class="eks"><span>Eksempel</span>Et renset utdrag til en forsker må fortsatt vurderes av kontoret, selv om alle navn er byttet.</p></div></details><details class="sek lilla" id="bilder"><summary><span class="merke">Bilder</span>Bilder og skannede sider</summary><p class="intro">I bilder må Klart først lese teksten, og det gir flere feil enn i vanlig tekst. Alle bildetallene er målt på Mac.</p><div class="punkt"><h3>Mer står igjen i bilder</h3><p>Omtrent én av femten personopplysninger i bildene sto igjen, mot rundt 1,5 av hundre i vanlig tekst. Noen få kunne Klart ikke lese i det hele tatt.</p><p class="eks"><span>Eksempel</span>Et bilde av en utfylt søknad tatt med mobilen gir færre treff enn den samme søknaden som Word-fil.</p></div><div class="punkt"><h3>Navn og numre i bilder</h3><p>De aller fleste navn, fødselsnumre, telefonnumre og e-poster blir tatt, men flere står igjen enn i vanlig tekst.</p><p class="eks"><span>Eksempel</span>Et skjermbilde av en kontaktliste får som regel navn, telefonnumre og e-poster byttet.</p></div><div class="punkt"><h3>Helse og ID-numre i bilder</h3><p>Helse, andre private opplysninger og andre ID-numre blir oftere stående i bilder enn i vanlig tekst. I blindbildene sto 29 % av helseopplysningene igjen, og 22 % av ID-numrene. Det er få verdier, så tallene er usikre.</p><p class="eks"><span>Eksempel</span>Et skannet skjema for legeerklæring kan få navnet byttet, men diagnosen stående.</p></div><div class="punkt"><h3>Ansikter</h3><p>Ansikter blir pikselert (gjort uskarpe med ruter) som standard. Små ansikter, ansikter fra siden og delvis skjulte ansikter kan bli oversett. Et ansikt Klart ikke finner, blir stående uten noe varsel. Ser Klart etter sladdingen at et ansikt fortsatt kan kjennes igjen, kommer en advarsel i rapporten, men kopien lagres likevel. Ansikter er ikke målt.</p><p class="eks"><span>Eksempel</span>Bittesmå profilbilder i en medlemsliste kan bli stående uten å bli gjort uskarpe, og rapporten sier ikke fra om dem. Se derfor over bilder med folk på.</p></div><div class="punkt"><h3>Bare tekst og ansikter</h3><p>Klart ser bare tekst den klarer å lese, og ansikter. Underskrifter (unntatt på førerkort), QR-koder, strekkoder, tatoveringer, hus og passnummeret som er stanset inn i passet, blir stående. Håndskrift og bilskilt byttes bare hvis Klart klarer å lese dem, og det er ikke målt hvor ofte det skjer. Bilder av pass og ID-kort må du alltid sjekke selv.</p><p class="eks"><span>Eksempel</span>En skannet kontrakt får de trykte navnene byttet, men den håndskrevne underskriften står. Et bilde av et pass kan få navn og fødselsnummer dekket, mens hullene med passnummeret i kanten fortsatt kan leses.</p></div><div class="punkt"><h3>Mac og Windows</h3><p>Windows leser bilder og finner ansikter med andre verktøy enn Mac, så resultatet der kan bli annerledes. Svikter bildelesingen, holdes bildene tilbake fra kopien, og Klart ber deg avslutte og starte på nytt.</p><p class="eks"><span>Eksempel</span>Første gang Klart leser bilder på en Mac, kan bildelesingen svikte. Start Klart på nytt og rens mappen igjen.</p></div></details><details class="sek signal" id="du_ma_selv"><summary><span class="merke">Ditt ansvar</span>Dette må du gjøre selv</summary><p class="intro">Klart gjør mye av jobben, men dette er ditt ansvar.</p><div class="punkt"><h3>Les gjennom kopien</h3><p>Les gjennom kopien før du deler den, særlig saker om enkeltpersoner. Klart tar det aller meste av navn og numre, men kan ikke love at alt privat er borte. Med standardvalgene i «Egendefinert» står det igjen mer enn med Full rens.</p><p class="eks"><span>Eksempel</span>Før du sender en barnevernssak til en sakkyndig, blar du gjennom kopien og ser etter setninger om familien som fortsatt sier for mye.</p></div><div class="punkt"><h3>Tenk over hva du slår av</h3><p>Det du slår av, lar Klart stort sett stå. Velger du «Egendefinert», er adresse, datoer, saksnummer (som også gjelder kunde-, ansatt- og pasientnumre), arbeidsplass, yrke og alder av fra start. Knappene forklarer ikke hva de tar.</p><p class="eks"><span>Eksempel</span>Slår du av «Helse» for å beholde fagteksten, står alle diagnoser igjen. Velger du Egendefinert uten å slå på Adresse, står hjemmeadressene igjen.</p></div><div class="punkt"><h3>Rett for hånd det Klart ikke fant</h3><p>Finner ikke Klart et navn eller et nummer, kan du ikke markere det selv i appen. Da må du rette kopien for hånd. Klart lærer ikke av rettelsene dine, og «Beholdes» gjelder bare det ene treffet, ikke samme ord i resten av mappen.</p><p class="eks"><span>Eksempel</span>Du ser at «Mira» ble oversett i ett brev. Du må rette det i kopien selv, og i neste mappe kan hun bli oversett igjen.</p></div><div class="punkt"><h3>Rens filer som holdes tilbake</h3><p>Er Klart ikke sikker på at en kopi er ren, blir den ikke lagret. Filen står i rapporten, og du må rense den på en annen måte.</p><p class="eks"><span>Eksempel</span>Et Word-dokument med et iPhone-bilde (HEIC) inni, som Klart ikke kan lese, får ingen renset kopi.</p></div><div class="punkt"><h3>Rydd bort gamle kopimapper</h3><p>Med lisens lager Klart de rensede kopiene med en gang skanningen er ferdig, før du har sett over treffene. Retter du noe, kommer en ny kopimappe, og de gamle blir liggende til du sletter dem.</p><p class="eks"><span>Eksempel</span>Etter en rettelse har du både «Saker-klar» og «Saker-klar 2». Slett den første før noen tar feil kopi.</p></div><div class="punkt"><h3>Slett sikkerhetskopien</h3><p>Klart lager som standard en sikkerhetskopi av originalene på maskinen. Den er ikke kryptert og ligger der til du sletter den selv. Klart minner deg på kopier som er eldre enn 30 dager.</p><p class="eks"><span>Eksempel</span>Har du renset en mappe med journalnotater, ligger en ukryptert kopi av notatene i Klarts egen mappe til du fjerner den.</p></div></details>
+          <details class="sek" id="tall">
+            <summary><span class="merke">Tallene</span>Alle tallene i en tabell</summary>
+            <p class="intro">Tallene under er fra blindprøven, altså testmapper som ble laget uten at Klart var tilpasset dem. De gjelder vanlig tekst og Full rens, om ikke annet står. «Sto igjen» betyr at opplysningen fortsatt kunne leses i kopien.</p>
+            <table>
+              <thead>
+                <tr><th scope="col">Hva</th><th scope="col">I ord</th><th scope="col">Blindprøven</th><th scope="col">Styrke</th></tr>
+              </thead>
+              <tbody><tr><th scope="row">Fødselsnummer og D-nummer</th><td>Ingen sto igjen</td><td class="tall">0 av 780 (0 %)</td><td><span class="styrke sterk">Sterk</span></td></tr><tr><th scope="row">E-postadresser</th><td>Ingen sto igjen</td><td class="tall">0 av 592 (0 %)</td><td><span class="styrke sterk">Sterk</span></td></tr><tr><th scope="row">Kontonumre</th><td>Ingen sto igjen</td><td class="tall">0 av 363 (0 %)</td><td><span class="styrke sterk">Sterk</span></td></tr><tr><th scope="row">Telefonnumre</th><td>Ett nummer sto igjen</td><td class="tall">1 av 809 (0,1 %)</td><td><span class="styrke sterk">Sterk</span></td></tr><tr><th scope="row">Navn</th><td>Omtrent 7 av 1 000 sto helt igjen, og i omtrent 9 av 1 000 sto en del av navnet</td><td class="tall">21 av 3 078 (0,7 %), pluss 28 delvis (0,9 %)</td><td><span class="styrke god">God</span></td></tr><tr><th scope="row">Adresser (når Adresse er slått på)</th><td>Litt over 1 % sto igjen. Med standardvalgene står nesten alle, fordi valget er av</td><td class="tall">5 av 388 (1,3 %)</td><td><span class="styrke god">God</span></td></tr><tr><th scope="row">Saksnumre (når Saksnummer er slått på)</th><td>Omtrent 3 % sto igjen</td><td class="tall">7 av 219 (3,2 %)</td><td><span class="styrke middels">Middels</span></td></tr><tr><th scope="row">Andre ID-numre (pass, bilnummer, kunde- og ansattnumre)</th><td>Rundt 5 % sto igjen. Med standardvalgene i Egendefinert sto 66 % igjen</td><td class="tall">21 av 428 (4,9 %); standardvalg 285 av 430 (66 %)</td><td><span class="styrke svak">Svak</span></td></tr><tr><th scope="row">Helseopplysninger</th><td>Nesten 6 % sto igjen</td><td class="tall">33 av 581 (5,7 %)</td><td><span class="styrke svak">Svak</span></td></tr><tr><th scope="row">Andre private opplysninger (familie, økonomi, konflikter)</th><td>Rundt 8 % sto igjen</td><td class="tall">27 av 335 (8,1 %)</td><td><span class="styrke svak">Svak</span></td></tr><tr><th scope="row">Alt samlet, Full rens</th><td>Rundt 1,5 % av personopplysningene sto igjen</td><td class="tall">115 av 7 578 (1,5 %), pluss 28 navn delvis</td><td><span class="styrke god">God</span></td></tr><tr><th scope="row">Alt samlet, standardvalgene i Egendefinert</th><td>Omtrent 15 % sto igjen, mest adresser, andre ID-numre, private opplysninger og saksnumre</td><td class="tall">1 131 av 7 589 (14,9 %)</td><td><span class="styrke svak">Svak</span></td></tr><tr><th scope="row">Alt samlet, Bare identitet</th><td>Omtrent 24 % sto igjen, blant annet all helse, med vilje</td><td class="tall">1 817 av 7 595 (23,9 %)</td><td><span class="styrke svak">Svak</span></td></tr><tr><th scope="row">Bilder og skannede sider, alt samlet</th><td>Omtrent 6,5 % sto igjen, og noen få kunne ikke leses</td><td class="tall">61 av 938 (6,5 %), og 8 av dem kunne ikke leses</td><td><span class="styrke svak">Svak</span></td></tr><tr><th scope="row">Navn i bilder</th><td>Omtrent 2 % sto igjen</td><td class="tall">8 av 418 (1,9 %)</td><td><span class="styrke god">God</span></td></tr><tr><th scope="row">Helse i bilder</th><td>29 % sto igjen (få verdier, så tallet er usikkert)</td><td class="tall">16 av 56 (29 %)</td><td><span class="styrke svak">Svak</span></td></tr><tr><th scope="row">Andre ID-numre i bilder</th><td>Mer enn 1 av 5 sto igjen</td><td class="tall">22 av 101 (22 %)</td><td><span class="styrke svak">Svak</span></td></tr></tbody>
+            </table>
+            <h3 class="under">Klart bytter også for mye</h3>
+            <p>Full rens bytter også mye som kunne stått. I blindprøven ble 748 av 3 351 ufarlige opplysninger byttet (22 %). Mest gjelder det saksnumre (65 %), andre ID-numre (61,5 %) og adresser (53 %): et saksnummer fra en annen etat eller adressen til legekontoret blir ofte byttet sammen med det private. Omtrent 20 % av telefonnumrene, kontonumrene og organisasjonsnumrene som skulle fått stå, ble byttet, for eksempel kontorets egne. Av navn som skulle fått stå, ble omtrent 10 % byttet. Med standardvalgene ble 9 % byttet unødvendig, og med «Bare identitet» 4 %, men da står mer av det private igjen. I bilder byttet Full rens omtrent 121 av 563 ufarlige opplysninger (21 %).</p>
+            <h3 class="under">Slik målte vi</h3>
+            <p>Vi har målt Klart på oppdiktede testmapper laget med KI, ikke på dokumenter fra ekte kontorer. Tallene vi viser først, er fra mapper som ble laget uten at Klart var tilpasset dem: 7 578 personopplysninger og 3 351 opplysninger som skulle fått stå i vanlig tekst, og 938 personopplysninger i bilder og skannede sider. Hver opplysning er sjekket mot en fasit. En lekkasje betyr at opplysningen fortsatt kan leses i kopien, og «delvis» betyr at en del av et navn står igjen. Filer som Klart holdt tilbake, er talt for seg. Noen rettelser er gjort etter at vi så resultatene fra disse mappene, så tallene kan være litt bedre enn det du får på helt nye dokumenter. Alle målingene er gjort på Mac.</p>
+          </details>
+          <details class="sek" id="teknisk">
+            <summary><span class="merke">For IT</span>De tekniske detaljene</summary>
+            <p class="intro">For den som vil vite nøyaktig hvordan motoren virker, hva som er målt, og hva som ikke er det.</p>
+            <div class="teknisk-innhold"><details><summary>Motoren i korte trekk</summary><ul><li>Motoren er låst fra 3. november 2026, og tallene på denne siden gjelder den versjonen. Den har tre deler: norske regler med kontrollsifre og navnelister, en liten setningsleser (NorBERT 3 small) for private setninger, og operativsystemets egen tekstgjenkjenning for bilder og skannede sider.</li><li>Regler og kontrollsifre: fødselsnummer, D- og H-nummer (mod 11), kontonummer (mod 11), norsk IBAN, organisasjonsnummer, FH-nummer, svensk og finsk personnummer og dansk CPR. Bak en merkelapp som «Fnr» eller «Personnr.» tas fødselsnummeret også med feil kontrollsifre eller ett uleselig tegn. Svensk personnummer uten århundre og dansk CPR tas bare med merkelapp på linjen. Navnelister fra SSB og Norsk ordbank, faste steder (Navn:, Med hilsen, kolonneoverskrifter som Fornavn) og et register for hele mappen: en funnet verdi byttes overalt. Personer får merkelappen [PERSON_n].</li><li>Setningsleseren er en ordleser pluss NorBERT 3 small, som kjører i Rust (om lag 300 MB minne). Den bytter bare setninger den er ganske sikker på, og bare i filer med minst ett personfunn. Setningen må være 20-400 tegn og minst tre ord, og ha et navn, et pekeord (han, hun, mor, far, eleven, pasienten, brukeren, klienten, kunden m.fl.), engelsk «I», eller ligge i et avsnitt om personen eller i jeg-form. Når minst to private setninger er funnet, leses resten av filen uten dette kravet. Høyst 5 000 setninger per fil. Mangler NorBERT-filene, leser en enklere leser alene uten at rapporten sier fra.</li><li>Ingen språkmodell i motoren. Appen har et eget spor som kan starte en språkmodell, men det er ikke i bruk. Programpakken har fortsatt med seg en ubrukt llama-server; det er et byggevalg for senere og ikke en del av motoren.</li><li>Bilder: på Mac Apple Vision med nøyaktig lesing og uten språkretting. På Windows Windows&#x27; egen tekstgjenkjenning (nb-NO, nn-NO, da-DK eller sv-SE hvis installert, ellers maskinens språk) og Tesseract med norsk modell i pakken. Ansikter: Vision på Mac; på Windows FaceAnalysis (bare forfra) pluss en liten egen modell som søker i ruter. Etter at bildet er lest, brukes de samme reglene som for tekst.</li><li>Fart: omtrent 0,2 til 1,6 sekunder per tekstfil på en Mac Mini, og noen sekunder per sett med bildefiler. Eldre PC-er med lite minne kan bruke lengre tid (ikke målt).</li></ul></details><details><summary>Profiler og grupper</summary><ul><li>Grupper: Navn, Fødselsnummer (F-nr, D-nr, pass, kjennemerke, andre ID-numre), Telefon og e-post, Helse, Private setninger, Konto og Hemmeligheter er på i standardvalgene. Adresse og sted, Datoer, Yrke og relasjon, Alder, Arbeidsplass og Saksnummer er av.</li><li>Full rens (alle grupper) velges for hver ny mappe, og valget huskes ikke. «Egendefinert» starter med standardvalgene. «Bare identitet» i målingen er navn, fødselsnummer, kontakt, konto og hemmeligheter; helse, adresse og saksnummer røres da ikke med vilje, men noen få verdier byttes likevel når de står inne i noe annet som byttes.</li><li>Kunde-, ansatt-, klient-, medlems-, pasient- og journalnumre bak en merkelapp regnes som saksnummer og følger gruppen Saksnummer, selv om hintet til Fødselsnummer sier «andre ID-numre». Restrisikoen i rapporten regner ikke saksnummer eller kontorets egne opplysninger. Forklaringene til gruppene vises ikke ved knappene.</li><li>Yrke og relasjon og Alder: reglene for disse kjøres bare i et eget spor som ikke er i bruk. Eneste treff er «skilsmisse» om en person, som merkes som relasjon.</li><li>Helse er én gruppe med merkelappen [HELSE_n]. Den dekker GDPR art. 9 og 10 pluss privatøkonomi: fagforening, religion, etnisitet, politikk, legning, strafferett, og personbundne ord som inkasso, gjeldsordning og bostøtte. Gruppen kan ikke deles uten nye typer i motoren. Private setninger er en egen gruppe, men hele helsesetninger fra reglene følger Helse.</li></ul></details><details><summary>Tall per type i ord</summary><ul><li>Blindprøven, vanlig tekst, Full rens, sto igjen: fødselsnummer 0 av 780, e-post 0 av 592, kontonummer 0 av 363, telefon 1 av 809, navn 21 av 3 078 (0,7 %) pluss 28 delvis (0,9 %), adresse 5 av 388 (1,3 %), saksnummer 7 av 219 (3,2 %), andre ID-numre 21 av 428 (4,9 %), helse 33 av 581 (5,7 %), andre private opplysninger 27 av 335 (8,1 %). Til sammen 115 av 7 578 (1,5 %).</li><li>Standardvalgene: 1 131 av 7 589 sto igjen (14,9 %), blant annet adresser 381 av 389, andre ID-numre 285 av 430, andre private opplysninger 208 av 335, saksnumre 202 av 219 og helse 33 av 581. Bare identitet: 1 817 av 7 595 (23,9 %), blant annet alle 581 helseopplysninger og 387 av 390 adresser.</li><li>Byttet unødvendig (av verdier som skulle stått), blindprøven, Full rens: 748 av 3 351 (22 %). Saksnummer 141 av 218 (65 %), andre ID-numre 61,5 %, adresse 96 av 181 (53 %), organisasjonsnummer 39 av 182 (21 %), telefon 38 av 185 (21 %), konto 17 av 84 (20 %), helse 14 av 23 (lite utvalg), navn 16 av 152 (10,5 %), e-post 17 av 163 (10 %). Standardvalg 307 av 3 371 (9 %), Bare identitet 144 av 3 378 (4 %).</li><li>Alle seks testsett, også de Klart er justert etter, Full rens: navn 47 av 11 767 pluss 110 delvis, fødselsnummer 0 av 1 549, telefon 1 av 6 101, e-post 1 av 3 206, konto 0 av 608, helse 52 av 1 294 (4,0 %).</li><li>Bilder og skannede sider (Apple Vision, Full rens), alle sett: 129 av 2 129 sto igjen (6,1 %) og 34 ble ikke lest (1,6 %). Navn 18 av 1 007 (pluss 21 ikke lest), helse 40 av 216 (18,5 %), andre private 34 av 103, andre ID-numre 22 av 101, saksnummer 7 av 65, telefon 2 av 228 (pluss 5 ikke lest), fødselsnummer 1 av 190, e-post 0 av 67. Blindbildene: 61 av 938 (6,5 %), av dem 8 ikke lest; navn 8 av 418, fødselsnummer 1 av 103, telefon 1 av 109, e-post 0 av 55, helse 16 av 56, andre ID-numre 22 av 101, andre private 10 av 22. Byttet unødvendig i bilder: om lag 121 av 563 (21 %). Ansikter er ikke med i målingen.</li><li>Filer holdt tilbake: i blindsett 6 sto filer med 154 personopplysninger utenfor kopien med Full rens (143 med standardvalg, 137 med Bare identitet), og i testsett 1 filer med 16.</li><li>Vanlig tekst uten sak: av 539 linjer fikk 303 noe byttet (346 navn), 10 fikk helse- eller privatmerke (standardvalg og Full rens), og ingen fikk adresser eller datoer byttet.</li></ul></details><details><summary>Kjente svake punkter</summary><ul><li>Private opplysninger med hverdagsord hviler på setningsleseren, som heller bytter en setning for lite enn for mye. Reglene har faste uttrykk for samvær, delt bosted, trang økonomi, konflikt og inkasso, men ingen for advarsler, avskjed eller karakterer. Uten navn i filen leses ingen setninger; «vedkommende» og «de» regnes ikke som pekeord, så de holder ikke før to private setninger er funnet i filen.</li><li>Språk: helse- og privatlistene er bokmål med noe nynorsk. Et lite sett engelske ord tas når en person står i setningen (sick leave, depression, anxiety, violence, abuse, alcohol, nightmares, hospitalized), men ikke for eksempel «panic» eller «pregnant». Ingen polske eller arabiske helseord. E-posthoder støttes på norsk, nynorsk, engelsk, svensk, dansk og tysk. Nynorsk er ikke målt for seg.</li><li>Navn: initialer tas bare med punktum eller sammen med etternavn; initialer uten punktum og saksbehandlerkoder i «Vår ref.» står med vilje. Navn med liten forbokstav tas som par av kjent fornavn og etternavn. «Etternavn, Fornavn» med ukjente navn kjennes ofte ikke igjen. Navnet bak en feltmerkelapp må ha stor forbokstav, så arabisk skrift tas heller ikke bak «Navn:»; kyrillisk bare bak en navnemerkelapp.</li><li>Spredning: registeret bytter en verdi overalt. Et navn foran «gate», «gård», «camping», «skole» eller «sykehus» regnes som sted, men «kommune» står ikke på listen. Ingen liste over kjente personer. Regelen for kontorets egne holder bare kontorets kontaktopplysninger, ikke personer. Eneste vei for å la et navn stå er «Beholdes» treff for treff.</li><li>Kolonner som Merknad, Anmerkning, Notat, Kommentar og Fritekst byttes som hel celle på rader med en person; korte statusord som «ok», «betalt» og «sendt» står.</li><li>Telefon: et utenlandsk nummer med 00 foran og uten skilletegn rett etter landkoden (som 0046701234567) står med vilje, fordi det ikke kan skilles fra et ordrenummer; «0046 70 123 45 67» tas.</li><li>Bilder: feillesninger, små ruter i skannede skjema og et skjevt tekstlag i skannede PDF-er kan gi lekkasjer. Helse og private setninger står oftere igjen, trolig fordi bildelesingen gir linjer og bruddstykker heller enn hele setninger (ikke målt). Kontrollen etter sladding av ansikter kjører bare når minst ett ansikt ble funnet; et ansikt som fortsatt kan kjennes igjen, gir «ADVARSEL» i notatet, men kopien skrives. Feiler Vision på Mac, prøves det én gang til, og så holdes filen tilbake med råd om omstart.</li><li>Kontorets egne opplysninger avgjøres per verdi i hele mappen ut fra brevhodet. Målingen skiller ikke ut hvor mange av de unødvendige byttene som gjelder kontorets egne opplysninger.</li></ul></details><details><summary>Hva som ikke dekkes</summary><ul><li>Tall: faktura- og ordrenummer er utelatt med vilje; KID foran et tall er betalingsnummer, aldri konto eller telefon; beløp og lønn blir aldri funn. Ingen Luhn-sjekk for betalingskort, ingen mønstre for IPv4/IPv6 eller koordinater. Gårds- og bruksnummer brukes bare som anker for en gateadresse bak, og bare adressen byttes. GPS fjernes fra metadata i dypvasken, ikke fra teksten.</li><li>Datoer: en dato byttes bare fra fødselsnummeret, etter «født», «Fødselsdato», «f.» og «DOB», under en kolonne «Fødselsdato», fra felt 3 på førerkort og fra datoer med årstall i tabellrader med en person når alderen blir 16-110 år. Datoer etter «faktura», «levering», «avtale» og lignende hoppes over. Stedsnavn alene tas ikke; Adresse og sted tar gateadresse, postnummer med sted og «bor på X».</li><li>Indirekte identifisering: ingen typer for roller, hendelser eller kombinasjoner av detaljer, og ingen vurdering av om flere utleveringer til samme mottaker til sammen peker ut en person.</li><li>Filtyper som leses: txt, md, docx-familien, pdf, png, jpg, tif, eml, xlsx, xls, xlsm, csv, pptx, rtf, msg, emlx og mbox; .ppt avvises. Andre filer, iCloud-filer som ikke er lastet ned, og snarveier står i rapporten som ikke lest. Passordbeskyttede filer leses ikke. I e-post renses tekstdeler (txt, csv, md, vcf, ics, html, xml, json, eml, mbox, log, rtf, tsv); andre vedlegg og innlimte bilder erstattes med en tekstlinje. Vedlegg inne i PDF, PDF-samlinger og XFA-skjemaer blir ikke med i kopien. Lyd og video i Office-filer: bare filinformasjonen sjekkes. EMF/WMF, HEIC og JPEG 2000 inne i dokumenter og innbakte objekter som ikke er Office-filer blir tomme eller gjør at filen holdes tilbake; innbakte Office-filer renses.</li><li>Utformat: PDF-sider blir bilder med merkelappene tegnet oppå og et usynlig tekstlag med renset tekst, skjemafelt flates ut, en forside legges først og en «-renset.txt» legges ved siden av. Kopien er ikke PDF/A, og struktur for skjermlesere går tapt. Gamle .xls blir .xlsx, RTF blir .txt, msg/emlx blir .eml, TIFF blir PNG, makroer fjernes.</li><li>Bilder: bildeanalysen gir bare tekstlinjer og ansiktsrammer. Ingen dekoding av QR- eller strekkoder. Signaturfelt og strekkode dekkes bare på førerkort. Perforert passnummer leses ikke. Håndskrift er ikke målt.</li><li>Arbeidsflyt: ingen markering for hånd. «Rett» bytter bare én merkelapp mot en annen. Det finnes kode for å lære nye navn, men den er ikke koblet til. Slås en hel gruppe av eller på, forsvinner enkeltvalg i gruppen.</li><li>Juss: en renset kopi er ikke automatisk anonymisert. Med pseudonymer krypteres teksten inn i hver kode, og nøkkelen gjør om kopien (pseudonymisering). Nøkkelen ligger i Klart, beskyttet av operativsystemet; mistes maskinen uten nøkkelfil og passordfrase eller de 24 ordene, kan kopien aldri gjøres om.</li></ul></details><details><summary>Måling og testgrunnlag</summary><ul><li>Blindtallene er fra testsett 4 og 6, sett 5 scenario 46 og sett 3 scenario 26 og 27. Alle testmappene er oppdiktet og laget med KI.</li><li>Blindmaterialet er ikke helt urørt: sett 4 er brukt mange ganger på summer, setningsleserens vekter er målt mot sett 4, én regel for kontorets egne opplysninger bygger på sett 4, og de siste rettelsene bygger på målinger av sett 1–6. Setningsleseren er trent på setninger fra samme slags KI-modeller som laget testene. Tallene kan derfor være noe bedre enn på helt nye dokumenter.</li><li>En lekkasje er en verdi fra fasiten som fortsatt kan leses i kopien. Delvis er et navn der en del står igjen. For mye er en verdi som skulle stått, men ble byttet. Verdier i filer som ble holdt tilbake, er talt for seg. Ikke lest gjelder bilder der tekstgjenkjenningen ikke fant verdien.</li><li>Alt er målt på Mac. Ikke prøvd med den låste motoren: Windows, nettverksdisker, iCloud-mapper, maskin i dvale, svært store mapper og Office-filer med lyd og video. Bilder er målt mindre enn tekst, og ansikter er ikke målt med fasit.</li></ul></details><details><summary>Nettverk, kopier og lagring</summary><ul><li>Appens innebygde nettleser får bare snakke med programmet selv (connect-src er begrenset til ipc). Programmet har ingen HTTP-bibliotek, og koden har ingen fetch-kall. Aktivering åpner bare aktiveringssiden i nettleseren, med maskinkoden i adressen.</li><li>Kopimappen legges alltid i forelder-mappen med endelsen «-klar», og hver ny skriving får en ny mappe («-klar 2»). Velger du roten på en minnepinne på Mac, kan kopien ikke lages, fordi forelder-mappen er /Volumes. Hva som skjer med en diskrot på Windows, er ikke avklart. Ligger kilden i en synkronisert mappe (OneDrive, Teams), havner kopien der også. Med lisens skrives kopiene straks skanningen er ferdig; bare dokumentmodus og prøveversjonen viser gjennomgangen først.</li><li>Sikkerhetskopi av originalene er på som standard og ligger ukryptert i «sikkerhetskopier» i appens datamappe: på Mac ~/Library/Application Support/no.klart.app, som blir med i Time Machine, og på Windows Roaming AppData, som kan følge med når profilen synkroniseres. Påminnelse etter 30 dager.</li><li>En sluttsjekk leser hele kopien før den skrives. Rester, deler som ikke lar seg lese, ukjente bildeformater som HEIC, krypterte oppføringer og nøsting dypere enn tre ledd gir «ikke skrevet». Deler som bare kan tas delvis med, gir merknaden «Bare delvis med i kopien».</li></ul></details></div>
+          </details>
+        </section>
+      </main>
+
+      <div class="slutt">
+        <strong>Ingen automatisk rensing fanger alt.</strong>
+        <p>
+          Klart tar det aller meste av navn og numre, men ikke alt det private.
+          Les derfor gjennom kopien før du deler den. Du er
+          behandlingsansvarlig, og Klart garanterer ikke at en kopi er anonym.
+        </p>
+        <p>Vil du sjekke at Klart ikke sender noe ut, står det <a href="til-it.html">på siden for IT-avdelingen</a>.</p>
+      </div>
+
+      <footer>
+        <a href="./">Tilbake til Klart</a> · Finner du noe Klart burde ha tatt, vil vi
+        gjerne høre om det. Vi oppdaterer denne siden når motoren endres.
+      </footer>
+    </div>
+    <script>
+      (function () {
+        var rader = document.querySelectorAll(".rad");
+        function lukk(unntak) {
+          for (var i = 0; i < rader.length; i++) if (rader[i] !== unntak) rader[i].classList.remove("apen");
+        }
+        for (var i = 0; i < rader.length; i++) {
+          rader[i].addEventListener("click", function (h) {
+            h.stopPropagation();
+            lukk(this);
+            this.classList.toggle("apen");
+          });
+        }
+        document.addEventListener("click", function () { lukk(null); });
+        document.addEventListener("keydown", function (h) { if (h.key === "Escape") lukk(null); });
+      })();
+    </script>
+  </body>
+</html>

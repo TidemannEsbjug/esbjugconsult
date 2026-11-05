@@ -373,7 +373,8 @@
     $("r-pris").replaceChildren();
     $("r-pris").appendChild(document.createTextNode(nok(d.pris) + " "));
     var per = document.createElement("span");
-    per.textContent = "per år, eks. mva";
+    // Kommuner og statlige virksomheter kjøper for fire år (lisenspris gir fireAar).
+    per.textContent = d.fireAar ? "for fire år, eks. mva" : "per år, eks. mva";
     $("r-pris").appendChild(per);
 
     // Vilkårene som betyr noe for kjøperen. Hva programmet gjør, vet de alt.

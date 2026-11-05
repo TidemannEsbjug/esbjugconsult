@@ -5,6 +5,7 @@ import {
   orgnrFra,
   lesPriser,
   lisenspris,
+  aarspris,
   kundepris,
   kurvepris,
   rund,
@@ -22,6 +23,8 @@ import {
   ehfForvalgt,
   reiseFor,
   virksomhetFra,
+  domeneFra,
+  epostPaaDomene,
 } from "./klart-pris.js";
 
 const P = lesPriser(readFileSync(new URL("../../verktoy/klart-priser.json", import.meta.url), "utf8"));
@@ -205,5 +208,101 @@ assert.equal(aktiv({ underAvvikling: true }), false);
 assert.equal(aktiv({ underTvangsavviklingEllerTvangsopplosning: true }), false);
 assert.equal(aktiv({ slettedato: "2020-01-01" }), false);
 assert.equal(virksomhetFra({ organisasjonsnummer: "1", navn: "X" }).ansatte, 0);
+
+// Statlige virksomheter: fireårslisens etter de ansatte, grunnpris pluss per ansatt per år, under samme tak.
+// Tilsyn, ombud og klagenemnder der personopplysninger er kjernen, får påslaget. Kontorer betaler sin andel.
+{
+  const etat = (ansatte, orgnr = "999999999") => ({ orgnr, ansatte, naering: "84.110", form: "ORGL", stat: true });
+  const s = (n, orgnr) => lisenspris(P, etat(n, orgnr));
+  assert.equal(s(18).pris, 4 * 43000); // en liten tingrett: 40 000 + 18 × 180
+  assert.equal(s(92).pris, 4 * 56500); // Lotteri- og stiftelsestilsynet
+  assert.equal(s(490).pris, 480000); // Statens pensjonskasse: på taket
+  assert.equal(s(26413).pris, 480000); // OUS
+  assert.equal(s(74).pris, 4 * 53500); // en etat med 74 ansatte uten påslag
+  assert.equal(s(74, "974761467").pris, 4 * 66500); // Datatilsynet: (40 000 + 74 × 180) × 1,25
+  assert.equal(s(74, "974761467").verdi, 1.25);
+  assert.equal(s(74).verdi, 1);
+  assert.equal(s(258, "982019095").pris, 4 * 108000); // UNE: (40 000 + 258 × 180) × 1,25
+  assert.equal(s(400, "974761394").pris, 480000); // påslaget går aldri over taket
+  assert.equal(s(74).fireAar, true);
+  assert.equal(s(74).stat, true);
+  assert.equal(s(74).aar, 4);
+  let sist = 0;
+  for (let n = 1; n <= 30000; n = Math.ceil(n * 1.05)) {
+    const p = s(n).pris;
+    assert.ok(p >= sist && p <= 480000, `statsprisen ved ${n}`);
+    sist = p;
+  }
+  // Domstolene kjøper samlet: en tingrett er en del, og alle til sammen holder seg under taket
+  const domstolene = { orgnr: "984195796", form: "STAT", ansatte: 2212, stat: true };
+  const domstol = (ansatte, betalt = 0) => lisenspris(P, { ansatte, naering: "84.230", form: "ORGL", kommune: domstolene }, null, betalt);
+  assert.equal(domstol(282).pris, rund(480000 * (282 / 2212))); // Oslo tingrett
+  assert.equal(domstol(282).del, true);
+  assert.equal(domstol(282).stat, true);
+  assert.equal(domstol(5).pris, P.stat.delMin);
+  let betalt = 0;
+  for (const a of [282, 124, 97, 60, 40, 18, 18, 300, 250, 200, 150, 100]) betalt += domstol(a, betalt).pris;
+  assert.ok(betalt <= 480000, `betalt ${betalt}`);
+  assert.equal(domstol(100, 480000).pris, 0);
+  assert.equal(aarspris(P, etat(74)).fireAar, undefined); // som kunde hos en leverandør: årsprisen
+}
+
+// Kommuner og fylkeskommuner: fireårslisens etter innbyggertallet, aldri over taket. Deler av en kommune
+// betaler sin andel av kommunens ansatte, og det som er betalt i kommunen, trekkes fra.
+{
+  const kommune = (innbyggere, form = "KOMM", ansatte = 1000) => ({ ansatte, naering: "84.110", form, innbyggere });
+  const k = (n, form) => lisenspris(P, kommune(n, form));
+  assert.equal(k(728714).pris, 480000); // Oslo
+  assert.equal(k(51511).pris, 480000); // Lørenskog: taket fra 50 000 innbyggere
+  assert.equal(k(29169).pris, 261000); // Kongsberg
+  assert.equal(k(5000).pris, 58000);
+  assert.equal(k(219).pris, 11000); // Utsira: uten gulv under første punkt
+  assert.equal(k(5000).fireAar, true);
+  assert.equal(k(5000).aar, 4);
+  assert.equal(k(5000).innbyggere, 5000);
+  assert.equal(k(2000000).pris, 480000); // taket holder over det siste punktet
+  assert.equal(k(658342, "FYLK").pris, k(658342).pris); // fylkeskommunen prises som en kommune
+  assert.equal(lisenspris(P, kommune(0, "KOMM", 94)).innbyggere, 564); // ukjent: anslått fra de ansatte
+  assert.equal(lisenspris(P, v(1000, "84.110", "ORGL")).fireAar, undefined); // ukjent etat uten stat: årspris
+  let sist = 0;
+  for (let n = 100; n <= 1e6; n = Math.ceil(n * 1.01)) {
+    const p = k(n).pris;
+    assert.ok(p >= sist && p <= P.kommune.tak, `kommuneprisen ved ${n}`);
+    sist = p;
+  }
+  // Det kommunen har betalt, trekkes fra, og kommunen betaler aldri under null
+  assert.equal(lisenspris(P, kommune(728714), null, 100000).pris, 380000);
+  assert.equal(lisenspris(P, kommune(728714), null, 500000).pris, 0);
+  // En bydel: andelen av kommunens ansatte, aldri mer enn det som er igjen, minst delMin
+  const oslo = { form: "KOMM", innbyggere: 728714, ansatte: 68378 };
+  const bydel = (ansatte, betalt = 0) => lisenspris(P, { ansatte, naering: "84.110", form: "ORGL", kommune: oslo }, null, betalt);
+  assert.equal(bydel(1805).pris, rund(480000 * (1805 / 68378))); // Grünerløkka
+  assert.equal(bydel(1805).del, true);
+  assert.equal(bydel(1805).hel, 480000);
+  assert.equal(bydel(5).pris, P.kommune.delMin); // et lite ombud
+  assert.equal(bydel(1805, 470000).pris, 10000); // bare det som er igjen av Oslos pris
+  assert.equal(bydel(1805, 480000).pris, 0);
+  assert.equal(bydel(200000).pris, 480000); // aldri mer enn hele kommunen
+  // Alle delene til sammen, kjøpt etter hverandre, blir aldri mer enn kommunens pris
+  let betalt = 0;
+  for (const a of [12000, 9000, 20000, 15000, 8000, 30000]) betalt += bydel(a, betalt).pris;
+  assert.ok(betalt <= 480000, `betalt ${betalt}`);
+  // En tjenesteleverandør betaler årsprisen for en kommune som kunde, ikke fireårsprisen
+  assert.equal(kundepris(P, kommune(5000)), aarspris(P, kommune(5000)).pris * P.leverandorFaktor);
+  assert.equal(aarspris(P, kommune(5000)).fireAar, undefined);
+  // Betalingsmåten er lik for alle siden 4329eda (kort eller faktura, ingen
+  // grenser og ingen kvartalsvise avdrag). Om en fireårslisens betales på
+  // forskudd eller per år avgjøres i kjøpet, ikke her.
+}
+
+// Nøkler før betaling går bare til virksomhetens eget domene fra Enhetsregisteret
+assert.equal(domeneFra({ hjemmeside: "www.oslo.kommune.no/" }), "oslo.kommune.no");
+assert.equal(domeneFra({ hjemmeside: "https://www.Utsira.kommune.no/om" }), "utsira.kommune.no");
+assert.equal(domeneFra({ epostadresse: "post@utsira.kommune.no" }), "utsira.kommune.no");
+assert.equal(domeneFra({}), null);
+assert.equal(epostPaaDomene("kari@bga.oslo.kommune.no", ["oslo.kommune.no"]), true);
+assert.equal(epostPaaDomene("kari@fakeoslo.kommune.no", ["oslo.kommune.no"]), false);
+assert.equal(epostPaaDomene("kari@oslo.kommune.no.evil.com", ["oslo.kommune.no"]), false);
+assert.equal(epostPaaDomene("kari@gmail.com", ["oslo.kommune.no"]), false);
 
 console.log("klart-pris: alt stemmer");
