@@ -223,6 +223,10 @@ button {
   box-shadow: 0 10px 22px -12px rgba(36, 86, 230, 0.45);
 }
 
+.btn:has(.ned) {
+  gap: 0;
+}
+
 .btn .os {
   font-family: var(--mono);
   font-size: 10.5px;
@@ -4043,9 +4047,13 @@ footer {
   .hero .scene .privat .get .btn {
     flex: 1 1 0;
     min-width: 0;
-    padding: 0 10px;
-    font-size: 13.5px;
+    padding: 0 12px;
+    font-size: 15px;
     white-space: nowrap;
+  }
+
+  .privat .btn .ned {
+    display: none;
   }
 
   .hero .scene .eller {
