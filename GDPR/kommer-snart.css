@@ -25,17 +25,18 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Bildet fyller flata, teksten står i himmelen over fjellet. */
+/* Hele bildet skal være med, ikke en utsnitt av det: object-fit: contain
+   skalerer det ned til det får plass, og flata rundt er sidens egen farge.
+   Ordene står midt i, over bildet. */
 .scene {
   position: relative;
   min-height: 100svh;
   display: grid;
-  grid-template-rows: auto minmax(24px, 1fr);
-  justify-items: center;
-  padding: clamp(64px, 14vh, 190px) clamp(20px, 5vw, 48px) clamp(40px, 8vh, 96px);
+  place-items: center;
+  padding: clamp(24px, 5vw, 64px);
   overflow: hidden;
   isolation: isolate;
-  background: #dfe8f2;
+  background: var(--ground);
 }
 
 .bilde {
@@ -44,19 +45,49 @@ body {
   z-index: -1;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center 8%;
+  object-fit: contain;
+  object-position: center;
   pointer-events: none;
 }
 
+/* Er vinduet høyere enn det er bredt, blir hele bildet en smal stripe midt på
+   skjermen med tomt over og under. Da er utsnittet det beste: det fyller flata,
+   og på en telefon ser man uansett bare en del av vidda. */
+@media (max-aspect-ratio: 1 / 1) {
+  .bilde {
+    object-fit: cover;
+    object-position: center 30%;
+  }
+}
+
 .ord {
+  position: relative;
   display: grid;
   justify-items: center;
-  gap: clamp(18px, 2.6vh, 30px);
+  gap: clamp(14px, 2vh, 24px);
   text-align: center;
 }
 
+/* Litt lys bak ordene, så de kan leses uansett hva de ligger over. Ingen
+   firkant: en myk sirkel som toner ut lenge før kanten. */
+.ord::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 50%;
+  width: clamp(420px, 70vw, 1000px);
+  height: clamp(260px, 42vh, 460px);
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    rgba(238, 243, 251, 0.88),
+    rgba(238, 243, 251, 0) 72%
+  );
+}
+
 .merke {
+  margin: 0;
   font-family: var(--mono);
   font-size: clamp(11px, 0.78vw, 13px);
   font-weight: 500;
@@ -73,18 +104,4 @@ h1 {
   line-height: 1.02;
   font-weight: 700;
   letter-spacing: -0.035em;
-}
-
-/* Litt luft rundt ordene der bildet er lyst, uten en firkant rundt dem. */
-.ord::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  inset: clamp(40px, 10vh, 140px) 0 auto;
-  height: clamp(220px, 40vh, 420px);
-  background: radial-gradient(
-    ellipse 60% 70% at 50% 40%,
-    rgba(238, 243, 251, 0.82),
-    rgba(238, 243, 251, 0) 70%
-  );
 }
