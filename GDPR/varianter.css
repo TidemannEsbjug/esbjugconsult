@@ -173,26 +173,45 @@
    linje sitt eget glass for å kunne leses.
    ========================================================================== */
 
+/* Ett kort, ikke to bokser oppå hverandre: flata er et eget felt i rutenettet
+   som dekker begge radene. To bokser viste en skjøt der de møttes. */
+.v4 .hero .scene-tekst:not(.har-svar)::after {
+  content: "";
+  grid-row: 3 / span 2;
+  grid-column: 1;
+  z-index: 0;
+  /* Rutenettet midtstiller feltene (align-items: center), så uten dette får
+     flata ingen høyde i det hele tatt. */
+  align-self: stretch;
+  width: min(760px, 100%);
+  justify-self: center;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.975);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 34px 80px -44px rgba(21, 32, 46, 0.75);
+}
+
+/* Uten dette havner de i en ny spalte ved siden av flata: et felt som ikke
+   selv sier hvilken spalte det hører til, blir flyttet dit det er ledig. */
+.v4 .hero .scene-tekst:not(.har-svar) > h1,
+.v4 .hero .scene-tekst:not(.har-svar) > .privat,
+.v4 .hero .scene-tekst:not(.har-svar) > .orgport {
+  grid-column: 1;
+  position: relative;
+  z-index: 1;
+}
+
 .v4 .hero .scene-tekst:not(.har-svar) > .privat {
   width: min(760px, 100%);
   margin: 0 auto;
-  padding: 30px 38px 22px;
-  border-radius: 28px 28px 0 0;
-  background: rgba(255, 255, 255, 0.94);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  box-shadow: 0 30px 70px -40px rgba(21, 32, 46, 0.7);
+  padding: 50px 44px 28px;
 }
 
 .v4 .hero .scene-tekst:not(.har-svar) > .orgport {
   width: min(760px, 100%);
   margin: 0 auto;
-  padding: 0 38px 30px;
-  border-radius: 0 0 28px 28px;
-  background: rgba(255, 255, 255, 0.94);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  box-shadow: 0 30px 70px -40px rgba(21, 32, 46, 0.7);
+  padding: 0 44px 38px;
 }
 
 .v4 .hero .scene .privat-linje span,
@@ -210,9 +229,43 @@
   margin-top: 20px;
 }
 
-.v4 .hero .scene .privat .btn {
-  padding: 0 24px;
-  font-size: 15.5px;
+.v4 .hero .scene .privat-linje {
+  margin-bottom: 30px;
+  font-size: clamp(24px, 2.1vw, 32px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.v4 .hero .scene .privat-linje b {
+  font-weight: 700;
+}
+
+/* Knappene er hvite på et hvitt kort, og forsvinner. De får sin egen flate i
+   samme blå familie som merkelappen øverst på siden: tydelig at de kan
+   trykkes, uten at én av dem ser ut som den anbefalte. */
+.v4 .hero .scene .privat .get {
+  gap: 10px;
+}
+
+.v4 .hero .scene .privat .btn,
+.v4 .hero .scene .privat .btn.ghost {
+  height: 60px;
+  padding: 0 28px;
+  font-size: 16.5px;
+  font-weight: 600;
+  color: var(--signal-deep);
+  background: var(--signal-soft);
+  border-color: rgba(36, 86, 230, 0.16);
+  box-shadow: none;
+}
+
+.v4 .hero .scene .privat .btn:hover,
+.v4 .hero .scene .privat .btn.ghost:hover {
+  color: #fff;
+  background: var(--signal);
+  border-color: var(--signal);
+  box-shadow: 0 10px 24px -12px rgba(36, 86, 230, 0.8);
 }
 
 .v4 .hero .scene .eller::before,
