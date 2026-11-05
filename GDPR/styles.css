@@ -780,37 +780,32 @@ section {
   margin-top: auto;
 }
 
-/* På desktop står feltet rett under hytta. Hyttas plass i bildet følger av bredde og høyde (object-fit: cover).
-   Privatblokka henger i samme punkt, men over streken (translateY(-100%)), så høyden på den aldri må gjettes. */
-@media (min-width: 761px) {
-  .hero .scene-tekst:not(.har-svar) {
-    position: static;
-  }
-
-  .hero .scene-tekst:not(.har-svar) > .orgport,
-  .hero .scene-tekst:not(.har-svar) > .privat {
-    position: absolute;
-    /* 30px før privatveien kom til. Feltet står litt lenger ned nå, så «eller»
-       får plass mellom hytta og feltet i stedet for å ligge over hytta. */
-    top: calc(23vw + 8vh + 76px);
-    left: 0;
-    right: 0;
-    margin: 0 auto;
-  }
-
-  .hero .scene-tekst:not(.har-svar) > .privat {
-    transform: translateY(-100%);
-    padding-bottom: 26px;
-  }
+/* Overskriften øverst, nedlastingen og feltet samlet nede mot sporet, og luft
+   imellom som gir etter — men aldri helt. Rad 2 (minimum 28px) er grunnen til
+   at knappene ikke kan legge seg oppå overskriften, uansett vindusform; rad 5
+   holder gruppa litt over bunnen. Forholdet 1fr : 0,7fr gir mer luft over enn
+   under, så feltet lander nede i snøen der sporene møtes. */
+.hero .scene-tekst:not(.har-svar) {
+  display: grid;
+  grid-template-rows: auto minmax(28px, 1fr) auto auto minmax(0, 0.7fr);
+  align-content: stretch;
+  transition: grid-template-rows 520ms var(--ease);
 }
 
-/* På mobil står de to sammen nederst i bildet, ikke hver for seg. */
+.hero .scene-tekst:not(.har-svar) > h1 {
+  grid-row: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .hero .scene-tekst:not(.har-svar) > .privat {
-  margin-top: auto;
+  grid-row: 3;
+  padding-bottom: 26px;
 }
 
-.hero .scene-tekst:not(.har-svar) > .privat + .orgport {
-  margin-top: 14px;
+.hero .scene-tekst:not(.har-svar) > .orgport {
+  grid-row: 4;
+  margin-top: 0;
 }
 
 /* Tilbake fra prissiden: kortet står der med en gang, uten feltet først og uten animasjon. */
@@ -931,10 +926,10 @@ section {
   visibility: hidden;
 }
 
-@media (min-width: 761px) {
-  .hero .scene-tekst.skriver:not(.har-svar) > .orgport {
-    top: clamp(48px, 11vh, 120px);
-  }
+/* De skriver: overskriften og luften over feltet faller sammen, så feltet
+   glir opp og forslagene får plassen under seg. */
+.hero .scene-tekst.skriver:not(.har-svar) {
+  grid-template-rows: 0fr minmax(0, 0fr) auto auto 1fr;
 }
 
 .orgport .btn:disabled {
