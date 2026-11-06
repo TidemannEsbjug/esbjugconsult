@@ -40,7 +40,7 @@
 //   POST /chat/kast               {k: "le" | "tomat" | "heia" | "slurk"} a visitor laughs, throws a tomato, cheers or asks him to take a sip (shared counters)
 //   GET  /chat/poll?id=sherpa     poll totals;  POST /chat/poll {id, valg, vid} one vote per visitor (a new vote replaces the old)
 //   POST /chat/android            {bat, lader}        the owner's Android phone reports its battery (its own key, ANDROID_TOKEN)
-//   POST /chat/maskin             {navn, ledig}       a computer says it is on, every minute (starbase, starship, falcon; key MASKIN_TOKEN)
+//   POST /chat/maskin             {navn, ledig}       a computer says it is on, every minute (colossus, starbase = Avia; key MASKIN_TOKEN)
 //   GET  /chat/oyet                               weather now in Dubai, Koh Phangan and Lombok (Open-Meteo, cached 15 min)
 //   GET  /chat/spor                               the public map: live position, today's trail, place name and the readings
 //   GET  /chat/hr                                 today's heart rate from the owner's Apple Watch (Oslo day, per minute) + live bpm
@@ -269,12 +269,12 @@ export async function handleChat(request, env, url) {
       body: JSON.stringify({ kilde: "android", d: { bat: Math.round(bat), lader: !!lader } }) }));
   }
 
-  // The computers: Starbase (Mac), Starship and Falcon 9 (Windows). Only «I am on» and seconds since the last
+  // The computers: Colossus (Mac mini M6, Ethernet) and Avia (Mac, key «starbase»). Only «I am on» and seconds since the last
   // keyboard/mouse input (ledig), never what was typed. The page shows «Av» when one has been quiet for a few minutes.
   if (path === "/chat/maskin" && request.method === "POST") {
     if (!env.MASKIN_TOKEN || request.headers.get("Authorization") !== `Bearer ${env.MASKIN_TOKEN}`) return new Response("Unauthorized", { status: 401 });
     const { navn, ledig } = await request.json().catch(() => ({}));
-    if (!["starbase", "starship", "falcon"].includes(navn)) return new Response("Bad request", { status: 400 });
+    if (!["colossus", "starbase"].includes(navn)) return new Response("Bad request", { status: 400 });
     return hub.fetch(new Request("https://hub/chat/admin/tele", { method: "POST", headers: { "x-role": "owner" },
       body: JSON.stringify({ kilde: navn, d: { ledig: Number.isFinite(ledig) && ledig >= 0 ? Math.round(ledig) : null } }) }));
   }
