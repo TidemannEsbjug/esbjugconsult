@@ -920,7 +920,7 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .akse{display:flex;flex-direction:column;gap:10px;padding:14px 18px 14px}
   .ak-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
   .ak-m{font:600 9.5px/1 "SF Mono",Menlo,monospace;letter-spacing:.1em;color:rgba(0,32,91,.5)}
-  .ak-m i{font-style:normal;font-weight:800}.kx{color:#e0233c}.ky{color:#d68a00}.kz{color:#2563eb}
+  .ak-m i{font-style:normal;font-weight:800}.kx{color:#00205B}.ky{color:#3b78c4}.kz{color:#7fb3e0}
   /* Podkast: episodene, nyeste først, med datoen de ble laget. Trykk spiller av her i modulen, med en tynn spolelinje. */
   .pod{display:flex;flex-direction:column;gap:6px;padding:12px 18px 13px}
   .pod[hidden]{display:none}
@@ -1472,6 +1472,9 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
     .hoyre .sens .hp .st-v{row-gap:20px}
     .hoyre .sens .hp .st-l{margin-top:16px}
   }
+  /* Enhetene i to kolonner (6.11.2026): iPhone og Android, Watch L og Watch R, Colossus og Avia. Med én klokke står den alene på sin rad. */
+  .hoyre .sens:not(.pultk){grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .hoyre .sens .hp{order:0}.sens .sv[data-k="ibat"]{order:1}.sens .sv[data-k="abat"]{order:2}.sens .sv[data-k="wbatl"]{order:3}.sens .sv[data-k="wbatr"]{order:4}.sens .maskiner{order:9}
   /* Rullefeltet er skjult (for utseendet, særlig på Windows); siden ruller som før med hjul, tastatur og berøring. */
   html{scrollbar-width:none}html::-webkit-scrollbar{display:none}
 </style>
@@ -1838,11 +1841,6 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
       <li><span>Claude Max 20 <i>25. okt · 10:47</i></span><b>−2&nbsp;299 kr</b></li>
     </ul>
   </section>
-  <section class="akse gl" aria-label="Akselerometeret i Apple Watch og iPhonen, live">
-    <div class="ak ak-l" hidden><div class="ak-h"><span class="sl"><svg class="di" viewBox="0 0 24 24" fill="currentColor" aria-label="Apple" role="img"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg>Watch<span class="wa"> L</span> · akselerometer</span><span class="ak-m">20 Hz · g</span></div><canvas class="ak-c" data-k="watchl"></canvas></div>
-    <div class="ak"><div class="ak-h"><span class="sl"><svg class="di" viewBox="0 0 24 24" fill="currentColor" aria-label="Apple" role="img"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg>Watch<span class="wa"> R</span> · akselerometer</span><span class="ak-m">20 Hz · g</span></div><canvas class="ak-c" data-k="watchr"></canvas></div>
-    <div class="ak ak-i"><div class="ak-h"><span class="sl">iPhone · akselerometer</span><span class="ak-m"><i class="kx">x</i> <i class="ky">y</i> <i class="kz">z</i></span></div><canvas class="ak-c" data-k="iphone"></canvas></div>
-  </section>
   <!-- Kontoret: pult-kameraet (person, plagg, hodetelefoner) og flaske-kameraet (vannet når målingen er under 2 min). -->
   <section class="sens pultk gl" hidden aria-label="Vannflasken. Åpne forklaringen." role="button" tabindex="0" aria-expanded="false">
     <span class="mono s-t pk-t">Kontoret · kamera</span>
@@ -1865,6 +1863,11 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
     </div>
   </section>
   <!-- Aktive AI-abonnementer, dyrest først. Legg til eller fjern linjer her. -->
+  <section class="akse gl" aria-label="Akselerometeret i Apple Watch og iPhonen, live">
+    <div class="ak ak-l" hidden><div class="ak-h"><span class="sl"><svg class="di" viewBox="0 0 24 24" fill="currentColor" aria-label="Apple" role="img"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg>Watch<span class="wa"> L</span> · akselerometer</span><span class="ak-m">20 Hz · g</span></div><canvas class="ak-c" data-k="watchl"></canvas></div>
+    <div class="ak"><div class="ak-h"><span class="sl"><svg class="di" viewBox="0 0 24 24" fill="currentColor" aria-label="Apple" role="img"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg>Watch<span class="wa"> R</span> · akselerometer</span><span class="ak-m">20 Hz · g</span></div><canvas class="ak-c" data-k="watchr"></canvas></div>
+    <div class="ak ak-i"><div class="ak-h"><span class="sl">iPhone · akselerometer</span><span class="ak-m"><i class="kx">x</i> <i class="ky">y</i> <i class="kz">z</i></span></div><canvas class="ak-c" data-k="iphone"></canvas></div>
+  </section>
   <section class="abo gl" aria-label="Aktive KI-abonnementer" tabindex="0">
     <span class="mono s-t">Aktive KI-abonnementer</span><span class="abo-ant" aria-hidden="true"><span></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
     <ol class="abo-l"><li style="--c:#D97757;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><g stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 12V3.5M12 12l6-6M12 12h8.5M12 12l6.2 5.8M12 12v8.5M12 12l-6 6M12 12H3.5M12 12L5.8 5.8M12 12l3.3-7.9M12 12l-7.9 3.3"/></g></svg><span>Claude Max 20</span></li><li style="--c:#E9A27F;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><g stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 12V3.5M12 12l6-6M12 12h8.5M12 12l6.2 5.8M12 12v8.5M12 12l-6 6M12 12H3.5M12 12L5.8 5.8M12 12l3.3-7.9M12 12l-7.9 3.3"/></g></svg><span>Claude Max 5</span></li><li style="--c:#14b8a6;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 4h3.4v6.6L14.6 4H19l-6.6 7.2L19.4 20h-4.5l-4.7-6.2-1.8 1.9V20H5z"/></svg><span>Kling</span></li><li style="--c:#111;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="7.2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M4.2 19.8L19.8 4.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span>SuperGrok</span></li><li style="--c:#fff;--f:#0b1d4a"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11 3.5L4.5 16H11zM12.5 6l6 10h-6z"/><path d="M3 17.6h18l-2.2 3H5.2z"/></svg><span>Midjourney</span></li><li style="--c:#334155;--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="7" y="4" width="3.4" height="16" rx=".6"/><rect x="13.6" y="4" width="3.4" height="16" rx=".6"/></svg><span>ElevenLabs</span></li><li style="--c:linear-gradient(135deg,#ff8a3d,#ff2e7e);--f:#fff"><svg class="abo-i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3" y="10" width="2.6" height="4" rx="1.3"/><rect x="7.1" y="6.5" width="2.6" height="11" rx="1.3"/><rect x="11.2" y="3.5" width="2.6" height="17" rx="1.3"/><rect x="15.3" y="7.5" width="2.6" height="9" rx="1.3"/><rect x="19.4" y="10.5" width="2.6" height="3" rx="1.3"/></svg><span>Suno</span></li></ol>
@@ -3076,7 +3079,7 @@ function oskilloskop(ts) {
     const a = AK[c.dataset.k]; if (!a) continue;
     const pts = a.s.filter(p => p[0] > nå - VIN && p[0] <= nå);
     if (pts.length < 2) continue;
-    [['#e0233c', 1], ['#d68a00', 2], ['#2563eb', 3]].forEach(([farge, i]) => {
+    [['#00205B', 1], ['#3b78c4', 2], ['#7fb3e0', 3]].forEach(([farge, i]) => {
       x.strokeStyle = farge; x.lineWidth = tynn ? 1.2 : 1.6; x.lineJoin = 'round'; x.beginPath();
       pts.forEach((p, n) => { const px = W - (nå - p[0]) / VIN * W, py = Y(Math.max(-2, Math.min(2, p[i]))); n ? x.lineTo(px, py) : x.moveTo(px, py); });
       x.stroke();
