@@ -1013,9 +1013,10 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .sens .hp .st-v{width:100%}
   .hk{flex:1 1 220px;min-width:180px;height:40px;overflow:visible}
   /* Pulsen som snødekte fjell: toppene (høy puls) har snø, dalene er marineblå fjell, og en blek fjellrekke bak. */
-  .hk-l{fill:none;stroke:#fff;stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke;opacity:.9}
+  .hk-l{fill:none;stroke:#fff;stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
   .hk-fjell{fill:url(#hk-sno)}
-  .hk-bak{fill:#c9dbef;opacity:.75}
+  .hk-bak{fill:url(#hk-bakg)}
+  .hk-snoen{fill:#fff;filter:drop-shadow(0 1px 1px rgba(60,100,160,.18))}
   .hk-p{fill:#e0233c;stroke:#fff;stroke-width:2;vector-effect:non-scaling-stroke}
   .hk-x{display:none}
   .sens .hp .st-l{font:600 9.5px/1.3 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(0,32,91,.6)}
@@ -1418,11 +1419,11 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
     .vf-slurk{padding:9px 10px 9px 12px;font-size:14px}
   }
   @media (prefers-reduced-motion:reduce){.vf::before,.vf-lys i,.vf-chip i,.vf-live i{animation:none}.vf-lys{display:none}}
-  /* Fra 6.11.2026: kartet øverst igjen, så snø-heroen, og ingenting under den. Modulene på kartet er tilbake. Bare detaljene i flaskekortet er skjult. */
+  /* Fra 6.11.2026: forsiden er bare kartet. Modulene på kartet er tilbake. Bare detaljene i flaskekortet er skjult. */
   .pultk .pk-t,.pultk [data-k="pstilling"],.pultk .pk-plagg{display:none!important}
   .vf,footer.hero{order:-1}
   /* Ingenting under snøbildet (6.11.2026): main og cookies-lenka er skjult, ikke slettet, fordi skriptene skriver til dem. */
-  main,.kk-rad,.abo{display:none!important}   /* .abo: «Aktive KI-abonnementer» er tatt bort (6.11.2026) */
+  main,.kk-rad,.abo,.sh-hero{display:none!important}   /* Bare kartet (6.11.2026): snø-heroen er også skjult */   /* .abo: «Aktive KI-abonnementer» er tatt bort (6.11.2026) */
   .vf.vf-aapen{min-height:clamp(420px,70svh,720px)}
   .pultk{grid-template-columns:minmax(0,1fr)!important;cursor:pointer}
   .pultk [data-k="pflaske"]{grid-row:auto}
@@ -1852,7 +1853,7 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   </div>
   <div class="hoyre">
   <section class="sens gl" aria-label="Everything his iPhone and Apple Watch measure">
-    <div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Heart rate today"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg><svg class="hk" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hk-sno" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="40"><stop offset="0" stop-color="#fff"/><stop offset=".3" stop-color="#f1f6fc"/><stop offset=".48" stop-color="#9db9da"/><stop offset=".7" stop-color="#2f5288"/><stop offset="1" stop-color="#00205B"/></linearGradient></defs><path class="hk-bak" d=""/><path class="hk-fjell" d=""/><path class="hk-l" d=""/><circle class="hk-p" r="3" cx="-9" cy="-9"/></svg></span></button><span class="st-l"><span class="hp-on">Live from Apple Watch</span><span class="hp-av">Not live right now</span></span></div><span class="hk-x" aria-hidden="true"><span>5 min</span><span>nå</span></span>
+    <div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Heart rate today"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg><svg class="hk" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hk-sno" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="40"><stop offset="0" stop-color="#eef5fc"/><stop offset=".45" stop-color="#bcd3ec"/><stop offset="1" stop-color="#8fb0d6"/></linearGradient><linearGradient id="hk-bakg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="40"><stop offset="0" stop-color="#f4f8fd"/><stop offset="1" stop-color="#d3e2f3"/></linearGradient></defs><path class="hk-bak" d=""/><path class="hk-fjell" d=""/><path class="hk-snoen" d=""/><path class="hk-l" d=""/><circle class="hk-p" r="3" cx="-9" cy="-9"/></svg></span></button><span class="st-l"><span class="hp-on">Live from Apple Watch</span><span class="hp-av">Not live right now</span></span></div><span class="hk-x" aria-hidden="true"><span>5 min</span><span>nå</span></span>
     <div class="sv" data-k="ibat"><span class="sl">iPhone</span><b>–</b><i class="bar"><i></i></i></div>
     <div class="sv" data-k="wbatl" hidden><span class="sl"><svg class="di" viewBox="0 0 24 24" fill="currentColor" aria-label="Apple" role="img"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg>Watch<span class="wa"> L</span></span><b>–</b><i class="bar"><i></i></i></div>
     <div class="sv" data-k="wbatr"><span class="sl"><svg class="di" viewBox="0 0 24 24" fill="currentColor" aria-label="Apple" role="img"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg>Watch<span class="wa"> R</span></span><b>–</b><i class="bar"><i></i></i></div>
@@ -3088,21 +3089,34 @@ let puls = [];
 function tegnPuls() {
   const l = document.querySelector('.hk-l'), p = document.querySelector('.hk-p'); if (!l) return;
   const nå = Date.now() + skew, fra = nå - 5 * 60e3, pts = puls.filter(q => q[0] > fra);
-  const fj = document.querySelector('.hk-fjell'), bak = document.querySelector('.hk-bak');
-  if (pts.length < 2) { for (const e of [l, fj, bak]) e.setAttribute('d', ''); p.setAttribute('cx', -9); return; }
+  const fj = document.querySelector('.hk-fjell'), bak = document.querySelector('.hk-bak'), sn = document.querySelector('.hk-snoen');
+  if (pts.length < 2) { for (const e of [l, fj, bak, sn]) e.setAttribute('d', ''); p.setAttribute('cx', -9); return; }
   let lo = Math.min(...pts.map(q => q[1])), hi = Math.max(...pts.map(q => q[1]));
   const midt = (lo + hi) / 2, h = Math.max(20, hi - lo + 6); lo = midt - h / 2; hi = midt + h / 2;
   const svg = l.ownerSVGElement, W = svg.clientWidth || 200, H = svg.clientHeight || 40; svg.setAttribute('viewBox', `0 0 ${W} ${H}`);   // grafen er så høy som panelet gir plass til
   const X = t => (t - fra) / (5 * 60e3) * W, Y = b => H - 2 - (b - lo) / (hi - lo) * (H - 4);
-  let d = '', forr = 0;
-  for (const [t, b] of pts) { d += (d && t - forr < 30e3 ? 'L' : 'M') + X(t).toFixed(1) + ' ' + Y(b).toFixed(1); forr = t; }
+  // Myke kurver gjennom punktene (Catmull-Rom som Bézier), så ryggen ser tegnet ut og ikke hakkete.
+  const myk = q => q.slice(1).map((p1, i) => { const p0 = q[i - 1] || q[i], a = q[i], p2 = q[i + 2] || p1;
+    return 'C' + (a[0] + (p1[0] - p0[0]) / 6).toFixed(1) + ' ' + (a[1] + (p1[1] - p0[1]) / 6).toFixed(1) + ' ' + (p1[0] - (p2[0] - a[0]) / 6).toFixed(1) + ' ' + (p1[1] - (p2[1] - a[1]) / 6).toFixed(1) + ' ' + p1[0].toFixed(1) + ' ' + p1[1].toFixed(1); }).join('');
+  const ryggen = pts.map(q => [X(q[0]), Y(q[1])]);
+  // Linja: brudd der det mangler målinger i over 30 s.
+  let d = '', del = [ryggen[0]];
+  for (let i = 1; i <= pts.length; i++) {
+    if (i === pts.length || pts[i][0] - pts[i - 1][0] >= 30e3) { d += 'M' + del[0][0].toFixed(1) + ' ' + del[0][1].toFixed(1) + myk(del); del = []; }
+    if (i < pts.length) del.push(ryggen[i]);
+  }
   l.setAttribute('d', d);
-  // Fjellet: flaten under pulsen ned til bunnen. Snøen ligger på toppene fordi fargen går fra hvit øverst til marineblå nederst.
-  const xs = pts.map(q => X(q[0])), ys = pts.map(q => Y(q[1]));
-  fj.setAttribute('d', 'M' + xs[0].toFixed(1) + ' ' + H + xs.map((x, i) => 'L' + x.toFixed(1) + ' ' + ys[i].toFixed(1)).join('') + 'L' + xs[xs.length - 1].toFixed(1) + ' ' + H + 'Z');
-  // Fjellrekka bak: en utglattet og høyere kopi, blek som fjell langt unna.
-  const gl = ys.map((_, i) => { const v = ys.slice(Math.max(0, i - 6), i + 7); return v.reduce((a, b) => a + b, 0) / v.length; });
-  bak.setAttribute('d', 'M0 ' + H + 'L0 ' + (gl[0] - H * .22).toFixed(1) + xs.map((x, i) => 'L' + x.toFixed(1) + ' ' + Math.max(1, gl[i] - H * .22).toFixed(1)).join('') + 'L' + W + ' ' + (gl[gl.length - 1] - H * .22).toFixed(1) + 'L' + W + ' ' + H + 'Z');
+  // Fjellet: flaten under ryggen ned til bunnen.
+  const x0 = ryggen[0][0].toFixed(1), x1 = ryggen[ryggen.length - 1][0].toFixed(1);
+  fj.setAttribute('d', 'M' + x0 + ' ' + H + 'L' + x0 + ' ' + ryggen[0][1].toFixed(1) + myk(ryggen) + 'L' + x1 + ' ' + H + 'Z');
+  // Snøen: et lag langs ryggen som er tykkest på de høye toppene og nesten borte i dalene, med en litt ujevn nedre kant.
+  const under = ryggen.map(([x, y], i) => [x, y + Math.max(0, H - y) * (.12 + .5 * Math.pow(1 - y / H, 2)) * (0.85 + 0.15 * Math.sin(i * 1.9))]).reverse();
+  sn.setAttribute('d', 'M' + x0 + ' ' + ryggen[0][1].toFixed(1) + myk(ryggen) + 'L' + under[0][0].toFixed(1) + ' ' + under[0][1].toFixed(1) + myk(under) + 'Z');
+  // Fjellrekka bak: utglattet og høyere, blek som fjell langt unna.
+  const ys = ryggen.map(q => q[1]), gl = ys.map((_, i) => { const v = ys.slice(Math.max(0, i - 6), i + 7); return v.reduce((a, b) => a + b, 0) / v.length; });
+  const bakR = [[0, gl[0] - H * .22], ...ryggen.map(([x], i) => [x, Math.max(1, gl[i] - H * .22)]), [W, gl[gl.length - 1] - H * .22]];
+  bak.setAttribute('d', 'M0 ' + H + 'L' + bakR[0][0] + ' ' + bakR[0][1].toFixed(1) + myk(bakR) + 'L' + W + ' ' + H + 'Z');
+  svg.querySelector('#hk-bakg').setAttribute('y2', H);
   svg.querySelector('#hk-sno').setAttribute('y2', H);
   const s = pts[pts.length - 1]; p.setAttribute('cx', X(s[0]).toFixed(1)); p.setAttribute('cy', Y(s[1]).toFixed(1));
 }
