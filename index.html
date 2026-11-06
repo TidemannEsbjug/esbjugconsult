@@ -1415,8 +1415,11 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
     .vf-slurk{padding:9px 10px 9px 12px;font-size:14px}
   }
   @media (prefers-reduced-motion:reduce){.vf::before,.vf-lys i,.vf-chip i,.vf-live i{animation:none}.vf-lys{display:none}}
-  /* Forenklet forside (30.10.2026). Modulene er skjult, ikke slettet, fordi skriptene skriver til dem. Under heroen kommer kartet rett etter, og ingenting under det. */
-  main,.bank,.abo,.poster,.gjor,.lang,.topp:not(:has(.st-i:not([hidden]))),.pultk .pk-t,.pultk [data-k="pstilling"],.pultk .pk-plagg,#chat,.ck,.vf-slurk{display:none!important}
+  /* Fra 6.11.2026: kartet øverst igjen, med «Snakk med meg» rett under, så snø-heroen og modulene. Bare detaljene i flaskekortet er skjult. */
+  .pultk .pk-t,.pultk [data-k="pstilling"],.pultk .pk-plagg{display:none!important}
+  .vf,footer.hero,.kart-cta{order:-1}
+  .kart-cta{display:flex;justify-content:center;margin:0;padding:28px 16px;background:#fff}
+  .kart-cta .sh-knapp.sh-p{text-shadow:none}
   .vf.vf-aapen{min-height:clamp(420px,70svh,720px)}
   .pultk{grid-template-columns:minmax(0,1fr)!important;cursor:pointer}
   .pultk [data-k="pflaske"]{grid-row:auto}
@@ -1481,7 +1484,6 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
     <p class="sh-ey">Tidemann Esbjug – KI Sherpa</p>
     <h1 data-flagg="Esbjug Consult">Esbjug Consult</h1>
     <p class="sh-ingress">Jeg bruker tiden min på å bygge programvare som er nyttig for så mange mennesker som mulig.</p>
-    <div class="sh-cta"><a class="sh-knapp sh-p" href="mailto:tidemann@esbjugconsult.com">Snakk med meg</a></div>
   </div>
 </section>
 <!-- Vannflasken: egen seksjon rett under heroen (fra 29.10.2026), en livestream. Robotarmen med iPhonen leter etter flasken, låser
@@ -1881,6 +1883,8 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   </div>
   </div>
 </footer>
+<!-- «Snakk med meg» står bare her, rett under kartet (fra 6.11.2026). -->
+<div class="kart-cta sh-cta"><a class="sh-knapp sh-p" href="mailto:tidemann@esbjugconsult.com">Snakk med meg</a></div>
 <script>
 // «Les mer» i seksjonene: teksten (og tanken) er skjult til man trykker.
 (() => {
