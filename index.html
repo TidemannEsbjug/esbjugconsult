@@ -1489,26 +1489,8 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
 .sens .sv[data-k="wbatl"]{order:3}.sens .sv[data-k="wbatr"]{order:4}.sens .maskiner{order:9}
   /* Søket i replay er koblet av (6.11.2026): Jev er tom for credits. Fjern denne linja for å slå det på igjen. */
   .hist .h-sok,.hist .h-sokk{display:none!important}
-  /* Is og flagg på stedskortet (bare PC): der pekeren er, fryser kortet til is i et loddrett bånd, og et norsk flagg
-     (22:16, hele kortets høyde) ligger helt til høyre og fryser fram på samme måte. Båndene kommer fra skriptet i --is. */
-  .kort-is,.kort-flagg{position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;
-    -webkit-mask-image:var(--is,linear-gradient(transparent,transparent));mask-image:var(--is,linear-gradient(transparent,transparent))}
-  .kort-is{background:
-    linear-gradient(rgba(255,255,255,.6),rgba(255,255,255,0) 45%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1.6 0 0 0 -.9'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23f)'/%3E%3C/svg%3E") 0 0/180px 180px,
-    linear-gradient(#f6fbff 0%,#d3eaf9 45%,#a8cdee 82%,#8dbbe4 100%)}
-  .kort-flagg{--fb:calc(var(--kh,100px) * 22 / 16);
-    background:
-      linear-gradient(rgba(255,255,255,.4),rgba(255,255,255,0) 42%,rgba(255,255,255,0) 78%,rgba(175,212,245,.3)),
-      linear-gradient(90deg,transparent 31.82%,#00205B 0 40.91%,transparent 0),
-      linear-gradient(transparent 43.75%,#00205B 0 56.25%,transparent 0),
-      linear-gradient(90deg,transparent 27.27%,#f4f9ff 0 45.45%,transparent 0),
-      linear-gradient(transparent 37.5%,#f4f9ff 0 62.5%,transparent 0),
-      linear-gradient(#c8183a,#9e0a28);
-    background-size:var(--fb) 100%;background-position:100% 0;background-repeat:no-repeat;
-    -webkit-mask-image:linear-gradient(90deg,transparent calc(100% - var(--fb)),#000 calc(100% - var(--fb) * .74)),var(--is,linear-gradient(transparent,transparent));
-    mask-image:linear-gradient(90deg,transparent calc(100% - var(--fb)),#000 calc(100% - var(--fb) * .74)),var(--is,linear-gradient(transparent,transparent));
-    -webkit-mask-composite:var(--iskw,source-in);mask-composite:var(--isk,intersect)}
+  /* Frost og flagg på stedskortet (bare PC), tegnet av skriptet («Frost på stedskortet») på et lerret bak teksten. */
+  .kort-frost{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;min-height:0!important;margin:0!important;transition:none;z-index:-1;border-radius:inherit;pointer-events:none}
   /* Rullefeltet er skjult (for utseendet, særlig på Windows); siden ruller som før med hjul, tastatur og berøring. */
   html{scrollbar-width:none}html::-webkit-scrollbar{display:none}
 </style>
@@ -4525,17 +4507,104 @@ setInterval(tegn, 1000);
   // raskt til R0, og holder man pekeren i ro, brer isen seg videre, fortere i starten og saktere mot RMAKS. Den fryser fort,
   // men tiner sakte: en flekk pekeren har forlatt, står frosset i 2,5 s og tiner så over 7 s. Kommer pekeren tilbake til
   // is som ikke har tint, fryser den videre derfra. Resten av tittelen er uendret. Flagget i «ult» fryser fram på samme måte. Flekkene blir masker i --is; --isk/--iskw legger dem sammen og snitter med flaggets toning i CSS.
-  // Gjelder tittelen i heroen og stedskortet på kartet. Kortet får to lag (isen og flagget) som maskes med --is,
-  // og båndene måles etter kortets høyde i stedet for skriftstørrelsen.
+  // Frost på stedskortet (bare PC): der pekeren er, fryser kortet til is, og i høyre ende fryser et norsk flagg (22:16, hele
+  // kortets høyde) fram. Isen har ujevne, frostaktige kanter, ikke rette bånd: hver flekk er en form med støy i kanten, myket
+  // opp, med små frostprikker rundt. Den fryser fort og tiner sakte (står i 2,5 s, tiner over 7 s), og når den tiner, trekker
+  // kanten seg ujevnt tilbake og det åpner seg hull, slik frost gjør. Tegnes på et lerret bak teksten: formene først, så
+  // en ferdig tegnet is- og flaggflate inni dem (source-in).
   const kort = $('.sted');
   if (kort && matchMedia('(min-width:900px) and (hover:hover) and (pointer:fine)').matches) {
-    // prepend i denne rekkefølgen, så flagget havner over isen
-    for (const k of ['kort-flagg', 'kort-is']) { const i = document.createElement('i'); i.className = k; i.setAttribute('aria-hidden', 'true'); kort.prepend(i); }
-    const h = () => kort.style.setProperty('--kh', kort.offsetHeight + 'px'); h(); new ResizeObserver(h).observe(kort);
+    const cv = document.createElement('canvas'); cv.className = 'kort-frost'; cv.setAttribute('aria-hidden', 'true'); kort.prepend(cv);
+    const x = cv.getContext('2d');
+    let W = 0, H = 0, dp = 1, flate = null, flekker = [], inne = null, rf = 0, sistT = 0;
+    const lagFlate = () => {
+      flate = document.createElement('canvas'); flate.width = cv.width; flate.height = cv.height;
+      const f = flate.getContext('2d'); f.scale(dp, dp);
+      let g = f.createLinearGradient(0, 0, 0, H);
+      g.addColorStop(0, '#f6fbff'); g.addColorStop(.45, '#d3eaf9'); g.addColorStop(.82, '#a8cdee'); g.addColorStop(1, '#8dbbe4');
+      f.fillStyle = g; f.fillRect(0, 0, W, H);
+      // Flagget i høyre ende, tonet inn mot venstre.
+      const fb = H * 22 / 16, fl = document.createElement('canvas'); fl.width = flate.width; fl.height = flate.height;
+      const c = fl.getContext('2d'); c.scale(dp, dp); const x0 = W - fb, u = fb / 22, v = H / 16;
+      c.fillStyle = '#b8102f'; c.fillRect(x0, 0, fb, H);
+      c.fillStyle = '#f4f9ff'; c.fillRect(x0 + 6 * u, 0, 4 * u, H); c.fillRect(x0, 6 * v, fb, 4 * v);
+      c.fillStyle = '#00205B'; c.fillRect(x0 + 7 * u, 0, 2 * u, H); c.fillRect(x0, 7 * v, fb, 2 * v);
+      c.globalCompositeOperation = 'destination-in';
+      g = c.createLinearGradient(x0, 0, x0 + fb * .26, 0); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, '#000');
+      c.fillStyle = g; c.fillRect(0, 0, W, H);
+      f.drawImage(fl, 0, 0, W, H);
+      // Rim og frostkorn over alt, og et lyst skjær øverst.
+      g = f.createLinearGradient(0, 0, 0, H); g.addColorStop(0, 'rgba(255,255,255,.55)'); g.addColorStop(.45, 'rgba(255,255,255,0)');
+      f.fillStyle = g; f.fillRect(0, 0, W, H);
+      for (let i = 0; i < W * H / 60; i++) { f.fillStyle = `rgba(255,255,255,${(.15 + Math.random() * .5).toFixed(2)})`; f.fillRect(Math.random() * W, Math.random() * H, .6 + Math.random() * 1.2, .6 + Math.random() * 1.2); }
+    };
+    const mål = () => {
+      W = kort.offsetWidth; H = kort.offsetHeight; dp = Math.min(2, devicePixelRatio || 1);
+      if (!W || !H) return;
+      cv.width = Math.round(W * dp); cv.height = Math.round(H * dp); lagFlate(); tegn();
+    };
+    const R0 = () => H * .42, RMAKS = () => H * 1.5;
+    const ny = (px, py) => ({ x: px, y: py, r: 0, holdt: 0, borte: 0, tin: 0,
+      fase: [0, 0, 0].map(() => Math.random() * 6.28), hull: Array.from({ length: 56 }, () => Math.random()),
+      prikker: Array.from({ length: 14 }, () => ({ a: Math.random() * 6.28, d: 1 + Math.random() * .25, s: .03 + Math.random() * .05 })) });
+    const form = p => {
+      // Kanten: tre bølger med tilfeldig fase gir en ujevn, frostaktig omkrets. Mens den tiner, trekker hvert punkt seg
+      // tilbake i sitt eget tempo (hull), så isen ikke krymper jevnt.
+      const N = p.hull.length;
+      x.beginPath();
+      for (let k = 0; k <= N; k++) {
+        const i = k % N, a = i / N * 6.283;
+        const st = .72 + .1 * Math.sin(3 * a + p.fase[0]) + .07 * Math.sin(7 * a + p.fase[1]) + .05 * Math.sin(13 * a + p.fase[2]) + .06 * p.hull[i];
+        const rr = p.r * st * Math.max(0, 1 - p.tin * (.4 + .9 * p.hull[i]));
+        const px = p.x + Math.cos(a) * rr, py = p.y + Math.sin(a) * rr * .85;
+        k ? x.lineTo(px, py) : x.moveTo(px, py);
+      }
+      x.fill();
+      for (const q of p.prikker) {
+        const rr = p.r * q.d * (1 - p.tin * .8), s = p.r * q.s * (1 - p.tin);
+        if (s > .4) { x.beginPath(); x.arc(p.x + Math.cos(q.a) * rr, p.y + Math.sin(q.a) * rr * .85, s, 0, 6.283); x.fill(); }
+      }
+    };
+    const tegn = () => {
+      x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, cv.width, cv.height);
+      if (!flekker.length || !flate) return;
+      x.setTransform(dp, 0, 0, dp, 0, 0);
+      x.filter = 'blur(' + (H * .025).toFixed(1) + 'px)'; x.fillStyle = '#000';
+      for (const p of flekker) form(p);
+      x.filter = 'none'; x.setTransform(1, 0, 0, 1, 0, 0);
+      x.globalCompositeOperation = 'source-in'; x.drawImage(flate, 0, 0); x.globalCompositeOperation = 'source-over';
+    };
+    const steg = t => {
+      rf = 0;
+      const dt = sistT ? Math.min(.05, (t - sistT) / 1000) : .016; sistT = t;
+      for (const p of flekker) {
+        if (p === inne) {
+          p.holdt += dt; p.borte = 0; p.tin = Math.max(0, p.tin - dt * 3);
+          const m = rolig ? R0() : R0() + (RMAKS() - R0()) * (1 - Math.exp(-p.holdt / 3.5));
+          p.r = rolig ? m : p.r + (m - p.r) * Math.min(1, dt * 7);
+        } else if ((p.borte += dt) > 2.5) p.tin = rolig ? 1 : Math.min(1, p.tin + dt / 7);
+      }
+      flekker = flekker.filter(p => p === inne || p.tin < 1);
+      tegn();
+      if (flekker.length) rf = requestAnimationFrame(steg); else sistT = 0;
+    };
+    kort.addEventListener('pointermove', e => {
+      if (e.pointerType !== 'mouse') return;
+      const b = kort.getBoundingClientRect(), z = b.width / (kort.offsetWidth || b.width) || 1;
+      const px = (e.clientX - b.left) / z, py = (e.clientY - b.top) / z;
+      const nær = p => Math.hypot(px - p.x, py - p.y) <= Math.max(R0() * .5, p.r * .35);
+      if (!inne || !nær(inne)) {
+        inne = flekker.filter(nær).sort((a, b) => b.r - a.r)[0];
+        if (!inne) { inne = ny(px, py); flekker.push(inne); if (flekker.length > 40) flekker.shift(); }
+      }
+      if (!rf) rf = requestAnimationFrame(steg);
+    });
+    kort.addEventListener('pointerleave', () => { inne = null; if (!rf) rf = requestAnimationFrame(steg); });
+    new ResizeObserver(mål).observe(kort); mål();
   }
-  if (matchMedia('(min-width:900px) and (hover:hover) and (pointer:fine)').matches) for (const h1 of [$('.sh-hero h1'), kort].filter(Boolean)) {
+  if (matchMedia('(min-width:900px) and (hover:hover) and (pointer:fine)').matches) for (const h1 of [$('.sh-hero h1')].filter(Boolean)) {
     let flekker = [], inne = null, rf = 0, sistT = 0;
-    const em = () => h1 === kort ? kort.offsetHeight * .55 : parseFloat(getComputedStyle(h1).fontSize), R0 = .75, RMAKS = 2.4;
+    const em = () => parseFloat(getComputedStyle(h1).fontSize), R0 = .75, RMAKS = 2.4;
     const tegnIs = () => {
       if (!flekker.length) { for (const k of ['--is', '--isk', '--iskw']) h1.style.removeProperty(k); return; }
       const kant = em() * R0 * .45, f = n => n.toFixed(1) + 'px';
