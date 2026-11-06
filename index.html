@@ -1456,13 +1456,13 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .fl-cta svg{flex:none;width:20px;height:20px;transition:transform .2s}
   .pultk:hover .fl-cta,.pultk:focus-visible .fl-cta{background:#0b3a8f;color:#fff;box-shadow:0 12px 26px rgba(0,32,91,.32)}
   .pultk:hover .fl-cta svg,.pultk:focus-visible .fl-cta svg{transform:translateX(5px)}
-  /* PC: panelene er like høye. Høyre panel fyller høyden til venstre, og det er pulsen som vokser: større tall og en høyere graf. */
+  /* PC: panelene har hver sin høyde (fra 6.11.2026). Pulsen har stort tall og en høy fjellgraf, uten tomrom rundt. */
   @media (min-width:761px){
-    .paneler{flex:0 0 auto;align-items:stretch}
-    .hoyre .sens{flex:1;grid-template-rows:minmax(0,1fr)}
+    .paneler{flex:0 0 auto;align-items:flex-start}
+    .hoyre .sens{flex:none}
     .hoyre .sens .hp{flex-direction:column;flex-wrap:nowrap;align-items:stretch;justify-content:flex-start;min-height:0}
-    .hoyre .sens .hp .hp-o{flex:1 1 auto;display:flex;align-items:stretch;min-height:0}
-    .hoyre .sens .hp .st-v{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto clamp(70px,10svh,110px);align-items:center;justify-items:start;gap:12px;width:100%;font-size:clamp(46px,4vw,60px)}
+    .hoyre .sens .hp .hp-o{flex:none;display:flex;align-items:stretch;min-height:0}
+    .hoyre .sens .hp .st-v{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto clamp(120px,17svh,170px);align-items:center;justify-items:start;gap:12px;width:100%;font-size:clamp(46px,4vw,60px)}
     .hoyre .sens .hp .st-l{flex:none}
     .hoyre .sens .hp .hj{width:.62em;height:.62em}
     .hoyre .sens .hp .hk{grid-column:1/-1;grid-row:2;justify-self:stretch;align-self:stretch;width:100%;height:100%;min-width:0}
@@ -3357,7 +3357,7 @@ const GJOR = TX.gjor;
 // Huset hos moren hans, skannet med LiDAR i appen (GET /chat/plan). Bare på testsiden /hjem/ inntil videre.
 // plan.geo plasserer skanningen i kartet: et punkt (x, z) i skanningen dreies th radianer, og blir meter øst
 // (u + tx) og nord (−v + ty) fra geo.lat/lon. Tilpasset husets omriss i kartdataene (OpenStreetMap).
-const REPLAY = false;   // replay er av på forsiden fra 30.10.2026
+const REPLAY = true;   // replay er på forsiden igjen fra 6.11.2026 (var av fra 30.10)
 const HUS = true;   // husfunksjonene (huset, rommene, replay) var en test på /hjem/; nå er de på forsiden, og /hjem/ sender hit
 let plan = null;
 const hentPlan = async () => { try { plan = await (await fetch('/chat/plan')).json(); husTegnet = ''; } catch {} };
