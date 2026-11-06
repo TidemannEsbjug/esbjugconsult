@@ -1013,7 +1013,7 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .sens .hp .hp-o{flex:1 1 100%;min-width:0}
   .sens .hp .st-l{flex-basis:100%}
   .sens .hp .st-v{width:100%}
-  .hk{flex:1 1 220px;min-width:180px;height:40px;overflow:visible}
+  .hk{flex:1 1 220px;min-width:180px;height:40px;overflow:hidden}
   /* Pulsen som snødekte fjell: toppene (høy puls) har snø, dalene er marineblå fjell, og en blek fjellrekke bak. */
   .hk-l{fill:none;stroke:#fff;stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
   .hk-fjell{fill:url(#hk-sno)}
@@ -1184,6 +1184,9 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .sno-k svg{position:relative;width:100%;height:100%;display:block;overflow:visible;filter:drop-shadow(0 1px 2px rgba(0,32,91,.3)) drop-shadow(0 0 6px rgba(255,255,255,.6));transition:filter .3s}
   html.sno-over .sno-k svg{filter:drop-shadow(0 1px 2px rgba(0,32,91,.3)) drop-shadow(0 0 9px rgba(205,222,255,.95))}
   html.sno-inne .sno-k{opacity:1}
+  /* Over kartet er isen pekeren: siktekorset er borte, men lappen (koordinater, puls …) står ved siden av isen. */
+  html.sno-inne .mus-k i,html.sno-inne .mus-k b{display:none}
+  html.sno-inne .mus-k span{left:22px;top:30px}
   .sh-nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px var(--g) 0}
   .sh-merke{display:flex;align-items:center;gap:10px;color:inherit;text-decoration:none;font:600 15px/1 -apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;letter-spacing:.01em}
   .sh-merke span{opacity:.6;font-weight:500}
@@ -1211,10 +1214,12 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
      å legge dem sammen i flagget). Lagene er kopier av teksten (data-flagg) over den hvite. */
   @media (min-width:900px) and (hover:hover) and (pointer:fine){
     .sh-hero h1{position:relative;width:fit-content}
+    /* Stedsnavnet på kartet får samme is og flagg (6.11.2026). */
+    .sted .s-navn{display:block;position:relative;width:fit-content;--lh:1.05}.sted .s-navn.kjent{--lh:1.15}
     /* Boksen går .25em over og under linjen, så isen også fyller det som stikker ut (halen på g og j). Bare bokstavene fylles,
        uten glød eller skygge. */
-    .sh-hero h1::before,.sh-hero h1::after{content:attr(data-flagg);position:absolute;inset:-.25em 0;padding-top:.25em;pointer-events:none;color:transparent;text-shadow:none}
-    .sh-hero h1::before{
+    .sh-hero h1::before,.sh-hero h1::after,.sted .s-navn::before,.sted .s-navn::after{content:attr(data-flagg);position:absolute;inset:-.25em 0;padding-top:.25em;pointer-events:none;color:transparent;text-shadow:none}
+    .sh-hero h1::before,.sted .s-navn::before{
       background:
         linear-gradient(100deg,transparent 42%,rgba(255,255,255,.85) 50%,transparent 58%) 120% 0/260% 100% no-repeat,
         linear-gradient(rgba(255,255,255,.55),rgba(255,255,255,0) 40%),
@@ -1225,7 +1230,7 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
       -webkit-mask-image:var(--is,linear-gradient(transparent,transparent));mask-image:var(--is,linear-gradient(transparent,transparent));
       animation:isGlimt 7s linear infinite paused}
     /* Flagget: alle lag i en boks på 22:16 helt til høyre. Korset står der det skal: 6 rødt, 1 hvitt, 2 blått, 1 hvitt. */
-    .sh-hero h1::after{--fb:calc(1.02em * 22 / 16);
+    .sh-hero h1::after,.sted .s-navn::after{--fb:calc(var(--lh,1.02) * 1em * 22 / 16);
       background:
         linear-gradient(rgba(255,255,255,.4),rgba(255,255,255,0) 42%,rgba(255,255,255,0) 78%,rgba(175,212,245,.3)),
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1.4 0 0 0 -.85'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23f)'/%3E%3C/svg%3E"),
@@ -1234,19 +1239,19 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
         linear-gradient(90deg,transparent 27.27%,#f4f9ff 0 45.45%,transparent 0),
         linear-gradient(transparent 37.5%,#f4f9ff 0 62.5%,transparent 0),
         linear-gradient(#c8183a,#9e0a28);
-      background-size:var(--fb) 1.02em;background-position:100% .25em;background-repeat:no-repeat;
+      background-size:var(--fb) calc(var(--lh,1.02) * 1em);background-position:100% .25em;background-repeat:no-repeat;
       -webkit-background-clip:text;background-clip:text;
       -webkit-mask-image:linear-gradient(90deg,transparent calc(100% - var(--fb)),#000 calc(100% - var(--fb) * .74)),var(--is,linear-gradient(transparent,transparent));
       mask-image:linear-gradient(90deg,transparent calc(100% - var(--fb)),#000 calc(100% - var(--fb) * .74)),var(--is,linear-gradient(transparent,transparent));
       -webkit-mask-composite:var(--iskw,source-in);mask-composite:var(--isk,intersect)}
-    .sh-hero h1:hover::before{animation-play-state:running}
+    .sh-hero h1:hover::before,.sted .s-navn:hover::before{animation-play-state:running}
   }
   /* Isglimtet går over de første 2 s pekeren er på tittelen, så står det. */
   @keyframes isGlimt{
     0%{background-position:120% 0,0 0,0 0,0 0,0 0}
     30%,100%{background-position:-20% 0,0 0,0 0,0 0,0 0}
   }
-  @media (prefers-reduced-motion:reduce){.sh-hero h1::before{animation:none}}
+  @media (prefers-reduced-motion:reduce){.sh-hero h1::before,.sted .s-navn::before{animation:none}}
   .sh-ingress{margin:0;max-width:31em;font:400 clamp(17px,calc(1.45vw / var(--z,1)),21px)/1.5 var(--tekst);color:rgba(0,32,91,.88)}
   .sh-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
   .sh-knapp{display:inline-flex;align-items:center;gap:10px;padding:16px 24px;border-radius:999px;text-decoration:none;font:600 16px/1 var(--tekst);transition:transform .15s ease,box-shadow .15s ease,background .15s ease}
@@ -3126,11 +3131,19 @@ requestAnimationFrame(oskilloskop);
 let puls = [];
 function tegnPuls() {
   const l = document.querySelector('.hk-l'), p = document.querySelector('.hk-p'); if (!l) return;
-  const nå = Date.now() + skew, fra = nå - 5 * 60e3, pts = puls.filter(q => q[0] > fra);
+  const nå = Date.now() + skew, fra = nå - 5 * 60e3;
+  // Ett punkt før vinduet tas med, så ryggen går ut av venstre kant i stedet for å forsvinne brått.
+  const før = puls.findLastIndex(q => q[0] <= fra), rå = puls.slice(Math.max(0, før));
+  // Lett utjevning (1-2-1), så ryggen ikke blir hakkete av enkeltmålinger.
+  const pts = rå.map((q, i) => [q[0], ((rå[i - 1] || q)[1] + 2 * q[1] + (rå[i + 1] || q)[1]) / 4]);
   const fj = document.querySelector('.hk-fjell'), bak = document.querySelector('.hk-bak'), sn = document.querySelector('.hk-snoen');
-  if (pts.length < 2) { for (const e of [l, fj, bak, sn]) e.setAttribute('d', ''); p.setAttribute('cx', -9); return; }
-  let lo = Math.min(...pts.map(q => q[1])), hi = Math.max(...pts.map(q => q[1]));
+  if (pts.length < 2) { for (const e of [l, fj, bak, sn]) e.setAttribute('d', ''); p.setAttribute('cx', -9); pulsLH = null; return; }
+  const inne = pts.filter(q => q[0] > fra), mål = inne.length ? inne : pts;
+  let lo = Math.min(...mål.map(q => q[1])), hi = Math.max(...mål.map(q => q[1]));
   const midt = (lo + hi) / 2, h = Math.max(20, hi - lo + 6); lo = midt - h / 2; hi = midt + h / 2;
+  // Skalaen glir mot den nye i stedet for å hoppe når en topp kommer inn eller går ut av vinduet.
+  if (!pulsLH) pulsLH = [lo, hi]; else { pulsLH[0] += (lo - pulsLH[0]) * .08; pulsLH[1] += (hi - pulsLH[1]) * .08; }
+  [lo, hi] = pulsLH;
   const svg = l.ownerSVGElement, W = svg.clientWidth || 200, H = svg.clientHeight || 40; svg.setAttribute('viewBox', `0 0 ${W} ${H}`);   // grafen er så høy som panelet gir plass til
   const X = t => (t - fra) / (5 * 60e3) * W, Y = b => H - 2 - (b - lo) / (hi - lo) * (H - 4);
   // Myke kurver gjennom punktene (Catmull-Rom som Bézier), så ryggen ser tegnet ut og ikke hakkete.
@@ -3157,9 +3170,18 @@ function tegnPuls() {
   svg.querySelector('#hk-bakg').setAttribute('y2', H);
   svg.querySelector('#hk-sno').setAttribute('y2', H);
   const s = pts[pts.length - 1]; p.setAttribute('cx', X(s[0]).toFixed(1)); p.setAttribute('cy', Y(s[1]).toFixed(1));
-  pulsSkala = { pts, X, Y, fra, W, H }; visPulsPunkt();
+  pulsSkala = { rå, pts, X, Y, fra, W, H }; visPulsPunkt();
 }
-setInterval(tegnPuls, 1000);
+// Grafen tegnes rundt 30 ganger i sekundet, så den glir mot venstre i stedet for å hoppe hvert sekund.
+// Stille når fanen er skjult eller kortet ikke vises, og i lett modus bare én gang i sekundet.
+let pulsLH = null, pulsSist = 0;
+function pulsLoop(ts) {
+  requestAnimationFrame(pulsLoop);
+  if (document.hidden || ts - pulsSist < (document.documentElement.classList.contains('lett') ? 1000 : 33)) return;
+  const svg = document.querySelector('.hk'); if (!svg || !svg.clientHeight) return;
+  pulsSist = ts; tegnPuls();
+}
+requestAnimationFrame(pulsLoop);
 // Holder man over den lille grafen, vises pulsen på det tidspunktet (nærmeste måling), som i pulsvinduet.
 let pulsSkala = null, pulsMus = null;
 const pulsKl = new Intl.DateTimeFormat('nb-NO', { timeZone: 'Europe/Oslo', hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -3167,10 +3189,10 @@ function visPulsPunkt() {
   const svg = document.querySelector('.hk'), xh = svg && svg.querySelector('.hk-xh'), hd = svg && svg.querySelector('.hk-hd'), tt = document.querySelector('.hk-t');
   if (!tt) return;
   const k = pulsSkala;
-  if (pulsMus == null || !k || !k.pts.length) { tt.hidden = true; xh.setAttribute('x1', -9); xh.setAttribute('x2', -9); hd.setAttribute('cx', -9); return; }
+  if (pulsMus == null || !k || !k.rå.length) { tt.hidden = true; xh.setAttribute('x1', -9); xh.setAttribute('x2', -9); hd.setAttribute('cx', -9); return; }
   const t = k.fra + pulsMus * 5 * 60e3;
-  let q = k.pts[0]; for (const v of k.pts) if (Math.abs(v[0] - t) < Math.abs(q[0] - t)) q = v;
-  const x = k.X(q[0]), y = k.Y(q[1]);
+  let j = 0; k.rå.forEach((v, i) => { if (v[0] > k.fra && Math.abs(v[0] - t) < Math.abs(k.rå[j][0] - t)) j = i; });
+  const q = k.rå[j], x = k.X(q[0]), y = k.Y(k.pts[j][1]);   // prikken på ryggen, tallet er målingen
   xh.setAttribute('x1', x); xh.setAttribute('x2', x); xh.setAttribute('y1', 0); xh.setAttribute('y2', k.H); hd.setAttribute('cx', x); hd.setAttribute('cy', y);
   const hp = document.querySelector('.hp').getBoundingClientRect(), b = svg.getBoundingClientRect();
   tt.innerHTML = '<b>' + Math.round(q[1]) + '</b> bpm · ' + pulsKl.format(q[0]);
@@ -4490,8 +4512,10 @@ setInterval(tegn, 1000);
   // raskt til R0, og holder man pekeren i ro, brer isen seg videre, fortere i starten og saktere mot RMAKS. Den fryser fort,
   // men tiner sakte: en flekk pekeren har forlatt, står frosset i 2,5 s og tiner så over 7 s. Kommer pekeren tilbake til
   // is som ikke har tint, fryser den videre derfra. Resten av tittelen er uendret. Flagget i «ult» fryser fram på samme måte. Flekkene blir masker i --is; --isk/--iskw legger dem sammen og snitter med flaggets toning i CSS.
-  const h1 = $('.sh-hero h1');
-  if (h1 && matchMedia('(min-width:900px) and (hover:hover) and (pointer:fine)').matches) {
+  // Gjelder tittelen i heroen og stedsnavnet på kartet. Stedsnavnet skifter tekst, så kopien i data-flagg følger med.
+  const sn = $('.sted .s-navn');
+  if (sn) { const kopi = () => { if (sn.dataset.flagg !== sn.textContent) sn.dataset.flagg = sn.textContent; }; kopi(); new MutationObserver(kopi).observe(sn, { childList: true, characterData: true, subtree: true }); }
+  if (matchMedia('(min-width:900px) and (hover:hover) and (pointer:fine)').matches) for (const h1 of [$('.sh-hero h1'), sn].filter(Boolean)) {
     let flekker = [], inne = null, rf = 0, sistT = 0;
     const em = () => parseFloat(getComputedStyle(h1).fontSize), R0 = .75, RMAKS = 2.4;
     const tegnIs = () => {
@@ -4551,7 +4575,7 @@ setInterval(tegn, 1000);
     addEventListener('pointermove', e => {
       if (e.pointerType !== 'mouse') return;
       const t = e.target instanceof Element ? e.target : null;
-      inne = !!t?.closest('.sh-hero') && !t.closest('#chat'); rot.classList.toggle('sno-inne', inne);
+      inne = !!t?.closest('.sh-hero, footer.hero') && !t.closest('#chat'); rot.classList.toggle('sno-inne', inne);   // isen også over kartet (6.11.2026)
       if (!inne) { px = -99; return; }
       over = !!t.closest(KLIKK); rot.classList.toggle('sno-over', over);
       if (px > -99) {
