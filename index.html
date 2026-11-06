@@ -1012,7 +1012,10 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .sens .hp .st-l{flex-basis:100%}
   .sens .hp .st-v{width:100%}
   .hk{flex:1 1 220px;min-width:180px;height:40px;overflow:visible}
-  .hk-l{fill:none;stroke:#e0233c;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+  /* Pulsen som snødekte fjell: toppene (høy puls) har snø, dalene er marineblå fjell, og en blek fjellrekke bak. */
+  .hk-l{fill:none;stroke:#fff;stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke;opacity:.9}
+  .hk-fjell{fill:url(#hk-sno)}
+  .hk-bak{fill:#c9dbef;opacity:.75}
   .hk-p{fill:#e0233c;stroke:#fff;stroke-width:2;vector-effect:non-scaling-stroke}
   .hk-x{display:none}
   .sens .hp .st-l{font:600 9.5px/1.3 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(0,32,91,.6)}
@@ -1415,11 +1418,11 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
     .vf-slurk{padding:9px 10px 9px 12px;font-size:14px}
   }
   @media (prefers-reduced-motion:reduce){.vf::before,.vf-lys i,.vf-chip i,.vf-live i{animation:none}.vf-lys{display:none}}
-  /* Fra 6.11.2026: kartet øverst igjen, med «Snakk med meg» rett under, så snø-heroen og modulene. Bare detaljene i flaskekortet er skjult. */
+  /* Fra 6.11.2026: kartet øverst igjen, så snø-heroen, og ingenting under den. Modulene på kartet er tilbake. Bare detaljene i flaskekortet er skjult. */
   .pultk .pk-t,.pultk [data-k="pstilling"],.pultk .pk-plagg{display:none!important}
-  .vf,footer.hero,.kart-cta{order:-1}
-  .kart-cta{display:flex;justify-content:center;margin:0;padding:28px 16px;background:#fff}
-  .kart-cta .sh-knapp.sh-p{text-shadow:none}
+  .vf,footer.hero{order:-1}
+  /* Ingenting under snøbildet (6.11.2026): main og cookies-lenka er skjult, ikke slettet, fordi skriptene skriver til dem. */
+  main,.kk-rad{display:none!important}
   .vf.vf-aapen{min-height:clamp(420px,70svh,720px)}
   .pultk{grid-template-columns:minmax(0,1fr)!important;cursor:pointer}
   .pultk [data-k="pflaske"]{grid-row:auto}
@@ -1459,7 +1462,7 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
     .hoyre .sens{flex:1;grid-template-rows:minmax(0,1fr)}
     .hoyre .sens .hp{flex-direction:column;flex-wrap:nowrap;align-items:stretch;justify-content:flex-start;min-height:0}
     .hoyre .sens .hp .hp-o{flex:1 1 auto;display:flex;align-items:stretch;min-height:0}
-    .hoyre .sens .hp .st-v{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto minmax(56px,1fr);align-items:center;justify-items:start;gap:12px;width:100%;font-size:clamp(46px,4vw,60px)}
+    .hoyre .sens .hp .st-v{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto clamp(70px,10svh,110px);align-items:center;justify-items:start;gap:12px;width:100%;font-size:clamp(46px,4vw,60px)}
     .hoyre .sens .hp .st-l{flex:none}
     .hoyre .sens .hp .hj{width:.62em;height:.62em}
     .hoyre .sens .hp .hk{grid-column:1/-1;grid-row:2;justify-self:stretch;align-self:stretch;width:100%;height:100%;min-width:0}
@@ -1849,7 +1852,7 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   </div>
   <div class="hoyre">
   <section class="sens gl" aria-label="Alt iPhonen og Apple Watch måler">
-    <div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Puls i dag"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg><svg class="hk" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true"><path class="hk-l" d=""/><circle class="hk-p" r="3" cx="-9" cy="-9"/></svg></span></button><span class="st-l"><span class="hp-on">Live fra Apple Watch</span><span class="hp-av">Ikke live akkurat nå</span></span></div><span class="hk-x" aria-hidden="true"><span>5 min</span><span>nå</span></span>
+    <div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Puls i dag"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg><svg class="hk" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hk-sno" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="40"><stop offset="0" stop-color="#fff"/><stop offset=".3" stop-color="#f1f6fc"/><stop offset=".48" stop-color="#9db9da"/><stop offset=".7" stop-color="#2f5288"/><stop offset="1" stop-color="#00205B"/></linearGradient></defs><path class="hk-bak" d=""/><path class="hk-fjell" d=""/><path class="hk-l" d=""/><circle class="hk-p" r="3" cx="-9" cy="-9"/></svg></span></button><span class="st-l"><span class="hp-on">Live fra Apple Watch</span><span class="hp-av">Ikke live akkurat nå</span></span></div><span class="hk-x" aria-hidden="true"><span>5 min</span><span>nå</span></span>
     <div class="sv" data-k="ibat"><span class="sl">iPhone</span><b>–</b><i class="bar"><i></i></i></div>
     <div class="sv" data-k="wbatl" hidden><span class="sl"><svg class="di" viewBox="0 0 24 24" fill="currentColor" aria-label="Apple" role="img"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg>Watch<span class="wa"> L</span></span><b>–</b><i class="bar"><i></i></i></div>
     <div class="sv" data-k="wbatr"><span class="sl"><svg class="di" viewBox="0 0 24 24" fill="currentColor" aria-label="Apple" role="img"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg>Watch<span class="wa"> R</span></span><b>–</b><i class="bar"><i></i></i></div>
@@ -1883,8 +1886,6 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   </div>
   </div>
 </footer>
-<!-- «Snakk med meg» står bare her, rett under kartet (fra 6.11.2026). -->
-<div class="kart-cta sh-cta"><a class="sh-knapp sh-p" href="mailto:tidemann@esbjugconsult.com">Snakk med meg</a></div>
 <script>
 // «Les mer» i seksjonene: teksten (og tanken) er skjult til man trykker.
 (() => {
@@ -3087,7 +3088,8 @@ let puls = [];
 function tegnPuls() {
   const l = document.querySelector('.hk-l'), p = document.querySelector('.hk-p'); if (!l) return;
   const nå = Date.now() + skew, fra = nå - 5 * 60e3, pts = puls.filter(q => q[0] > fra);
-  if (pts.length < 2) { l.setAttribute('d', ''); p.setAttribute('cx', -9); return; }
+  const fj = document.querySelector('.hk-fjell'), bak = document.querySelector('.hk-bak');
+  if (pts.length < 2) { for (const e of [l, fj, bak]) e.setAttribute('d', ''); p.setAttribute('cx', -9); return; }
   let lo = Math.min(...pts.map(q => q[1])), hi = Math.max(...pts.map(q => q[1]));
   const midt = (lo + hi) / 2, h = Math.max(20, hi - lo + 6); lo = midt - h / 2; hi = midt + h / 2;
   const svg = l.ownerSVGElement, W = svg.clientWidth || 200, H = svg.clientHeight || 40; svg.setAttribute('viewBox', `0 0 ${W} ${H}`);   // grafen er så høy som panelet gir plass til
@@ -3095,6 +3097,13 @@ function tegnPuls() {
   let d = '', forr = 0;
   for (const [t, b] of pts) { d += (d && t - forr < 30e3 ? 'L' : 'M') + X(t).toFixed(1) + ' ' + Y(b).toFixed(1); forr = t; }
   l.setAttribute('d', d);
+  // Fjellet: flaten under pulsen ned til bunnen. Snøen ligger på toppene fordi fargen går fra hvit øverst til marineblå nederst.
+  const xs = pts.map(q => X(q[0])), ys = pts.map(q => Y(q[1]));
+  fj.setAttribute('d', 'M' + xs[0].toFixed(1) + ' ' + H + xs.map((x, i) => 'L' + x.toFixed(1) + ' ' + ys[i].toFixed(1)).join('') + 'L' + xs[xs.length - 1].toFixed(1) + ' ' + H + 'Z');
+  // Fjellrekka bak: en utglattet og høyere kopi, blek som fjell langt unna.
+  const gl = ys.map((_, i) => { const v = ys.slice(Math.max(0, i - 6), i + 7); return v.reduce((a, b) => a + b, 0) / v.length; });
+  bak.setAttribute('d', 'M0 ' + H + 'L0 ' + (gl[0] - H * .22).toFixed(1) + xs.map((x, i) => 'L' + x.toFixed(1) + ' ' + Math.max(1, gl[i] - H * .22).toFixed(1)).join('') + 'L' + W + ' ' + (gl[gl.length - 1] - H * .22).toFixed(1) + 'L' + W + ' ' + H + 'Z');
+  svg.querySelector('#hk-sno').setAttribute('y2', H);
   const s = pts[pts.length - 1]; p.setAttribute('cx', X(s[0]).toFixed(1)); p.setAttribute('cy', Y(s[1]).toFixed(1));
 }
 setInterval(tegnPuls, 1000);
