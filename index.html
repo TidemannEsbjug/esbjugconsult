@@ -1485,7 +1485,7 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   }
   /* Enhetene i to kolonner (6.11.2026): iPhone og Android, Watch L og Watch R, Colossus og Avia. Med én klokke står den alene på sin rad. */
   .hoyre .sens:not(.pultk){grid-template-columns:repeat(2,minmax(0,1fr))!important}
-  .hoyre .sens .hp{order:0}.sens .sv[data-k="ibat"]{order:1}.sens .sv[data-k="abat"]{order:2}.sens:has(.sv[data-k="abat"][hidden]) .sv[data-k="ibat"]{grid-column:1/-1}
+  .hoyre .sens .hp{order:0}.sens .sv[data-k="ibat"]{order:1}.sens .sv[data-k="abat"]{order:2}
 .sens .sv[data-k="wbatl"]{order:3}.sens .sv[data-k="wbatr"]{order:4}.sens .maskiner{order:9}
   /* Søket i replay er koblet av (6.11.2026): Jev er tom for credits. Fjern denne linja for å slå det på igjen. */
   .hist .h-sok,.hist .h-sokk{display:none!important}
@@ -3057,8 +3057,6 @@ function tegn() {
   }
   const a = tele.android || {};
   sett('abat', a.bat != null ? a.bat + ' %' : null, a.bat, a.lader);
-  // Android er av når den ikke har sendt på 20 min (den sender hvert minutt, reserven hvert 15.). Da tar iPhonen hele raden.
-  document.querySelector('.sv[data-k="abat"]').hidden = !(a.ts && nå - a.ts < 20 * 60e3);
   for (const k of ['iphone', 'watchr', 'watchl', 'watch']) inn(k, tele[k]);
   if (MONITOR) visPult(pultBilde());
   window.__vann = { t: vannBilde(), nå }; dispatchEvent(new Event('esbjug-vann'));   // vannflaske-seksjonen under heroen
