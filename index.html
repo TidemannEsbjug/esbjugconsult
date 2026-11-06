@@ -4531,7 +4531,8 @@ setInterval(tegn, 1000);
   // og båndene måles etter kortets høyde i stedet for skriftstørrelsen.
   const kort = $('.sted');
   if (kort && matchMedia('(min-width:900px) and (hover:hover) and (pointer:fine)').matches) {
-    for (const k of ['kort-is', 'kort-flagg']) { const i = document.createElement('i'); i.className = k; i.setAttribute('aria-hidden', 'true'); kort.prepend(i); }
+    // prepend i denne rekkefølgen, så flagget havner over isen
+    for (const k of ['kort-flagg', 'kort-is']) { const i = document.createElement('i'); i.className = k; i.setAttribute('aria-hidden', 'true'); kort.prepend(i); }
     const h = () => kort.style.setProperty('--kh', kort.offsetHeight + 'px'); h(); new ResizeObserver(h).observe(kort);
   }
   if (matchMedia('(min-width:900px) and (hover:hover) and (pointer:fine)').matches) for (const h1 of [$('.sh-hero h1'), kort].filter(Boolean)) {
