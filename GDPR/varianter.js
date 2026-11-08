@@ -72,9 +72,38 @@
   document.body.appendChild(strip);
   vis();
 
+  // Melder målingene til den lokale tjeneren, så de kan leses uten å se skjermen.
+  window.addEventListener("load", function () {
+    setTimeout(function () {
+      try {
+        fetch("/maal", { method: "POST", body: window.NAKEN_TILSTAND() }).catch(function () {});
+      } catch (e) {
+        fetch("/maal", { method: "POST", body: "FEIL: " + e.message }).catch(function () {});
+      }
+    }, 1600);
+  });
+
   // Nettsyn leser denne hvert par sekund og skriver den til fil, så valget
   // finnes på disk og ikke bare på skjermen.
   window.NAKEN_TILSTAND = function () {
-    return JSON.stringify({ variant: na + 1, navn: UTKAST[na].navn });
+    function m(v) {
+      var e = document.querySelector(v);
+      if (!e) return null;
+      var r = e.getBoundingClientRect();
+      return [Math.round(r.top), Math.round(r.bottom), Math.round(r.width), Math.round(r.height)];
+    }
+    return JSON.stringify({
+      variant: na + 1,
+      navn: UTKAST[na].navn,
+      vindu: [innerWidth, innerHeight],
+      dpr: devicePixelRatio,
+      scene: m(".hero .scene"),
+      h1: m(".hero .scene-tekst h1"),
+      kort: m(".hero .scene-tekst .privat"),
+      merke: m(".hero-merke"),
+      rise: document.querySelectorAll(".rise").length,
+      vist: document.querySelectorAll(".rise.in").length,
+      svh: getComputedStyle(document.querySelector(".hero .scene")).minHeight,
+    });
   };
 })();

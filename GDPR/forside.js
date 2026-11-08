@@ -217,6 +217,21 @@ console.info(
   reveal.forEach(function (el) {
     io.observe(el);
   });
+  // Sikkerhetsnett. Kommer det ingen beskjed fra IntersectionObserver, står
+  // siden helt tom — alt innhold ligger på opacity: 0 og venter. Det skjer i
+  // innebygde nettlesere (WKWebView) og når vinduet ennå ikke har fått
+  // størrelse når siden lastes. Etter et øyeblikk viser vi derfor alt som
+  // faktisk er innenfor skjermen, og lar resten bli som før på rulling.
+  setTimeout(function () {
+    reveal.forEach(function (el) {
+      if (el.classList.contains("in")) return;
+      var r = el.getBoundingClientRect();
+      if (r.top < window.innerHeight && r.bottom > 0 && r.width > 0) {
+        el.classList.add("in");
+        io.unobserve(el);
+      }
+    });
+  }, 900);
 })();
 
 // Nedlastingen er satt på pause (KLART_NEDLASTING i wrangler.jsonc). Knappene
