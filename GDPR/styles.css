@@ -796,12 +796,20 @@ section {
   box-shadow: 0 4px 14px -6px rgba(21, 32, 46, 0.5);
 }
 
+/* Samme som appen setter merket sitt i (.mark i src/styles.css): Literata
+   kursiv i vekt 600. Bare 400 finnes som fil, både her og i appen, så
+   nettleseren lager halvfeten selv — og da ser de to like ut. SVG-ordmerket
+   er den ekte 400-tegningen og ble for tynn ved siden av appen.
+   Skyggen er mørk: en hvit glød bak hvit skrift gir ingen kant. */
 .hero-merke .merke-ord {
-  width: auto;
-  height: clamp(20px, 1.6vw, 27px);
-  /* Hvitt ordmerke mot himmelen: skyggen må være mørk for å gi kant. En hvit
-     glød bak hvit skrift gjør ingenting. */
-  filter: drop-shadow(0 1px 2px rgba(21, 32, 46, 0.35)) drop-shadow(0 0 18px rgba(21, 32, 46, 0.25));
+  font-family: "Literata", "Iowan Old Style", Georgia, serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(21px, 1.72vw, 29px);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(21, 32, 46, 0.4), 0 0 18px rgba(21, 32, 46, 0.3);
 }
 
 .hero-merke:hover {
