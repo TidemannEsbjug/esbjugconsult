@@ -456,7 +456,7 @@ section {
 }
 
 .hero .scene h1 span {
-  color: var(--signal-deep);
+  color: #fff;
 }
 
 /* Overskriften ligger rett på fotografiet, og himmelen skifter fra lys til
@@ -466,12 +466,16 @@ section {
    hvor mykt det var, la det seg som en rute rundt linja. Det tetteste laget
    er igjen, bare for kanten på bokstavene. */
 .hero .scene h1 {
-  padding: clamp(16px, 2.6vh, 40px) clamp(28px, 5vw, 96px);
-  background:
-    radial-gradient(ellipse 34% 44% at 26% 38%, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0) 72%),
-    radial-gradient(ellipse 40% 50% at 62% 58%, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0) 74%),
-    radial-gradient(ellipse 46% 38% at 46% 30%, rgba(255, 255, 255, 0.46), rgba(255, 255, 255, 0) 76%);
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.75);
+  padding: clamp(10px, 1.6vh, 24px) clamp(20px, 4vw, 70px);
+  color: #fff;
+  /* Hvit skrift rett på fotografiet. Tre lag mørk skygge gir kant og løfter
+     den fra flata: ett tett for kanten, to myke for dybden. Dis bak mørk
+     skrift ble prøvd først — den leste greit, men hvit skrift holder hele
+     heroen i samme toneart som merket og kortet. */
+  text-shadow:
+    0 1px 2px rgba(10, 20, 34, 0.45),
+    0 2px 14px rgba(10, 20, 34, 0.4),
+    0 0 44px rgba(10, 20, 34, 0.3);
 }
 
 /* Store skjermer (1920 × 1080 og opp): teksten vokser med skjermen, så heroen
@@ -816,6 +820,147 @@ section {
   opacity: 0.86;
 }
 
+/* --------------------------------------------------------------------------
+   Kortet i heroen. Begge veiene — nedlasting for privatpersoner og feltet for
+   virksomheter — ligger i ett hvitt kort på snøen. Da trenger ikke hver linje
+   sitt eget glass for å kunne leses, og de to leses som én ting.
+   Valgt 5.11.2026 av fem utkast; de fire andre ligger i git-historikken
+   (varianter.css, commit c253603).
+   -------------------------------------------------------------------------- */
+
+/* Ett kort, ikke to bokser oppå hverandre: flata er et eget felt i rutenettet
+   som dekker begge radene. To bokser viste en skjøt der de møttes. */
+.hero .scene-tekst:not(.har-svar)::after {
+  content: "";
+  grid-row: 3 / span 2;
+  grid-column: 1;
+  z-index: 0;
+  /* Rutenettet midtstiller feltene (align-items: center), så uten dette får
+     flata ingen høyde i det hele tatt. */
+  align-self: stretch;
+  width: min(760px, 100%);
+  justify-self: center;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.975);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 34px 80px -44px rgba(21, 32, 46, 0.75);
+}
+
+/* Uten dette havner de i en ny spalte ved siden av flata: et felt som ikke
+   selv sier hvilken spalte det hører til, blir flyttet dit det er ledig. */
+.hero .scene-tekst:not(.har-svar) > h1,
+.hero .scene-tekst:not(.har-svar) > .privat,
+.hero .scene-tekst:not(.har-svar) > .orgport {
+  grid-column: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.hero .scene-tekst:not(.har-svar) > .privat {
+  width: min(760px, 100%);
+  margin: 0 auto;
+  padding: 50px 44px 28px;
+}
+
+.hero .scene-tekst:not(.har-svar) > .orgport {
+  width: min(760px, 100%);
+  margin: 0 auto;
+  padding: 0 44px 38px;
+}
+
+.hero .scene .privat-linje span,
+.hero .scene .virk-linje span,
+.hero .scene .eller span {
+  padding: 0;
+  background: none;
+  border: none;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.hero .scene .eller {
+  margin-top: 20px;
+}
+
+.hero .scene .privat-linje {
+  margin-bottom: 30px;
+  font-size: clamp(24px, 2.1vw, 32px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.hero .scene .privat-linje b {
+  font-weight: 700;
+}
+
+/* Knappene er hvite på et hvitt kort, og forsvinner. De får sin egen flate i
+   samme blå familie som merkelappen øverst på siden: tydelig at de kan
+   trykkes, uten at én av dem ser ut som den anbefalte. */
+.hero .scene .privat .get {
+  gap: 10px;
+}
+
+.hero .scene .privat .btn,
+.hero .scene .privat .btn.ghost {
+  height: 60px;
+  padding: 0 28px;
+  font-size: 16.5px;
+  font-weight: 600;
+  color: var(--signal-deep);
+  background: var(--signal-soft);
+  border-color: rgba(36, 86, 230, 0.16);
+  box-shadow: none;
+}
+
+.hero .scene .privat .btn:hover,
+.hero .scene .privat .btn.ghost:hover {
+  color: #fff;
+  background: var(--signal);
+  border-color: var(--signal);
+  box-shadow: 0 10px 24px -12px rgba(36, 86, 230, 0.8);
+}
+
+.hero .scene .eller::before,
+.hero .scene .eller::after {
+  display: block;
+  background: var(--rule);
+}
+
+@media (min-width: 561px) {
+  .hero .scene .orgport:not(.svar) input {
+    height: 60px;
+    padding: 0 200px 0 52px;
+    font-size: 17px;
+    background-position: 22px center;
+    background-size: 20px;
+    border-color: var(--rule);
+    box-shadow: none;
+    animation: none;
+  }
+
+  .hero .scene .orgport:not(.svar) .btn {
+    top: 7px;
+    right: 7px;
+    height: 46px;
+    padding: 0 22px;
+    font-size: 15px;
+  }
+}
+
+.hero .scene-tekst.skriver:not(.har-svar) > .privat {
+  min-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  overflow: hidden;
+}
+
+.hero .scene-tekst.skriver:not(.har-svar) > .orgport {
+  padding-top: 30px;
+}
+
 /* Komposisjonen: overskriften i himmelen, feltet nede i snøen og hytta fri mellom dem.
    Overskriften står høyere enn før, så de to veiene får plass mellom den og feltet. */
 .hero .scene {
@@ -992,10 +1137,12 @@ section {
   visibility: hidden;
 }
 
-/* De skriver: overskriften og luften over feltet faller sammen, så feltet
-   glir opp og forslagene får plassen under seg. */
+/* De skriver: overskriften, luften over kortet og privatdelen faller sammen,
+   så kortet krymper ned til feltet og forslagene får plassen under seg.
+   Rad 3 må med — uten den blir kortet stående med en tom hvit flate der
+   nedlastingen sto. */
 .hero .scene-tekst.skriver:not(.har-svar) {
-  grid-template-rows: 0fr minmax(0, 0fr) auto auto 1fr;
+  grid-template-rows: 0fr minmax(0, 0fr) 0fr auto 1fr;
 }
 
 .orgport .btn:disabled {
