@@ -455,8 +455,11 @@ section {
   color: var(--ink-2);
 }
 
+/* «med lokal KI.» er det siden handler om, og den eneste fargen i
+   overskriften. Merkeblå som før; en lys blåtone ble prøvd mot den hvite
+   førstelinja og ble for vask. */
 .hero .scene h1 span {
-  color: #fff;
+  color: var(--signal-deep);
 }
 
 /* Overskriften ligger rett på fotografiet, og himmelen skifter fra lys til
@@ -820,6 +823,144 @@ section {
   opacity: 0.86;
 }
 
+/* Komposisjonen: overskriften i himmelen, feltet nede i snøen og hytta fri mellom dem.
+   Overskriften står høyere enn før, så de to veiene får plass mellom den og feltet. */
+.hero .scene {
+  justify-content: flex-start;
+  padding-top: clamp(48px, 9vh, 112px);
+  padding-bottom: clamp(84px, 16vh, 190px);
+}
+
+.hero .scene:has(.har-svar) {
+  justify-content: center;
+  padding-top: clamp(72px, 10vh, 120px);
+  padding-bottom: clamp(72px, 10vh, 120px);
+}
+
+.hero .scene-tekst {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero .scene-tekst.har-svar {
+  flex: none;
+  display: block;
+}
+
+.hero .scene-tekst:not(.har-svar) > .orgport {
+  margin-top: auto;
+}
+
+/* Overskriften øverst, nedlastingen og feltet samlet nede mot sporet, og luft
+   imellom som gir etter — men aldri helt. Rad 2 (minimum 28px) er grunnen til
+   at knappene ikke kan legge seg oppå overskriften, uansett vindusform; rad 5
+   holder gruppa litt over bunnen. Forholdet 1fr : 0,7fr gir mer luft over enn
+   under, så feltet lander nede i snøen der sporene møtes. */
+.hero .scene-tekst:not(.har-svar) {
+  display: grid;
+  grid-template-rows: auto minmax(28px, 1fr) auto auto minmax(0, 0.7fr);
+  align-content: stretch;
+  transition: grid-template-rows 520ms var(--ease);
+}
+
+.hero .scene-tekst:not(.har-svar) > h1 {
+  grid-row: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.hero .scene-tekst:not(.har-svar) > .privat {
+  grid-row: 3;
+  padding-bottom: 26px;
+}
+
+.hero .scene-tekst:not(.har-svar) > .orgport {
+  grid-row: 4;
+  margin-top: 0;
+}
+
+/* Tilbake fra prissiden: kortet står der med en gang, uten feltet først og uten animasjon. */
+.kommer-tilbake .hero .scene-tekst {
+  visibility: hidden;
+}
+
+.uten-feiring .orgport-svar-hoved,
+.uten-feiring .orgport-svar-hoved *,
+.uten-feiring .orgport-svar-hoved *::before,
+.uten-feiring .orgport-svar-hoved *::after {
+  animation: none !important;
+}
+
+/* Heroen har én oppgave: feltet og knappen, store og midt i bildet. Forklaringen står rett under bildet. */
+@media (min-width: 561px) {
+  .hero .scene .orgport:not(.svar),
+  .hero .scene .privat {
+    width: min(860px, 100%);
+  }
+
+  /* Gratis for privatpersoner er hovedtilbudet nå; knappene skal ikke være de minste i bildet. */
+  .hero .scene .privat .btn {
+    height: 60px;
+    padding: 0 32px;
+    font-size: 16.5px;
+  }
+
+  /* Knappen ligger inne i feltet, så de leses som én ting. */
+  .hero .scene .orgport:not(.svar) .orgport-rad {
+    position: relative;
+    display: block;
+  }
+
+  .hero .scene .orgport:not(.svar) input {
+    height: 84px;
+    padding: 0 250px 0 72px;
+    font-size: 22px;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232456e6' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M16.5 16.5 21 21'/%3E%3C/svg%3E") 30px center / 26px no-repeat;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 16px 40px -18px rgba(21, 32, 46, 0.5);
+    animation: felt-puls 2200ms ease-out 2;
+  }
+
+  .hero .scene .orgport:not(.svar) input::placeholder {
+    color: var(--ink-2);
+    opacity: 1;
+  }
+
+  .hero .scene .orgport:not(.svar) .btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+    height: 64px;
+    padding: 0 30px;
+    font-size: 18px;
+  }
+
+  /* Forslagene har samme størrelse som feltet. */
+  .hero .scene .orgforslag {
+    top: calc(100% + 10px);
+    max-height: calc(100vh - 220px);
+    overflow-y: auto;
+    padding: 10px;
+    border-radius: 24px;
+  }
+
+  .hero .scene .orgforslag button {
+    gap: 5px;
+    padding: 20px 26px;
+    border-radius: 16px;
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  .hero .scene .orgforslag button small {
+    font-size: 15px;
+    font-weight: 400;
+  }
+}
+
 /* --------------------------------------------------------------------------
    Kortet i heroen. Begge veiene — nedlasting for privatpersoner og feltet for
    virksomheter — ligger i ett hvitt kort på snøen. Da trenger ikke hver linje
@@ -959,144 +1100,6 @@ section {
 
 .hero .scene-tekst.skriver:not(.har-svar) > .orgport {
   padding-top: 30px;
-}
-
-/* Komposisjonen: overskriften i himmelen, feltet nede i snøen og hytta fri mellom dem.
-   Overskriften står høyere enn før, så de to veiene får plass mellom den og feltet. */
-.hero .scene {
-  justify-content: flex-start;
-  padding-top: clamp(48px, 9vh, 112px);
-  padding-bottom: clamp(84px, 16vh, 190px);
-}
-
-.hero .scene:has(.har-svar) {
-  justify-content: center;
-  padding-top: clamp(72px, 10vh, 120px);
-  padding-bottom: clamp(72px, 10vh, 120px);
-}
-
-.hero .scene-tekst {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.hero .scene-tekst.har-svar {
-  flex: none;
-  display: block;
-}
-
-.hero .scene-tekst:not(.har-svar) > .orgport {
-  margin-top: auto;
-}
-
-/* Overskriften øverst, nedlastingen og feltet samlet nede mot sporet, og luft
-   imellom som gir etter — men aldri helt. Rad 2 (minimum 28px) er grunnen til
-   at knappene ikke kan legge seg oppå overskriften, uansett vindusform; rad 5
-   holder gruppa litt over bunnen. Forholdet 1fr : 0,7fr gir mer luft over enn
-   under, så feltet lander nede i snøen der sporene møtes. */
-.hero .scene-tekst:not(.har-svar) {
-  display: grid;
-  grid-template-rows: auto minmax(28px, 1fr) auto auto minmax(0, 0.7fr);
-  align-content: stretch;
-  transition: grid-template-rows 520ms var(--ease);
-}
-
-.hero .scene-tekst:not(.har-svar) > h1 {
-  grid-row: 1;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.hero .scene-tekst:not(.har-svar) > .privat {
-  grid-row: 3;
-  padding-bottom: 26px;
-}
-
-.hero .scene-tekst:not(.har-svar) > .orgport {
-  grid-row: 4;
-  margin-top: 0;
-}
-
-/* Tilbake fra prissiden: kortet står der med en gang, uten feltet først og uten animasjon. */
-.kommer-tilbake .hero .scene-tekst {
-  visibility: hidden;
-}
-
-.uten-feiring .orgport-svar-hoved,
-.uten-feiring .orgport-svar-hoved *,
-.uten-feiring .orgport-svar-hoved *::before,
-.uten-feiring .orgport-svar-hoved *::after {
-  animation: none !important;
-}
-
-/* Heroen har én oppgave: feltet og knappen, store og midt i bildet. Forklaringen står rett under bildet. */
-@media (min-width: 561px) {
-  .hero .scene .orgport:not(.svar),
-  .hero .scene .privat {
-    width: min(860px, 100%);
-  }
-
-  /* Gratis for privatpersoner er hovedtilbudet nå; knappene skal ikke være de minste i bildet. */
-  .hero .scene .privat .btn {
-    height: 60px;
-    padding: 0 32px;
-    font-size: 16.5px;
-  }
-
-  /* Knappen ligger inne i feltet, så de leses som én ting. */
-  .hero .scene .orgport:not(.svar) .orgport-rad {
-    position: relative;
-    display: block;
-  }
-
-  .hero .scene .orgport:not(.svar) input {
-    height: 84px;
-    padding: 0 250px 0 72px;
-    font-size: 22px;
-    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232456e6' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M16.5 16.5 21 21'/%3E%3C/svg%3E") 30px center / 26px no-repeat;
-    border: 1px solid rgba(255, 255, 255, 0.9);
-    box-shadow: 0 16px 40px -18px rgba(21, 32, 46, 0.5);
-    animation: felt-puls 2200ms ease-out 2;
-  }
-
-  .hero .scene .orgport:not(.svar) input::placeholder {
-    color: var(--ink-2);
-    opacity: 1;
-  }
-
-  .hero .scene .orgport:not(.svar) .btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 2;
-    height: 64px;
-    padding: 0 30px;
-    font-size: 18px;
-  }
-
-  /* Forslagene har samme størrelse som feltet. */
-  .hero .scene .orgforslag {
-    top: calc(100% + 10px);
-    max-height: calc(100vh - 220px);
-    overflow-y: auto;
-    padding: 10px;
-    border-radius: 24px;
-  }
-
-  .hero .scene .orgforslag button {
-    gap: 5px;
-    padding: 20px 26px;
-    border-radius: 16px;
-    font-size: 24px;
-    font-weight: 600;
-  }
-
-  .hero .scene .orgforslag button small {
-    font-size: 15px;
-    font-weight: 400;
-  }
 }
 
 /* Feltet trekker blikket til seg de første sekundene, så stopper pulsen. */
