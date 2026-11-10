@@ -455,13 +455,6 @@ section {
   color: var(--ink-2);
 }
 
-/* «med lokal KI.» er det siden handler om, og den eneste fargen i
-   overskriften. Merkeblå som før; en lys blåtone ble prøvd mot den hvite
-   førstelinja og ble for vask. */
-.hero .scene h1 span {
-  color: var(--signal-deep);
-}
-
 /* Overskriften ligger rett på fotografiet, og himmelen skifter fra lys til
    mørk over bildet. Bak bokstavene ligger en dis: tre myke ellipser som
    overlapper hverandre på skrå, så kanten aldri blir en firkant — den tynnes
@@ -781,46 +774,27 @@ section {
   display: none;
 }
 
-/* Merket øverst til venstre i bildet: krystallen fra appikonet og ordmerket
-   (Literata kursiv, tegnet som baner i SVG-en, så skriften ikke må lastes).
-   Begge er appens egne filer fra klartsett/merke. Står utenfor rutenettet i
-   .scene-tekst, så heroens oppsett ikke røres. */
-.hero-merke {
-  position: absolute;
-  z-index: 6;
-  top: clamp(16px, 2.4vh, 30px);
-  left: clamp(16px, 3.4vw, 46px);
-  display: inline-flex;
-  align-items: center;
-  gap: 11px;
-  text-decoration: none;
+/* Ordet «Klart» er overskriften, stort i himmelen der setningen sto. Settes
+   som appens .mark (src/styles.css): Literata kursiv i vekt 600. Bare 400
+   finnes som fil, så nettleseren lager halvfeten selv, akkurat som i appen. */
+.hero .scene .scene-tekst > h1.hero-logo {
+  max-width: none;
+  /* Skyggen ligger på ordet selv. Klipper boksen, blir skyggen kuttet i en
+     rett kant; derfor synlig overløp her. */
+  overflow: visible;
+  text-shadow: none;
 }
 
-.hero-merke .merke-krystall {
-  width: clamp(28px, 2.3vw, 38px);
-  height: auto;
-  border-radius: 50%;
-  box-shadow: 0 4px 14px -6px rgba(21, 32, 46, 0.5);
-}
-
-/* Samme som appen setter merket sitt i (.mark i src/styles.css): Literata
-   kursiv i vekt 600. Bare 400 finnes som fil, både her og i appen, så
-   nettleseren lager halvfeten selv — og da ser de to like ut. SVG-ordmerket
-   er den ekte 400-tegningen og ble for tynn ved siden av appen.
-   Skyggen er mørk: en hvit glød bak hvit skrift gir ingen kant. */
-.hero-merke .merke-ord {
+.hero-logo .logo-ord {
   font-family: "Literata", "Iowan Old Style", Georgia, serif;
   font-style: italic;
   font-weight: 600;
-  font-size: clamp(21px, 1.72vw, 29px);
+  font-size: clamp(56px, 6.4vw, 124px);
   letter-spacing: -0.02em;
   line-height: 1;
   color: #fff;
-  text-shadow: 0 1px 2px rgba(21, 32, 46, 0.4), 0 0 18px rgba(21, 32, 46, 0.3);
-}
-
-.hero-merke:hover {
-  opacity: 0.86;
+  background: none;
+  text-shadow: 0 1px 2px rgba(10, 20, 34, 0.2), 0 2px 12px rgba(10, 20, 34, 0.08);
 }
 
 /* Komposisjonen: overskriften i himmelen, feltet nede i snøen og hytta fri mellom dem.
@@ -863,6 +837,13 @@ section {
   grid-template-rows: auto minmax(28px, 1fr) auto auto minmax(0, 0.7fr);
   align-content: stretch;
   transition: grid-template-rows 520ms var(--ease);
+}
+
+/* Ordet og kortet står samlet midt i heroen, med fast avstand mellom seg.
+   Gjelder bare før de skriver; da tar .skriver over med sine egne rader. */
+.hero .scene-tekst:not(.har-svar):not(.skriver) {
+  grid-template-rows: auto clamp(24px, 4.2vh, 56px) auto auto 0px;
+  align-content: center;
 }
 
 .hero .scene-tekst:not(.har-svar) > h1 {
@@ -1037,6 +1018,32 @@ section {
   font-weight: 700;
 }
 
+/* «Last ned» står én gang over de tre knappene, som bare har navnet på
+   systemet. Overskriften over får mindre luft under seg, så de to linjene og
+   knappene leses som én blokk. */
+.hero .scene .privat .privat-linje {
+  margin-bottom: 18px;
+}
+
+.hero .scene .last-ned-tittel {
+  margin: 0 0 12px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: #fff;
+}
+
+.hero .scene .privat .last-ned-tittel + .get {
+  margin-top: 0;
+}
+
+/* Knappene har bare systemnavnet, så de kan være like brede. */
+.hero .scene .privat .get .btn {
+  min-width: 150px;
+  justify-content: center;
+}
+
 /* Knappene er hvite på et hvitt kort, og forsvinner. De får sin egen flate i
    samme blå familie som merkelappen øverst på siden: tydelig at de kan
    trykkes, uten at én av dem ser ut som den anbefalte. */
@@ -1091,15 +1098,11 @@ section {
   }
 }
 
+/* Privatdelen beholder margene sine mens den toner ut; bare raden den står i
+   faller sammen. Endrer marger seg underveis, hopper innholdet. */
 .hero .scene-tekst.skriver:not(.har-svar) > .privat {
   min-height: 0;
-  padding-top: 0;
-  padding-bottom: 0;
   overflow: hidden;
-}
-
-.hero .scene-tekst.skriver:not(.har-svar) > .orgport {
-  padding-top: 30px;
 }
 
 /* Feltet trekker blikket til seg de første sekundene, så stopper pulsen. */
@@ -1145,7 +1148,8 @@ section {
    Rad 3 må med — uten den blir kortet stående med en tom hvit flate der
    nedlastingen sto. */
 .hero .scene-tekst.skriver:not(.har-svar) {
-  grid-template-rows: 0fr minmax(0, 0fr) 0fr auto 1fr;
+  /* Rad 3 beholder 30 px: luften i kortet over feltet. */
+  grid-template-rows: 0fr minmax(0, 0fr) 30px auto 1fr;
 }
 
 .orgport .btn:disabled {
@@ -4403,3 +4407,684 @@ footer {
 .mt-18 { margin-top: 18px !important; }
 .mt-22 { margin-top: 22px !important; }
 .lenke-signal { color: var(--signal); font-weight: 600; }
+
+/* Kortet i heroen: havblått frostglass med hvit skrift og hvite
+   nedlastingsknapper (valgt 10.11.2026 av ti + fem varianter). Ligger sist,
+   så det vinner over de hvite kortreglene lenger opp. */
+.hero .scene-tekst:not(.har-svar)::after {
+  background: rgba(10, 82, 190, 0.64);
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 34px 80px -44px rgba(10, 20, 50, 0.8);
+}
+
+.hero .scene .privat-linje,
+.hero .scene .privat-linje b,
+.hero .scene .virk-linje b {
+  color: #fff;
+}
+
+.hero .scene .virk-linje,
+.hero .scene .eller {
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.hero .scene .eller::before,
+.hero .scene .eller::after {
+  background: rgba(255, 255, 255, 0.26);
+}
+
+.hero .scene .privat .btn,
+.hero .scene .privat .btn.ghost {
+  color: #0a4aa8;
+  background: #fff;
+  border-color: #fff;
+}
+
+.hero .scene .privat .btn:hover,
+.hero .scene .privat .btn.ghost:hover {
+  color: #0a4aa8;
+  background: #dcecff;
+  border-color: #dcecff;
+  box-shadow: 0 10px 24px -12px rgba(5, 15, 40, 0.6);
+}
+
+.hero .scene .orgport:not(.svar) input {
+  border-color: rgba(255, 255, 255, 0.9);
+}
+
+.hero .scene .orgport:not(.svar) .btn {
+  color: #fff;
+  background: #0a4aa8;
+  border-color: #0a4aa8;
+}
+
+/* Ingenting i heroen skal kunne markeres, bortsett fra de to tilbudslinjene
+   og feltet man skriver i (uten markering kan Safari nekte å ta imot tekst i
+   et felt). Resten av siden er som før. */
+.hero {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.hero input,
+.hero .scene .privat-linje,
+.hero .scene .virk-linje {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Nedlastingsknappene løfter seg når man holder over. Linux har i tillegg en
+   pingvin (egen tegning, ikke Tux) som hopper opp fra bunnen av knappen og
+   vugger mens musa er der. Windows og macOS har ingen tegn: vindusknapper og
+   prikker ble prøvd, men leses som noe man kan trykke på.
+   Like brede knapper, så navnet kan flytte seg uten at raden endrer seg.
+   Bare på skjermer med mus; på mobil står de som før. */
+@media (min-width: 561px) {
+  .hero .scene .get .btn.os {
+    position: relative;
+    width: 172px;
+    min-width: 0;
+    padding: 0;
+    gap: 0;
+    overflow: hidden;
+    justify-content: center;
+    transition:
+      background-color 220ms ease,
+      border-color 220ms ease,
+      transform 260ms var(--ease),
+      box-shadow 260ms var(--ease);
+  }
+
+  .os-navn {
+    display: inline-block;
+    transition: transform 460ms var(--ease);
+  }
+
+  /* Pingvinen står til venstre, utenfor synsfeltet, til den trengs. */
+  .os-figur {
+    position: absolute;
+    left: 44px;
+    top: 50%;
+    width: 24px;
+    height: 28px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-34px, -52%);
+    transition: transform 460ms var(--ease), opacity 200ms ease;
+  }
+
+  .os-figur svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .os-pingvin-kropp {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+  }
+
+  /* Windows: en ring i logoens fire farger rundt knappen. Fargene står der
+     de står i logoen: rød oppe til venstre, grønn oppe til høyre, gul nede
+     til høyre, blå nede til venstre. En ring, aldri ruter. Den er der med én
+     gang man holder over; ingen bevegelse rundt. Knappen beholder formen og
+     den blå teksten. */
+  .hero .scene .get .btn.os-win::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 3px;
+    background: conic-gradient(
+      #7fba00 0deg 90deg,
+      #ffb900 90deg 180deg,
+      #00a4ef 180deg 270deg,
+      #f25022 270deg 360deg);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* macOS: glass slik Apple beskriver Liquid Glass (WWDC25, «Meet Liquid
+     Glass»): ingen strek rundt; formen tegnes av lys som ligger på kanten mot
+     lyskilden og på motsatt side, og som flytter seg (her: følger musa).
+     Kantene er tykke og bryter lyset. Ved trykk lyser det innenfra fra
+     punktet man trykker, og elementet gir etter. Kortet under er allerede
+     glass, og Apple sier «avoid glass on glass»: ingen egen uskarphet, bare
+     et tynt lys lag.
+     Glasset er et eget lag (.os-glass) bak teksten. Knappen med teksten står
+     stille: skaleres teksten, tegner Safari den som et bilde under bevegelsen
+     og skarpt igjen etterpå, og da hopper den litt. Glasset vokser heller
+     ikke, så det ikke tar plass fra nabo-knappene. --mx, --my og --vinkel
+     settes av forside.js. */
+  .hero .scene .get .btn.os-mac {
+    isolation: isolate;
+    overflow: visible;
+    transition:
+      background-color 320ms ease,
+      border-color 320ms ease,
+      color 320ms ease,
+      transform 260ms var(--ease),
+      box-shadow 320ms var(--ease);
+  }
+
+  .os-glass {
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow:
+      inset 0 3px 8px -2px rgba(255, 255, 255, 0.4),
+      inset 0 -4px 10px -3px rgba(0, 28, 90, 0.22),
+      0 16px 30px -16px rgba(4, 14, 40, 0.6);
+    opacity: 0;
+    transition:
+      opacity 320ms ease,
+      transform 520ms cubic-bezier(0.3, 1.6, 0.5, 1);
+    pointer-events: none;
+  }
+
+  .os-mac .os-navn {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Lyset innenfra, der musa er. */
+  .os-glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(var(--glod, 110px) var(--glod-h, 64px) at var(--mx, 50%) var(--my, 30%), rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0) 72%);
+  }
+
+  /* Lyset på kanten: tynn ring der bare sidene mot og bort fra lyset lyser. */
+  .os-glass::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.25px;
+    background: conic-gradient(from var(--vinkel, 315deg),
+      rgba(255, 255, 255, 0.95) 0deg,
+      rgba(255, 255, 255, 0.12) 55deg,
+      rgba(255, 255, 255, 0) 90deg,
+      rgba(255, 255, 255, 0.12) 145deg,
+      rgba(255, 255, 255, 0.55) 180deg,
+      rgba(255, 255, 255, 0.12) 215deg,
+      rgba(255, 255, 255, 0) 270deg,
+      rgba(255, 255, 255, 0.12) 305deg,
+      rgba(255, 255, 255, 0.95) 360deg);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  }
+}
+
+@media (hover: hover) and (min-width: 561px) {
+  .hero .scene .get .btn.os:is(:hover, :focus-visible) {
+    transform: translateY(-2px);
+    color: #0a4aa8;
+    background: #fff;
+    border-color: #fff;
+    box-shadow: 0 16px 30px -16px rgba(4, 14, 40, 0.7);
+  }
+
+  .hero .scene .get .btn.os:active {
+    transform: translateY(0) scale(0.98);
+    transition-duration: 90ms;
+  }
+
+  /* Navnet viker til høyre, og tegningen hopper opp med et lite overslag. */
+  .os-lin:is(:hover, :focus-visible) .os-navn {
+    transform: translateX(15px);
+  }
+
+  /* Den hvite kanten ville ligget som en strek utenfor ringen. */
+  .hero .scene .get .btn.os-win:is(:hover, :focus-visible) {
+    border-color: transparent;
+    background-clip: padding-box;
+  }
+
+  .hero .scene .get .btn.os-win:is(:hover, :focus-visible)::after {
+    opacity: 1;
+  }
+
+  /* macOS: selve knappen blir gjennomsiktig og løfter seg 2 px som de andre.
+     Ingen skalering: da hopper teksten i Safari. Glasslaget bak tar over. */
+  .hero .scene .get .btn.os-mac:is(:hover, :focus-visible) {
+    transform: translateY(-2px);
+    color: #fff;
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    text-shadow: 0 1px 6px rgba(10, 40, 100, 0.3);
+  }
+
+  .hero .scene .get .btn.os-mac:active {
+    transform: translateY(0);
+  }
+
+  /* Glasset kommer fram uten å bli større eller flytte seg, så det ikke tar
+     plass fra knappene ved siden av. */
+  .os-mac:is(:hover, :focus-visible) .os-glass {
+    opacity: 1;
+  }
+
+  /* Trykk: glasset gir etter, og gløden sprer seg fra punktet. */
+  .os-mac:active .os-glass {
+    transform: scale(0.97);
+    transition-duration: 320ms, 140ms;
+    --glod: 260px;
+    --glod-h: 140px;
+  }
+
+  /* Pingvinen vagger inn fra venstre: tre små steg på veien, så vugger den
+     rolig på stedet. */
+  .os-lin:is(:hover, :focus-visible) .os-figur {
+    opacity: 1;
+    transform: translate(0, -52%);
+  }
+
+  .os-lin:is(:hover, :focus-visible) .os-pingvin-kropp {
+    animation:
+      os-vagle 460ms ease-in-out,
+      os-vugg 1400ms ease-in-out 700ms infinite;
+  }
+
+
+}
+
+@keyframes os-vagle {
+  0% { transform: rotate(-9deg); }
+  33% { transform: rotate(9deg); }
+  66% { transform: rotate(-7deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes os-vugg {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-7deg); }
+  75% { transform: rotate(7deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero .scene .get .btn.os,
+  .os-navn,
+  .os-figur,
+  .os-pingvin-kropp,
+  .os-win::after,
+  .os-glass {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Kortet svarer på knappen man holder over (bare med mus):
+   Windows en svak glød i de fire fargene langs bunnen. Mac: kortet blir
+   gjennomsiktig glass uten uskarphet, så landskapet står skarpt gjennom.
+   Linux: kortet blir en mørk terminal, og bak innholdet skriver en
+   installasjon med apt seg selv, på norsk slik det står i en norsk terminal.
+   Teksten lages av forside.js. */
+@media (hover: hover) and (min-width: 561px) {
+  /* Laget oppå flata (::after), under innholdet. Samme plass i rutenettet. */
+  .hero .scene-tekst:not(.har-svar)::before {
+    content: "";
+    grid-row: 3 / span 2;
+    grid-column: 1;
+    z-index: 1;
+    align-self: stretch;
+    justify-self: center;
+    width: min(760px, 100%);
+    border-radius: 30px;
+    opacity: 0;
+    transition: opacity 360ms ease;
+    pointer-events: none;
+  }
+
+  /* Bare fargen glir; uskarpheten byttes med én gang (Safari mister den
+     midt i en overgang). */
+  .hero .scene-tekst:not(.har-svar)::after {
+    transition: background-color 420ms ease;
+  }
+
+  .hero .scene-tekst:not(.har-svar):has(.os-win:hover)::before {
+    opacity: 1;
+    background: linear-gradient(90deg, #f25022, #7fba00, #00a4ef, #ffb900);
+    -webkit-mask: linear-gradient(to top, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0) 38%);
+    mask: linear-gradient(to top, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0) 38%);
+  }
+
+  .hero .scene-tekst:not(.har-svar):has(.os-mac:hover)::after {
+    background-color: rgba(10, 82, 190, 0.42);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  /* Mac: i det gjennomsiktige kortet flyter tre myke flekker av lys og dypere
+     blått sakte forbi hverandre, i hver sin takt, så glasset puster. Bare
+     kortet, ikke knappen. */
+  .hero .scene-tekst:not(.har-svar):has(.os-mac:hover)::before {
+    opacity: 1;
+    background:
+      radial-gradient(34% 50% at 50% 50%, rgba(170, 215, 255, 0.55), rgba(170, 215, 255, 0) 70%),
+      radial-gradient(38% 55% at 50% 50%, rgba(8, 60, 170, 0.55), rgba(8, 60, 170, 0) 70%),
+      radial-gradient(26% 40% at 50% 50%, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0) 70%);
+    background-size: 170% 170%, 180% 180%, 160% 160%;
+    background-repeat: no-repeat;
+    animation: kort-flyt 8s ease-in-out infinite alternate;
+  }
+
+  .hero .scene-tekst:not(.har-svar):has(.os-lin:hover)::after {
+    background-color: rgba(5, 18, 42, 0.86);
+  }
+
+  /* Terminalen bak innholdet: linjene renner nedover kortet og ligger delvis
+     bak knappene og feltet, som en ekte terminal i bakgrunnen. Kommandoer
+     skrives i tastefart, utdata kommer hele linja på én gang. Vises (og
+     starter på nytt) når Linux holdes over. */
+  .kort-terminal {
+    display: none;
+  }
+
+  .hero .scene-tekst:not(.har-svar):has(.os-lin:hover) > .kort-terminal {
+    display: block;
+    position: relative;
+    grid-row: 3 / span 2;
+    grid-column: 1;
+    z-index: 1;
+    align-self: stretch;
+    justify-self: center;
+    width: min(760px, 100%);
+    border-radius: 30px;
+    overflow: hidden;
+    padding: 20px 30px;
+    font: 500 12.5px/1.75 "JetBrains Mono", ui-monospace, monospace;
+    color: rgba(150, 230, 180, 0.42);
+    /* Kortet midtstiller teksten. Arvet hit flytter den ferdige linja seg et
+       halvt tegn mot høyre i det den er skrevet ferdig. */
+    text-align: left;
+    pointer-events: none;
+  }
+
+  .kort-terminal span {
+    display: block;
+    width: 0;
+    overflow: hidden;
+    white-space: pre;
+    animation: kort-skriv calc(var(--n) * 24ms) steps(var(--n), end) var(--f) forwards;
+  }
+
+  .kort-terminal span.kommando {
+    color: rgba(225, 240, 255, 0.6);
+  }
+
+  .kort-terminal span:not(.kommando) {
+    animation-duration: 1ms;
+  }
+
+  .kort-terminal span.markor {
+    overflow: visible;
+  }
+
+  .kort-terminal span.markor::after {
+    content: "";
+    display: inline-block;
+    width: 0.6em;
+    height: 1.05em;
+    vertical-align: -0.2em;
+    background: rgba(225, 240, 255, 0.7);
+    animation: kort-blink 1s steps(1, end) infinite;
+  }
+}
+
+@keyframes kort-flyt {
+  0% { background-position: 10% 20%, 90% 80%, 60% 10%; }
+  33% { background-position: 70% 40%, 30% 60%, 20% 80%; }
+  66% { background-position: 40% 90%, 80% 20%, 90% 50%; }
+  100% { background-position: 90% 60%, 10% 30%, 40% 30%; }
+}
+
+@keyframes kort-skriv {
+  to { width: calc(var(--n) * 1ch); }
+}
+
+@keyframes kort-blink {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero .scene-tekst::before {
+    animation: none !important;
+  }
+
+  .kort-terminal span {
+    animation: none !important;
+    width: auto !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Svarkortet etter oppslaget, i samme drakt som kortet i heroen: havblått
+   frostglass, hvit skrift, og de samme nedlastingsknappene med «Last ned»
+   én gang over. Gjelder små og store virksomheter.
+   -------------------------------------------------------------------------- */
+.hero .scene .orgport-svar-hoved {
+  color: #fff;
+  background: rgba(10, 82, 190, 0.64);
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 30px;
+  box-shadow: 0 34px 80px -44px rgba(10, 20, 50, 0.8);
+}
+
+.hero .scene .orgport-firmanavn {
+  color: #fff;
+}
+
+.hero .scene .orgport-orgnr {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.hero .scene .orgport-prove {
+  border-top-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.hero .scene .orgport-prove .orgport-prove-tittel {
+  color: #fff;
+}
+
+.hero .scene .orgport-pris-celle {
+  color: rgba(255, 255, 255, 0.84);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+.hero .scene .orgport-pris-celle.valgt,
+.hero .scene .orgport-pris-celle:hover,
+.hero .scene .orgport-pris-celle:focus-visible {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.55);
+  box-shadow: none;
+}
+
+.hero .scene .orgport-pris:has(.orgport-pris-celle:not(.valgt):hover) .orgport-pris-celle.valgt {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+.hero .scene .orgport-pris-merke {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.hero .scene .orgport-belop,
+.hero .scene .orgport-pris-celle.valgt .orgport-belop,
+.hero .scene .orgport-pris-celle:hover .orgport-belop,
+.hero .scene .orgport-pris:has(.orgport-pris-celle:not(.valgt):hover) .orgport-pris-celle.valgt .orgport-belop {
+  color: #fff;
+}
+
+.hero .scene .orgport-pris-lenke {
+  color: #fff;
+}
+
+.hero .scene .orgport-endre {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.hero .scene .orgport-endre:hover {
+  color: #fff;
+}
+
+/* «Last ned» over de tre knappene, venstrestilt som resten av kortet. */
+.hero .scene .orgport-svar .last-ned-tittel {
+  margin: 22px 0 10px;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.hero .scene .orgport .orgport-svar .last-ned-tittel + .get {
+  margin-top: 0;
+}
+
+.hero .scene .orgport-svar .get .btn {
+  color: #0a4aa8;
+  background: #fff;
+  border-color: #fff;
+}
+
+/* Knappene deler raden likt, uansett hvor bredt kortet er. */
+@media (min-width: 561px) {
+  .hero .scene .orgport-svar .get {
+    flex-wrap: nowrap;
+    gap: 10px;
+  }
+
+  .hero .scene .orgport-svar .get .btn.os {
+    flex: 1 1 0;
+    width: auto;
+    height: 54px;
+    font-size: 16px;
+  }
+}
+
+/* Store virksomheter: bredere, og venstre kort bruker bredden. Navnet over
+   hele kortet, så prøven og prisen side om side, så nedlastingen. Lavere
+   kort, så det står midt i bildet også på brede skjermer. */
+@media (min-width: 900px) {
+  .hero .scene .orgport.stor {
+    width: min(1160px, 100%);
+  }
+
+  .hero .scene .orgport.stor .orgport-svar-grid {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .hero .scene .orgport.stor .orgport-svar-hoved {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 28px;
+    align-content: center;
+    padding: 34px 38px;
+    border-radius: 30px;
+  }
+
+  .hero .scene .orgport.stor .orgport-svar-hoved > * {
+    grid-column: 1 / -1;
+  }
+
+  .hero .scene .orgport.stor .orgport-topp {
+    padding-bottom: 20px;
+    margin-bottom: 22px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .hero .scene .orgport.stor .orgport-svar-hoved > .orgport-prove {
+    grid-column: 1;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 15.5px;
+  }
+
+  .hero .scene .orgport.stor .orgport-svar-hoved > .orgport-pris {
+    grid-column: 2;
+    align-self: start;
+    margin: 0;
+  }
+
+  .hero .scene .orgport.stor .orgport-firmanavn {
+    font-size: clamp(30px, 2.6vw, 40px);
+  }
+
+  .hero .scene .orgport.stor .orgport-belop {
+    font-size: clamp(28px, 2.3vw, 36px);
+  }
+
+  .hero .scene .orgport.stor .orgport-oppsett {
+    padding: 34px 38px;
+    border-radius: 30px;
+  }
+
+  .hero .scene .orgport.stor .orgport-oppsett h3 {
+    font-size: clamp(26px, 2.3vw, 34px);
+  }
+
+  .hero .scene .orgport.stor .orgport-oppsett p:not(.orgport-merke) {
+    font-size: 15.5px;
+  }
+
+  .hero .scene .orgport.stor .orgport-mac {
+    max-width: 280px;
+    padding: 10px 0;
+  }
+
+  .hero .scene .orgport.stor .orgport-oppsett .btn {
+    height: 54px;
+    font-size: 16px;
+  }
+}
+
+/* Snøen i heroen: samme snø som forsiden på esbjugconsult.com hadde, men alt
+   ligger bak «Klart» og kortet (over bildet, under innholdet). Kortet er
+   frostet glass, så snøen skimtes mykt gjennom det. Tegnes av forside.js. */
+.hero .scene-sno {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Fnuggene som faller over kortets glass: over flata (::after, z 0), under
+   innholdet i kortet (z 1, senere i rekkefølgen), så de går bak overskriften,
+   knappene og feltet. */
+.hero .scene-sno-midt {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Snøen som har lagt seg på «Klart» og oppå kortet: eget lag foran innholdet. */
+.hero .scene-sno-lag {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}

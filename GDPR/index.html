@@ -187,19 +187,17 @@
              teksten står i himmelen og knappene nede i snøen. -->
         <div class="scene">
           <img class="scene-bilde" src="assets/hero-vinter.jpg" width="2400" height="1600" fetchpriority="high" alt="" aria-hidden="true" />
-
-          <!-- Navnet i hjørnet av bildet. Ligger utenfor rutenettet i .scene-tekst,
-               så oppsettet under står som det står. -->
-          <a class="hero-merke" href="#top" aria-label="Klart">
-            <img class="merke-krystall" src="assets/klart-ikon.png" width="256" height="256" alt="" aria-hidden="true" />
-            <span class="merke-ord">Klart</span>
-          </a>
+          <!-- Snøen fra forsiden på esbjugconsult.com, bak «Klart» og kortet (forside.js). -->
+          <canvas class="scene-sno" aria-hidden="true"></canvas>
+          <!-- Fnuggene som faller over kortets glass, bak innholdet i kortet. -->
+          <canvas class="scene-sno-midt" aria-hidden="true"></canvas>
+          <!-- Snøen som legger seg på «Klart» og kortet, foran innholdet. -->
+          <canvas class="scene-sno-lag" aria-hidden="true"></canvas>
 
           <!-- All teksten samlet, nede i snøen. Himmelen, hytta og sporet står fritt over. -->
           <div class="scene-tekst">
-            <h1 class="rise d-60">
-              Sladdede dokumenter,
-              <span>med lokal KI.</span>
+            <h1 class="rise d-60 hero-logo">
+              <span class="logo-ord">Klart</span>
             </h1>
             <!-- Privatpersoner laster ned og bruker Klart gratis; de skal ikke gjennom noe felt.
                  Virksomheter går gjennom feltet under: 30 dager, så lisens. Blokka ligger rett over
@@ -209,10 +207,14 @@
               <p class="privat-linje">
                 <span><b>Gratis for privatpersoner.</b></span>
               </p>
+              <p class="last-ned-tittel">Last ned</p>
               <div class="get">
-                <a class="btn ghost" href="/klart/last-ned/windows" download aria-label="Last ned for Windows"><span class="ned">Last ned for&nbsp;</span>Windows</a>
-                <a class="btn ghost" href="/klart/last-ned/mac" download aria-label="Last ned for Mac"><span class="ned">Last ned for&nbsp;</span>Mac</a>
-                <a class="btn ghost" href="/klart/last-ned/linux" download aria-label="Last ned for Linux"><span class="ned">Last ned for&nbsp;</span>Linux</a>
+                <!-- Hver knapp får sitt systems kjennetegn når man holder over, uten logoer:
+                     Windows en ring i de fire fargene rundt knappen (en ring,
+                     ikke logoens ruter), Mac glass etter Apples egen beskrivelse, Linux en pingvin (egen tegning). -->
+                <a class="btn ghost os os-win" href="/klart/last-ned/windows" download aria-label="Last ned for Windows"><span class="os-navn">Windows</span></a>
+                <a class="btn ghost os os-mac" href="/klart/last-ned/mac" download aria-label="Last ned for Mac"><span class="os-glass" aria-hidden="true"></span><span class="os-navn">Mac</span></a>
+                <a class="btn ghost os os-lin" href="/klart/last-ned/linux" download aria-label="Last ned for Linux"><span class="os-figur os-pingvin" aria-hidden="true"><svg viewBox="0 0 24 28" width="24" height="28" focusable="false"><g class="os-pingvin-kropp"><ellipse cx="8.4" cy="26.4" rx="3.3" ry="1.4" fill="#f5a524"/><ellipse cx="15.6" cy="26.4" rx="3.3" ry="1.4" fill="#f5a524"/><ellipse cx="3.9" cy="17" rx="1.9" ry="5.4" transform="rotate(16 3.9 17)" fill="#0f2147"/><ellipse cx="20.1" cy="17" rx="1.9" ry="5.4" transform="rotate(-16 20.1 17)" fill="#0f2147"/><ellipse cx="12" cy="15" rx="8.4" ry="11.2" fill="#0f2147"/><ellipse cx="12" cy="18.4" rx="5.5" ry="7.6" fill="#fff"/><circle cx="9.7" cy="8.6" r="2" fill="#fff"/><circle cx="14.3" cy="8.6" r="2" fill="#fff"/><circle cx="10.1" cy="8.9" r="0.95" fill="#0f2147"/><circle cx="13.9" cy="8.9" r="0.95" fill="#0f2147"/><path d="M9.9 11.4 Q12 10.5 14.1 11.4 Q12 13.9 9.9 11.4Z" fill="#f5a524"/></g></svg></span><span class="os-navn">Linux</span></a>
               </div>
               <p class="eller"><span>eller</span></p>
             </div>
@@ -268,10 +270,12 @@
                         <span class="orgport-pris-lenke">Se hva som er med →</span>
                       </a>
                     </div>
+                    <!-- Samme knapper som i heroen, med «Last ned» én gang over. -->
+                    <p class="last-ned-tittel">Last ned</p>
                     <div class="get">
-                      <a class="btn ghost" href="/klart/last-ned/windows" download aria-label="Last ned for Windows"><span class="ned">Last ned for&nbsp;</span>Windows</a>
-                      <a class="btn ghost" href="/klart/last-ned/mac" download aria-label="Last ned for Mac"><span class="ned">Last ned for&nbsp;</span>Mac</a>
-                      <a class="btn ghost" href="/klart/last-ned/linux" download aria-label="Last ned for Linux"><span class="ned">Last ned for&nbsp;</span>Linux</a>
+                      <a class="btn ghost os os-win" href="/klart/last-ned/windows" download aria-label="Last ned for Windows"><span class="os-navn">Windows</span></a>
+                      <a class="btn ghost os os-mac" href="/klart/last-ned/mac" download aria-label="Last ned for Mac"><span class="os-glass" aria-hidden="true"></span><span class="os-navn">Mac</span></a>
+                      <a class="btn ghost os os-lin" href="/klart/last-ned/linux" download aria-label="Last ned for Linux"><span class="os-figur os-pingvin" aria-hidden="true"><svg viewBox="0 0 24 28" width="24" height="28" focusable="false"><g class="os-pingvin-kropp"><ellipse cx="8.4" cy="26.4" rx="3.3" ry="1.4" fill="#f5a524"/><ellipse cx="15.6" cy="26.4" rx="3.3" ry="1.4" fill="#f5a524"/><ellipse cx="3.9" cy="17" rx="1.9" ry="5.4" transform="rotate(16 3.9 17)" fill="#0f2147"/><ellipse cx="20.1" cy="17" rx="1.9" ry="5.4" transform="rotate(-16 20.1 17)" fill="#0f2147"/><ellipse cx="12" cy="15" rx="8.4" ry="11.2" fill="#0f2147"/><ellipse cx="12" cy="18.4" rx="5.5" ry="7.6" fill="#fff"/><circle cx="9.7" cy="8.6" r="2" fill="#fff"/><circle cx="14.3" cy="8.6" r="2" fill="#fff"/><circle cx="10.1" cy="8.9" r="0.95" fill="#0f2147"/><circle cx="13.9" cy="8.9" r="0.95" fill="#0f2147"/><path d="M9.9 11.4 Q12 10.5 14.1 11.4 Q12 13.9 9.9 11.4Z" fill="#f5a524"/></g></svg></span><span class="os-navn">Linux</span></a>
                     </div>
                     <button type="button" class="orgport-endre" data-endre>Ikke deres virksomhet?</button>
                   </div>
