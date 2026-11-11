@@ -2284,3 +2284,16 @@ footer.v-bunn {
   aspect-ratio: 1 / 1;
   object-fit: contain;
 }
+
+/* Nederst på mobil og nettbrett: e-posten med lenken i stedet for overskriften og
+   nedlastingsknappene (eieren 11.11.2026). Linjen for virksomheter og prislenken står. */
+@media (hover: none) and (pointer: coarse) {
+  .v-hent-inn > h2,
+  .v-hent-inn > .v-hent-privat,
+  .v-hent-inn > .v-hent-knapper {
+    display: none;
+  }
+  .v-hent-inn > .mobil-send {
+    margin-bottom: 22px;
+  }
+}
