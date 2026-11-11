@@ -4232,3 +4232,17 @@ body:has(> main#top > .hero) {
 main#top:has(> .hero) {
   background: var(--ground);
 }
+
+/* Toppmenyen: «Last ned» på datamaskin, «Send til deg selv» på mobil og nettbrett. */
+.topbar .topp-send {
+  display: none;
+}
+@media (hover: none) and (pointer: coarse) {
+  .topbar .topp-last {
+    display: none;
+  }
+  .topbar .topp-send {
+    display: inline-flex;
+    white-space: nowrap;
+  }
+}
