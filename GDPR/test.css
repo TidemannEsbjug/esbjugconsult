@@ -95,95 +95,52 @@ body {
   box-shadow: 0 34px 80px -44px rgba(10, 20, 50, 0.8);
 }
 
-.kort label {
-  font-size: 19px;
-  font-weight: 700;
-  color: #fff;
+/* Snøen (test.js) ligger over bildet og under merket og kortet. */
+.sno {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
 }
 
-.kort .rad {
-  display: flex;
-  gap: 10px;
+.innhold {
+  position: relative;
+  z-index: 1;
 }
 
-.kort input,
-.kort button {
-  font: inherit;
-  font-size: 16px;
-  height: 48px;
-  border-radius: 999px;
+/* Merket er inngangen til den skjulte innloggingen, men skal ikke se klikkbart ut. */
+.merke {
+  cursor: default;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
-.kort input {
-  width: min(260px, 52vw);
-  padding: 0 20px;
-  color: #fff;
-  caret-color: #fff;
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.9);
+.nedtelling {
+  gap: 6px;
+  padding: 24px clamp(28px, 4vw, 48px) 26px;
 }
 
-.kort button {
-  padding: 0 24px;
-  color: #0a4aa8;
-  background: #fff;
-  border: 1px solid #fff;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.kort button:hover {
-  background: #dcecff;
-  border-color: #dcecff;
-}
-
-.kort input:focus-visible,
-.kort button:focus-visible {
-  outline: 3px solid rgba(255, 255, 255, 0.55);
-  outline-offset: 2px;
-}
-
-.kort .feil {
+.nedtelling p {
   margin: 0;
   color: #fff;
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.kort .feil::before {
-  content: "⚠ ";
-}
-
-/* Nedtellingen til siden åpner, under kortet. */
-.nedtelling {
-  margin: -12px 0 0;
-  display: grid;
-  justify-items: center;
-  gap: 4px;
-  color: #fff;
-  text-shadow: 0 1px 2px rgba(10, 20, 34, 0.35), 0 2px 14px rgba(10, 20, 34, 0.25);
 }
 
 .nedtelling-tekst {
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  font-size: 18px;
+  font-weight: 700;
 }
 
 .nedtelling-tall {
   font-family: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
-  font-size: clamp(28px, 3vw, 40px);
+  font-size: clamp(36px, 4vw, 56px);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.04em;
+  line-height: 1.1;
 }
 
-@media (max-width: 420px) {
-  .kort .rad {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .kort input {
-    width: 100%;
-  }
+.skjult {
+  display: none;
 }

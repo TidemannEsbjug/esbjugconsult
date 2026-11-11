@@ -7,11 +7,11 @@
     <meta name="robots" content="noindex" />
     <meta name="theme-color" content="#0a52be" />
     <!--
-      Passordsiden på /klart mens siden ikke er åpen for alle (KLART_SNART i wrangler.jsonc).
-      Riktig passord gir en informasjonskapsel, og da viser workeren de ekte sidene og slipper
-      nedlastingene gjennom (handleTest og harTest i .worker/klart.js). Passordet er
-      hemmeligheten KLART_TESTPASSORD, ikke noe i repoet. Samme drakt som heroen: vinterbildet,
-      «Klart» i Literata kursiv og det havblå glasskortet med hvit skrift.
+      Siden på /klart til Klart åpner for alle (LANSERING i .worker/klart.js, 11.11.2026 kl. 23.11).
+      Vinterbildet, snø som faller, merket og nedtellingen i det havblå glasskortet fra heroen.
+      Innloggingen er skjult (eieren 11.11.2026): klikk på merket, skriv passordet og trykk Enter
+      (test.js). Riktig passord gir kapselen som viser de ekte sidene (handleTest i klart.js).
+      Passordet er hemmeligheten KLART_TESTPASSORD, ikke noe i repoet.
     -->
     <link rel="icon" type="image/png" href="/klart/favicon.png" />
     <link rel="stylesheet" href="/klart/fonts.css" />
@@ -21,25 +21,21 @@
   <body>
     <main class="inngang">
       <img class="bilde" src="/klart/assets/hero-vinter.jpg" width="2400" height="1600" alt="" aria-hidden="true" />
+      <canvas class="sno" aria-hidden="true"></canvas>
       <div class="innhold">
-        <h1 class="merke">
+        <h1 class="merke" data-merke>
           <img class="ikon" src="/klart/assets/klart-ikon.png" width="256" height="256" alt="" aria-hidden="true" />
           <span>Klart</span>
         </h1>
-        <form class="kort" method="post" action="/klart/test">
-          <label for="passord">Passord</label>
-          <div class="rad">
-            <input id="passord" name="passord" type="password" autocomplete="current-password" autofocus required />
-            <button type="submit">Gå inn</button>
-          </div>
-          <p class="feil" hidden>Feil passord. Prøv igjen.</p>
-        </form>
         <!-- Samme tidspunkt som LANSERING i .worker/klart.js (23.11 norsk tid 11.11.2026). -->
-        <p class="nedtelling" data-til="2026-11-11T22:11:00Z">
-          <span class="nedtelling-tekst">Åpner i kveld kl. 23.11</span>
-          <span class="nedtelling-tall" data-tall>--:--:--</span>
-        </p>
+        <div class="kort nedtelling" data-til="2026-11-11T22:11:00Z">
+          <p class="nedtelling-tekst">Åpner i kveld kl. 23.11</p>
+          <p class="nedtelling-tall" data-tall>--:--:--</p>
+        </div>
       </div>
+      <form class="skjult" method="post" action="/klart/test" hidden>
+        <input type="hidden" name="passord" />
+      </form>
     </main>
   </body>
 </html>
