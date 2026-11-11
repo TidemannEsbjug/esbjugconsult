@@ -166,11 +166,8 @@ export async function handleChat(request, env, url) {
       return Response.json({ funnet: r, sikkerhet: r ? 1 : null });
     }
     // Banken («når brukte han penger sist», «når hadde han minus på konto»): fra saldoene som er logget hvert kvarter.
-    const bs = bankSok(q);
-    if (bs) {
-      const r = await (await hub.fetch(new Request("https://hub/internal/banksok", { method: "POST", headers: { "x-role": "internal" }, body: JSON.stringify(bs) }))).json();
-      return Response.json(r ? { funnet: r, sikkerhet: 1 } : { funnet: null, melding: "Fant ikke noe slikt i saldoene." });
-    }
+    // Banken vises ikke på sidene (eieren 11.11.2026), så søket svarer ikke om saldoene.
+    if (bankSok(q)) return Response.json({ funnet: null, melding: "Banken vises ikke lenger på siden." });
     // Tekstene han har skrevet på siden («når skrev han om PC-laderen sin»): Jev velger innlegget som passer.
     if (/\b(skrev|skrevet|skriver|innlegg|posten|nevnte|tekstboks|notat)/i.test(q)) {
       const poster = await (await hub.fetch(new Request("https://hub/internal/tekster", { method: "POST", headers: { "x-role": "internal" }, body: "{}" }))).json();
@@ -237,7 +234,12 @@ export async function handleChat(request, env, url) {
   }
 
   if (path === "/chat/spor") {
-    return hub.fetch(new Request("https://hub/internal/spor", { method: "POST", headers: { "x-role": "internal" }, body: JSON.stringify({ t: tid(url) }) }));
+    // Banken vises ikke på sidene (eieren 11.11.2026): den tas ut her også, så ingen saldo går ut.
+    const r = await hub.fetch(new Request("https://hub/internal/spor", { method: "POST", headers: { "x-role": "internal" }, body: JSON.stringify({ t: tid(url) }) }));
+    if (!r.ok) return r;
+    const d = await r.json();
+    d.bank = null;
+    return Response.json(d, { headers: { "cache-control": "no-store" } });
   }
 
   if (path === "/chat/kast" && request.method === "POST") {
@@ -2300,7 +2302,7 @@ export class ChatHub {
     return {
       now: t, live, trail: this.sporFra(pos, d.veispor, t), tele, bev: [],
       puls: d.hr.filter((h) => h[0] > t - 5 * 60e3 && h[0] <= t),
-      kast: json(l.kast, { le: 0, tomat: 0, heia: 0 }), gjor: l.gjor || "", notater, rom: l.rom || null, bank: json(l.bank, null),
+      kast: json(l.kast, { le: 0, tomat: 0, heia: 0 }), gjor: l.gjor || "", notater, rom: l.rom || null, bank: null, // banken vises ikke på sidene (eieren 11.11.2026)
     };
   }
 
@@ -2534,7 +2536,7 @@ export class ChatHub {
       ...this.sql.exec(`SELECT ts, v FROM bev WHERE ts > ? ORDER BY ts`, fra).toArray()].map((r) => [r.ts, r.v]);
     // Heart rate the last 5 minutes, every stored sample (one per ~4 s while the watch shares it).
     const puls = this.sql.exec(`SELECT ts, bpm FROM hr WHERE ts > ? ORDER BY ts`, Date.now() - 5 * 60e3).toArray().map((r) => [r.ts, r.bpm]);
-    return { now: Date.now(), live, trail, tele: this.tele(), bev, puls, kast: this.kast(), gjor: this.setting("gjor") || "", notater: this.notater(20), rom: this.rom(), bank: this.bank() };
+    return { now: Date.now(), live, trail, tele: this.tele(), bev, puls, kast: this.kast(), gjor: this.setting("gjor") || "", notater: this.notater(20), rom: this.rom(), bank: null }; // banken vises ikke på sidene (eieren 11.11.2026)
   }
 
   // The name of the place he is at (neighbourhood, town, country), from OpenStreetMap's Nominatim. At most every

@@ -272,9 +272,6 @@ T = [
 
 # V2 (forsiden fra 7.10.2026) har egne tekster. V1-tekstene den har byttet ut hoppes over.
 T_NY = [
-    # Kostnader under banken.
-    ('aria-label="Kostnader"', 'aria-label="Costs"'),
-    ('<span>Kostnader</span>', '<span>Costs</span>'),
     # Aktive AI-abonnementer og den kompakte podkasten.
     ('aria-label="Aktive KI-abonnementer"', 'aria-label="Active AI subscriptions"'),
     ('<span class="mono s-t">Aktive KI-abonnementer</span>', '<span class="mono s-t">Active AI subscriptions</span>'),
@@ -301,8 +298,6 @@ T_NY = [
     ('<span class="vf-tl vf-dr" hidden>Drukket i dag <b>', '<span class="vf-tl vf-dr" hidden>Drunk today <b>'),
     ('aria-label="Be meg ta en slurk"><span class="vf-e" aria-hidden="true">💧</span><span>Be meg ta en slurk</span>',
      'aria-label="Ask me to take a sip"><span class="vf-e" aria-hidden="true">💧</span><span>Ask me to take a sip</span>'),
-    ('<i>25. okt · 11:30</i>', '<i>25 Oct · 11:30</i>'),
-    ('<i>25. okt · 10:47</i>', '<i>25 Oct · 10:47</i>'),
     ('<b>Tidemann sover</b><span>Skriv gjerne, så svarer jeg når jeg er våken.</span>',
      '<b>Tidemann is asleep</b><span>Feel free to write, and I\'ll reply when I\'m awake.</span>'),
     # Kartet i heroen (fra 22.10.2026): HTML-en. Teksten i kartskriptet velger selv språk etter <html lang>.
