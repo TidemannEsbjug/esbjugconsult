@@ -340,6 +340,9 @@ document.querySelectorAll(".hero .os-mac, .v-hent .os-mac").forEach(function (ma
   });
   // Foran innholdet i rekkefølgen, så knappene og feltet tegnes oppå den.
   tekst.insertBefore(term, tekst.querySelector(".privat"));
+  // Samme terminal bak kortet for virksomheter (etter oppslaget).
+  var hoved = tekst.querySelector(".orgport-svar-hoved");
+  if (hoved) hoved.insertBefore(term.cloneNode(true), hoved.firstChild);
 })();
 
 // Snøen i heroen, fra forsiden på esbjugconsult.com: hvert fnugg har en avstand
@@ -1070,14 +1073,24 @@ document.querySelectorAll(".hero .os-mac, .v-hent .os-mac").forEach(function (ma
 
   function tilbake() {
     jobb++;
+    // Kom de fra kortet for virksomheter, står det kortet der igjen.
+    if (fraSvar) tekst.classList.add("har-svar");
+    fraSvar = false;
     tekst.classList.remove("laster", "lastet");
     tekst.style.removeProperty("--p");
     kort.hidden = true;
   }
 
-  tekst.querySelectorAll(".privat .get .btn.os").forEach(function (a) {
+  // Knappene i kortet for virksomheter gir samme nedlastingskort: kortet deres viker
+  // (har-svar tas av) mens nedlastingen vises, og kommer tilbake med «Tilbake».
+  var fraSvar = false;
+  tekst.querySelectorAll(".privat .get .btn.os, .orgport-svar .get .btn.os").forEach(function (a) {
     a.addEventListener("click", function (e) {
       e.preventDefault();
+      if (tekst.classList.contains("har-svar")) {
+        fraSvar = true;
+        tekst.classList.remove("har-svar");
+      }
       start(a.getAttribute("href").split("/").pop());
     });
   });
