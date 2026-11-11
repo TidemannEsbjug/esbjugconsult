@@ -342,7 +342,15 @@ document.querySelectorAll(".hero .os-mac, .v-hent .os-mac").forEach(function (ma
   tekst.insertBefore(term, tekst.querySelector(".privat"));
   // Samme terminal bak kortet for virksomheter (etter oppslaget).
   var hoved = tekst.querySelector(".orgport-svar-hoved");
-  if (hoved) hoved.insertBefore(term.cloneNode(true), hoved.firstChild);
+  if (hoved) {
+    // Kopien mister --n og --f (siden tillater ikke style-attributter), så de settes på nytt.
+    var kopi = term.cloneNode(true);
+    for (var i = 0; i < kopi.children.length; i++) {
+      kopi.children[i].style.setProperty("--n", term.children[i].style.getPropertyValue("--n"));
+      kopi.children[i].style.setProperty("--f", term.children[i].style.getPropertyValue("--f"));
+    }
+    hoved.insertBefore(kopi, hoved.firstChild);
+  }
 })();
 
 // Snøen i heroen, fra forsiden på esbjugconsult.com: hvert fnugg har en avstand
