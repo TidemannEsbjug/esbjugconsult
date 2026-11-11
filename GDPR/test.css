@@ -12,8 +12,15 @@ body {
   margin: 0;
 }
 
+/* Toppen på iPhone (eieren 11.11.2026), som på forsiden: Safari farger linjen øverst etter
+   bakgrunnen bak siden, så den har himmelens farge (#6593c3, målt helt øverst i bildet der
+   mobilen viser det). */
+html {
+  background-color: #6593c3;
+}
+
 body {
-  background: #0a3f8f;
+  background: #6593c3;
   color: #fff;
   font-family: "Archivo", "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -97,6 +104,26 @@ body {
   backdrop-filter: blur(22px);
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 34px 80px -44px rgba(10, 20, 50, 0.8);
+}
+
+/* Himmelen øverst toner over i samme farge som linjen øverst på telefonen, så overgangen er
+   sømløs; mykt ut og ferdig lenge før merket. Samme toning som .scene-himmel i styles.css. */
+.himmel {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: -1;
+  height: clamp(48px, 7%, 90px);
+  background: linear-gradient(
+    180deg,
+    rgba(101, 147, 195, 1) 0%,
+    rgba(101, 147, 195, 0.9) 12%,
+    rgba(101, 147, 195, 0.7) 28%,
+    rgba(101, 147, 195, 0.45) 48%,
+    rgba(101, 147, 195, 0.22) 68%,
+    rgba(101, 147, 195, 0.07) 86%,
+    rgba(101, 147, 195, 0) 100%
+  );
+  pointer-events: none;
 }
 
 /* Snøen (test.js) ligger over bildet og under merket og kortet. */
