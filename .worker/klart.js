@@ -146,6 +146,14 @@ const FILER = {
 // når passordet byttes. Uten hemmeligheten er inngangen stengt.
 // ---------------------------------------------------------------------------
 
+// Klart åpner for alle 11.11.2026 kl. 23.11 norsk tid (eieren). Fra da av står passordet ikke
+// lenger foran sidene, og nedlastingene er åpne, uten at noe må deployes. Samme tidspunkt står i
+// data-til i GDPR/test.html (nedtellingen).
+const LANSERING = Date.parse("2026-11-11T22:11:00Z");
+export function erLansert() {
+  return Date.now() >= LANSERING;
+}
+
 async function testMerke(env) {
   if (!env.KLART_TESTPASSORD) return null;
   const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("klart-test|" + env.KLART_TESTPASSORD));
@@ -160,6 +168,8 @@ export async function harTest(request, env) {
 
 export async function handleTest(request, env, url) {
   const ingenLager = { "cache-control": "no-store" };
+  // Etter lanseringen finnes det ikke noe passord: alle går rett til forsiden.
+  if (erLansert()) return new Response(null, { status: 303, headers: { ...ingenLager, location: "/klart/" } });
   if (request.method === "POST") {
     const skjema = await request.formData().catch(() => null);
     const passord = skjema && skjema.get("passord");
@@ -188,7 +198,7 @@ export async function handleNedlasting(request, env, url) {
   if (!fil || !["GET", "HEAD"].includes(request.method)) return new Response("Finnes ikke.", { status: 404 });
   // KLART_NEDLASTING = "pause" i wrangler.jsonc stenger nedlastingen, for eksempel
   // mens en feil rettes. Gamle lenker får da en forklaring, ikke en gammel fil.
-  if (env.KLART_NEDLASTING === "pause" && !(await harTest(request, env))) {
+  if (env.KLART_NEDLASTING === "pause" && !erLansert() && !(await harTest(request, env))) {
     return new Response(
       "<!doctype html><meta charset=utf-8><title>Klart</title>" +
         "<p style='font:16px system-ui;max-width:36em;margin:4em auto'>Klart oppdateres. " +

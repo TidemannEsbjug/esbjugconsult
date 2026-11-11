@@ -154,6 +154,30 @@ body {
   content: "⚠ ";
 }
 
+/* Nedtellingen til siden åpner, under kortet. */
+.nedtelling {
+  margin: -12px 0 0;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(10, 20, 34, 0.35), 0 2px 14px rgba(10, 20, 34, 0.25);
+}
+
+.nedtelling-tekst {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.nedtelling-tall {
+  font-family: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
 @media (max-width: 420px) {
   .kort .rad {
     flex-direction: column;
