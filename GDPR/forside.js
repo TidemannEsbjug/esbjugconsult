@@ -1186,7 +1186,7 @@ function nedlastingskort(tekst, kort, knapper) {
   var meta = document.querySelector('meta[name="theme-color"]');
   var scene = document.querySelector(".hero .scene");
   if (!meta || !scene) return;
-  var HIMMEL = "#6593c3", LYS = "#eef3fb", naa = "";
+  var HIMMEL = "#7eaee0", LYS = "#eef3fb", naa = "";
   function sett() {
     var farge = window.scrollY < scene.offsetHeight - 80 ? HIMMEL : LYS;
     if (farge === naa) return;

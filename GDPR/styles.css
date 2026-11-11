@@ -4190,24 +4190,33 @@ footer {
    og etter en fast meny øverst, selv om den er skjøvet ut av bildet. Siden bak (html) har
    himmelens farge mens heroen vises (forside.js bytter den til sidens lyse farge lenger ned),
    og den skjulte menyen har ingen bakgrunn. */
-html {
-  background-color: #6593c3;
+html:has(> body > main#top > .hero) {
+  background-color: #7eaee0;
 }
-.topbar:not(.synlig):not(:focus-within) {
+body:has(> main#top > .hero) .topbar:not(.synlig):not(:focus-within) {
   /* Safari på iPhone tar fargen fra den faste menyen øverst, også når den er skjult og
      usynlig. Skjult har den derfor himmelens farge. */
-  background: #6593c3;
+  background: #7eaee0;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
 
-/* Himmelen øverst i heroen toner over i én farge (#6593c3, målt øverst i bildet), så den går
+/* Himmelen øverst i heroen toner over i én farge (#7eaee0, en lys himmelblå), så den går
    sømløst over i linjen øverst på telefonen, som har samme farge (eieren 11.11.2026). */
 .hero .scene-himmel {
   position: absolute;
   inset: 0 0 auto;
   z-index: -2;
-  height: clamp(140px, 22%, 260px);
-  background: linear-gradient(180deg, #6593c3 0%, #6593c3 22%, rgba(101, 147, 195, 0.6) 55%, rgba(101, 147, 195, 0) 100%);
+  height: clamp(56px, 9%, 110px);
+  background: linear-gradient(180deg, #7eaee0 0%, #7eaee0 30%, rgba(126, 174, 224, 0.55) 62%, rgba(126, 174, 224, 0) 100%);
   pointer-events: none;
+}
+
+/* Safari på iPhone farger toppen etter bakgrunnen på body når siden lastes. Body har derfor
+   himmelens farge, og innholdet sin egen lyse bakgrunn (eieren 11.11.2026). */
+body:has(> main#top > .hero) {
+  background-color: #7eaee0;
+}
+main#top:has(> .hero) {
+  background: var(--ground);
 }
