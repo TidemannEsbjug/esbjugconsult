@@ -3185,7 +3185,7 @@ footer {
    Like brede knapper, så navnet kan flytte seg uten at raden endrer seg.
    Bare på skjermer med mus; på mobil står de som før. */
 @media (min-width: 561px) {
-  .hero .scene .get .btn.os {
+  :is(.hero .scene, .v-hent) .get .btn.os {
     position: relative;
     width: 172px;
     min-width: 0;
@@ -3234,7 +3234,7 @@ footer {
      til høyre, blå nede til venstre. En ring, aldri ruter. Den er der med én
      gang man holder over; ingen bevegelse rundt. Knappen beholder formen og
      den blå teksten. */
-  .hero .scene .get .btn.os-win::after {
+  :is(.hero .scene, .v-hent) .get .btn.os-win::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -3264,7 +3264,7 @@ footer {
      og skarpt igjen etterpå, og da hopper den litt. Glasset vokser heller
      ikke, så det ikke tar plass fra nabo-knappene. --mx, --my og --vinkel
      settes av forside.js. */
-  .hero .scene .get .btn.os-mac {
+  :is(.hero .scene, .v-hent) .get .btn.os-mac {
     isolation: isolate;
     overflow: visible;
     transition:
@@ -3330,7 +3330,7 @@ footer {
 }
 
 @media (hover: hover) and (min-width: 561px) {
-  .hero .scene .get .btn.os:is(:hover, :focus-visible) {
+  :is(.hero .scene, .v-hent) .get .btn.os:is(:hover, :focus-visible) {
     transform: translateY(-2px);
     color: #0a4aa8;
     background: #fff;
@@ -3338,7 +3338,7 @@ footer {
     box-shadow: 0 16px 30px -16px rgba(4, 14, 40, 0.7);
   }
 
-  .hero .scene .get .btn.os:active {
+  :is(.hero .scene, .v-hent) .get .btn.os:active {
     transform: translateY(0) scale(0.98);
     transition-duration: 90ms;
   }
@@ -3349,18 +3349,18 @@ footer {
   }
 
   /* Den hvite kanten ville ligget som en strek utenfor ringen. */
-  .hero .scene .get .btn.os-win:is(:hover, :focus-visible) {
+  :is(.hero .scene, .v-hent) .get .btn.os-win:is(:hover, :focus-visible) {
     border-color: transparent;
     background-clip: padding-box;
   }
 
-  .hero .scene .get .btn.os-win:is(:hover, :focus-visible)::after {
+  :is(.hero .scene, .v-hent) .get .btn.os-win:is(:hover, :focus-visible)::after {
     opacity: 1;
   }
 
   /* macOS: selve knappen blir gjennomsiktig og løfter seg 2 px som de andre.
      Ingen skalering: da hopper teksten i Safari. Glasslaget bak tar over. */
-  .hero .scene .get .btn.os-mac:is(:hover, :focus-visible) {
+  :is(.hero .scene, .v-hent) .get .btn.os-mac:is(:hover, :focus-visible) {
     transform: translateY(-2px);
     color: #fff;
     background: transparent;
@@ -3369,7 +3369,7 @@ footer {
     text-shadow: 0 1px 6px rgba(10, 40, 100, 0.3);
   }
 
-  .hero .scene .get .btn.os-mac:active {
+  :is(.hero .scene, .v-hent) .get .btn.os-mac:active {
     transform: translateY(0);
   }
 
@@ -3417,7 +3417,7 @@ footer {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero .scene .get .btn.os,
+  :is(.hero .scene, .v-hent) .get .btn.os,
   .os-navn,
   .os-figur,
   .os-pingvin-kropp,

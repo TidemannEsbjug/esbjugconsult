@@ -18,8 +18,10 @@ textarea {
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* Kortet står midt på skjermen; blir det høyere enn skjermen, starter det øverst. */
+  justify-content: safe center;
   min-height: 100svh;
-  padding: clamp(32px, 10vh, 120px) 16px clamp(20px, 3vh, 48px);
+  padding: clamp(64px, 9vh, 96px) 16px clamp(20px, 3vh, 48px);
   background: #dfe8f2 url("../assets/hero-film-slutt.jpg") center 38% / cover no-repeat;
   position: relative;
   isolation: isolate;
@@ -1271,4 +1273,48 @@ textarea:focus {
   .book-rute {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+/* Veien tilbake til forsiden, oppe til venstre på bildet. */
+.pris-hjem {
+  position: absolute;
+  top: clamp(16px, 2.6vh, 28px);
+  left: clamp(16px, 2.4vw, 36px);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 8px 16px 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 6px 20px -10px rgba(20, 40, 70, 0.4);
+  color: var(--ink);
+  font-size: 15px;
+  text-decoration: none;
+}
+.pris-hjem i {
+  font-family: "Literata", Georgia, serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+}
+.pris-hjem:hover {
+  background: #fff;
+}
+
+/* «Gratis for privatpersoner» først i kortet, over prisen for virksomheter. */
+.pris-privat {
+  margin: 0 0 20px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #e8f0fd;
+  color: var(--ink);
+  font-size: 15.5px;
+}
+.pris-privat a {
+  margin-left: 6px;
+  color: #0a4aa8;
+  font-weight: 600;
 }

@@ -273,8 +273,9 @@ console.info(
 // macOS-knappen i heroen er glass når man holder over. Musa er lyskilden:
 // lyset innenfra står der den er (--mx, --my), og lyset på kanten ligger på
 // siden mot den og på motsatt side (--vinkel, retningen fra midten).
-// Gjelder begge Mac-knappene i heroen: i kortet og i svaret etter oppslaget.
-document.querySelectorAll(".hero .os-mac").forEach(function (mac) {
+// Gjelder begge Mac-knappene i heroen (i kortet og i svaret etter oppslaget) og
+// den nederst på siden.
+document.querySelectorAll(".hero .os-mac, .v-hent .os-mac").forEach(function (mac) {
   mac.addEventListener("pointermove", function (e) {
     var r = mac.getBoundingClientRect();
     var x = e.clientX - r.left;
@@ -410,7 +411,7 @@ document.querySelectorAll(".hero .os-mac").forEach(function (mac) {
     var z = Math.pow(Math.random(), 1.7);
     return { x: Math.random() * w, y: y, z: z, r: 0.4 + z * 1.4, v: 0.15 + z * 0.5, s: Math.random() * 6.28, dx: 0, dy: 0, foran: Math.random() < 0.25 };
   }
-  var grunn = 0;
+  var grunn = 0, lastSno = 0;
   function str() {
     if (c.clientWidth === w && c.clientHeight === h) return;
     var nyBredde = c.clientWidth !== w;
@@ -812,7 +813,10 @@ document.querySelectorAll(".hero .os-mac").forEach(function (mac) {
       x.clearRect(0, 0, w, h);
       xm.clearRect(0, 0, w, h);
       x.fillStyle = xm.fillStyle = "#fff";
-      var antall = Math.min(f.length, Math.round(grunn * (1 + (MAKS - 1) * st)));
+      // Mens noen laster ned, tiltar snøen rolig til fem ganger grunnmengden (eieren
+      // 11.11.2026: det skal snø litt mer da), og gir seg like rolig etterpå.
+      lastSno += ((!FULL && paa ? 1 : 0) - lastSno) * Math.min(1, dt * 0.6);
+      var antall = Math.min(f.length, Math.round(grunn * (1 + (MAKS - 1) * st) * (1 + 4 * lastSno)));
       var fart = Math.abs(mus.vx) + Math.abs(mus.vy);
       var stor = 1 + st * 0.9;
       // Midtlaget er klippet til kortet, så fnugg over glasset ikke tegnes
@@ -1074,6 +1078,14 @@ document.querySelectorAll(".hero .os-mac").forEach(function (mac) {
   tekst.querySelectorAll(".privat .get .btn.os").forEach(function (a) {
     a.addEventListener("click", function (e) {
       e.preventDefault();
+      start(a.getAttribute("href").split("/").pop());
+    });
+  });
+  // Knappene nederst på siden: opp til heroen, og nedlastingen vises i kortet der.
+  document.querySelectorAll("[data-v-hent] a").forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
       start(a.getAttribute("href").split("/").pop());
     });
   });

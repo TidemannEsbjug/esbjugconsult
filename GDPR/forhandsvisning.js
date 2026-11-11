@@ -114,11 +114,24 @@
 
   // Lesehodet glir ned over siden (CSS). Hvert merke toner inn når hodet passerer:
   // forsinkelsen regnes ut fra hvor merket står på siden.
+  // Hodet stopper der innholdet slutter (eieren 11.11.2026: det fortsatte forbi det som var
+  // lest, ned over den tomme delen av arket). Slutten er underkanten av det siste på siden.
   function lesSide(dok) {
     var s = side(dok);
     var r = s.getBoundingClientRect();
-    var h = r.height || 1;
-    s.style.setProperty("--hoyde", Math.round(s.offsetHeight) + "px");
+    var skala = r.height / (s.offsetHeight || 1) || 1;
+    var slutt = 0;
+    each(s.children, function (b) {
+      if (b.classList.contains("kv-lesehode") || !b.offsetHeight) return;
+      slutt = Math.max(slutt, b.offsetTop + b.offsetHeight);
+    });
+    slutt = Math.min(slutt || s.offsetHeight, s.offsetHeight);
+    // Arket er høyere enn vinduet det ligger i: hodet går ikke lenger enn det som synes.
+    var bord = s.parentElement && s.parentElement.getBoundingClientRect();
+    if (bord && bord.height) slutt = Math.min(slutt, Math.max(60, (bord.bottom - r.top) / skala - 10));
+    var h = slutt * skala || 1;
+    // Hodet er 54 px høyt, og underkanten er leselinja: den stanser like under siste linje.
+    s.style.setProperty("--hoyde", Math.round(slutt - 46) + "px");
     each(s.querySelectorAll("mark"), function (m) {
       var y = Math.max(0, Math.min(1, (m.getBoundingClientRect().top - r.top) / h));
       m.style.transitionDelay = Math.round(y * LES) + "ms";
