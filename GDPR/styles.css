@@ -4194,7 +4194,9 @@ html {
   background-color: #6593c3;
 }
 .topbar:not(.synlig):not(:focus-within) {
-  background: transparent;
+  /* Safari på iPhone tar fargen fra den faste menyen øverst, også når den er skjult og
+     usynlig. Skjult har den derfor himmelens farge. */
+  background: #6593c3;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
