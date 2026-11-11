@@ -324,28 +324,6 @@ section {
   pointer-events: none;
 }
 
-/* Tre vinterbilder etter tur: hvert står i ti sekunder og toner over i det neste.
-   Det første ligger alltid under, de to andre toner inn over det. */
-.scene-bilde.skift {
-  opacity: 0;
-  animation: 30s ease-in-out infinite;
-}
-.scene-bilde.b2 { animation-name: scene-b2; }
-.scene-bilde.b3 { animation-name: scene-b3; }
-@keyframes scene-b2 {
-  0%, 30% { opacity: 0; }
-  36%, 70% { opacity: 1; }
-  71%, 100% { opacity: 0; }
-}
-@keyframes scene-b3 {
-  0%, 63% { opacity: 0; }
-  69%, 94% { opacity: 1; }
-  100% { opacity: 0; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .scene-bilde.skift { animation: none; }
-}
-
 .scene-tekst {
   position: relative;
 }
