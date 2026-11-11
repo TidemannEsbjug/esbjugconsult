@@ -1180,19 +1180,26 @@ function nedlastingskort(tekst, kort, knapper) {
   start();
 })();
 
-// Fargen øverst på telefonen (theme-color): himmelen fra vinterbildet mens heroen vises,
-// sidens lyse farge når man har blat forbi den (eieren 11.11.2026).
+// Fargen øverst på telefonen: himmelen fra vinterbildet helt øverst, og så glir den over i
+// sidens lyse farge mens man blar gjennom heroen (eieren 11.11.2026). Safari på iPhone tar
+// fargen fra bakgrunnen bak siden og fra den skjulte menyen (--topp-farge i styles.css),
+// andre nettlesere fra theme-color.
 (function () {
   var meta = document.querySelector('meta[name="theme-color"]');
   var scene = document.querySelector(".hero .scene");
   if (!meta || !scene) return;
-  var HIMMEL = "#6593c3", LYS = "#eef3fb", naa = "";
+  var HIMMEL = [101, 147, 195], LYS = [238, 243, 251], naa = "";
   function sett() {
-    var farge = window.scrollY < scene.offsetHeight - 80 ? HIMMEL : LYS;
+    // Helt over ved to tredjedeler av heroen, i tjue trinn.
+    var t = Math.min(1, Math.max(0, window.scrollY / (scene.offsetHeight * 0.66)));
+    t = Math.round(t * 20) / 20;
+    var farge = "#" + HIMMEL.map(function (h, i) {
+      var v = Math.round(h + (LYS[i] - h) * t);
+      return (v < 16 ? "0" : "") + v.toString(16);
+    }).join("");
     if (farge === naa) return;
     meta.setAttribute("content", (naa = farge));
-    // Safari på iPhone bruker bakgrunnen bak siden, ikke theme-color.
-    document.documentElement.style.backgroundColor = farge;
+    document.documentElement.style.setProperty("--topp-farge", farge);
   }
   window.addEventListener("scroll", sett, { passive: true });
   sett();
