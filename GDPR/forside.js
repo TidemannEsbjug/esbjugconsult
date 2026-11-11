@@ -114,7 +114,8 @@ console.info(
       });
       boks.querySelector("[data-orgnr]").textContent = KlartOrgfelt.tekst(svar.orgnr);
       boks.querySelectorAll("[data-godkjent]").forEach(function (el) {
-        el.hidden = Boolean(svar.stor);
+        // Kommuner og stat får ikke «Godkjent»-merket (eieren 11.11.2026), og de store har sitt eget kort.
+        el.hidden = Boolean(svar.stor || svar.offentlig);
       });
       boks.querySelector("[data-stor]").hidden = !svar.stor;
       if (svar.stor) new Image().src = "assets/klart-maskin-sno.jpg"; // Klart når de trykker «Les om skreddersydd oppsett».

@@ -935,6 +935,8 @@ async function sjekk(env, url) {
     orgnr: o.virksomhet.orgnr,
     navn: o.virksomhet.navn,
     stor: Boolean(g && !offentligKunde(g.v) && sprintFor(p, telteAnsatte(p, g.v))),
+    // Kommuner og stat: forsiden viser dem uten «Godkjent»-merket.
+    offentlig: Boolean(g && offentligKunde(g.v)),
     konsern: Boolean(g?.konsern),
     pris: l ? l.pris : null,
     fireAar: Boolean(l?.fireAar),
