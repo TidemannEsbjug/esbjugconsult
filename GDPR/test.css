@@ -1,0 +1,56 @@
+/* Inngangen til testversjonen (test.html). Bygger på kommer-snart.css. */
+
+.inn {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.inn label {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.inn .rad {
+  display: flex;
+  gap: 8px;
+}
+
+.inn input,
+.inn button {
+  font: inherit;
+  font-size: 16px;
+  height: 44px;
+  border-radius: 10px;
+  border: 1px solid rgba(21, 32, 46, 0.22);
+}
+
+.inn input {
+  width: min(240px, 60vw);
+  padding: 0 14px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+}
+
+.inn button {
+  padding: 0 18px;
+  background: #1f5fa8;
+  border-color: #1f5fa8;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.inn input:focus-visible,
+.inn button:focus-visible {
+  outline: 3px solid rgba(31, 95, 168, 0.35);
+  outline-offset: 2px;
+}
+
+.inn .feil {
+  margin: 0;
+  color: #a3261b;
+  font-size: 14px;
+  font-weight: 600;
+}

@@ -130,9 +130,53 @@ export async function handleKlart(request, env, url) {
 
 const FILER = {
   // «key» er navnet i R2 (fra bygget), «navn» er det kunden får på disken.
-  mac: { key: "mac/Klart_0.1.0_universal.dmg", navn: "Klart-for-Mac-0.1.0.dmg", type: "application/x-apple-diskimage" },
-  windows: { key: "windows/Klart_0.1.0_x64-setup.exe", navn: "Klart-for-Windows-0.1.0.exe", type: "application/vnd.microsoft.portable-executable" },
+  // Byggene fra 11.11.2026 (11a2aee), lagt i egen mappe så de gamle i mac/ og windows/ står urørt.
+  mac: { key: "2026-11-11/Klart_0.1.0_universal.dmg", navn: "Klart-for-Mac-0.1.0.dmg", type: "application/x-apple-diskimage" },
+  windows: { key: "2026-11-11/Klart_0.1.0_x64-setup.exe", navn: "Klart-for-Windows-0.1.0.exe", type: "application/vnd.microsoft.portable-executable" },
+  linux: { key: "2026-11-11/Klart_0.1.0_amd64.deb", navn: "Klart-for-Linux-0.1.0-amd64.deb", type: "application/vnd.debian.binary-package" },
+  "linux-arm": { key: "2026-11-11/Klart_0.1.0_arm64.deb", navn: "Klart-for-Linux-0.1.0-arm64.deb", type: "application/vnd.debian.binary-package" },
 };
+
+// ---------------------------------------------------------------------------
+// Testversjonen: mens «Kommer snart» står ute, slipper /klart/test eieren inn i de ekte
+// sidene og nedlastingene med et passord (hemmeligheten KLART_TESTPASSORD). Riktig passord
+// gir informasjonskapselen klart_test, som er en hash av passordet, så den slutter å virke
+// når passordet byttes. Uten hemmeligheten er inngangen stengt.
+// ---------------------------------------------------------------------------
+
+async function testMerke(env) {
+  if (!env.KLART_TESTPASSORD) return null;
+  const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("klart-test|" + env.KLART_TESTPASSORD));
+  return [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+export async function harTest(request, env) {
+  const merke = await testMerke(env);
+  if (!merke) return false;
+  return (request.headers.get("cookie") || "").split(/;\s*/).includes("klart_test=" + merke);
+}
+
+export async function handleTest(request, env, url) {
+  const ingenLager = { "cache-control": "no-store" };
+  if (request.method === "POST") {
+    const skjema = await request.formData().catch(() => null);
+    const passord = skjema && skjema.get("passord");
+    const merke = await testMerke(env);
+    // Store og små bokstaver teller ikke: telefoner gjør gjerne første bokstav stor.
+    if (merke && typeof passord === "string" && passord.trim().toLowerCase() === String(env.KLART_TESTPASSORD).toLowerCase()) {
+      return new Response(null, {
+        status: 303,
+        headers: { ...ingenLager, location: "/klart/", "set-cookie": `klart_test=${merke}; Path=/; Max-Age=2592000; HttpOnly; Secure; SameSite=Lax` },
+      });
+    }
+    return new Response(null, { status: 303, headers: { ...ingenLager, location: "/klart/test?feil" } });
+  }
+  if (await harTest(request, env)) return new Response(null, { status: 303, headers: { ...ingenLager, location: "/klart/" } });
+  const side = await env.ASSETS.fetch(new Request(new URL("/GDPR/test", url)));
+  let html = await side.text();
+  if (url.searchParams.has("feil")) html = html.replace('<p class="feil" hidden>', '<p class="feil">');
+  return new Response(html, { headers: { ...ingenLager, "content-type": "text/html; charset=utf-8" } });
+}
 
 export async function handleNedlasting(request, env, url) {
   const hva = url.pathname.replace(/^\/(klart|GDPR)\/last-ned\//, "").replace(/\/$/, "");
@@ -140,7 +184,7 @@ export async function handleNedlasting(request, env, url) {
   if (!fil || !["GET", "HEAD"].includes(request.method)) return new Response("Finnes ikke.", { status: 404 });
   // KLART_NEDLASTING = "pause" i wrangler.jsonc stenger nedlastingen, for eksempel
   // mens en feil rettes. Gamle lenker får da en forklaring, ikke en gammel fil.
-  if (env.KLART_NEDLASTING === "pause") {
+  if (env.KLART_NEDLASTING === "pause" && !(await harTest(request, env))) {
     return new Response(
       "<!doctype html><meta charset=utf-8><title>Klart</title>" +
         "<p style='font:16px system-ui;max-width:36em;margin:4em auto'>Klart oppdateres. " +

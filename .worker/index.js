@@ -3,7 +3,7 @@
 // else is the static site. /login/ (customer portal) and /kunde/ (behind login) are in kunde.js.
 import { handleChat, pageVisit } from "./chat.js";
 import { handleKunde } from "./kunde.js";
-import { handleKlart, handleNedlasting } from "./klart.js";
+import { handleKlart, handleNedlasting, handleTest, harTest } from "./klart.js";
 export { ChatHub } from "./chat.js";
 export { KlartLager } from "./klart.js";
 
@@ -85,11 +85,14 @@ export default {
       // ellers står en kunde med en lisenskode og kommer ingen vei — og siden
       // trenger fonten, ikonet og bildet sitt. Alt annet får forsiden.
       // Åpne igjen: fjern KLART_SNART og de to linjene som bruker den.
-      const ÅPENT = /^\/(?:aktiver(?:\/.*)?|favicon\.png|fonts\.css|fonts\/.*|kommer-snart\.css|assets\/hero-vinter\.jpg)$/;
+      const ÅPENT = /^\/(?:aktiver(?:\/.*)?|favicon\.png|fonts\.css|fonts\/.*|kommer-snart\.css|test\.css|assets\/hero-vinter\.jpg)$/;
+      // Inngangen til testversjonen (passord), se handleTest i klart.js.
+      if (rest === "/test" || rest === "/test/") return medHoder(await handleTest(request, env, url));
       const fil = new URL(url);
       // Uten .html: Assets svarer 307 til adressa uten endelse, og den ville
       // kommet hit igjen og blitt skrevet om på nytt — en evig runddans.
-      const snart = env.KLART_SNART === "ja" && !ÅPENT.test(rest);
+      // Med testkapselen (riktig passord på /klart/test) vises de ekte sidene.
+      const snart = env.KLART_SNART === "ja" && !ÅPENT.test(rest) && !(await harTest(request, env));
       fil.pathname = "/GDPR" + (snart ? "/kommer-snart" : rest);
       let svar = await env.ASSETS.fetch(new Request(fil, request));
       if (snart) {

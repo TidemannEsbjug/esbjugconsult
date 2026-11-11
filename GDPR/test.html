@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="nb">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Klart — test</title>
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#eef3fb" />
+    <!--
+      Inngangen til testversjonen av /klart mens «Kommer snart» står ute for alle andre.
+      Riktig passord gir en informasjonskapsel, og da viser workeren de ekte sidene og
+      slipper nedlastingene gjennom (handleTest og harTest i .worker/klart.js).
+      Passordet er hemmeligheten KLART_TESTPASSORD, ikke noe i repoet.
+    -->
+    <link rel="icon" type="image/png" href="/klart/favicon.png" />
+    <link rel="stylesheet" href="/klart/fonts.css" />
+    <link rel="stylesheet" href="/klart/kommer-snart.css" />
+    <link rel="stylesheet" href="/klart/test.css" />
+  </head>
+  <body>
+    <main class="scene">
+      <img class="bilde" src="/klart/assets/hero-vinter.jpg" width="2400" height="1600" alt="" aria-hidden="true" />
+      <div class="ord">
+        <p class="merke">Klart · test</p>
+        <form class="inn" method="post" action="/klart/test">
+          <label for="passord">Passord</label>
+          <div class="rad">
+            <input id="passord" name="passord" type="password" autocomplete="current-password" autofocus required />
+            <button type="submit">Gå inn</button>
+          </div>
+          <p class="feil" hidden>Feil passord. Prøv igjen.</p>
+        </form>
+      </div>
+    </main>
+  </body>
+</html>

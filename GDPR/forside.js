@@ -887,20 +887,20 @@ document.querySelectorAll(".hero .os-mac").forEach(function (mac) {
 // Nedlastingskortet: når de klikker Windows, Mac eller Linux i heroen, blir
 // kortet et eget nedlastingskort (CSS: .scene-tekst.laster). Lyset rundt
 // kanten (--p) og prosenten følger nedlastingen; ferdig gir en hake og neste
-// steg. Foreløpig simulert: bare lokalt (localhost) eller med ?nedlasting=sim,
-// så ekte nedlastinger på nettet ikke berøres. Den ekte framdriften kommer
-// senere via en service worker som teller bytene.
+// steg. På nettet hentes filen selv, bytene telles mens de kommer, og når alt
+// er kommet, lagres filen (nettleseren får den som en vanlig nedlasting).
+// Lokalt (localhost) eller med ?nedlasting=sim måles det bare: bytene kastes,
+// og finnes ikke filen, simuleres det.
 (function () {
   var tekst = document.querySelector(".hero .scene-tekst");
   var kort = tekst && tekst.querySelector("[data-nedlasting]");
   if (!kort) return;
   var SIMULER = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) || /[?&]nedlasting=sim\b/.test(location.search);
-  if (!SIMULER) return;
 
   var SYSTEM = {
     windows: { navn: "Windows", fil: "Klart-for-Windows-0.1.0.exe", mb: 168, neste: "Åpne filen for å installere Klart." },
     mac: { navn: "Mac", fil: "Klart-for-Mac-0.1.0.dmg", mb: 212, neste: "Åpne filen og dra Klart over i Programmer." },
-    linux: { navn: "Linux", fil: "Klart-for-Linux-0.1.0.AppImage", mb: 190, neste: "Gjør filen kjørbar og åpne den." },
+    linux: { navn: "Linux", fil: "Klart-for-Linux-0.1.0-amd64.deb", mb: 200, neste: "Åpne filen for å installere Klart." },
   };
   var merke = kort.querySelector("[data-merke]");
   var prosentEl = kort.querySelector("[data-prosent]");
@@ -941,7 +941,11 @@ document.querySelectorAll(".hero .os-mac").forEach(function (mac) {
     // Ekte fil lokalt: hent den og tell bytene som kommer. Finnes ikke filen
     // (Linux ennå), simuleres det.
     ekte(hva, sys, min).catch(function () {
-      if (min === jobb) simuler(sys, min);
+      if (min !== jobb) return;
+      if (SIMULER) return simuler(sys, min);
+      // På nettet: går det ikke å telle, får nettleseren lenken som før.
+      tilbake();
+      location.href = "/klart/last-ned/" + hva;
     });
   }
 
@@ -955,6 +959,7 @@ document.querySelectorAll(".hero .os-mac").forEach(function (mac) {
       var total = +svar.headers.get("content-length");
       if (!svar.ok || !svar.body || !total) throw new Error("ingen fil");
       var leser = svar.body.getReader();
+      var biter = SIMULER ? null : [];
       var lastet = 0, rolig = 0, igjenRolig = 0, skrevet = 0, startet = performance.now();
       var punkter = [[startet, 0]];
       var vist = 0;
@@ -974,6 +979,7 @@ document.querySelectorAll(".hero .os-mac").forEach(function (mac) {
           }
           var naa = performance.now();
           if (r.done) {
+            if (biter) lagre(new Blob(biter, { type: svar.headers.get("content-type") || "application/octet-stream" }), sys.fil);
             vis(100);
             statusEl.textContent = hele.format(Math.round(total / MB)) + " MB på " + ((naa - startet) / 1000).toFixed(1).replace(".", ",") + " s";
             tekst.classList.add("lastet");
@@ -982,6 +988,7 @@ document.querySelectorAll(".hero .os-mac").forEach(function (mac) {
             return;
           }
           lastet += r.value.byteLength;
+          if (biter) biter.push(r.value);
           // Fart over de siste to sekundene.
           punkter.push([naa, lastet]);
           while (punkter.length > 2 && naa - punkter[0][0] > 2000) punkter.shift();
@@ -1004,6 +1011,19 @@ document.querySelectorAll(".hero .os-mac").forEach(function (mac) {
       }
       return les();
     });
+  }
+
+  // Den ferdige filen gis til nettleseren som en vanlig nedlasting.
+  function lagre(blob, navn) {
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = navn;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () {
+      URL.revokeObjectURL(a.href);
+    }, 60000);
   }
 
   function simuler(sys, min) {
