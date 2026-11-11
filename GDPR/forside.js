@@ -1103,3 +1103,94 @@ function nedlastingskort(tekst, kort, knapper) {
   var bunn = document.querySelector(".v-hent-kort");
   if (bunn) nedlastingskort(bunn, bunn.querySelector("[data-nedlasting]"), bunn.querySelectorAll("[data-v-hent] a"));
 })();
+
+// Mobil og nettbrett: det snør lett bak «Klart» og kortet, som på nedtellingssiden, men
+// glissent (eieren 11.11.2026). Står stille når heroen ikke vises, og for dem som har bedt
+// om mindre bevegelse.
+(function () {
+  var c = document.querySelector(".hero .scene-sno-mobil");
+  if (!c || !c.getContext) return;
+  if (!window.matchMedia("(hover: none) and (pointer: coarse)").matches) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var ctx = c.getContext("2d");
+  var fnugg = [];
+  var b = 0, h = 0, synlig = true, gaar = false;
+  function nytt(hvorSomHelst) {
+    var r = Math.random();
+    var stor = r * r * 2.2 + 0.6;
+    return {
+      x: Math.random() * b,
+      y: hvorSomHelst ? Math.random() * h : -10,
+      r: stor,
+      fart: 16 + stor * 18 + Math.random() * 12,
+      drift: Math.random() * Math.PI * 2,
+      svai: 6 + Math.random() * 14,
+      lys: 0.5 + Math.random() * 0.4,
+    };
+  }
+  function str() {
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    b = c.clientWidth;
+    h = c.clientHeight;
+    c.width = Math.round(b * dpr);
+    c.height = Math.round(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var antall = Math.round(Math.min(70, (b * h) / 9000));
+    while (fnugg.length < antall) fnugg.push(nytt(true));
+    fnugg.length = antall;
+  }
+  var forrige = 0;
+  function tegn(naa) {
+    if (!synlig) {
+      gaar = false;
+      return;
+    }
+    var dt = forrige ? Math.min((naa - forrige) / 1000, 0.05) : 0;
+    forrige = naa;
+    ctx.clearRect(0, 0, b, h);
+    for (var i = 0; i < fnugg.length; i++) {
+      var f = fnugg[i];
+      f.y += f.fart * dt;
+      f.drift += dt * 0.8;
+      f.x += Math.sin(f.drift) * f.svai * dt;
+      if (f.y > h + 10) fnugg[i] = f = nytt(false);
+      if (f.x < -10) f.x = b + 10;
+      if (f.x > b + 10) f.x = -10;
+      ctx.beginPath();
+      ctx.fillStyle = "rgba(255,255,255," + f.lys + ")";
+      ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    requestAnimationFrame(tegn);
+  }
+  function start() {
+    if (gaar || !synlig) return;
+    gaar = true;
+    forrige = 0;
+    requestAnimationFrame(tegn);
+  }
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(function (e) {
+      synlig = e[0].isIntersecting;
+      start();
+    }).observe(c);
+  }
+  window.addEventListener("resize", str);
+  str();
+  start();
+})();
+
+// Fargen øverst på telefonen (theme-color): himmelen fra vinterbildet mens heroen vises,
+// sidens lyse farge når man har blat forbi den (eieren 11.11.2026).
+(function () {
+  var meta = document.querySelector('meta[name="theme-color"]');
+  var scene = document.querySelector(".hero .scene");
+  if (!meta || !scene) return;
+  var HIMMEL = "#6593c3", LYS = "#eef3fb", naa = "";
+  function sett() {
+    var farge = window.scrollY < scene.offsetHeight - 80 ? HIMMEL : LYS;
+    if (farge !== naa) meta.setAttribute("content", (naa = farge));
+  }
+  window.addEventListener("scroll", sett, { passive: true });
+  sett();
+})();

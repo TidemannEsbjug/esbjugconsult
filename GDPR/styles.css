@@ -4169,3 +4169,19 @@ footer {
     filter: drop-shadow(0 10px 24px rgba(10, 20, 34, 0.35));
   }
 }
+
+/* Lett snø bak «Klart» og kortet på mobil og nettbrett (eieren 11.11.2026). */
+.hero .scene-sno-mobil {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+@media (hover: none) and (pointer: coarse) {
+  .hero .scene-sno-mobil {
+    display: block;
+  }
+}
