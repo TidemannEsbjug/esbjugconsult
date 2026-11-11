@@ -1189,7 +1189,10 @@ function nedlastingskort(tekst, kort, knapper) {
   var HIMMEL = "#6593c3", LYS = "#eef3fb", naa = "";
   function sett() {
     var farge = window.scrollY < scene.offsetHeight - 80 ? HIMMEL : LYS;
-    if (farge !== naa) meta.setAttribute("content", (naa = farge));
+    if (farge === naa) return;
+    meta.setAttribute("content", (naa = farge));
+    // Safari på iPhone bruker bakgrunnen bak siden, ikke theme-color.
+    document.documentElement.style.backgroundColor = farge;
   }
   window.addEventListener("scroll", sett, { passive: true });
   sett();
