@@ -934,7 +934,7 @@ async function sjekk(env, url) {
   return json({
     orgnr: o.virksomhet.orgnr,
     navn: o.virksomhet.navn,
-    stor: Boolean(g && sprintFor(p, telteAnsatte(p, g.v))),
+    stor: Boolean(g && !offentligKunde(g.v) && sprintFor(p, telteAnsatte(p, g.v))),
     konsern: Boolean(g?.konsern),
     pris: l ? l.pris : null,
     fireAar: Boolean(l?.fireAar),
@@ -1720,7 +1720,15 @@ async function ledigeStarter(env, tilbud, reise = false) {
 
 /** Tilbudene for virksomheten, i rekkefølge. Samme ansatte som prisen telles på. */
 function sprintTilbud(p, g) {
+  // Kommuner og stat får ikke tilbudet om sprint eller oppsettsdag på siden (eieren 11.11.2026:
+  // en sprint koster for mye for dem; det tas heller i andre kanaler).
+  if (offentligKunde(g.v)) return [];
   return sprintTilbudFor(p, telteAnsatte(p, g.v));
+}
+
+/** En kommune, en fylkeskommune, en statlig virksomhet, eller en del av en av dem. */
+function offentligKunde(v) {
+  return Boolean(v.stat || v.kommune || KOMMUNEFORMER.has(v.form));
 }
 
 /** Det kunden betaler ved booking, eks. mva: fast pris for oppsettsdagen, ellers grunnhonoraret. */
