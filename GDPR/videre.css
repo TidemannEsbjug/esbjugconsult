@@ -2274,3 +2274,13 @@ footer.v-bunn {
 .v-hent-kort.laster.lastet::before {
   background: #fff;
 }
+
+/* Ikonene i kortene ble strukket på iPhone (eieren 11.11.2026): Safari strekker et bilde i en
+   flexboks når det ikke får beholde sin egen form. Fast form, ingen krymping, ingen strekking. */
+.v-kort > img {
+  flex: none;
+  align-self: center;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+}
