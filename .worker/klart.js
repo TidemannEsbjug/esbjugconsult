@@ -1173,7 +1173,7 @@ async function kasse(request, env, url) {
   const perAar = fireAar;
   if (type === "testing") betaling = "kort";
   if (type === "leverandor" && l.fireAar) {
-    return json({ feil: "Kommuner og statlige virksomheter kjøper en lisens for fire år. Behandler dere data for andre, skriv til oss." }, 400);
+    return json({ feil: "Kommuner og statlige virksomheter kjøper sin egen lisens. Behandler dere data for andre, skriv til oss." }, 400);
   }
   if (fireAar) {
     const hinder = kommuneHinder(k, l);
@@ -1216,8 +1216,8 @@ async function kasse(request, env, url) {
         ? `Klart for ${v.navn} (org.nr ${orgnrTekst(v.orgnr)}) og hele konsernet. Alle brukere og enheter, konsernets egne data.`
         : `Klart for ${v.navn} (org.nr ${orgnrTekst(v.orgnr)}). Alle brukere og enheter, virksomhetens egne data.`) +
       (fireAar
-        ? ` Lisens for fire år, til og med ${datoTekst(fireAarFra())}, ` +
-          (perAar ? "betalt med fire årlige beløp." : "betalt på forskudd.") +
+        ? // Kommuner og stat: årlig lisens uten binding, uten noe om fire år (eieren 11.11.2026).
+          " Årlig lisens uten binding." +
           (l.del ? ` En del av ${g.v.kommune.navn} (org.nr ${orgnrTekst(g.v.kommune.orgnr)}).` : "") +
           (l.betalt ? ` ${kroner(l.betalt)} som er betalt i ${helhet(l.stat)} før, er trukket fra.` : "")
         : "");
@@ -1366,7 +1366,7 @@ async function fakturerForskudd(env, { kunde, meta, linjer, mva, beskrivelse }) 
       invoice: faktura.id,
       currency: "nok",
       amount: String(linje.belop),
-      description: "Klart – lisens for virksomheten, fire år",
+      description: "Klart – lisens for virksomheten",
       "tax_rates[0]": mva,
     });
   }
@@ -2155,7 +2155,7 @@ async function fornyelsesvarsel(env, faktura) {
       tekst: [
         "Hei,",
         "",
-        `neste årlige betaling for fireårslisensen til Klart for ${m.company_name} (org.nr ${orgnrTekst(m.orgnr)}) er ${datoTekst(dato(periodeSlutt(abo) * 1000))}: ${kroner(belop)}, eks. mva. Prisen er den samme alle fire årene.`,
+        `neste årlige betaling for lisensen til Klart for ${m.company_name} (org.nr ${orgnrTekst(m.orgnr)}) er ${datoTekst(dato(periodeSlutt(abo) * 1000))}: ${kroner(belop)}, eks. mva. Det er ingen binding.`,
         "",
         "Når betalingen er gjort, kommer en ny lisensnøkkel på e-post.",
         "",

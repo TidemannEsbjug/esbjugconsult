@@ -4109,3 +4109,65 @@ footer {
     animation: none;
   }
 }
+
+/* Mobil og nettbrett: Klart er for datamaskiner. I stedet for nedlastingsknappene og
+   virksomhetsfeltet står en e-post med lenken, til seg selv eller andre (eieren 11.11.2026). */
+.mobil-send {
+  display: none;
+}
+.hero .scene .privat-fin {
+  margin: 14px 0 0;
+  text-align: center;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.86);
+}
+@media (hover: none) and (pointer: coarse) {
+  .hero .scene .privat > :not(.mobil-send),
+  .hero .scene-tekst > .orgport,
+  .hero .scene-tekst > .nedlasting {
+    display: none;
+  }
+  .hero .scene-tekst:not(.har-svar)::after {
+    grid-row: 3;
+  }
+  .hero .scene-tekst:not(.har-svar) > .privat {
+    padding: 34px 26px 30px;
+  }
+  .mobil-send {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    text-align: center;
+    color: #fff;
+  }
+  .mobil-send p {
+    margin: 0;
+  }
+  .mobil-send-tittel {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+  .mobil-send-tekst,
+  .mobil-send-andre {
+    font-size: 15px;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.86);
+  }
+  .mobil-send .btn {
+    margin-top: 6px;
+    height: 52px;
+    padding: 0 30px;
+    font-size: 16px;
+    background: #fff;
+    border-color: #fff;
+    color: #16348f;
+  }
+  .mobil-send-andre a {
+    color: #fff;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}

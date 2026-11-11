@@ -383,7 +383,8 @@
     v.replaceChildren();
     v.appendChild(li("Gjelder alle brukere og enheter i " + hvem + "."));
     v.appendChild(li((d.konsern ? "Dekker dokumentene i hele konsernet" : "Dekker dokumentene i virksomheten") + ", også de som handler om kundene."));
-    v.appendChild(li("Årlig lisens. Dere får påminnelse 14 dager før den fornyes."));
+    // Kommuner og stat: ingen binding (eieren 11.11.2026).
+    v.appendChild(li((d.fireAar ? "Årlig lisens uten binding." : "Årlig lisens.") + " Dere får påminnelse 14 dager før den fornyes."));
 
     $("pris-videre").disabled = !d.kjop;
     $("kjop-stengt").hidden = d.kjop;

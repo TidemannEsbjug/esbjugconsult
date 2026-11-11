@@ -128,6 +128,8 @@ console.info(
         boks.querySelector("[data-prishvem]").textContent = svar.konsern ? svar.navn + " og hele konsernet" : svar.navn;
         // Alle ser prisen per år, også kommuner og stat (eieren 11.11.2026).
         boks.querySelector("[data-prisnaar]").textContent = "Per år";
+        // Kommuner og stat: det står at det ikke er noen binding (eieren 11.11.2026).
+        boks.querySelector("[data-binding]").hidden = !svar.offentlig;
         boks.querySelector("[data-prislenke]").href = "pris/?orgnr=" + svar.orgnr + "&fra=forside";
       }
       boks.hidden = false;
