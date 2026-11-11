@@ -938,7 +938,8 @@ async function sjekk(env, url) {
     // Kommuner og stat: forsiden viser dem uten «Godkjent»-merket.
     offentlig: Boolean(g && offentligKunde(g.v)),
     konsern: Boolean(g?.konsern),
-    pris: l ? l.pris : null,
+    // Kommuner og stat ser prisen per år, som på prissiden (eieren 11.11.2026).
+    pris: l ? (l.fireAar ? Math.round(l.pris / 4) : l.pris) : null,
     fireAar: Boolean(l?.fireAar),
   });
 }
