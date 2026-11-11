@@ -3593,7 +3593,8 @@ footer {
 
 /* Kortet svarer på knappen man holder over, som kortet for privatpersoner: Windows en
    glød i de fire fargene langs bunnen, Mac gjennomsiktig glass med lys som flyter, Linux
-   en mørk terminal bak innholdet (forside.js legger en kopi av terminalen inn her). */
+   en mørk flate. Terminalen som skriver seg selv, er bare i kortet for privatpersoner: her
+   forstyrret den teksten (eieren 11.11.2026). */
 @media (hover: hover) and (min-width: 561px) {
   .hero .scene .orgport-svar-hoved > * {
     position: relative;
@@ -3634,34 +3635,6 @@ footer {
 
   .hero .scene .orgport-svar-hoved:has(.os-lin:hover) {
     background: rgba(5, 18, 42, 0.94);
-  }
-
-  /* Kommer de rett inn med virksomheten i adressen (.uten-feiring), er all animasjon i kortet
-     slått av. Terminalen skal likevel skrive seg selv. */
-  .uten-feiring .orgport-svar-hoved .kort-terminal span {
-    animation: kort-skriv calc(var(--n) * 24ms) steps(var(--n), end) var(--f) forwards !important;
-  }
-
-  .uten-feiring .orgport-svar-hoved .kort-terminal span:not(.kommando) {
-    animation-duration: 1ms !important;
-  }
-
-  .uten-feiring .orgport-svar-hoved .kort-terminal span.markor::after {
-    animation: kort-blink 1s steps(1, end) infinite !important;
-  }
-
-  .hero .scene .orgport-svar-hoved:has(.os-lin:hover) > .kort-terminal {
-    display: block;
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    overflow: hidden;
-    padding: 20px 30px;
-    font: 500 12.5px/1.75 "JetBrains Mono", ui-monospace, monospace;
-    color: rgba(150, 230, 180, 0.42);
-    text-align: left;
-    pointer-events: none;
-    animation: none;
   }
 }
 
