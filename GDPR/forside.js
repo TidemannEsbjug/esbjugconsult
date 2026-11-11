@@ -126,8 +126,8 @@ console.info(
         boks.querySelector("[data-prisbelop]").textContent =
           new Intl.NumberFormat("nb-NO").format(svar.pris) + " kr";
         boks.querySelector("[data-prishvem]").textContent = svar.konsern ? svar.navn + " og hele konsernet" : svar.navn;
-        // Kommuner og statlige virksomheter kjøper en lisens for fire år, ikke per år.
-        boks.querySelector("[data-prisnaar]").textContent = svar.fireAar ? "For fire år" : "Per år";
+        // Alle ser prisen per år, også kommuner og stat (eieren 11.11.2026).
+        boks.querySelector("[data-prisnaar]").textContent = "Per år";
         boks.querySelector("[data-prislenke]").href = "pris/?orgnr=" + svar.orgnr + "&fra=forside";
       }
       boks.hidden = false;

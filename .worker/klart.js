@@ -967,8 +967,10 @@ async function pris(env, url) {
     navn: v.navn,
     ansatte: v.ansatte,
     konsern: g.konsern,
-    pris: l.pris,
-    // Kommuner og delene av dem kjøper for fire år, på forskudd eller per år.
+    // Kommuner og stat ser prisen per år, som alle andre (eieren 11.11.2026): en fjerdedel av
+    // fireårsprisen, og det er det de betaler hvert år (perAar i kassen).
+    pris: l.fireAar ? Math.round(l.pris / 4) : l.pris,
+    // Kommuner og delene av dem kjøper for fire år, betalt per år.
     fireAar: Boolean(l.fireAar),
     kommune: l.fireAar
       ? {
@@ -1166,7 +1168,8 @@ async function kasse(request, env, url) {
   // En kommune, eller en del av den, kjøper en lisens for fire år: på forskudd (én betaling eller én
   // faktura) eller per år (fire betalinger). Det som er betalt i kommunen før, er trukket fra prisen.
   const fireAar = type === "lisens" && Boolean(l.fireAar);
-  const perAar = fireAar && inn.perAar === true;
+  // Siden viser prisen per år, så kommuner og stat betaler alltid per år (eieren 11.11.2026).
+  const perAar = fireAar;
   if (type === "testing") betaling = "kort";
   if (type === "leverandor" && l.fireAar) {
     return json({ feil: "Kommuner og statlige virksomheter kjøper en lisens for fire år. Behandler dere data for andre, skriv til oss." }, 400);
