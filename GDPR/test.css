@@ -25,9 +25,11 @@ body {
   width: 100vw;
   min-height: 100vh;
   min-height: 100svh;
-  display: grid;
-  place-items: center;
-  padding: 24px;
+  /* Som heroen: «Klart» i himmelen, kortet nede i snøen og hytta fri mellom dem. */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(40px, 8vh, 104px) 24px clamp(72px, 15vh, 180px);
   overflow: hidden;
   isolation: isolate;
 }
@@ -44,22 +46,25 @@ body {
 }
 
 .innhold {
-  display: grid;
-  justify-items: center;
-  gap: clamp(20px, 3.5vh, 36px);
-  transform: translateY(-4vh);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
 }
 
+/* Krystallen og ordet på én linje, som merket i appen. */
 .merke {
   margin: 0;
-  display: grid;
-  justify-items: center;
-  gap: 12px;
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 1.4vw, 20px);
   font-weight: inherit;
 }
 
 .merke .ikon {
-  width: clamp(64px, 7vw, 92px);
+  width: clamp(52px, 5.4vw, 96px);
   height: auto;
   filter: drop-shadow(0 10px 24px rgba(10, 20, 34, 0.35));
 }
