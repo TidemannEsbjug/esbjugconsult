@@ -1,0 +1,2486 @@
+/* --------------------------------------------------------------------------
+   Programvinduet: Klart slik appen ser ut fra november 2026 (src/ny/app.css og
+   src/editor/ui/editor.css i appen). Alt er prefikset med kv- så det ikke
+   krasjer med sidens egne klasser. Vinduet bygges i fast størrelse (1120 × 680)
+   og skaleres til bredden (forhandsvisning.js setter --s). Smalt (under 760 px)
+   bygges det 640 bredt uten fillisten.
+   Uten JS står data-scene på «gjennom» og .avklart: editoren med alt gjennomgått.
+
+   Lysfølsomhet: ingenting blinker. Scenene toner over i 420 ms, merkene toner
+   inn på 700 ms, lesehodet er en svak stripe som glir én gang nedover siden,
+   og pilla har en rolig prikk uten puls. Redusert bevegelse: alt står stille.
+   -------------------------------------------------------------------------- */
+
+.kv {
+  --bg: #e8ebef;
+  --surface: #ffffff;
+  --surface-2: #f5f6f8;
+  --surface-3: #eceff2;
+  --ink: #1a1f25;
+  --ink-2: #48525c;
+  --ink-3: #66717b;
+  --line: rgba(24, 34, 44, 0.1);
+  --line-strong: rgba(24, 34, 44, 0.2);
+  --blaa: #0b47b0;
+  --blaa-2: #1f62d6;
+  --knapp: #2e6fe0;
+  --is: #2f8fc9;
+  --is-dyp: #1f6fa3;
+  --wash: rgba(56, 150, 210, 0.2);
+  --uavklart: #d4600f;
+  --uavklart-wash: rgba(232, 140, 50, 0.16);
+  --staa: #2f7a57;
+  --staa-wash: rgba(53, 140, 100, 0.14);
+  --display: "Schibsted Grotesk", "Avenir Next", "Helvetica Neue", sans-serif;
+  --mono: "IBM Plex Mono", "SF Mono", ui-monospace, Menlo, monospace;
+  --dok: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --shadow-sm: 0 1px 2px rgba(20, 30, 40, 0.06), 0 1px 1px rgba(20, 30, 40, 0.04);
+  --shadow: 0 1px 2px rgba(20, 30, 40, 0.05), 0 8px 24px rgba(20, 30, 40, 0.08);
+  --shadow-lg: 0 2px 4px rgba(20, 30, 40, 0.06), 0 22px 56px rgba(20, 30, 40, 0.2);
+  --s: 0.9;
+  --w: 1120px;
+  --h: 680px;
+
+  position: relative;
+  width: 100%;
+  max-width: 1020px;
+  margin: clamp(56px, 7vw, 96px) auto 0;
+  text-align: left;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 13px;
+  line-height: 1.45;
+  letter-spacing: -0.005em;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: default;
+}
+
+.kv.smal {
+  --w: 640px;
+}
+
+.kv :where(h4, h5, p, ul, dl, dd) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.kv-ramme {
+  position: relative;
+  height: calc(var(--h) * var(--s));
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(20, 30, 40, 0.14);
+  box-shadow: 0 2px 6px rgba(27, 33, 35, 0.06), 0 40px 80px -40px rgba(27, 33, 35, 0.45);
+  background: var(--bg);
+}
+
+.kv-app {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--w);
+  height: var(--h);
+  display: flex;
+  flex-direction: column;
+  transform: scale(var(--s));
+  transform-origin: 0 0;
+  background: var(--bg);
+}
+
+/* ---------- Topplinjen ---------- */
+
+.kv-chrome {
+  flex-shrink: 0;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 14px;
+  background: var(--blaa);
+  color: #fff;
+}
+
+.kv-lys {
+  display: flex;
+  gap: 8px;
+}
+
+.kv-lys i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ff5f57;
+}
+
+.kv-lys i:nth-child(2) {
+  background: #febc2e;
+}
+
+.kv-lys i:nth-child(3) {
+  background: #28c840;
+}
+
+.kv-merke {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 8px;
+  font-family: "Literata", Georgia, serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 19px;
+  letter-spacing: -0.01em;
+}
+
+.kv-merke img {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.kv-sok {
+  flex: 1;
+  max-width: 470px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 30px;
+  padding: 0 6px 0 11px;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink-2);
+  font-size: 12.5px;
+  transition: opacity 300ms ease;
+}
+
+.kv-sok svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: var(--ink-2);
+  stroke-width: 1.6;
+}
+
+.kv-sok kbd {
+  margin-left: auto;
+  padding: 1px 5px;
+  border-radius: 4px;
+  border: 1px solid var(--line-strong);
+  font: 500 10px var(--mono);
+  color: var(--ink-3);
+}
+
+.kv-hoyre {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: opacity 300ms ease;
+}
+
+.kv-lagret {
+  margin-right: 6px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.kv-lysknapp {
+  padding: 4px 9px;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+/* På startskjermen er det bare merket i topplinjen. */
+.kv[data-scene="start"] .kv-sok,
+.kv[data-scene="start"] .kv-hoyre,
+.kv[data-scene="forvalg"] .kv-sok,
+.kv[data-scene="forvalg"] .kv-hoyre,
+.kv[data-scene="leser"] .kv-sok,
+.kv[data-scene="tekst"] .kv-sok,
+.kv[data-scene="tekst"] .kv-lagret,
+.kv[data-scene="tekst"] .kv-lysknapp:not(.kv-sporsmal) {
+  opacity: 0;
+}
+
+.kv[data-scene="leser"] .kv-lagret {
+  visibility: hidden;
+}
+
+.kv.smal .kv-sok,
+.kv.smal .kv-lagret,
+.kv.smal .kv-lysknapp:not(.kv-sporsmal) {
+  display: none;
+}
+
+.kv.smal .kv-hoyre {
+  margin-left: auto;
+}
+
+/* ---------- Scenene ---------- */
+
+.kv-flate {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.kv-scene,
+.kv-slor {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 420ms ease, visibility 0s linear 420ms;
+}
+
+.kv[data-scene="start"] .kv-s-start,
+.kv[data-scene="forvalg"] .kv-s-start,
+.kv[data-scene="forvalg"] .kv-s-forvalg,
+.kv[data-scene="leser"] .kv-s-editor,
+.kv[data-scene="gjennom"] .kv-s-editor,
+.kv[data-scene="kopi"] .kv-s-editor,
+.kv[data-scene="ferdig"] .kv-s-editor,
+.kv[data-scene="ferdig"] .kv-s-ferdig,
+.kv[data-scene="kopivalg"] .kv-s-editor,
+.kv[data-scene="kopivalg"] .kv-s-kopivalg,
+.kv[data-scene="tekst"] .kv-s-tekst,
+.kv[data-scene="finder"] .kv-s-finder,
+.kv[data-scene="ki"] .kv-s-ki {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 420ms ease, visibility 0s;
+}
+
+/* ---------- Startskjermen ---------- */
+
+.kv-s-start {
+  display: grid;
+  place-items: center;
+}
+
+.kv-kortene {
+  display: grid;
+  grid-template-columns: repeat(3, 236px);
+  gap: 14px;
+}
+
+.kv.smal .kv-kortene {
+  grid-template-columns: repeat(3, 184px);
+  gap: 10px;
+}
+
+.kv-startkort {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 26px 16px 22px;
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(31, 98, 214, 0.82), rgba(18, 74, 180, 0.9)),
+    url("assets/klart-vinter.jpg") center 60% / cover;
+  box-shadow: var(--shadow);
+  color: #fff;
+}
+
+.kv-startkort img {
+  width: 92px;
+  height: 92px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 10px rgba(0, 20, 60, 0.3));
+}
+
+.kv-startkort h4 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.kv-hvit {
+  padding: 5px 11px;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--blaa);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.kv.smal .kv-startkort .kv-hvit {
+  font-size: 10.5px;
+  padding: 5px 7px;
+}
+
+/* ---------- Editoren ---------- */
+
+.kv-s-editor {
+  display: grid;
+  grid-template-columns: 236px minmax(0, 1fr) 286px;
+}
+
+.kv.smal .kv-s-editor {
+  grid-template-columns: minmax(0, 1fr) 250px;
+}
+
+.kv.smal .kv-filer {
+  display: none;
+}
+
+.kv-filer {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--surface-2);
+  border-right: 1px solid var(--line);
+}
+
+.kv-filer-topp {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 14px 8px;
+}
+
+.kv-filer-topp b {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.kv-filer-topp span {
+  font: 11px var(--mono);
+  color: var(--ink-3);
+}
+
+.kv-filer ul {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 7px;
+}
+
+.kv-filer li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) 20px;
+  grid-template-areas: "ikon navn ring" "ikon meta ring";
+  align-items: center;
+  column-gap: 9px;
+  padding: 7px 8px;
+  border-radius: 8px;
+}
+
+.kv-filer li.valgt {
+  background: rgba(45, 95, 139, 0.1);
+}
+
+.kv-fikon {
+  grid-area: ikon;
+  align-self: start;
+  width: 26px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 3px 8px 3px 3px;
+  background: #2b5ab8;
+  color: #fff;
+  font: 700 10px var(--display);
+  font-style: normal;
+}
+
+.kv-fikon.pdf {
+  background: #c0352b;
+  font-size: 8px;
+}
+
+.kv-fikon.epost,
+.kv-fikon.tekst {
+  background: #5f6b76;
+}
+
+.kv-fikon.x {
+  background: #1f7a44;
+}
+
+.kv-fikon.p {
+  background: #c4501d;
+}
+
+.kv-fikon.bilde {
+  background: #6b4fa8;
+  font-size: 8px;
+}
+
+.kv-fnavn {
+  grid-area: navn;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12.5px;
+}
+
+.kv-fmeta {
+  grid-area: meta;
+  font: 10.5px var(--mono);
+  color: var(--ink-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Ringen: grå i kø, fylles rolig mens filen leses, grønn når den er lest, oransje med noe uavklart. */
+.kv-ring {
+  grid-area: ring;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid var(--staa);
+  transition: border-color 500ms ease, opacity 500ms ease;
+}
+
+.kv-filer li.uavklart .kv-ring {
+  border-color: #c98a2c;
+}
+
+.kv-filer li.ko .kv-ring {
+  border-color: var(--line-strong);
+}
+
+.kv-filer li.ko .kv-fmeta,
+.kv-filer li.ko .kv-fnavn {
+  color: var(--ink-3);
+}
+
+.kv-filer li.leses .kv-ring {
+  border-color: var(--line-strong);
+  border-top-color: var(--is);
+  animation: kv-snurr 1.6s linear infinite;
+}
+
+@keyframes kv-snurr {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Midten: dokumentlinjen og dokumentet */
+
+.kv-midt {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  background: #dfe3e8;
+}
+
+.kv-docket {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 12px;
+  background: rgba(248, 249, 250, 0.96);
+  border-bottom: 1px solid var(--line);
+  transition: background-color 420ms ease, color 420ms ease;
+}
+
+.kv-docket b {
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.kv-type {
+  font: 500 9.5px var(--mono);
+  letter-spacing: 0.06em;
+  color: var(--ink-3);
+}
+
+.kv-kopimerke {
+  display: none;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.kv-verktoy {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: opacity 300ms ease;
+}
+
+.kv-zoom {
+  padding: 4px 9px;
+  border-radius: 7px;
+  background: var(--surface-3);
+  font-size: 11px;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.kv-docket .kv-hvit {
+  color: var(--ink);
+  font-weight: 500;
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+
+.kv[data-scene="leser"] .kv-verktoy {
+  opacity: 0;
+}
+
+/* Kopien: mørk dokumentlinje, som i appen. */
+.kv.kopi .kv-docket {
+  background: #1c2a3a;
+  color: #fff;
+}
+
+.kv.kopi .kv-type {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.kv.kopi .kv-kopimerke {
+  display: inline;
+}
+
+.kv.kopi .kv-zoom {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.kv.kopi .kv-docket .kv-hvit {
+  box-shadow: none;
+}
+
+.kv-bord {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  padding: 22px 30px 0;
+}
+
+.kv.smal .kv-bord {
+  padding: 18px 16px 0;
+}
+
+.kv-side {
+  position: absolute;
+  top: 22px;
+  left: 30px;
+  right: 30px;
+  max-width: 470px;
+  margin: 0 auto;
+  opacity: 0;
+  visibility: hidden;
+  min-height: 640px;
+  padding: 42px 44px;
+  background: #fff;
+  box-shadow: var(--shadow);
+  font-family: var(--dok);
+  font-size: 12.5px;
+  line-height: 1.75;
+  color: #16191c;
+  overflow: hidden;
+}
+
+.kv.smal .kv-side {
+  left: 16px;
+  right: 16px;
+  padding: 30px 26px;
+}
+
+.kv-avsender {
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #7a8590;
+}
+
+.kv-side h4 {
+  margin-top: 4px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.kv-ref {
+  margin-top: 2px;
+  color: #59626b;
+}
+
+.kv-side h5 {
+  margin: 20px 0 4px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid #e3e6ea;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #3d464f;
+}
+
+.kv-side dl {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr);
+}
+
+.kv-side dt {
+  color: #59626b;
+}
+
+.kv-side p + p {
+  margin-top: 8px;
+}
+
+/* Merkene: blått skjules, oransje stiplet er uavklart, grønt får stå. */
+.kv-side mark {
+  color: inherit;
+  background: var(--wash);
+  border-radius: 2px;
+  box-shadow: inset 0 -2px 0 var(--is-dyp);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition: background-color 700ms ease, box-shadow 700ms ease, outline-color 300ms ease;
+  outline: 2px solid transparent;
+  outline-offset: 1px;
+}
+
+.kv-side mark.u {
+  background: var(--uavklart-wash);
+  box-shadow: none;
+  text-decoration: underline dashed var(--uavklart);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+.kv-side mark.b {
+  background: var(--staa-wash);
+  box-shadow: inset 0 -2px 0 rgba(47, 122, 87, 0.7);
+}
+
+.kv-side mark.vald {
+  outline-color: #1a1f25;
+}
+
+/* Under lesingen: merkene står umerket til lesehodet har passert. */
+.kv[data-scene="leser"] .kv-side mark:not(.sett) {
+  background-color: transparent;
+  box-shadow: inset 0 0 0 transparent;
+  text-decoration-color: transparent;
+}
+
+.kv-side .k {
+  display: none;
+  font-family: var(--mono);
+  font-size: 0.86em;
+  color: #0e3f66;
+}
+
+.kv.kopi .kv-side .o {
+  display: none;
+}
+
+.kv.kopi .kv-side .k {
+  display: inline;
+}
+
+.kv.kopi .kv-side mark.b .o {
+  display: inline;
+}
+
+.kv.kopi .kv-side mark.b .k {
+  display: none;
+}
+
+/* Én side vises om gangen; byttet toner over. Kopien toner inn som én overgang, ikke ord for ord. */
+.kv-side {
+  transition: opacity 400ms ease, visibility 0s linear 400ms;
+}
+
+.kv-side.vist {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 400ms ease, visibility 0s;
+}
+
+.kv-side.vist.bytter {
+  opacity: 0.25;
+}
+
+/* Lesehodet: en svak blå stripe som glir én gang ned over siden. */
+.kv-lesehode {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 54px;
+  background: linear-gradient(180deg, rgba(47, 143, 201, 0), rgba(47, 143, 201, 0.12) 70%, rgba(47, 143, 201, 0.32) 100%);
+  border-bottom: 1px solid rgba(47, 143, 201, 0.45);
+  opacity: 0;
+  transform: translateY(-60px);
+  pointer-events: none;
+}
+
+.kv-side.leser .kv-lesehode {
+  opacity: 1;
+  transform: translateY(var(--hoyde, 600px));
+  transition: transform 1.7s cubic-bezier(0.35, 0, 0.65, 1), opacity 400ms ease;
+}
+
+.kv-side.lest .kv-lesehode {
+  opacity: 0;
+  transform: translateY(var(--hoyde, 600px));
+  transition: opacity 500ms ease;
+}
+
+/* Pilla over dokumentet mens filene leses. */
+.kv-pille {
+  position: absolute;
+  z-index: 3;
+  top: 12px;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #1a1f25;
+  color: #fff;
+  font-size: 11.5px;
+  white-space: nowrap;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  transform: translate(-50%, -6px);
+  transition: opacity 360ms ease, transform 360ms ease;
+}
+
+.kv-pille i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--is);
+}
+
+.kv-pille b {
+  font-weight: 600;
+}
+
+.kv-pille span {
+  font: 10.5px var(--mono);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.kv[data-scene="leser"] .kv-pille {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* Gjennomgangen av det uavklarte: kortet nederst i dokumentet. */
+.kv-gjennom {
+  position: absolute;
+  z-index: 3;
+  left: 22px;
+  right: 22px;
+  bottom: 14px;
+  padding: 14px 16px 14px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(14px);
+  visibility: hidden;
+  transition: opacity 360ms ease, transform 360ms ease, visibility 0s linear 360ms;
+}
+
+.kv.gaar-gjennom .kv-gjennom {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  transition: opacity 360ms ease, transform 360ms ease, visibility 0s;
+}
+
+.kv-gjennom-strek {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 50%;
+  background: var(--blaa-2);
+  transition: width 400ms ease;
+}
+
+.kv-gjennom-topp {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.kv-gjennom-topp b {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.kv-gjennom-topp span {
+  font: 11px var(--mono);
+  color: var(--ink-3);
+}
+
+.kv code {
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #e2ebf4;
+  font: 10.5px var(--mono);
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.kv-gjennom-hvorfor {
+  margin-top: 5px;
+  font-size: 12px;
+  color: #b04a10;
+}
+
+.kv-gjennom-knapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 11px;
+}
+
+.kv.smal .kv-gjennom-knapper .kv-btn:nth-child(n + 3) {
+  display: none;
+}
+
+/* Knappene */
+.kv-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border-radius: 7px;
+  background: var(--blaa);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: transform 160ms ease, background-color 300ms ease, opacity 300ms ease;
+}
+
+.kv-btn.hvit {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+
+.kv-btn.av {
+  opacity: 0.45;
+}
+
+.kv-btn.stor {
+  padding: 9px 16px;
+  font-size: 13px;
+}
+
+.kv-btn.bred {
+  display: flex;
+  margin-top: 6px;
+  background: var(--knapp);
+}
+
+.kv-btn kbd {
+  padding: 0 4px;
+  border-radius: 3px;
+  border: 1px solid currentColor;
+  font: 500 9.5px var(--mono);
+  opacity: 0.7;
+}
+
+.kv .trykk {
+  transform: scale(0.96);
+}
+
+/* Høyre panel: det uavklarte og registeret for mappen. */
+.kv-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--surface-2);
+  border-left: 1px solid var(--line);
+}
+
+.kv-panel h5 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font: 500 10.5px var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.kv-panel h5 svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.3;
+}
+
+.kv-uavklart {
+  padding: 12px 12px 4px;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  transition: opacity 420ms ease;
+}
+
+.kv-uboks {
+  margin-top: 9px;
+  padding: 8px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: var(--shadow-sm), inset 3px 0 0 var(--uavklart);
+}
+
+.kv-uboks p {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 2px 4px 6px;
+  font-size: 11.5px;
+  transition: opacity 360ms ease;
+}
+
+.kv-uboks p span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kv-uboks em {
+  font: normal 10px var(--mono);
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.kv-uboks em::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 5px;
+  border-radius: 50%;
+  background: var(--uavklart);
+  vertical-align: 1px;
+}
+
+.kv-uboks p.avgjort {
+  opacity: 0.35;
+}
+
+.kv-imappen {
+  flex: 1;
+  min-height: 0;
+  padding: 14px 12px 0;
+  overflow: hidden;
+}
+
+.kv-imappen h5 span {
+  margin-left: auto;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-3);
+}
+
+.kv-imappen h5 b {
+  font-weight: 500;
+}
+
+.kv-imappen ul {
+  margin-top: 8px;
+}
+
+.kv-imappen li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.kv-imappen li::before {
+  content: "›";
+  color: var(--ink-3);
+}
+
+.kv-imappen li em {
+  margin-left: auto;
+  font: normal 10.5px var(--mono);
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.kv-imappen li.tom {
+  opacity: 0.35;
+}
+
+.kv-imappen li {
+  transition: opacity 500ms ease;
+}
+
+/* Uten noe uavklart: boksen og knappen er borte, som i appen. */
+.kv.avklart .kv-uavklart,
+.kv[data-scene="leser"] .kv-uavklart {
+  display: none;
+}
+
+.kv-bunn {
+  padding: 10px 12px 12px;
+  border-top: 1px solid var(--line);
+  background: var(--surface-2);
+}
+
+.kv-bunn p:first-child {
+  font-size: 12px;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.kv-bunn b {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.kv-bunn-knapper {
+  display: flex;
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.kv-bunn-knapper .kv-btn {
+  padding-top: 9px;
+  padding-bottom: 9px;
+}
+
+.kv-bunn-knapper .kv-btn:last-child {
+  flex: 1;
+  background: var(--knapp);
+}
+
+.kv-btn.oransje {
+  box-shadow: inset 0 0 0 1.5px var(--uavklart);
+}
+
+.kv-btn.oransje i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--uavklart);
+}
+
+.kv.avklart .kv-btn.oransje,
+.kv[data-scene="leser"] .kv-btn.oransje {
+  display: none;
+}
+
+.kv[data-scene="leser"] .kv-bunn-knapper .kv-btn:last-child {
+  opacity: 0.5;
+}
+
+/* ---------- Dialogene: «Før skanningen» og «Klart.» ---------- */
+
+.kv-slor {
+  display: grid;
+  place-items: center;
+  background: rgba(40, 50, 60, 0.28);
+}
+
+.kv-modal,
+.kv-ferdig {
+  width: 470px;
+  max-width: calc(100% - 40px);
+  padding: 22px 24px 18px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: var(--shadow-lg);
+  transform: translateY(8px);
+  transition: transform 420ms ease;
+}
+
+.kv[data-scene="forvalg"] .kv-modal,
+.kv[data-scene="ferdig"] .kv-ferdig {
+  transform: none;
+}
+
+.kv-modal h4 {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.kv-modal-under {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.kv-maate {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.kv-maate p {
+  display: flex;
+  gap: 11px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+.kv-maate p.på {
+  background: rgba(45, 95, 139, 0.07);
+  box-shadow: inset 0 0 0 1.5px var(--is-dyp);
+}
+
+.kv-maate i {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  margin-top: 2px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line-strong);
+}
+
+.kv-maate p.på i {
+  border: 4.5px solid var(--is-dyp);
+}
+
+.kv-maate b {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.kv-sammen {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+.kv-sammen small {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.kv-sammen em {
+  margin-left: auto;
+  font-style: normal;
+  font-weight: 600;
+  color: var(--is-dyp);
+}
+
+.kv-modal-bunn {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.kv-ferdig {
+  padding: 28px 28px 22px;
+  text-align: center;
+}
+
+.kv-stor {
+  font-family: "Literata", Georgia, serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 40px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--blaa);
+}
+
+.kv-ferdig p + p {
+  margin-top: 10px;
+}
+
+.kv-ferdig > p:nth-child(2) {
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+
+.kv-sti {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 7px;
+  background: var(--surface-2);
+  font: 12px var(--mono);
+}
+
+.kv-sti span {
+  color: var(--ink-3);
+}
+
+.kv-liten {
+  font-size: 11.5px;
+  color: var(--ink-3);
+}
+
+.kv-ferdig .kv-modal-bunn {
+  justify-content: center;
+}
+
+/* ---------- Pekeren og «spolt fram» ---------- */
+
+.kv-peker {
+  position: absolute;
+  z-index: 5;
+  top: 0;
+  left: 0;
+  width: 22px;
+  height: 22px;
+  pointer-events: none;
+  opacity: 1;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Cpath d='M4 2l13 11.5-6.2.6 3.7 6.6-2.4 1.3-3.6-6.7L4 19.6z' fill='%23111' stroke='%23fff' stroke-width='1.3' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat;
+  transition: transform 900ms cubic-bezier(0.45, 0, 0.25, 1);
+}
+
+.kv:not(.spiller) .kv-peker {
+  display: none;
+}
+
+.kv-peker::after {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid rgba(31, 98, 214, 0.55);
+  opacity: 0;
+  transform: scale(0.4);
+}
+
+.kv-peker.klikk::after {
+  animation: kv-klikk 560ms ease-out;
+}
+
+@keyframes kv-klikk {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.4);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.3);
+  }
+}
+
+.kv-spol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--ink-3);
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+
+.kv-spol svg {
+  flex: none;
+  width: 16px;
+  height: 10px;
+  fill: currentColor;
+}
+
+.kv[data-scene="leser"] .kv-spol {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kv *,
+  .kv *::before,
+  .kv *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .kv-peker {
+    display: none;
+  }
+}
+
+.kv.smal .kv-uboks p span {
+  display: none;
+}
+
+.kv.smal .kv-uboks p {
+  grid-template-columns: auto auto;
+  justify-content: space-between;
+}
+
+/* ---------- Dokumenttypene ---------- */
+
+/* E-post */
+.kv-epost {
+  font-family: -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.kv-hode {
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e3e6ea;
+  grid-template-columns: 52px minmax(0, 1fr);
+}
+
+.kv-hode dt {
+  font-size: 11.5px;
+}
+
+.kv-epost p + p {
+  margin-top: 12px;
+}
+
+/* Regneark: rutenett med kolonnebokstaver og radnumre */
+.kv-ark {
+  max-width: 560px;
+  padding: 0;
+  background: #fff;
+  font-family: "Carlito", Calibri, "Helvetica Neue", Arial, sans-serif;
+  font-size: 11.5px;
+  line-height: 1.3;
+}
+
+.kv-ark table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.kv-ark th {
+  height: 22px;
+  background: #f1f3f5;
+  border: 1px solid #dde1e5;
+  font-weight: 500;
+  font-size: 10.5px;
+  color: #66717b;
+}
+
+.kv-ark thead th:first-child,
+.kv-ark tbody th {
+  width: 30px;
+}
+
+.kv-ark td {
+  height: 30px;
+  padding: 0 6px;
+  border: 1px solid #e5e8eb;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.kv-ark td b {
+  font-weight: 700;
+}
+
+.kv.kopi .kv-ark .k {
+  font-size: 0.8em;
+}
+
+/* Svart sladd: opplysningene dekkes av svarte felt. */
+.kv.svart .kv-side mark:not(.b) {
+  background: #111;
+  box-shadow: none;
+  color: transparent;
+  border-radius: 0;
+}
+
+.kv.svart .kv-side mark .k {
+  display: none;
+}
+
+.kv.svart .kv-side mark.b {
+  background: transparent;
+  box-shadow: none;
+}
+
+.kv.svart .kv-side mark .o {
+  display: inline;
+}
+
+/* ---------- «Før kopiene lages»: til høyre, så siden synes bak ---------- */
+
+.kv-s-kopivalg {
+  justify-items: end;
+  padding-right: 22px;
+  background: rgba(40, 50, 60, 0.12);
+}
+
+.kv-kopivalg {
+  width: 380px;
+  padding: 18px 18px 14px;
+}
+
+.kv-former {
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.kv-former p {
+  padding: 9px 11px;
+  font-size: 11px;
+}
+
+.kv-former b {
+  font-size: 12.5px;
+}
+
+.kv-former code {
+  display: inline-block;
+  margin-top: 5px;
+}
+
+.kv code.kv-svartprove {
+  width: 104px;
+  height: 14px;
+  padding: 0;
+  border-radius: 2px;
+  background: #111;
+  vertical-align: middle;
+}
+
+.kv[data-scene="kopivalg"] .kv-kopivalg {
+  transform: none;
+}
+
+/* ---------- Startskjermen: tilbakeføringen ---------- */
+
+.kv-start-inn {
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+}
+
+.kv-tb-resultat {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 420ms ease, transform 420ms ease;
+}
+
+.kv-tb-resultat.vis {
+  opacity: 1;
+  transform: none;
+}
+
+.kv-tb-topp {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.kv-tb-topp span {
+  color: var(--ink-3);
+}
+
+.kv-tb-rad {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "navn knapp" "hva knapp";
+  align-items: center;
+  column-gap: 14px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(45, 95, 139, 0.09);
+}
+
+.kv-tb-rad b {
+  grid-area: navn;
+  font-size: 12.5px;
+}
+
+.kv-tb-rad > span:not(.kv-btn) {
+  grid-area: hva;
+  font-size: 11.5px;
+  color: var(--ink-2);
+}
+
+.kv-tb-rad .kv-btn {
+  grid-area: knapp;
+}
+
+.kv-tb-advarsel {
+  margin-top: 9px;
+  font-size: 11.5px;
+  color: #8f6210;
+}
+
+/* ---------- Tekstverktøyet ---------- */
+
+.kv-s-tekst {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+.kv-rt-linje {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  height: 50px;
+  padding: 0 14px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+
+.kv-rt-tilbake {
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.kv-faner {
+  display: flex;
+  gap: 3px;
+  padding: 3px;
+  border-radius: 9px;
+  background: rgba(20, 30, 40, 0.06);
+}
+
+.kv-faner span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 12px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-2);
+  white-space: nowrap;
+  transition: background-color 300ms ease, box-shadow 300ms ease;
+}
+
+.kv-faner span.på {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgba(20, 30, 40, 0.14);
+}
+
+.kv-faner i {
+  width: 16px;
+  height: 16px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--surface-3);
+  font: normal 600 9.5px var(--display);
+}
+
+.kv-rt-visning {
+  justify-self: end;
+}
+
+.kv-rt-kropp {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 18px;
+  padding: 22px 22px 0;
+}
+
+.kv.smal .kv-rt-kropp {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.kv.smal .kv-rt-liste,
+.kv.smal .kv-rt-tilbake,
+.kv.smal .kv-faner:not(.kv-rt-visning) {
+  display: none;
+}
+
+.kv.smal .kv-rt-linje {
+  grid-template-columns: 1fr auto;
+}
+
+.kv-rt-ark {
+  position: relative;
+  max-width: 560px;
+  width: 100%;
+  justify-self: center;
+  padding: 40px 46px;
+  background: #fff;
+  box-shadow: var(--shadow);
+  font-family: "Literata", Georgia, serif;
+  font-size: 15px;
+  line-height: 1.75;
+  color: #16191c;
+}
+
+.kv-rt-ark p {
+  display: inline;
+}
+
+.kv-markor {
+  display: inline-block;
+  width: 1.5px;
+  height: 1.1em;
+  margin-left: 1px;
+  vertical-align: -0.15em;
+  background: var(--ink);
+}
+
+.kv.renset .kv-markor {
+  display: none;
+}
+
+.kv-rt-ark mark {
+  color: inherit;
+  background: transparent;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 transparent;
+  transition: background-color 700ms ease, box-shadow 700ms ease;
+}
+
+.kv-rt-ark mark.sett {
+  background: var(--wash);
+  box-shadow: inset 0 -2px 0 var(--is-dyp);
+}
+
+.kv-rt-ark .k {
+  display: none;
+  font-family: var(--mono);
+  font-size: 0.8em;
+  color: #0e3f66;
+}
+
+.kv.renset .kv-rt-ark .o {
+  display: none;
+}
+
+.kv.renset .kv-rt-ark .k {
+  display: inline;
+}
+
+.kv-rt-liste {
+  align-self: start;
+  padding: 14px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+.kv-rt-liste h5 {
+  font: 500 10.5px var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.kv-rt-liste ul {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+  min-height: 140px;
+  align-content: start;
+}
+
+.kv-rt-liste li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  animation: kv-inn 500ms ease both;
+}
+
+.kv-rt-liste li span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@keyframes kv-inn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+.kv-rt-merke {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+.kv-toast {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  padding: 9px 16px;
+  border-radius: 10px;
+  background: #1a1f25;
+  color: #fff;
+  font-size: 12.5px;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate(-50%, 8px);
+  transition: opacity 360ms ease, transform 360ms ease;
+}
+
+.kv-toast.vis {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* ---------- Kapitlene under vinduet ---------- */
+
+.kv-kapitler {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 6px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.kv-kapitler button {
+  position: relative;
+  padding: 6px 12px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  font: inherit;
+  font-size: 13.5px;
+  color: var(--ink-3);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.kv-kapitler button:hover {
+  color: var(--ink);
+  background: rgba(20, 30, 40, 0.05);
+}
+
+.kv-kapitler button:focus-visible {
+  outline: 2px solid var(--blaa-2);
+  outline-offset: 2px;
+}
+
+/* Kapittelet som spilles: mørk tekst og en strek som fylles rolig mens det går. */
+.kv-kapitler button::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 3px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--blaa-2);
+  transform: scaleX(var(--fylt, 0));
+  transform-origin: left;
+  opacity: 0;
+}
+
+.kv-kapitler button[aria-current="step"] {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.kv-kapitler button[aria-current="step"]::after {
+  opacity: 1;
+}
+
+.kv.smal .kv-kapitler button {
+  font-size: 12.5px;
+  padding: 5px 8px 7px;
+}
+
+/* Kapittelknappene virker bare når avspillingen går. */
+.kv:not(.spiller) .kv-kapitler {
+  display: none;
+}
+
+.kv.smal .kv-kopimerke,
+.kv.smal .kv-zoom {
+  display: none !important;
+}
+
+/* ---------- Bildet av bilen i e-posten: skiltet merkes og dekkes ---------- */
+
+.kv-vedlegg {
+  position: relative;
+  margin: 14px 0 0;
+  width: 300px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px #e3e6ea;
+}
+
+.kv-bilramme {
+  position: relative;
+  display: block;
+}
+
+.kv-bilramme > img {
+  display: block;
+  width: 100%;
+}
+
+.kv-vedlegg figcaption {
+  padding: 4px 8px;
+  background: #f5f6f8;
+  font-size: 10px;
+  color: #66717b;
+}
+
+.kv-skilt {
+  position: absolute;
+  left: 42.78%;
+  top: 65.01%;
+  width: 13.95%;
+  height: 4.97%;
+  border-radius: 2px;
+  outline: 2px dashed transparent;
+  outline-offset: 2px;
+  transition: outline-color 500ms ease;
+}
+
+/* Dekket: skiltet pikselert (et nedskalert utsnitt av det samme bildet), tonet inn rolig. */
+.kv-skilt img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  opacity: 0;
+  transition: opacity 700ms ease;
+}
+
+.kv-skilt em {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  transform: translateX(-50%);
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: #1a1f25;
+  color: #fff;
+  font: normal 9.5px var(--display);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+
+.kv-skilt.funnet,
+.kv-skilt.dekket {
+  outline-color: var(--is);
+}
+
+.kv-skilt.funnet em,
+.kv-skilt.lapp em {
+  opacity: 1;
+}
+
+.kv-skilt.dekket img {
+  opacity: 1;
+}
+
+.kv.svart .kv-skilt.dekket {
+  background: #111;
+}
+
+.kv.svart .kv-skilt.dekket img {
+  opacity: 0;
+}
+
+/* ---------- PowerPoint: lysbildet med bildet av de to kollegene ---------- */
+
+.kv-ppt {
+  max-width: 600px;
+  padding: 26px 0;
+  background: #d9dde2;
+  box-shadow: none;
+}
+
+.kv-lysbilde {
+  margin: 0 18px;
+  aspect-ratio: 16 / 9;
+  padding: 18px 22px 12px;
+  display: grid;
+  grid-template-columns: minmax(0, 0.62fr) minmax(0, 1.38fr);
+  grid-template-rows: auto 1fr auto;
+  column-gap: 18px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(20, 30, 40, 0.18);
+  font-family: "Carlito", Calibri, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.35;
+}
+
+.kv-lb-tittel {
+  grid-column: 1;
+  font-size: 19px;
+  font-weight: 700;
+  color: #0e2a4d;
+  letter-spacing: -0.01em;
+}
+
+.kv-lb-under {
+  grid-column: 1;
+  margin-top: 10px;
+  font-size: 12px;
+  color: #33404d;
+}
+
+.kv-lb-foto {
+  position: relative;
+  grid-column: 2;
+  grid-row: 1 / 3;
+  align-self: center;
+  aspect-ratio: 3 / 2;
+  overflow: visible;
+}
+
+.kv-lb-foto > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 3px;
+}
+
+.kv-lb-bunn {
+  grid-column: 1 / 3;
+  margin-top: 8px;
+  font-size: 9px;
+  color: #8a96a3;
+}
+
+/* Ansiktene: rammen kommer når de er funnet, pikslene toner inn når de pikseleres. */
+.kv-ansikt {
+  position: absolute;
+  border-radius: 2px;
+  outline: 2px dashed transparent;
+  outline-offset: 2px;
+  transition: outline-color 500ms ease;
+}
+
+.kv-ansikt.a1 {
+  left: 21.82%;
+  top: 21.59%;
+  width: 12.27%;
+  height: 20.68%;
+}
+
+.kv-ansikt.a2 {
+  left: 34.09%;
+  top: 17.61%;
+  width: 12.12%;
+  height: 26.36%;
+}
+
+.kv-ansikt img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 700ms ease;
+}
+
+.kv-ansikt em {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  transform: translateX(-50%);
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #1a1f25;
+  color: #fff;
+  font: normal 8.5px var(--display);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+
+.kv-ansikt.a1 em {
+  bottom: auto;
+  top: calc(100% + 6px);
+}
+
+.kv-ansikt.funnet,
+.kv-ansikt.pikselert {
+  outline-color: var(--is);
+}
+
+.kv-ansikt.funnet em,
+.kv-ansikt.lapp em {
+  opacity: 1;
+}
+
+.kv-ansikt.pikselert img {
+  opacity: 1;
+}
+
+.kv-ansikt.staar {
+  outline-color: var(--staa);
+}
+
+/* ---------- Skrivebordet: utenfor Klart-vinduet (Finder og KI-verktøyet) ---------- */
+
+.kv-skrivebord {
+  top: -48px;
+  z-index: 4;
+  background: url("assets/klart-vinter.jpg") center 40% / cover no-repeat, #9fb8d4;
+}
+
+.kv-vindulinje {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 38px;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--line);
+  background: #f3f4f6;
+  font-size: 12.5px;
+}
+
+.kv-vindulinje b {
+  font-weight: 600;
+}
+
+.kv-pil {
+  color: var(--ink-3);
+  letter-spacing: 0.2em;
+}
+
+.kv-finder {
+  position: absolute;
+  left: 50%;
+  top: 70px;
+  width: 720px;
+  max-width: calc(100% - 40px);
+  transform: translateX(-50%);
+  border-radius: 12px;
+  overflow: visible;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(20, 30, 40, 0.12), 0 30px 70px rgba(20, 30, 40, 0.35);
+}
+
+.kv-finder > .kv-vindulinje {
+  border-radius: 12px 12px 0 0;
+}
+
+.kv-finder-kropp {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr);
+  min-height: 380px;
+}
+
+.kv.smal .kv-finder-kropp {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.kv.smal .kv-sidefelt {
+  display: none;
+}
+
+.kv-sidefelt {
+  margin: 0;
+  padding: 10px 8px;
+  list-style: none;
+  background: #eef0f3;
+  border-radius: 0 0 0 12px;
+  font-size: 12px;
+}
+
+.kv-sidefelt li {
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.kv-sidefelt li.på {
+  background: rgba(20, 30, 40, 0.09);
+}
+
+.kv-sf-h {
+  margin-top: 8px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+
+.kv-ikoner {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  align-content: start;
+  gap: 18px 8px;
+  padding: 22px 18px;
+}
+
+.kv-mappe,
+.kv-dokikon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 4px;
+  border-radius: 8px;
+  font-size: 11.5px;
+  text-align: center;
+  transition: background-color 300ms ease, opacity 500ms ease;
+}
+
+.kv-mappe i {
+  position: relative;
+  width: 62px;
+  height: 48px;
+  border-radius: 5px;
+  background: linear-gradient(180deg, #7cc3f5, #4aa3e6);
+}
+
+.kv-mappe i::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -6px;
+  width: 26px;
+  height: 10px;
+  border-radius: 4px 4px 0 0;
+  background: #5fb0ec;
+}
+
+.kv-dokikon i {
+  width: 40px;
+  height: 50px;
+  display: grid;
+  place-items: end center;
+  padding-bottom: 6px;
+  box-sizing: border-box;
+  border-radius: 3px 10px 3px 3px;
+  background: #fff;
+  box-shadow: 0 0 0 1px #d3d8de, 0 2px 4px rgba(20, 30, 40, 0.1);
+  font: normal 700 9px var(--display);
+  color: #c0352b;
+}
+
+.kv-dokikon.w i {
+  color: #2b5ab8;
+}
+
+.kv-mappe.valgt {
+  background: rgba(31, 98, 214, 0.14);
+}
+
+.kv-mappe.ny {
+  opacity: 0;
+}
+
+.kv-mappe.ny.vis {
+  opacity: 1;
+}
+
+/* Høyreklikkmenyen og Hurtighandlinger */
+.kv-meny {
+  position: absolute;
+  z-index: 2;
+  left: 290px;
+  top: 128px;
+  width: 210px;
+  margin: 0;
+  padding: 5px;
+  list-style: none;
+  border-radius: 9px;
+  background: rgba(246, 247, 249, 0.97);
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.2), 0 12px 32px rgba(20, 30, 40, 0.28);
+  font-size: 12px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 200ms ease, visibility 0s linear 200ms;
+}
+
+.kv-meny.vis {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 200ms ease, visibility 0s;
+}
+
+.kv-meny li {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 10px;
+  border-radius: 5px;
+}
+
+.kv-meny li.kv-skille {
+  height: 1px;
+  margin: 4px 8px;
+  padding: 0;
+  background: rgba(20, 30, 40, 0.12);
+}
+
+.kv-meny li.aktiv {
+  background: #2f6fe0;
+  color: #fff;
+}
+
+.kv-undermeny {
+  left: 497px;
+  top: 362px;
+  width: 190px;
+}
+
+.kv.smal .kv-meny {
+  left: 120px;
+}
+
+.kv.smal .kv-undermeny {
+  left: 260px;
+}
+
+/* Varslingen øverst til høyre */
+.kv-varsel {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 330px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: 14px;
+  background: rgba(246, 247, 249, 0.95);
+  box-shadow: 0 10px 30px rgba(20, 30, 40, 0.25);
+  font-size: 11.5px;
+  line-height: 1.35;
+  opacity: 0;
+  transform: translateX(20px);
+  transition: opacity 400ms ease, transform 400ms ease;
+}
+
+.kv-varsel.vis {
+  opacity: 1;
+  transform: none;
+}
+
+.kv-varsel img {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+}
+
+.kv-varsel b {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.kv-varsel span {
+  color: var(--ink-2);
+}
+
+.kv-varsel small {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--ink-3);
+}
+
+/* KI-verktøyet: et nøytralt samtalevindu */
+.kv-ki {
+  position: absolute;
+  left: 50%;
+  top: 46px;
+  width: 640px;
+  max-width: calc(100% - 40px);
+  height: 520px;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-50%);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fbfbfa;
+  box-shadow: 0 2px 6px rgba(20, 30, 40, 0.12), 0 30px 70px rgba(20, 30, 40, 0.35);
+}
+
+.kv-ki-samtale {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px 26px;
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.kv-ki-bruker {
+  align-self: flex-end;
+  max-width: 78%;
+  padding: 11px 14px;
+  border-radius: 14px 14px 4px 14px;
+  background: #e9edf2;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 400ms ease, transform 400ms ease;
+}
+
+.kv-ki-bruker.vis {
+  opacity: 1;
+  transform: none;
+}
+
+.kv-ki-sitat {
+  margin-top: 6px !important;
+  padding-left: 10px;
+  border-left: 2px solid #c3ccd6;
+  color: var(--ink-2);
+}
+
+.kv-ki-svar {
+  max-width: 86%;
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+
+.kv-ki-svar.vis {
+  opacity: 1;
+}
+
+.kv-ki code,
+.kv-rt-svar code {
+  padding: 1px 4px;
+  font-size: 0.82em;
+}
+
+.kv-ki-kopier {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+  font-size: 11.5px;
+  color: var(--ink-2);
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+
+.kv-ki-svar.ferdig .kv-ki-kopier {
+  opacity: 1;
+}
+
+.kv-ki-felt {
+  display: flex;
+  align-items: center;
+  margin: 0 20px 18px;
+  padding: 10px 10px 10px 16px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+  font-size: 12.5px;
+  color: var(--ink-3);
+}
+
+.kv-ki-felt i {
+  margin-left: auto;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #1a1f25;
+  color: #fff;
+  font-style: normal;
+}
+
+.kv-ki-merke {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(20, 30, 40, 0.72);
+  color: #fff;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* Tekstverktøyet, fane 2: svaret fra KI-en limes inn, og kodene blir navn igjen. */
+.kv-rt-svar {
+  display: none !important;
+}
+
+.kv.tbtekst .kv-rt-ark > p:first-child,
+.kv.tbtekst .kv-markor {
+  display: none;
+}
+
+.kv.tbtekst .kv-rt-svar {
+  display: block !important;
+}
+
+.kv-rt-svar mark {
+  color: inherit;
+  background: transparent;
+  border-radius: 2px;
+  transition: background-color 700ms ease, box-shadow 700ms ease;
+}
+
+.kv-rt-svar mark .o {
+  display: none;
+}
+
+.kv-rt-svar mark.tilbake {
+  background: var(--staa-wash);
+  box-shadow: inset 0 -2px 0 rgba(47, 122, 87, 0.7);
+}
+
+.kv-rt-svar mark.tilbake .o {
+  display: inline;
+}
+
+.kv-rt-svar mark.tilbake code {
+  display: none;
+}
+
+/* Mindre enn innholdsbredden: vinduet skal ikke ta over siden. */
+.hero > .kv {
+  max-width: 1020px;
+}

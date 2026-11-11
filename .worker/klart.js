@@ -27,6 +27,8 @@
 //   GET  /klart/api/adresse?q=…           → adresser fra Kartverket, med avstand og om det trengs reisedag
 //   GET  /klart/api/kart/…                → kartdata via oss, så siden aldri kobler seg til andre enn oss
 //   GET  /klart/api/sok?q=…               → opptil seks virksomheter som passer navnet (forslag i feltet)
+//   GET  /klart/api/maskin?q=…            → maskiner som passer navnet, og om Klart går på dem (klart-maskin.js).
+//                                           Bare et oppslag i vår egen liste: ingenting lagres, ingen andre spørres.
 //   GET  /klart/api/sjekk?orgnr=…         → virksomheten, om den er stor nok for skreddersydd oppsett, og
 //                                           lisensprisen etter prøven (forsiden viser den ved nedlasting).
 //   GET  /klart/api/pris?orgnr=…[&som=kunde]  → virksomheten, prisen og hvordan den kan betale
@@ -80,6 +82,7 @@ import INNBYGGERE from "./innbyggere.json";
 import KOMMUNEANSATTE from "./kommuneansatte.json";
 import STATSANSATTE from "./statsansatte.json";
 import { ansatteITre, delAvKommunen, statlig, SAMLET_STAT } from "./kommunetre.js";
+import { sokMaskin } from "./klart-maskin.js";
 
 const NADE_DAGER = 14; // lisensen varer så mange dager etter at perioden er betalt til
 const MASKINKODE = /^[0-9A-HJKMNP-TV-Z]{4}(-[0-9A-HJKMNP-TV-Z]{4}){3}$/;
@@ -100,6 +103,7 @@ export async function handleKlart(request, env, url) {
     if (sti === "hent" && request.method === "POST") return await hent(request, env);
     if (sti === "stripe" && request.method === "POST") return await webhook(request, env);
     if (sti === "sok" && request.method === "GET") return await sok(url);
+    if (sti === "maskin" && request.method === "GET") return json(sokMaskin(url.searchParams.get("q")));
     if (sti === "adresse" && request.method === "GET") return json({ treff: await adresser(url.searchParams.get("q")) });
     if (sti.startsWith("kart/") && request.method === "GET") return await kartdata(url);
     if (sti === "sjekk" && request.method === "GET") return await sjekk(env, url);

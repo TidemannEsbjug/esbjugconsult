@@ -1,0 +1,691 @@
+/* ==========================================================================
+   Klart — undersidene «Til IT» og «Personvern»
+
+   Samme utseende som resten av /klart (videre.css): Literata i overskriftene,
+   Schibsted Grotesk i teksten, IBM Plex Mono i kode, og den dype blåfargen
+   fra appens topplinje øverst. Sidene er lange og skal leses, så teksten står
+   i én smal spalte, med innholdslisten ved siden av på brede skjermer.
+
+   Ingen skrifter, bilder eller skript utenfra. Alt heter s-…, bortsett fra
+   det til-it.js bruker fra før (.cmd, .kopier, .os, [data-velg]).
+   ========================================================================== */
+
+:root {
+  --s-blekk: #1a1f25;
+  --s-blekk-2: #48525c;
+  --s-blekk-3: #66717b;
+  --s-grunn: #eef3fb;
+  --s-flate: #ffffff;
+  --s-flate-2: #f5f6f8;
+  --s-linje: rgba(24, 34, 44, 0.1);
+  --s-linje-2: rgba(24, 34, 44, 0.2);
+  --s-bla: #0050b8;
+  --s-bla-dyp: #0b3f9c;
+  --s-bla-natt: #071f4d;
+  --s-kode-bg: #e2ebf4;
+  --s-kode-blekk: #13314c;
+  --s-ok: #24593f;
+  --s-ok-bg: #e3f1e9;
+  --s-varsel: #73500b;
+  --s-varsel-bg: #f6ecd6;
+  --s-skygge: 0 1px 2px rgba(20, 30, 40, 0.05), 0 10px 30px -12px rgba(20, 40, 90, 0.18);
+  --s-serif: "Literata", "Iowan Old Style", Georgia, serif;
+  --s-sans: "Schibsted Grotesk", "Avenir Next", "Helvetica Neue", sans-serif;
+  --s-mono: "IBM Plex Mono", "SF Mono", ui-monospace, Menlo, monospace;
+  --s-myk: cubic-bezier(0.22, 0.7, 0.26, 1);
+  --s-kant: clamp(20px, 5vw, 72px);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 28px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--s-grunn);
+  color: var(--s-blekk);
+  font-family: var(--s-sans);
+  font-size: 17px;
+  line-height: 1.62;
+  letter-spacing: -0.006em;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+dl,
+dd,
+figure,
+pre {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--s-bla);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* --------------------------------------------------------------------------
+   Toppen: den blå flaten med merket, veien tilbake og sidens overskrift
+   -------------------------------------------------------------------------- */
+
+.s-topp {
+  padding: 22px var(--s-kant) clamp(44px, 6vw, 84px);
+  background:
+    radial-gradient(60% 70% at 14% 0%, rgba(86, 160, 255, 0.34), transparent 70%),
+    radial-gradient(50% 60% at 92% 100%, rgba(40, 120, 235, 0.34), transparent 70%),
+    linear-gradient(180deg, #0a47ad 0%, #08357f 100%);
+  color: #fff;
+}
+
+.s-topp :focus-visible {
+  outline-color: #fff;
+}
+
+.s-linje-topp {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px 32px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.s-merke {
+  margin-right: auto;
+  font-family: var(--s-serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 30px;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.s-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 26px;
+  font-size: 15.5px;
+}
+
+.s-nav a {
+  color: rgba(255, 255, 255, 0.82);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.s-nav a:hover,
+.s-nav a[aria-current] {
+  color: #fff;
+}
+
+.s-nav a[aria-current] {
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 6px;
+}
+
+.s-hode {
+  max-width: 1120px;
+  margin: clamp(40px, 6vw, 84px) auto 0;
+}
+
+.s-over {
+  font-family: var(--s-mono);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.76);
+}
+
+.s-hode h1 {
+  max-width: 17ch;
+  margin-top: 12px;
+  font-family: var(--s-serif);
+  font-weight: 600;
+  font-size: clamp(36px, 5vw, 64px);
+  line-height: 1.06;
+  letter-spacing: -0.022em;
+  text-wrap: balance;
+}
+
+.s-ingress {
+  max-width: 36em;
+  margin-top: clamp(16px, 2vw, 24px);
+  font-size: clamp(18px, 1.5vw, 21px);
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.88);
+  text-wrap: pretty;
+}
+
+/* --------------------------------------------------------------------------
+   Kroppen: innholdslisten til venstre, teksten i en smal spalte
+   -------------------------------------------------------------------------- */
+
+.s-kropp {
+  display: grid;
+  grid-template-columns: minmax(0, 250px) minmax(0, 760px);
+  justify-content: center;
+  gap: clamp(28px, 5vw, 80px);
+  padding: clamp(36px, 5vw, 72px) var(--s-kant) clamp(72px, 9vw, 130px);
+}
+
+.s-innhold {
+  position: sticky;
+  top: 28px;
+  align-self: start;
+  max-height: calc(100vh - 56px);
+  overflow: auto;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.s-innhold p {
+  margin-bottom: 10px;
+  font-family: var(--s-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--s-blekk-3);
+}
+
+.s-innhold ol {
+  padding: 0;
+  list-style: none;
+  border-left: 1.5px solid var(--s-linje-2);
+}
+
+.s-innhold a {
+  display: block;
+  padding: 6px 0 6px 16px;
+  margin-left: -1.5px;
+  border-left: 1.5px solid transparent;
+  color: var(--s-blekk-2);
+  text-decoration: none;
+}
+
+.s-innhold a:hover {
+  border-left-color: var(--s-bla);
+  color: var(--s-bla);
+}
+
+.s-tekst > * + * {
+  margin-top: clamp(40px, 5vw, 64px);
+}
+
+.s-del > * + * {
+  margin-top: 16px;
+}
+
+.s-del > h2 {
+  font-family: var(--s-serif);
+  font-weight: 600;
+  font-size: clamp(26px, 2.8vw, 36px);
+  line-height: 1.15;
+  letter-spacing: -0.018em;
+  text-wrap: balance;
+}
+
+.s-del > h2 .s-nr {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background: var(--s-bla-dyp);
+  color: #fff;
+  font-family: var(--s-mono);
+  font-size: 16px;
+  font-weight: 500;
+  vertical-align: 0.12em;
+}
+
+.s-del > h3,
+.s-del .os > h3 {
+  margin-top: 30px;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  line-height: 1.3;
+}
+
+.s-del p,
+.s-del li,
+.s-del dd {
+  color: var(--s-blekk-2);
+  text-wrap: pretty;
+}
+
+.s-del b,
+.s-del strong {
+  color: var(--s-blekk);
+  font-weight: 600;
+}
+
+.s-del ul,
+.s-del ol {
+  padding-left: 1.2em;
+}
+
+.s-del li + li {
+  margin-top: 6px;
+}
+
+.s-del a,
+.s-lenke {
+  color: var(--s-bla);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgba(0, 80, 184, 0.3);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+}
+
+.s-del a:hover,
+.s-lenke:hover {
+  text-decoration-color: currentColor;
+}
+
+.s-del code,
+.s-del kbd {
+  padding: 0.1em 0.38em;
+  border-radius: 5px;
+  background: var(--s-kode-bg);
+  color: var(--s-kode-blekk);
+  font-family: var(--s-mono);
+  font-size: 0.86em;
+  overflow-wrap: anywhere;
+}
+
+.s-del kbd {
+  background: var(--s-flate);
+  box-shadow: inset 0 0 0 1px var(--s-linje-2), 0 1px 0 var(--s-linje-2);
+}
+
+/* Det viktigste først: en hvit boks med korte punkter. */
+.s-kort {
+  padding: clamp(22px, 2.8vw, 34px);
+  border-radius: 20px;
+  background: var(--s-flate);
+  box-shadow: var(--s-skygge);
+}
+
+.s-kort > * + * {
+  margin-top: 12px;
+}
+
+.s-kort h2 {
+  font-family: var(--s-serif);
+  font-weight: 600;
+  font-size: 24px;
+  letter-spacing: -0.014em;
+}
+
+.s-kort ul {
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  list-style: none;
+}
+
+.s-kort li {
+  position: relative;
+  padding-left: 30px;
+  color: var(--s-blekk-2);
+}
+
+.s-kort li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 0.42em;
+  width: 13px;
+  height: 7px;
+  border: solid var(--s-bla);
+  border-width: 0 0 2.4px 2.4px;
+  transform: rotate(-45deg);
+}
+
+.s-kort b {
+  color: var(--s-blekk);
+  font-weight: 600;
+}
+
+/* Rader med et navn til venstre og forklaringen til høyre. */
+.s-tabell > div {
+  display: grid;
+  grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
+  gap: 4px 26px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--s-linje);
+}
+
+.s-tabell > div:first-child {
+  border-top: 1px solid var(--s-linje);
+}
+
+.s-tabell dt {
+  color: var(--s-blekk);
+  font-weight: 600;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.s-tabell dt code {
+  font-weight: 500;
+}
+
+/* Det som ikke er bestemt ennå. Skal ikke stå igjen når siden går ut. */
+.s-avklar {
+  padding: 0.08em 0.4em;
+  border-radius: 5px;
+  background: var(--s-varsel-bg);
+  color: var(--s-varsel);
+  font-weight: 600;
+}
+
+.s-notis {
+  padding: 16px 20px;
+  border-radius: 14px;
+  background: var(--s-flate);
+  box-shadow: inset 4px 0 0 var(--s-bla), var(--s-skygge);
+}
+
+.s-notis.varsel {
+  box-shadow: inset 4px 0 0 #b9841a, var(--s-skygge);
+}
+
+.s-dato {
+  font-size: 14.5px;
+  color: var(--s-blekk-3);
+}
+
+/* --------------------------------------------------------------------------
+   Til IT: valg av system, kommandoer, fasit og hva sjekken beviser
+   -------------------------------------------------------------------------- */
+
+.s-velg {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 18px;
+  padding: 18px 22px;
+  border-radius: 18px;
+  background: var(--s-flate);
+  box-shadow: var(--s-skygge);
+}
+
+.s-velg p {
+  margin-right: auto;
+  font-weight: 600;
+}
+
+.s-velg-knapper {
+  display: inline-flex;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--s-flate-2);
+  box-shadow: inset 0 0 0 1px var(--s-linje);
+}
+
+.s-velg-knapper button {
+  min-width: 96px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--s-blekk-2);
+  transition: background 200ms var(--s-myk), color 200ms var(--s-myk);
+}
+
+.s-velg-knapper button[aria-pressed="true"] {
+  background: var(--s-bla-dyp);
+  color: #fff;
+}
+
+/* Bare det valgte systemet vises. Uten skript, eller før noe er valgt, vises alle. */
+html[data-vis="mac"] .os:not([data-os="mac"]),
+html[data-vis="windows"] .os:not([data-os="windows"]),
+html[data-vis="linux"] .os:not([data-os="linux"]) {
+  display: none;
+}
+
+.os > * + * {
+  margin-top: 14px;
+}
+
+/* Merkelappen sier hvilket system blokken gjelder, når flere vises samtidig. */
+html:not([data-vis]) .os::before {
+  content: attr(data-navn);
+  display: inline-block;
+  margin-top: 8px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--s-kode-bg);
+  color: var(--s-kode-blekk);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.cmd {
+  border-radius: 14px;
+  background: #0d1a33;
+  color: #e6edf8;
+  overflow: hidden;
+}
+
+.cmd-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 8px 8px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: var(--s-mono);
+  font-size: 12px;
+  color: rgba(230, 237, 248, 0.66);
+}
+
+.cmd pre {
+  padding: 14px 16px 16px;
+  font-family: var(--s-mono);
+  font-size: 13.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  cursor: copy;
+}
+
+.kopier {
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-family: var(--s-sans);
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 160ms var(--s-myk);
+}
+
+.kopier:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.kopier.kopiert {
+  background: #2f7a55;
+}
+
+.cmd :focus-visible {
+  outline-color: #fff;
+}
+
+/* Det kommandoen skal svare. */
+.s-fasit {
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: var(--s-ok-bg);
+  color: var(--s-ok);
+}
+
+.s-fasit b {
+  color: inherit;
+}
+
+.s-fasit code {
+  background: rgba(255, 255, 255, 0.7);
+  color: inherit;
+}
+
+.s-del .s-fasit,
+.s-del .s-beviser {
+  text-wrap: pretty;
+}
+
+/* Hva sjekken faktisk beviser, og hva den ikke gjør. */
+.s-beviser {
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: var(--s-flate);
+  box-shadow: inset 0 0 0 1px var(--s-linje-2);
+  color: var(--s-blekk-2);
+}
+
+.s-skjult {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Bunnen
+   -------------------------------------------------------------------------- */
+
+.s-bunn {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 14px clamp(24px, 4vw, 56px);
+  padding: clamp(28px, 3.4vw, 40px) var(--s-kant) clamp(32px, 3.8vw, 46px);
+  background: var(--s-bla-natt);
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 15px;
+}
+
+.s-bunn :focus-visible {
+  outline-color: #fff;
+}
+
+.s-bunn-merke i {
+  font-family: var(--s-serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 26px;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.s-bunn-merke span {
+  margin-left: 8px;
+  font-size: 14px;
+}
+
+.s-bunn nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 26px;
+  margin-right: auto;
+}
+
+.s-bunn nav a {
+  color: #fff;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.s-bunn nav a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.s-bunn-liten {
+  font-size: 13.5px;
+}
+
+@media (max-width: 900px) {
+  .s-kropp {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .s-innhold {
+    position: static;
+    max-height: none;
+    padding: 18px 20px;
+    border-radius: 16px;
+    background: var(--s-flate);
+    box-shadow: var(--s-skygge);
+  }
+
+  .s-tabell > div {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .s-velg-knapper button,
+  .kopier {
+    transition: none;
+  }
+}
+
+@media print {
+  .s-innhold,
+  .s-nav,
+  .s-velg,
+  .kopier {
+    display: none;
+  }
+
+  .s-topp {
+    background: none;
+    color: #000;
+  }
+
+  .s-kropp {
+    display: block;
+  }
+}

@@ -1,21 +1,309 @@
 <!doctype html>
+<!--
+  Personvern for Klart. Skrevet 11.11.2026 ut fra hva koden faktisk gjør:
+  programmet (ingen nettverkskode), nettsiden (/klart, .worker/index.js) og
+  kjøpet (.worker/klart.js). Endres koden, skal denne siden endres samme dag.
+
+  Det som er merket «avklares» (klassen s-avklar), er valg bare selgeren kan ta:
+  hvem som er behandlingsansvarlig, hvor lenge opplysningene blir liggende, og
+  grunnlaget for overføring til leverandører utenfor EØS. Siden skal ikke
+  publiseres før de er fylt ut.
+
+  Varsler til eierens telefon når noen er innom (pushVisit i .worker/chat.js)
+  er slått av nå (PUSH_PAUSET). Slås de på igjen, skal det stå under «Telling
+  av besøk»: by, land, enhet og side sendes da til telefonen via Apple.
+-->
 <html lang="nb">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/png" href="/klart/favicon.png" />
     <title>Personvern · Klart</title>
+    <meta name="description" content="Hva som skjer med opplysninger om deg i programmet Klart, på nettsiden og når du kjøper en lisens." />
     <meta name="robots" content="noindex" />
     <link rel="stylesheet" href="../fonts.css" />
-    <link rel="stylesheet" href="../styles.css" />
-    <!-- Plassholder. Teksten skrives av selskapet som selger Klart. -->
-    <link rel="stylesheet" href="../juridisk.css" />
+    <link rel="stylesheet" href="../sider.css" />
   </head>
   <body>
-    <main>
-      <h1>Personvern</h1>
-      <p>Personvernerklæringen for Klart kommer her. Klart selv går aldri på nett og sender ingenting om dokumentene deres.</p>
-      <p><a href="/klart/pris/">Tilbake til prisen</a></p>
-    </main>
+    <header class="s-topp">
+      <div class="s-linje-topp">
+        <a class="s-merke" href="../">Klart</a>
+        <nav class="s-nav" aria-label="Sider">
+          <a href="../">Forsiden</a>
+          <a href="../pris/">Pris</a>
+          <a href="../til-it.html">Til IT</a>
+          <a href="./" aria-current="page">Personvern</a>
+        </nav>
+      </div>
+      <div class="s-hode">
+        <p class="s-over">Personvern</p>
+        <h1>Opplysningene blir hos deg.</h1>
+        <p class="s-ingress">
+          Klart er laget for at personopplysninger ikke skal komme på avveie.
+          Det gjelder også dine. Her står hva som skjer i programmet, på
+          nettsiden og når du kjøper.
+        </p>
+      </div>
+    </header>
+
+    <div class="s-kropp">
+      <nav class="s-innhold" aria-label="Innhold">
+        <p>På denne siden</p>
+        <ol>
+          <li><a href="#kort">Kort fortalt</a></li>
+          <li><a href="#ansvarlig">Hvem som har ansvaret</a></li>
+          <li><a href="#programmet">Programmet</a></li>
+          <li><a href="#nettsiden">Nettsiden</a></li>
+          <li><a href="#kjop">Når du kjøper</a></li>
+          <li><a href="#mottakere">Hvem andre som får noe</a></li>
+          <li><a href="#grunnlag">Hvorfor vi har lov</a></li>
+          <li><a href="#lagring">Hvor lenge</a></li>
+          <li><a href="#rettigheter">Rettighetene dine</a></li>
+        </ol>
+      </nav>
+
+      <main class="s-tekst">
+        <section class="s-kort" id="kort">
+          <h2>Kort fortalt</h2>
+          <ul>
+            <li><b>Programmet sender ingenting.</b> Dokumentene dine forlater aldri maskinen, og vi ser dem aldri.</li>
+            <li><b>Nettsiden sporer deg ikke.</b> Sidene til Klart setter ingen informasjonskapsler, og har ingen annonser og ingen analyseverktøy fra andre.</li>
+            <li><b>Kjøper du, lagrer vi det som trengs for å levere.</b> Virksomheten, e-postadressen og betalingen.</li>
+          </ul>
+        </section>
+
+        <section class="s-del" id="ansvarlig">
+          <h2>Hvem som har ansvaret</h2>
+          <p>
+            Klart selges av <span class="s-avklar">[Selskap]</span>, org.nr.
+            <span class="s-avklar">[000 000 000]</span>, <span class="s-avklar">[Adresse]</span>.
+            Selskapet er behandlingsansvarlig for opplysningene som står på denne siden.
+          </p>
+          <p>
+            Spørsmål om personvern sender du til
+            <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a>.
+            Du får svar fra et menneske.
+          </p>
+        </section>
+
+        <section class="s-del" id="programmet">
+          <h2>Programmet</h2>
+          <p>
+            Klart kan ikke koble seg til internett. Programmet har ingen konto, ingen
+            bruksstatistikk, ingen feilrapporter og ingen automatiske oppdateringer.
+            Det finnes ingenting vi kan samle inn.
+          </p>
+          <dl class="s-tabell">
+            <div>
+              <dt>Dokumentene dine</dt>
+              <dd>De leses og renses på maskinen din. Vi får dem aldri, og behandler dem ikke for deg. For dokumentene er det du, eller virksomheten din, som er behandlingsansvarlig.</dd>
+            </div>
+            <div>
+              <dt>Det Klart husker</dt>
+              <dd>Det du har bestemt i en mappe, dine egne merkinger, sikkerhetskopier og nøkkelen ligger på maskinen din, kryptert. Du kan slette det når du vil.</dd>
+            </div>
+            <div>
+              <dt>Lisensen</dt>
+              <dd>Lisenskoden sjekkes på maskinen. Programmet ringer ikke hjem for å spørre om den er gyldig.</dd>
+            </div>
+            <div>
+              <dt>Når programmet åpner nettsiden</dt>
+              <dd>Trykker du «Kjøp lisens», åpnes nettsiden vår i nettleseren din. Adressen har med en maskinkode, som kjennetegner installasjonen. Den sier ingenting om dokumentene dine.</dd>
+            </div>
+          </dl>
+          <p>IT-avdelingen kan kontrollere dette selv. <a href="../til-it.html">Se sjekkene på siden til IT</a>.</p>
+        </section>
+
+        <section class="s-del" id="nettsiden">
+          <h2>Nettsiden</h2>
+          <p>
+            Sidene til Klart ligger under esbjugconsult.com/klart. De henter skrifter,
+            bilder og kart fra oss selv, og ingenting fra andre nettsteder.
+          </p>
+          <dl class="s-tabell">
+            <div>
+              <dt>Informasjonskapsler</dt>
+              <dd>Sidene til Klart setter ingen. Når du bestiller en oppsettsdag, husker nettleseren bestillingen til du er tilbake fra betalingen. Det ligger bare i fanen, og blir borte når du lukker den.</dd>
+            </div>
+            <div>
+              <dt>Telling av besøk</dt>
+              <dd>
+                Vi teller besøk for å se om sidene blir brukt. For hvert besøk lagrer vi tidspunktet, hvilken side det gjaldt,
+                byen og landet (anslått fra IP-adressen), og om det var en mobil eller en PC. IP-adressen lagres ikke.
+              </dd>
+            </div>
+            <div>
+              <dt>Nytt besøk, eller en som har vært her før</dt>
+              <dd>
+                For å skille de to lager vi en kode av nettverket du kommer fra. Koden kan ikke regnes tilbake til IP-adressen.
+                Den lagres sammen med byen og tidspunktet. Har du sagt ja til informasjonskapsler på forsiden av esbjugconsult.com,
+                brukes den i stedet for nettverket.
+              </dd>
+            </div>
+            <div>
+              <dt>Søk etter virksomheten</dt>
+              <dd>Det du skriver i feltet, sender vi til Brønnøysundregistrene for å finne virksomheten. De ser at spørsmålet kommer fra oss, ikke fra deg. Et enkeltpersonforetak har ofte eierens navn, og da er navnet en personopplysning.</dd>
+            </div>
+            <div>
+              <dt>Maskinsjekken</dt>
+              <dd>Det du skriver i «Går Klart på maskinen din?», slår vi opp i vår egen liste. Søket lagres ikke.</dd>
+            </div>
+            <div>
+              <dt>Nedlasting</dt>
+              <dd>Vi teller ikke nedlastinger, og knytter dem ikke til en virksomhet.</dd>
+            </div>
+            <div>
+              <dt>Feil hos oss</dt>
+              <dd>Når noe går galt, logger vi feilen. Loggen kan ha med organisasjonsnummeret oppslaget gjaldt.</dd>
+            </div>
+          </dl>
+          <p>
+            Nettsiden driftes hos Cloudflare. Som alle nettsteder må den som leverer siden,
+            se IP-adressen din for å kunne sende siden til deg.
+          </p>
+        </section>
+
+        <section class="s-del" id="kjop">
+          <h2>Når du kjøper</h2>
+          <p>
+            Klart er gratis for privatpersoner, og da trenger vi ingenting fra deg.
+            En virksomhet som kjøper lisens, gir oss dette:
+          </p>
+          <dl class="s-tabell">
+            <div>
+              <dt>Virksomheten</dt>
+              <dd>Organisasjonsnummeret og navnet. Adressen, antall ansatte, bransjen og siste årsregnskap henter vi fra Brønnøysundregistrene. Prisen regnes ut av dem.</dd>
+            </div>
+            <div>
+              <dt>E-postadresser</dt>
+              <dd>Adressen fakturaen skal til, og adressen lisensnøkkelen skal til hvis den er en annen.</dd>
+            </div>
+            <div>
+              <dt>Betalingen</dt>
+              <dd>Kort betales hos Stripe. Vi ser aldri kortnummeret. Velger dere faktura, lager Stripe den for oss. Vi sjekker i PEPPOL-katalogen om virksomheten kan ta imot EHF.</dd>
+            </div>
+            <div>
+              <dt>Lisensnøkkelen</dt>
+              <dd>Nøkkelen har virksomhetens navn og organisasjonsnummer, e-postadressen til den som kjøpte, og datoene lisensen gjelder. Den som får nøkkelen, kan lese dette.</dd>
+            </div>
+            <div>
+              <dt>Oppsettsdag</dt>
+              <dd>Bestiller dere en dag med oss, trenger vi navn, e-postadresse, adressen vi skal til, datoen og det dere skriver i meldingen. Telefonnummer er valgfritt. Adressen slår vi opp hos Kartverket.</dd>
+            </div>
+            <div>
+              <dt>Spørsmål til oss</dt>
+              <dd>Sender dere et spørsmål fra prissiden, lagrer vi navnet, e-postadressen og meldingen, så vi kan svare.</dd>
+            </div>
+          </dl>
+          <p>E-postene vi sender, tar vi vare på en kopi av, så vi kan se hva dere har fått.</p>
+        </section>
+
+        <section class="s-del" id="mottakere">
+          <h2>Hvem andre som får noe</h2>
+          <p>Vi selger ikke opplysninger, og gir dem ikke til noen for reklame. Disse hjelper oss med å levere:</p>
+          <dl class="s-tabell">
+            <div>
+              <dt>Cloudflare</dt>
+              <dd>Drifter nettsiden og lagrer det som står på denne siden.</dd>
+            </div>
+            <div>
+              <dt>Stripe</dt>
+              <dd>Tar imot betaling og lager fakturaer. Får virksomhetens navn, adresse og organisasjonsnummer, e-postadressen og fakturareferansen.</dd>
+            </div>
+            <div>
+              <dt>Resend</dt>
+              <dd>Sender e-postene våre. Får mottakeradressen og innholdet i e-posten.</dd>
+            </div>
+            <div>
+              <dt>Brønnøysundregistrene</dt>
+              <dd>Får organisasjonsnummeret eller navnet vi slår opp.</dd>
+            </div>
+            <div>
+              <dt>Kartverket</dt>
+              <dd>Får adressen vi slår opp når dere bestiller en oppsettsdag.</dd>
+            </div>
+            <div>
+              <dt>OpenFreeMap</dt>
+              <dd>Leverer kartet på prissiden. Kartet hentes gjennom oss, så de ser ikke hvem du er.</dd>
+            </div>
+            <div>
+              <dt>PEPPOL-katalogen</dt>
+              <dd>Får organisasjonsnummeret når vi sjekker om virksomheten kan ta imot EHF.</dd>
+            </div>
+          </dl>
+          <p>
+            Cloudflare, Stripe og Resend er amerikanske selskaper.
+            <span class="s-avklar">[Grunnlaget for overføring ut av EØS avklares.]</span>
+          </p>
+        </section>
+
+        <section class="s-del" id="grunnlag">
+          <h2>Hvorfor vi har lov</h2>
+          <dl class="s-tabell">
+            <div>
+              <dt>Avtalen med dere</dt>
+              <dd>Det vi trenger for å levere lisensen og oppsettsdagen (personvernforordningen artikkel 6 nr. 1 bokstav b).</dd>
+            </div>
+            <div>
+              <dt>Loven</dt>
+              <dd>Regnskapet må vi ta vare på (artikkel 6 nr. 1 bokstav c).</dd>
+            </div>
+            <div>
+              <dt>Berettiget interesse</dt>
+              <dd>Telling av besøk, svar på spørsmål og logging av feil (artikkel 6 nr. 1 bokstav f). Vi har veid dette mot personvernet ditt, og lagrer derfor ikke IP-adressen.</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="s-del" id="lagring">
+          <h2>Hvor lenge</h2>
+          <dl class="s-tabell">
+            <div>
+              <dt>Lisenser</dt>
+              <dd>Så lenge lisensen gjelder. <span class="s-avklar">[Hvor lenge etterpå, avklares.]</span></dd>
+            </div>
+            <div>
+              <dt>Regnskap</dt>
+              <dd>Så lenge bokføringsloven krever.</dd>
+            </div>
+            <div>
+              <dt>Spørsmål, bestillinger og kopier av e-post</dt>
+              <dd><span class="s-avklar">[Frist avklares.]</span></dd>
+            </div>
+            <div>
+              <dt>Besøkstall</dt>
+              <dd><span class="s-avklar">[Frist avklares.]</span></dd>
+            </div>
+          </dl>
+          <p>Du kan uansett be oss slette opplysninger om deg. Se under.</p>
+        </section>
+
+        <section class="s-del" id="rettigheter">
+          <h2>Rettighetene dine</h2>
+          <p>Du kan be om å få se hva vi har lagret om deg, få det rettet og få det slettet. Du kan også si nei til at vi bruker det, og be om å få det utlevert.</p>
+          <p>
+            Skriv til <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a>.
+            Det koster ingenting, og du får svar innen en måned.
+          </p>
+          <p>
+            Mener du vi gjør noe galt, kan du klage til
+            Datatilsynet. Si gjerne fra til oss først, så retter vi det.
+          </p>
+          <p class="s-dato">Sist endret 11. november 2026.</p>
+        </section>
+      </main>
+    </div>
+
+    <footer class="s-bunn">
+      <p class="s-bunn-merke"><i>Klart</i> <span>av Tidemann Esbjug</span></p>
+      <nav aria-label="Mer om Klart">
+        <a href="../">Forsiden</a>
+        <a href="../pris/">Pris</a>
+        <a href="../hva-klart-tar.html">Hva Klart tar</a>
+        <a href="../til-it.html">Til IT</a>
+        <a href="../vilkar/">Vilkår</a>
+      </nav>
+      <p class="s-bunn-liten">Laget i Norge</p>
+    </footer>
   </body>
 </html>

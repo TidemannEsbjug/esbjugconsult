@@ -5,424 +5,576 @@
   Klart lover at dokumentene aldri forlater maskinen. Et sånt løfte skal ikke
   tas på ordet, så sjekk det:
 
-  - Programmet: /klart/til-it har kommandoene som viser hva det snakker med.
-  - Denne siden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
+  - Programmet: denne siden har kommandoene som viser hva det snakker med.
+  - Nettsiden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
     uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
   - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
     Vi vil heller høre det fra deg enn fra en kunde.
+
+  Skrevet på nytt 11.11.2026 for Klart slik programmet er nå. Den lokale
+  språkmodellen (llama-server) ble tatt ut 4.11.; pakken har nå bare appen,
+  en hjelper for nøkkelen, PDFium og setningsmodellen. Mac-fasitene er kjørt
+  mot bygget fra 10.11.2026 (signert og notarisert).
 -->
 <html lang="nb">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/png" href="/klart/favicon.png" />
-    <title>Klart — til IT-avdelingen</title>
+    <title>Til IT · Klart</title>
     <meta
       name="description"
-      content="Fem sjekker som avgjør om Klart kan snakke med nett, for Mac og Windows. Med kommandoer du kopierer med ett trykk, fasit, og det hver enkelt sjekk faktisk beviser."
+      content="Sjekkene som viser at Klart ikke snakker med nett, hva som ligger i pakken og på disken, og hvordan IT styrer Klart sentralt. Med kommandoer, fasit og hva hver sjekk beviser."
     />
     <meta name="robots" content="noindex" />
-    <!--
-      Ingen skrifter, bilder eller skript utenfra. En side om et program
-      som ikke går på nett bør ikke selv hente noe. De eneste skriptene er
-      de to små (til-it-tidlig.js og til-it.js), som bytter mellom Mac og Windows og kopierer kommandoene.
-      Uten skript vises begge, og alt kan fortsatt markeres og kopieres.
-
-      Ingenting under valget vises før man har trykket Mac eller Windows. En
-      lenke med #mac eller #windows har valgt på forhånd.
-    -->
+    <!-- Ingen skrifter, bilder eller skript utenfra. De to skriptene bytter mellom Mac og
+         Windows og kopierer kommandoene. Uten skript vises begge systemene, og alt kan markeres. -->
     <script src="til-it-tidlig.js"></script>
-    <link rel="stylesheet" href="til-it.css" />
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="sider.css" />
   </head>
   <body>
-    <div class="wrap">
-      <header>
-        <p class="kicker">Klart · til IT-avdelingen</p>
-        <h1>Fem sjekker, og hva hver av dem faktisk beviser</h1>
-        <p class="lead">
-          Klart renser dokumenter lokalt. Motoren og språkmodellen ligger i
-          installasjonsfilen, og ingenting lastes ned. Du skal slippe å tro på
-          det. Under står kommandoene som avgjør saken — med fasit, og med en
-          ærlig merknad om hva hver enkelt sjekk holder for.
-        </p>
-      </header>
-
-      <div class="velg">
-        <h2 class="velg-tittel" id="velg-tittel">Hvilket system sjekker du?</h2>
-        <div class="velg-kort" role="group" aria-labelledby="velg-tittel">
-          <button type="button" data-velg="mac" aria-pressed="false">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#1d1d1f" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
-            <span class="navn">Mac</span>
-            <span class="under">Kommandoer for Terminal</span>
-          </button>
-          <button type="button" data-velg="windows" aria-pressed="false">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><g fill="#0078d4"><rect x="1" y="1" width="10.4" height="10.4" /><rect x="12.6" y="1" width="10.4" height="10.4" /><rect x="1" y="12.6" width="10.4" height="10.4" /><rect x="12.6" y="12.6" width="10.4" height="10.4" /></g></svg>
-            <span class="navn">Windows</span>
-            <span class="under">Kommandoer for PowerShell</span>
-          </button>
-        </div>
-        <p class="velg-hint">Velg ett, så kommer sjekkene for det systemet.</p>
+    <header class="s-topp">
+      <div class="s-linje-topp">
+        <a class="s-merke" href="./">Klart</a>
+        <nav class="s-nav" aria-label="Sider">
+          <a href="./">Forsiden</a>
+          <a href="pris/">Pris</a>
+          <a href="til-it.html" aria-current="page">Til IT</a>
+          <a href="personvern/">Personvern</a>
+        </nav>
       </div>
-
-      <main id="innhold">
-      <div class="start">
-        <div class="os" data-os="mac" data-navn="Mac">
-          <h3>Slik gjør du på Mac</h3>
-          <ol>
-            <li>Åpne Terminal: trykk <kbd>⌘</kbd> + <kbd>mellomrom</kbd>, skriv <b>Terminal</b> og trykk <kbd>Enter</kbd>.</li>
-            <li>Trykk <b>Kopier</b> ved en kommando under.</li>
-            <li>Lim inn i Terminal med <kbd>⌘</kbd> + <kbd>V</kbd> og trykk <kbd>Enter</kbd>.</li>
-          </ol>
-          <p>Ingen av kommandoene endrer noe på maskinen. De leser bare.</p>
-        </div>
-        <div class="os" data-os="windows" data-navn="Windows">
-          <h3>Slik gjør du på Windows</h3>
-          <ol>
-            <li>Åpne PowerShell: trykk <kbd>Windows</kbd>-tasten, skriv <b>PowerShell</b> og trykk <kbd>Enter</kbd>.</li>
-            <li>Trykk <b>Kopier</b> ved en kommando under.</li>
-            <li>Lim inn med <kbd>Ctrl</kbd> + <kbd>V</kbd> (eller høyreklikk i vinduet) og trykk <kbd>Enter</kbd>.</li>
-          </ol>
-          <p>
-            Alt unntatt brannmurreglene nederst leser bare. Kommandoene går ut
-            fra at Klart er installert med filen fra nettsiden, som legger
-            programmet i brukerens egen mappe:
-            <code>C:\Users\&lt;bruker&gt;\AppData\Local\Klart</code>.
-          </p>
-        </div>
+      <div class="s-hode">
+        <p class="s-over">Til IT-avdelingen</p>
+        <h1>Ikke stol på oss. Sjekk det.</h1>
+        <p class="s-ingress">
+          Klart lover at dokumentene aldri forlater maskinen. Her er kommandoene
+          som viser det, hva de skal svare, og hva hver sjekk faktisk beviser.
+        </p>
       </div>
+    </header>
 
-      <section>
-        <h2><span class="n">1</span> Er dette vår fil?</h2>
-        <p>
-          Vi publiserer SHA-256 for hver utgivelse, samme sted som nedlastingen.
-          Får du et annet tall, er filen ikke vår.
-        </p>
-        <div class="os" data-os="mac" data-navn="Mac">
-          <div class="cmd"><pre>shasum -a 256 ~/Downloads/Klart-for-Mac-*.dmg</pre></div>
-          <p class="gjor">
-            <b>Hva den gjør:</b> regner ut SHA-256 for installasjonsfilen i
-            Nedlastinger. Ligger filen et annet sted, skriv
-            <code>shasum -a 256 </code> med mellomrom etter, og dra filen inn i
-            Terminal-vinduet.
-          </p>
-          <div class="fasit">
-            <b>Fasit:</b> den lange rekken med tall og bokstaver først på linjen
-            er lik den vi har publisert.
-          </div>
-        </div>
-        <div class="os" data-os="windows" data-navn="Windows">
-          <div class="cmd"><pre>Get-FileHash "$HOME\Downloads\Klart-for-Windows-*.exe"</pre></div>
-          <p class="gjor">
-            <b>Hva den gjør:</b> regner ut SHA-256 for installasjonsfilen i
-            Nedlastinger. Ligger filen et annet sted, bytt ut stien mellom
-            anførselstegnene.
-          </p>
-          <div class="fasit">
-            <b>Fasit:</b> tallet i kolonnen <code>Hash</code> er likt det vi har
-            publisert. Windows skriver det med store bokstaver; det er samme tall.
-          </div>
-        </div>
-        <p class="beviser">
-          <b>Beviser:</b> at filen er den vi ga ut. Ikke noe mer — en sjekksum
-          sier ingenting om hva programmet gjør.
-        </p>
-      </section>
+    <div class="s-kropp">
+      <nav class="s-innhold" aria-label="Innhold">
+        <p>På denne siden</p>
+        <ol>
+          <li><a href="#kort">Kort fortalt</a></li>
+          <li><a href="#fil">1 Er dette vår fil?</a></li>
+          <li><a href="#signert">2 Signert og urørt?</a></li>
+          <li><a href="#rettigheter">3 Hva har den lov til?</a></li>
+          <li><a href="#snakker">4 Snakker den med noen?</a></li>
+          <li><a href="#laget">5 Hva er den laget av?</a></li>
+          <li><a href="#steng">Steng den selv</a></li>
+          <li><a href="#disk">Det som ligger på disken</a></li>
+          <li><a href="#styring">Styr Klart sentralt</a></li>
+          <li><a href="#nokkel">Nøkkelen i en virksomhet</a></li>
+          <li><a href="#logg">Revisjonslogg</a></li>
+          <li><a href="#kommando">Kommandolinje</a></li>
+          <li><a href="#krypto">Kryptografi</a></li>
+          <li><a href="#krav">Systemkrav</a></li>
+          <li><a href="#si-fra">Fant du noe?</a></li>
+        </ol>
+      </nav>
 
-      <section>
-        <h2><span class="n">2</span> Er den signert av oss, og urørt?</h2>
-        <div class="os" data-os="mac" data-navn="Mac">
-          <div class="cmd"><pre>codesign -dv --verbose=4 /Applications/Klart.app</pre></div>
-          <p class="gjor"><b>Hva den gjør:</b> viser hvem som har signert appen.</p>
-          <div class="cmd"><pre>spctl -a -vv /Applications/Klart.app</pre></div>
-          <p class="gjor"><b>Hva den gjør:</b> spør Gatekeeper om macOS godtar appen slik den ligger på disken nå.</p>
-          <div class="fasit">
-            <b>Fasit:</b> <code>TeamIdentifier=N5BKVM258S</code> fra codesign, og
-            <code>accepted</code> med <code>source=Notarized Developer ID</code> fra spctl.
-          </div>
-          <p>Sjekk gjerne motoren inni pakken også — den er en egen kjørbar fil:</p>
-          <div class="cmd"><pre>codesign -dv --verbose=2 /Applications/Klart.app/Contents/Resources/bundled/engine/llama-server</pre></div>
-          <p class="gjor"><b>Hva den gjør:</b> det samme som den første, for motoren.</p>
-          <div class="fasit"><b>Fasit:</b> samme <code>TeamIdentifier=N5BKVM258S</code> som appen.</div>
-          <p>
-            Motoren er llama.cpp, bygget av Ollama-prosjektet. Ollama selv — den
-            som er en HTTP-server med et registerklientledd — er ikke med i
-            pakken; det er bare llama.cpp-serveren og modellfilen. Ved signering
-            skrives hele pakken om med vår Team ID, motoren inkludert. Viser den
-            en annen ID, er pakken ikke signert ferdig — si fra, så er det vår
-            feil, ikke deres.
-          </p>
-        </div>
-        <div class="os" data-os="windows" data-navn="Windows">
-          <div class="advarsel">
-            <b>Windows-versjonen er ikke signert ennå.</b> Til den er det, svarer
-            kommandoene under <code>NotSigned</code>, og da er sjekksummen i
-            punkt 1 det som knytter filen til oss.
-          </div>
-          <div class="cmd"><pre>Get-AuthenticodeSignature "$HOME\Downloads\Klart-for-Windows-*.exe" | Format-List Status, SignerCertificate</pre></div>
-          <p class="gjor"><b>Hva den gjør:</b> leser Authenticode-signaturen på installasjonsfilen.</p>
-          <div class="cmd"><pre>Get-ChildItem "$env:LOCALAPPDATA\Klart" -Recurse -Include *.exe, *.dll | Get-AuthenticodeSignature | Format-Table Status, Path -AutoSize</pre></div>
-          <p class="gjor">
-            <b>Hva den gjør:</b> sjekker signaturen på hver kjørbar fil i den
-            installerte appen, én linje per fil.
-          </p>
-          <div class="fasit">
-            <b>Fasit, når den er signert:</b> <code>Valid</code> på hver linje, og
-            vårt navn i <code>SignerCertificate</code>.
-          </div>
-        </div>
-        <p class="beviser">
-          <b>Beviser:</b> at koden er vår og ikke endret etterpå. Dette er
-          testen mot en ombygd kopi. En «hacket versjon» med en socket i seg er
-          et annet program — ingen sperre inne i vår binær overlever at noen
-          bytter ut koden. Det er signaturen som fanger det, og at dere bare
-          installerer det vi har signert.
-        </p>
-      </section>
+      <main class="s-tekst" id="innhold">
+        <section class="s-kort" id="kort">
+          <h2>Kort fortalt</h2>
+          <ul>
+            <li><b>Ingen vei ut.</b> Programmet har ingen TLS, kan ikke slå opp et navn på nettet og lytter ikke på noen port.</li>
+            <li><b>Alt ligger i pakken.</b> Ingenting lastes ned etter installasjonen. Ingen oppdaterer, ingen bruksstatistikk, ingen feilrapporter.</li>
+            <li><b>Dere kan stenge den.</b> Blokker all utgående trafikk for Klart. Programmet virker like godt.</li>
+            <li><b>Dere kan styre den.</b> Én fil bestemmer hva brukerne får velge selv.</li>
+          </ul>
+        </section>
 
-      <section>
-        <h2><span class="n">3</span> Har den lov til å bruke nett?</h2>
-        <div class="os" data-os="mac" data-navn="Mac">
-          <div class="cmd"><pre>codesign -d --entitlements - --xml /Applications/Klart.app | plutil -p -</pre></div>
-          <p class="gjor"><b>Hva den gjør:</b> lister rettighetene (entitlements) appen er signert med.</p>
-          <div class="fasit">
-            <b>Fasit:</b> verken
-            <code>com.apple.security.network.client</code> eller
-            <code>com.apple.security.network.server</code> skal stå der.
+        <div class="s-velg">
+          <p id="velg-tittel">Hvilket system sjekker du?</p>
+          <div class="s-velg-knapper" role="group" aria-labelledby="velg-tittel">
+            <button type="button" data-velg="mac" aria-pressed="false">Mac</button>
+            <button type="button" data-velg="windows" aria-pressed="false">Windows</button>
           </div>
-          <div class="advarsel">
-            <b>Men les dette:</b> disse to rettighetene håndheves bare når
-            <code>com.apple.security.app-sandbox</code> er slått på. Er den ikke
-            det, er fraværet av dem bare metadata — en app med Hardened Runtime og
-            null rettigheter kan fint åpne en forbindelse ut. Vi sier det heller
-            enn å la dere oppdage det selv.
-          </div>
-          <p>
-            Står <code>app-sandbox</code> der: da nekter kjernen utgående TCP, også
-            til maskinen selv, og punkt 3 er en ekte sperre. Står den ikke der: se
-            punkt 4 og 5, og sett deres egen regel.
-          </p>
-          <p class="beviser">
-            <b>Beviser:</b> med app-sandbox — at nett er avskrudd i kjernen. Uten
-            app-sandbox — ingenting alene.
-          </p>
         </div>
-        <div class="os" data-os="windows" data-navn="Windows">
-          <p>
-            Windows har ingen tilsvarende rettighet for vanlige
-            skrivebordsprogrammer. Et program installert med en .exe ber ikke om
-            lov til nett — det har det. Derfor er det ingen kommando her.
-          </p>
-          <p>
-            Sperren på Windows er brannmurregelen nederst på siden, og beviset
-            for at programmet er stille er punkt 4.
-          </p>
-          <p class="beviser">
-            <b>Beviser:</b> ingenting på Windows. Det er grunnen til at vi ber
-            dere sette regelen.
-          </p>
-        </div>
-      </section>
+        <p class="s-skjult" id="melding" role="status" aria-live="polite"></p>
 
-      <section>
-        <h2><span class="n">4</span> Snakker den likevel?</h2>
-        <p>
-          Start en rensing på en mappe, og kjør kommandoen mens den står på.
-          Motoren er en egen prosess, så kommandoen sjekker begge.
-        </p>
-        <div class="os" data-os="mac" data-navn="Mac">
-          <div class="cmd"><pre>pgrep -lx 'klart|llama-server'; lsof -nP -a -i -c klart -c llama-server</pre></div>
-          <p class="gjor">
-            <b>Hva den gjør:</b> første del viser at Klart og motoren kjører, med
-            prosessnummer. Andre del lister alle nett-socketer, TCP og UDP, som de
-            to prosessene har åpne.
-          </p>
-          <div class="fasit">
-            <b>Fasit:</b> to linjer, <code>klart</code> og
-            <code>llama-server</code> med hvert sitt prosessnummer — og
-            <b>ingenting etter dem</b>. Hverken appen eller motoren har en eneste
-            TCP- eller UDP-socket. Motoren lytter på en filsocket i brukerens egen
-            midlertidige mappe — <code>klart-&lt;pid&gt;.sock</code>, én per Klart-vindu — og en
-            AF_UNIX-socket kan ikke adressere noe utenfor maskinen.
+        <!-- ============ 1 ============ -->
+        <section class="s-del" id="fil">
+          <h2><span class="s-nr">1</span>Er dette vår fil?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>shasum -a 256 ~/Downloads/Klart*.dmg</pre></div>
           </div>
-          <p>
-            Ser du bare <code>klart</code>, er motoren ikke startet ennå. Start en
-            rensing og kjør kommandoen igjen mens den går.
-          </p>
-          <div class="advarsel">
-            <b>Pass på flagget <code>-a</code>.</b> Uten det tolker lsof
-            <code>-i</code> og <code>-c</code> som «eller», og du får hele
-            maskinens trafikk i listen — nettleseren, Dropbox, alt. Det ser
-            dramatisk ut og har ingenting med Klart å gjøre. Med
-            <code>-a</code> får du null rader.
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-FileHash "$HOME\Downloads\Klart*.exe"</pre></div>
           </div>
-          <p>LuLu eller Little Snitch ved siden av gir samme svar, hvis dere heller vil se det slik.</p>
-        </div>
-        <div class="os" data-os="windows" data-navn="Windows">
-          <div class="cmd"><pre>Get-Process klart, llama-server -ErrorAction SilentlyContinue |
+          <p class="s-fasit"><b>Fasit:</b> den lange rekken med tall og bokstaver er lik sjekksummen vi har publisert for utgivelsen.</p>
+          <p><span class="s-avklar">[Sjekksummene publiseres sammen med nedlastingen når den åpner.]</span></p>
+          <p class="s-beviser"><b>Beviser:</b> at filen er den vi ga ut. Ikke noe mer. En sjekksum sier ingenting om hva programmet gjør.</p>
+        </section>
+
+        <!-- ============ 2 ============ -->
+        <section class="s-del" id="signert">
+          <h2><span class="s-nr">2</span>Er den signert av oss, og urørt?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>codesign -dv --verbose=4 /Applications/Klart.app 2>&amp;1 | grep -E "Format|TeamIdentifier|flags|Notarization"</pre></div>
+            <p class="s-fasit">
+              <b>Fasit:</b> <code>Format=app bundle with Mach-O universal (x86_64 arm64)</code>,
+              <code>flags=0x10000(runtime)</code>, <code>Notarization Ticket=stapled</code> og
+              <code>TeamIdentifier=N5BKVM258S</code>.
+            </p>
+            <div class="cmd"><pre>spctl -a -vv /Applications/Klart.app</pre></div>
+            <p class="s-fasit"><b>Fasit:</b> <code>accepted</code> og <code>source=Notarized Developer ID</code>.</p>
+            <p>Pakken har to kjørbare filer til: hjelperen som passer på nøkkelen, og PDF-biblioteket. Sjekk dem også:</p>
+            <div class="cmd"><pre>codesign -dv /Applications/Klart.app/Contents/MacOS/klart-hvelv 2>&amp;1 | grep TeamIdentifier
+codesign -dv /Applications/Klart.app/Contents/Resources/bundled/engine/pdfium/libpdfium.dylib 2>&amp;1 | grep TeamIdentifier</pre></div>
+            <p class="s-fasit"><b>Fasit:</b> samme <code>TeamIdentifier=N5BKVM258S</code> på begge.</p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Windows-utgaven er ikke signert ennå. Til den er det, svarer kommandoen <code>NotSigned</code>, og da er sjekksummen i punkt 1 det som knytter filen til oss.</p>
+            <div class="cmd"><pre>Get-AuthenticodeSignature "$HOME\Downloads\Klart*.exe" | Format-List Status, SignerCertificate</pre></div>
+            <p class="s-fasit"><b>Fasit, når den er signert:</b> <code>Valid</code>, og vårt navn i <code>SignerCertificate</code>.</p>
+          </div>
+          <p class="s-beviser">
+            <b>Beviser:</b> at koden er vår og ikke endret etterpå. Dette er testen mot en ombygd kopi.
+            En kopi med en nettforbindelse lagt inn er et annet program, og det er signaturen som avslører den.
+          </p>
+        </section>
+
+        <!-- ============ 3 ============ -->
+        <section class="s-del" id="rettigheter">
+          <h2><span class="s-nr">3</span>Hva har den lov til?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>codesign -d --entitlements - --xml /Applications/Klart.app 2>/dev/null | plutil -p -</pre></div>
+            <p class="s-fasit">
+              <b>Fasit:</b> fem linjer, alle <code>false</code>: <code>automation.apple-events</code>,
+              <code>cs.allow-dyld-environment-variables</code>, <code>cs.allow-jit</code>,
+              <code>cs.allow-unsigned-executable-memory</code> og <code>cs.disable-library-validation</code>.
+              Ingen iCloud-rettigheter, og verken <code>network.client</code> eller <code>network.server</code>.
+            </p>
+            <p>
+              <b>Men les dette:</b> Klart kjører ikke i App Sandbox. Da er det at nettrettighetene mangler,
+              bare en opplysning. macOS håndhever dem ikke uten sandkassen, og et program med Hardened Runtime
+              kan i prinsippet åpne en forbindelse likevel. Vi sier det heller enn at dere finner det selv.
+              Det som faktisk avgjør saken, er punkt 4 og 5, og regelen dere setter selv.
+            </p>
+            <p class="s-beviser"><b>Beviser:</b> at programmet ikke kan styre andre programmer, ikke kan laste inn fremmed kode, og ikke har tilgang til iCloud. Om nett beviser det ingenting alene.</p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>
+              Windows har ingen tilsvarende rettigheter for vanlige skrivebordsprogrammer. Et program
+              installert med en .exe ber ikke om lov til nett. Det har det. Derfor er det ingen kommando her.
+            </p>
+            <p class="s-beviser"><b>Beviser:</b> ingenting på Windows. Sperren er brannmurregelen lenger ned, og beviset for at programmet er stille, er punkt 4.</p>
+          </div>
+        </section>
+
+        <!-- ============ 4 ============ -->
+        <section class="s-del" id="snakker">
+          <h2><span class="s-nr">4</span>Snakker den med noen?</h2>
+          <p>Start Klart, åpne en mappe og la den lese. Kjør kommandoen mens den står på.</p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>pgrep -lx klart; lsof +c 0 -nP -a -i -c klart -c com.apple.WebKit.Networking</pre></div>
+            <p class="s-fasit"><b>Fasit:</b> én linje med prosessnummeret og <code>klart</code>, og ingenting etter den. Klart har ikke en eneste TCP- eller UDP-socket.</p>
+            <p>
+              Vinduet i Klart tegnes av WebKit, som følger med macOS. WebKit starter sine egne hjelpeprosesser,
+              og én av dem heter <code>com.apple.WebKit.Networking</code>. Den er med i kommandoen, for det er den
+              som ville hentet noe hvis vinduet prøvde. Den skal også være tom.
+            </p>
+            <p>
+              Kommer det rader likevel, har du trolig Safari, Mail eller et annet program med WebKit åpent.
+              De deler navn på hjelpeprosessen. Lukk dem og kjør på nytt, eller se på prosessnumrene:
+              Klarts hjelpere har numrene rett etter Klart.
+            </p>
+            <p>
+              Pass på <code>-a</code>. Uten den leser <code>lsof</code> valgene som «eller», og du får hele
+              maskinens trafikk i listen. LuLu eller Little Snitch gir samme svar, hvis dere heller vil se det slik.
+            </p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-Process klart, tesseract -ErrorAction SilentlyContinue |
 ForEach-Object {
   "$($_.ProcessName) kjører (prosess $($_.Id))"
   Get-NetTCPConnection -OwningProcess $_.Id -ErrorAction SilentlyContinue
   Get-NetUDPEndpoint -OwningProcess $_.Id -ErrorAction SilentlyContinue
 }</pre></div>
-          <p class="gjor">
-            <b>Hva den gjør:</b> finner Klart og motoren, skriver ut at de kjører,
-            og lister hver TCP-forbindelse og UDP-port de har åpen.
-          </p>
-          <div class="fasit">
-            <b>Fasit:</b> bare linjene som sier <code>klart kjører</code> (og
-            <code>llama-server kjører</code> når motoren går) — <b>ingen tabeller
-            med adresser og porter</b>.
+            <p class="s-fasit"><b>Fasit:</b> bare linjene som sier at <code>klart</code> kjører, og <code>tesseract</code> mens Klart leser et bilde. Ingen tabeller med adresser og porter.</p>
+            <p>
+              Vinduet i Klart tegnes av WebView2, som er Microsofts og følger med Windows. Det kjører som
+              egne prosesser, <code>msedgewebview2.exe</code>. Innholdet i vinduet får ikke hente noe:
+              reglene i punkt 5 stenger det. Men WebView2 kan selv snakke med Microsoft, for eksempel om sine
+              egne oppdateringer. Det er Microsofts trafikk, og den inneholder ingenting fra Klart eller dokumentene.
+              Vil dere ha det helt stille, stenger dere begge i brannmuren.
+            </p>
+            <p>Ressursovervåking (<code>resmon</code>), fanen Nettverk, gir samme svar hvis dere heller vil se det slik.</p>
+          </div>
+          <p class="s-beviser"><b>Beviser:</b> at programmet slik det kjører hos dere, ikke har en vei ut. Dette er sjekken vi selv stoler mest på.</p>
+        </section>
+
+        <!-- ============ 5 ============ -->
+        <section class="s-del" id="laget">
+          <h2><span class="s-nr">5</span>Hva er den laget av?</h2>
+          <p>Hele pakken på Mac er 286 MB. Dette er alt som ligger i den:</p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>MacOS/klart</code></dt>
+              <dd>Programmet. 104 MB, for både Intel og Apple-prosessor. Skallet er Rust (Tauri 2), vinduet er TypeScript.</dd>
+            </div>
+            <div>
+              <dt><code>MacOS/klart-hvelv</code></dt>
+              <dd>En liten hjelper (0,2 MB) som pakker nøkkelen inn og ut med nøkkelringen og Secure Enclave.</dd>
+            </div>
+            <div>
+              <dt><code>setning/norbert3-small.onnx</code></dt>
+              <dd>Setningsmodellen: NorBERT 3 small fra Universitetet i Oslo, 177 MB. Kjøres på prosessoren, i programmet selv. Den er ikke en egen prosess.</dd>
+            </div>
+            <div>
+              <dt><code>setning/tokenizer.json</code></dt>
+              <dd>Ordlisten til modellen, 1,3 MB.</dd>
+            </div>
+            <div>
+              <dt><code>pdfium/libpdfium.dylib</code></dt>
+              <dd>PDFium, biblioteket som leser og tegner PDF-er. 15 MB.</dd>
+            </div>
+          </dl>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>find /Applications/Klart.app/Contents -type f -size +100k -exec ls -lh {} \;</pre></div>
+            <p class="s-fasit"><b>Fasit:</b> de fem filene over og appikonet. Ingen <code>llama-server</code>, ingen <code>.gguf</code>, ingen andre modeller.</p>
           </div>
           <p>
-            Kommer det ingen linjer i det hele tatt, kjører ikke Klart. Start
-            appen og en rensing, og kjør kommandoen igjen. Ressursovervåking
-            (<code>resmon</code>), fanen Nettverk, gir samme svar hvis dere heller
-            vil se det slik.
+            Programmet har ingen TLS og ingen HTTP-klient som kan nå en vert. Det kan ikke lytte på en port,
+            og det kan ikke slå opp et navn på nettet. Det ser dere i selve filen:
           </p>
-        </div>
-        <p class="beviser">
-          <b>Beviser:</b> at programmet slik det kjører hos dere ikke har en vei
-          ut. Dette er den sjekken vi selv stoler mest på.
-        </p>
-      </section>
-
-      <section>
-        <h2><span class="n">5</span> Hva er den laget av?</h2>
-        <p>
-          Presist sagt: det finnes ingen HTTP-klient som kan nå en vert. Appen
-          snakker med modellen over en filsocket, med noen titalls linjer
-          HTTP/1.1 skrevet for hånd — og en AF_UNIX-socket har ingen vert å
-          koble til. Ingen TLS-stakk, ingen navneoppslag, ingen TCP, verken i
-          våre avhengigheter eller i standardbiblioteket.
-        </p>
-        <p>
-          Nettleservinduet er WebKit og kunne i prinsippet hentet hva som helst.
-          Det er CSP-en i tabellen under som stenger den døra, og punkt 4 som
-          viser at den er stengt.
-        </p>
-        <div class="os" data-os="mac" data-navn="Mac">
-          <div class="cmd" data-hvor="Terminal, i kildekoden"><pre>cd src-tauri &amp;&amp; cargo tree -e normal | grep -E 'reqwest|hyper|rustls|native-tls|openssl'</pre></div>
-        </div>
-        <div class="os" data-os="windows" data-navn="Windows">
-          <div class="cmd" data-hvor="PowerShell, i kildekoden"><pre>cd src-tauri; cargo tree -e normal | Select-String 'reqwest|hyper|rustls|native-tls|openssl'</pre></div>
-        </div>
-        <p class="gjor">
-          <b>Hva den gjør:</b> kjøres i mappen med kildekoden. Lister alle
-          avhengighetene som faktisk bygges inn, og leter etter HTTP- og
-          TLS-biblioteker blant dem.
-        </p>
-        <div class="fasit"><b>Fasit:</b> ingen treff.</div>
-        <table>
-          <tr>
-            <th>Fil</th>
-            <th>Hva dere ser etter</th>
-          </tr>
-          <tr>
-            <td>src-tauri/Cargo.toml</td>
-            <td>ingen <code>reqwest</code>, ingen TLS-stakk, <code>tokio</code> uten <code>net</code></td>
-          </tr>
-          <tr>
-            <td>src-tauri/src/engine.rs</td>
-            <td>motoren nås over en Unix-socket. Ingen adresse, ingen port</td>
-          </tr>
-          <tr>
-            <td>capabilities/default.json</td>
-            <td>vinduet er nektet <code>open_url</code>. Ingen http-tillegg, ingen oppdateringstjeneste</td>
-          </tr>
-          <tr>
-            <td>tauri.conf.json</td>
-            <td>CSP der <code>connect-src</code> bare slipper gjennom appens interne IPC-kanal</td>
-          </tr>
-          <tr>
-            <td>scripts/sjekk-nett.sh</td>
-            <td>sjekken over, kjørt før hvert bygg. Kommer noe av dette tilbake, stopper bygget</td>
-          </tr>
-        </table>
-        <p class="beviser mt-18">
-          <b>Beviser:</b> at det ikke finnes kode i programmet som kan snakke
-          HTTP. Er kilden åpen for dere, kan dere bygge den selv og sammenligne.
-        </p>
-      </section>
-
-      <section>
-        <h2><span class="n">+</span> Om oppdateringer og telemetri</h2>
-        <p>
-          Det er ingen av delene. Ingen «se etter ny versjon», ingen bruksstatistikk,
-          ingen feilrapportering. En oppdatering er en ny installasjonsfil dere
-          henter selv, når dere vil.
-        </p>
-      </section>
-
-      <div class="slutt">
-        <strong>Stol ikke på oss. Steng utgående trafikk for Klart i brannmuren eller via MDM.</strong>
-        <p>Programmet virker like godt. Det er hele poenget med å bygge det slik.</p>
-        <p>
-          <b>Ta med begge to.</b> Motoren er en egen kjørbar fil, ikke en tråd
-          inne i appen, og en regel som bare nevner Klart slipper den forbi.
-        </p>
-        <div class="os" data-os="mac" data-navn="Mac">
-          <p>
-            Brannmuren som følger med macOS stopper bare innkommende trafikk.
-            Legg inn begge stiene i en regel i MDM-ens nettverksfilter, eller i
-            LuLu eller Little Snitch:
-          </p>
-          <div class="cmd" data-hvor="Sti til appen"><pre>/Applications/Klart.app/Contents/MacOS/klart</pre></div>
-          
-          <div class="cmd" data-hvor="Sti til motoren"><pre>/Applications/Klart.app/Contents/Resources/bundled/engine/llama-server</pre></div>
-        </div>
-        <div class="os" data-os="windows" data-navn="Windows">
-          <p>
-            Åpne PowerShell som administrator: høyreklikk PowerShell i
-            Start-menyen og velg <b>Kjør som administrator</b>. Gjør det logget
-            inn som brukeren som har Klart, så peker stiene riktig.
-          </p>
-          <div class="cmd" data-hvor="PowerShell som administrator"><pre>New-NetFirewallRule -DisplayName "Klart - blokker utgående" `
-  -Direction Outbound -Action Block -Profile Any `
-  -Program "$env:LOCALAPPDATA\Klart\klart.exe"
-
-New-NetFirewallRule -DisplayName "Klart motor - blokker utgående" `
-  -Direction Outbound -Action Block -Profile Any `
-  -Program "$env:LOCALAPPDATA\Klart\bundled\engine\llama-server.exe"</pre></div>
-          <p class="gjor">
-            <b>Hva den gjør:</b> legger inn to regler i Windows-brannmuren som
-            blokkerer all utgående trafikk fra appen og fra motoren, på alle
-            nettverksprofiler.
-          </p>
-          <div class="cmd"><pre>Get-NetFirewallRule -DisplayName "Klart*" | Get-NetFirewallApplicationFilter</pre></div>
-          <p class="gjor"><b>Hva den gjør:</b> viser reglene som ligger inne, med stien hver av dem gjelder.</p>
-          <div class="fasit">
-            <b>Fasit:</b> to oppføringer, én med <code>klart.exe</code> og én med
-            <code>llama-server.exe</code>.
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>otool -L /Applications/Klart.app/Contents/MacOS/klart | grep -iE 'curl|CFNetwork|Network\.framework|ssl'
+nm -u /Applications/Klart.app/Contents/MacOS/klart | grep -E '_(bind|listen|accept|getaddrinfo)$'</pre></div>
+            <p class="s-fasit"><b>Fasit:</b> ingen linjer fra noen av dem.</p>
+            <p>
+              <b>Det dere vil finne, og hva det er:</b> filen har <code>socket</code> og <code>connect</code>, og ordet
+              <code>llama-server</code> står i den. Det er rester etter den lokale språkmodellen, som ble tatt ut
+              4. november 2026. Koden som snakket med den over en filsocket, ligger igjen, men pakken har ingen modell
+              å starte. Ved oppstart ser Klart etter en gammel modellprosess som kan ha blitt stående, med <code>pgrep</code>.
+              Det vil et overvåkingsverktøy legge merke til.
+            </p>
+            <p>
+              Filen er også lenket mot <code>CloudKit</code> og <code>CoreData</code>. Det kommer fra vindusbiblioteket,
+              ikke fra oss. Klart bruker ingen av dem, og har ingen iCloud-rettigheter (punkt 3).
+            </p>
           </div>
+          <p>Har dere kildekoden, er dette stedene å se:</p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>src-tauri/Cargo.toml</code></dt>
+              <dd>Ingen reqwest, hyper, rustls, native-tls eller openssl. <code>tokio</code> bygges uten <code>net</code>. Noen av navnene står i <code>Cargo.lock</code> likevel, fordi et bibliotek har dem for mobil. De bygges aldri inn. Derfor er det <code>cargo tree</code> som gjelder, ikke et søk i låsefilen.</dd>
+            </div>
+            <div>
+              <dt><code>tauri.conf.json</code></dt>
+              <dd>CSP for vinduet: <code>default-src 'self'</code> og <code>connect-src ipc: http://ipc.localhost</code>. Vinduet får bare snakke med programmet det ligger i. Ingen rammer, ingen innbygde objekter, ingen skjema ut. I tillegg stopper programmet enhver navigering bort fra seg selv.</dd>
+            </div>
+            <div>
+              <dt><code>capabilities/default.json</code></dt>
+              <dd>Vinduet er nektet å åpne adresser og stier: <code>opener:deny-open-url</code>, <code>deny-open-path</code> og <code>deny-reveal-item-in-dir</code>. Ingen http-tillegg, ingen oppdaterer.</dd>
+            </div>
+            <div>
+              <dt><code>scripts/sjekk-nett.sh</code></dt>
+              <dd>Kjøres før hvert bygg. Leser den kompilerte avhengighetsgrafen, leter etter adresser og etter <code>std::net</code> i Rust-koden, og stopper bygget hvis noe av dette kommer tilbake.</dd>
+            </div>
+          </dl>
+          <div class="cmd" data-hvor="I mappen med kildekoden"><pre>cd src-tauri &amp;&amp; cargo tree -e normal | grep -E 'reqwest|hyper|rustls|native-tls|openssl'</pre></div>
+          <p class="s-fasit"><b>Fasit:</b> ingen treff.</p>
           <p>
-            Bruker dere en egen administratorkonto, bytt
-            <code>$env:LOCALAPPDATA</code> med brukerens egen sti,
-            <code>C:\Users\&lt;bruker&gt;\AppData\Local</code>. Via Intune: lag de
-            samme to reglene i en brannmurpolicy under Endpoint security.
+            Ett sted åpner Klart en nettadresse: trykker brukeren «Kjøp lisens», ber programmet systemet
+            åpne <code>https://esbjugconsult.com/klart/aktiver?hva=kjop&amp;maskin=…</code> i brukerens egen nettleser.
+            Klart kobler seg ikke dit selv. Maskinkoden i adressen er en SHA-256 av maskinens ID, og sier ingenting
+            om brukeren eller dokumentene.
           </p>
-        </div>
-        <p>
-          Motoren er llama.cpp. Den er bygget som en HTTP-server — det er slik
-          llama.cpp er laget — og vi kjører den derfor på en filsocket i stedet
-          for en port, med en tilfeldig nøkkel appen lager ved hver oppstart, så
-          ingen annen prosess på maskinen kan bruke den. Men den kjørbare filen
-          inneholder HTTP-kode, og det skal dere få vite fra oss framfor å finne
-          det selv. Regelen over gjør spørsmålet uinteressant.
-        </p>
-        <p>
-          Når regelen er deres, trenger dere ikke ta vårt ord for noe av det
-          over.
-        </p>
-      </div>
+          <h3>Bibliotekene som leser dokumentene</h3>
+          <p>Disse tar imot filer dere ikke har laget selv, så dem vil dere kjenne til:</p>
+          <dl class="s-tabell">
+            <div><dt>PDF</dt><dd>PDFium 158, pdf.js 4.10.38 og pdf-lib 1.17.1. pdf.js kjører uten <code>eval</code>.</dd></div>
+            <div><dt>Word</dt><dd>JSZip 3.10.1 og docx-preview 0.4.1.</dd></div>
+            <div><dt>Excel</dt><dd>SheetJS (xlsx) 0.18.5.</dd></div>
+            <div><dt>Bilder</dt><dd>Apple Vision på Mac. Windows sin egen tekstgjenkjenning og Tesseract 5 på Windows.</dd></div>
+            <div><dt>Setninger</dt><dd>NorBERT 3 small, kjørt med tract-onnx 0.23.</dd></div>
+          </dl>
+          <p class="s-beviser"><b>Beviser:</b> at det ikke finnes kode i programmet som kan sende noe. Med kilden åpen for dere kan dere bygge den selv og sammenligne.</p>
+        </section>
+
+        <!-- ============ Steng den selv ============ -->
+        <section class="s-del" id="steng">
+          <h2>Steng den selv</h2>
+          <p>Stol ikke på oss. Steng utgående trafikk for Klart i brannmuren eller med MDM. Programmet virker like godt. Det er hele poenget med å bygge det slik.</p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <p>Brannmuren som følger med macOS, stopper bare innkommende trafikk. Legg stien inn i en regel i MDM-ens nettverksfilter, eller i LuLu eller Little Snitch:</p>
+            <div class="cmd" data-hvor="Sti"><pre>/Applications/Klart.app/Contents/MacOS/klart</pre></div>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Installasjonsprogrammet (.exe) prøver å legge inn regelen selv. .msi-pakken gjør det ikke. Slik ser dere om den ligger der:</p>
+            <div class="cmd"><pre>Get-NetFirewallRule -DisplayName "Klart*" | Get-NetFirewallApplicationFilter</pre></div>
+            <p class="s-fasit"><b>Fasit:</b> en regel som heter «Klart - blokker utgående», med stien til <code>Klart.exe</code>.</p>
+            <p>Mangler den, legger dere den inn slik, i PowerShell som administrator:</p>
+            <div class="cmd"><pre>New-NetFirewallRule -DisplayName "Klart - blokker utgående" `
+  -Direction Outbound -Action Block -Profile Any `
+  -Program (Get-Process klart).Path</pre></div>
+            <p>
+              Kjør den mens Klart står åpent, så finner kommandoen stien selv. Ta også med <code>tesseract.exe</code>,
+              som ligger i mappen <code>bundled</code> under Klart. Den er en egen kjørbar fil.
+              Via Intune: lag de samme reglene i en brannmurpolicy under Endpoint security.
+            </p>
+          </div>
+          <p>Når regelen er deres, trenger dere ikke ta vårt ord for noe av det over.</p>
+        </section>
+
+        <!-- ============ Disken ============ -->
+        <section class="s-del" id="disk">
+          <h2>Det som ligger på disken</h2>
+          <p>
+            Klart lagrer alt sitt i én mappe per bruker. På Mac er det
+            <code>~/Library/Application Support/no.klart.app/</code>, på Windows
+            <code>%APPDATA%\no.klart.app\</code>.
+          </p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>prosjekter/</code></dt>
+              <dd>Det brukeren har bestemt i hver mappe, og teksten Klart har lest fra filene. Det siste er personopplysninger. Alt er kryptert med AES-256-GCM, og mappene har navn som ikke kan leses tilbake til stien. Et prosjekt som ikke brukes, glemmes etter 30 dager.</dd>
+            </div>
+            <div>
+              <dt><code>pseudonym/</code></dt>
+              <dd>Nøkkelen (<code>nokkel.nokkelring</code> på Mac, <code>nokkel.dpapi</code> på Windows), tidligere nøkler som er lagt til side, og nummerboken. Nummerboken knytter koder til numre og har ingen navn.</dd>
+            </div>
+            <div>
+              <dt><code>secure-enclave.nokkel</code></dt>
+              <dd>På Mac-er med Secure Enclave: en referanse til en nøkkel i brikken. Den er ubrukelig på en annen maskin.</dd>
+            </div>
+            <div>
+              <dt><code>ror/</code></dt>
+              <dd>Brukerens egne merkinger og tekstene fra Tekstverktøy. Kryptert.</dd>
+            </div>
+            <div>
+              <dt><code>sikkerhetskopier/</code></dt>
+              <dd>Kopier av originalene, tatt før skanningen når brukeren ber om det. Innholdet i hver fil er kryptert med AES-256-GCM. <b>Fil- og mappenavnene står i klartekst.</b> Kopiene slettes ikke av seg selv. Klart minner om dem etter 30 dager.</dd>
+            </div>
+            <div>
+              <dt><code>revisjon/</code></dt>
+              <dd>Revisjonsloggen, når den er slått på. Én fil per måned, de siste 13 månedene.</dd>
+            </div>
+            <div>
+              <dt>Tre små filer</dt>
+              <dd><code>aktivering.json</code> (lisenskoden), <code>innstillinger.json</code> og <code>vindu.json</code>. Ikke kryptert, og uten noe fra dokumentene.</dd>
+            </div>
+          </dl>
+          <h3>Hvordan nøklene er beskyttet</h3>
+          <p>
+            På Mac er nøkkelen pakket inn med en annen nøkkel som ligger i nøkkelringen (tjenesten
+            <code>no.klart.pseudonym</code>), og med Secure Enclave der den finnes. På Windows brukes DPAPI for brukeren.
+            Det beskytter mot en annen bruker og mot en disk på avveie. Det beskytter ikke mot et program som
+            kjører som samme bruker. Det er grensen for både nøkkelringen og DPAPI, og dere skal vite om den.
+          </p>
+          <h3>Sikkerhetskopi og søk</h3>
+          <p>
+            <code>prosjekter/</code>, <code>sikkerhetskopier/</code> og <code>revisjon/</code> holdes utenfor Spotlight og
+            Time Machine (og Windows-søk). <code>ror/</code> og <code>pseudonym/</code> blir med i Time Machine. De er
+            kryptert, og nøkkelfilen kan bare åpnes med nøkkelringen på maskinen den kom fra.
+          </p>
+          <h3>Det Klart legger inn i systemet</h3>
+          <dl class="s-tabell">
+            <div><dt>Tjenester i Finder</dt><dd>På Mac skriver Klart fire tjenester til <code>~/Library/Services/</code> ved oppstart: «Rens med Klart», «Tilbakefør med Klart», «Rens tekst med Klart» og «Tilbakefør tekst med Klart». De to siste tar imot merket tekst fra andre programmer. Med <code>"kommandolinje": false</code> i retningslinjene fjernes alle fire.</dd></div>
+            <div><dt>Adresser og filtyper</dt><dd>Klart tar imot <code>klart://</code>-lenker, og filtypene <code>.klartlisens</code> og <code>.klartord</code>. En lenke kan foreslå en lisens. Brukeren blir alltid spurt, og en nøkkelpakke trenger fortsatt koden sin.</dd></div>
+            <div><dt>Ingenting i bakgrunnen</dt><dd>Ingen tjeneste, ingen oppstartsoppføring og ingen prosess som blir stående når vinduet lukkes.</dd></div>
+            <div><dt>Det overvåkingen vil se</dt><dd>Klart starter noen korte hjelpere fra systemet: <code>klart-hvelv</code> (nøkkelen), <code>ioreg</code> (maskinkoden), <code>id</code> og <code>scutil</code> (bruker- og maskinnavn til endringslisten), <code>tmutil</code> (holde mapper utenfor Time Machine), <code>open</code> (vise kopimappen) og <code>osascript</code> (varsler).</dd></div>
+          </dl>
+          <h3>Fjerne alt</h3>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <p>Slett programmet, og så dette:</p>
+            <div class="cmd"><pre>rm -rf ~/Library/Application\ Support/no.klart.app ~/Library/WebKit/no.klart.app ~/Library/Caches/no.klart.app
+rm -f ~/Library/Preferences/no.klart.app.plist
+rm -rf ~/Library/Services/*Klart.workflow
+security delete-generic-password -s no.klart.pseudonym</pre></div>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Avinstaller programmet, og slett så <code>%APPDATA%\no.klart.app\</code>, <code>%LOCALAPPDATA%\no.klart.app\</code> og <code>%ProgramData%\Klart\</code>.</p>
+          </div>
+          <p class="s-notis varsel">
+            <b>Ta vare på nøkkelen først.</b> Slettes datamappen uten at nøkkelen er skrevet ned eller lagret som nøkkelfil,
+            kan ingen kopi med koder føres tilbake igjen.
+          </p>
+        </section>
+
+        <!-- ============ Sentral styring ============ -->
+        <section class="s-del" id="styring">
+          <h2>Styr Klart sentralt</h2>
+          <p>
+            Én fil bestemmer det brukeren ellers velger selv. Legg den ut med MDM, Intune, gruppepolicy eller et skript.
+            Begge stedene krever administrator for å skrive, så brukeren kan ikke løse opp det dere har låst.
+          </p>
+          <dl class="s-tabell">
+            <div><dt>Mac</dt><dd><code>/Library/Application Support/Klart/retningslinjer.json</code></dd></div>
+            <div><dt>Windows</dt><dd><code>%ProgramData%\Klart\retningslinjer.json</code></dd></div>
+          </dl>
+          <div class="cmd" data-hvor="retningslinjer.json"><pre>{
+  "versjon": 1,
+  "virksomhet": "Acme AS",
+  "alltidSkjult": ["navn", "fnr", "helse"],
+  "kodeform": "kort",
+  "ansikterAlltid": true,
+  "utenSkanning": false,
+  "glemEtterDager": 30,
+  "revisjonslogg": true,
+  "nokkelEksport": false
+}</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>versjon</code></dt><dd>Må stå. Bare <code>1</code> finnes.</dd></div>
+            <div><dt><code>virksomhet</code></dt><dd>Navnet som står ved det som er låst: «Satt av Acme AS».</dd></div>
+            <div><dt><code>alltidSkjult</code></dt><dd>Gruppene som alltid skjules. De kan ikke slås av, og ingenting i dem kan settes til å stå. Gruppene heter <code>navn</code>, <code>fnr</code>, <code>kontakt</code>, <code>helse</code>, <code>setninger</code>, <code>skilt</code>, <code>penger</code>, <code>hemmelig</code>, <code>sted</code>, <code>dato</code>, <code>org</code> og <code>sak</code>.</dd></div>
+            <div><dt><code>standardGrupper</code></dt><dd>Gruppene som er på når en mappe åpnes første gang. Uten: Klarts egne.</dd></div>
+            <div><dt><code>kodeform</code></dt><dd><code>lapp</code>, <code>kort</code> eller <code>full</code>. Uten: brukeren velger.</dd></div>
+            <div><dt><code>ansikterAlltid</code></dt><dd>Ansikter pikseleres alltid, og ingen kan settes til å stå.</dd></div>
+            <div><dt><code>utenSkanning</code></dt><dd><code>false</code> krever at Klart alltid leser filene. Standard er at brukeren også kan merke alt selv.</dd></div>
+            <div><dt><code>prosjekter</code></dt><dd><code>false</code>: Klart husker ingenting om mappene mellom gangene.</dd></div>
+            <div><dt><code>glemEtterDager</code></dt><dd>Hvor lenge et ubrukt prosjekt blir liggende, 1–365. Standard er 30.</dd></div>
+            <div><dt><code>kommandolinje</code></dt><dd><code>false</code> slår av kommandolinjen og vaktmappen.</dd></div>
+            <div><dt><code>revisjonslogg</code></dt><dd>Slår på loggen. <code>revisjonsmappe</code> gir i tillegg en kopi på et fellesområde.</dd></div>
+            <div><dt><code>rapportJson</code></dt><dd>Skriver <code>rapport.json</code> ved siden av <code>rapport.txt</code> i hver kopimappe.</dd></div>
+            <div><dt><code>nokkelEksport</code></dt><dd><code>false</code>: ingen kan ta nøkkelen ut som ord eller fil. Nye maskiner meldes inn av den nøkkelansvarlige.</dd></div>
+          </dl>
+          <p>
+            Lisensen kan ligge ved siden av, i <code>lisens.klart</code>. Da trenger ingen bruker å lime inn noe.
+            Har brukeren sin egen gyldige lisens, går den foran.
+          </p>
+          <p class="s-notis varsel">
+            <b>Kan filen ikke leses, starter ikke Klart.</b> En skrivefeil, et ukjent felt eller en verdi utenfor det tillatte
+            skal ikke føre til at Klart renser med mindre enn dere bestemte. Feilmeldingen sier hvilket felt det gjelder.
+          </p>
+        </section>
+
+        <!-- ============ Nøkkelen ============ -->
+        <section class="s-del" id="nokkel">
+          <h2>Nøkkelen i en virksomhet</h2>
+          <p>
+            Kodene i kopiene kan bare gjøres om til navn med nøkkelen. I en virksomhet bør alle ha den samme,
+            ellers får samme person ulike koder hos ulike kolleger.
+          </p>
+          <dl class="s-tabell">
+            <div><dt>Nøkkelansvarlig</dt><dd>Lager virksomhetens nøkkel, deler den og melder inn kolleger.</dd></div>
+            <div><dt>Medlem</dt><dd>Bruker nøkkelen. Programmet lar ikke et medlem ta den ut. Det er en regel i programmet, ikke kryptografi: maskinen har hele nøkkelen.</dd></div>
+            <div><dt>Nøkkelpakke</dt><dd>Nøkkelen kryptert med en nøkkelkode på tolv tegn (Argon2id og AES-256-GCM). Pakken og koden sendes hver for seg. Koden kan brukes flere ganger, så behandle den som nøkkelen.</dd></div>
+            <div><dt>Innmelding uten nett</dt><dd>Kollegaens maskin lager en forespørsel. Den nøkkelansvarlige svarer med en innmelding som bare den maskinen kan åpne (X25519). En kontrollkode på seks sifre leses opp, så begge vet at de snakker med rett maskin.</dd></div>
+            <div><dt>Reserve</dt><dd>24 norske ord på papir, eller en nøkkelfil låst med en passordfrase (Argon2id og AES-256-GCM).</dd></div>
+          </dl>
+          <p class="s-notis varsel">
+            <b>Stille utrulling har en pris.</b> Dere kan legge nøkkelpakken ved siden av <code>retningslinjer.json</code>
+            og skrive nøkkelkoden i filen (<code>nokkelkode</code>). Da tar Klart nøkkelen i bruk uten at brukeren gjør noe.
+            Men da er nøkkelen ikke sikrere enn mappen: den som kan lese begge filene, har virksomhetens nøkkel.
+          </p>
+        </section>
+
+        <!-- ============ Revisjonslogg ============ -->
+        <section class="s-del" id="logg">
+          <h2>Revisjonslogg</h2>
+          <p>
+            Loggen sier hva Klart har gjort, når og av hvem. Den har ingenting fra dokumentene:
+            ingen filnavn, ingen stier og ingen verdier. Den er av til dere slår den på med
+            <code>"revisjonslogg": true</code>.
+          </p>
+          <div class="cmd" data-hvor="En linje i loggen"><pre>{"format":1,"tid":"2026-11-05T11:50:25.332Z","hendelse":"rens","via":"kommandolinjen",
+ "kilde":"DXmRKTRw4ZJMiUixyVeUYA","filer":18,"skrevet":14,"ikkeLevert":4,"steder":193,
+ "skjult":{"person":140,"fnr":19,"health":25},"kodeform":"kort","grupper":["helse","navn","fnr"],
+ "ansikter":true,"gjennomgått":false,"bruker":"ola","maskin":"OLA-MAC","klart":"0.1.0"}</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>hendelse</code></dt><dd><code>rens</code>, <code>prøve</code>, <code>skann</code>, <code>glem</code>, <code>tilbake</code> eller <code>logg</code> (endringslisten er tatt ut).</dd></div>
+            <div><dt><code>via</code></dt><dd><code>appen</code>, <code>kommandolinjen</code> eller <code>vaktmappen</code>.</dd></div>
+            <div><dt><code>kilde</code></dt><dd>Et avtrykk av mappen, regnet ut med en nøkkel på maskinen. Samme sak har samme verdi i hver linje på den maskinen, men stien kan ikke leses ut. En annen maskin gir en annen verdi for samme mappe.</dd></div>
+            <div><dt><code>bruker</code>, <code>maskin</code>, <code>tid</code></dt><dd>Settes av programmet selv, ikke av vinduet.</dd></div>
+            <div><dt>Hvor</dt><dd><code>revisjon/ÅÅÅÅ-MM.jsonl</code> i datamappen. Med <code>revisjonsmappe</code> også <code>&lt;maskin&gt;-&lt;bruker&gt;.jsonl</code> på et fellesområde. Klart oppretter ikke den mappen. Er området ikke koblet til, står det i den lokale loggen.</dd></div>
+          </dl>
+          <p class="s-notis">
+            <b>Loggen er en vanlig tekstfil.</b> Brukeren kan endre den. Trenger dere en logg som ikke kan røres,
+            pek <code>revisjonsmappe</code> til et område der brukeren bare kan legge til.
+          </p>
+        </section>
+
+        <!-- ============ Kommandolinje ============ -->
+        <section class="s-del" id="kommando">
+          <h2>Kommandolinje og vaktmappe</h2>
+          <p>
+            Samme program, uten vindu. Kanalen inn er kommandolinjen. Kanalen ut er stdout, stderr og filene
+            dere peker ut. Ingenting åpner en port.
+          </p>
+          <div class="cmd"><pre>KLART=/Applications/Klart.app/Contents/MacOS/klart
+
+$KLART skann ~/Saker/2026-114                 # les på forhånd
+$KLART rens  ~/Saker/2026-114 --ut ~/Til-KI   # lag rensede kopier
+$KLART rens  ~/Saker/2026-114 --ut ~/Til-KI --bare-endrede
+$KLART vakt  ~/Innboks --ut ~/Til-KI          # vaktmappe
+$KLART tilbake ~/Til-KI/2026-114-klar         # før tilbake med nøkkelen
+$KLART glem  ~/Saker/2026-114                 # glem alt om saken</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>--kodeform</code></dt><dd><code>lapp</code>, <code>kort</code>, <code>full</code> eller <code>svart</code>.</dd></div>
+            <div><dt><code>--grupper</code></dt><dd>Det som skal byttes ut, som <code>navn,fnr,helse</code>.</dd></div>
+            <div><dt><code>--prove</code></dt><dd>Gjør alt, også kontrollen av hver kopi, men skriver ingenting.</dd></div>
+            <div><dt><code>--uten-prosjekt</code></dt><dd>Husker ingenting, og bruker ikke det som er bestemt i vinduet.</dd></div>
+            <div><dt>Svaret</dt><dd>Én JSON-linje på stdout, med <code>format: 1</code>. Fremdriften går til stderr, bare som tall.</dd></div>
+            <div><dt>Avslutningskode</dt><dd><code>0</code>: alt er levert. <code>2</code>: noe ble holdt tilbake, fordi en kopi ikke besto kontrollen eller en fil ikke kunne leses. <code>1</code>: feil.</dd></div>
+          </dl>
+        </section>
+
+        <!-- ============ Kryptografi ============ -->
+        <section class="s-del" id="krypto">
+          <h2>Kryptografi</h2>
+          <dl class="s-tabell">
+            <div><dt>Nøkkelen</dt><dd>32 tilfeldige byte fra operativsystemet. Undernøkler med HKDF-SHA256.</dd></div>
+            <div><dt>Kodene</dt><dd>Hvem det er: HMAC-SHA256. Teksten som sto der: AES-SIV (RFC 5297), som er deterministisk og autentisert.</dd></div>
+            <div><dt>Nøkkelen på disk</dt><dd>Mac: nøkkelringen og Secure Enclave. Windows: DPAPI.</dd></div>
+            <div><dt>Nøkkelfil</dt><dd>Argon2id (64 MiB, 3 runder) og AES-256-GCM.</dd></div>
+            <div><dt>De 24 ordene</dt><dd>256 bit nøkkel og 8 bit sjekksum, 11 bit per ord, fra en liste på 2048 norske ord.</dd></div>
+            <div><dt>Innmelding</dt><dd>X25519.</dd></div>
+            <div><dt>Prosjekter, egne merkinger og tekster</dt><dd>AES-256-GCM, med nøkler fra HKDF-SHA256. Filnavnene er HMAC-avtrykk.</dd></div>
+            <div><dt>Sikkerhetskopier, og bildepunktene under feltene i en kopi</dt><dd>AES-256-GCM.</dd></div>
+            <div><dt>Lisenskoden</dt><dd>Ed25519. Signaturen sjekkes på maskinen.</dd></div>
+          </dl>
+          <p>Alt er kjente algoritmer fra åpne bibliotek (RustCrypto og dalek). Vi har ikke laget noe eget.</p>
+        </section>
+
+        <!-- ============ Systemkrav ============ -->
+        <section class="s-del" id="krav">
+          <h2>Systemkrav</h2>
+          <dl class="s-tabell">
+            <div><dt>Mac</dt><dd>macOS 13 eller nyere. Intel og Apple-prosessor i samme pakke.</dd></div>
+            <div><dt>Windows</dt><dd>Windows 10 eller 11, 64-bit med Intel eller AMD. Installeres for alle brukere, med .exe eller .msi.</dd></div>
+            <div><dt>Minne</dt><dd>Klart bruker rundt en halv gigabyte når setningsmodellen er lastet. Vi anbefaler 8 GB i maskinen.</dd></div>
+            <div><dt>Disk</dt><dd>286 MB installert på Mac. I tillegg kommer sikkerhetskopier og det Klart husker om mappene.</dd></div>
+            <div><dt>Grafikkort</dt><dd>Trengs ikke. Alt kjører på prosessoren.</dd></div>
+            <div><dt>Nett</dt><dd>Trengs ikke, verken ved installasjon, aktivering eller bruk.</dd></div>
+          </dl>
+          <p>
+            Første gang Klart leser bilder på en Mac, kan macOS bruke noen minutter på å gjøre klar sin egen
+            tekstgjenkjenning. Det skjer én gang.
+          </p>
+          <p>Svart sladd som PDF, tjenestene i Finder og lisenslenker finnes foreløpig bare på Mac.</p>
+          <p>En oppdatering er en ny installasjonsfil dere henter selv, når dere vil. Klart ser ikke etter nye versjoner.</p>
+        </section>
+
+        <!-- ============ Si fra ============ -->
+        <section class="s-del" id="si-fra">
+          <h2>Fant du noe?</h2>
+          <p>
+            Skriv til <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a>.
+            Vi svarer personlig, og vil heller høre det fra deg enn fra en kunde.
+            Se også <a href="/.well-known/security.txt">security.txt</a>.
+          </p>
+          <p class="s-dato">Sist endret 11. november 2026. Mac-fasitene er kjørt mot bygget fra 10. november 2026.</p>
+        </section>
       </main>
-
-      <footer>
-        Klart · lokal rensing av norske personopplysninger. Spørsmål om noe av
-        dette hører hjemme hos oss, ikke hos brukeren — ta kontakt, så går vi
-        gjennom det.
-      </footer>
     </div>
-    <p class="skjult" role="status" aria-live="polite" id="melding"></p>
+
+    <footer class="s-bunn">
+      <p class="s-bunn-merke"><i>Klart</i> <span>av Tidemann Esbjug</span></p>
+      <nav aria-label="Mer om Klart">
+        <a href="./">Forsiden</a>
+        <a href="pris/">Pris</a>
+        <a href="hva-klart-tar.html">Hva Klart tar</a>
+        <a href="personvern/">Personvern</a>
+        <a href="vilkar/">Vilkår</a>
+      </nav>
+      <p class="s-bunn-liten">Laget i Norge</p>
+    </footer>
 
     <script src="til-it.js"></script>
   </body>

@@ -270,353 +270,6 @@ console.info(
   }, 900);
 })();
 
-// Nedlastingen er satt på pause (KLART_NEDLASTING i wrangler.jsonc). Knappene
-// ser ut som vanlig, men et klikk viser «Kommer snart». Settes til false når
-// den nye versjonen er ute.
-(function () {
-  var PAUSE = true;
-  if (!PAUSE) return;
-  var lapp;
-  document.querySelectorAll('a[href^="/klart/last-ned/"]').forEach(function (a) {
-    a.addEventListener("click", function (e) {
-      e.preventDefault();
-      if (!lapp) {
-        lapp = document.createElement("div");
-        lapp.className = "kommer-lapp";
-        lapp.setAttribute("role", "status");
-        document.body.appendChild(lapp);
-      }
-      lapp.textContent = "Kommer snart. Den nye versjonen av Klart er rett rundt hjørnet.";
-      lapp.classList.add("synlig");
-      clearTimeout(lapp.t);
-      lapp.t = setTimeout(function () {
-        lapp.classList.remove("synlig");
-      }, 3200);
-    });
-  });
-})();
-
-// Programvinduet spiller av flyten i Klart. Går bare når vinduet er på skjermen.
-(function () {
-  var ka = document.querySelector(".ka");
-  if (!ka) return;
-
-  function visStats(byttes) {
-    function tall(n) {
-      var b = document.createElement("b");
-      b.textContent = n;
-      return b;
-    }
-    $("stats").replaceChildren(tall(6), " filer · ", tall(byttes), " av 27 byttes ut");
-  }
-  if (
-    window.matchMedia &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  )
-    return;
-
-  function $(key) {
-    return ka.querySelector('[data-ka="' + key + '"]');
-  }
-  function each(list, fn) {
-    Array.prototype.forEach.call(list, fn);
-  }
-
-  var peker = ka.querySelector(".ka-peker");
-  var sheet = ka.querySelector(".ka-sheet");
-  var rader = $("rader").children;
-  var adresse = $("adresse");
-  // Adressen er av som standard i appen («Adresse og sted»), så den lyser først når den slås på.
-  var merker = Array.prototype.filter.call(
-    ka.querySelectorAll(".ka-tekst mark"),
-    function (m) {
-      return m !== adresse;
-    }
-  );
-  var filer = [
-    "01-arbeidsavtale-acme.docx",
-    "02-vedtak-statsforvalter.pdf",
-    "03-epost-trad.eml",
-    "07-saksnotat.txt",
-    "08-kundeliste.xlsx",
-    "09-statusmote.pptx"
-  ];
-  // Reglene finner det meste i steg 1. Den lokale KI-en finner resten i steg 2.
-  var regler = [5, 8, 4, 0, 3, 0];
-  var totalt = [7, 11, 5, 0, 3, 1];
-  var treff = 0;
-  var sekunder = 0;
-
-  function treffTekst(n) {
-    return n === 1 ? "1 treff" : n + " treff";
-  }
-  function varighet(s) {
-    if (s < 60) return s + " s";
-    var rest = s % 60;
-    return Math.floor(s / 60) + " min" + (rest ? " " + rest + " s" : "");
-  }
-  function scene(navn) {
-    ka.setAttribute("data-scene", navn);
-  }
-  function tekst(key, verdi) {
-    $(key).textContent = verdi;
-  }
-  function rad(i, klasse, verdi) {
-    rader[i].className = klasse;
-    rader[i].lastChild.textContent = verdi;
-  }
-  function nå(verdi, dyp) {
-    tekst("nå", verdi);
-    $("nå").className = "ka-scan-now" + (dyp ? " deep" : "");
-  }
-  function framdrift(n, s) {
-    tekst("ferdige", n + " / 6");
-    $("meter").style.width = (n / 6) * 100 + "%";
-    sekunder += s;
-    tekst("brukt", varighet(sekunder));
-  }
-  function steg(el, klasse, tall) {
-    el.className = klasse;
-    el.firstChild.textContent = tall;
-  }
-
-  function pek(el) {
-    var r = el.getBoundingClientRect();
-    var f = ka.getBoundingClientRect();
-    if (!r.width) return skjulPeker();
-    var x = r.left - f.left + r.width * 0.6;
-    var y = r.top - f.top + r.height * 0.55;
-    if (!peker.classList.contains("på")) {
-      peker.style.transition = "none";
-      peker.style.transform =
-        "translate(" + (x + 90) + "px," + (y + 110) + "px)";
-      peker.offsetWidth;
-      peker.style.transition = "";
-      peker.classList.add("på");
-    }
-    peker.style.transform = "translate(" + x + "px," + y + "px)";
-  }
-  function skjulPeker() {
-    peker.classList.remove("på");
-  }
-  function klikk(el) {
-    el.classList.add("trykk");
-    peker.classList.remove("klikk");
-    peker.offsetWidth;
-    peker.classList.add("klikk");
-    setTimeout(function () {
-      el.classList.remove("trykk");
-    }, 180);
-  }
-
-  function nullstill() {
-    scene("start");
-    skjulPeker();
-    treff = 0;
-    sekunder = 0;
-    tekst("motor", "");
-    steg($("steg1"), "aktiv", "1");
-    steg($("steg2"), "", "2");
-    tekst("skanntittel", "Går gjennom mappen");
-    tekst(
-      "forklaring",
-      "Hver fil sjekkes mot norske regler. Etterpå leser den lokale KI-en filene grundig."
-    );
-    tekst("ferdigetekst", "filer sjekket");
-    tekst("treff", "0");
-    tekst("igjen", "Regner ut …");
-    tekst("igjentekst", "igjen av steg 1");
-    nå("", false);
-    framdrift(0, 0);
-    each(rader, function (_, i) {
-      rad(i, "venter", "I kø");
-    });
-    sheet.classList.remove("leser");
-    each(ka.querySelectorAll(".ka-tekst mark"), function (m) {
-      m.classList.remove("lit", "sladd");
-    });
-    $("sted").classList.remove("på");
-    $("adressemerke").hidden = true;
-    tekst("vis", "Vis sladdet");
-    visStats(24);
-    tekst("skrivenotat", "Lager rensede kopier ved siden av originalene…");
-  }
-
-  // Tidslinjen: hvert steg står med ventetid etter forrige steg.
-  var tidslinje = [];
-  var t = 0;
-  function etter(dt, fn) {
-    t += dt;
-    tidslinje.push([t, fn]);
-  }
-
-  etter(0, nullstill);
-  etter(900, function () {
-    pek($("velg"));
-  });
-  etter(950, function () {
-    klikk($("velg"));
-  });
-  etter(400, function () {
-    skjulPeker();
-    scene("forbered");
-  });
-  etter(1300, function () {
-    pek($("rens"));
-  });
-  etter(950, function () {
-    klikk($("rens"));
-  });
-  etter(400, function () {
-    skjulPeker();
-    scene("skann");
-    tekst("motor", "Modell");
-  });
-
-  each(rader, function (_, i) {
-    etter(i ? 0 : 450, function () {
-      rad(i, "jobber", "Sjekker mot norske regler");
-      nå("Nå: " + filer[i] + " — sjekker mot norske regler", false);
-    });
-    etter(380, function () {
-      treff += regler[i];
-      tekst("treff", treff);
-      rad(i, "sjekket", treffTekst(regler[i]) + " · venter på grundig lesing");
-      if (i === 1) tekst("igjen", "ca. 8 s");
-      framdrift(i + 1, 2);
-    });
-  });
-
-  etter(500, function () {
-    steg($("steg1"), "ferdig", "✓");
-    steg($("steg2"), "aktiv", "2");
-    tekst("skanntittel", "Leser grundig");
-    tekst(
-      "forklaring",
-      "Den lokale KI-en leser filene på nytt og finner det reglene ikke fanger. Den kjører på denne maskinen og bruker mye prosessorkraft, så maskinen kan være treg til den er ferdig."
-    );
-    tekst("ferdigetekst", "filer lest grundig");
-    tekst("igjentekst", "igjen av steg 2");
-    tekst("igjen", "ca. 54 s");
-    tekst("ferdige", "0 / 6");
-    $("meter").style.width = "0%";
-  });
-
-  each(rader, function (_, i) {
-    etter(i ? 0 : 350, function () {
-      rad(i, "jobber", "Leser grundig");
-      nå("Nå: " + filer[i] + " — leses grundig. Kan ta et minutt.", true);
-    });
-    etter(560, function () {
-      treff += totalt[i] - regler[i];
-      tekst("treff", treff);
-      tekst("igjen", i < 5 ? "ca. " + (45 - i * 9) + " s" : "—");
-      rad(i, "ok", "Ferdig · " + treffTekst(totalt[i]));
-      framdrift(i + 1, 9);
-    });
-  });
-
-  etter(650, function () {
-    scene("gjennom");
-    tekst("motor", "");
-  });
-  etter(450, function () {
-    sheet.classList.add("leser");
-  });
-  each(merker, function (m) {
-    etter(190, function () {
-      m.classList.add("lit");
-    });
-  });
-  etter(700, function () {
-    pek($("sted"));
-  });
-  etter(950, function () {
-    klikk($("sted"));
-    $("sted").classList.add("på");
-    adresse.classList.add("lit");
-    $("adressemerke").hidden = false;
-    visStats(27);
-  });
-  etter(900, function () {
-    pek($("vis"));
-  });
-  etter(950, function () {
-    klikk($("vis"));
-    tekst("vis", "Vis original");
-  });
-  each(ka.querySelectorAll(".ka-tekst mark"), function (m) {
-    etter(140, function () {
-      m.classList.add("sladd");
-    });
-  });
-  etter(1400, function () {
-    pek($("lag"));
-  });
-  etter(950, function () {
-    klikk($("lag"));
-  });
-  etter(400, function () {
-    skjulPeker();
-    scene("skriver");
-  });
-  each(filer, function (fil) {
-    etter(330, function () {
-      tekst("skrivenotat", "Skriver " + fil);
-    });
-  });
-  etter(400, function () {
-    scene("ferdig");
-  });
-  etter(3600, function () {});
-
-  // Klokken går bare mens vinduet er på skjermen og fanen er åpen.
-  var klokke = 0;
-  var neste = 0;
-  var sist = 0;
-  var timer = null;
-  var synlig = false;
-
-  function tikk() {
-    var nå = Date.now();
-    klokke += Math.min(nå - sist, 100);
-    sist = nå;
-    while (neste < tidslinje.length && tidslinje[neste][0] <= klokke) {
-      tidslinje[neste++][1]();
-    }
-    if (neste >= tidslinje.length) {
-      klokke = 0;
-      neste = 0;
-    }
-  }
-  function synk() {
-    var går = synlig && !document.hidden;
-    if (går === !!timer) return;
-    if (går) {
-      sist = Date.now();
-      timer = setInterval(tikk, 50);
-    } else {
-      clearInterval(timer);
-      timer = null;
-    }
-  }
-
-  nullstill();
-  if ("IntersectionObserver" in window) {
-    new IntersectionObserver(
-      function (entries) {
-        synlig = entries[0].isIntersecting;
-        synk();
-      },
-      { threshold: 0.25 }
-    ).observe(ka);
-  } else {
-    synlig = true;
-    synk();
-  }
-  document.addEventListener("visibilitychange", synk);
-})();
-
 // macOS-knappen i heroen er glass når man holder over. Musa er lyskilden:
 // lyset innenfra står der den er (--mx, --my), og lyset på kanten ligger på
 // siden mot den og på motsatt side (--vinkel, retningen fra midten).
@@ -723,7 +376,17 @@ document.querySelectorAll(".hero .os-mac").forEach(function (mac) {
   var tekst = document.querySelector(".hero .scene-tekst");
   var ord = document.querySelector(".hero .logo-ord");
   var privat = tekst && tekst.querySelector(".privat");
+  // Full snø (tiltar, legger seg) er av inntil videre (10.11.2026) og jobbes
+  // videre med som eget element; ?sno=pa (eller ?sno=fort for full styrke med
+  // en gang) slår den på. Uten det snør det bare mens noen laster ned
+  // (.scene-tekst.laster): minimalistisk, ovenfra, og ingenting legger seg.
+  // Når nedlastingskortet lukkes, kommer det ikke flere fnugg; de som faller,
+  // daler ut.
+  var FULL = /[?&]sno=(pa|fort)\b/.test(location.search);
   if (!c || !cm || !cl || !tekst || !ord || !privat || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  function aktiv() {
+    return FULL || tekst.classList.contains("laster");
+  }
   var x = c.getContext("2d");
   var xm = cm.getContext("2d");
   var xl = cl.getContext("2d");
@@ -763,7 +426,11 @@ document.querySelectorAll(".hero .os-mac").forEach(function (mac) {
     if (nyBredde || !f.length) {
       // Alle starter over toppen, spredt i høyden, så de faller inn etter tur.
       f = [];
-      for (var i = 0; i < grunn * MAKS; i++) f.push(nytt(-6 - Math.random() * h));
+      for (var i = 0; i < grunn * MAKS; i++) {
+        var ny = nytt(-6 - Math.random() * h);
+        ny.parkert = !FULL;
+        f.push(ny);
+      }
     }
     flater = null;
     nokkel = "";
@@ -1138,9 +805,10 @@ document.querySelectorAll(".hero .os-mac").forEach(function (mac) {
     var dt = Math.min((naa - sist) / 1000, 0.1);
     sist = naa;
     if (synlig && !document.hidden) {
-      tid += dt;
-      var st = styrke();
-      if (naa - maaltSist > 500) maal(naa);
+      if (FULL) tid += dt;
+      var st = FULL ? styrke() : 0;
+      if (FULL && naa - maaltSist > 500) maal(naa);
+      var paa = aktiv();
       x.clearRect(0, 0, w, h);
       xm.clearRect(0, 0, w, h);
       x.fillStyle = xm.fillStyle = "#fff";
@@ -1167,6 +835,12 @@ document.querySelectorAll(".hero .os-mac").forEach(function (mac) {
       } else frys = 0;
       for (var i = 0; i < antall; i++) {
         var p = f[i];
+        if (p.parkert) {
+          // Venter over toppen til det skal snø; slippes da ovenfra, spredt i
+          // høyden så de ikke kommer som en vegg.
+          if (!paa) continue;
+          Object.assign(p, nytt(-6 - Math.random() * h), { parkert: false });
+        }
         if (fart > 0.5) {
           var ax = p.x - mus.x, ay = p.y - mus.y, dist = Math.hypot(ax, ay);
           if (dist < R && dist > 0) {
@@ -1181,7 +855,13 @@ document.querySelectorAll(".hero .os-mac").forEach(function (mac) {
         p.y += p.v * (1 + st * 0.3) + p.dy;
         p.s += 0.012;
         p.x += Math.sin(p.s) * (0.12 + p.z * 0.25) + p.dx;
-        if (p.y > h + 6 || lander(p, forrigeY, st)) Object.assign(p, nytt(-6 - Math.random() * 40));
+        if (p.y > h + 6 || lander(p, forrigeY, st)) {
+          if (!paa) {
+            p.parkert = true;
+            continue;
+          }
+          Object.assign(p, nytt(-6 - Math.random() * 40));
+        }
         if (p.x < -8) p.x = w + 8;
         else if (p.x > w + 8) p.x = -8;
         prikk(p.foran && iKort(p) ? xm : x, p, stor, st);
@@ -1202,4 +882,180 @@ document.querySelectorAll(".hero .os-mac").forEach(function (mac) {
     synlig = e[0].isIntersecting;
   }).observe(c);
   requestAnimationFrame(tegn);
+})();
+
+// Nedlastingskortet: når de klikker Windows, Mac eller Linux i heroen, blir
+// kortet et eget nedlastingskort (CSS: .scene-tekst.laster). Lyset rundt
+// kanten (--p) og prosenten følger nedlastingen; ferdig gir en hake og neste
+// steg. Foreløpig simulert: bare lokalt (localhost) eller med ?nedlasting=sim,
+// så ekte nedlastinger på nettet ikke berøres. Den ekte framdriften kommer
+// senere via en service worker som teller bytene.
+(function () {
+  var tekst = document.querySelector(".hero .scene-tekst");
+  var kort = tekst && tekst.querySelector("[data-nedlasting]");
+  if (!kort) return;
+  var SIMULER = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) || /[?&]nedlasting=sim\b/.test(location.search);
+  if (!SIMULER) return;
+
+  var SYSTEM = {
+    windows: { navn: "Windows", fil: "Klart-for-Windows-0.1.0.exe", mb: 168, neste: "Åpne filen for å installere Klart." },
+    mac: { navn: "Mac", fil: "Klart-for-Mac-0.1.0.dmg", mb: 212, neste: "Åpne filen og dra Klart over i Programmer." },
+    linux: { navn: "Linux", fil: "Klart-for-Linux-0.1.0.AppImage", mb: 190, neste: "Gjør filen kjørbar og åpne den." },
+  };
+  var merke = kort.querySelector("[data-merke]");
+  var prosentEl = kort.querySelector("[data-prosent]");
+  var statusEl = kort.querySelector("[data-status]");
+  var ferdigEl = kort.querySelector("[data-ferdig]");
+  var tal = new Intl.NumberFormat("nb-NO", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  var hele = new Intl.NumberFormat("nb-NO", { maximumFractionDigits: 0 });
+  var jobb = 0;
+
+  function vis(p) {
+    tekst.style.setProperty("--p", p.toFixed(2) + "%");
+    prosentEl.textContent = Math.floor(p);
+  }
+
+  function start(hva) {
+    var sys = SYSTEM[hva];
+    if (!sys) return;
+    var min = ++jobb;
+    kort.querySelector("[data-os]").textContent = sys.navn;
+    kort.querySelector("[data-fil]").textContent = sys.fil;
+    kort.querySelector("[data-neste]").textContent = sys.neste;
+    // Mac har ikke noe merke; Windows fargeringen, Linux pingvinen.
+    merke.className = "nedlasting-merke " + hva.slice(0, 3);
+    merke.hidden = hva === "mac";
+    merke.textContent = "";
+    if (hva === "linux") {
+      var pingvin = tekst.querySelector(".os-pingvin svg");
+      if (pingvin) merke.appendChild(pingvin.cloneNode(true));
+    }
+    kort.classList.remove("ferdig");
+    tekst.classList.remove("lastet");
+    ferdigEl.hidden = true;
+    statusEl.textContent = "Starter …";
+    vis(0);
+    kort.hidden = false;
+    tekst.classList.add("laster");
+
+    // Ekte fil lokalt: hent den og tell bytene som kommer. Finnes ikke filen
+    // (Linux ennå), simuleres det.
+    ekte(hva, sys, min).catch(function () {
+      if (min === jobb) simuler(sys, min);
+    });
+  }
+
+  // Ekte nedlasting, målt: bytene telles etter hvert som de kommer, og ringen,
+  // prosenten, MB, farten og tiden igjen regnes av dem. Bytene kastes etter
+  // hvert (testen skal måle, ikke lagre).
+  var MB = 1024 * 1024;
+  function ekte(hva, sys, min) {
+    var adresse = "/klart/last-ned/" + hva + location.search.replace(/^\?/, "?").replace(/^$/, "");
+    return fetch(adresse, { cache: "no-store" }).then(function (svar) {
+      var total = +svar.headers.get("content-length");
+      if (!svar.ok || !svar.body || !total) throw new Error("ingen fil");
+      var leser = svar.body.getReader();
+      var lastet = 0, rolig = 0, igjenRolig = 0, skrevet = 0, startet = performance.now();
+      var punkter = [[startet, 0]];
+      var vist = 0;
+      (function tegnRing() {
+        if (min !== jobb) return;
+        vist += ((lastet / total) * 100 - vist) * 0.25;
+        if (!kort.classList.contains("ferdig")) {
+          vis(vist);
+          requestAnimationFrame(tegnRing);
+        }
+      })();
+      function les() {
+        return leser.read().then(function (r) {
+          if (min !== jobb) {
+            leser.cancel();
+            return;
+          }
+          var naa = performance.now();
+          if (r.done) {
+            vis(100);
+            statusEl.textContent = hele.format(Math.round(total / MB)) + " MB på " + ((naa - startet) / 1000).toFixed(1).replace(".", ",") + " s";
+            tekst.classList.add("lastet");
+            kort.classList.add("ferdig");
+            ferdigEl.hidden = false;
+            return;
+          }
+          lastet += r.value.byteLength;
+          // Fart over de siste to sekundene.
+          punkter.push([naa, lastet]);
+          while (punkter.length > 2 && naa - punkter[0][0] > 2000) punkter.shift();
+          var dt = (naa - punkter[0][0]) / 1000;
+          var fart = dt > 0.2 ? (lastet - punkter[0][1]) / MB / dt : 0;
+          if (fart > 0) {
+            rolig = rolig ? rolig + (fart - rolig) * 0.1 : fart;
+            var igjen = (total - lastet) / MB / rolig;
+            igjenRolig = igjenRolig ? igjenRolig + (igjen - igjenRolig) * 0.1 : igjen;
+          }
+          if (naa - skrevet > 500) {
+            skrevet = naa;
+            statusEl.textContent =
+              hele.format(Math.floor(lastet / MB)) + " av " + hele.format(Math.round(total / MB)) + " MB · " +
+              (rolig ? tal.format(rolig) + " MB/s · " : "") +
+              (naa - startet < 1200 || !rolig ? "beregner tid …" : igjenRolig < 5 ? "noen sekunder igjen" : "ca. " + Math.ceil(igjenRolig) + " s igjen");
+          }
+          return les();
+        });
+      }
+      return les();
+    });
+  }
+
+  function simuler(sys, min) {
+    // Simulert: ca. 12 sekunder, med ujevn fart som en ekte linje. Farten og
+    // tiden igjen jevnes ut over noen sekunder, og statuslinja skrives bare to
+    // ganger i sekundet, så den står rolig.
+    var lastet = 0, vist = 0, fart = (sys.mb / 11) * 0.6, rolig = 0, igjenRolig = 0, skrevet = 0, startet = performance.now(), forrige = startet;
+    function steg(naa) {
+      if (min !== jobb) return;
+      var dt = Math.min((naa - forrige) / 1000, 0.1);
+      forrige = naa;
+      var maal = sys.mb / 11 * (0.7 + Math.random() * 0.6);
+      fart += (maal - fart) * 0.05;
+      lastet = Math.min(sys.mb, lastet + fart * dt);
+      var p = (lastet / sys.mb) * 100;
+      vist += (p - vist) * 0.25;
+      vis(vist);
+      // Jevnet fart: starter fra første målte fart, så tiden igjen ikke blir
+      // urimelig i begynnelsen.
+      rolig = rolig ? rolig + (fart - rolig) * Math.min(1, dt * 0.8) : fart;
+      var igjen = rolig > 0.5 ? (sys.mb - lastet) / rolig : 0;
+      igjenRolig = igjenRolig ? igjenRolig + (igjen - igjenRolig) * Math.min(1, dt * 0.8) : igjen;
+      if (naa - skrevet > 500 && rolig > 0.5) {
+        skrevet = naa;
+        statusEl.textContent =
+          hele.format(Math.floor(lastet)) + " av " + sys.mb + " MB · " + tal.format(rolig) + " MB/s · " +
+          (naa - startet < 1200 ? "beregner tid …" : igjenRolig < 5 ? "noen sekunder igjen" : "ca. " + Math.ceil(igjenRolig) + " s igjen");
+      }
+      if (lastet >= sys.mb && vist > 99.6) {
+        vis(100);
+        tekst.classList.add("lastet");
+        kort.classList.add("ferdig");
+        ferdigEl.hidden = false;
+        return;
+      }
+      requestAnimationFrame(steg);
+    }
+    requestAnimationFrame(steg);
+  }
+
+  function tilbake() {
+    jobb++;
+    tekst.classList.remove("laster", "lastet");
+    tekst.style.removeProperty("--p");
+    kort.hidden = true;
+  }
+
+  tekst.querySelectorAll(".privat .get .btn.os").forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      e.preventDefault();
+      start(a.getAttribute("href").split("/").pop());
+    });
+  });
+  kort.querySelector("[data-tilbake]").addEventListener("click", tilbake);
 })();
