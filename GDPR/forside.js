@@ -895,10 +895,11 @@ document.querySelectorAll(".hero .os-mac, .v-hent .os-mac").forEach(function (ma
 // er kommet, lagres filen (nettleseren får den som en vanlig nedlasting).
 // Lokalt (localhost) eller med ?nedlasting=sim måles det bare: bytene kastes,
 // og finnes ikke filen, simuleres det.
-(function () {
-  var tekst = document.querySelector(".hero .scene-tekst");
-  var kort = tekst && tekst.querySelector("[data-nedlasting]");
-  if (!kort) return;
+// Samme kort to steder: i heroen og i kortet nederst på siden (eieren 11.11.2026: nedlastingen
+// nederst skal vises der, ikke sende folk til toppen). `tekst` er flata som får .laster/.lastet
+// og --p, `kort` er nedlastingsinnholdet i den, `knapper` er lenkene som starter.
+function nedlastingskort(tekst, kort, knapper) {
+  if (!tekst || !kort) return;
   var SIMULER = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) || /[?&]nedlasting=sim\b/.test(location.search);
 
   var SYSTEM = {
@@ -1081,7 +1082,7 @@ document.querySelectorAll(".hero .os-mac, .v-hent .os-mac").forEach(function (ma
   // Knappene i kortet for virksomheter gir samme nedlastingskort: kortet deres viker
   // (har-svar tas av) mens nedlastingen vises, og kommer tilbake med «Tilbake».
   var fraSvar = false;
-  tekst.querySelectorAll(".privat .get .btn.os, .orgport-svar .get .btn.os").forEach(function (a) {
+  knapper.forEach(function (a) {
     a.addEventListener("click", function (e) {
       e.preventDefault();
       if (tekst.classList.contains("har-svar")) {
@@ -1091,13 +1092,11 @@ document.querySelectorAll(".hero .os-mac, .v-hent .os-mac").forEach(function (ma
       start(a.getAttribute("href").split("/").pop());
     });
   });
-  // Knappene nederst på siden: opp til heroen, og nedlastingen vises i kortet der.
-  document.querySelectorAll("[data-v-hent] a").forEach(function (a) {
-    a.addEventListener("click", function (e) {
-      e.preventDefault();
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      start(a.getAttribute("href").split("/").pop());
-    });
-  });
   kort.querySelector("[data-tilbake]").addEventListener("click", tilbake);
+}
+(function () {
+  var hero = document.querySelector(".hero .scene-tekst");
+  if (hero) nedlastingskort(hero, hero.querySelector("[data-nedlasting]"), hero.querySelectorAll(".privat .get .btn.os, .orgport-svar .get .btn.os"));
+  var bunn = document.querySelector(".v-hent-kort");
+  if (bunn) nedlastingskort(bunn, bunn.querySelector("[data-nedlasting]"), bunn.querySelectorAll("[data-v-hent] a"));
 })();

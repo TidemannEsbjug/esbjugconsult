@@ -2235,3 +2235,42 @@ footer.v-bunn {
     width: 156px;
   }
 }
+
+/* Nedlastingen i kortet nederst: det vanlige innholdet viker, og samme nedlastingskort som i
+   heroen står der, med ringen rundt kanten (--p settes av forside.js). */
+.v-hent-kort.laster .v-hent-inn {
+  display: none;
+}
+
+.v-hent-kort > .nedlasting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  text-align: center;
+  color: #fff;
+  animation: nedlasting-inn 420ms var(--v-myk) 120ms both;
+}
+
+.v-hent-kort > .nedlasting[hidden] {
+  display: none;
+}
+
+.v-hent-kort.laster::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2.5px;
+  background: conic-gradient(from 0deg, #fff 0 var(--p, 0%), rgba(255, 255, 255, 0.14) var(--p, 0%) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.55));
+  pointer-events: none;
+}
+
+.v-hent-kort.laster.lastet::before {
+  background: #fff;
+}
