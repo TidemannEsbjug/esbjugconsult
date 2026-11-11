@@ -174,8 +174,10 @@ export async function handleTest(request, env, url) {
     const skjema = await request.formData().catch(() => null);
     const passord = skjema && skjema.get("passord");
     const merke = await testMerke(env);
+    // Fire raske trykk på merket gir også tilgang, for telefoner uten tastatur (eieren 11.11.2026).
+    const fireTrykk = skjema && skjema.get("trykk") === "4";
     // Store og små bokstaver teller ikke: telefoner gjør gjerne første bokstav stor.
-    if (merke && typeof passord === "string" && passord.trim().toLowerCase() === String(env.KLART_TESTPASSORD).toLowerCase()) {
+    if (merke && (fireTrykk || (typeof passord === "string" && passord.trim().toLowerCase() === String(env.KLART_TESTPASSORD).toLowerCase()))) {
       return new Response(null, {
         status: 303,
         headers: { ...ingenLager, location: "/klart/", "set-cookie": `klart_test=${merke}; Path=/; Max-Age=2592000; HttpOnly; Secure; SameSite=Lax` },

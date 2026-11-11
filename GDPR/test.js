@@ -39,9 +39,24 @@
   if (!merke || !skjema) return;
   var lytter = false;
   var skrevet = "";
+  // Fire raske trykk på merket logger inn uten passord, for telefonen (eieren 11.11.2026).
+  var trykk = [];
   merke.addEventListener("click", function () {
     lytter = true;
     skrevet = "";
+    var naa = Date.now();
+    trykk = trykk.filter(function (t) {
+      return naa - t < 2500;
+    });
+    trykk.push(naa);
+    if (trykk.length >= 4) {
+      var felt = document.createElement("input");
+      felt.type = "hidden";
+      felt.name = "trykk";
+      felt.value = "4";
+      skjema.appendChild(felt);
+      skjema.submit();
+    }
   });
   document.addEventListener("keydown", function (e) {
     if (!lytter || e.metaKey || e.ctrlKey || e.altKey) return;
