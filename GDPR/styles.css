@@ -4149,3 +4149,23 @@ footer {
     text-underline-offset: 3px;
   }
 }
+
+/* Krystallen over «Klart» i heroen vises bare på mobil og nettbrett, som på
+   nedtellingssiden (eieren 11.11.2026). */
+.hero-ikon {
+  display: none;
+}
+@media (hover: none) and (pointer: coarse) {
+  .hero .scene .scene-tekst > h1.hero-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .hero-ikon {
+    display: block;
+    width: 88px;
+    height: auto;
+    filter: drop-shadow(0 10px 24px rgba(10, 20, 34, 0.35));
+  }
+}
