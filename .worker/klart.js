@@ -181,7 +181,7 @@ export async function handleTest(request, env, url) {
         headers: { ...ingenLager, location: "/klart/", "set-cookie": `klart_test=${merke}; Path=/; Max-Age=2592000; HttpOnly; Secure; SameSite=Lax` },
       });
     }
-    return new Response(null, { status: 303, headers: { ...ingenLager, location: "/klart/?feil" } });
+    return new Response(null, { status: 303, headers: { ...ingenLager, location: "/klart/" } });
   }
   if (await harTest(request, env)) return new Response(null, { status: 303, headers: { ...ingenLager, location: "/klart/" } });
   // Bare sider får passordskjemaet. Et skjult stilark, bilde eller skript får 404, ikke HTML.
