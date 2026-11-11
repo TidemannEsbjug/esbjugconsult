@@ -900,7 +900,7 @@ document.querySelectorAll(".hero .os-mac").forEach(function (mac) {
   var SYSTEM = {
     windows: { navn: "Windows", fil: "Klart.exe", mb: 168, neste: "Åpne filen for å installere Klart." },
     mac: { navn: "Mac", fil: "Klart.dmg", mb: 212, neste: "Åpne filen og dra Klart over i Programmer." },
-    linux: { navn: "Linux", fil: "Klart.deb", mb: 200, neste: "Åpne filen for å installere Klart." },
+    linux: { navn: "Linux", fil: "Klart_0.1.0_amd64.deb", mb: 200, neste: "Åpne filen for å installere Klart." },
   };
   var merke = kort.querySelector("[data-merke]");
   var prosentEl = kort.querySelector("[data-prosent]");
