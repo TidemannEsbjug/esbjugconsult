@@ -3,26 +3,29 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Klart — test</title>
+    <title>Klart</title>
     <meta name="robots" content="noindex" />
-    <meta name="theme-color" content="#eef3fb" />
+    <meta name="theme-color" content="#0a52be" />
     <!--
-      Inngangen til testversjonen av /klart mens «Kommer snart» står ute for alle andre.
-      Riktig passord gir en informasjonskapsel, og da viser workeren de ekte sidene og
-      slipper nedlastingene gjennom (handleTest og harTest i .worker/klart.js).
-      Passordet er hemmeligheten KLART_TESTPASSORD, ikke noe i repoet.
+      Passordsiden på /klart mens siden ikke er åpen for alle (KLART_SNART i wrangler.jsonc).
+      Riktig passord gir en informasjonskapsel, og da viser workeren de ekte sidene og slipper
+      nedlastingene gjennom (handleTest og harTest i .worker/klart.js). Passordet er
+      hemmeligheten KLART_TESTPASSORD, ikke noe i repoet. Samme drakt som heroen: vinterbildet,
+      «Klart» i Literata kursiv og det havblå glasskortet med hvit skrift.
     -->
     <link rel="icon" type="image/png" href="/klart/favicon.png" />
     <link rel="stylesheet" href="/klart/fonts.css" />
-    <link rel="stylesheet" href="/klart/kommer-snart.css" />
     <link rel="stylesheet" href="/klart/test.css" />
   </head>
   <body>
-    <main class="scene">
+    <main class="inngang">
       <img class="bilde" src="/klart/assets/hero-vinter.jpg" width="2400" height="1600" alt="" aria-hidden="true" />
-      <div class="ord">
-        <p class="merke">Klart · test</p>
-        <form class="inn" method="post" action="/klart/test">
+      <div class="innhold">
+        <h1 class="merke">
+          <img class="ikon" src="/klart/assets/klart-ikon.png" width="256" height="256" alt="" aria-hidden="true" />
+          <span>Klart</span>
+        </h1>
+        <form class="kort" method="post" action="/klart/test">
           <label for="passord">Passord</label>
           <div class="rad">
             <input id="passord" name="passord" type="password" autocomplete="current-password" autofocus required />

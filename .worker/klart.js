@@ -171,9 +171,11 @@ export async function handleTest(request, env, url) {
         headers: { ...ingenLager, location: "/klart/", "set-cookie": `klart_test=${merke}; Path=/; Max-Age=2592000; HttpOnly; Secure; SameSite=Lax` },
       });
     }
-    return new Response(null, { status: 303, headers: { ...ingenLager, location: "/klart/test?feil" } });
+    return new Response(null, { status: 303, headers: { ...ingenLager, location: "/klart/?feil" } });
   }
   if (await harTest(request, env)) return new Response(null, { status: 303, headers: { ...ingenLager, location: "/klart/" } });
+  // Bare sider får passordskjemaet. Et skjult stilark, bilde eller skript får 404, ikke HTML.
+  if (/\.[a-z0-9]+$/i.test(url.pathname) && !/\.html$/i.test(url.pathname)) return new Response("Finnes ikke.", { status: 404, headers: ingenLager });
   const side = await env.ASSETS.fetch(new Request(new URL("/GDPR/test", url)));
   let html = await side.text();
   if (url.searchParams.has("feil")) html = html.replace('<p class="feil" hidden>', '<p class="feil">');

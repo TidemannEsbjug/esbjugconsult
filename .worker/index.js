@@ -85,14 +85,20 @@ export default {
       // ellers står en kunde med en lisenskode og kommer ingen vei — og siden
       // trenger fonten, ikonet og bildet sitt. Alt annet får forsiden.
       // Åpne igjen: fjern KLART_SNART og de to linjene som bruker den.
-      const ÅPENT = /^\/(?:aktiver(?:\/.*)?|favicon\.png|fonts\.css|fonts\/.*|kommer-snart\.css|test\.css|assets\/hero-vinter\.jpg)$/;
+      const ÅPENT = /^\/(?:aktiver(?:\/.*)?|favicon\.png|fonts\.css|fonts\/.*|kommer-snart\.css|test\.css|assets\/hero-vinter\.jpg|assets\/klart-ikon\.png)$/;
       // Inngangen til testversjonen (passord), se handleTest i klart.js.
       if (rest === "/test" || rest === "/test/") return medHoder(await handleTest(request, env, url));
+      // Logg ut av testversjonen: kapselen slettes, og /klart viser passordet igjen.
+      if (rest === "/ut" || rest === "/ut/") {
+        return medHoder(new Response(null, { status: 303, headers: { location: "/klart/", "cache-control": "no-store", "set-cookie": "klart_test=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax" } }));
+      }
       const fil = new URL(url);
       // Uten .html: Assets svarer 307 til adressa uten endelse, og den ville
       // kommet hit igjen og blitt skrevet om på nytt — en evig runddans.
       // Med testkapselen (riktig passord på /klart/test) vises de ekte sidene.
       const snart = env.KLART_SNART === "ja" && !ÅPENT.test(rest) && !(await harTest(request, env));
+      // Uten kapselen får alt som er skjult passordsiden (ikke lenger «Kommer snart»; eieren 11.11.2026).
+      if (snart) return medHoder(await handleTest(request, env, url));
       fil.pathname = "/GDPR" + (snart ? "/kommer-snart" : rest);
       let svar = await env.ASSETS.fetch(new Request(fil, request));
       if (snart) {
