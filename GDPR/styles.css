@@ -4198,3 +4198,14 @@ html {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
+
+/* Himmelen øverst i heroen toner over i én farge (#6593c3, målt øverst i bildet), så den går
+   sømløst over i linjen øverst på telefonen, som har samme farge (eieren 11.11.2026). */
+.hero .scene-himmel {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: -2;
+  height: clamp(140px, 22%, 260px);
+  background: linear-gradient(180deg, #6593c3 0%, #6593c3 22%, rgba(101, 147, 195, 0.6) 55%, rgba(101, 147, 195, 0) 100%);
+  pointer-events: none;
+}
