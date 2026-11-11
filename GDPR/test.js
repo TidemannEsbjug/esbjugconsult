@@ -5,16 +5,20 @@
 // lastes siden på nytt og viser den ekte forsiden.
 (function () {
   var el = document.querySelector("[data-til]");
-  var tall = el && el.querySelector("[data-tall]");
   var til = el && Date.parse(el.getAttribute("data-til"));
-  if (!tall || !til) return;
+  var t = el && el.querySelector('[data-del="t"]');
+  var m = el && el.querySelector('[data-del="m"]');
+  var s = el && el.querySelector('[data-del="s"]');
+  if (!til || !t || !m || !s) return;
   function to(n) {
     return (n < 10 ? "0" : "") + n;
   }
   var lastet = false;
   function tikk() {
     var igjen = Math.max(0, Math.floor((til - Date.now()) / 1000));
-    tall.textContent = to(Math.floor(igjen / 3600)) + ":" + to(Math.floor((igjen % 3600) / 60)) + ":" + to(igjen % 60);
+    t.textContent = to(Math.floor(igjen / 3600));
+    m.textContent = to(Math.floor((igjen % 3600) / 60));
+    s.textContent = to(igjen % 60);
     if (igjen === 0 && !lastet) {
       lastet = true;
       // Litt slakk, så workerens klokke også har passert tidspunktet.

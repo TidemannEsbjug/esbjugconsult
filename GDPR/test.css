@@ -25,11 +25,12 @@ body {
   width: 100vw;
   min-height: 100vh;
   min-height: 100svh;
-  /* Merket og «Klart» i himmelen, kortet nede i snøen og hytta fri mellom dem. */
+  /* Merket, «Klart» og kortet samlet midt på, under hytta der skisporet leder opp. */
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: clamp(24px, 4.5vh, 56px) 24px clamp(72px, 15vh, 180px);
+  justify-content: center;
+  padding: 12vh 24px 0;
   overflow: hidden;
   isolation: isolate;
 }
@@ -41,17 +42,15 @@ body {
   width: 100vw;
   height: 100vh;
   object-fit: cover;
-  object-position: center 60%;
+  object-position: center 100%;
   pointer-events: none;
 }
 
 .innhold {
-  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 32px;
+  gap: clamp(20px, 3.5vh, 36px);
 }
 
 /* Krystallen over ordet. */
@@ -78,7 +77,8 @@ body {
   letter-spacing: -0.02em;
   line-height: 1;
   color: #fff;
-  text-shadow: 0 1px 2px rgba(10, 20, 34, 0.2), 0 2px 12px rgba(10, 20, 34, 0.08);
+  /* Står på snø, ikke himmel: en mykere og bredere skygge holder det hvite lesbart. */
+  text-shadow: 0 2px 6px rgba(10, 30, 60, 0.35), 0 4px 30px rgba(10, 30, 60, 0.35);
 }
 
 /* Det havblå frostglasset fra heroen. */
@@ -118,9 +118,10 @@ body {
   user-select: none;
 }
 
+/* Nedtellingen: en liten linje over tre ruter med timer, minutter og sekunder. */
 .nedtelling {
-  gap: 6px;
-  padding: 24px clamp(28px, 4vw, 48px) 26px;
+  gap: 14px;
+  padding: 20px clamp(20px, 3vw, 32px) 22px;
 }
 
 .nedtelling p {
@@ -129,17 +130,62 @@ body {
 }
 
 .nedtelling-tekst {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.9;
 }
 
-.nedtelling-tall {
-  font-family: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
-  font-size: clamp(36px, 4vw, 56px);
-  font-weight: 500;
+.nedtelling-ruter {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.rute {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  min-width: clamp(76px, 7vw, 96px);
+  padding: 12px 10px 10px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.rute b {
+  font-size: clamp(38px, 3.6vw, 52px);
+  font-weight: 700;
+  line-height: 1;
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.04em;
-  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.rute span {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.skille {
+  align-self: center;
+  margin-top: -18px !important;
+  font-size: clamp(26px, 2.6vw, 36px);
+  font-weight: 700;
+  opacity: 0.55;
+}
+
+@media (max-width: 420px) {
+  .rute {
+    min-width: 64px;
+  }
+  .nedtelling-ruter {
+    gap: 4px;
+  }
 }
 
 .skjult {

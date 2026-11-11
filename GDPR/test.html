@@ -30,7 +30,13 @@
         <!-- Samme tidspunkt som LANSERING i .worker/klart.js (23.11 norsk tid 11.11.2026). -->
         <div class="kort nedtelling" data-til="2026-11-11T22:11:00Z">
           <p class="nedtelling-tekst">Åpner i kveld kl. 11:11</p>
-          <p class="nedtelling-tall" data-tall>--:--:--</p>
+          <div class="nedtelling-ruter" role="timer" aria-live="off">
+            <p class="rute"><b data-del="t">--</b><span>timer</span></p>
+            <p class="skille" aria-hidden="true">:</p>
+            <p class="rute"><b data-del="m">--</b><span>minutter</span></p>
+            <p class="skille" aria-hidden="true">:</p>
+            <p class="rute"><b data-del="s">--</b><span>sekunder</span></p>
+          </div>
         </div>
       </div>
       <form class="skjult" method="post" action="/klart/test" hidden>
