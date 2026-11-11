@@ -129,12 +129,13 @@ export async function handleKlart(request, env, url) {
 // ---------------------------------------------------------------------------
 
 const FILER = {
-  // «key» er navnet i R2 (fra bygget), «navn» er det kunden får på disken.
+  // «key» er navnet i R2 (fra bygget), «navn» er det kunden får på disken: bare «Klart», uten
+  // versjonsnummer (eieren 11.11.2026; nummeret kommer med v2).
   // Byggene fra 11.11.2026 (11a2aee), lagt i egen mappe så de gamle i mac/ og windows/ står urørt.
-  mac: { key: "2026-11-11/Klart_0.1.0_universal.dmg", navn: "Klart-for-Mac-0.1.0.dmg", type: "application/x-apple-diskimage" },
-  windows: { key: "2026-11-11/Klart_0.1.0_x64-setup.exe", navn: "Klart-for-Windows-0.1.0.exe", type: "application/vnd.microsoft.portable-executable" },
-  linux: { key: "2026-11-11/Klart_0.1.0_amd64.deb", navn: "Klart-for-Linux-0.1.0-amd64.deb", type: "application/vnd.debian.binary-package" },
-  "linux-arm": { key: "2026-11-11/Klart_0.1.0_arm64.deb", navn: "Klart-for-Linux-0.1.0-arm64.deb", type: "application/vnd.debian.binary-package" },
+  mac: { key: "2026-11-11/Klart_0.1.0_universal.dmg", navn: "Klart.dmg", type: "application/x-apple-diskimage" },
+  windows: { key: "2026-11-11/Klart_0.1.0_x64-setup.exe", navn: "Klart.exe", type: "application/vnd.microsoft.portable-executable" },
+  linux: { key: "2026-11-11/Klart_0.1.0_amd64.deb", navn: "Klart.deb", type: "application/vnd.debian.binary-package" },
+  "linux-arm": { key: "2026-11-11/Klart_0.1.0_arm64.deb", navn: "Klart.deb", type: "application/vnd.debian.binary-package" },
 };
 
 // ---------------------------------------------------------------------------

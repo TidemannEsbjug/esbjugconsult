@@ -898,9 +898,9 @@ document.querySelectorAll(".hero .os-mac").forEach(function (mac) {
   var SIMULER = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) || /[?&]nedlasting=sim\b/.test(location.search);
 
   var SYSTEM = {
-    windows: { navn: "Windows", fil: "Klart-for-Windows-0.1.0.exe", mb: 168, neste: "Åpne filen for å installere Klart." },
-    mac: { navn: "Mac", fil: "Klart-for-Mac-0.1.0.dmg", mb: 212, neste: "Åpne filen og dra Klart over i Programmer." },
-    linux: { navn: "Linux", fil: "Klart-for-Linux-0.1.0-amd64.deb", mb: 200, neste: "Åpne filen for å installere Klart." },
+    windows: { navn: "Windows", fil: "Klart.exe", mb: 168, neste: "Åpne filen for å installere Klart." },
+    mac: { navn: "Mac", fil: "Klart.dmg", mb: 212, neste: "Åpne filen og dra Klart over i Programmer." },
+    linux: { navn: "Linux", fil: "Klart.deb", mb: 200, neste: "Åpne filen for å installere Klart." },
   };
   var merke = kort.querySelector("[data-merke]");
   var prosentEl = kort.querySelector("[data-prosent]");
