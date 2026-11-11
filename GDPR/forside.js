@@ -254,7 +254,7 @@ console.info(
     io.observe(el);
   });
   // Sikkerhetsnett. Kommer det ingen beskjed fra IntersectionObserver, står
-  // siden helt tom — alt innhold ligger på opacity: 0 og venter. Det skjer i
+  // siden helt tom - alt innhold ligger på opacity: 0 og venter. Det skjer i
   // innebygde nettlesere (WKWebView) og når vinduet ennå ikke har fått
   // størrelse når siden lastes. Etter et øyeblikk viser vi derfor alt som
   // faktisk er innenfor skjermen, og lar resten bli som før på rulling.

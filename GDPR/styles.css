@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Klart — landingsside
+   Klart - landingsside
    Rolig, lys flate med god luft. Programvinduet er det eneste mørke objektet.
    ========================================================================== */
 
@@ -457,7 +457,7 @@ section {
 
 /* Overskriften ligger rett på fotografiet, og himmelen skifter fra lys til
    mørk over bildet. Bak bokstavene ligger en dis: tre myke ellipser som
-   overlapper hverandre på skrå, så kanten aldri blir en firkant — den tynnes
+   overlapper hverandre på skrå, så kanten aldri blir en firkant - den tynnes
    ut som en sky. Et jevnt text-shadow ble prøvd først og forkastet: uansett
    hvor mykt det var, la det seg som en rute rundt linja. Det tetteste laget
    er igjen, bare for kanten på bokstavene. */
@@ -466,7 +466,7 @@ section {
   color: #fff;
   /* Hvit skrift rett på fotografiet. Tre lag mørk skygge gir kant og løfter
      den fra flata: ett tett for kanten, to myke for dybden. Dis bak mørk
-     skrift ble prøvd først — den leste greit, men hvit skrift holder hele
+     skrift ble prøvd først - den leste greit, men hvit skrift holder hele
      heroen i samme toneart som merket og kortet. */
   text-shadow:
     0 1px 2px rgba(10, 20, 34, 0.45),
@@ -828,7 +828,7 @@ section {
 }
 
 /* Overskriften øverst, nedlastingen og feltet samlet nede mot sporet, og luft
-   imellom som gir etter — men aldri helt. Rad 2 (minimum 28px) er grunnen til
+   imellom som gir etter - men aldri helt. Rad 2 (minimum 28px) er grunnen til
    at knappene ikke kan legge seg oppå overskriften, uansett vindusform; rad 5
    holder gruppa litt over bunnen. Forholdet 1fr : 0,7fr gir mer luft over enn
    under, så feltet lander nede i snøen der sporene møtes. */
@@ -943,8 +943,8 @@ section {
 }
 
 /* --------------------------------------------------------------------------
-   Kortet i heroen. Begge veiene — nedlasting for privatpersoner og feltet for
-   virksomheter — ligger i ett hvitt kort på snøen. Da trenger ikke hver linje
+   Kortet i heroen. Begge veiene - nedlasting for privatpersoner og feltet for
+   virksomheter - ligger i ett hvitt kort på snøen. Da trenger ikke hver linje
    sitt eget glass for å kunne leses, og de to leses som én ting.
    Valgt 5.11.2026 av fem utkast; de fire andre ligger i git-historikken
    (varianter.css, commit c253603).
@@ -1145,7 +1145,7 @@ section {
 
 /* De skriver: overskriften, luften over kortet og privatdelen faller sammen,
    så kortet krymper ned til feltet og forslagene får plassen under seg.
-   Rad 3 må med — uten den blir kortet stående med en tom hvit flate der
+   Rad 3 må med - uten den blir kortet stående med en tom hvit flate der
    nedlastingen sto. */
 .hero .scene-tekst.skriver:not(.har-svar) {
   /* Rad 3 beholder 30 px: luften i kortet over feltet. */
@@ -2163,7 +2163,7 @@ section {
   font-size: 17px;
 }
 
-/* Markeringen skal ikke skyve på tegnsettingen — den legger seg utenpå. */
+/* Markeringen skal ikke skyve på tegnsettingen - den legger seg utenpå. */
 mark {
   background: rgba(36, 86, 230, 0.13);
   color: inherit;
@@ -3634,6 +3634,20 @@ footer {
 
   .hero .scene .orgport-svar-hoved:has(.os-lin:hover) {
     background: rgba(5, 18, 42, 0.94);
+  }
+
+  /* Kommer de rett inn med virksomheten i adressen (.uten-feiring), er all animasjon i kortet
+     slått av. Terminalen skal likevel skrive seg selv. */
+  .uten-feiring .orgport-svar-hoved .kort-terminal span {
+    animation: kort-skriv calc(var(--n) * 24ms) steps(var(--n), end) var(--f) forwards !important;
+  }
+
+  .uten-feiring .orgport-svar-hoved .kort-terminal span:not(.kommando) {
+    animation-duration: 1ms !important;
+  }
+
+  .uten-feiring .orgport-svar-hoved .kort-terminal span.markor::after {
+    animation: kort-blink 1s steps(1, end) infinite !important;
   }
 
   .hero .scene .orgport-svar-hoved:has(.os-lin:hover) > .kort-terminal {
