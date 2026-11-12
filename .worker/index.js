@@ -121,6 +121,14 @@ export default {
         hoder.set("location", til.replace(/\/GDPR\//, "/klart/"));
         return medHoder(new Response(svar.body, { status: svar.status, headers: hoder }));
       }
+      // Programvinduet alene står i en iframe i heroen på forsiden (eieren 12.11.2026): bare den siden kan rammes inn,
+      // og bare fra samme domene. Den teller ikke som besøk, ellers ville hver visning av forsiden gitt to.
+      if (/^\/programvindu(?:\.html)?$/.test(rest)) {
+        const ut = medHoder(svar);
+        ut.headers.set("Content-Security-Policy", KLART_HODER["Content-Security-Policy"].replace("frame-ancestors 'none'", "frame-ancestors 'self'"));
+        ut.headers.set("X-Frame-Options", "SAMEORIGIN");
+        return ut;
+      }
       if (svar.status === 200) try { const visit = pageVisit(request, env, url); if (visit) ctx.waitUntil(visit); } catch {}
       if (/\.mp4$/i.test(url.pathname)) return medHoder(await medRange(request, svar));
       return medHoder(svar);
