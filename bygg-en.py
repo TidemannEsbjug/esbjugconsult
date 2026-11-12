@@ -273,7 +273,7 @@ T = [
 # V2 (forsiden fra 7.10.2026) har egne tekster. V1-tekstene den har byttet ut hoppes over.
 T_NY = [
     # Klart øverst på forsiden og bunnlinjen under kartet (12.11.2026).
-    ('<h1>Klart - det revolusjonerende verktøyet for dokumentsladding</h1>', '<h1>Klart - the revolutionary document redaction tool</h1>'),
+    ('<h1>Det revolusjonerende verktøyet for dokumentsladding</h1>', '<h1>The revolutionary document redaction tool</h1>'),
     ('</i>Lansert 11.11.2026</p>', '</i>Launched 11.11.2026</p>'),
     ('<h2 class="th-h">Mål</h2>', '<h2 class="th-h">Aspiring to</h2>'),
     ('<span class="th-n">Nøling</span>', '<span class="th-n">Hesitation</span>'),
