@@ -1495,7 +1495,7 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   html{scrollbar-width:none}html::-webkit-scrollbar{display:none}
   /* Klart øverst (eieren 12.11.2026): én skjerm i samme drakt som kartdelen under (lyst frostglass, mørkeblå skrift,
      Gloock i overskriften, monoskrift i småtekst og de lyse pilleknappene), som tar deg til /klart/. */
-  .kl-hero{order:-2;position:relative;isolation:isolate;overflow:hidden;min-height:100svh;display:grid;grid-template-columns:minmax(330px,.66fr) minmax(0,1.5fr);align-items:center;gap:clamp(24px,3.4vw,56px);box-sizing:border-box;
+  .kl-hero{order:-2;position:relative;isolation:isolate;overflow:hidden;min-height:100svh;max-height:100svh;display:grid;grid-template-columns:minmax(330px,.66fr) minmax(0,1.5fr);align-items:center;gap:clamp(24px,3.4vw,56px);box-sizing:border-box;
     padding:calc(env(safe-area-inset-top) + 40px) var(--g) 56px;color:var(--ink);-webkit-user-select:text;user-select:text;
     background:radial-gradient(70% 55% at 50% 42%,#f4f9fe 0%,rgba(244,249,254,0) 70%),linear-gradient(180deg,#e3eff9 0%,#cfe4f6 100%)}
   .kl-kort{display:flex;flex-direction:column;align-items:flex-start;gap:18px;max-width:640px;padding:clamp(24px,3.4vw,40px);
@@ -1512,7 +1512,7 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .kl-knapp:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   /* Programvinduet fra /klart (iframe, eieren 12.11.2026). Høyden settes av meldingen fra rammen. */
   .kl-vis{min-width:0;width:100%}
-  .kl-vis iframe{display:block;width:100%;height:520px;border:0;background:transparent;color-scheme:normal}
+  .kl-vis iframe{display:block;width:100%;height:520px;border:0;background:transparent;color-scheme:normal;transform-origin:top center}
   @media (max-width:980px){.kl-kort h1{font-size:clamp(32px,6.4vw,54px)}.kl-hero{grid-template-columns:minmax(0,1fr);justify-items:center;align-content:center;padding-top:calc(env(safe-area-inset-top) + 28px)}.kl-kort{max-width:none;width:100%;box-sizing:border-box}.kl-vis{max-width:760px}}
   /* Bunnlinjen under kartet (eieren 12.11.2026): virksomheten, org.nr., adressen og kontakten. */
   .firma{order:0;background:#00205B;color:#e6eefb;font:13px/1.6 "Archivo","Helvetica Neue",Arial,sans-serif;padding:22px 20px calc(env(safe-area-inset-bottom) + 22px);-webkit-user-select:text;user-select:text}
@@ -1534,7 +1534,35 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   <!-- Programvinduet fra /klart som spilles av (eieren 12.11.2026). Egen side, /klart/programvindu, så stilene fra /klart
        ikke treffer forsiden. Den sier selv fra om høyden (programvindu.js). -->
   <div class="kl-vis"><iframe src="/klart/programvindu" title="Klart, slik programmet ser ut" loading="eager" scrolling="no"></iframe></div>
-  <script>addEventListener("message",function(e){if(e.origin!==location.origin||!e.data||typeof e.data.programvindu!=="number")return;var f=document.querySelector(".kl-vis iframe");if(f)f.style.height=e.data.programvindu+"px"})</script>
+  <!-- Vinduet sier selv fra om høyden sin. Heroen kan ikke bli høyere enn skjermen (max-height:100svh),
+       så er vinduet høyere enn plassen som er igjen, krymper det ovenfra i stedet for å presse heroen ut.
+       Plassen er skjermen minus luften over og under, og på smale skjermer også kortet og mellomrommet. -->
+  <script>
+  (function(){
+    var vis=document.querySelector(".kl-vis"),ramme=vis&&vis.querySelector("iframe"),hero=document.querySelector(".kl-hero"),
+        kort=hero&&hero.querySelector(".kl-kort"),hoyde=0;
+    if(!vis||!ramme||!hero||!kort)return;
+    function plass(){
+      var s=getComputedStyle(hero),h=hero.clientHeight-parseFloat(s.paddingTop)-parseFloat(s.paddingBottom);
+      // Stablet (smal skjerm): kortet og mellomrommet står over vinduet og tar av plassen.
+      if(s.gridTemplateColumns.split(" ").length<2)h-=kort.getBoundingClientRect().height+(parseFloat(s.rowGap)||0);
+      return h;
+    }
+    function pass(){
+      if(!hoyde)return;
+      ramme.style.height=hoyde+"px";
+      var skala=Math.min(1,plass()/hoyde);
+      if(!(skala>0))skala=1;
+      ramme.style.transform=skala<1?"scale("+skala+")":"";
+      vis.style.height=Math.round(hoyde*skala)+"px";
+    }
+    addEventListener("message",function(e){
+      if(e.origin!==location.origin||!e.data||typeof e.data.programvindu!=="number")return;
+      hoyde=e.data.programvindu;pass();
+    });
+    addEventListener("resize",pass);
+  })();
+  </script>
 </section>
 <section class="sh-hero" aria-label="KI Sherpa">
   <!-- Midjourney-bildet i full størrelse (1680 × 720) i stedet for videoen (fra 30.10.2026, prøves ut). Klippene ligger fortsatt i media/ (sherpa*.mp4). -->
