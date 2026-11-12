@@ -282,7 +282,7 @@ T_NY = [
     ('<span class="th-n">Takknemlighet</span>', '<span class="th-n">Gratitude</span>'),
     ('<span class="th-n">Mot</span>', '<span class="th-n">Bravery</span>'),
     ('<b class="th-t">MAKS</b>', '<b class="th-t">MAX</b>'),
-    ('</i>På App Store 08.11.2026</p>', '</i>On the App Store 08.11.2026</p>'),
+    ('</i>Nå på App Store 08.11.2026</p>', '</i>Now on the App Store 08.11.2026</p>'),
     ('<h2 class="at-h">Én alarm. Ett trykk. Familien ser det.</h2>', '<h2 class="at-h">One alarm. One tap. Everyone knows.</h2>'),
     ('<a class="kl-knapp" href="https://athenaalarm.app/no/">Se Athena', '<a class="kl-knapp" href="https://athenaalarm.app/">See Athena'),
     ('<p class="mono at-play">Google Play Store er på vei</p>', '<p class="mono at-play">Google Play Store is on the way</p>'),
