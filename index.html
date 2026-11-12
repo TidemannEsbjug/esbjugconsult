@@ -1579,6 +1579,15 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .kl-kort .at-play{font-size:11px;color:rgba(0,32,91,.55)}
   .at-vis{min-width:0;width:100%;max-width:960px;justify-self:center}
   .at-vis video{display:block;width:100%;height:auto;max-height:calc(100svh - 120px);object-fit:cover;border-radius:18px;box-shadow:0 24px 60px rgba(0,32,91,.25)}
+  /* Klart i to seksjoner (eieren 12.11.2026): først logoen, overskriften og knappen midt på, så programvinduet midt på. */
+  .kl-hero.kl-topp,.kl-hero.kl-visning{grid-template-columns:minmax(0,1fr);justify-items:center;align-content:center;text-align:center}
+  .kl-topp .kl-kort{align-items:center;max-width:920px;gap:24px}
+  .kl-topp .kl-logo img{width:clamp(72px,7vw,128px)}
+  .kl-topp .kl-logo span{font-size:clamp(72px,9vw,160px)}
+  .kl-topp .kl-kort h1{font-size:clamp(30px,3.3vw,58px)}
+  .kl-visning{padding-top:clamp(32px,5svh,64px);padding-bottom:clamp(32px,5svh,64px)}
+  .kl-visning .kl-vis{max-width:1240px}
+  @media (max-width:980px){.kl-topp .kl-kort h1{font-size:clamp(30px,7vw,48px)}.kl-hero.kl-visning{padding-top:calc(env(safe-area-inset-top) + 24px)}}
   @media (max-width:980px){.at-hero .at-h{font-size:clamp(28px,6vw,44px)}.at-vis{max-width:760px}}
   /* Datoen i Klart og Athena som et banner helt øverst til venstre i seksjonen (eieren 12.11.2026), utenfor kortet med overskriften. */
   .kl-hero>.kl-banner{position:absolute;z-index:2;top:0;left:0;margin:0;display:inline-flex;align-items:center;gap:10px;padding:14px 22px 14px var(--g);border-radius:0 0 16px 0;
@@ -1616,29 +1625,28 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   </div>
 </section>
 <!-- Klart øverst (eieren 12.11.2026), se .kl-hero i stilene. -->
-<section class="kl-hero" aria-label="Klart">
+<section class="kl-hero kl-topp" aria-label="Klart">
   <p class="mono kl-banner"><i aria-hidden="true"></i>Lansert 11.11.2026</p>
   <div class="kl-kort">
     <p class="kl-logo"><img src="/klart/assets/klart-ikon.png" width="256" height="256" alt="" aria-hidden="true"><span>Klart</span></p>
     <h1>Det revolusjonerende verktøyet for dokumentsladding</h1>
     <a class="kl-knapp" href="/klart/">Se Klart <span aria-hidden="true">→</span></a>
   </div>
+</section>
+<section class="kl-hero kl-visning" aria-label="Klart">
   <!-- Programvinduet fra /klart som spilles av (eieren 12.11.2026). Egen side, /klart/programvindu, så stilene fra /klart
        ikke treffer forsiden. Den sier selv fra om høyden (programvindu.js). -->
   <div class="kl-vis"><iframe src="/klart/programvindu" title="Klart, slik programmet ser ut" loading="eager" scrolling="no"></iframe></div>
   <!-- Vinduet sier selv fra om høyden sin. Heroen kan ikke bli høyere enn skjermen (max-height:100svh),
        så er vinduet høyere enn plassen som er igjen, krymper det ovenfra i stedet for å presse heroen ut.
-       Plassen er skjermen minus luften over og under, og på smale skjermer også kortet og mellomrommet. -->
+       Plassen er skjermen minus luften over og under (vinduet har egen seksjon, uten kortet). -->
   <script>
   (function(){
-    var vis=document.querySelector(".kl-vis"),ramme=vis&&vis.querySelector("iframe"),hero=document.querySelector(".kl-hero"),
-        kort=hero&&hero.querySelector(".kl-kort"),hoyde=0;
-    if(!vis||!ramme||!hero||!kort)return;
+    var vis=document.querySelector(".kl-vis"),ramme=vis&&vis.querySelector("iframe"),hero=document.querySelector(".kl-visning"),hoyde=0;
+    if(!vis||!ramme||!hero)return;
     function plass(){
-      var s=getComputedStyle(hero),h=hero.clientHeight-parseFloat(s.paddingTop)-parseFloat(s.paddingBottom);
-      // Stablet (smal skjerm): kortet og mellomrommet står over vinduet og tar av plassen.
-      if(s.gridTemplateColumns.split(" ").length<2)h-=kort.getBoundingClientRect().height+(parseFloat(s.rowGap)||0);
-      return h;
+      var s=getComputedStyle(hero);
+      return hero.clientHeight-parseFloat(s.paddingTop)-parseFloat(s.paddingBottom);
     }
     function pass(){
       if(!hoyde)return;
