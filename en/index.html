@@ -1580,10 +1580,11 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .at-vis{min-width:0;width:100%;max-width:960px;justify-self:center}
   .at-vis video{display:block;width:100%;height:auto;max-height:calc(100svh - 120px);object-fit:cover;border-radius:18px;box-shadow:0 24px 60px rgba(0,32,91,.25)}
   @media (max-width:980px){.at-hero .at-h{font-size:clamp(28px,6vw,44px)}.at-vis{max-width:760px}}
-  /* Datoen øverst i Klart og Athena som et banner (eieren 12.11.2026): større, rødt felt med hvit skrift. */
-  .kl-kort .kl-banner{display:inline-flex;align-items:center;gap:10px;margin:0 0 4px;padding:11px 18px 11px 15px;border-radius:10px;background:var(--r);color:#fff;
-    font-size:clamp(14px,1.15vw,17px);letter-spacing:.12em;box-shadow:0 10px 26px rgba(186,12,47,.28),inset 0 1px 0 rgba(255,255,255,.2)}
-  .kl-kort .kl-banner i{width:9px;height:9px;background:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.22)}
+  /* Datoen i Klart og Athena som et banner helt øverst til venstre i seksjonen (eieren 12.11.2026), utenfor kortet med overskriften. */
+  .kl-hero>.kl-banner{position:absolute;z-index:2;top:0;left:0;margin:0;display:inline-flex;align-items:center;gap:10px;padding:14px 22px 14px var(--g);border-radius:0 0 16px 0;
+    background:var(--r);color:#fff;font-size:clamp(13px,1.05vw,16px);letter-spacing:.12em;box-shadow:0 10px 26px rgba(186,12,47,.22)}
+  .kl-hero>.kl-banner i{width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.22)}
+  @media (max-width:980px){.kl-hero{padding-top:calc(env(safe-area-inset-top) + 76px)}}
   /* Bunnlinjen under kartet (eieren 12.11.2026): virksomheten, org.nr., adressen og kontakten. */
   .firma{order:0;background:#00205B;color:#e6eefb;font:13px/1.6 "Archivo","Helvetica Neue",Arial,sans-serif;padding:22px 20px calc(env(safe-area-inset-bottom) + 22px);-webkit-user-select:text;user-select:text}
   .firma ul{list-style:none;margin:0 auto;padding:0;max-width:1180px;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 22px}
@@ -1616,8 +1617,8 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
 </section>
 <!-- Klart øverst (eieren 12.11.2026), se .kl-hero i stilene. -->
 <section class="kl-hero" aria-label="Klart">
+  <p class="mono kl-banner"><i aria-hidden="true"></i>Launched 11.11.2026</p>
   <div class="kl-kort">
-    <p class="mono kl-banner"><i aria-hidden="true"></i>Launched 11.11.2026</p>
     <p class="kl-logo"><img src="/klart/assets/klart-ikon.png" width="256" height="256" alt="" aria-hidden="true"><span>Klart</span></p>
     <h1>The revolutionary document redaction tool</h1>
     <a class="kl-knapp" href="/klart/">See Klart <span aria-hidden="true">→</span></a>
@@ -1657,8 +1658,8 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
 </section>
 <!-- Athena under Klart (eieren 12.11.2026): samme drakt som Klart-heroen, med reklamefilmen der Klart har programvinduet. -->
 <section class="kl-hero at-hero" aria-label="Athena: Alarm">
+  <p class="mono kl-banner"><i aria-hidden="true"></i>Now on the App Store 08.11.2026</p>
   <div class="kl-kort">
-    <p class="mono kl-banner"><i aria-hidden="true"></i>Now on the App Store 08.11.2026</p>
     <p class="kl-logo at-logo"><img src="/media/athena-ikon.png" width="180" height="180" alt="" aria-hidden="true"><span>Athena: Alarm</span></p>
     <h2 class="at-h">One alarm. One tap. Everyone knows.</h2>
     <a class="kl-knapp" href="https://athenaalarm.app/">See Athena <span aria-hidden="true">→</span></a>
