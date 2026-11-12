@@ -274,6 +274,7 @@ T = [
 T_NY = [
     # Klart øverst på forsiden og bunnlinjen under kartet (12.11.2026).
     ('<h1>Klart - det revolusjonerende verktøyet for dokumentsladding</h1>', '<h1>Klart - the revolutionary document redaction tool</h1>'),
+    ('</i>Lansert 11.11.2026</p>', '</i>Launched 11.11.2026</p>'),
     ('>Se Klart <span', '>See Klart <span'),
     ('<li>Org.nr. 938 441 405</li>', '<li>Org. no. 938 441 405</li>'),
     ('<li>Glenneveien 272B, 1455 Nordre Frogn</li>', '<li>Glenneveien 272B, 1455 Nordre Frogn, Norway</li>'),
