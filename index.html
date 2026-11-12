@@ -1499,13 +1499,13 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .th{order:-3;position:relative;isolation:isolate;overflow:hidden;width:100%;min-height:100svh;max-height:100svh;box-sizing:border-box;display:grid;
     grid-template-columns:minmax(250px,350px) minmax(0,1fr) minmax(270px,370px);align-items:center;gap:clamp(16px,3vw,48px);
     padding:calc(env(safe-area-inset-top) + 40px) var(--g) 48px;color:#fff;
-    background:radial-gradient(34% 52% at 50% 46%,rgba(150,195,250,.16) 0%,rgba(60,115,200,.07) 45%,rgba(0,32,91,0) 75%),linear-gradient(180deg,#00122f 0%,#00205B 58%,#0b3380 100%)}
+    background:radial-gradient(34% 52% at 50% 46%,rgba(150,195,250,.32) 0%,rgba(60,115,200,.14) 45%,rgba(0,32,91,0) 75%),linear-gradient(180deg,#00122f 0%,#00205B 58%,#0b3380 100%)}
   .th::before{content:"";position:absolute;z-index:-3;left:-60%;right:-60%;bottom:0;height:46%;transform:perspective(520px) rotateX(64deg);transform-origin:50% 100%;
     background-image:linear-gradient(rgba(160,200,250,.28) 1px,transparent 1px),linear-gradient(90deg,rgba(160,200,250,.28) 1px,transparent 1px);background-size:72px 72px;
     -webkit-mask-image:linear-gradient(to top,#000 0%,transparent 90%);mask-image:linear-gradient(to top,#000 0%,transparent 90%)}
   .th::after{content:"";position:absolute;z-index:-1;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 3px)}
   .th-figur{position:absolute;z-index:-2;left:50%;bottom:0;height:min(88svh,64vw);transform:translateX(-50%);pointer-events:none}
-  .th-figur img{display:block;height:100%;width:auto;filter:drop-shadow(0 0 2px rgba(200,225,255,.25)) drop-shadow(0 0 36px rgba(130,185,255,.1))}
+  .th-figur img{display:block;height:100%;width:auto;filter:drop-shadow(0 0 2px rgba(200,225,255,.4)) drop-shadow(0 0 36px rgba(130,185,255,.22))}
   .th-gl{border-radius:22px;background:linear-gradient(160deg,rgba(255,255,255,.13),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.18);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 22px 54px rgba(0,8,30,.45);-webkit-backdrop-filter:blur(16px) saturate(1.3);backdrop-filter:blur(16px) saturate(1.3)}
   .th-v{grid-column:1;padding:clamp(20px,2.2vw,30px)}
@@ -1581,14 +1581,21 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .at-vis video{display:block;width:100%;height:auto;max-height:calc(100svh - 120px);object-fit:cover;border-radius:18px;box-shadow:0 24px 60px rgba(0,32,91,.25)}
   /* Klart er én seksjon (eieren 12.11.2026): logoen og overskriften, så programvinduet, så knappen, tett etter hverandre
      og sentrert. Høyden følger innholdet (minst én skjerm). */
-  .kl-hero.kl-stor{grid-template-columns:minmax(0,1fr);min-height:100svh;max-height:none;justify-items:center;align-content:center;row-gap:clamp(22px,3.4svh,40px);text-align:center;
-    padding-top:calc(env(safe-area-inset-top) + clamp(84px,11svh,120px));padding-bottom:clamp(56px,9svh,100px)}
-  .kl-stor .kl-kort{align-items:center;max-width:920px;gap:18px}
+  .kl-hero.kl-stor{grid-template-columns:minmax(0,1fr);min-height:100svh;max-height:none;justify-items:center;align-content:center;row-gap:clamp(40px,7svh,80px);text-align:center;
+    padding-top:calc(env(safe-area-inset-top) + clamp(110px,15svh,170px));padding-bottom:clamp(90px,14svh,160px)}
+  .kl-stor .kl-kort{align-items:center;max-width:1040px;gap:clamp(18px,2.4svh,28px)}
   .kl-cta{margin:0}
-  .kl-stor .kl-logo img{width:clamp(72px,7vw,128px)}
-  .kl-stor .kl-logo span{font-size:clamp(72px,9vw,160px)}
-  .kl-stor .kl-kort h1{font-size:clamp(30px,3.3vw,58px)}
-  .kl-stor .kl-vis{max-width:1240px}
+  .kl-stor .kl-logo img{width:clamp(80px,8vw,150px)}
+  .kl-stor .kl-logo span{font-size:clamp(84px,10.5vw,190px)}
+  .kl-stor .kl-kort h1{font-size:clamp(34px,4vw,70px)}
+  /* Knappen under programvinduet: stor pille med pila i en hvit sirkel. */
+  .kl-cta .kl-knapp{padding:12px 12px 12px 34px;gap:22px;font-size:clamp(17px,1.3vw,21px);font-weight:600;letter-spacing:.005em;
+    background:linear-gradient(180deg,#0b2f78,var(--ink));border:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 18px 40px rgba(0,32,91,.3),0 4px 10px rgba(0,32,91,.18);
+    transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s}
+  .kl-cta .kl-knapp span{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:#fff;color:var(--ink);font-size:20px;transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+  .kl-cta .kl-knapp:hover{transform:translateY(-2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 24px 50px rgba(0,32,91,.36),0 6px 14px rgba(0,32,91,.2)}
+  .kl-cta .kl-knapp:hover span{transform:translateX(4px)}
+  .kl-stor .kl-vis{max-width:1320px}
   @media (max-width:980px){.kl-stor .kl-kort h1{font-size:clamp(30px,7vw,48px)}}
   @media (max-width:980px){.at-hero .at-h{font-size:clamp(28px,6vw,44px)}.at-vis{max-width:760px}}
   /* Datoen i Klart og Athena som et banner helt øverst til venstre i seksjonen (eieren 12.11.2026), utenfor kortet med overskriften. */
@@ -1644,7 +1651,7 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
     var vis=document.querySelector(".kl-vis"),ramme=vis&&vis.querySelector("iframe"),hero=document.querySelector(".kl-stor"),hoyde=0;
     if(!vis||!ramme||!hero)return;
     function plass(){
-      return innerHeight-120;
+      return innerHeight-40;
     }
     function pass(){
       if(!hoyde)return;
