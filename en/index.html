@@ -1500,10 +1500,13 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
     grid-template-columns:minmax(250px,350px) minmax(0,1fr) minmax(270px,370px);align-items:center;gap:clamp(16px,3vw,48px);
     padding:calc(env(safe-area-inset-top) + 40px) var(--g) 48px;color:#fff;
     background:radial-gradient(34% 52% at 50% 46%,rgba(150,195,250,.32) 0%,rgba(60,115,200,.14) 45%,rgba(0,32,91,0) 75%),linear-gradient(180deg,#00122f 0%,#00205B 58%,#0b3380 100%)}
-  .th::before{content:"";position:absolute;z-index:-1;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(0,12,32,.42) 0%,rgba(0,12,32,0) 32%,rgba(0,12,32,0) 68%,rgba(0,12,32,.42) 100%)}
-  .th::after{content:"";position:absolute;z-index:-1;inset:0;display:none;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 3px)}
-  .th-figur{position:absolute;z-index:-2;inset:0;pointer-events:none;background:#4f6a96 url(/media/fjell.webp) 50% 50%/cover}
-  .th-gl{border-radius:22px;background:linear-gradient(160deg,rgba(0,32,91,.62),rgba(0,18,47,.5));border:1px solid rgba(255,255,255,.18);
+  .th::before{content:"";position:absolute;z-index:-3;left:-60%;right:-60%;bottom:0;height:46%;transform:perspective(520px) rotateX(64deg);transform-origin:50% 100%;
+    background-image:linear-gradient(rgba(160,200,250,.28) 1px,transparent 1px),linear-gradient(90deg,rgba(160,200,250,.28) 1px,transparent 1px);background-size:72px 72px;
+    -webkit-mask-image:linear-gradient(to top,#000 0%,transparent 90%);mask-image:linear-gradient(to top,#000 0%,transparent 90%)}
+  .th::after{content:"";position:absolute;z-index:-1;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 3px)}
+  .th-figur{position:absolute;z-index:-2;left:50%;bottom:0;height:min(88svh,64vw);transform:translateX(-50%);pointer-events:none}
+  .th-figur img{display:block;height:100%;width:auto;filter:drop-shadow(0 0 2px rgba(200,225,255,.4)) drop-shadow(0 0 36px rgba(130,185,255,.22))}
+  .th-gl{border-radius:22px;background:linear-gradient(160deg,rgba(255,255,255,.13),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.18);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 22px 54px rgba(0,8,30,.45);-webkit-backdrop-filter:blur(16px) saturate(1.3);backdrop-filter:blur(16px) saturate(1.3)}
   .th-v{grid-column:1;padding:clamp(20px,2.2vw,30px)}
   .th-navn{margin:0 0 8px;display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.62)}
@@ -1537,11 +1540,12 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .th .hk-bak{opacity:.3}
   .th .hp .st-l{font:600 9.5px/1.3 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.62)}
   .th .poster{color:var(--ink)}
-  @media (max-width:1100px){.th{grid-template-columns:minmax(220px,290px) minmax(0,1fr) minmax(240px,300px)}}
-  /* Mobil: egenskapene, så pulsen og postene, oppå videoen. */
+  @media (max-width:1100px){.th{grid-template-columns:minmax(220px,290px) minmax(0,1fr) minmax(240px,300px)}.th-figur{height:min(80svh,70vw)}}
+  /* Mobil: egenskapene, så pulsen og postene, og bildet nederst, kuttet i bunnen av heroen. */
   @media (max-width:760px){
-    .th{display:flex;flex-direction:column;align-items:stretch;max-height:none;gap:18px;padding:calc(env(safe-area-inset-top) + 28px) var(--g) 40px}
-    .th-figur{background-image:url(/media/fjell-900.webp)}
+    .th{display:flex;flex-direction:column;align-items:stretch;max-height:none;gap:18px;padding:calc(env(safe-area-inset-top) + 28px) var(--g) 0}
+    .th-figur{position:relative;left:auto;transform:none;order:3;align-self:center;height:auto;width:min(112%,560px);margin-top:4px}
+    .th-figur img{width:100%;height:auto}
   }
   @media (prefers-reduced-motion:reduce){.th-bar i.th-on{animation:none}}
   /* Klart øverst (eieren 12.11.2026): én skjerm i samme drakt som kartdelen under (lyst frostglass, mørkeblå skrift,
@@ -1591,10 +1595,10 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
 </head>
 <body>
 <script>document.body.classList.add('forspill');setTimeout(()=>document.body.classList.remove('forspill'),8000)</script>
-<!-- Tidemann øverst (eieren 12.11.2026), som et figurvalg i et spill: egenskapene til venstre, pulsen og postene fra kartet
-     til høyre, og fjellbildet (media/fjell.webp, -900 for mobil) som bakgrunn. Se .th i stilene. -->
+<!-- Tidemann øverst (eieren 12.11.2026), som et figurvalg i et spill: egenskapene til venstre, dressbildet stort i midten
+     (kuttet i bunnen av skjermen), pulsen og postene fra kartet til høyre. Se .th i stilene. -->
 <section class="th" aria-label="Tidemann Esbjug">
-  <div class="th-figur" aria-hidden="true"></div>
+  <div class="th-figur" aria-hidden="true"><img src="/media/tidemann-dress.webp" srcset="/media/tidemann-dress-900.webp 900w, /media/tidemann-dress.webp 1640w" sizes="(max-width:760px) 100vw, 88vh" width="1640" height="1648" alt="" fetchpriority="high"></div>
   <div class="th-v th-gl">
     <p class="th-navn mono"><i aria-hidden="true"></i>Tidemann Esbjug</p>
     <h2 class="th-h">Aspiring to</h2>
