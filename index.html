@@ -1548,6 +1548,21 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
     .th-figur img{width:100%;height:auto}
   }
   @media (prefers-reduced-motion:reduce){.th-bar i.th-on{animation:none}}
+  /* Liv i figuren (eieren 12.11.2026): pust, lys som slår i takt med pulsen, dybde etter musa og lyspartikler. */
+  .th-aura{position:absolute;z-index:-3;left:50%;bottom:-8%;width:min(78svh,62vw);aspect-ratio:1;border-radius:50%;translate:calc(-50% + var(--px,0) * 10px) 0;
+    background:radial-gradient(circle,rgba(170,210,255,.55) 0%,rgba(90,150,240,.25) 38%,rgba(0,32,91,0) 68%);animation:thAura 4.5s ease-in-out infinite;pointer-events:none}
+  .th.th-live .th-aura{animation:thSlag var(--beat,1s) ease-out infinite}
+  @keyframes thAura{50%{opacity:.75;scale:.97}}
+  @keyframes thSlag{0%{opacity:.8;scale:1}14%{opacity:1;scale:1.05}30%{opacity:.85;scale:1.01}100%{opacity:.8;scale:1}}
+  .th-lys{position:absolute;z-index:-1;inset:0;width:100%;height:100%;pointer-events:none}
+  .th-figur{translate:calc(var(--px,0) * 16px) 0;transition:translate .1s linear}
+  .th-figur img{transform-origin:50% 100%;animation:thPust 5.5s ease-in-out infinite}
+  @keyframes thPust{50%{transform:scale(1.008) translateY(-2px)}}
+  .th::before{translate:calc(var(--px,0) * -26px) 0}
+  .th-v{translate:calc(var(--px,0) * -8px) calc(var(--py,0) * -5px)}
+  .th-hoyre{translate:calc(var(--px,0) * -8px) calc(var(--py,0) * -5px)}
+  @media (max-width:760px){.th-aura{bottom:0;width:120vw}}
+  @media (prefers-reduced-motion:reduce){.th-aura,.th.th-live .th-aura,.th-figur img{animation:none}.th-lys{display:none}}
   /* Klart øverst (eieren 12.11.2026): én skjerm i samme drakt som kartdelen under (lyst frostglass, mørkeblå skrift,
      Gloock i overskriften, monoskrift i småtekst og de lyse pilleknappene), som tar deg til /klart/. */
   .kl-hero{order:-2;position:relative;isolation:isolate;overflow:hidden;min-height:100svh;max-height:100svh;display:grid;grid-template-columns:minmax(330px,.66fr) minmax(0,1.5fr);align-items:center;gap:clamp(24px,3.4vw,56px);box-sizing:border-box;
@@ -1593,6 +1608,8 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
 <!-- Tidemann øverst (eieren 12.11.2026), som et figurvalg i et spill: egenskapene til venstre, dressbildet stort i midten
      (kuttet i bunnen av skjermen), pulsen og postene fra kartet til høyre. Se .th i stilene. -->
 <section class="th" aria-label="Tidemann Esbjug">
+  <div class="th-aura" aria-hidden="true"></div>
+  <canvas class="th-lys" aria-hidden="true"></canvas>
   <div class="th-figur" aria-hidden="true"><img src="/media/tidemann-dress.webp" srcset="/media/tidemann-dress-900.webp 900w, /media/tidemann-dress.webp 1640w" sizes="(max-width:760px) 100vw, 88vh" width="1640" height="1648" alt="" fetchpriority="high"></div>
   <div class="th-v th-gl">
     <p class="th-navn mono"><i aria-hidden="true"></i>Tidemann Esbjug</p>
@@ -1608,6 +1625,37 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   <div class="th-hoyre">
     <div class="th-puls th-gl"><div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Puls i dag"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg><svg class="hk" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hk-sno" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="40"><stop offset="0" stop-color="#eef5fc"/><stop offset=".45" stop-color="#bcd3ec"/><stop offset="1" stop-color="#8fb0d6"/></linearGradient><linearGradient id="hk-bakg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="40"><stop offset="0" stop-color="#f4f8fd"/><stop offset="1" stop-color="#d3e2f3"/></linearGradient></defs><path class="hk-bak" d=""/><path class="hk-fjell" d=""/><path class="hk-snoen" d=""/><path class="hk-l" d=""/><circle class="hk-p" r="3" cx="-9" cy="-9"/><line class="hk-xh" x1="-9" x2="-9" y1="0" y2="0"/><circle class="hk-hd" r="4" cx="-9" cy="-9"/></svg><span class="hk-t" hidden></span></span></button><span class="st-l"><span class="hp-on">Live fra Apple Watch</span><span class="hp-av">Ikke live akkurat nå</span></span></div></div>
     <section class="poster" hidden aria-live="polite" aria-label="Poster fra Tidemann. Trykk for neste." role="button" tabindex="0"></section>
+<!-- Liv i figurheroen (eieren 12.11.2026): lyset bak ham slår i takt med pulsen fra klokka (--beat fra .hp), figuren
+     følger musa litt og bakgrunnen motsatt vei, og svake lyspartikler stiger opp. Står stille ved redusert bevegelse. -->
+<script>
+(()=>{
+  const th=document.querySelector('.th'),hp=th&&th.querySelector('.hp');if(!th)return;
+  const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Pulsen: kopier takten fra pulsmodulen til heroen.
+  const takt=()=>{const b=hp&&hp.style.getPropertyValue('--beat');th.classList.toggle('th-live',!!(hp&&hp.classList.contains('live')&&b));if(b)th.style.setProperty('--beat',b)};
+  if(hp){new MutationObserver(takt).observe(hp,{attributes:true,attributeFilter:['class','style']});takt()}
+  if(still)return;
+  // Musa: myk dybde, bare der det finnes en mus.
+  if(matchMedia('(hover: hover) and (pointer: fine)').matches){
+    let mx=0,my=0,x=0,y=0,raf=0;
+    const steg=()=>{x+=(mx-x)*.06;y+=(my-y)*.06;th.style.setProperty('--px',x.toFixed(4));th.style.setProperty('--py',y.toFixed(4));
+      raf=Math.abs(mx-x)+Math.abs(my-y)>.001?requestAnimationFrame(steg):0};
+    th.addEventListener('pointermove',e=>{const r=th.getBoundingClientRect();mx=(e.clientX-r.left)/r.width*2-1;my=(e.clientY-r.top)/r.height*2-1;if(!raf)raf=requestAnimationFrame(steg)});
+    th.addEventListener('pointerleave',()=>{mx=0;my=0;if(!raf)raf=requestAnimationFrame(steg)});
+  }
+  // Lyspartiklene: stiger sakte opp rundt figuren og tones ut. Tegnes bare mens heroen er på skjermen.
+  const c=th.querySelector('.th-lys'),g=c.getContext('2d');let W=0,H=0,dpr=1,synlig=true,sist=0;
+  const P=[];const ny=(start)=>({x:W*(.2+Math.random()*.6),y:start?Math.random()*H:H+10,r:.6+Math.random()*1.8,v:8+Math.random()*22,s:Math.random()*6.28,a:.25+Math.random()*.5});
+  const str=()=>{dpr=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=W*dpr;c.height=H*dpr;g.setTransform(dpr,0,0,dpr,0,0);if(!P.length)for(let i=0;i<46;i++)P.push(ny(true))};
+  const tegn=t=>{if(!synlig){sist=0;return}const dt=Math.min(.05,sist?(t-sist)/1000:0);sist=t;g.clearRect(0,0,W,H);
+    for(const p of P){p.y-=p.v*dt;p.s+=dt*.8;const x=p.x+Math.sin(p.s)*10,f=Math.min(1,p.y/(H*.35));if(p.y<-10)Object.assign(p,ny(false));
+      const a=p.a*Math.max(0,f);g.beginPath();g.arc(x,p.y,p.r,0,6.283);g.fillStyle='rgba(200,225,255,'+a.toFixed(3)+')';g.shadowColor='rgba(150,200,255,.9)';g.shadowBlur=8;g.fill()}
+    requestAnimationFrame(tegn)};
+  str();addEventListener('resize',str);
+  new IntersectionObserver(([e])=>{const før=synlig;synlig=e.isIntersecting;if(synlig&&!før)requestAnimationFrame(tegn)}).observe(th);
+  requestAnimationFrame(tegn);
+})();
+</script>
   </div>
 </section>
 <!-- Klart øverst (eieren 12.11.2026), se .kl-hero i stilene. -->
