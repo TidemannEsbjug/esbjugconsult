@@ -1493,6 +1493,61 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .kort-frost{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;min-height:0!important;margin:0!important;transition:none;z-index:-1;border-radius:inherit;pointer-events:none}
   /* Rullefeltet er skjult (for utseendet, særlig på Windows); siden ruller som før med hjul, tastatur og berøring. */
   html{scrollbar-width:none}html::-webkit-scrollbar{display:none}
+  /* Tidemann øverst (eieren 12.11.2026): et figurvalg i et spill. Mørk scene med lys bak figuren og et gulv i perspektiv,
+     «Aspiring to» med egenskapene som stolper til venstre, dressbildet (klippet ut av det gule) stort i midten og kuttet
+     i bunnen av skjermen, og pulsen og postene (flyttet opp fra kartet) til høyre. */
+  .th{order:-3;position:relative;isolation:isolate;overflow:hidden;width:100%;min-height:100svh;max-height:100svh;box-sizing:border-box;display:grid;
+    grid-template-columns:minmax(250px,350px) minmax(0,1fr) minmax(270px,370px);align-items:center;gap:clamp(16px,3vw,48px);
+    padding:calc(env(safe-area-inset-top) + 40px) var(--g) 48px;color:#fff;
+    background:radial-gradient(34% 52% at 50% 46%,rgba(150,195,250,.5) 0%,rgba(60,115,200,.22) 45%,rgba(0,32,91,0) 75%),linear-gradient(180deg,#00122f 0%,#00205B 58%,#0b3380 100%)}
+  .th::before{content:"";position:absolute;z-index:-3;left:-60%;right:-60%;bottom:0;height:46%;transform:perspective(520px) rotateX(64deg);transform-origin:50% 100%;
+    background-image:linear-gradient(rgba(160,200,250,.28) 1px,transparent 1px),linear-gradient(90deg,rgba(160,200,250,.28) 1px,transparent 1px);background-size:72px 72px;
+    -webkit-mask-image:linear-gradient(to top,#000 0%,transparent 90%);mask-image:linear-gradient(to top,#000 0%,transparent 90%)}
+  .th::after{content:"";position:absolute;z-index:-1;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 3px)}
+  .th-figur{position:absolute;z-index:-2;left:50%;bottom:0;height:min(88svh,64vw);transform:translateX(-50%);pointer-events:none}
+  .th-figur img{display:block;height:100%;width:auto;filter:drop-shadow(0 0 2px rgba(200,225,255,.5)) drop-shadow(0 0 36px rgba(130,185,255,.35))}
+  .th-gl{border-radius:22px;background:linear-gradient(160deg,rgba(255,255,255,.13),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.18);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 22px 54px rgba(0,8,30,.45);-webkit-backdrop-filter:blur(16px) saturate(1.3);backdrop-filter:blur(16px) saturate(1.3)}
+  .th-v{grid-column:1;padding:clamp(20px,2.2vw,30px)}
+  .th-navn{margin:0 0 8px;display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.62)}
+  .th-navn i{width:7px;height:7px;border-radius:50%;background:var(--r);box-shadow:0 0 10px var(--r)}
+  .th-h{margin:0 0 24px;font:400 clamp(34px,3vw,52px)/1 "Gloock",var(--serif);letter-spacing:-.01em}
+  .th-stats{list-style:none;margin:0;padding:0;display:grid;gap:17px}
+  .th-s{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px 12px}
+  .th-n{font:600 11px/1.2 "SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.8)}
+  .th-t{font:600 13px/1 "SF Mono",Menlo,monospace;letter-spacing:.06em;font-variant-numeric:tabular-nums}
+  .th-s.max .th-t{padding:4px 7px;border-radius:6px;background:var(--r);box-shadow:0 0 14px rgba(186,12,47,.6);font-size:10.5px;letter-spacing:.14em}
+  .th-bar{grid-column:1/-1;display:grid;grid-template-columns:repeat(10,1fr);gap:4px;height:10px}
+  .th-bar i{border-radius:2px;background:rgba(255,255,255,.09);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
+  .th-bar i.th-on{background:linear-gradient(#fff,#b9d4f3);box-shadow:0 0 10px rgba(170,210,255,.55);animation:thFyll .32s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(.3s + var(--d,0s) + var(--k,0) * 45ms)}
+  .th-s.max .th-bar i.th-on{background:linear-gradient(#fff,#ffd4dc);box-shadow:0 0 12px rgba(255,120,150,.5)}
+  .th-bar i:nth-child(2){--k:1}.th-bar i:nth-child(3){--k:2}.th-bar i:nth-child(4){--k:3}.th-bar i:nth-child(5){--k:4}.th-bar i:nth-child(6){--k:5}.th-bar i:nth-child(7){--k:6}.th-bar i:nth-child(8){--k:7}.th-bar i:nth-child(9){--k:8}.th-bar i:nth-child(10){--k:9}
+  .th-s:nth-child(2){--d:0.12s}.th-s:nth-child(3){--d:0.24s}.th-s:nth-child(4){--d:0.36s}.th-s:nth-child(5){--d:0.48s}
+  @keyframes thFyll{from{opacity:0;transform:scaleY(.2)}}
+  /* Pulsen og postene til høyre. Pulsen har samme form som i kartet (stort tall, fjellgraf), i lyst på den mørke scenen. */
+  .th-hoyre{grid-column:3;display:flex;flex-direction:column;gap:18px;min-width:0}
+  html:not(.data-klar) .th-hoyre{opacity:0}
+  .data-klar .th-hoyre{animation:panelInn .6s ease both}
+  .th-puls{padding:18px 20px 16px}
+  .th .hp,.th .hp[hidden]{display:flex;flex-direction:column;align-items:stretch;gap:12px}
+  .th .hp-o{display:flex;width:100%;margin:0;padding:6px 8px;margin:-6px -8px;border-radius:14px}
+  .th .hp-o:hover,.th .hp-o[aria-expanded="true"]{background:rgba(255,255,255,.07)}
+  .th .hp-o:focus-visible{outline:2px solid #fff}
+  .th .hp .st-v{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto clamp(100px,15svh,150px);align-items:center;justify-items:start;gap:16px 12px;width:100%;
+    font:400 clamp(44px,3.6vw,58px)/1 "Gloock",var(--serif);letter-spacing:-.02em;color:#fff}
+  .th .hp .g{display:none}
+  .th .hp .hk{grid-column:1/-1;grid-row:2;justify-self:stretch;align-self:stretch;width:100%;height:100%;min-width:0}
+  .th .hk-bak{opacity:.3}
+  .th .hp .st-l{font:600 9.5px/1.3 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.62)}
+  .th .poster{color:var(--ink)}
+  @media (max-width:1100px){.th{grid-template-columns:minmax(220px,290px) minmax(0,1fr) minmax(240px,300px)}.th-figur{height:min(80svh,70vw)}}
+  /* Mobil: egenskapene, så pulsen og postene, og bildet nederst, kuttet i bunnen av heroen. */
+  @media (max-width:760px){
+    .th{display:flex;flex-direction:column;align-items:stretch;max-height:none;gap:18px;padding:calc(env(safe-area-inset-top) + 28px) var(--g) 0}
+    .th-figur{position:relative;left:auto;transform:none;order:3;align-self:center;height:auto;width:min(112%,560px);margin-top:4px}
+    .th-figur img{width:100%;height:auto}
+  }
+  @media (prefers-reduced-motion:reduce){.th-bar i.th-on{animation:none}}
   /* Klart øverst (eieren 12.11.2026): én skjerm i samme drakt som kartdelen under (lyst frostglass, mørkeblå skrift,
      Gloock i overskriften, monoskrift i småtekst og de lyse pilleknappene), som tar deg til /klart/. */
   .kl-hero{order:-2;position:relative;isolation:isolate;overflow:hidden;min-height:100svh;max-height:100svh;display:grid;grid-template-columns:minmax(330px,.66fr) minmax(0,1.5fr);align-items:center;gap:clamp(24px,3.4vw,56px);box-sizing:border-box;
@@ -1517,6 +1572,14 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .kl-vis{min-width:0;width:100%}
   .kl-vis iframe{display:block;width:100%;height:520px;border:0;background:transparent;color-scheme:normal;transform-origin:top center}
   @media (max-width:980px){.kl-kort h1{font-size:clamp(32px,6.4vw,54px)}.kl-hero{grid-template-columns:minmax(0,1fr);justify-items:center;align-content:center;padding-top:calc(env(safe-area-inset-top) + 28px)}.kl-kort{max-width:none;width:100%;box-sizing:border-box}.kl-vis{max-width:760px}}
+  /* Athena under Klart (eieren 12.11.2026): samme hero, ikonet med runde hjørner og filmen i en avrundet ramme. */
+  .at-logo img{border-radius:22%}
+  .at-logo span{font-size:clamp(44px,5vw,92px)}
+  .at-h{margin:0;font:400 clamp(26px,2.35vw,44px)/1.06 "Gloock",var(--serif);letter-spacing:-.01em;text-wrap:balance}
+  .kl-kort .at-play{font-size:11px;color:rgba(0,32,91,.55)}
+  .at-vis{min-width:0;width:100%;max-width:960px;justify-self:center}
+  .at-vis video{display:block;width:100%;height:auto;max-height:calc(100svh - 120px);object-fit:cover;border-radius:18px;box-shadow:0 24px 60px rgba(0,32,91,.25)}
+  @media (max-width:980px){.at-hero .at-h{font-size:clamp(28px,6vw,44px)}.at-vis{max-width:760px}}
   /* Bunnlinjen under kartet (eieren 12.11.2026): virksomheten, org.nr., adressen og kontakten. */
   .firma{order:0;background:#00205B;color:#e6eefb;font:13px/1.6 "Archivo","Helvetica Neue",Arial,sans-serif;padding:22px 20px calc(env(safe-area-inset-bottom) + 22px);-webkit-user-select:text;user-select:text}
   .firma ul{list-style:none;margin:0 auto;padding:0;max-width:1180px;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 22px}
@@ -1527,6 +1590,26 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
 </head>
 <body>
 <script>document.body.classList.add('forspill');setTimeout(()=>document.body.classList.remove('forspill'),8000)</script>
+<!-- Tidemann øverst (eieren 12.11.2026), som et figurvalg i et spill: egenskapene til venstre, dressbildet stort i midten
+     (kuttet i bunnen av skjermen), pulsen og postene fra kartet til høyre. Se .th i stilene. -->
+<section class="th" aria-label="Tidemann Esbjug">
+  <div class="th-figur" aria-hidden="true"><img src="/media/tidemann-dress.webp" width="820" height="824" alt="" fetchpriority="high"></div>
+  <div class="th-v th-gl">
+    <p class="th-navn mono"><i aria-hidden="true"></i>Tidemann Esbjug</p>
+    <h2 class="th-h">Aspiring to</h2>
+    <ul class="th-stats">
+      <li class="th-s"><span class="th-n">Hesitation</span><b class="th-t">10</b><span class="th-bar" aria-hidden="true"><i class="th-on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></li>
+      <li class="th-s max"><span class="th-n">Agency</span><b class="th-t">MAX</b><span class="th-bar" aria-hidden="true"><i class="th-on"></i><i class="th-on"></i><i class="th-on"></i><i class="th-on"></i><i class="th-on"></i><i class="th-on"></i><i class="th-on"></i><i class="th-on"></i><i class="th-on"></i><i class="th-on"></i></span></li>
+      <li class="th-s"><span class="th-n">Fear</span><b class="th-t">0</b><span class="th-bar" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></li>
+      <li class="th-s max"><span class="th-n">Gratitude</span><b class="th-t">MAX</b><span class="th-bar" aria-hidden="true"><i class="th-on"></i><i class="th-on"></i><i class="th-on"></i><i class="th-on"></i><i class="th-on"></i><i class="th-on"></i><i class="th-on"></i><i class="th-on"></i><i class="th-on"></i><i class="th-on"></i></span></li>
+      <li class="th-s max"><span class="th-n">Bravery</span><b class="th-t">MAX</b><span class="th-bar" aria-hidden="true"><i class="th-on"></i><i class="th-on"></i><i class="th-on"></i><i class="th-on"></i><i class="th-on"></i><i class="th-on"></i><i class="th-on"></i><i class="th-on"></i><i class="th-on"></i><i class="th-on"></i></span></li>
+    </ul>
+  </div>
+  <div class="th-hoyre">
+    <div class="th-puls th-gl"><div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Heart rate today"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg><svg class="hk" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hk-sno" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="40"><stop offset="0" stop-color="#eef5fc"/><stop offset=".45" stop-color="#bcd3ec"/><stop offset="1" stop-color="#8fb0d6"/></linearGradient><linearGradient id="hk-bakg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="40"><stop offset="0" stop-color="#f4f8fd"/><stop offset="1" stop-color="#d3e2f3"/></linearGradient></defs><path class="hk-bak" d=""/><path class="hk-fjell" d=""/><path class="hk-snoen" d=""/><path class="hk-l" d=""/><circle class="hk-p" r="3" cx="-9" cy="-9"/><line class="hk-xh" x1="-9" x2="-9" y1="0" y2="0"/><circle class="hk-hd" r="4" cx="-9" cy="-9"/></svg><span class="hk-t" hidden></span></span></button><span class="st-l"><span class="hp-on">Live from Apple Watch</span><span class="hp-av">Not live right now</span></span></div></div>
+    <section class="poster" hidden aria-live="polite" aria-label="Poster fra Tidemann. Trykk for neste." role="button" tabindex="0"></section>
+  </div>
+</section>
 <!-- Klart øverst (eieren 12.11.2026), se .kl-hero i stilene. -->
 <section class="kl-hero" aria-label="Klart">
   <div class="kl-kort">
@@ -1567,6 +1650,17 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
     addEventListener("resize",pass);
   })();
   </script>
+</section>
+<!-- Athena under Klart (eieren 12.11.2026): samme drakt som Klart-heroen, med reklamefilmen der Klart har programvinduet. -->
+<section class="kl-hero at-hero" aria-label="Athena: Alarm">
+  <div class="kl-kort">
+    <p class="mono"><i aria-hidden="true"></i>On the App Store 08.11.2026</p>
+    <p class="kl-logo at-logo"><img src="/media/athena-ikon.png" width="180" height="180" alt="" aria-hidden="true"><span>Athena: Alarm</span></p>
+    <h2 class="at-h">One alarm. One tap. Everyone knows.</h2>
+    <a class="kl-knapp" href="https://athenaalarm.app/">See Athena <span aria-hidden="true">→</span></a>
+    <p class="mono at-play">Google Play Store is on the way</p>
+  </div>
+  <div class="at-vis"><video src="/media/athena.mp4" poster="/media/athena.jpg" width="960" height="540" autoplay muted loop playsinline preload="metadata" aria-hidden="true"></video></div>
 </section>
 <section class="sh-hero" aria-label="The AI Sherpa">
   <!-- Midjourney-bildet i full størrelse (1680 × 720) i stedet for videoen (fra 30.10.2026, prøves ut). Klippene ligger fortsatt i media/ (sherpa*.mp4). -->
@@ -1910,7 +2004,6 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
     <span class="mono s-t">Right now</span>
     <b class="g-navn">–</b>
   </section>
-  <section class="poster" hidden aria-live="polite" aria-label="Poster fra Tidemann. Trykk for neste." role="button" tabindex="0"></section>
   <section class="bank gl" hidden aria-label="Bank">
     <span class="mono s-t"><span>SpareBank 1</span><span class="bk-t"></span></span>
     <b class="bk-sum">–</b>
@@ -1927,7 +2020,7 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   </div>
   <div class="hoyre">
   <section class="sens gl" aria-label="Everything his iPhone and Apple Watch measure">
-    <div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Heart rate today"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg><svg class="hk" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hk-sno" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="40"><stop offset="0" stop-color="#eef5fc"/><stop offset=".45" stop-color="#bcd3ec"/><stop offset="1" stop-color="#8fb0d6"/></linearGradient><linearGradient id="hk-bakg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="40"><stop offset="0" stop-color="#f4f8fd"/><stop offset="1" stop-color="#d3e2f3"/></linearGradient></defs><path class="hk-bak" d=""/><path class="hk-fjell" d=""/><path class="hk-snoen" d=""/><path class="hk-l" d=""/><circle class="hk-p" r="3" cx="-9" cy="-9"/><line class="hk-xh" x1="-9" x2="-9" y1="0" y2="0"/><circle class="hk-hd" r="4" cx="-9" cy="-9"/></svg><span class="hk-t" hidden></span></span></button><span class="st-l"><span class="hp-on">Live from Apple Watch</span><span class="hp-av">Not live right now</span></span></div><span class="hk-x" aria-hidden="true"><span>5 min</span><span>nå</span></span>
+    <span class="hk-x" aria-hidden="true"><span>5 min</span><span>nå</span></span>
     <div class="sv" data-k="ibat"><span class="sl">iPhone</span><b>–</b><i class="bar"><i></i></i></div>
     <div class="sv" data-k="wbatl" hidden><span class="sl"><svg class="di" viewBox="0 0 24 24" fill="currentColor" aria-label="Apple" role="img"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg>Watch<span class="wa"> L</span></span><b>–</b><i class="bar"><i></i></i></div>
     <div class="sv" data-k="wbatr"><span class="sl"><svg class="di" viewBox="0 0 24 24" fill="currentColor" aria-label="Apple" role="img"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.5-1-2.5-3.9zM14 5.5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg>Watch<span class="wa"> R</span></span><b>–</b><i class="bar"><i></i></i></div>
