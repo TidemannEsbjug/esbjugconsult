@@ -1493,10 +1493,59 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .kort-frost{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;min-height:0!important;margin:0!important;transition:none;z-index:-1;border-radius:inherit;pointer-events:none}
   /* Rullefeltet er skjult (for utseendet, særlig på Windows); siden ruller som før med hjul, tastatur og berøring. */
   html{scrollbar-width:none}html::-webkit-scrollbar{display:none}
+  /* Klart øverst (eieren 12.11.2026): én skjerm som reklamerer for Klart og tar deg til /klart/.
+     Samme drakt som /klart: vinterbildet, krystallen, «Klart» i Literata kursiv og det havblå frostglasset.
+     Kartet kommer rett under. Skriftene hentes fra /klart/fonts.css (Literata kursiv og Archivo). */
+  .kl-hero{order:-2;position:relative;isolation:isolate;overflow:hidden;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:calc(env(safe-area-inset-top) + clamp(80px,22vh,240px)) 20px 84px;box-sizing:border-box;background:#6593c3;color:#fff;text-align:center;font-family:"Archivo","Helvetica Neue",Arial,sans-serif;-webkit-user-select:text;user-select:text}
+  .kl-bilde{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;object-position:center 100%;transform:scale(1.07);transform-origin:50% 100%;pointer-events:none}
+  .kl-himmel{position:absolute;inset:0 0 auto;z-index:-1;height:clamp(48px,7%,90px);pointer-events:none;
+    background:linear-gradient(180deg,rgba(101,147,195,1) 0%,rgba(101,147,195,.7) 28%,rgba(101,147,195,.22) 68%,rgba(101,147,195,0) 100%)}
+  .kl-i{display:flex;flex-direction:column;align-items:center;gap:clamp(18px,3.4vh,34px);max-width:600px}
+  .kl-merke{margin:0;display:flex;flex-direction:column;align-items:center;gap:clamp(6px,1.2vh,12px);font-weight:inherit;text-decoration:none;color:inherit}
+  .kl-merke img{width:clamp(80px,8vw,116px);height:auto;filter:drop-shadow(0 10px 24px rgba(10,20,34,.35))}
+  .kl-merke span{font:italic 600 clamp(58px,7vw,116px)/1 "Literata","Iowan Old Style",Georgia,serif;letter-spacing:-.02em;
+    text-shadow:0 2px 6px rgba(10,30,60,.35),0 4px 30px rgba(10,30,60,.35)}
+  .kl-kort .kl-slagord{margin:0 0 -4px;font:400 clamp(24px,2.6vw,32px)/1.2 "Literata","Iowan Old Style",Georgia,serif;text-wrap:balance}
+  .kl-kort{display:grid;justify-items:center;gap:16px;margin-top:4px;padding:24px clamp(20px,4vw,36px) 22px;border-radius:26px;background:rgba(10,82,190,.64);
+    -webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);border:1px solid rgba(255,255,255,.3);box-shadow:0 34px 80px -44px rgba(10,20,50,.8)}
+  .kl-kort p{margin:0;font-size:16px;line-height:1.5;text-wrap:pretty}
+  .kl-knapp{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;border-radius:999px;background:#fff;color:#0a3f8f;font-weight:600;font-size:16px;text-decoration:none;
+    box-shadow:0 10px 30px -12px rgba(10,30,70,.6);transition:transform .2s ease,box-shadow .2s ease}
+  .kl-knapp:hover{transform:translateY(-1px);box-shadow:0 14px 34px -12px rgba(10,30,70,.7)}
+  .kl-knapp:focus-visible,.kl-ned:focus-visible{outline:2px solid #fff;outline-offset:3px}
+  .kl-kort .kl-liten{font-size:13px;opacity:.85}
+  .kl-ned{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom) + 22px);translate:-50% 0;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;
+    color:#fff;font-size:13px;font-weight:500;text-decoration:none;background:rgba(10,40,90,.28);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  .kl-ned svg{width:14px;height:14px}
+  @media (max-width:520px){.kl-kort p{font-size:15px}.kl-hero{padding-bottom:88px}.kl-ned{left:18px;translate:0 0;bottom:calc(env(safe-area-inset-bottom) + 26px)}}
+  @media (prefers-reduced-motion:reduce){.kl-knapp{transition:none}}
+  /* Bunnlinjen under kartet (eieren 12.11.2026): virksomheten, org.nr., adressen og kontakten. */
+  .firma{order:0;background:#00205B;color:#e6eefb;font:13px/1.6 "Archivo","Helvetica Neue",Arial,sans-serif;padding:22px 20px calc(env(safe-area-inset-bottom) + 22px);-webkit-user-select:text;user-select:text}
+  .firma ul{list-style:none;margin:0 auto;padding:0;max-width:1180px;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 22px}
+  .firma b{font-weight:600;color:#fff}
+  .firma a{color:inherit;text-underline-offset:3px}
+  @media (max-width:760px){.firma{padding-bottom:calc(env(safe-area-inset-bottom) + 90px)}.firma ul{flex-direction:column;align-items:center;gap:2px}}
 </style>
+<link rel="stylesheet" href="/klart/fonts.css">
 </head>
 <body>
 <script>document.body.classList.add('forspill');setTimeout(()=>document.body.classList.remove('forspill'),8000)</script>
+<!-- Klart øverst (eieren 12.11.2026), se .kl-hero i stilene. -->
+<section class="kl-hero" aria-label="Klart">
+  <img class="kl-bilde" src="/klart/assets/hero-vinter.jpg" width="2400" height="1600" fetchpriority="high" alt="" aria-hidden="true">
+  <div class="kl-himmel" aria-hidden="true"></div>
+  <div class="kl-i">
+    <a class="kl-merke" href="/klart/"><img src="/klart/assets/klart-ikon.png" width="256" height="256" alt=""><span>Klart</span></a>
+    <div class="kl-kort">
+      <p class="kl-slagord">Share the documents.<br>Not the people in them.</p>
+      <p>Klart cleans whole folders of Word, Excel, PowerPoint, PDF and email of names, national ID numbers and other personal data. On your own computer, offline.</p>
+      <a class="kl-knapp" href="/klart/">See Klart <span aria-hidden="true">→</span></a>
+      <p class="kl-liten">Free for individuals. Mac, Windows and Linux.</p>
+    </div>
+  </div>
+  <a class="kl-ned" href="#live">The live map <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a>
+</section>
 <section class="sh-hero" aria-label="The AI Sherpa">
   <!-- Midjourney-bildet i full størrelse (1680 × 720) i stedet for videoen (fra 30.10.2026, prøves ut). Klippene ligger fortsatt i media/ (sherpa*.mp4). -->
   <div class="sh-bilde"><img src="/media/sherpa-mj.webp" width="1680" height="720" fetchpriority="high" alt="Illustration of a roped team climbing a snowy mountain ridge in Norway, with a red cabin in the valley below"></div>
@@ -1894,6 +1943,16 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   </div>
   </div>
   </div>
+</footer>
+<!-- Bunnlinjen under kartet (eieren 12.11.2026). -->
+<footer class="firma">
+  <ul>
+    <li><b>Esbjug Consult</b></li>
+    <li>Org. no. 938 441 405</li>
+    <li>Glenneveien 272B, 1455 Nordre Frogn, Norway</li>
+    <li><a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a></li>
+    <li><a href="/klart/">Klart</a></li>
+  </ul>
 </footer>
 <script>
 // «Les mer» i seksjonene: teksten (og tanken) er skjult til man trykker.

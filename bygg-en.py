@@ -272,6 +272,15 @@ T = [
 
 # V2 (forsiden fra 7.10.2026) har egne tekster. V1-tekstene den har byttet ut hoppes over.
 T_NY = [
+    # Klart øverst på forsiden og bunnlinjen under kartet (12.11.2026).
+    ('<p class="kl-slagord">Del dokumentene.<br>Ikke menneskene i dem.</p>', '<p class="kl-slagord">Share the documents.<br>Not the people in them.</p>'),
+    ('<p>Klart renser hele mapper med Word, Excel, PowerPoint, PDF og e-post for navn, fødselsnummer og andre personopplysninger. På din egen maskin, uten nett.</p>',
+     '<p>Klart cleans whole folders of Word, Excel, PowerPoint, PDF and email of names, national ID numbers and other personal data. On your own computer, offline.</p>'),
+    ('>Se Klart <span', '>See Klart <span'),
+    ('<p class="kl-liten">Gratis for privatpersoner. Mac, Windows og Linux.</p>', '<p class="kl-liten">Free for individuals. Mac, Windows and Linux.</p>'),
+    ('>Live-kartet <svg', '>The live map <svg'),
+    ('<li>Org.nr. 938 441 405</li>', '<li>Org. no. 938 441 405</li>'),
+    ('<li>Glenneveien 272B, 1455 Nordre Frogn</li>', '<li>Glenneveien 272B, 1455 Nordre Frogn, Norway</li>'),
     # Aktive AI-abonnementer og den kompakte podkasten.
     ('aria-label="Aktive KI-abonnementer"', 'aria-label="Active AI subscriptions"'),
     ('<span class="mono s-t">Aktive KI-abonnementer</span>', '<span class="mono s-t">Active AI subscriptions</span>'),
