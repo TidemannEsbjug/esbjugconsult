@@ -275,7 +275,7 @@ T_NY = [
     # Klart øverst på forsiden og bunnlinjen under kartet (12.11.2026).
     ('<h1>Klart - det revolusjonerende verktøyet for dokumentsladding</h1>', '<h1>Klart - the revolutionary document redaction tool</h1>'),
     ('</i>Lansert 11.11.2026</p>', '</i>Launched 11.11.2026</p>'),
-    ('<h2 class="th-h">Jeg strekker meg etter</h2>', '<h2 class="th-h">Aspiring to</h2>'),
+    ('<h2 class="th-h">Mål</h2>', '<h2 class="th-h">Aspiring to</h2>'),
     ('<span class="th-n">Nøling</span>', '<span class="th-n">Hesitation</span>'),
     ('<span class="th-n">Handlekraft</span>', '<span class="th-n">Agency</span>'),
     ('<span class="th-n">Frykt</span>', '<span class="th-n">Fear</span>'),
