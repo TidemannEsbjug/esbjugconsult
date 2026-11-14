@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sprout · Kniebeugen zählen, Garten pflegen</title>
+<meta name="description" content="Sprout ist eine kostenlose iPhone-App, die deine Kniebeugen mit der Kamera zählt. Jede Kniebeuge lässt eine Pflanze wachsen, und jeder Trainingstag wird zu einer Pflanze in deinem Garten.">
+<link rel="canonical" href="https://esbjugconsult.com/sprout/de/">
+<link rel="alternate" hreflang="nb" href="https://esbjugconsult.com/sprout/">
+<link rel="alternate" hreflang="en" href="https://esbjugconsult.com/sprout/en/">
+<link rel="alternate" hreflang="de" href="https://esbjugconsult.com/sprout/de/">
+<link rel="alternate" hreflang="fr" href="https://esbjugconsult.com/sprout/fr/">
+<link rel="alternate" hreflang="es" href="https://esbjugconsult.com/sprout/es/">
+<link rel="alternate" hreflang="pt" href="https://esbjugconsult.com/sprout/pt/">
+<link rel="alternate" hreflang="ja" href="https://esbjugconsult.com/sprout/ja/">
+<link rel="alternate" hreflang="ko" href="https://esbjugconsult.com/sprout/ko/">
+<link rel="alternate" hreflang="x-default" href="https://esbjugconsult.com/sprout/en/">
+<meta name="theme-color" content="#08201f">
+<link rel="icon" href="/sprout/app/logo.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Sprout">
+<meta property="og:url" content="https://esbjugconsult.com/sprout/de/">
+<meta property="og:locale" content="de_DE">
+<meta property="og:title" content="Sprout · Kniebeugen zählen, Garten pflegen">
+<meta property="og:description" content="Sprout ist eine kostenlose iPhone-App, die deine Kniebeugen mit der Kamera zählt. Jede Kniebeuge lässt eine Pflanze wachsen, und jeder Trainingstag wird zu einer Pflanze in deinem Garten.">
+<meta property="og:image" content="https://esbjugconsult.com/sprout/app/logo.png">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "MobileApplication", "name": "Sprout", "alternateName": "Kniebeugen zählen, Garten pflegen", "operatingSystem": "iOS 17.0 or later", "applicationCategory": "HealthApplication", "description": "Sprout ist eine kostenlose iPhone-App, die deine Kniebeugen mit der Kamera zählt. Jede Kniebeuge lässt eine Pflanze wachsen, und jeder Trainingstag wird zu einer Pflanze in deinem Garten.", "inLanguage": "de", "url": "https://esbjugconsult.com/sprout/de/", "image": "https://esbjugconsult.com/sprout/app/logo.png", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "publisher": {"@type": "Organization", "name": "Esbjug Consult", "url": "https://esbjugconsult.com/"}}</script>
+<script>document.documentElement.className='js'</script>
+<style>
+/*
+  Denne siden viser ikke bilder av Sprout. Den kjører Sprout.
+  Bak hele siden ligger appens egen tegnekode (app/sprout.html, laget av tools/web/build-site.py i
+  Sprout-prosjektet), og siden styrer den mens du ruller: frøet som vannes, stilken som vokser fra
+  skogbunnen til stjernene, hagen som dreier, sommerfuglen som flyr inn. Tall og navn på skjermen
+  er appens egne deler. Teksten er vanlig HTML og kan leses uten skript.
+*/
+@font-face{font-family:"Fraunces";src:url(/media/fonts/fraunces.woff2) format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+:root{
+  --cream:#f3fbe9; --soft:rgba(243,251,233,.8); --faint:rgba(243,251,233,.5);
+  --ink:#12301f; --lime:#c8ff9a; --line:rgba(243,251,233,.2);
+  --glass:rgba(8,44,32,.56); --edge:rgba(255,255,255,.26);
+  --serif:"Fraunces",ui-serif,"New York",Georgia,serif;
+  --sans:ui-rounded,"SF Pro Rounded",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --g:clamp(18px,5vw,64px);
+  --vh:1vh;
+}
+@supports (height:1svh){:root{--vh:1svh}}
+*{box-sizing:border-box}
+html{background:#08201f;-webkit-text-size-adjust:100%}
+body{margin:0;color:var(--cream);font:400 17px/1.5 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden;
+  background:linear-gradient(180deg,#0b2a22,#0e3a2c 40%,#08201f)}
+a{color:inherit}
+
+/* —— scenen: appen selv, bak alt —— */
+#scene{position:fixed;left:0;top:0;width:100vw;height:100vh;border:0;z-index:0;pointer-events:none;background:#08201f;opacity:0;transition:opacity 1.2s ease}
+@supports (height:1lvh){#scene{height:100lvh}}
+#scene.on{opacity:1}
+html:not(.js) #scene{display:none}
+
+main,footer{position:relative;z-index:1}
+.merke{position:absolute;left:var(--g);top:max(20px,env(safe-area-inset-top));z-index:3;display:flex;align-items:center;gap:11px;text-decoration:none;font:560 21px/1 var(--serif);letter-spacing:-.01em;text-shadow:0 2px 16px rgba(2,20,14,.6)}
+.merke img{width:34px;height:34px;border-radius:9px;box-shadow:0 6px 18px rgba(0,0,0,.4)}
+
+/* —— hvert kapittel er en lang rullestrekning med ett fastlåst vindu —— */
+.kap{position:relative;height:calc(var(--len,300) * var(--vh))}
+.las{position:sticky;top:0;height:calc(100 * var(--vh));overflow:hidden}
+html:not(.js) .kap{height:auto}html:not(.js) .las{position:static;height:auto;padding:8vh 0}
+
+.lbl{font-size:12px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--lime)}
+h1,h2,h3{margin:0;font-family:var(--serif);font-weight:560;letter-spacing:-.02em;text-wrap:balance}
+p{margin:0}
+
+/* åpningen */
+.apning{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;text-align:center;padding:calc(15 * var(--vh)) var(--g) 0}
+.apning h1{font-size:clamp(46px,8.6vw,118px);line-height:.96;letter-spacing:-.03em;text-shadow:0 4px 40px rgba(2,20,14,.55)}
+.apning p{margin-top:clamp(14px,2.2vw,26px);font-size:clamp(17px,2vw,21px);color:var(--soft);text-shadow:0 2px 18px rgba(2,20,14,.7)}
+.rull{position:absolute;left:50%;bottom:calc(5 * var(--vh));transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--soft)}
+.apning{will-change:opacity,transform}
+.rull i{width:1.5px;height:44px;background:linear-gradient(var(--lime),transparent);animation:rull 2.2s ease-in-out infinite;transform-origin:top}
+@keyframes rull{0%{transform:scaleY(0);opacity:0}35%{transform:scaleY(1);opacity:1}100%{transform:scaleY(1) translateY(26px);opacity:0}}
+
+/* et utsagn som toner inn og ut med rullingen: stort, i glass som appens egne flater */
+.slag{position:absolute;left:var(--g);bottom:calc(9 * var(--vh));width:min(470px,calc(100vw - 2 * var(--g)));padding:22px 24px 24px;border-radius:28px;
+  background:var(--glass);border:1px solid var(--edge);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 20px 60px rgba(2,20,14,.35);opacity:0;transform:translateY(18px);will-change:opacity,transform}
+@media (min-width:900px){.slag{bottom:auto;top:50%;margin-top:-4vh;transform:translateY(calc(-50% + 18px))}.slag.hoyre{left:auto;right:var(--g)}}
+.slag h2{margin-top:10px;font-size:clamp(28px,3.6vw,44px);line-height:1.04}
+.slag h3{font-size:clamp(24px,3vw,34px);line-height:1.08}
+.slag p{margin-top:10px;color:var(--soft);font-size:clamp(16px,1.5vw,18px)}
+html:not(.js) .slag{position:static;opacity:1;transform:none;margin:14px var(--g)}
+
+/* vannets navn, stort, mens stilken stiger */
+.vann{position:absolute;left:var(--g);right:var(--g);bottom:calc(9 * var(--vh));opacity:0;will-change:opacity;text-shadow:0 3px 36px rgba(2,20,14,.5)}
+.vann b{display:block;font:560 clamp(58px,12vw,176px)/.9 var(--serif);letter-spacing:-.035em}
+.vann span{display:block;margin-top:12px;font-size:clamp(13px,1.4vw,16px);font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--soft)}
+@media (min-width:900px){.vann{bottom:calc(8 * var(--vh))}}
+/* appen sier selv når bakgrunnen er lys: da blir skriften mørk, som i appen */
+body.mork .vann{color:var(--ink);text-shadow:0 2px 30px rgba(255,255,255,.55)}
+body.mork .vann span{color:rgba(18,48,31,.74)}
+
+/* lappen som følger med sommerfuglen */
+.lapp{position:absolute;right:var(--g);bottom:calc(11 * var(--vh));width:min(330px,calc(100vw - 2 * var(--g)));opacity:0;transform:translateY(18px) rotate(-2deg);will-change:opacity,transform}
+@media (min-width:900px){.lapp{right:max(var(--g),9vw);bottom:auto;top:44%}}
+.lapp div{padding:20px 22px 22px;border-radius:6px 18px 8px 16px;background:#fbf6e6;color:#3a3324;font:500 clamp(20px,2.2vw,24px)/1.32 var(--serif);box-shadow:0 18px 50px rgba(2,20,14,.4),inset 0 0 0 1px rgba(120,96,50,.14)}
+.lapp small{display:block;margin-top:12px;font:700 11px var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--soft);text-shadow:0 2px 14px rgba(2,20,14,.7)}
+
+/* prøv selv: knappen er sidens egen, planten og tallene er appens */
+.prov{position:absolute;left:0;right:0;bottom:calc(7 * var(--vh) + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:14px;padding:0 var(--g);text-align:center;opacity:0;will-change:opacity}
+.prov .lbl{text-shadow:0 2px 14px rgba(2,20,14,.8)}
+.knb{appearance:none;-webkit-appearance:none;border:0;cursor:pointer;min-width:min(300px,78vw);padding:21px 34px 22px;border-radius:999px;
+  font:560 clamp(21px,2.4vw,25px)/1 var(--serif);letter-spacing:-.01em;color:#0f3320;
+  background:linear-gradient(180deg,#e4ffb9,#a9ec86 62%,#8fdd78);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.75),inset 0 -3px 0 rgba(32,96,48,.22),0 14px 40px rgba(6,40,22,.5),0 0 0 8px rgba(200,255,154,.13);
+  transition:transform .12s ease,box-shadow .2s ease;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+.knb:hover{box-shadow:inset 0 1.5px 0 rgba(255,255,255,.75),inset 0 -3px 0 rgba(32,96,48,.22),0 16px 46px rgba(6,40,22,.55),0 0 0 12px rgba(200,255,154,.17)}
+.knb.ned{transform:scale(.955) translateY(2px)}
+.knb:focus-visible{outline:3px solid #fff;outline-offset:4px}
+.prov p{font-size:15.5px;color:var(--soft);text-shadow:0 2px 14px rgba(2,20,14,.85);min-height:1.5em}
+html:not(.js) .prov{display:none}
+
+/* lyd av og på, og hvor på veien du er */
+.lyd{position:fixed;z-index:5;right:max(14px,calc(var(--g) - 14px));top:max(14px,env(safe-area-inset-top));display:flex;align-items:center;gap:9px;height:40px;padding:0 15px 0 13px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--edge);background:var(--glass);color:var(--cream);font:650 13px/1 var(--sans);letter-spacing:.02em;
+  -webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 8px 24px rgba(2,20,14,.3);-webkit-tap-highlight-color:transparent}
+.lyd:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.lyd span{display:flex;align-items:center;gap:2.5px;height:14px}
+.lyd span i{width:2.5px;height:4px;border-radius:2px;background:var(--lime);opacity:.55}
+.lyd[aria-pressed=true] span i{opacity:1;animation:lyd 1s ease-in-out infinite}
+.lyd[aria-pressed=true] span i:nth-child(2){animation-delay:-.35s}.lyd[aria-pressed=true] span i:nth-child(3){animation-delay:-.7s}.lyd[aria-pressed=true] span i:nth-child(4){animation-delay:-.15s}
+@keyframes lyd{0%,100%{height:4px}50%{height:14px}}
+html:not(.js) .lyd,html:not(.js) .vei{display:none}
+.vei{position:fixed;z-index:4;right:10px;top:50%;transform:translateY(-50%);display:none;flex-direction:column;gap:2px;margin:0;padding:0;list-style:none}
+@media (min-width:900px) and (hover:hover){.vei{display:flex}}
+.vei a{display:flex;align-items:center;justify-content:flex-end;gap:10px;height:24px;padding:0 6px;text-decoration:none;font:650 11.5px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--cream)}
+.vei a b{font-weight:650;opacity:0;transform:translateX(6px);transition:opacity .2s,transform .2s;text-shadow:0 1px 10px rgba(2,20,14,.9)}
+.vei a i{width:6px;height:6px;border-radius:6px;background:var(--cream);opacity:.45;transition:height .3s ease,opacity .3s,background .3s;box-shadow:0 0 0 1px rgba(2,20,14,.25)}
+.vei a.her i{height:22px;opacity:1;background:var(--lime)}
+.vei:hover a b,.vei a:focus-visible b{opacity:1;transform:none}
+
+/* —— slutten: vanlig tekst mens natten faller —— */
+.slutt{position:relative;padding:calc(16 * var(--vh)) var(--g) calc(8 * var(--vh));min-height:calc(100 * var(--vh))}
+.slutt .inn{max-width:1040px;margin:0 auto}
+.slutt h2{margin-top:10px;font-size:clamp(34px,5vw,60px);line-height:1}
+.valg{display:grid;gap:14px;margin:clamp(28px,4vw,48px) 0 0;padding:0;list-style:none}
+@media (min-width:760px){.valg{grid-template-columns:1fr 1fr}}
+.valg li{padding:22px 24px;border-radius:26px;background:var(--glass);border:1px solid var(--edge);-webkit-backdrop-filter:blur(16px) saturate(1.3);backdrop-filter:blur(16px) saturate(1.3);box-shadow:inset 0 1px 0 rgba(255,255,255,.2)}
+.valg b{display:block;font:560 clamp(21px,2.4vw,26px)/1.15 var(--serif);letter-spacing:-.01em}
+.valg p{margin-top:8px;color:var(--soft)}
+.sist{display:grid;gap:14px;margin-top:14px}
+@media (min-width:760px){.sist{grid-template-columns:1fr 1fr}}
+.sist>div{padding:22px 24px;border-radius:26px;background:rgba(6,30,24,.5);border:1px solid rgba(255,255,255,.14);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+.sist p{margin-top:10px;color:var(--soft);max-width:26em}
+.epost{display:inline-block;margin-top:10px;font:560 clamp(19px,2.3vw,24px)/1.3 var(--serif);text-decoration:underline;text-decoration-color:rgba(200,255,154,.6);text-underline-offset:5px;overflow-wrap:anywhere}
+.mer,.sprak{display:flex;flex-wrap:wrap;gap:8px 10px;margin-top:22px}
+.mer a{padding:11px 18px;border-radius:999px;background:var(--glass);border:1px solid var(--edge);text-decoration:none;font:650 14.5px/1 var(--sans);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+.mer a:first-child{background:linear-gradient(180deg,#e4ffb9,#a9ec86);color:#0f3320;border-color:transparent}
+.sprak{margin-top:16px;font-size:14px}.sprak a{color:var(--soft);text-decoration:none;padding:4px 2px;border-bottom:1px solid transparent}.sprak a[aria-current]{color:var(--cream);border-bottom-color:var(--lime)}
+footer{padding:26px var(--g) calc(34px + env(safe-area-inset-bottom));font-size:13.5px;color:var(--faint);text-align:center}
+footer a{color:var(--soft)}
+</style>
+</head>
+<body>
+<iframe id="scene" src="/sprout/app/sprout.html?lang=de&amp;squats=0&amp;hour=6.3" title="" aria-hidden="true" tabindex="-1" scrolling="no"></iframe>
+
+<button class="lyd" id="lyd" type="button" aria-pressed="false"><span aria-hidden="true"><i></i><i></i><i></i><i></i></span><em id="lydt" style="font-style:normal">Ton an</em></button>
+<ol class="vei" id="vei" aria-label="Kapitel"></ol>
+
+<main>
+  <a class="merke" href="/sprout/de/"><img src="/sprout/app/logo.png" alt="" width="34" height="34">Sprout</a>
+
+  <!-- 0 · frøet i skogbunnen, ved daggry -->
+  <section class="kap" data-kap="fro" data-navn="Der Samen" style="--len:130">
+    <div class="las">
+      <div class="apning">
+        <h1>Kniebeugen zählen.<br>Einen Garten pflegen.</h1>
+        <p>Scrolle nach unten, dann wächst er.</p>
+      </div>
+      <div class="rull" aria-hidden="true"><span>Scrollen</span><i></i></div>
+    </div>
+  </section>
+
+  <!-- 1 · fem knebøy vanner frøet, så vokser stilken, og ved dagens mål blomstrer den -->
+  <section class="kap" data-kap="vokse" data-navn="Ein Tag" style="--len:420">
+    <div class="las">
+      <div class="slag" data-fra=".04" data-til=".4"><div class="lbl">01</div><h2>Eine Kniebeuge ist ein Tropfen Wasser</h2><p>Das Handy lehnt an der Wand und zählt deine Kniebeugen mit der Kamera. Die ersten fünf gießen den Samen des Tages.</p></div>
+      <div class="slag hoyre" data-fra=".46" data-til=".72"><h3>Dann keimt er</h3><p>Danach wächst der Stängel mit jeder Kniebeuge.</p></div>
+      <div class="slag" data-fra=".78" data-til="1"><h3>Ist das Tagesziel erreicht, blüht er</h3></div>
+    </div>
+  </section>
+
+  <!-- 2 · bedre vann: fra regn til solvann, fra skogen til stjernene -->
+  <section class="kap" data-kap="vann" data-navn="Das Wasser" style="--len:760">
+    <div class="las">
+      <div class="slag" data-fra=".02" data-til=".2"><div class="lbl">02</div><h2>Das Wasser wird besser</h2><p>Je mehr Kniebeugen du insgesamt gemacht hast, desto besser wird dein Wasser. Mit besserem Wasser wächst der Stängel bei jeder Kniebeuge weiter.</p></div>
+      <div class="vann" data-fra=".22" data-til=".94" aria-live="off"><b id="vn">Regen</b><span id="vt"></span></div>
+    </div>
+  </section>
+
+  <!-- 3 · hagen: tre uker, så potter og lys én etter én, så seks uker; til slutt på avstand (på telefon: tre måneder) -->
+  <section class="kap" data-kap="hage" data-navn="Der Garten" style="--len:600">
+    <div class="las">
+      <div class="slag" data-fra=".04" data-til=".23"><div class="lbl">03</div><h2>Aus einem Tag wird eine Pflanze</h2><p>Wenn der Tag vorbei ist, bleibt die Pflanze in deinem Garten stehen.</p></div>
+      <div class="slag hoyre" data-fra=".28" data-til=".53"><h3>Pflege, Töpfe und Schmuck</h3><p>Den Garten pflegst und schmückst du mit Tau, den du dir mit Kniebeugen verdienst.</p></div>
+      <div class="slag" data-fra=".6" data-til="1"><h3>Woche für Woche</h3><p>Nach ein paar Wochen zeigt der Garten, wie oft du trainiert hast.</p></div>
+    </div>
+  </section>
+
+  <!-- 4 · en venns hage, og en sommerfugl som flyr inn med noen ord -->
+  <section class="kap" data-kap="venn" data-navn="Freunde" style="--len:380">
+    <div class="las">
+      <div class="slag" data-fra=".06" data-til=".34"><div class="lbl">04</div><h2>Gärten kann man besuchen</h2><p>Freunde besuchen gegenseitig ihre Gärten und lassen einen Schmetterling mit ein paar Worten da.</p></div>
+      <div class="lapp" data-fra=".44" data-til=".97"><div>Hallo! Gut gemacht, Amelie.<br>Hab einen schönen Tag!</div><small>Die Notiz, die mit dem Schmetterling kommt</small></div>
+    </div>
+  </section>
+
+  <!-- 5 · et nytt frø neste morgen, og leseren tar knebøyene selv -->
+  <section class="kap" data-kap="prov" data-navn="Ausprobieren" style="--len:190">
+    <div class="las">
+      <div class="prov" data-fra=".05" data-til="1">
+        <div class="lbl">05 · Ausprobieren</div>
+        <button class="knb" id="kn" type="button">Eine Kniebeuge machen</button>
+        <p id="knt" aria-live="polite">Jedes Tippen ist eine Kniebeuge. Fünf gießen den Samen.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 · natten faller over planten du nettopp dyrket: valgene, status og kontakt -->
+  <section class="slutt" data-kap="slutt" data-navn="Über die App">
+    <div class="inn">
+      <div class="lbl">Entscheidungen</div>
+      <h2>Was die App ist und was nicht.</h2>
+      <ul class="valg">
+        <li><b>Kostenlos</b><p>Kein Abo und keine Werbung. Verkauft wird nur Tau, den du dir auch mit Kniebeugen verdienst.</p></li>
+        <li><b>Die Kamera zählt auf dem Handy</b><p>Nichts wird gefilmt, gespeichert oder gesendet.</p></li>
+        <li><b>Zeigen statt erklären</b><p>Die App erklärt sich mit kleinen animierten Szenen, nicht mit Text.</p></li>
+        <li><b>Acht Sprachen</b><p>Deutsch, Englisch, Norwegisch, Französisch, Spanisch, Portugiesisch, Japanisch und Koreanisch.</p></li>
+      </ul>
+      <div class="sist">
+        <div><div class="lbl">Stand</div><p>Die iPhone-Version liegt bei Apple zur Prüfung. An Android wird gearbeitet.</p></div>
+        <div><div class="lbl">Kontakt</div><a class="epost" href="mailto:sproutappsupport@proton.me">sproutappsupport@proton.me</a></div>
+      </div>
+      <nav class="mer" aria-label="Mehr über Sprout"><a href="/sprout/de/faq">Fragen und Antworten</a><a href="/sprout/support">Hilfe</a><a href="/sprout/privacy">Datenschutz</a><a href="/sprout/terms">Nutzungsbedingungen</a></nav>
+      <nav class="sprak" aria-label="Sprachen"><a href="/sprout/" hreflang="nb" lang="nb">Norsk</a><a href="/sprout/en/" hreflang="en" lang="en">English</a><a href="/sprout/de/" hreflang="de" lang="de" aria-current="page">Deutsch</a><a href="/sprout/fr/" hreflang="fr" lang="fr">Français</a><a href="/sprout/es/" hreflang="es" lang="es">Español</a><a href="/sprout/pt/" hreflang="pt" lang="pt-BR">Português</a><a href="/sprout/ja/" hreflang="ja" lang="ja">日本語</a><a href="/sprout/ko/" hreflang="ko" lang="ko">한국어</a></nav>
+    </div>
+  </section>
+</main>
+
+<footer>Sprout ist ein Projekt von <a href="/">Esbjug Consult</a>. Alles, was du auf dem Weg nach unten gesehen hast, hat der Code der App beim Scrollen gezeichnet. Auch Musik und Klänge stammen aus der App.</footer>
+
+<script>
+/* Rullingen styrer appen. Hvert kapittel sier hva appen skal vise for hvor langt du har rullet i det. */
+(function(){
+  var T={"on": "Ton an", "off": "Ton aus", "per": "{v} pro Kniebeuge · Stufe {n} von 12", "dec": ",", "btn": "Eine Kniebeuge machen", "btn2": "Neuen Samen pflanzen", "h0": "Jedes Tippen ist eine Kniebeuge. Fünf gießen den Samen.", "h1": "Noch {n}, bis der Samen keimt.", "h2": "Noch {n} bis zum Tagesziel.", "h3": "Das Tagesziel ist erreicht, und die Pflanze blüht."};
+  var ramme=document.getElementById('scene'),kap=[].slice.call(document.querySelectorAll('[data-kap]')),S=null,mus=.5,forrige='',time=6.3,i;
+  var LTS=[0,50,150,350,750,1500,3000,6000,11000,19000,32000,50000];
+  var kl=function(v,a,b){return Math.max(a,Math.min(b,v))},bl=function(a,b,t){return a+(b-a)*t},myk=function(a,b,v){v=kl((v-a)/(b-a),0,1);return v*v*(3-2*v)};
+  var $=function(id){return document.getElementById(id)};
+  function klar(){try{var w=ramme.contentWindow;if(w&&w.STAGE&&w.STAGE.ready){S=w.STAGE;w.STSFX=spill;S.sound(lyd.pa);ramme.classList.add('on');return true}}catch(e){}return false}
+  ramme.addEventListener('load',klar);addEventListener('message',function(e){if(e.data&&e.data.sproutStage)klar()});
+  addEventListener('pointermove',function(e){mus=e.clientX/innerWidth},{passive:true});
+
+  // hvor langt inne i et kapittel vi er, 0 til 1
+  function fram(el){var r=el.getBoundingClientRect(),lang=r.height-innerHeight;return lang>4?kl(-r.top/lang,0,1):kl((innerHeight*.5-r.top)/Math.max(1,r.height),0,1)}
+  // rull til et sted i et kapittel
+  function gaTil(navn,p,mykt){var el=document.querySelector('[data-kap="'+navn+'"]');if(!el)return;var r=el.getBoundingClientRect(),y=scrollY+r.top+Math.max(0,r.height-innerHeight)*(p||0);scrollTo({top:y,behavior:mykt?'smooth':'auto'})}
+  window.til=gaTil;
+  // alt i alt antall knebøy som gir et vann et stykke oppe på stigen (x = 1 er regn, 12 er solvann)
+  function ialt(x){var i=kl(Math.floor(x),0,10),f=x-i;return x>=11?50000*(1+(x-11)*.6):bl(LTS[i],LTS[i+1],f)}
+  function tall(cm){return cm<100?String(cm).replace('.',T.dec)+' cm':String(Math.round(cm/10)/10).replace('.',T.dec)+' m'}
+
+  // —— merkene i kanten: hvor på veien du er ——
+  var vei=$('vei'),merker={};
+  kap.forEach(function(k){var li=document.createElement('li'),a=document.createElement('a');a.href='#'+k.dataset.kap;a.innerHTML='<b>'+k.dataset.navn+'</b><i></i>';
+    a.addEventListener('click',function(e){e.preventDefault();gaTil(k.dataset.kap,k.dataset.kap==='fro'||k.dataset.kap==='slutt'?0:k.dataset.kap==='prov'?.3:.1,true)});li.appendChild(a);vei.appendChild(li);merker[k.dataset.kap]=a});
+
+  // —— lyd: appens egen musikk for tiden på døgnet, og appens egne lyder. Ingenting spilles før du slår det på. ——
+  var lyd={pa:false,ctx:null,ut:null,buf:{},vent:{},spor:{}},DELER=['dawn','day','dusk','night'];
+  function del(h){return h>=5&&h<9.5?'dawn':h>=9.5&&h<17?'day':h>=17&&h<21?'dusk':'night'}
+  function hent(n,sa){if(lyd.buf[n]){sa&&sa(lyd.buf[n]);return}if(lyd.vent[n]){sa&&lyd.vent[n].push(sa);return}lyd.vent[n]=sa?[sa]:[];
+    fetch('/sprout/app/audio/'+n+'.m4a').then(function(r){return r.arrayBuffer()}).then(function(a){return new Promise(function(ok,nei){lyd.ctx.decodeAudioData(a,ok,nei)})})
+      .then(function(b){lyd.buf[n]=b;var v=lyd.vent[n]||[];delete lyd.vent[n];v.forEach(function(f){f(b)})}).catch(function(){delete lyd.vent[n]})}
+  function spill(n){if(!lyd.pa||!lyd.ctx)return;var t0=performance.now();hent(n,function(b){if(!lyd.pa||performance.now()-t0>450)return;var k=lyd.ctx.createBufferSource();k.buffer=b;k.connect(lyd.ut);k.start()})}
+  function lydPa(pa){lyd.pa=pa;$('lyd').setAttribute('aria-pressed',pa?'true':'false');$('lydt').textContent=pa?T.off:T.on;
+    if(pa&&!lyd.ctx){var AC=window.AudioContext||window.webkitAudioContext;if(!AC){lyd.pa=false;return}lyd.ctx=new AC();lyd.ut=lyd.ctx.createGain();lyd.ut.gain.value=.7;lyd.ut.connect(lyd.ctx.destination);
+      ['rep1','rep2','rep3','rep4','rep5','rep6','rep7','rep8','bloom','finish','stage','garden','home','flutter','letter','placePot','placePot2','placeStone','placeLight','placeFlame','placeCrystal','placeShell','plot'].forEach(function(n){hent(n)})}
+    if(lyd.ctx){if(pa)lyd.ctx.resume();else{DELER.forEach(function(d){var s=lyd.spor[d];if(s){s.v=0;s.g.gain.value=0;s.el.pause()}})}}
+    if(S)S.sound(pa)}
+  $('lyd').addEventListener('click',function(){lydPa(!lyd.pa)});
+  document.addEventListener('visibilitychange',function(){if(!lyd.ctx)return;if(document.hidden){DELER.forEach(function(d){var s=lyd.spor[d];if(s)s.el.pause()});lyd.ctx.suspend()}else if(lyd.pa)lyd.ctx.resume()});
+  // musikken følger tiden på døgnet i bildet, og glir over fra ett stykke til det neste
+  function musikk(){if(!lyd.pa||!lyd.ctx||document.hidden)return;var na=del(time);
+    DELER.forEach(function(d){var s=lyd.spor[d],mal=d===na?1:0;if(!s){if(!mal)return;var el=new Audio('/sprout/app/audio/music-'+d+'.m4a');el.loop=true;el.preload='auto';var g=lyd.ctx.createGain();g.gain.value=0;
+        try{lyd.ctx.createMediaElementSource(el).connect(g)}catch(e){}g.connect(lyd.ctx.destination);s=lyd.spor[d]={el:el,g:g,v:0}}
+      s.v+=(mal-s.v)*.022;if(Math.abs(mal-s.v)<.004)s.v=mal;s.g.gain.value=s.v*s.v*.5;
+      if(mal&&s.el.paused){var pr=s.el.play();pr&&pr.catch&&pr.catch(function(){})}else if(!mal&&s.v===0&&!s.el.paused)s.el.pause()})}
+
+  // —— prøv selv: hvert trykk er en knebøy, og holder du inne, kommer de etter hverandre ——
+  var kn=$('kn'),knt=$('knt'),hold=null,ferdig=false;
+  function trykk(){if(!S)return;if(ferdig){S.replant();return}S.squat()}
+  function slipp(){kn.classList.remove('ned');clearTimeout(hold);hold=null}
+  kn.addEventListener('pointerdown',function(e){if(e.button)return;kn.classList.add('ned');trykk();clearTimeout(hold);
+    var fart=330;(function igjen(){hold=setTimeout(function(){if(ferdig){slipp();return}trykk();fart=Math.max(150,fart*.88);igjen()},fart)})()});
+  ['pointerup','pointercancel','pointerleave'].forEach(function(n){kn.addEventListener(n,slipp)});
+  kn.addEventListener('click',function(e){if(e.detail===0)trykk()});   // tastaturet
+  kn.addEventListener('contextmenu',function(e){e.preventDefault()});
+
+  var sistLapp=0;
+  function tegn(){
+    requestAnimationFrame(tegn);
+    var midt=innerHeight*.5,na=kap[0],i;
+    for(i=0;i<kap.length;i++){if(kap[i].getBoundingClientRect().top<=midt)na=kap[i]}
+    var navn=na.dataset.kap,p=fram(na);
+    // utsagnene toner inn og ut
+    var slag=na.querySelectorAll('[data-fra]');
+    for(i=0;i<slag.length;i++){var e=slag[i],a=+e.dataset.fra,b=+e.dataset.til,o=myk(a,a+.035,p)*(b>=1?1:1-myk(b-.035,b,p));
+      e.style.opacity=o;e.style.pointerEvents=o>.5?'':'none';
+      if(e.classList.contains('slag')||e.classList.contains('lapp')){var y=(1-o)*18,sm=e.classList.contains('lapp')?' rotate(-2deg)':'';e.style.transform=(innerWidth>=900&&e.classList.contains('slag')?'translateY(calc(-50% + '+y+'px))':'translateY('+y+'px)')+sm}}
+    if(forrige!==navn){var gamle=document.querySelectorAll('[data-fra]');for(i=0;i<gamle.length;i++)if(!na.contains(gamle[i])){gamle[i].style.opacity=0;gamle[i].style.pointerEvents='none'}
+      for(var k in merker)merker[k].classList.toggle('her',k===navn);forrige=navn}
+    if(navn==='fro'){var ap=na.querySelector('.apning'),ut=myk(.3,.95,p);ap.style.opacity=1-ut;ap.style.transform='translateY('+(-ut*60)+'px) scale('+(1+ut*.04)+')';na.querySelector('.rull').style.opacity=1-myk(.05,.3,p)}
+    if(!S&&!klar())return;
+    var dreie=(mus-.5)*.22;
+    if(navn==='fro'){S.ui('');time=6.3;S.home({shown:0,life:0,hour:time,done:false})}
+    else if(navn==='vokse'){S.ui('home');
+      var n=p<.1?0:p<.42?5*myk(.1,.42,p):5+95*kl((p-.42)/.5,0,1);time=bl(6.4,8.6,p);
+      S.home({shown:n,life:0,hour:time,done:n>=50,sound:true})}
+    else if(navn==='vann'){S.ui('home');
+      var x=bl(1.25,11.7,myk(.02,.98,p)),t=ialt(x);time=p<.45?bl(8.6,13,p/.45):p<.72?bl(13,18.6,(p-.45)/.27):bl(18.6,22.5,(p-.72)/.28);
+      S.home({shown:100,life:Math.max(0,t-100),hour:time,done:true,sound:true});
+      var inf=S.info();$('vn').textContent=inf.water;$('vt').textContent=T.per.replace('{v}',tall(inf.cm)).replace('{n}',inf.level);
+      document.body.classList.toggle('mork',inf.ink==='dark')}
+    else if(navn==='hage'){S.ui('');time=bl(10,16.5,p);
+      // den fjerne visningen av tre måneder er laget for en stående skjerm; i et bredt vindu trekker kameraet seg heller opp og ut
+      var felt=p>=.82&&innerWidth<innerHeight,ut=myk(.8,1,p);
+      S.garden({span:felt?'q':p<.56?'w3':'w6',dress:myk(.27,.52,p),hour:time,
+        yaw:(felt?bl(-.16,.16,(p-.82)/.18):bl(-.42,.42,p))+dreie,pitch:bl(.2,.3,p)+ut*.2,zoom:felt?1:p<.56?bl(.98,1.12,myk(0,.22,p)):bl(1.12,.93,ut)})}
+    else if(navn==='venn'){S.ui('visit');time=13;
+      var flyr=p>.4&&p<.985;S.friend({hour:time,yaw:bl(.32,-.22,p)+dreie,pitch:.24,zoom:1.3,fly:flyr,kind:7});
+      if(p>.46&&p<.9&&sistLapp<.46)S.say('letter');sistLapp=p}
+    else if(navn==='prov'||navn==='slutt'){S.ui(navn==='prov'?'home':'');time=navn==='prov'?bl(6.2,7.4,p):bl(19.5,22.6,myk(0,.6,p));S.play({hour:time});
+      var u=S.info();if(u.done!==ferdig){ferdig=u.done;kn.textContent=ferdig?T.btn2:T.btn}
+      knt.textContent=ferdig?T.h3:u.total<1?T.h0:u.total<5?T.h1.replace('{n}',5-u.total):T.h2.replace('{n}',u.goal-u.total)}
+    if(navn!=='vann')document.body.classList.remove('mork');
+    if(navn!=='venn')sistLapp=0;
+    musikk();
+  }
+  requestAnimationFrame(tegn);
+})();
+</script>
+</body>
+</html>

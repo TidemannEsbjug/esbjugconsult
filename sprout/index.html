@@ -4,14 +4,28 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Sprout · Tell knebøy, dyrk en hage</title>
-<meta name="description" content="Sprout er en app der hver knebøy får en plante til å vokse, og hver dag du trener blir en plante i en hage.">
-<!-- Konseptside for en app som ikke er ute ennå: holdes utenfor søk til den er det. Fjern linja under ved lansering. -->
-<meta name="robots" content="noindex">
+<meta name="description" content="Sprout er en gratis iPhone-app som teller knebøy med kameraet. Hver knebøy får en plante til å vokse, og hver dag du trener blir en plante i hagen din.">
+<link rel="canonical" href="https://esbjugconsult.com/sprout/">
+<link rel="alternate" hreflang="nb" href="https://esbjugconsult.com/sprout/">
+<link rel="alternate" hreflang="en" href="https://esbjugconsult.com/sprout/en/">
+<link rel="alternate" hreflang="de" href="https://esbjugconsult.com/sprout/de/">
+<link rel="alternate" hreflang="fr" href="https://esbjugconsult.com/sprout/fr/">
+<link rel="alternate" hreflang="es" href="https://esbjugconsult.com/sprout/es/">
+<link rel="alternate" hreflang="pt" href="https://esbjugconsult.com/sprout/pt/">
+<link rel="alternate" hreflang="ja" href="https://esbjugconsult.com/sprout/ja/">
+<link rel="alternate" hreflang="ko" href="https://esbjugconsult.com/sprout/ko/">
+<link rel="alternate" hreflang="x-default" href="https://esbjugconsult.com/sprout/en/">
 <meta name="theme-color" content="#08201f">
-<link rel="icon" href="app/logo.png">
+<link rel="icon" href="/sprout/app/logo.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Sprout">
+<meta property="og:url" content="https://esbjugconsult.com/sprout/">
+<meta property="og:locale" content="nb_NO">
 <meta property="og:title" content="Sprout · Tell knebøy, dyrk en hage">
-<meta property="og:description" content="En app der hver knebøy får en plante til å vokse, og hver dag du trener blir en plante i en hage.">
+<meta property="og:description" content="Sprout er en gratis iPhone-app som teller knebøy med kameraet. Hver knebøy får en plante til å vokse, og hver dag du trener blir en plante i hagen din.">
 <meta property="og:image" content="https://esbjugconsult.com/sprout/app/logo.png">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "MobileApplication", "name": "Sprout", "alternateName": "Tell knebøy, dyrk en hage", "operatingSystem": "iOS 17.0 or later", "applicationCategory": "HealthApplication", "description": "Sprout er en gratis iPhone-app som teller knebøy med kameraet. Hver knebøy får en plante til å vokse, og hver dag du trener blir en plante i hagen din.", "inLanguage": "nb", "url": "https://esbjugconsult.com/sprout/", "image": "https://esbjugconsult.com/sprout/app/logo.png", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "publisher": {"@type": "Organization", "name": "Esbjug Consult", "url": "https://esbjugconsult.com/"}}</script>
 <script>document.documentElement.className='js'</script>
 <style>
 /*
@@ -138,18 +152,22 @@ html:not(.js) .lyd,html:not(.js) .vei{display:none}
 .sist>div{padding:22px 24px;border-radius:26px;background:rgba(6,30,24,.5);border:1px solid rgba(255,255,255,.14);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
 .sist p{margin-top:10px;color:var(--soft);max-width:26em}
 .epost{display:inline-block;margin-top:10px;font:560 clamp(19px,2.3vw,24px)/1.3 var(--serif);text-decoration:underline;text-decoration-color:rgba(200,255,154,.6);text-underline-offset:5px;overflow-wrap:anywhere}
+.mer,.sprak{display:flex;flex-wrap:wrap;gap:8px 10px;margin-top:22px}
+.mer a{padding:11px 18px;border-radius:999px;background:var(--glass);border:1px solid var(--edge);text-decoration:none;font:650 14.5px/1 var(--sans);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+.mer a:first-child{background:linear-gradient(180deg,#e4ffb9,#a9ec86);color:#0f3320;border-color:transparent}
+.sprak{margin-top:16px;font-size:14px}.sprak a{color:var(--soft);text-decoration:none;padding:4px 2px;border-bottom:1px solid transparent}.sprak a[aria-current]{color:var(--cream);border-bottom-color:var(--lime)}
 footer{padding:26px var(--g) calc(34px + env(safe-area-inset-bottom));font-size:13.5px;color:var(--faint);text-align:center}
 footer a{color:var(--soft)}
 </style>
 </head>
 <body>
-<iframe id="scene" src="app/sprout.html?lang=nb&amp;squats=0&amp;hour=6.3" title="" aria-hidden="true" tabindex="-1" scrolling="no"></iframe>
+<iframe id="scene" src="/sprout/app/sprout.html?lang=nb&amp;squats=0&amp;hour=6.3" title="" aria-hidden="true" tabindex="-1" scrolling="no"></iframe>
 
 <button class="lyd" id="lyd" type="button" aria-pressed="false"><span aria-hidden="true"><i></i><i></i><i></i><i></i></span><em id="lydt" style="font-style:normal">Slå på lyd</em></button>
 <ol class="vei" id="vei" aria-label="Kapitler"></ol>
 
 <main>
-  <a class="merke" href="/sprout/"><img src="app/logo.png" alt="" width="34" height="34">Sprout</a>
+  <a class="merke" href="/sprout/"><img src="/sprout/app/logo.png" alt="" width="34" height="34">Sprout</a>
 
   <!-- 0 · frøet i skogbunnen, ved daggry -->
   <section class="kap" data-kap="fro" data-navn="Frøet" style="--len:130">
@@ -175,7 +193,7 @@ footer a{color:var(--soft)}
   <section class="kap" data-kap="vann" data-navn="Vannet" style="--len:760">
     <div class="las">
       <div class="slag" data-fra=".02" data-til=".2"><div class="lbl">02</div><h2>Vannet blir bedre</h2><p>Jo flere knebøy du har tatt i alt, desto bedre vann får du. Med bedre vann vokser stilken lenger for hver knebøy.</p></div>
-      <div class="vann" data-fra=".22" data-til=".94" aria-live="off"><b id="vn">Regn</b><span id="vt">1 cm per knebøy · nivå 1 av 12</span></div>
+      <div class="vann" data-fra=".22" data-til=".94" aria-live="off"><b id="vn">Regn</b><span id="vt"></span></div>
     </div>
   </section>
 
@@ -219,9 +237,11 @@ footer a{color:var(--soft)}
         <li><b>Åtte språk</b><p>Norsk, engelsk, tysk, fransk, spansk, portugisisk, japansk og koreansk.</p></li>
       </ul>
       <div class="sist">
-        <div><div class="lbl">Status</div><p>iPhone-versjonen er bygget og testes. Android er under arbeid.</p></div>
+        <div><div class="lbl">Status</div><p>iPhone-versjonen er sendt til Apple for godkjenning. Android er under arbeid.</p></div>
         <div><div class="lbl">Kontakt</div><a class="epost" href="mailto:sproutappsupport@proton.me">sproutappsupport@proton.me</a></div>
       </div>
+      <nav class="mer" aria-label="Mer om Sprout"><a href="/sprout/faq">Spørsmål og svar</a><a href="/sprout/support">Støtte</a><a href="/sprout/privacy">Personvern</a><a href="/sprout/terms">Vilkår</a></nav>
+      <nav class="sprak" aria-label="Språk"><a href="/sprout/" hreflang="nb" lang="nb" aria-current="page">Norsk</a><a href="/sprout/en/" hreflang="en" lang="en">English</a><a href="/sprout/de/" hreflang="de" lang="de">Deutsch</a><a href="/sprout/fr/" hreflang="fr" lang="fr">Français</a><a href="/sprout/es/" hreflang="es" lang="es">Español</a><a href="/sprout/pt/" hreflang="pt" lang="pt-BR">Português</a><a href="/sprout/ja/" hreflang="ja" lang="ja">日本語</a><a href="/sprout/ko/" hreflang="ko" lang="ko">한국어</a></nav>
     </div>
   </section>
 </main>
@@ -231,6 +251,7 @@ footer a{color:var(--soft)}
 <script>
 /* Rullingen styrer appen. Hvert kapittel sier hva appen skal vise for hvor langt du har rullet i det. */
 (function(){
+  var T={"on": "Slå på lyd", "off": "Slå av lyd", "per": "{v} per knebøy · nivå {n} av 12", "dec": ",", "btn": "Ta en knebøy", "btn2": "Plant et nytt frø", "h0": "Hvert trykk er en knebøy. Fem vanner frøet.", "h1": "{n} knebøy igjen før frøet spirer.", "h2": "{n} igjen til dagens mål.", "h3": "Dagens mål er nådd, og planten blomstrer."};
   var ramme=document.getElementById('scene'),kap=[].slice.call(document.querySelectorAll('[data-kap]')),S=null,mus=.5,forrige='',time=6.3,i;
   var LTS=[0,50,150,350,750,1500,3000,6000,11000,19000,32000,50000];
   var kl=function(v,a,b){return Math.max(a,Math.min(b,v))},bl=function(a,b,t){return a+(b-a)*t},myk=function(a,b,v){v=kl((v-a)/(b-a),0,1);return v*v*(3-2*v)};
@@ -246,7 +267,7 @@ footer a{color:var(--soft)}
   window.til=gaTil;
   // alt i alt antall knebøy som gir et vann et stykke oppe på stigen (x = 1 er regn, 12 er solvann)
   function ialt(x){var i=kl(Math.floor(x),0,10),f=x-i;return x>=11?50000*(1+(x-11)*.6):bl(LTS[i],LTS[i+1],f)}
-  function tall(cm){return cm<100?String(cm).replace('.',',')+' cm':String(Math.round(cm/10)/10).replace('.',',')+' m'}
+  function tall(cm){return cm<100?String(cm).replace('.',T.dec)+' cm':String(Math.round(cm/10)/10).replace('.',T.dec)+' m'}
 
   // —— merkene i kanten: hvor på veien du er ——
   var vei=$('vei'),merker={};
@@ -257,10 +278,10 @@ footer a{color:var(--soft)}
   var lyd={pa:false,ctx:null,ut:null,buf:{},vent:{},spor:{}},DELER=['dawn','day','dusk','night'];
   function del(h){return h>=5&&h<9.5?'dawn':h>=9.5&&h<17?'day':h>=17&&h<21?'dusk':'night'}
   function hent(n,sa){if(lyd.buf[n]){sa&&sa(lyd.buf[n]);return}if(lyd.vent[n]){sa&&lyd.vent[n].push(sa);return}lyd.vent[n]=sa?[sa]:[];
-    fetch('app/audio/'+n+'.m4a').then(function(r){return r.arrayBuffer()}).then(function(a){return new Promise(function(ok,nei){lyd.ctx.decodeAudioData(a,ok,nei)})})
+    fetch('/sprout/app/audio/'+n+'.m4a').then(function(r){return r.arrayBuffer()}).then(function(a){return new Promise(function(ok,nei){lyd.ctx.decodeAudioData(a,ok,nei)})})
       .then(function(b){lyd.buf[n]=b;var v=lyd.vent[n]||[];delete lyd.vent[n];v.forEach(function(f){f(b)})}).catch(function(){delete lyd.vent[n]})}
   function spill(n){if(!lyd.pa||!lyd.ctx)return;var t0=performance.now();hent(n,function(b){if(!lyd.pa||performance.now()-t0>450)return;var k=lyd.ctx.createBufferSource();k.buffer=b;k.connect(lyd.ut);k.start()})}
-  function lydPa(pa){lyd.pa=pa;$('lyd').setAttribute('aria-pressed',pa?'true':'false');$('lydt').textContent=pa?'Slå av lyd':'Slå på lyd';
+  function lydPa(pa){lyd.pa=pa;$('lyd').setAttribute('aria-pressed',pa?'true':'false');$('lydt').textContent=pa?T.off:T.on;
     if(pa&&!lyd.ctx){var AC=window.AudioContext||window.webkitAudioContext;if(!AC){lyd.pa=false;return}lyd.ctx=new AC();lyd.ut=lyd.ctx.createGain();lyd.ut.gain.value=.7;lyd.ut.connect(lyd.ctx.destination);
       ['rep1','rep2','rep3','rep4','rep5','rep6','rep7','rep8','bloom','finish','stage','garden','home','flutter','letter','placePot','placePot2','placeStone','placeLight','placeFlame','placeCrystal','placeShell','plot'].forEach(function(n){hent(n)})}
     if(lyd.ctx){if(pa)lyd.ctx.resume();else{DELER.forEach(function(d){var s=lyd.spor[d];if(s){s.v=0;s.g.gain.value=0;s.el.pause()}})}}
@@ -269,7 +290,7 @@ footer a{color:var(--soft)}
   document.addEventListener('visibilitychange',function(){if(!lyd.ctx)return;if(document.hidden){DELER.forEach(function(d){var s=lyd.spor[d];if(s)s.el.pause()});lyd.ctx.suspend()}else if(lyd.pa)lyd.ctx.resume()});
   // musikken følger tiden på døgnet i bildet, og glir over fra ett stykke til det neste
   function musikk(){if(!lyd.pa||!lyd.ctx||document.hidden)return;var na=del(time);
-    DELER.forEach(function(d){var s=lyd.spor[d],mal=d===na?1:0;if(!s){if(!mal)return;var el=new Audio('app/audio/music-'+d+'.m4a');el.loop=true;el.preload='auto';var g=lyd.ctx.createGain();g.gain.value=0;
+    DELER.forEach(function(d){var s=lyd.spor[d],mal=d===na?1:0;if(!s){if(!mal)return;var el=new Audio('/sprout/app/audio/music-'+d+'.m4a');el.loop=true;el.preload='auto';var g=lyd.ctx.createGain();g.gain.value=0;
         try{lyd.ctx.createMediaElementSource(el).connect(g)}catch(e){}g.connect(lyd.ctx.destination);s=lyd.spor[d]={el:el,g:g,v:0}}
       s.v+=(mal-s.v)*.022;if(Math.abs(mal-s.v)<.004)s.v=mal;s.g.gain.value=s.v*s.v*.5;
       if(mal&&s.el.paused){var pr=s.el.play();pr&&pr.catch&&pr.catch(function(){})}else if(!mal&&s.v===0&&!s.el.paused)s.el.pause()})}
@@ -307,7 +328,7 @@ footer a{color:var(--soft)}
     else if(navn==='vann'){S.ui('home');
       var x=bl(1.25,11.7,myk(.02,.98,p)),t=ialt(x);time=p<.45?bl(8.6,13,p/.45):p<.72?bl(13,18.6,(p-.45)/.27):bl(18.6,22.5,(p-.72)/.28);
       S.home({shown:100,life:Math.max(0,t-100),hour:time,done:true,sound:true});
-      var inf=S.info();$('vn').textContent=inf.water;$('vt').textContent=tall(inf.cm)+' per knebøy · nivå '+inf.level+' av 12';
+      var inf=S.info();$('vn').textContent=inf.water;$('vt').textContent=T.per.replace('{v}',tall(inf.cm)).replace('{n}',inf.level);
       document.body.classList.toggle('mork',inf.ink==='dark')}
     else if(navn==='hage'){S.ui('');time=bl(10,16.5,p);
       // den fjerne visningen av tre måneder er laget for en stående skjerm; i et bredt vindu trekker kameraet seg heller opp og ut
@@ -318,8 +339,8 @@ footer a{color:var(--soft)}
       var flyr=p>.4&&p<.985;S.friend({hour:time,yaw:bl(.32,-.22,p)+dreie,pitch:.24,zoom:1.3,fly:flyr,kind:7});
       if(p>.46&&p<.9&&sistLapp<.46)S.say('letter');sistLapp=p}
     else if(navn==='prov'||navn==='slutt'){S.ui(navn==='prov'?'home':'');time=navn==='prov'?bl(6.2,7.4,p):bl(19.5,22.6,myk(0,.6,p));S.play({hour:time});
-      var u=S.info();if(u.done!==ferdig){ferdig=u.done;kn.textContent=ferdig?'Plant et nytt frø':'Ta en knebøy'}
-      knt.textContent=ferdig?'Dagens mål er nådd, og planten blomstrer.':u.total<1?'Hvert trykk er en knebøy. Fem vanner frøet.':u.total<5?(5-u.total)+' knebøy igjen før frøet spirer.':(u.goal-u.total)+' igjen til dagens mål.'}
+      var u=S.info();if(u.done!==ferdig){ferdig=u.done;kn.textContent=ferdig?T.btn2:T.btn}
+      knt.textContent=ferdig?T.h3:u.total<1?T.h0:u.total<5?T.h1.replace('{n}',5-u.total):T.h2.replace('{n}',u.goal-u.total)}
     if(navn!=='vann')document.body.classList.remove('mork');
     if(navn!=='venn')sistLapp=0;
     musikk();
