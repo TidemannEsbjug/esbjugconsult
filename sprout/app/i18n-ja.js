@@ -1,5 +1,5 @@
 // Japanese (ja) for sprout.html. Keys follow i18n/source.json; check with: python3 tools/check-i18n.py ja
-window.SPROUT_I18N={"lang":"ja","s":{
+window.SPROUT_I18N={"lang":"ja","app":"新芽","s":{
 "Today":"今日",
 "today":"今日",
 "Water · Lv":"水 · Lv",
@@ -60,12 +60,12 @@ window.SPROUT_I18N={"lang":"ja","s":{
 "Watering the seed":"種に水やり中",
 "Not started today":"今日はまだです",
 "{name}’s flower will stir":"{name}さんの花が揺れます",
-"Welcome to Sprout":"Sproutへようこそ",
-"Sprout counts your squats with the camera. Every squat grows your plant, and every day adds one to your garden.":"Sproutはカメラでスクワットを数えます。1回ごとに植物が育ち、1日ごとに庭に1本増えていきます。",
+"Welcome to Sprout":"「新芽」へようこそ",
+"Sprout counts your squats with the camera. Every squat grows your plant, and every day adds one to your garden.":"「新芽」はカメラでスクワットを数えます。1回ごとに植物が育ち、1日ごとに庭に1本増えていきます。",
 "Five squats wake the seed":"スクワット5回で種が目覚める",
 "Every squat after that makes it grow.":"そのあとは、1回ごとに伸びていきます。",
 "Better water, taller stalk":"水が良いほど、茎は高く",
-"Every squat you do in Sprout improves your water.":"Sproutでスクワットするたびに、水が良くなります。",
+"Every squat you do in Sprout improves your water.":"「新芽」でスクワットするたびに、水が良くなります。",
 "Tend the garden":"庭の手入れをしよう",
 "Kept well, it makes every squat count for more.":"よく手入れされた庭は、スクワット1回の伸びを大きくしてくれます。",
 "Every squat earns dew":"スクワットのたびに、しずくがたまる",

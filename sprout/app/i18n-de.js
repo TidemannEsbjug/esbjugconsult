@@ -1,5 +1,5 @@
 // Deutsch. Die Schlüssel sind die englischen Texte aus i18n/source.json; prüfen mit: python3 tools/check-i18n.py de
-window.SPROUT_I18N={"lang":"de","s":{
+window.SPROUT_I18N={"lang":"de","app":"Keimling","s":{
 "Today":"Heute",
 "today":"heute",
 "Water · Lv":"Stufe",
@@ -60,12 +60,12 @@ window.SPROUT_I18N={"lang":"de","s":{
 "Watering the seed":"Gießt den Samen",
 "Not started today":"Heute noch nicht begonnen",
 "{name}’s flower will stir":"Die Blume von {name} wird sich regen",
-"Welcome to Sprout":"Willkommen bei Sprout",
-"Sprout counts your squats with the camera. Every squat grows your plant, and every day adds one to your garden.":"Sprout zählt deine Kniebeugen mit der Kamera. Jede Kniebeuge lässt deine Pflanze wachsen, und jeder Tag bringt eine neue in deinen Garten.",
+"Welcome to Sprout":"Willkommen bei Keimling",
+"Sprout counts your squats with the camera. Every squat grows your plant, and every day adds one to your garden.":"Keimling zählt deine Kniebeugen mit der Kamera. Jede Kniebeuge lässt deine Pflanze wachsen, und jeder Tag bringt eine neue in deinen Garten.",
 "Five squats wake the seed":"Fünf Kniebeugen wecken den Samen",
 "Every squat after that makes it grow.":"Jede weitere lässt ihn wachsen.",
 "Better water, taller stalk":"Besseres Wasser, höherer Stängel",
-"Every squat you do in Sprout improves your water.":"Jede Kniebeuge in Sprout verbessert dein Wasser.",
+"Every squat you do in Sprout improves your water.":"Jede Kniebeuge in Keimling verbessert dein Wasser.",
 "Tend the garden":"Pflege den Garten",
 "Kept well, it makes every squat count for more.":"Gut gepflegt, lässt er jede Kniebeuge mehr zählen.",
 "Every squat earns dew":"Jede Kniebeuge bringt Tau",

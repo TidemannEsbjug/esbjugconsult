@@ -76,6 +76,8 @@ function I18N_FILL(t,v){return String(t).replace(/\{(\w+)(\|lower)?\}/g,function
 function TR(s){return s}
 function TT(t,v){return I18N_FILL(t,v)}
 function RAW(s){return s}
+// The app's own name in the language shown: the dictionary's "app" (i18n/app-names.json). English: Sprout.
+var APPNAME='Sprout';
 (function(){
   var want=window.SPROUT_LANG;
   if(!want)try{want=new URLSearchParams(location.search).get('lang')}catch(e){}
@@ -87,6 +89,7 @@ function RAW(s){return s}
     window.__sproutI18nBoot=null;
     var D=window.SPROUT_I18N,S=D&&D.s;
     if(!S||typeof S!=='object')return;
+    if(typeof D.app==='string'&&D.app)APPNAME=D.app;
 
     var HASL,MARK='\u2060';
     try{HASL=new RegExp('\\p{L}','u')}catch(e){HASL=/[A-Za-z\u00c0-\uffff]/}
@@ -617,7 +620,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-acti
 .hdew .gain.on{animation:dewgain 2.6s ease-out both}@keyframes dewgain{0%{opacity:0;transform:translateY(9px)}12%{opacity:1;transform:none}72%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}
 .dew.gain{transform:scale(1.12);box-shadow:0 0 0 1.5px rgba(159,220,255,.9),0 0 22px rgba(159,220,255,.6)}
 #stage{overflow:hidden}#stage>*{position:relative;z-index:1}#stage>canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;border-radius:inherit;pointer-events:none}#stage .bar{display:none}#stage strong{margin-bottom:5px}#stage small{margin-top:0}
-html[lang=ja] *,html[lang=ko] *{letter-spacing:0!important}html[lang=ko] *{word-break:keep-all}html[lang=ja] *{line-break:strict}
+html[lang=ja] *,html[lang=ko] *,html[lang|=zh] *,html[lang=th] *,html[lang=hi] *{letter-spacing:0!important}html[lang=ko] *{word-break:keep-all}html[lang=ja] *{line-break:strict}
 .shw{display:none;flex-direction:column;align-items:center;gap:7px}.shw.on{display:flex}
 .shr{all:unset;cursor:pointer;width:38px;height:30px;display:grid;place-items:center;border-radius:15px;margin-bottom:-4px}.shr:active{background:rgba(255,255,255,.16)}
 .rail.right .shr svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
@@ -2096,7 +2099,7 @@ function shareFrame(x,H,o){
       pane(bx,ty-bh/2,bw,bh,15,true);cap(TR('Height'),bx+13,ty-6,'left',8.5);x.fillStyle=SHF.cream;x.textAlign='left';x.font='560 19px '+SHF.se;x.fillText(RAW(o.ht),bx+13,ty+14);
       if(o.gain&&o.gainA>0){x.globalAlpha=o.gainA;x.fillStyle='#c8ff9a';x.font='560 17px '+SHF.se;x.fillText(RAW('+'+o.gain),bx+13,ty-bh/2-8-(o.gainY||0)*16);x.globalAlpha=1}}}
   if(o.plant)cap(o.plant,29,H-74,'left',10);
-  x.textAlign='left';x.fillStyle=SHF.cream;x.font='560 28px '+SHF.se;x.fillText(RAW('Sprout'),28,H-40);
+  x.textAlign='left';x.fillStyle=SHF.cream;x.font='560 28px '+SHF.se;x.fillText(RAW(APPNAME),28,H-40);
   x.textAlign='right';x.font='600 12px '+SHF.sa;x.fillStyle=SHF.soft;x.fillText(RAW(new Date().toLocaleDateString(LOC,{weekday:'long',day:'numeric',month:'long'})),W-28,H-42)}
 function sharePhoto(){sfx('share');const w=cv.width,h=cv.height,c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d'),k=w/W;x.drawImage(cv,0,0);x.scale(k,k);
   shareFrame(x,h/k,S.view==='garden'?{garden:1}:{n:Math.round(S.shown),ht:fmtH(realM(S.shown)),lf:levelF(S.life0+S.shown),tip:S.tipS,t:performance.now()/1000,plant:S.variety!=='bean'&&SEEDS[S.variety]?TR(SEEDS[S.variety].name):''});
@@ -2121,7 +2124,7 @@ function stuArt(kind){if(STU.art[kind])return STU.art[kind];const w=cv.width,h=c
     x.scale(k,k);x.shadowColor='rgba(0,0,0,.5)';x.shadowBlur=14*k;x.shadowOffsetY=2*k;x.textBaseline='alphabetic';x.textAlign='left';let y=y0;
     items.forEach((it,i)=>{if(i===0){x.font='700 12px '+SHF.sa;x.fillStyle='rgba(255,255,255,.88)';x.fillText(RAW(it.l.toUpperCase()),20,y+34);let fs=104;x.font='560 '+fs+'px '+SHF.se;const mw=x.measureText(RAW(it.v)).width;if(mw>tw-34){fs=Math.floor(fs*(tw-34)/mw);x.font='560 '+fs+'px '+SHF.se}x.fillStyle='#ffffff';x.fillText(RAW(it.v),16,y+132-(104-fs)*.3);y+=136}
       else{x.font='560 28px '+SHF.se;x.fillStyle='#ffffff';x.fillText(RAW(it.v),20,y+30);const vw=x.measureText(RAW(it.v)).width;x.font='700 11px '+SHF.sa;x.fillStyle='rgba(255,255,255,.86)';x.fillText(RAW('  ·  '+it.l.toUpperCase()),20+vw,y+28);y+=42}});
-    if(nameOn){x.font='560 24px '+SHF.se;x.fillStyle='#c8ff9a';x.fillText(RAW('Sprout'),20,y+34);if(plant){const sw=x.measureText(RAW('Sprout')).width;x.font='700 10px '+SHF.sa;x.fillStyle='rgba(255,255,255,.82)';x.fillText(RAW(plant.toUpperCase()),20+sw+10,y+32)}}}
+    if(nameOn){x.font='560 24px '+SHF.se;x.fillStyle='#c8ff9a';x.fillText(RAW(APPNAME),20,y+34);if(plant){const sw=x.measureText(RAW(APPNAME)).width;x.font='700 10px '+SHF.sa;x.fillStyle='rgba(255,255,255,.82)';x.fillText(RAW(plant.toUpperCase()),20+sw+10,y+32)}}}
   return STU.art[kind]=c}
 // how a style looks in the studio: pictures as they are, the two on nothing laid over a stand-in photo
 function stuShow(kind,c2,maxW,maxH){const a=stuArt(kind==='video'?'photo':kind),x=c2.getContext('2d');if(stuCut(kind)){c2.width=maxW;c2.height=maxH;const g=x.createLinearGradient(0,0,maxW*.5,maxH);g.addColorStop(0,'#2e456f');g.addColorStop(.55,'#7a5378');g.addColorStop(1,'#d89a7c');x.fillStyle=g;x.fillRect(0,0,maxW,maxH);

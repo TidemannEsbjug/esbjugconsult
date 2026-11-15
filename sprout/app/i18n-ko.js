@@ -1,5 +1,5 @@
 // Korean (ko) for sprout.html. Keys follow i18n/source.json; check with: python3 tools/check-i18n.py ko
-window.SPROUT_I18N={"lang":"ko","s":{
+window.SPROUT_I18N={"lang":"ko","app":"새싹","s":{
 "Today":"오늘",
 "today":"오늘",
 "Water · Lv":"물 · Lv",
@@ -60,12 +60,12 @@ window.SPROUT_I18N={"lang":"ko","s":{
 "Watering the seed":"씨앗에 물 주는 중",
 "Not started today":"오늘은 아직이에요",
 "{name}’s flower will stir":"{name}님의 꽃이 살랑일 거예요",
-"Welcome to Sprout":"Sprout에 오신 것을 환영해요",
-"Sprout counts your squats with the camera. Every squat grows your plant, and every day adds one to your garden.":"Sprout는 카메라로 스쿼트를 세어요. 한 번 할 때마다 식물이 자라고, 하루가 지날 때마다 정원에 한 그루씩 늘어나요.",
+"Welcome to Sprout":"새싹에 오신 것을 환영해요",
+"Sprout counts your squats with the camera. Every squat grows your plant, and every day adds one to your garden.":"새싹은 카메라로 스쿼트를 세어요. 한 번 할 때마다 식물이 자라고, 하루가 지날 때마다 정원에 한 그루씩 늘어나요.",
 "Five squats wake the seed":"스쿼트 다섯 번이면 씨앗이 깨어나요",
 "Every squat after that makes it grow.":"그다음부터는 스쿼트할 때마다 자라요.",
 "Better water, taller stalk":"물이 좋을수록 줄기는 더 높이",
-"Every squat you do in Sprout improves your water.":"Sprout에서 스쿼트할 때마다 물이 좋아져요.",
+"Every squat you do in Sprout improves your water.":"새싹에서 스쿼트할 때마다 물이 좋아져요.",
 "Tend the garden":"정원을 가꿔요",
 "Kept well, it makes every squat count for more.":"정원을 잘 가꾸면 스쿼트 한 번에 더 많이 자라요.",
 "Every squat earns dew":"스쿼트할 때마다 이슬이 모여요",
