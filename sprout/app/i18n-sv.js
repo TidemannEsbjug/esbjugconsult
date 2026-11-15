@@ -1,5 +1,5 @@
 // Svenska. Nycklarna är de engelska texterna från i18n/source.json; kontroll: python3 tools/check-i18n.py sv
-window.SPROUT_I18N={"lang":"sv","app":"Grodd","s":{
+window.SPROUT_I18N={"lang":"sv","app":"Spira","s":{
 "Today":"I dag",
 "today":"i dag",
 "Water · Lv":"Nivå",
@@ -60,12 +60,12 @@ window.SPROUT_I18N={"lang":"sv","app":"Grodd","s":{
 "Watering the seed":"Vattnar fröet",
 "Not started today":"Inte börjat i dag",
 "{name}’s flower will stir":"{name}s blomma kommer att röra sig",
-"Welcome to Sprout":"Välkommen till Grodd",
-"Sprout counts your squats with the camera. Every squat grows your plant, and every day adds one to your garden.":"Grodd räknar dina knäböj med kameran. Varje knäböj får din planta att växa, och varje dag blir en ny planta i din trädgård.",
+"Welcome to Sprout":"Välkommen till Spira",
+"Sprout counts your squats with the camera. Every squat grows your plant, and every day adds one to your garden.":"Spira räknar dina knäböj med kameran. Varje knäböj får din planta att växa, och varje dag blir en ny planta i din trädgård.",
 "Five squats wake the seed":"Fem knäböj väcker fröet",
 "Every squat after that makes it grow.":"Varje knäböj efter det får det att växa.",
 "Better water, taller stalk":"Bättre vatten, högre stjälk",
-"Every squat you do in Sprout improves your water.":"Varje knäböj du gör i Grodd förbättrar ditt vatten.",
+"Every squat you do in Sprout improves your water.":"Varje knäböj du gör i Spira förbättrar ditt vatten.",
 "Tend the garden":"Sköt trädgården",
 "Kept well, it makes every squat count for more.":"Välskött gör den att varje knäböj räknas för mer.",
 "Every squat earns dew":"Varje knäböj ger dagg",
