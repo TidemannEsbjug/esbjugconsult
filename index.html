@@ -1579,6 +1579,11 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .kl-kort .at-play{font-size:11px;color:rgba(0,32,91,.55)}
   .at-vis{min-width:0;width:100%;max-width:960px;justify-self:center}
   .at-vis video{display:block;width:100%;height:auto;max-height:calc(100svh - 120px);object-fit:cover;border-radius:18px;box-shadow:0 24px 60px rgba(0,32,91,.25)}
+  /* Spire under Klart (eieren 17.11.2026): Athenas drakt, men filmen står på høykant som på telefonen. */
+  .sp-vis{width:auto;max-width:100%}
+  .sp-vis video{width:auto;height:min(calc(100svh - 150px),860px);aspect-ratio:540/1170;max-width:100%;border-radius:28px}
+  .sp-mer{color:inherit;text-underline-offset:3px}
+  @media (max-width:980px){.sp-hero{max-height:none;row-gap:28px;padding-bottom:64px}.sp-vis video{height:min(72svh,640px)}}
   /* Klart er én seksjon (eieren 12.11.2026): logoen og overskriften, så programvinduet, så knappen, tett etter hverandre
      og sentrert. Høyden følger innholdet (minst én skjerm). */
   .kl-hero.kl-stor{grid-template-columns:minmax(0,1fr);min-height:100svh;max-height:none;justify-items:center;align-content:center;row-gap:clamp(40px,7svh,80px);text-align:center;
@@ -1668,6 +1673,18 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
     addEventListener("resize",pass);
   })();
   </script>
+</section>
+<!-- Spire (Sprout) som seksjon 2, rett under Klart (eieren 17.11.2026): samme drakt som Athena, med appens egen
+     forhåndsvisning fra App Store stående til høyre. Filmen er media/sprout-nb.mp4 (engelsk: sprout-en.mp4). -->
+<section class="kl-hero at-hero sp-hero" aria-label="Spire">
+  <p class="mono kl-banner"><i aria-hidden="true"></i>Lansert 16.11.2026</p>
+  <div class="kl-kort">
+    <p class="kl-logo at-logo"><img src="/sprout/app/logo.png" width="180" height="180" alt="" aria-hidden="true"><span>Spire</span></p>
+    <h2 class="at-h">Tell knebøy. Dyrk en hage.</h2>
+    <a class="kl-knapp" href="https://apps.apple.com/no/app/sprout-squat-garden/id6834577494">Last ned på App Store <span aria-hidden="true">→</span></a>
+    <p class="mono at-play"><a class="sp-mer" href="/sprout/">Se Spire i nettleseren</a></p>
+  </div>
+  <div class="at-vis sp-vis"><video src="/media/sprout-nb.mp4" poster="/media/sprout-nb.jpg" width="540" height="1170" autoplay muted loop playsinline preload="metadata" aria-hidden="true"></video></div>
 </section>
 <!-- Athena under Klart (eieren 12.11.2026): samme drakt som Klart-heroen, med reklamefilmen der Klart har programvinduet. -->
 <section class="kl-hero at-hero" aria-label="Athena: Alarm">
