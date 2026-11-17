@@ -1579,11 +1579,19 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .kl-kort .at-play{font-size:11px;color:rgba(0,32,91,.55)}
   .at-vis{min-width:0;width:100%;max-width:960px;justify-self:center}
   .at-vis video{display:block;width:100%;height:auto;max-height:calc(100svh - 120px);object-fit:cover;border-radius:18px;box-shadow:0 24px 60px rgba(0,32,91,.25)}
-  /* Spire under Klart (eieren 17.11.2026): Athenas drakt, men filmen står på høykant som på telefonen. */
+  /* Spire rett under heroen (eieren 17.11.2026). Egen oppstilling, ikke Athenas: filmen står på høykant, så teksten og
+     telefonen står tett sammen midt i seksjonen i stedet for i hver sin brede kolonne. */
+  .sp-hero{grid-template-columns:minmax(0,auto) auto;justify-content:center;column-gap:clamp(48px,7vw,128px)}
+  .sp-hero .kl-kort{max-width:560px;gap:clamp(18px,2.4svh,28px)}
+  .sp-hero .at-logo span{font-size:clamp(64px,7.4vw,132px)}
+  .sp-hero .at-h{font-size:clamp(30px,2.9vw,52px)}
+  .sp-hero .kl-knapp{margin-top:6px}
   .sp-vis{width:auto;max-width:100%}
-  .sp-vis video{width:auto;height:min(calc(100svh - 150px),860px);aspect-ratio:540/1170;max-width:100%;border-radius:28px}
+  .sp-vis video{width:auto;height:min(calc(100svh - 190px),820px);aspect-ratio:540/1170;max-width:100%;border-radius:clamp(22px,2.4vw,34px)}
   .sp-mer{color:inherit;text-underline-offset:3px}
-  @media (max-width:980px){.sp-hero{max-height:none;row-gap:28px;padding-bottom:64px}.sp-vis video{height:min(72svh,640px)}}
+  @media (max-width:980px){.sp-hero{grid-template-columns:minmax(0,1fr);max-height:none;row-gap:36px;padding-bottom:72px;text-align:center}
+    .sp-hero .kl-kort{align-items:center;gap:16px}.sp-hero .at-logo span{font-size:clamp(56px,15vw,88px)}.sp-hero .at-h{font-size:clamp(28px,7vw,44px)}
+    .sp-hero .kl-kort .mono{justify-content:center}.sp-vis video{height:min(70svh,620px)}}
   /* Klart er én seksjon (eieren 12.11.2026): logoen og overskriften, så programvinduet, så knappen, tett etter hverandre
      og sentrert. Høyden følger innholdet (minst én skjerm). */
   .kl-hero.kl-stor{grid-template-columns:minmax(0,1fr);min-height:100svh;max-height:none;justify-items:center;align-content:center;row-gap:clamp(40px,7svh,80px);text-align:center;
