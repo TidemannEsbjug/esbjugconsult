@@ -4246,3 +4246,18 @@ main#top:has(> .hero) {
     white-space: nowrap;
   }
 }
+
+/* Hva Klart er, rett over programvinduet (eieren 19.11.2026). Samme bredde som vinduet. */
+.hero > .hva-klart {
+  width: 100%;
+  max-width: 1020px;
+  margin: clamp(56px, 7vw, 96px) auto 0;
+  padding: 0;
+  box-sizing: border-box;
+  font: 400 clamp(19px, 1.7vw, 24px)/1.5 var(--serif);
+  color: var(--ink);
+  text-wrap: pretty;
+}
+.hero > .hva-klart + .kv {
+  margin-top: clamp(24px, 3vw, 36px);
+}
