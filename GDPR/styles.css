@@ -4260,6 +4260,18 @@ main#top:has(> .hero) {
   box-shadow: var(--shadow);
   text-align: left;
 }
+/* Smal skjerm: logoen øverst, så punktene, med luft mellom (eieren 20.11.2026). */
+@media (max-width: 899px) {
+  .hero > .hva {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .hva-hoyre {
+    order: -1;
+    padding: 20px 16px;
+  }
+}
 @media (min-width: 900px) {
   .hero > .hva {
     display: grid;
