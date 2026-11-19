@@ -4268,14 +4268,17 @@ main#top:has(> .hero) {
     gap: 24px;
   }
   .hva-hoyre {
-    order: -1;
     padding: 20px 16px;
   }
+}
+.hva-hoyre {
+  order: -1;
 }
 @media (min-width: 900px) {
   .hero > .hva {
     display: grid;
-    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.35fr);
+    /* Klart til venstre, punktene til høyre (eieren 20.11.2026). */
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.85fr);
     gap: clamp(32px, 4vw, 64px);
     align-items: stretch;
   }
