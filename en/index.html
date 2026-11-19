@@ -1540,6 +1540,16 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .th .hk-bak{opacity:.3}
   .th .hp .st-l{font:600 9.5px/1.3 "SF Mono",Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.62)}
   .th .poster{color:var(--ink)}
+  /* Oppdateringskortene (postene) er tatt bort fra toppen (eieren 19.11.2026). Elementet står, fordi skriptet skriver til det. */
+  .th .poster{display:none!important}
+  /* Klart i en boks over pulsen (eieren 19.11.2026): ikonet og ordet som på /klart, i samme glass som pulsen. Lenker til /klart/. */
+  .th-klart{display:flex;align-items:center;gap:14px;padding:14px 18px;color:#fff;text-decoration:none;transition:background .2s,transform .2s}
+  .th-klart:hover{background:linear-gradient(160deg,rgba(255,255,255,.2),rgba(255,255,255,.07));transform:translateY(-1px)}
+  .th-klart:focus-visible{outline:2px solid #fff;outline-offset:3px}
+  .th-klart img{flex:none;width:44px;height:44px;border-radius:11px;filter:drop-shadow(0 6px 14px rgba(0,8,30,.35))}
+  .th-klart span{flex:1;font:italic 600 clamp(28px,2.4vw,38px)/1 "Klart Literata","Iowan Old Style",Georgia,serif;letter-spacing:-.02em}
+  .th-klart svg{flex:none;width:18px;height:18px;opacity:.55;transition:opacity .2s,transform .2s}
+  .th-klart:hover svg{opacity:.95;transform:translateX(3px)}
   @media (max-width:1100px){.th{grid-template-columns:minmax(220px,290px) minmax(0,1fr) minmax(240px,300px)}.th-figur{height:min(80svh,70vw)}}
   /* Mobil: egenskapene, så pulsen og postene, og bildet nederst, kuttet i bunnen av heroen. */
   @media (max-width:760px){
@@ -1642,6 +1652,7 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
     </ul>
   </div>
   <div class="th-hoyre">
+    <a class="th-klart th-gl" href="/klart/" aria-label="Klart"><img src="/klart/assets/klart-ikon.png" width="256" height="256" alt="" aria-hidden="true"><span>Klart</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     <div class="th-puls th-gl"><div class="st-i hp" hidden><button class="hp-o" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Heart rate today"><span class="st-v"><svg class="hj" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.8 4.3 7.2C19.5 16.4 12 21 12 21z"/></svg><b class="hb-n">–</b><svg class="g" viewBox="0 0 120 30" aria-hidden="true"></svg><svg class="hk" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="hk-sno" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="40"><stop offset="0" stop-color="#eef5fc"/><stop offset=".45" stop-color="#bcd3ec"/><stop offset="1" stop-color="#8fb0d6"/></linearGradient><linearGradient id="hk-bakg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="40"><stop offset="0" stop-color="#f4f8fd"/><stop offset="1" stop-color="#d3e2f3"/></linearGradient></defs><path class="hk-bak" d=""/><path class="hk-fjell" d=""/><path class="hk-snoen" d=""/><path class="hk-l" d=""/><circle class="hk-p" r="3" cx="-9" cy="-9"/><line class="hk-xh" x1="-9" x2="-9" y1="0" y2="0"/><circle class="hk-hd" r="4" cx="-9" cy="-9"/></svg><span class="hk-t" hidden></span></span></button><span class="st-l"><span class="hp-on">Live from Apple Watch</span><span class="hp-av">Not live right now</span></span></div></div>
     <section class="poster" hidden aria-live="polite" aria-label="Poster fra Tidemann. Trykk for neste." role="button" tabindex="0"></section>
   </div>
@@ -3658,7 +3669,7 @@ const GJOR = TX.gjor;
 // Huset hos moren hans, skannet med LiDAR i appen (GET /chat/plan). Bare på testsiden /hjem/ inntil videre.
 // plan.geo plasserer skanningen i kartet: et punkt (x, z) i skanningen dreies th radianer, og blir meter øst
 // (u + tx) og nord (−v + ty) fra geo.lat/lon. Tilpasset husets omriss i kartdataene (OpenStreetMap).
-const REPLAY = true;   // replay er på forsiden igjen fra 6.11.2026 (var av fra 30.10)
+const REPLAY = false;   // play-knappen på kartet er tatt bort (eieren 19.11.2026); var på igjen fra 6.11
 const HUS = true;   // husfunksjonene (huset, rommene, replay) var en test på /hjem/; nå er de på forsiden, og /hjem/ sender hit
 let plan = null;
 const hentPlan = async () => { try { plan = await (await fetch('/chat/plan')).json(); husTegnet = ''; } catch {} };
