@@ -914,7 +914,6 @@ function nedlastingskort(tekst, kort, knapper) {
   var prosentEl = kort.querySelector("[data-prosent]");
   var statusEl = kort.querySelector("[data-status]");
   var ferdigEl = kort.querySelector("[data-ferdig]");
-  var ferdigTittel = kort.querySelector(".nedlasting-ferdig-tittel");
   var tal = new Intl.NumberFormat("nb-NO", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   var hele = new Intl.NumberFormat("nb-NO", { maximumFractionDigits: 0 });
   var jobb = 0;
@@ -947,23 +946,14 @@ function nedlastingskort(tekst, kort, knapper) {
     kort.hidden = false;
     tekst.classList.add("laster");
 
-    // På nettet laster nettleseren ned selv, fra klikket på lenken (20.11.2026). Før hentet siden
-    // hele filen (over 200 MB) inn i minnet og lagret den etterpå; da kom det ingen fil.
-    // Kortet sier bare at nedlastingen er i gang og hva neste steg er.
-    if (!SIMULER) {
-      vis(100);
-      statusEl.textContent = "";
-      kort.querySelector("[data-neste]").textContent = "Du finner filen i Nedlastinger. " + sys.neste;
-      if (ferdigTittel) ferdigTittel.textContent = "Nedlastingen er startet";
-      tekst.classList.add("lastet");
-      kort.classList.add("ferdig");
-      ferdigEl.hidden = false;
-      return;
-    }
-    // Lokalt: hent filen og tell bytene som kommer (bytene kastes). Finnes ikke filen, simuleres det.
+    // Ekte fil lokalt: hent den og tell bytene som kommer. Finnes ikke filen
+    // (Linux ennå), simuleres det.
     ekte(hva, sys, min).catch(function () {
       if (min !== jobb) return;
-      simuler(sys, min);
+      if (SIMULER) return simuler(sys, min);
+      // På nettet: går det ikke å telle, får nettleseren lenken som før.
+      tilbake();
+      location.href = "/klart/last-ned/" + hva;
     });
   }
 
@@ -1097,8 +1087,7 @@ function nedlastingskort(tekst, kort, knapper) {
   var fraSvar = false;
   knapper.forEach(function (a) {
     a.addEventListener("click", function (e) {
-      // På nettet går klikket videre til lenken, så nettleseren laster ned filen selv.
-      if (SIMULER) e.preventDefault();
+      e.preventDefault();
       if (tekst.classList.contains("har-svar")) {
         fraSvar = true;
         tekst.classList.remove("har-svar");
