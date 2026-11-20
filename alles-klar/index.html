@@ -1,0 +1,1670 @@
+<!doctype html>
+<!--
+  Hei, du som leser kildekoden. Det var deg vi håpet på.
+
+  Klart lover at dokumentene aldri forlater maskinen. Et sånt løfte skal ikke
+  tas på ordet, så sjekk det:
+
+  - Programmet: /alles-klar/til-it har kommandoene som viser hva det snakker med.
+  - Denne siden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
+    uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
+  - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
+    Vi vil heller høre det fra deg enn fra en kunde.
+-->
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="forside-tidlig.js"></script>
+    <link rel="icon" type="image/png" href="/alles-klar/favicon.png" />
+    <title>Alles Klar - entfernt personenbezogene Daten aus Dokumenten, lokal auf Ihrem Rechner</title>
+    <meta
+      name="description"
+      content="Alles Klar ist ein in Norwegen entwickeltes Programm für Mac, Windows und Linux: Eine lokale KI bereinigt einen ganzen Ordner mit Word-, Excel-, PowerPoint-, PDF- und E-Mail-Dateien von norwegischen personenbezogenen Daten. Für Auskunftsersuchen, Weitergabe, Archiv, Schulung oder KI-Werkzeuge - ohne Internet und ohne Konto."
+    />
+    <!-- Himmelen øverst i heroen; forside.js bytter til sidens lyse farge når man har blat forbi. -->
+    <meta name="theme-color" content="#6593c3" />
+    <meta
+      property="og:title"
+      content="Alles Klar - entfernt personenbezogene Daten aus Dokumenten, lokal auf Ihrem Rechner"
+    />
+    <meta
+      property="og:description"
+      content="In Norwegen entwickeltes Programm für Mac, Windows und Linux. Eine lokale KI liest Word, Excel, PowerPoint, PDF, E-Mail und Text, findet norwegische personenbezogene Daten und schreibt eine bereinigte Kopie, die Sie selbst prüfen. Nichts verlässt den Rechner."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="de_DE" />
+    <meta property="og:url" content="https://esbjugconsult.com/alles-klar/" />
+    <!-- Delingsbildet (Snapchat, iMessage, Facebook): krystallen på vinterbildet, 1200 × 630.
+         Uten det tok Snapchat et tilfeldig bilde fra siden, mappeikonet (eieren 11.11.2026). -->
+    <meta property="og:image" content="https://esbjugconsult.com/alles-klar/assets/klart-deling.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Alles Klar: der Silberkristall auf einem Winterbild mit Skispur" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://esbjugconsult.com/alles-klar/assets/klart-deling.jpg" />
+    <link rel="apple-touch-icon" href="/alles-klar/assets/klart-ikon.png" />
+    <!-- Ikke indekser før nedlastingene er på plass. Fjern når Klart lanseres. -->
+    <meta name="robots" content="noindex" />
+    <!-- Fontene ligger på siden selv. Henter vi dem fra Google, får Google
+         IP-adressen til hver besøkende - ikke noe en GDPR-side skal gjøre. -->
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="forhandsvisning.css" />
+    <link rel="stylesheet" href="videre.css" />
+  </head>
+  <body>
+    <!-- Filtype-ikoner: dokumentark bak, appflis foran. -->
+    <svg class="ikonark" width="0" height="0" aria-hidden="true">
+      <defs>
+        <g id="page">
+          <rect
+            x="16"
+            y="2"
+            width="26"
+            height="32"
+            rx="3.5"
+            fill="#fff"
+            stroke="#dcdfda"
+            stroke-width="1.3"
+          />
+          <g fill="#e4e7e2">
+            <rect x="26" y="9" width="12" height="2.4" rx="1.2" />
+            <rect x="26" y="15" width="12" height="2.4" rx="1.2" />
+          </g>
+        </g>
+
+        <symbol id="i-word" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#185abd" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">W</text>
+        </symbol>
+
+        <symbol id="i-excel" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#107c41" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">X</text>
+        </symbol>
+
+        <symbol id="i-ppt" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#c43e1c" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">P</text>
+        </symbol>
+
+        <symbol id="i-pdf" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#c8322b" />
+          <text x="17.5" y="31" text-anchor="middle" font-size="11">PDF</text>
+        </symbol>
+
+        <symbol id="i-mail" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#0f6cbd" />
+          <rect
+            x="8.5"
+            y="20"
+            width="18"
+            height="13.5"
+            rx="1.8"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2.1"
+          />
+          <path
+            d="M9.2 21.2l8.3 6.4 8.3-6.4"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2.1"
+          />
+        </symbol>
+
+        <symbol id="i-bilde" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#7a4fd6" />
+          <circle cx="23" cy="20" r="3" fill="#fff" />
+          <path d="M7.5 36l7.5-10 5.5 6.5 3.5-4 6.5 7.5z" fill="#fff" />
+        </symbol>
+
+        <symbol id="i-text" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#5b6569" />
+          <g fill="#fff">
+            <rect x="9" y="19.5" width="17" height="2.4" rx="1.2" />
+            <rect x="9" y="25.3" width="17" height="2.4" rx="1.2" />
+            <rect x="9" y="31.1" width="10" height="2.4" rx="1.2" />
+          </g>
+        </symbol>
+
+        <!-- Mac Studio for skreddersydd oppsett. Ligger her én
+             gang, så de to nedlastingsfeltene kan bruke den uten like id-er. -->
+        <linearGradient id="mac-front" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f3f5f8" />
+          <stop offset="0.55" stop-color="#e1e6ec" />
+          <stop offset="1" stop-color="#c4cbd4" />
+        </linearGradient>
+        <linearGradient id="mac-kant" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#6d7783" stop-opacity="0.28" />
+          <stop offset="0.08" stop-color="#6d7783" stop-opacity="0" />
+          <stop offset="0.92" stop-color="#6d7783" stop-opacity="0" />
+          <stop offset="1" stop-color="#6d7783" stop-opacity="0.32" />
+        </linearGradient>
+        <linearGradient id="mac-topp" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#e9edf2" />
+          <stop offset="1" stop-color="#fbfcfd" />
+        </linearGradient>
+        <radialGradient id="mac-skygge" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="#050d1f" stop-opacity="0.45" />
+          <stop offset="1" stop-color="#050d1f" stop-opacity="0" />
+        </radialGradient>
+        <symbol id="mac-studio" viewBox="60 80 440 240">
+          <ellipse cx="280" cy="292" rx="236" ry="26" fill="url(#mac-skygge)" />
+          <rect x="122" y="262" width="316" height="24" rx="9" fill="#8d96a1" />
+          <rect x="128" y="276" width="304" height="6" rx="3" fill="#6e7782" />
+          <path d="M96 150 L128 104 Q134 96 146 96 L414 96 Q426 96 432 104 L464 150 Z" fill="url(#mac-topp)" stroke="#d3d9e1" stroke-width="1.2" />
+          <path d="M96 150 H464 V252 Q464 270 446 270 H114 Q96 270 96 252 Z" fill="url(#mac-front)" />
+          <path d="M96 150 H464 V252 Q464 270 446 270 H114 Q96 270 96 252 Z" fill="url(#mac-kant)" />
+          <path d="M96 150.5 H464" stroke="#ffffff" stroke-width="1.6" />
+          <g fill="#2b3139">
+            <rect x="128" y="200" width="22" height="8" rx="4" />
+            <rect x="162" y="200" width="22" height="8" rx="4" />
+            <rect x="386" y="202" width="42" height="4" rx="2" />
+          </g>
+          <circle cx="114" cy="254" r="2.4" fill="#ffffff" />
+          <circle cx="114" cy="254" r="5" fill="#ffffff" opacity="0.25" />
+        </symbol>
+      </defs>
+    </svg>
+
+    <!-- ================= Toppbar ================= -->
+    <header class="topbar">
+      <a class="wordmark" href="#top">
+        <b>Alles Klar</b>
+        <span>v0.1.0</span>
+      </a>
+      <nav class="topnav">
+        <a href="#hva">Was ist Alles Klar</a>
+        <a href="#kjernen">So funktioniert es</a>
+        <a href="#nokkel">Der Schlüssel</a>
+        <a href="#trygt">Sicherheit</a>
+        <a href="#dybde">Im Detail</a>
+        <a href="#ansvar">Verantwortung</a>
+        <a href="pris/">Preis</a>
+      </nav>
+      <a class="btn sm topp-last" href="#top">Herunterladen</a>
+      <!-- Mobil og nettbrett: e-post med lenken i stedet for «Last ned» (eieren 11.11.2026). -->
+      <a class="btn sm topp-send" href="mailto:?subject=Alles%20Klar&amp;body=https%3A%2F%2Fesbjugconsult.com%2Falles-klar">An mich senden</a>
+    </header>
+
+    <main id="top">
+      <!-- ================= Hero ================= -->
+      <section class="hero" id="programmet">
+        <!-- Scenen: vinterbildet fra appen. Skisporet leder opp mot hytta,
+             teksten står i himmelen og knappene nede i snøen. -->
+        <div class="scene">
+          <img class="scene-bilde" src="assets/hero-vinter.jpg" width="2400" height="1600" fetchpriority="high" alt="" aria-hidden="true" />
+          <!-- Øverst toner himmelen over i én farge, den samme som linjen øverst på telefonen (eieren 11.11.2026). -->
+          <div class="scene-himmel" aria-hidden="true"></div>
+          <!-- Snøen fra forsiden på esbjugconsult.com, bak «Klart» og kortet (forside.js). -->
+          <canvas class="scene-sno" aria-hidden="true"></canvas>
+          <!-- Fnuggene som faller over kortets glass, bak innholdet i kortet. -->
+          <canvas class="scene-sno-midt" aria-hidden="true"></canvas>
+          <!-- Snøen som legger seg på «Klart» og kortet, foran innholdet. -->
+          <canvas class="scene-sno-lag" aria-hidden="true"></canvas>
+          <!-- Lett snø på mobil og nettbrett, bak «Klart» og kortet (forside.js). -->
+          <canvas class="scene-sno-mobil" aria-hidden="true"></canvas>
+
+          <!-- All teksten samlet, nede i snøen. Himmelen, hytta og sporet står fritt over. -->
+          <div class="scene-tekst">
+            <h1 class="rise d-60 hero-logo">
+              <!-- Krystallen over ordet på mobil, som på nedtellingssiden (eieren 11.11.2026). -->
+              <img class="hero-ikon" src="assets/klart-ikon.png" width="256" height="256" alt="" aria-hidden="true" />
+              <span class="logo-ord">Alles Klar</span>
+            </h1>
+            <!-- Privatpersoner laster ned og bruker Klart gratis; de skal ikke gjennom noe felt.
+                 Virksomheter går gjennom feltet under: 30 dager, så lisens. Blokka ligger rett over
+                 feltet (transform: translateY(-100%)), så feltet blir stående ved hytta som før,
+                 og viker når de begynner å skrive virksomhetsnavnet. -->
+            <div class="privat rise d-120">
+              <p class="privat-linje">
+                <span><b>Kostenlos für Privatpersonen.</b></span>
+              </p>
+              <!-- Mobil og nettbrett: Klart kjører ikke der, så i stedet for nedlasting en e-post med lenken
+                   til seg selv eller andre (eieren 11.11.2026). Vises bare på berøringsskjermer (styles.css). -->
+              <div class="mobil-send">
+                <p class="mobil-send-tittel">Alles Klar ist ein Programm für Computer.</p>
+                <p class="mobil-send-tekst">Senden Sie sich den Link per E-Mail und laden Sie das Programm auf dem Mac, unter Windows oder unter Linux herunter.</p>
+                <a class="btn" href="mailto:?subject=Alles%20Klar&amp;body=https%3A%2F%2Fesbjugconsult.com%2Falles-klar">An mich senden</a>
+                <p class="mobil-send-andre">(Oder jemand anderem?)</p>
+              </div>
+              <p class="last-ned-tittel">Herunterladen</p>
+              <div class="get">
+                <!-- Hver knapp får sitt systems kjennetegn når man holder over, uten logoer:
+                     Windows en ring i de fire fargene rundt knappen (en ring,
+                     ikke logoens ruter), Mac glass etter Apples egen beskrivelse, Linux en pingvin (egen tegning). -->
+                <a class="btn ghost os os-win" href="/alles-klar/last-ned/windows" download aria-label="Für Windows herunterladen"><span class="os-navn">Windows</span></a>
+                <a class="btn ghost os os-mac" href="/alles-klar/last-ned/mac" download aria-label="Für Mac herunterladen"><span class="os-glass" aria-hidden="true"></span><span class="os-navn">Mac</span></a>
+                <a class="btn ghost os os-lin" href="/alles-klar/last-ned/linux" download aria-label="Für Linux herunterladen"><span class="os-figur os-pingvin" aria-hidden="true"><svg viewBox="0 0 24 28" width="24" height="28" focusable="false"><g class="os-pingvin-kropp"><ellipse cx="8.4" cy="26.4" rx="3.3" ry="1.4" fill="#f5a524"/><ellipse cx="15.6" cy="26.4" rx="3.3" ry="1.4" fill="#f5a524"/><ellipse cx="3.9" cy="17" rx="1.9" ry="5.4" transform="rotate(16 3.9 17)" fill="#0f2147"/><ellipse cx="20.1" cy="17" rx="1.9" ry="5.4" transform="rotate(-16 20.1 17)" fill="#0f2147"/><ellipse cx="12" cy="15" rx="8.4" ry="11.2" fill="#0f2147"/><ellipse cx="12" cy="18.4" rx="5.5" ry="7.6" fill="#fff"/><circle cx="9.7" cy="8.6" r="2" fill="#fff"/><circle cx="14.3" cy="8.6" r="2" fill="#fff"/><circle cx="10.1" cy="8.9" r="0.95" fill="#0f2147"/><circle cx="13.9" cy="8.9" r="0.95" fill="#0f2147"/><path d="M9.9 11.4 Q12 10.5 14.1 11.4 Q12 13.9 9.9 11.4Z" fill="#f5a524"/></g></svg></span><span class="os-navn">Linux</span></a>
+              </div>
+              <p class="privat-fin">Keine Registrierung, keine Vertragsbindung.</p>
+              <p class="eller"><span>oder</span></p>
+            </div>
+            <!-- Nedlasting: virksomheten (orgfelt.js og skriptet nederst). Etter oppslaget: 30 dager gratis og hva lisensen koster etterpå. -->
+            <form class="orgport rise d-180" data-orgport novalidate>
+              <div data-orgport-sok>
+                <label class="skjult-tekst" for="orgport-topp">Organisationsnummer oder Name Ihres Unternehmens</label>
+                <div class="orgport-rad">
+                  <div class="orgfelt">
+                    <input id="orgport-topp" type="text" autocomplete="off" spellcheck="false" placeholder="Name des Unternehmens oder Org.-Nr. eingeben" maxlength="80" />
+                    <ul class="orgforslag" role="listbox" hidden></ul>
+                  </div>
+                  <button class="btn" type="submit">Alles Klar kostenlos testen</button>
+                </div>
+                <p class="orgport-feil" role="alert" hidden></p>
+                <p class="virk-linje">
+                  <span>Für Unternehmen: <b>30 Tage kostenlos</b>. Keine Registrierung, keine Kreditkarte.</span>
+                </p>
+              </div>
+              <!-- Små: stort kort med navnet, «godkjent» og knappene. Store: bredere, med navnet og gratis prøve til venstre og
+                   skreddersydd oppsett med Mac Studio til høyre (klassen «stor» på skjemaet). -->
+              <div class="orgport-svar" data-orgport-svar hidden aria-live="polite">
+                <div class="orgport-svar-grid">
+                  <div class="orgport-svar-hoved">
+                    <div class="orgport-topp">
+                      <span class="orgport-segl" data-godkjent>
+                        <svg viewBox="0 0 56 56" aria-hidden="true">
+                          <circle cx="28" cy="28" r="25" pathLength="1" />
+                          <path d="M17 29l8 8 15-17" pathLength="1" />
+                        </svg>
+                      </span>
+                      <div>
+                        <p class="orgport-ok" data-godkjent>Bestätigt</p>
+                        <p class="orgport-firmanavn" data-navn></p>
+                        <p class="orgport-orgnr">Org.-Nr. <span data-orgnr></span></p>
+                      </div>
+                    </div>
+                    <!-- At dette er fullversjonen, så hva det koster, så knappene. Ingen sperre: knappene står som før. -->
+                    <div class="orgport-prove">
+                      <p class="orgport-prove-tittel">30 Tage mit dem vollen Alles Klar.</p>
+                      <p>Testen Sie Alles Klar 30 Tage lang mit Ihren eigenen Dateien, bevor Sie sich entscheiden. Ohne Einschränkungen, mit der Vollversion. Der Test erfordert keine Registrierung und ist völlig unverbindlich.</p>
+                    </div>
+                    <div class="orgport-pris" data-pris hidden>
+                      <a class="orgport-pris-celle valgt" href="#" data-til-knapper>
+                        <p class="orgport-pris-merke">Die ersten 30 Tage</p>
+                        <p class="orgport-belop">Kostenlos</p>
+                        <p>Keine Registrierung, keine Kreditkarte.</p>
+                      </a>
+                      <a class="orgport-pris-celle" data-prislenke href="pris/">
+                        <!-- Ikke «Etter 30 dager»: det hørtes ut som om kjøpet skjer av seg selv (eieren 11.11.2026). -->
+                        <p class="orgport-pris-merke">Wenn Sie kaufen möchten</p>
+                        <p class="orgport-belop" data-prisbelop></p>
+                        <p><span data-prisnaar>Pro Jahr</span> zzgl. MwSt. für <span data-prishvem></span>.<span data-binding hidden> Keine Vertragsbindung.</span></p>
+                        <span class="orgport-pris-lenke">Leistungsumfang ansehen →</span>
+                      </a>
+                    </div>
+                    <!-- Samme knapper som i heroen, med «Last ned» én gang over. -->
+                    <p class="last-ned-tittel">Herunterladen</p>
+                    <div class="get">
+                      <a class="btn ghost os os-win" href="/alles-klar/last-ned/windows" download aria-label="Für Windows herunterladen"><span class="os-navn">Windows</span></a>
+                      <a class="btn ghost os os-mac" href="/alles-klar/last-ned/mac" download aria-label="Für Mac herunterladen"><span class="os-glass" aria-hidden="true"></span><span class="os-navn">Mac</span></a>
+                      <a class="btn ghost os os-lin" href="/alles-klar/last-ned/linux" download aria-label="Für Linux herunterladen"><span class="os-figur os-pingvin" aria-hidden="true"><svg viewBox="0 0 24 28" width="24" height="28" focusable="false"><g class="os-pingvin-kropp"><ellipse cx="8.4" cy="26.4" rx="3.3" ry="1.4" fill="#f5a524"/><ellipse cx="15.6" cy="26.4" rx="3.3" ry="1.4" fill="#f5a524"/><ellipse cx="3.9" cy="17" rx="1.9" ry="5.4" transform="rotate(16 3.9 17)" fill="#0f2147"/><ellipse cx="20.1" cy="17" rx="1.9" ry="5.4" transform="rotate(-16 20.1 17)" fill="#0f2147"/><ellipse cx="12" cy="15" rx="8.4" ry="11.2" fill="#0f2147"/><ellipse cx="12" cy="18.4" rx="5.5" ry="7.6" fill="#fff"/><circle cx="9.7" cy="8.6" r="2" fill="#fff"/><circle cx="14.3" cy="8.6" r="2" fill="#fff"/><circle cx="10.1" cy="8.9" r="0.95" fill="#0f2147"/><circle cx="13.9" cy="8.9" r="0.95" fill="#0f2147"/><path d="M9.9 11.4 Q12 10.5 14.1 11.4 Q12 13.9 9.9 11.4Z" fill="#f5a524"/></g></svg></span><span class="os-navn">Linux</span></a>
+                    </div>
+                    <button type="button" class="orgport-endre" data-endre>Nicht Ihr Unternehmen?</button>
+                  </div>
+                  <aside class="orgport-oppsett" data-stor hidden>
+                    <p class="orgport-merke">Für große Unternehmen</p>
+                    <h3>Maßgeschneiderte Einrichtung</h3>
+                    <p>Ein größeres Modell, feinabgestimmt auf Ihre eigenen Dokumente und bei Ihnen eingerichtet, auf Hardware, die Ihnen gehört.</p>
+                    <svg class="orgport-mac" role="img" aria-label="Mac Studio"><use href="#mac-studio" /></svg>
+                    <a class="btn" data-oppsett href="pris/">Mehr zur maßgeschneiderten Einrichtung</a>
+                  </aside>
+                </div>
+              </div>
+            </form>
+            <!-- Nedlastingen: kortet blir et eget nedlastingskort når de har valgt system.
+                 Lyset rundt kanten følger hvor langt nedlastingen har kommet (forside.js). -->
+            <div class="nedlasting" data-nedlasting hidden aria-live="polite">
+              <div class="nedlasting-topp">
+                <span class="nedlasting-merke" data-merke aria-hidden="true"></span>
+                <div>
+                  <p class="nedlasting-tittel">Alles Klar für <span data-os></span></p>
+                  <p class="nedlasting-fil" data-fil></p>
+                </div>
+              </div>
+              <p class="nedlasting-prosent"><span data-prosent>0</span><span class="nedlasting-pst">%</span></p>
+              <p class="nedlasting-status" data-status></p>
+              <div class="nedlasting-ferdig" data-ferdig hidden>
+                <span class="nedlasting-hake" aria-hidden="true"><svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="25" pathLength="1" /><path d="M17 29l8 8 15-17" pathLength="1" /></svg></span>
+                <p class="nedlasting-ferdig-tittel">Heruntergeladen</p>
+                <p class="nedlasting-neste" data-neste></p>
+              </div>
+              <button type="button" class="nedlasting-tilbake" data-tilbake>Zurück</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vis først, forklar etterpå: programvinduet rett under bildet, så filtypene,
+             og til slutt hva Klart er (boksen «om»). -->
+
+        <!-- Programvindu: en kopi av Klart slik appen ser ut fra november 2026 (src/ny og
+             src/editor/ui i appen), bygget i HTML og CSS, ikke film. forhandsvisning.js spiller
+             av fem kapitler, og raden under vinduet hopper mellom dem: rens en mappe (PDF,
+             e-post med bilde av en bil (Midjourney, fiktiv), regneark og PowerPoint leses;
+             ansiktene og skiltet pikseleres underveis),
+             gjennomgangen, kopiene (også svart sladd), høyreklikk i Finder, og en KI som får
+             teksten med koder og svarer, før svaret tilbakeføres i Klart. Lesingen vises rolig
+             (epilepsi og lysfølsomhet): ingen blink, ett lesehode som glir over hver side, og
+             merkene toner inn. Pekeren er alltid i bildet og glir mellom stedene. Uten JS, eller
+             med redusert bevegelse, står den stille i editoren med alt gjennomgått.
+             Stil: forhandsvisning.css. -->
+        <!-- Hva Klart er, rett over programvinduet (GDPR/index.html, eieren 19.-20.11.2026), på tysk. -->
+        <section class="hva rise" aria-label="Alles Klar ist ein lokales Programm">
+          <div class="hva-venstre">
+            <!-- Det første man skal forstå, enkelt forklart. Den tyske utgaven har en tysk språkmodell. -->
+            <ul class="hva-sjekk">
+              <li>KI-Modell für deutsche Texte</li>
+              <li>Alles geschieht auf Ihrem eigenen Rechner</li>
+              <li>Gemacht für gewöhnliche Computer</li>
+            </ul>
+          </div>
+          <!-- Logoen, og det viktigste under den. -->
+          <div class="hva-hoyre">
+            <p class="hva-logo"><img src="assets/klart-ikon.png" width="256" height="256" alt="" aria-hidden="true" /><span>Alles Klar</span></p>
+            <p class="hva-under">Lokales Programm · Ohne Internet</p>
+          </div>
+        </section>
+        <figure class="kv rise avklart" data-scene="gjennom">
+          <div class="kv-ramme">
+          <div class="kv-app" aria-hidden="true">
+            <header class="kv-chrome">
+              <span class="kv-lys"><i></i><i></i><i></i></span>
+              <span class="kv-merke"><img src="assets/klart-ikon.png" alt="" />Klart</span>
+              <span class="kv-sok"><svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.6" /><path d="M10.4 10.4L14 14" /></svg>Søk i alle filene i mappen<kbd>⌘F</kbd></span>
+              <span class="kv-hoyre">
+                <span class="kv-lagret">✓ Auto-lagret</span>
+                <span class="kv-lysknapp">Skannevalg</span>
+                <span class="kv-lysknapp" data-kv="hjem">Startskjermen</span>
+                <span class="kv-lysknapp kv-sporsmal">?</span>
+              </span>
+            </header>
+
+            <div class="kv-flate">
+              <!-- Startskjermen: de tre verktøyene, og det som ble tilbakeført under dem -->
+              <div class="kv-scene kv-s-start">
+                <div class="kv-start-inn">
+                  <div class="kv-kortene">
+                    <div class="kv-startkort">
+                      <img src="assets/visning/ikon-rens.png" alt="" />
+                      <h4>Rens</h4>
+                      <span class="kv-hvit" data-kv="velg">Velg mappe eller dokumenter …</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="assets/visning/ikon-tilbakefor.png" alt="" />
+                      <h4>Tilbakefør</h4>
+                      <span class="kv-hvit" data-kv="tbvelg">Velg kopier …</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="assets/visning/ikon-tekst.png" alt="" />
+                      <h4>Tekstverktøy</h4>
+                      <span class="kv-hvit" data-kv="tekstvelg">Åpne …</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Editoren: filene, dokumentet og registeret for mappen -->
+              <div class="kv-scene kv-s-editor">
+                <aside class="kv-filer">
+                  <div class="kv-filer-topp"><b>kundesaker</b><span>10 filer</span></div>
+                  <ul data-kv="filer">
+                    <li data-steder="30"><i class="kv-fikon w">W</i><span class="kv-fnavn">01-arbeidsavtale-acme.docx</span><span class="kv-fmeta">30 steder</span><i class="kv-ring"></i></li>
+                    <li data-steder="41" data-uavklart="2" data-dok="vedtak" class="valgt"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">02-vedtak-vergemal.pdf</span><span class="kv-fmeta">41 steder</span><i class="kv-ring"></i></li>
+                    <li data-steder="45" data-ekstra="1 bilskilt" data-dok="epost"><i class="kv-fikon epost">@</i><span class="kv-fnavn">03-epost-trad.eml</span><span class="kv-fmeta">45 steder</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon tekst">T</i><span class="kv-fnavn">04-hr-notat.md</span><span class="kv-fmeta">21 steder</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon w">W</i><span class="kv-fnavn">05-legeerklaring.docx</span><span class="kv-fmeta">21 steder</span><i class="kv-ring"></i></li>
+                    <li data-steder="16"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">06-faktura-nordlys.pdf</span><span class="kv-fmeta">16 steder</span><i class="kv-ring"></i></li>
+                    <li data-steder="82" data-dok="liste"><i class="kv-fikon x">X</i><span class="kv-fnavn">08-kundeliste.xlsx</span><span class="kv-fmeta">82 steder</span><i class="kv-ring"></i></li>
+                    <li data-steder="43" data-ekstra="2 ansikter" data-dok="ppt"><i class="kv-fikon p">P</i><span class="kv-fnavn">09-statusmote.pptx</span><span class="kv-fmeta">43 steder · 2 ansikter</span><i class="kv-ring"></i></li>
+                    <li data-steder="18"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">11-skannet-vedlegg.pdf</span><span class="kv-fmeta">18 steder</span><i class="kv-ring"></i></li>
+                    <li data-steder="3" data-ekstra="1 ansikt"><i class="kv-fikon bilde">JPG</i><span class="kv-fnavn">16-adgangskort.jpg</span><span class="kv-fmeta">3 steder · 1 ansikt</span><i class="kv-ring"></i></li>
+                  </ul>
+                </aside>
+
+                <div class="kv-midt">
+                  <div class="kv-docket">
+                    <b data-kv="docnavn">02-vedtak-vergemal.pdf</b><span class="kv-type" data-kv="doctype">PDF</span>
+                    <span class="kv-kopimerke" data-kv="kopimerke">Kopien · kodeliste bakerst</span>
+                    <span class="kv-verktoy">
+                      <span class="kv-zoom">− &nbsp;86 %&nbsp; +</span>
+                      <span class="kv-hvit" data-kv="vis">Vis kopien</span>
+                    </span>
+                  </div>
+                  <div class="kv-bord">
+                    <div class="kv-pille" data-kv="pille"><i></i>Leser <b data-kv="leser">01-arbeidsavtale-acme.docx</b><span data-kv="nr">1 av 10</span></div>
+
+                    <!-- PDF: vedtak om vergemål -->
+                    <article class="kv-side vist" data-dok="vedtak">
+                      <i class="kv-lesehode"></i>
+                      <p class="kv-avsender">Vedtak</p>
+                      <h4>Vedtak om vergemål</h4>
+                      <p class="kv-ref">Vår ref. <mark class="s"><span class="o">2026/18442</span><span class="k">[Saksnummer 4906498]</span></mark> · 14.03.2026</p>
+                      <h5>Vergehaver</h5>
+                      <dl>
+                        <dt>Navn</dt><dd><mark class="s"><span class="o">Kari Nordmann</span><span class="k">[Person 6311794]</span></mark></dd>
+                        <dt>Fødselsnummer</dt><dd><mark class="s"><span class="o">110779 41012</span><span class="k">[Fødselsnummer 2215087]</span></mark></dd>
+                        <dt>Adresse</dt><dd><mark class="s"><span class="o">Glenneveien 272, 0550 Oslo</span><span class="k">[Adresse 8950779]</span></mark></dd>
+                      </dl>
+                      <h5>Oppnevnt verge</h5>
+                      <dl>
+                        <dt>Navn</dt><dd><mark class="s"><span class="o">Lars Hansen</span><span class="k">[Person 2656447]</span></mark>, <mark class="b" data-kv="arbeid"><span class="o">Advokatfirmaet Nordlys AS</span><span class="k">[Arbeidsplass 5521093]</span></mark></dd>
+                        <dt>E-post</dt><dd><mark class="s"><span class="o">lars.hansen@nordlys.test</span><span class="k">[E-post 3278678]</span></mark></dd>
+                        <dt>Telefon</dt><dd><mark class="s"><span class="o">922 11 334</span><span class="k">[Telefon 6289990]</span></mark></dd>
+                      </dl>
+                      <h5>Begrunnelse</h5>
+                      <p><mark class="s" data-kv="merknad"><span class="o">Vergehaver har vært innlagt for depresjon siden januar og trenger hjelp med økonomien.</span><span class="k">[Merknad 2760056]</span></mark> Vergemålet omfatter forvaltning av midler på konto <mark class="s"><span class="o">1503 42 17886</span><span class="k">[Kontonummer 7719741]</span></mark>.</p>
+                      <p>Vergemålet gjelder fra vedtaksdato. Vedtaket kan påklages innen tre uker.</p>
+                    </article>
+
+                    <!-- E-post -->
+                    <article class="kv-side kv-epost" data-dok="epost">
+                      <i class="kv-lesehode"></i>
+                      <dl class="kv-hode">
+                        <dt>Fra</dt><dd><mark class="s"><span class="o">Silje Johansen</span><span class="k">[Person 7320430]</span></mark> &lt;<mark class="s"><span class="o">silje.johansen@nordlys.test</span><span class="k">[E-post 5102284]</span></mark>&gt;</dd>
+                        <dt>Til</dt><dd><mark class="s"><span class="o">Kari Nordmann</span><span class="k">[Person 6311794]</span></mark></dd>
+                        <dt>Emne</dt><dd><b>Oppfølging etter møtet</b></dd>
+                        <dt>Dato</dt><dd>12. mars 2026 kl. 09.14</dd>
+                      </dl>
+                      <p>Hei <mark class="s"><span class="o">Kari</span><span class="k">[Person 6311794]</span></mark>,</p>
+                      <p>Takk for praten i går. Som avtalt sender jeg over kopi av legeerklæringen. Du når meg på <mark class="s"><span class="o">922 11 334</span><span class="k">[Telefon 6289990]</span></mark> hele uka.</p>
+                      <p>Firmabilen med skilt <mark class="s"><span class="o">EL 48213</span><span class="k">[Bilskilt 3071552]</span></mark> står klar fra mandag. Bildet er vedlagt.</p>
+                      <p>Hilsen<br /><mark class="s"><span class="o">Silje Johansen</span><span class="k">[Person 7320430]</span></mark><br />Nordlys Drift AS · <mark class="s"><span class="o">Havnegata 22, 9008 Kvitbergvik</span><span class="k">[Adresse 6113936]</span></mark></p>
+                      <figure class="kv-vedlegg">
+                        <span class="kv-bilramme"><img src="assets/visning/bil.jpg" alt="" /><span class="kv-skilt" data-kv="skilt"><img src="assets/visning/bil-skilt.png" alt="" /><em data-kv="skiltlapp">Bilskilt · skjules</em></span></span>
+                        <figcaption>bilen.jpg · 1,2 MB</figcaption>
+                      </figure>
+                    </article>
+
+                    <!-- Regneark -->
+                    <article class="kv-side kv-ark" data-dok="liste">
+                      <i class="kv-lesehode"></i>
+                      <table>
+                        <thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead>
+                        <tbody>
+                          <tr><th>1</th><td><b>Navn</b></td><td><b>Fødselsnummer</b></td><td><b>Telefon</b></td><td><b>Kontonummer</b></td></tr>
+                          <tr><th>2</th><td><mark class="s"><span class="o">Ola Berg</span><span class="k">[Person 1180342]</span></mark></td><td><mark class="s"><span class="o">030485 12345</span><span class="k">[Fnr 4402918]</span></mark></td><td><mark class="s"><span class="o">913 44 210</span><span class="k">[Telefon 2290174]</span></mark></td><td><mark class="s"><span class="o">1503 22 98761</span><span class="k">[Konto 6630215]</span></mark></td></tr>
+                          <tr><th>3</th><td><mark class="s"><span class="o">Ingrid Lunde</span><span class="k">[Person 5523107]</span></mark></td><td><mark class="s"><span class="o">220791 23456</span><span class="k">[Fnr 8817330]</span></mark></td><td><mark class="s"><span class="o">476 12 803</span><span class="k">[Telefon 1047782]</span></mark></td><td><mark class="s"><span class="o">9710 05 44120</span><span class="k">[Konto 3359810]</span></mark></td></tr>
+                          <tr><th>4</th><td><mark class="s"><span class="o">Ahmed Hassan</span><span class="k">[Person 9918066]</span></mark></td><td><mark class="s"><span class="o">150668 34567</span><span class="k">[Fnr 2265419]</span></mark></td><td><mark class="s"><span class="o">988 30 117</span><span class="k">[Telefon 7714203]</span></mark></td><td><mark class="s"><span class="o">1206 48 33105</span><span class="k">[Konto 9046631]</span></mark></td></tr>
+                          <tr><th>5</th><td><mark class="s"><span class="o">Marit Solberg</span><span class="k">[Person 3301459]</span></mark></td><td><mark class="s"><span class="o">091102 45678</span><span class="k">[Fnr 6158820]</span></mark></td><td><mark class="s"><span class="o">452 90 664</span><span class="k">[Telefon 4420987]</span></mark></td><td><mark class="s"><span class="o">3000 17 82246</span><span class="k">[Konto 1872264]</span></mark></td></tr>
+                          <tr><th>6</th><td><mark class="s"><span class="o">Jonas Vik</span><span class="k">[Person 8045126]</span></mark></td><td><mark class="s"><span class="o">280377 56789</span><span class="k">[Fnr 5590743]</span></mark></td><td><mark class="s"><span class="o">934 51 278</span><span class="k">[Telefon 3368201]</span></mark></td><td><mark class="s"><span class="o">6012 09 41873</span><span class="k">[Konto 7701358]</span></mark></td></tr>
+                          <tr><th>7</th><td></td><td></td><td></td><td></td></tr>
+                          <tr><th>8</th><td></td><td></td><td></td><td></td></tr>
+                        </tbody>
+                      </table>
+                    </article>
+
+                    <!-- PowerPoint: lysbildet fra fellesturen, med to ansikter -->
+                    <article class="kv-side kv-ppt" data-dok="ppt">
+                      <i class="kv-lesehode"></i>
+                      <div class="kv-lysbilde">
+                        <p class="kv-lb-tittel">Fellesturen i februar</p>
+                        <p class="kv-lb-under">Takk til <mark class="s"><span class="o">Hanne Lund</span><span class="k">[Person 3390415]</span></mark> og <mark class="s"><span class="o">Per Strand</span><span class="k">[Person 8812706]</span></mark> for planleggingen!</p>
+                        <div class="kv-lb-foto">
+                          <img src="assets/visning/fagtur.jpg" alt="" />
+                          <span class="kv-ansikt a1" data-kv="ansikt1"><img src="assets/visning/fagtur-ansikt-1.jpg" alt="" /><em>Ansikt · pikseleres</em></span>
+                          <span class="kv-ansikt a2" data-kv="ansikt2"><img src="assets/visning/fagtur-ansikt-2.jpg" alt="" /><em>Ansikt · pikseleres</em></span>
+                        </div>
+                        <p class="kv-lb-bunn">Statusmøte · lysbilde 4 av 12</p>
+                      </div>
+                    </article>
+
+                    <div class="kv-gjennom" data-kv="gjennom">
+                      <i class="kv-gjennom-strek" data-kv="gstrek"></i>
+                      <p class="kv-gjennom-topp"><code data-kv="gkode">Merknad 2760056</code><b>Uavklart</b><span data-kv="gnr">1 av 2</span></p>
+                      <p class="kv-gjennom-hvorfor" data-kv="ghvorfor">Klart er usikker på om dette er en merknad om en person. · 02-vedtak-vergemal.pdf</p>
+                      <p class="kv-gjennom-knapper">
+                        <span class="kv-btn" data-kv="skjul">Skjul <kbd>↵</kbd></span>
+                        <span class="kv-btn hvit" data-kv="lastaa">La stå <kbd>B</kbd></span>
+                        <span class="kv-btn hvit av">Forrige <kbd>←</kbd></span>
+                        <span class="kv-btn hvit">Neste <kbd>→</kbd></span>
+                        <span class="kv-btn hvit">Avslutt <kbd>Esc</kbd></span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <aside class="kv-panel">
+                  <div class="kv-uavklart" data-kv="uavklart">
+                    <h5><svg viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" rx="2" /><path d="M6 2.5v11" /></svg>Uavklart</h5>
+                    <div class="kv-uboks">
+                      <p data-kv="u1"><code>Merknad 2760056</code><span>Vergehaver har vært innlagt …</span><em>1 uavklart</em></p>
+                      <p data-kv="u2"><code>Arbeidsplass 5521093</code><span>Advokatfirmaet Nordlys AS</span><em>1 uavklart</em></p>
+                      <span class="kv-btn bred" data-kv="gaa">Gå gjennom alle 2 <kbd>G</kbd></span>
+                    </div>
+                  </div>
+                  <div class="kv-imappen">
+                    <h5>I mappen <span><b data-kv="opplysninger">67</b> opplysninger</span></h5>
+                    <ul data-kv="register">
+                      <li data-n="19" data-s="114"><span>Personer</span><em>19 · 114 steder</em></li>
+                      <li data-n="7" data-s="24"><span>Fødselsnumre</span><em>7 · 24 steder</em></li>
+                      <li data-n="12" data-s="43"><span>Telefon</span><em>12 · 43 steder</em></li>
+                      <li data-n="15" data-s="53"><span>E-post</span><em>15 · 53 steder</em></li>
+                      <li data-n="7" data-s="29"><span>Adresser</span><em>7 · 29 steder</em></li>
+                      <li data-n="6" data-s="13"><span>Kontonumre</span><em>6 · 13 steder</em></li>
+                      <li data-n="1" data-s="2"><span>Bilskilt</span><em>1 · 2 steder</em></li>
+                      <li data-n="3" data-s="12"><span>Sensitiv</span><em>3 · 12 steder</em></li>
+                      <li data-n="3" data-s="3" data-kv="ansikter"><span>Ansikter</span><em>3 · 3 steder</em></li>
+                    </ul>
+                  </div>
+                  <div class="kv-bunn">
+                    <p><b data-kv="skjules">292</b> skjules <b data-kv="faarstaa">1</b> får stå</p>
+                    <p class="kv-bunn-knapper">
+                      <span class="kv-btn hvit oransje" data-kv="ubtn"><i></i>Uavklart 2</span>
+                      <span class="kv-btn stor" data-kv="lag">Lag 10 kopier</span>
+                    </p>
+                  </div>
+                </aside>
+              </div>
+
+              <!-- Tekstverktøy: et ark å skrive eller lime inn på -->
+              <div class="kv-scene kv-s-tekst">
+                <div class="kv-rt-linje">
+                  <span class="kv-rt-tilbake">‹ Startskjermen</span>
+                  <span class="kv-faner"><span class="på" data-kv="fanerens"><i>1</i>Rens tekst</span><span data-kv="fanetb"><i>2</i>Tilbakefør tekst</span></span>
+                  <span class="kv-faner kv-rt-visning"><span class="på" data-kv="rtorig">Original</span><span data-kv="rtrenset">Renset</span></span>
+                  <span class="kv-btn" data-kv="rtkopier">Kopier</span>
+                </div>
+                <div class="kv-rt-kropp">
+                  <div class="kv-rt-ark" data-kv="rtark"><p data-kv="rttekst"></p><i class="kv-markor"></i><p class="kv-rt-svar" data-kv="rtsvar"></p></div>
+                  <aside class="kv-rt-liste">
+                    <h5 data-kv="rtlistetittel">Skjules</h5>
+                    <ul data-kv="rtliste"></ul>
+                    <p class="kv-rt-merke">Leses på denne maskinen. Ingenting sendes.</p>
+                  </aside>
+                </div>
+                <p class="kv-toast" data-kv="toast">Kopiert</p>
+              </div>
+
+              <!-- Skrivebordet: Finder med høyreklikk › Hurtighandlinger › Rens med Klart -->
+              <div class="kv-scene kv-s-finder kv-skrivebord">
+                <div class="kv-finder">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><span class="kv-pil">‹ ›</span><b>Dokumenter</b></div>
+                  <div class="kv-finder-kropp">
+                    <ul class="kv-sidefelt">
+                      <li class="kv-sf-h">Favoritter</li>
+                      <li>Skrivebord</li>
+                      <li class="på">Dokumenter</li>
+                      <li>Nedlastinger</li>
+                      <li class="kv-sf-h">Steder</li>
+                      <li>iCloud Drive</li>
+                    </ul>
+                    <div class="kv-ikoner">
+                      <span class="kv-mappe" data-kv="fmappe"><i></i>kundesaker</span>
+                      <span class="kv-mappe"><i></i>innsyn mars</span>
+                      <span class="kv-mappe"><i></i>regnskap 2025</span>
+                      <span class="kv-dokikon"><i>PDF</i>kontrakt-acme.pdf</span>
+                      <span class="kv-dokikon w"><i>W</i>referat 10.11.docx</span>
+                      <span class="kv-mappe ny" data-kv="fny"><i></i>kundesaker-klar</span>
+                    </div>
+                  </div>
+                  <ul class="kv-meny" data-kv="meny">
+                    <li>Åpne</li>
+                    <li>Åpne i ny fane</li>
+                    <li class="kv-skille"></li>
+                    <li>Flytt til papirkurv</li>
+                    <li class="kv-skille"></li>
+                    <li>Vis info</li>
+                    <li>Gi nytt navn</li>
+                    <li>Komprimer «kundesaker»</li>
+                    <li>Dupliser</li>
+                    <li class="kv-skille"></li>
+                    <li>Kopier</li>
+                    <li>Del …</li>
+                    <li class="kv-skille"></li>
+                    <li class="kv-under" data-kv="hurtig">Hurtighandlinger<span>›</span></li>
+                    <li class="kv-under">Tjenester<span>›</span></li>
+                  </ul>
+                  <ul class="kv-meny kv-undermeny" data-kv="undermeny">
+                    <li data-kv="rensmed">Rens med Klart</li>
+                    <li>Tilbakefør med Klart</li>
+                    <li class="kv-skille"></li>
+                    <li>Tilpass …</li>
+                  </ul>
+                </div>
+                <div class="kv-varsel" data-kv="varsel">
+                  <img src="assets/klart-ikon.png" alt="" />
+                  <p><b data-kv="vtittel">Renser «kundesaker» …</b><span data-kv="vtekst">Kopiene legges ved siden av. Du får beskjed når de er klare.</span></p>
+                  <small>nå</small>
+                </div>
+              </div>
+
+              <!-- Skrivebordet: et KI-verktøy som bare får kodene -->
+              <div class="kv-scene kv-s-ki kv-skrivebord">
+                <div class="kv-ki">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><b>KI-assistent</b></div>
+                  <div class="kv-ki-samtale">
+                    <div class="kv-ki-bruker" data-kv="kibruker">
+                      <p>Lag et kort svar på denne meldingen:</p>
+                      <p class="kv-ki-sitat">Hei! Kan du ringe <code>[Person 6311794]</code> på <code>[Telefon 6289990]</code> i dag? Hun har flyttet til <code>[Adresse 8950779]</code>, og lønnen skal nå gå til konto <code>[Kontonummer 7719741]</code>.</p>
+                    </div>
+                    <div class="kv-ki-svar" data-kv="kisvar"><p data-kv="kisvartekst"></p><span class="kv-ki-kopier" data-kv="kikopier">Kopier svaret</span></div>
+                  </div>
+                  <div class="kv-ki-felt" data-kv="kifelt"><span>Skriv en melding …</span><i>↑</i></div>
+                </div>
+                <p class="kv-ki-merke">KI-en får bare kodene. Navn, telefon, adresse og konto blir på maskinen.</p>
+              </div>
+
+              <!-- «Før skanningen»: over startskjermen, når mappen er valgt -->
+              <div class="kv-slor kv-s-forvalg">
+                <div class="kv-modal">
+                  <h4>kundesaker</h4>
+                  <p class="kv-modal-under">10 filer · docx, eml, jpg, md, pdf, pptx, xlsx</p>
+                  <div class="kv-maate">
+                    <p class="på"><i></i><span><b>Med skanning</b>Klart leser filene og merker det den finner. Du går gjennom og bestemmer.</span></p>
+                    <p><i></i><span><b>Uten skanning</b>Ingenting merkes på forhånd. Du klikker på det som skal skjules.</span></p>
+                  </div>
+                  <p class="kv-sammen"><span><small>Skanningen ser etter og skjuler</small>Navn, Fødselsnummer, Telefon og e-post, Sensitiv, Bilskilt, Konto, Ansikter og 5 til</span><em>Endre</em></p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Avbryt</span>
+                    <span class="kv-btn stor" data-kv="skann">Skann <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- «Før kopiene lages»: formen kopiene får -->
+              <div class="kv-slor kv-s-kopivalg">
+                <div class="kv-modal kv-kopivalg">
+                  <h4>Før kopiene lages</h4>
+                  <p class="kv-modal-under">10 filer · kopiene legges i kundesaker-klar</p>
+                  <div class="kv-maate kv-former" data-kv="former">
+                    <p class="på" data-form="kort"><i></i><span><b>Kort kode og kodeliste</b>Lett å lese. Kan føres tilbake med kontorets nøkkel.<code>[Person 4814887] + liste</code></span></p>
+                    <p data-form="full"><i></i><span><b>Full kode i teksten</b>Ingen liste. Kan føres tilbake, men er tungt å lese.</span></p>
+                    <p data-form="lapp"><i></i><span><b>Bare merkelapper</b>Lett å lese, men kan ikke føres tilbake.</span></p>
+                    <p data-form="svart"><i></i><span><b>Svart sladd (PDF)</b>Det som sto der, er borte for godt.<code class="kv-svartprove"></code></span></p>
+                  </div>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Avbryt</span>
+                    <span class="kv-btn stor" data-kv="lagnaa">Lag 10 kopier <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Kopiene er laget -->
+              <div class="kv-slor kv-s-ferdig">
+                <div class="kv-ferdig">
+                  <p class="kv-stor">Klart.</p>
+                  <p>10 kopier er laget. Originalene ligger urørt. Les gjennom før du deler dem.</p>
+                  <p class="kv-sti"><span>Dokumenter/</span>kundesaker-klar/</p>
+                  <p class="kv-liten">Kodelisten ligger bakerst i hver kopi.</p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit">Tilbake til mappen</span>
+                    <span class="kv-btn">Åpne kopiene</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+          <span class="kv-peker" aria-hidden="true"></span>
+          <!-- Kapitlene: hopper i avspillingen. Det som spilles nå, er markert. -->
+          <ol class="kv-kapitler" data-kv="kapitler" aria-label="Kapitler i forhåndsvisningen">
+            <li><button type="button" data-kapittel="0">Rens en mappe</button></li>
+            <li><button type="button" data-kapittel="1">Gå gjennom</button></li>
+            <li><button type="button" data-kapittel="2">Kopiene</button></li>
+            <li><button type="button" data-kapittel="3">Høyreklikk i Finder</button></li>
+            <li><button type="button" data-kapittel="4">Rens og tilbakefør tekst</button></li>
+          </ol>
+          <!-- Lesingen spilles av mye raskere enn den går på en vanlig maskin. Det skal stå. -->
+          <p class="kv-spol" aria-hidden="true">
+            <svg viewBox="0 0 20 12"><path d="M1 1l8 5-8 5zM10 1l8 5-8 5z" /></svg>
+            <span>Spolt fram. Hvor lang tid lesingen tar, varierer fra maskin til maskin. På en vanlig bærbar går det tregere.</span>
+          </p>
+          <figcaption class="skjult-tekst">
+            Slik virker Klart. Velg en mappe, og Klart leser filene, også PDF, e-post, regneark,
+            PowerPoint og bilder, og merker navn, fødselsnumre, kontaktinfo, adresser, kontonumre,
+            sensitive opplysninger, bilskilt og ansikter, som pikseleres. Det Klart er usikker på,
+            går du gjennom og bestemmer selv: skjul eller la stå. Kopiene kan få korte koder med
+            kodeliste, fulle koder, bare merkelapper eller svart sladd, og originalene ligger urørt.
+            I Finder kan en mappe renses med høyreklikk › Hurtighandlinger › Rens med Klart.
+            Tekst med koder kan gis til et KI-verktøy, og svaret tilbakeføres i Klart, så navnene
+            kommer tilbake uten at KI-en har sett dem. Lesingen er spolt fram: hvor lang tid den
+            tar, varierer fra maskin til maskin.
+          </figcaption>
+        </figure>
+
+        <!-- Filtypene under programvinduet, over boksen. -->
+        <div class="formats rise">
+          <p>Liest die Dateien, mit denen Sie ohnehin arbeiten</p>
+          <ul>
+            <li>
+              <svg class="ficon"><use href="#i-word" /></svg>
+              <span class="fname">Word</span>
+              <span class="fext">.docx</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-excel" /></svg>
+              <span class="fname">Excel</span>
+              <span class="fext">.xlsx · .xls · .csv</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-ppt" /></svg>
+              <span class="fname">PowerPoint</span>
+              <span class="fext">.pptx</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-pdf" /></svg>
+              <span class="fname">PDF</span>
+              <span class="fext">.pdf</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-mail" /></svg>
+              <span class="fname">E-Mail</span>
+              <span class="fext">.eml</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-bilde" /></svg>
+              <span class="fname">Bilder</span>
+              <span class="fext">.jpg · .png · .tiff</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-text" /></svg>
+              <span class="fname">Text</span>
+              <span class="fext">.txt · .md</span>
+            </li>
+          </ul>
+          <!-- Eierens tekst (GDPR/index.html, 20.11.2026), på tysk. -->
+          <p class="formats-unik"><b>Besondere Funktion:</b> Alles Klar kopiert die Dateien in dem Format, in dem sie vorliegen, sodass Sie mit den bereinigten Dokumenten weiterarbeiten können.</p>
+        </div>
+
+      </section>
+
+      <!-- =====================================================================
+           Resten av siden (videre.css og videre.js). Skrevet 11.11.2026 for
+           Klart slik programmet er nå: koder med faste numre, nøkkelen,
+           tilbakeføring, gjennomgangen, kopikontrollen og de fire kopiformene.
+
+           Rekkefølgen er lagt for en leser uten teknisk bakgrunn: først én idé
+           per skjerm, med et bilde og få ord. Så «I dybden», der hvert emne
+           kan åpnes av den som vil vite mer. Ordene er appens egne.
+           Bildene i krom er appens ikoner og velkomstbilder (assets/krom/),
+           og fire nye laget i Midjourney med mappeikonet som stilreferanse.
+           ===================================================================== -->
+      <div class="videre">
+        <!-- ============ Hva Klart gir deg (før hva det gjør; eieren 11.11.2026: selg ferien,
+             ikke flyturen) ============ -->
+        <section class="v-del v-hva" id="hva">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Den Fall teilen. Die Namen behalten.</h2>
+            <p class="v-ingress">
+              Schicken Sie Dokumente an eine Beraterin, beantworten Sie ein Auskunftsersuchen oder fragen Sie ein KI-Werkzeug,
+              ohne dass die Namen mitgehen. Das Schwärzen geht viel schneller als von Hand,
+              Seite für Seite.
+            </p>
+          </div>
+          <ul class="v-tre-ord rise">
+            <li><b>KI für echte Fälle nutzen.</b> Das Werkzeug sieht Codes statt Menschen.</li>
+            <li><b>Ja zum Teilen sagen.</b> Mit Wirtschaftsprüfer, Anwältin oder einer anderen Behörde, noch am selben Tag.</li>
+            <li><b>Die Namen zurückholen, wann Sie wollen.</b> Nur Sie haben den Schlüssel.</li>
+          </ul>
+          <p class="v-hva-er rise">Alles Klar ist ein Programm auf Ihrem eigenen Rechner. Die Dokumente verlassen ihn nie.</p>
+        </section>
+
+        <!-- ============ 1. Kjernen: navn blir koder ============ -->
+        <section class="v-del v-kjerne" id="kjernen">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Aus Namen werden Codes.</h2>
+            <p class="v-ingress">
+              Alles Klar erstellt eine Kopie Ihrer Dokumente. In der Kopie steht ein Code,
+              wo vorher ein Name, eine Personennummer oder etwas anderes über eine Person stand.
+            </p>
+          </div>
+
+          <!-- To ark fra samme mappe. Bryteren viser originalen eller kopien; den går av seg
+               selv til noen tar i den (videre.js). Uten JS står arkene som kopi. -->
+          <figure class="v-ark-scene rise" data-v-bytt data-vis="kopi">
+            <div class="v-bryter" role="group" aria-label="Original oder Kopie anzeigen">
+              <button type="button" data-v-vis="original" aria-pressed="false">Original</button>
+              <button type="button" data-v-vis="kopi" aria-pressed="true">Kopie</button>
+            </div>
+            <div class="v-ark-par" aria-hidden="true">
+              <article class="v-ark v-ark-a">
+                <header class="v-ark-topp">
+                  <svg class="v-ark-ikon"><use href="#i-pdf" /></svg>
+                  <span>beschluss-betreuung.pdf</span>
+                </header>
+                <p class="v-ark-h">Beschluss über die Betreuung</p>
+                <dl class="v-ark-rader">
+                  <div>
+                    <dt>Betreute Person</dt>
+                    <dd><span class="v-bytt v-samme"><span class="v-o"><i>Kari Nordmann</i></span><span class="v-k"><i>[Person 4829133]</i></span></span></dd>
+                  </div>
+                  <div>
+                    <dt>Personennummer</dt>
+                    <dd><span class="v-bytt"><span class="v-o"><i>110779 41012</i></span><span class="v-k"><i>[Personennummer 2204716]</i></span></span></dd>
+                  </div>
+                  <div>
+                    <dt>Adresse</dt>
+                    <dd><span class="v-bytt"><span class="v-o"><i>Glenneveien 272</i></span><span class="v-k"><i>[Adresse 3310482]</i></span></span></dd>
+                  </div>
+                  <div>
+                    <dt>Betreuer</dt>
+                    <dd><span class="v-bytt"><span class="v-o"><i>Lars Hansen</i></span><span class="v-k"><i>[Person 6071542]</i></span></span></dd>
+                  </div>
+                </dl>
+                <p class="v-ark-p">
+                  Der Betreuer unterstützt in finanziellen Angelegenheiten.
+                  <span class="v-bytt"><span class="v-o"><i>Kari ist bis zum 30. April krankgeschrieben.</i></span><span class="v-k"><i>[Anmerkung 2760056]</i></span></span>
+                </p>
+              </article>
+              <article class="v-ark v-ark-b">
+                <header class="v-ark-topp">
+                  <svg class="v-ark-ikon"><use href="#i-mail" /></svg>
+                  <span>antwort-der-bank.eml</span>
+                </header>
+                <p class="v-ark-h">AW: Verfügung über das Konto</p>
+                <p class="v-ark-p">
+                  Guten Tag, wir beziehen uns auf das Gespräch mit
+                  <span class="v-bytt v-samme"><span class="v-o"><i>Kari Nordmann</i>.</span><span class="v-k"><i>[Person 4829133]</i>.</span></span>
+                </p>
+                <p class="v-ark-p">
+                  Das Konto ist jetzt so eingerichtet, wie vom Betreuer gewünscht. Sie erreichen uns unter
+                  <span class="v-bytt"><span class="v-o"><i>922 11 334</i>.</span><span class="v-k"><i>[Telefon 7745190]</i>.</span></span>
+                </p>
+                <p class="v-ark-p v-ark-hilsen">
+                  Mit freundlichen Grüßen<br />
+                  <span class="v-bytt"><span class="v-o"><i>Ingrid Berg</i></span><span class="v-k"><i>[Person 5530871]</i></span></span><br />
+                  Kundenberaterin
+                </p>
+              </article>
+            </div>
+            <figcaption class="v-samme-linje">
+              <span class="v-kode">[Person 4829133]</span>
+              <span>Dieselbe Person bekommt immer denselben Code, in allen Dokumenten.</span>
+            </figcaption>
+          </figure>
+
+          <ul class="v-tre-ord rise">
+            <li><b>Die Kopie sieht aus wie das Original.</b> Layout, Tabellen und Logos bleiben erhalten.</li>
+            <li><b>Wer sie liest, versteht den Fall.</b> Nur nicht, um wen es geht.</li>
+            <li><b>Die Originale bleiben unberührt.</b> Alles Klar legt neue Dateien daneben an.</li>
+          </ul>
+        </section>
+
+        <!-- ============ 2. De tre tingene på startskjermen ============ -->
+        <section class="v-del v-verktoy" id="verktoy">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Drei Dinge, die Sie tun können.</h2>
+          </div>
+          <div class="v-kort-rad">
+            <article class="v-kort rise">
+              <img src="assets/krom/rens.webp" width="512" height="512" alt="" loading="lazy" decoding="async" />
+              <h3>Bereinigen</h3>
+              <p>Wählen Sie einen Ordner oder einzelne Dokumente. Sie erhalten Kopien mit Codes anstelle personenbezogener Daten.</p>
+            </article>
+            <article class="v-kort rise d-60">
+              <img src="assets/krom/tilbakefor.webp" width="512" height="512" alt="" loading="lazy" decoding="async" />
+              <h3>Zurückführen</h3>
+              <p>Verwandeln Sie die Codes wieder in Namen, wenn Sie sie brauchen.</p>
+            </article>
+            <article class="v-kort rise d-120">
+              <img src="assets/krom/tekst.webp" width="512" height="512" alt="" loading="lazy" decoding="async" />
+              <h3>Textwerkzeug</h3>
+              <p>Text eingeben oder einfügen. Er wird bereinigt, während Sie zusehen.</p>
+            </article>
+          </div>
+
+          <!-- Rens, steg for steg. Streken mellom stegene er et skispor. -->
+          <ol class="v-steg rise">
+            <li><b>Ordner wählen</b><span>Oder ins Fenster ziehen.</span></li>
+            <li><b>Alles Klar liest</b><span>Sie können währenddessen weiterarbeiten.</span></li>
+            <li><b>Sie prüfen</b><span>Ausblenden oder stehen lassen.</span></li>
+            <li><b>Alles Klar kontrolliert</b><span>Jede Kopie wird erneut gelesen.</span></li>
+            <li><b>Die Kopien liegen bereit</b><span>In einem eigenen Ordner daneben.</span></li>
+          </ol>
+        </section>
+
+        <!-- ============ 3. Nøkkelen ============ -->
+        <section class="v-del v-nokkel" id="nokkel">
+          <div class="v-nokkel-inn">
+            <img class="v-nokkel-bilde rise" src="assets/krom/nokkel-blaa.webp" width="800" height="386" alt="" loading="lazy" decoding="async" />
+            <div class="v-hode rise">
+              <h2 class="v-tittel">Nur der Schlüssel macht aus Codes wieder Namen.</h2>
+              <p class="v-ingress">
+                Der Schlüssel entsteht auf Ihrem Rechner, wenn Sie Alles Klar zum ersten Mal öffnen, und er gehört nur Ihnen.
+                Ohne ihn ist ein Code nur ein Code.
+              </p>
+              <!-- Viktig (eieren 11.11.2026): ingen skal tro at alle med Klart kan gjøre om kodene. -->
+              <p class="v-nokkel-bare">
+                <b>Andere mit Alles Klar können Ihre Codes nicht zurückverwandeln.</b>
+                Sie haben ihren eigenen Schlüssel, und damit bleiben Ihre Codes einfach Codes.
+              </p>
+            </div>
+
+            <!-- Hvorfor det er nyttig at kodene kan gjøres om: runden ut og hjem igjen. -->
+            <ol class="v-runde rise">
+              <li>
+                <span class="v-runde-nr">1</span>
+                <b>Bereinigen</b>
+                <span class="v-linje">Betreute Person: <i class="v-kode lys">[Person 4829133]</i></span>
+              </li>
+              <li>
+                <span class="v-runde-nr">2</span>
+                <b>Kopie teilen</b>
+                <span class="v-runde-tekst">Mit einer Beraterin, einer anderen Behörde oder einem KI-Werkzeug.</span>
+              </li>
+              <li>
+                <span class="v-runde-nr">3</span>
+                <b>Antwort zurückführen</b>
+                <span class="v-linje">Betreute Person: <i class="v-navn">Kari Nordmann</i></span>
+              </li>
+            </ol>
+
+            <div class="v-nokkel-par rise">
+              <img src="assets/krom/skrin-blaa.webp" width="640" height="630" alt="" loading="lazy" decoding="async" />
+              <div>
+                <article>
+                  <h3>Bewahren Sie den Schlüssel gut auf</h3>
+                  <p>24 Wörter auf Papier oder eine Schlüsseldatei. So lassen sich die Codes immer wieder in Namen verwandeln.</p>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ Én nøkkel for hele virksomheten ============ -->
+        <section class="v-del v-kontor" id="virksomhet">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Derselbe Code bei allen Kollegen.</h2>
+            <p class="v-ingress">
+              Mit einem Schlüssel für das ganze Unternehmen ist Kari Nordmann auf allen
+              Rechnern derselbe Code. Eine Kollegin kann eine Kopie zurückführen, die Sie erstellt haben.
+            </p>
+          </div>
+          <div class="v-nett rise" aria-hidden="true">
+            <img src="assets/krom/nokkel.webp" width="800" height="386" alt="" loading="lazy" decoding="async" />
+            <div class="v-nett-rad">
+              <p><span>Sachbearbeitung</span><i class="v-kode">[Person 4829133]</i></p>
+              <p><span>Personal</span><i class="v-kode">[Person 4829133]</i></p>
+              <p><span>Archiv</span><i class="v-kode">[Person 4829133]</i></p>
+            </div>
+          </div>
+          <ul class="v-tre-ord rise">
+            <li><b>Eine Person ist verantwortlich.</b> Sie erstellt den Schlüssel und gibt ihn an die Kollegen weiter.</li>
+            <li><b>Der Schlüssel wird in zwei Teilen verschickt.</b> Ein Schlüsselpaket und ein Schlüsselcode, getrennt voneinander.</li>
+            <li><b>Die IT kann gemeinsame Regeln festlegen.</b> Zum Beispiel, was immer ausgeblendet wird.</li>
+          </ul>
+          <!-- Samarbeid på tvers: nøkler fra andre legges inn ved siden av ens egen. -->
+          <div class="v-andres rise">
+            <img src="assets/krom/nokkel-blaa.webp" width="800" height="386" alt="" loading="lazy" decoding="async" />
+            <div>
+              <h3>Sie können auch Schlüssel anderer hinzufügen</h3>
+              <p>
+                Arbeiten Sie mit einem anderen Unternehmen zusammen, kann es seinen Schlüssel mit Ihnen teilen.
+                Dann führen Sie dessen Kopien zurück, und das Unternehmen Ihre, wenn Sie Ihren teilen.
+                Ihr eigener Schlüssel bleibt unverändert, und Sie bestimmen, wer ihn bekommt.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ Dette ser Klart etter ============ -->
+        <!-- Oversikten over hva skanningen ser etter. Ansikter står her, som én av gruppene
+             (eieren 11.11.2026), ikke som en egen omtale under kopiformene. -->
+        <section class="v-del v-ser" id="ser-etter">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Danach sucht Alles Klar.</h2>
+            <p class="v-ingress">Zehn Arten von Angaben sind von Anfang an aktiv. Sie wählen selbst, was dazugehört.</p>
+          </div>
+          <ul class="v-ser-liste rise">
+            <li><b>Namen</b><span>Personennamen</span></li>
+            <li><b>Personennummer</b><span>Auch D-Nummer, Pass und andere ID-Nummern</span></li>
+            <li><b>Telefon und E-Mail</b><span>Nummern und Adressen</span></li>
+            <li><b>Adresse und Ort</b><span>Straße, Postleitzahl und Stadt</span></li>
+            <li><b>Sensibel</b><span>Gesundheit, Gewerkschaft, Glaube und Straftaten</span></li>
+            <li><b>Private Sätze</b><span>Ganze Sätze und Anmerkungen über eine Person</span></li>
+            <li><b>Konto</b><span>Kontonummer und IBAN</span></li>
+            <li><b>Geheimnisse</b><span>Passwörter und Schlüssel</span></li>
+            <li><b>Kennzeichen</b><span>In Texten und auf Bildern</span></li>
+            <li class="v-ser-ansikt">
+              <b>Gesichter</b><span>Werden in Bildern und gescannten Seiten verpixelt</span>
+            </li>
+          </ul>
+          <p class="v-ser-fot rise">
+            Daten, Arbeitgeber und Aktenzeichen schalten Sie bei Bedarf dazu.
+            <a class="v-lenke" href="hva-klart-tar.html">Sehen Sie, was Alles Klar erkennt und was nicht</a>
+          </p>
+        </section>
+
+        <!-- ============ 4. Du bestemmer ============ -->
+        <section class="v-del v-avgjor" id="du-bestemmer">
+          <div class="v-to">
+            <div class="v-hode rise">
+              <h2 class="v-tittel">Sie bestimmen, was ausgeblendet wird.</h2>
+              <p class="v-ingress">
+                Alles Klar markiert, was es findet. Ist es unsicher, fragt es Sie.
+              </p>
+              <ul class="v-punkter">
+                <li>Ein Klick auf ein Wort blendet es im ganzen Ordner aus.</li>
+                <li>Alles Klar merkt sich, was Sie markieren. Der nächste Ordner wird mit Ihren Wörtern gelesen.</li>
+                <li>Die eigenen Angaben Ihrer Organisation bleiben stehen.</li>
+                <li>Alles lässt sich rückgängig machen.</li>
+              </ul>
+            </div>
+
+            <!-- Gjennomgangen slik den ser ut i appen: tre slags merker og linjen nederst
+                 som spør. Fargene og strekene er appens (heltrukket, stiplet, prikket). -->
+            <figure class="v-gjennom rise" aria-hidden="true">
+              <div class="v-gjennom-ark">
+                <p>Direkter Vorgesetzter ist <span class="v-m skjul">Lars Hansen</span>.</p>
+                <p><span class="v-m uavklart">Berg</span> hat eine schrittweise Wiedereingliederung ab Mai empfohlen.</p>
+                <p>Termine über die Zentrale unter <span class="v-m staa">22 00 00 00</span>.</p>
+              </div>
+              <div class="v-spor">
+                <p class="v-spor-topp">
+                  <span class="v-kode">Person 5530871</span>
+                  <b>Ungeklärt</b>
+                  <span class="v-spor-tall">1 von 5</span>
+                </p>
+                <p class="v-spor-grunn">Steht am Satzanfang. Ist es der Name oder das Wort „Berg“?</p>
+                <p class="v-spor-knapper">
+                  <span class="v-knapp">Ausblenden <kbd>↵</kbd></span>
+                  <span class="v-knapp lys">Stehen lassen <kbd>B</kbd></span>
+                  <span class="v-knapp lys">Weiter <kbd>→</kbd></span>
+                </p>
+              </div>
+              <p class="v-forklaring">
+                <span><i class="v-m skjul">Aa</i> Wird ausgeblendet</span>
+                <span><i class="v-m uavklart">Aa</i> Ungeklärt</span>
+                <span><i class="v-m staa">Aa</i> Bleibt stehen</span>
+              </p>
+            </figure>
+          </div>
+        </section>
+
+        <!-- ============ 5. Trygt ============ -->
+        <!-- Hytta fra heroen, på nært hold: dokumentene blir hjemme. Bildet er laget i Midjourney
+             med vinterbildet fra heroen som stilreferanse. -->
+        <section class="v-del v-trygt" id="trygt">
+          <figure class="v-plate rise">
+            <img src="assets/foto/hytte.webp" width="2200" height="1232" alt="Eine kleine rote Hütte im tiefen Schnee unter blauem Himmel." loading="lazy" decoding="async" />
+            <figcaption>
+              <h2 class="v-tittel">Die Dokumente bleiben auf dem Rechner.</h2>
+            </figcaption>
+          </figure>
+          <div class="v-kort-rad">
+            <article class="v-kort v-hvit rise">
+              <img src="assets/krom/laas.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>Kein Weg nach draußen</h3>
+              <p>Alles Klar kann sich nicht mit dem Internet verbinden.</p>
+              <p><a class="v-lenke" href="til-it.html">Die IT kann es selbst prüfen</a></p>
+            </article>
+            <article class="v-kort v-hvit rise d-60">
+              <img src="assets/krom/maskin.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>Die KI ist dabei</h3>
+              <p>Sie steckt im Programm und ist klein. Ein normaler Büro-PC oder Mac genügt, ohne Grafikkarte.</p>
+            </article>
+            <article class="v-kort v-hvit rise d-120">
+              <img src="assets/krom/hvelv.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>Die Originale bleiben unberührt</h3>
+              <p>Alles Klar schreibt nur neue Kopien, in einen eigenen Ordner. Vor dem Start können Sie eine verschlüsselte Sicherungskopie anlegen.</p>
+            </article>
+            <article class="v-kort v-hvit rise d-180">
+              <img src="assets/krom/lupe.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>Kontrolle vor dem Erstellen</h3>
+              <p>Alles Klar liest jede Kopie so, wie ein Empfänger es täte. Ist noch etwas übrig, wird die Datei nicht erstellt.</p>
+            </article>
+          </div>
+        </section>
+
+        <!-- ============ 6. Slik kan kopien se ut ============ -->
+        <section class="v-del v-former" id="kopien">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Wählen Sie, wie die Kopie aussieht.</h2>
+            <p class="v-ingress">Vier Varianten. Sie wählen direkt vor dem Erstellen der Kopien.</p>
+          </div>
+          <div class="v-form-rad">
+            <article class="v-form rise">
+              <p class="v-form-merke">Am häufigsten</p>
+              <div class="v-prove">
+                <span>Betreute Person: <i class="v-kode">[Person 4829133]</i></span>
+                <span class="v-prove-liste">+ Codeliste am Ende</span>
+              </div>
+              <h3>Kurzer Code und Codeliste</h3>
+              <p>Gut lesbar. Mit dem Schlüssel umkehrbar.</p>
+            </article>
+            <article class="v-form rise d-60">
+              <div class="v-prove">
+                <span>Betreute Person: <i class="v-kode lang">[PERSON_VBTF60YD0E-Q7MZ2KXA4RWN]</i></span>
+              </div>
+              <h3>Voller Code im Text</h3>
+              <p>Keine Liste. Umkehrbar, aber schwerer zu lesen.</p>
+            </article>
+            <article class="v-form rise d-120">
+              <div class="v-prove">
+                <span>Betreute Person: <i class="v-kode">[Person 4829133]</i></span>
+              </div>
+              <h3>Nur Platzhalter</h3>
+              <p>Gut lesbar. Nicht umkehrbar.</p>
+            </article>
+            <article class="v-form rise d-180">
+              <div class="v-prove">
+                <span>Betreute Person: <i class="v-sladd"><i>§ 5 IFG</i></i></span>
+              </div>
+              <h3>Schwärzung (PDF)</h3>
+              <p>Was dort stand, ist endgültig weg. Die Rechtsgrundlage kann auf der Schwärzung stehen. Vorerst nur auf dem Mac.</p>
+            </article>
+          </div>
+
+        </section>
+
+        <!-- ============ 7. Brukes til ============ -->
+        <section class="v-del v-bruk" id="bruk">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Wenn Dokumente weitergehen.</h2>
+          </div>
+          <ul class="v-bruk-liste rise">
+            <li><b>Auskunft</b><span>Auskunftsersuchen beantworten, ohne Seite für Seite zu schwärzen.</span></li>
+            <li><b>Weitergabe</b><span>An Wirtschaftsprüfer, Anwälte, Dienstleister oder andere Behörden.</span></li>
+            <li><b>KI-Werkzeuge</b><span>Dieselbe Person hat denselben Code, so versteht das Werkzeug den Zusammenhang.</span></li>
+            <li><b>Schulung</b><span>Echte Fälle als Beispiele, ohne dass jemand erkennbar ist.</span></li>
+            <li><b>Testdaten</b><span>Realistische Dokumente für neue Systeme.</span></li>
+            <li><b>Statistik</b><span>Inhalte nutzen, ohne zu sehen, wen sie betreffen.</span></li>
+          </ul>
+        </section>
+
+        <!-- ============ Vanlige spørsmål ============ -->
+        <section class="v-del v-spm" id="sporsmal">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Häufige Fragen.</h2>
+          </div>
+          <dl class="v-spm-liste rise">
+            <div>
+              <dt>Ist die Kopie anonym?</dt>
+              <dd>Nein. Wer den Schlüssel hat, kann die Codes wieder in Namen verwandeln. Wählen Sie „Nur Platzhalter“ oder „Schwärzung (PDF)“, wenn die Kopie nie umkehrbar sein soll, und lesen Sie sie immer durch, bevor Sie sie teilen.</dd>
+            </div>
+            <div>
+              <dt>Können andere mit Alles Klar meine Codes zurückverwandeln?</dt>
+              <dd>Nein. Die Codes lassen sich nur mit Ihrem Schlüssel umkehren. Andere haben ihren eigenen Schlüssel, und damit sind Ihre Codes nur Codes. Soll jemand Ihre Kopien zurückführen können, teilen Sie Ihren Schlüssel mit ihm.</dd>
+            </div>
+            <div>
+              <dt>Was, wenn ich den Schlüssel verliere?</dt>
+              <dd>Dann kann niemand die Codes wieder in Namen verwandeln. Ihre Originale bleiben unberührt. Deshalb bittet Alles Klar Sie, den Schlüssel zu sichern, mit 24 Wörtern auf Papier oder einer Schlüsseldatei.</dd>
+            </div>
+            <div>
+              <dt>Braucht Alles Klar Internet?</dt>
+              <dd>Nein. Alles Klar verbindet sich nie mit dem Internet und funktioniert offline genauso gut.</dd>
+            </div>
+            <div>
+              <dt>Läuft es auf meinem Rechner?</dt>
+              <dd>Wahrscheinlich. Alles Klar läuft auf normalen Büro-Rechnern, ohne Grafikkarte. <a class="v-lenke" href="#maskin">Prüfen Sie Ihren Rechner</a></dd>
+            </div>
+            <div>
+              <dt>Kann eine Kollegin eine Kopie zurückführen, die ich erstellt habe?</dt>
+              <dd>Ja, wenn Sie denselben Schlüssel haben oder die Kollegin Ihren hinzugefügt hat.</dd>
+            </div>
+            <div>
+              <dt>Lernt Alles Klar von mir?</dt>
+              <dd>Ja, aus dem, was Sie tun. Markieren Sie einen Namen, einen Spitznamen oder ein Wort, das Alles Klar übersehen hat, merkt es sich das und blendet es in allem aus, was es danach liest. Die Liste heißt „Immer ausblenden“. Sie liegt verschlüsselt auf Ihrem Rechner, und Sie können Einträge daraus entfernen. Nichts wird an uns gesendet, und Ihre Dokumente werden nicht zum Training eines Modells verwendet.</dd>
+            </div>
+            <div>
+              <dt>Was, wenn Alles Klar etwas übersieht?</dt>
+              <dd>Das kann passieren. Deshalb prüfen Sie, was Alles Klar findet, und Alles Klar kontrolliert jede Kopie, bevor sie erstellt wird. <a class="v-lenke" href="hva-klart-tar.html">Sehen Sie, was Alles Klar erkennt und was nicht</a></dd>
+            </div>
+            <div>
+              <dt>Was passiert mit den Originalen?</dt>
+              <dd>Nichts. Alles Klar schreibt nur neue Dateien, in einen eigenen Ordner daneben.</dd>
+            </div>
+            <div>
+              <dt>Was kostet es?</dt>
+              <dd>Für Privatpersonen ist Alles Klar kostenlos. Unternehmen testen 30 Tage kostenlos und kaufen dann eine Lizenz für das ganze Unternehmen. <a class="v-lenke" href="pris/">Zum Preis</a></dd>
+            </div>
+          </dl>
+        </section>
+
+        <!-- ============ 8. I dybden ============ -->
+        <section class="v-del v-dybde" id="dybde">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Im Detail.</h2>
+            <p class="v-ingress">Für alle, die mehr wissen wollen. Öffnen Sie, was Sie interessiert.</p>
+          </div>
+
+          <div class="v-fag rise">
+            <details name="v-dybde">
+              <summary><span>Wonach Alles Klar sucht</span></summary>
+              <div class="v-fag-inn">
+                <p>Sie wählen selbst, wonach der Scan sucht. Die zehn Gruppen, die von Anfang an aktiv sind, finden Sie unter <a class="v-lenke" href="#ser-etter">Danach sucht Alles Klar</a>.</p>
+                <p>Diese schalten Sie bei Bedarf dazu: <b>Daten</b>, <b>Arbeitgeber</b> (Unternehmen und Org.-Nr.) und <b>Aktenzeichen</b>.</p>
+                <p>
+                  Personennummer, D-Nummer, Kontonummer und Org.-Nr. werden anhand der Prüfziffern kontrolliert.
+                  Eine zufällige elfstellige Zahl wird nicht für eine Personennummer gehalten.
+                  Alles Klar kennt auch schwedische, dänische und finnische Personennummern.
+                </p>
+                <p>
+                  Die eigenen Angaben Ihrer Organisation bleiben stehen: Adresse, Zentrale, Org.-Nr. und Geschäftskonto.
+                </p>
+                <p><a class="v-lenke" href="hva-klart-tar.html">Die Zahlen: was Alles Klar erkennt und was nicht</a></p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Welche Dateien Alles Klar liest und wie die Kopie aussieht</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Word, Excel und PowerPoint</dt>
+                    <dd>Dieselbe Datei, mit den Codes an der Stelle der Angaben. Layout, Logos und Tabellen bleiben erhalten. Kommentare, Makros, eingebettete Dateien und versteckte Angaben in Bildern werden entfernt.</dd>
+                  </div>
+                  <div>
+                    <dt>PDF, auch gescannte</dt>
+                    <dd>Jede Seite wird zu einem Bild, auf dem die Codes über die Angaben gemalt sind. Darunter liegt eine unsichtbare Textebene, sodass die Kopie durchsuchbar bleibt.</dd>
+                  </div>
+                  <div>
+                    <dt>Bilder</dt>
+                    <dd>Alles Klar liest den Text im Bild. Angaben werden übermalt und Gesichter verpixelt.</dd>
+                  </div>
+                  <div>
+                    <dt>E-Mail</dt>
+                    <dd>Liest .eml, Outlook (.msg), Apple Mail (.emlx) und .mbox. Die Kopie wird eine .eml. Anhänge werden entfernt, und die Kopie weist darauf hin.</dd>
+                  </div>
+                  <div>
+                    <dt>Text</dt>
+                    <dd>.txt, .md, .csv, .json und .rtf.</dd>
+                  </div>
+                </dl>
+                <p>Auch Datei- und Ordnernamen werden bereinigt. Die Kopien landen zusammen mit einem Bericht in einem neuen Ordner neben dem Original, mit „-klar“ am Namensende.</p>
+                <p>Dateien mit Passwortschutz öffnet Alles Klar, wenn Sie das Passwort angeben. Alte .ppt-Dateien können nicht gelesen werden. Alles Klar weist darauf hin.</p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>So liest Alles Klar die Dokumente</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Zuerst Regeln</dt>
+                    <dd>Norwegische Muster, Prüfziffern, Namenslisten und Adressen. Die Regeln laufen über jede Datei.</dd>
+                  </div>
+                  <div>
+                    <dt>Dann ein kleines norwegisches Sprachmodell</dt>
+                    <dd>NorBERT 3 small von der Universität Oslo. Es beurteilt, ob ein Satz etwas Privates über eine Person verrät. Es ist rund 180 MB groß und braucht keine Grafikkarte.</dd>
+                  </div>
+                  <div>
+                    <dt>Text in Bildern</dt>
+                    <dd>Gescannte Seiten und Bilder werden per Texterkennung auf dem Rechner gelesen.</dd>
+                  </div>
+                  <div>
+                    <dt>Gesichter</dt>
+                    <dd>Alles Klar findet Gesichter und verpixelt sie. Sie können ein Gesicht auch stehen lassen.</dd>
+                  </div>
+                </dl>
+                <p>Alles Klar hat keinen Chatbot und sendet nichts an einen KI-Dienst.</p>
+                <p>Sie können einen Ordner auch ohne Scan öffnen. Dann markieren Sie selbst, was ausgeblendet werden soll.</p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Die Codes und der Schlüssel</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Feste Nummern</dt>
+                    <dd>Die Nummer im Code wird aus dem Schlüssel und der Angabe berechnet. Deshalb ist Kari Nordmann <i class="v-kode">[Person 4829133]</i> in jedem Ordner, bei allen Kollegen mit demselben Schlüssel.</dd>
+                  </div>
+                  <div>
+                    <dt>Der Name steckt verschlüsselt in der Kopie</dt>
+                    <dd>Die Codeliste am Ende der Kopie enthält die vollen Codes. In ihnen steckt der ursprüngliche Text, verschlüsselt mit AES-SIV. Der Schlüssel allein macht sie wieder lesbar. Es gibt kein Codebuch, auf das Sie aufpassen müssen.</dd>
+                  </div>
+                  <div>
+                    <dt>Nur Ihr Schlüssel</dt>
+                    <dd>Jede Installation erzeugt ihren eigenen Schlüssel. Jemand anderes mit Alles Klar kann Ihre Codes nicht umkehren: Ohne Ihren Schlüssel sind sie nur Codes, auch für uns.</dd>
+                  </div>
+                  <div>
+                    <dt>Wo der Schlüssel wohnt</dt>
+                    <dd>Er wird vom Betriebssystem geschützt: vom Schlüsselbund auf dem Mac, von DPAPI unter Windows.</dd>
+                  </div>
+                  <div>
+                    <dt>Reserve</dt>
+                    <dd>24 norwegische Wörter auf Papier oder eine Schlüsseldatei, gesichert mit einer Passphrase Ihrer Wahl.</dd>
+                  </div>
+                  <div>
+                    <dt>Im Unternehmen</dt>
+                    <dd>Eine Person ist für den Schlüssel verantwortlich und gibt ihn als Schlüsselpaket an die Kollegen weiter. Paket und Schlüsselcode werden getrennt verschickt. Die IT kann den Export des Schlüssels sperren.</dd>
+                  </div>
+                  <div>
+                    <dt>Schlüssel von anderen</dt>
+                    <dd>Unter „Schlüssel“ › Zusammenarbeit fügen Sie den Schlüssel eines anderen Unternehmens hinzu. Er liegt neben Ihrem eigenen. Die Kopie verrät, mit welchem Schlüssel sie erstellt wurde, sodass Alles Klar beim Zurückführen den richtigen wählt.</dd>
+                  </div>
+                  <div>
+                    <dt>Zurückführen</dt>
+                    <dd>Alles Klar legt einen neuen Ordner mit „-zurück“ am Namensende an. Die Kopie bleibt unberührt. Bei Bildern und PDF-Seiten liegt das, was unter den Feldern stand, verschlüsselt in der Kopie und wird wieder eingesetzt.</dd>
+                  </div>
+                </dl>
+                <p>Codes sind keine Anonymisierung. Wer den Schlüssel hat, kann sie umkehren, also enthält eine Kopie mit Codes weiterhin personenbezogene Daten (Pseudonymisierung nach Art. 4 Nr. 5 DSGVO).</p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Auskunft und Schwärzung</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Schwärzung (PDF)</dt>
+                    <dd>Jede Kopie wird ein PDF mit schwarzen Feldern. Der übrige Text lässt sich weiterhin markieren und durchsuchen. Vorerst nur auf dem Mac.</dd>
+                  </div>
+                  <div>
+                    <dt>Rechtsgrundlage auf der Schwärzung</dt>
+                    <dd>Jedes Feld kann die Rechtsgrundlage tragen, auf der es beruht, zum Beispiel „§ 5 IFG“ oder „§ 6 IFG“. Die vollständigen Rechtsgrundlagen werden für das Antwortschreiben in eine eigene Datei geschrieben.</dd>
+                  </div>
+                  <div>
+                    <dt>Nur diese Person stehen lassen</dt>
+                    <dd>Für die Auskunft in eigener Sache: die betroffene Person behalten, alle anderen ausblenden.</dd>
+                  </div>
+                  <div>
+                    <dt>Mehrere Fassungen desselben Ordners</dt>
+                    <dd>Eine für die betroffene Person, eine für die Presse, jede mit eigenen Einstellungen.</dd>
+                  </div>
+                  <div>
+                    <dt>Weichzeichner</dt>
+                    <dd>Zeichnen Sie ein Rechteck, ein Oval oder eine freie Form über einen Teil eines Bildes oder einer Seite.</dd>
+                  </div>
+                </dl>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Während der Arbeit</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Automatisch gespeichert</dt>
+                    <dd>Ihre Entscheidungen werden verschlüsselt auf dem Rechner gespeichert. Sie machen dort weiter, wo Sie aufgehört haben.</dd>
+                  </div>
+                  <div>
+                    <dt>Änderungen</dt>
+                    <dd>Jede Änderung steht in einer Liste. Nehmen Sie eine zurück oder kehren Sie zum Ausgangszustand zurück. Die Liste lässt sich als PDF oder CSV speichern.</dd>
+                  </div>
+                  <div>
+                    <dt>Eigene Markierungen</dt>
+                    <dd>Was Sie selbst markieren, wird in allen Ordnern und Texten berücksichtigt. Die Liste lässt sich mit Kollegen teilen.</dd>
+                  </div>
+                  <div>
+                    <dt>Suche</dt>
+                    <dd>Durchsuchen Sie alle Dateien im Ordner auf einmal.</dd>
+                  </div>
+                  <div>
+                    <dt>Sicherungskopie</dt>
+                    <dd>Eine verschlüsselte Kopie des Ordners, angelegt vor dem Scan. Alles Klar erinnert Sie nach 30 Tagen daran.</dd>
+                  </div>
+                  <div>
+                    <dt>Aus dem Finder</dt>
+                    <dd>Auf dem Mac: Rechtsklick auf eine Datei oder einen Ordner und „Mit Alles Klar bereinigen“ wählen.</dd>
+                  </div>
+                </dl>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Für die IT</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Kein Netzwerkcode</dt>
+                    <dd>Das Programm hat kein TLS, kann keine Namen im Netz auflösen und lauscht an keinem Port. <a class="v-lenke" href="til-it.html">Prüfungen, die Sie selbst durchführen können</a></dd>
+                  </div>
+                  <div>
+                    <dt>Richtlinien in einer Datei</dt>
+                    <dd>Legen Sie fest, was immer ausgeblendet wird, sperren Sie die Kopievariante, verlangen Sie einen Scan und steuern Sie, ob der Schlüssel exportiert werden darf.</dd>
+                  </div>
+                  <div>
+                    <dt>Audit-Protokoll</dt>
+                    <dd>Lässt sich einschalten. Es enthält keine Dateinamen und keine Angaben aus den Dokumenten.</dd>
+                  </div>
+                  <div>
+                    <dt>Kommandozeile</dt>
+                    <dd><code>allesklar clean</code> und <code>allesklar restore</code>, mit Ausgabe in JSON. Alles Klar kann auch einen Ordner überwachen.</dd>
+                  </div>
+                  <div>
+                    <dt>Lizenz ohne Internet</dt>
+                    <dd>Ein signierter Code, der auf dem Rechner geprüft wird. Eine Lizenz gilt für das ganze Unternehmen.</dd>
+                  </div>
+                </dl>
+              </div>
+            </details>
+          </div>
+        </section>
+
+        <!-- ============ Full nerd-out ============ -->
+        <!-- Hele programmet, forklart for den som vil vite hvordan det virker. Veien en fil går
+             står alltid framme; resten åpnes. Tallene og navnene er fra appens kildekode. -->
+        <section class="v-del v-nerd" id="nerd">
+          <div class="v-hode rise">
+            <p class="v-nerd-over">Für besonders Interessierte</p>
+            <h2 class="v-tittel">Für Technikfans.</h2>
+            <p class="v-ingress">Der ganze Weg einer Datei durch Alles Klar und was in jedem Schritt passiert.</p>
+          </div>
+
+          <ol class="v-ror rise">
+            <li><b>Lesen</b><span>Word, Excel, PDF, E-Mail und Bilder werden in Text und Position auf der Seite zerlegt.</span></li>
+            <li><b>Regeln</b><span>Muster, Prüfziffern, Namens- und Wortlisten.</span></li>
+            <li><b>Sätze</b><span>Ein kleines norwegisches Sprachmodell bewertet ganze Sätze.</span></li>
+            <li><b>Bilder</b><span>Texterkennung und Gesichter, auf dem Rechner.</span></li>
+            <li><b>Register</b><span>Die Funde werden für den ganzen Ordner gesammelt. Gleiche Person, gleicher Code.</span></li>
+            <li><b>Sie</b><span>Blenden aus, lassen stehen und entscheiden, was ungeklärt ist.</span></li>
+            <li><b>Schreiben</b><span>Jeder Dateityp wird auf seine eigene Weise zurückgeschrieben.</span></li>
+            <li><b>Kontrolle</b><span>Die Kopie wird erneut gelesen. Ist noch etwas übrig, wird sie gestoppt.</span></li>
+          </ol>
+
+          <details class="v-nerd-alt rise">
+            <summary><span><i class="v-nar-lukket">Maschinenraum öffnen</i><i class="v-nar-aapen">Maschinenraum schließen</i></span></summary>
+            <div class="v-nerd-inn">
+              <article>
+                <h3>Was im Paket steckt</h3>
+                <p>
+                  Alles Klar ist ein gewöhnliches Desktop-Programm. Die Hülle ist in Rust (Tauri) geschrieben, das Fenster
+                  ist eine Webansicht mit einer Oberfläche in TypeScript. Alles Nötige steckt in der Installationsdatei.
+                  Nachträglich wird nichts heruntergeladen.
+                </p>
+                <dl class="v-spek">
+                  <div><dt>Regel-Engine</dt><dd>TypeScript. Läuft im Programm, ohne Server.</dd></div>
+                  <div><dt>Satzmodell</dt><dd>NorBERT 3 small von der Universität Oslo (Apache 2.0), rund 180 MB. Läuft auf dem Prozessor mit <code>tract</code>, in reinem Rust. Braucht etwa 300 MB Arbeitsspeicher.</dd></div>
+                  <div><dt>Text in Bildern</dt><dd>Apple Vision auf dem Mac. Unter Windows die eigene Texterkennung von Windows und Tesseract mit Norwegisch.</dd></div>
+                  <div><dt>Gesichter</dt><dd>Apple Vision auf dem Mac. Kleine Gesichtsmodelle (YuNet und UltraFace) unter Windows.</dd></div>
+                  <div><dt>PDF</dt><dd>PDFium zeichnet die Seiten und liest die Textebene.</dd></div>
+                  <div><dt>Kein großes Sprachmodell</dt><dd>Alles Klar hat kein LLM und keinen Chatbot. Der Build bricht ab, wenn eines im Paket liegt.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Von der Datei zum Fund</h3>
+                <p>
+                  Jede Datei wird in Textstücke zerlegt, die wissen, wo sie stehen: Absatz, Zelle, Textfeld,
+                  Kopfzeile oder eine Stelle auf einer PDF-Seite. Dann gehen drei Leser über den Text.
+                </p>
+                <dl class="v-spek">
+                  <div><dt>Die Regeln</dt><dd>Personennummer, D-Nummer, Kontonummer und Organisationsnummer müssen korrekte Prüfziffern haben (Modulo 11). IBAN hat eine eigene Prüfung. Alles Klar kennt auch schwedische, dänische und finnische Personennummern. Namen werden über Namenslisten und über ihre Position gefunden, etwa hinter „Name:“ oder in einer Signatur.</dd></div>
+                  <div><dt>Sensible Wörter</dt><dd>Eine Wortliste für Gesundheit, Gewerkschaft, Glaube und Straftaten, mit allen Beugungsformen. „krankgeschrieben“, „Krankschreibung“ und „krank geschrieben“ sind derselbe Treffer.</dd></div>
+                  <div><dt>Der Satzleser</dt><dd>Das Sprachmodell gibt jedem Satz über eine Person einen Wert dafür, wie privat er ist. Zusammen mit einem wortbasierten Leser entscheidet das, ob der Satz zur „Anmerkung“ wird.</dd></div>
+                  <div><dt>Eigene Angaben der Organisation</dt><dd>Die Adresse im Briefkopf, die Zentrale, die Organisationsnummer und das Geschäftskonto werden erkannt und bleiben stehen. E-Mail-Adressen werden trotzdem ausgeblendet.</dd></div>
+                </dl>
+                <p>
+                  Zum Schluss werden die Funde im Register des Ordners gesammelt. „Kari“, „Kari Nordmann“ und „KARI NORDMANN“
+                  werden zu einer Person, in allen Dateien. Was Alles Klar nicht sicher weiß, landet mit Begründung in der Warteschlange „Ungeklärt“:
+                  Der Name steht am Satzanfang, zwei Personen heißen gleich, oder das Wort wurde nachträglich hinzugefügt.
+                </p>
+              </article>
+
+              <article>
+                <h3>Die Codes</h3>
+                <p>Ein Code hat zwei Teile. Der eine sagt, wer es ist. Der andere ist der ursprüngliche Text, verschlüsselt.</p>
+                <p class="v-kodelinje"><code>[PERSON_VBTF60YD0E-J94DW5ZFTYA2GWTWAXFKK0XYBF1KTY19BED6E5TJ832VZ00]</code></p>
+                <dl class="v-spek">
+                  <div><dt>Der Personencode</dt><dd>HMAC-SHA256 aus Typ und Wert, gekürzt auf zehn Zeichen. Gleich für alle Schreibweisen desselben Namens, sodass ein KI-Werkzeug erkennt, dass es dieselbe Person ist.</dd></div>
+                  <div><dt>Der verschlüsselte Teil</dt><dd>AES-SIV (RFC 5297) des Textes genau so, wie er stand. Derselbe Text ergibt immer denselben Code. Ein veränderter oder mit einem anderen Schlüssel erstellter Code wird abgewiesen. Alles Klar setzt nie etwas Falsches ein.</dd></div>
+                  <div><dt>Die kurze Nummer</dt><dd>Die Nummer in <code>[Person 4829133]</code> wird aus dem Schlüssel und dem Wert berechnet. Deshalb ist sie auf allen Rechnern mit demselben Schlüssel gleich, ohne dass diese miteinander kommunizieren.</dd></div>
+                  <div><dt>Die Codeliste</dt><dd>In der üblichen Kopievariante steht die kurze Nummer im Text und die vollen Codes in einer Liste am Ende. Zusammen mit dem Schlüssel ist die Liste alles, was zum Zurückführen der Kopie nötig ist.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Der Schlüssel</h3>
+                <dl class="v-spek">
+                  <div><dt>Was er ist</dt><dd>32 zufällige Bytes, erzeugt auf dem Rechner beim ersten Start von Alles Klar. Unterschlüssel für Codes, Nummern und Bilder werden mit HKDF-SHA256 abgeleitet.</dd></div>
+                  <div><dt>Wo er liegt</dt><dd>Geschützt vom Betriebssystem: Schlüsselbund und Secure Enclave auf dem Mac, DPAPI unter Windows. Der Schlüssel wird im Rust-Teil des Programms gehalten. Das Fenster bekommt ihn nur, wenn Sie die 24 Wörter sehen möchten.</dd></div>
+                  <div><dt>24 Wörter</dt><dd>Der Schlüssel lässt sich als 24 norwegische Wörter aus einer Liste von 2048 aufschreiben. Die Wörter bestehen nur aus a–z, und keine zwei ähneln sich. Die ersten vier Buchstaben genügen, um ein Wort zu erkennen.</dd></div>
+                  <div><dt>Schlüsseldatei</dt><dd>Der Schlüssel, verschlüsselt mit einer Passphrase von mindestens zwölf Zeichen (Argon2id und AES-256-GCM).</dd></div>
+                  <div><dt>Schlüssel-ID</dt><dd>Ein kurzes Kennzeichen wie <code>WJ0R-Q3R5</code>. Sie zeigt, mit welchem Schlüssel eine Kopie erstellt wurde, ist aber nicht der Schlüssel selbst.</dd></div>
+                  <div><dt>Mehrere Schlüssel</dt><dd>Wechseln Sie den Schlüssel, wird der alte beiseitegelegt. Beim Zurückführen probiert Alles Klar zuerst den aktuellen Schlüssel, dann die früheren.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>So wird die Kopie geschrieben</h3>
+                <dl class="v-spek">
+                  <div><dt>Word, Excel, PowerPoint</dt><dd>Die Datei ist ein ZIP mit XML. Alles Klar ersetzt die Werte an Ort und Stelle, auch wenn Word einen Namen in mehrere Stücke zerlegt hat. Dann wird die Datei gesäubert: Kommentare, Makros, eingebettete Dateien, die Vorschau und versteckte Angaben in Bildern werden entfernt.</dd></div>
+                  <div><dt>PDF</dt><dd>Jede Seite wird als Bild mit 200 dpi gezeichnet, bei kleiner Schrift mit 300. Die Codes werden über die Angaben gemalt, und der bereinigte Text liegt unsichtbar darunter, sodass die Kopie durchsuchbar ist.</dd></div>
+                  <div><dt>Bilder</dt><dd>Die Felder werden übermalt und die Gesichter verpixelt.</dd></div>
+                  <div><dt>Was darunter lag</dt><dd>Soll die Kopie umkehrbar sein, legt Alles Klar die ursprünglichen Pixel unter jedem Feld verschlüsselt in die Kopie (AES-256-GCM). Normale Programme überspringen sie.</dd></div>
+                  <div><dt>E-Mail</dt><dd>Die Kopie wird eine aufgeräumte .eml. Technische Kopfzeilen über den Weg der E-Mail werden entfernt.</dd></div>
+                  <div><dt>Dateinamen</dt><dd>Steht ein Name im Datei- oder Ordnernamen, wird er ebenfalls ersetzt.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Die Kontrolle vor dem Erstellen</h3>
+                <p>
+                  Bevor eine Kopie geschrieben wird, liest Alles Klar sie so, wie es ein anderes Programm täte: jeden Teil der ZIP-Datei,
+                  jedes XML-Attribut, jedes Objekt im PDF und den Text in jedem Bild. Findet es etwas, das ausgeblendet werden sollte,
+                  oder einen Teil, den es nicht lesen kann, wird die Datei nicht erstellt. Sie sehen dann, worum es geht.
+                </p>
+              </article>
+
+              <article>
+                <h3>Was Alles Klar speichert</h3>
+                <dl class="v-spek">
+                  <div><dt>Das Projekt</dt><dd>Ihre Entscheidungen zu einem Ordner werden verschlüsselt auf dem Rechner gespeichert und von Spotlight und Time Machine ausgenommen. Ein ungenutztes Projekt wird nach 30 Tagen verworfen.</dd></div>
+                  <div><dt>Die Sicherungskopie</dt><dd>Eine Kopie der Originale. Der Inhalt ist mit AES-256-GCM verschlüsselt und nur auf dem Rechner lesbar, auf dem sie erstellt wurde. Die Dateinamen bleiben unverändert.</dd></div>
+                  <div><dt>Eigene Markierungen</dt><dd>Die Liste dessen, was Alles Klar auf Ihren Wunsch ausblendet, wird verschlüsselt gespeichert.</dd></div>
+                  <div><dt>Die Originale</dt><dd>Alles Klar schreibt nur in Ordner, die es selbst angelegt hat. Jede Stelle im Code, die eine Datei löscht oder verschiebt, braucht eine schriftliche Begründung. Sonst bricht ein Test den Build ab.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Was es nicht gibt</h3>
+                <p>
+                  Das Programm hat kein TLS, kann keine Namen im Netz auflösen und lauscht an keinem Port.
+                  Es gibt kein Konto, keine Nutzungsstatistik, keine Fehlerberichte und keine automatischen Updates.
+                  Die Lizenz ist ein signierter Code (Ed25519), der auf dem Rechner geprüft wird.
+                  Das Einzige, was Alles Klar in Richtung Internet tut: Es öffnet unsere Website in Ihrem eigenen Browser, wenn Sie auf „Lizenz kaufen“ klicken.
+                </p>
+                <p><a class="v-lenke" href="til-it.html">Prüfungen, die die IT selbst durchführen kann</a></p>
+              </article>
+            </div>
+          </details>
+        </section>
+
+        <!-- ============ 9. Ansvar ============ -->
+        <section class="v-del v-ansvar" id="ansvar">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Ein Werkzeug. Keine Garantie.</h2>
+          </div>
+          <ul class="v-ansvar-liste rise">
+            <li><b>Alles Klar kann etwas übersehen.</b> Lesen Sie die Kopien durch, bevor Sie sie teilen.</li>
+            <li><b>Codes sind keine Anonymisierung.</b> Wer den Schlüssel hat, kann sie umkehren.</li>
+            <li><b>Die Verantwortung liegt bei Ihnen.</b> Alles Klar ist keine Rechtsberatung, und Sie entscheiden, was weitergegeben wird.</li>
+          </ul>
+          <p class="rise"><a class="v-lenke" href="hva-klart-tar.html">Sehen Sie, was Alles Klar erkennt und was nicht</a></p>
+        </section>
+
+        <!-- ============ Går Klart på maskinen din? ============ -->
+        <!-- Et praktisk oppslag rett før nedlastingen, ikke et salgspunkt. Søket spør
+             GET /klart/api/maskin?q=… (.worker/klart-maskin.js): en liste hos oss over et par tusen
+             maskiner. Svaret bygger på systemkravene, ikke på at hver modell er prøvd. -->
+        <section class="v-del v-maskin" id="maskin">
+          <div class="v-sjekk rise" data-v-maskin>
+            <h2 id="v-sjekk-tittel">Läuft Alles Klar auf Ihrem Rechner?</h2>
+            <p class="v-sjekk-om">Alles Klar läuft auf normalen Büro-Rechnern. Geben Sie Ihren ein und sehen Sie selbst.</p>
+            <form class="v-sjekk-felt" role="search" aria-labelledby="v-sjekk-tittel" novalidate>
+              <input type="search" name="q" autocomplete="off" spellcheck="false" maxlength="80" placeholder="Marke und Modell eingeben" aria-label="Marke und Modell" />
+            </form>
+            <p class="v-sjekk-forslag">
+              <button type="button" data-v-prov="MacBook Air">MacBook Air</button>
+              <button type="button" data-v-prov="ThinkPad T14">ThinkPad T14</button>
+              <button type="button" data-v-prov="EliteBook 840">EliteBook 840</button>
+              <button type="button" data-v-prov="Latitude 5420">Latitude 5420</button>
+            </p>
+            <p class="v-sjekk-melding" data-v-melding hidden></p>
+            <ul class="v-sjekk-svar" data-v-svar aria-live="polite"></ul>
+            <p class="v-sjekk-fot">
+              Nicht gefunden? Alles Klar läuft auf dem Mac ab macOS 13 und auf dem PC
+              mit Windows 10 oder 11. Wir empfehlen 8 GB Arbeitsspeicher.
+            </p>
+          </div>
+        </section>
+
+        <!-- ============ 10. Last ned ============ -->
+        <section class="v-hent" id="last-ned">
+          <img class="v-hent-bilde" src="assets/klart-vinter.jpg" width="1600" height="1067" alt="" loading="lazy" decoding="async" />
+          <div class="v-hent-kort rise">
+            <!-- Samme nedlastingskort som i heroen; vises her når de velger system (forside.js). -->
+            <div class="nedlasting" data-nedlasting hidden aria-live="polite">
+              <div class="nedlasting-topp">
+                <span class="nedlasting-merke" data-merke aria-hidden="true"></span>
+                <div>
+                  <p class="nedlasting-tittel">Alles Klar für <span data-os></span></p>
+                  <p class="nedlasting-fil" data-fil></p>
+                </div>
+              </div>
+              <p class="nedlasting-prosent"><span data-prosent>0</span><span class="nedlasting-pst">%</span></p>
+              <p class="nedlasting-status" data-status></p>
+              <div class="nedlasting-ferdig" data-ferdig hidden>
+                <span class="nedlasting-hake" aria-hidden="true"><svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="25" pathLength="1" /><path d="M17 29l8 8 15-17" pathLength="1" /></svg></span>
+                <p class="nedlasting-ferdig-tittel">Heruntergeladen</p>
+                <p class="nedlasting-neste" data-neste></p>
+              </div>
+              <button type="button" class="nedlasting-tilbake" data-tilbake>Zurück</button>
+            </div>
+            <div class="v-hent-inn">
+            <!-- Mobil og nettbrett: samme e-post som i heroen i stedet for nedlastingen (eieren 11.11.2026). -->
+            <div class="mobil-send">
+              <p class="mobil-send-tittel">Alles Klar ist ein Programm für Computer.</p>
+              <p class="mobil-send-tekst">Senden Sie sich den Link per E-Mail und laden Sie das Programm auf dem Mac, unter Windows oder unter Linux herunter.</p>
+              <a class="btn" href="mailto:?subject=Alles%20Klar&amp;body=https%3A%2F%2Fesbjugconsult.com%2Falles-klar">An mich senden</a>
+              <p class="mobil-send-andre">(Oder jemand anderem?)</p>
+            </div>
+            <h2>Testen Sie Alles Klar an einem Ordner.</h2>
+            <p class="v-hent-privat"><b>Kostenlos für Privatpersonen.</b></p>
+            <!-- Samme knapper som i heroen (kjennetegnene når man holder over). Ved et klikk
+                 vises nedlastingen vises her i kortet (forside.js). -->
+            <div class="v-hent-knapper get" data-v-hent>
+              <a class="btn ghost os os-win" href="/alles-klar/last-ned/windows" download aria-label="Für Windows herunterladen"><span class="os-navn">Windows</span></a>
+              <a class="btn ghost os os-mac" href="/alles-klar/last-ned/mac" download aria-label="Für Mac herunterladen"><span class="os-glass" aria-hidden="true"></span><span class="os-navn">Mac</span></a>
+              <a class="btn ghost os os-lin" href="/alles-klar/last-ned/linux" download aria-label="Für Linux herunterladen"><span class="os-figur os-pingvin" aria-hidden="true"><svg viewBox="0 0 24 28" width="24" height="28" focusable="false"><g class="os-pingvin-kropp"><ellipse cx="8.4" cy="26.4" rx="3.3" ry="1.4" fill="#f5a524"/><ellipse cx="15.6" cy="26.4" rx="3.3" ry="1.4" fill="#f5a524"/><ellipse cx="3.9" cy="17" rx="1.9" ry="5.4" transform="rotate(16 3.9 17)" fill="#0f2147"/><ellipse cx="20.1" cy="17" rx="1.9" ry="5.4" transform="rotate(-16 20.1 17)" fill="#0f2147"/><ellipse cx="12" cy="15" rx="8.4" ry="11.2" fill="#0f2147"/><ellipse cx="12" cy="18.4" rx="5.5" ry="7.6" fill="#fff"/><circle cx="9.7" cy="8.6" r="2" fill="#fff"/><circle cx="14.3" cy="8.6" r="2" fill="#fff"/><circle cx="10.1" cy="8.9" r="0.95" fill="#0f2147"/><circle cx="13.9" cy="8.9" r="0.95" fill="#0f2147"/><path d="M9.9 11.4 Q12 10.5 14.1 11.4 Q12 13.9 9.9 11.4Z" fill="#f5a524"/></g></svg></span><span class="os-navn">Linux</span></a>
+            </div>
+            <!-- Bare den tyske siden: Linux på ARM64 har egen pakke. Samme nedlastingskort (forside.js). -->
+            <p class="v-hent-arm" data-v-hent><a href="/alles-klar/last-ned/linux-arm" download>Linux auf ARM64 (.deb)</a></p>
+            <p class="v-hent-virk">Für Unternehmen: <b>30 Tage kostenlos</b>. Keine Registrierung, keine Kreditkarte.</p>
+            <p><a class="v-hent-pris" href="pris/">Preis für Ihr Unternehmen ansehen</a></p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- ================= Bunn ================= -->
+    <footer class="v-bunn">
+      <p class="v-bunn-merke"><i>Alles Klar</i> <span>von Tidemann Esbjug</span></p>
+      <nav class="v-bunn-lenker" aria-label="Mehr über Alles Klar">
+        <a href="pris/">Preis</a>
+        <a href="hva-klart-tar.html">Was Alles Klar erkennt</a>
+        <a href="til-it.html">Für die IT</a>
+        <a href="vilkar/">Bedingungen</a>
+        <a href="personvern/">Datenschutz</a>
+      </nav>
+      <p class="v-bunn-liten">Entwickelt in Norwegen · Keine Rechtsberatung</p>
+    </footer>
+
+    <script src="orgfelt.js"></script>
+    <script src="forside.js"></script>
+    <script src="forhandsvisning.js"></script>
+    <script src="videre.js"></script>
+  </body>
+</html>

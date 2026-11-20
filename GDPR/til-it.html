@@ -128,9 +128,9 @@ codesign -dv /Applications/Klart.app/Contents/Resources/bundled/engine/pdfium/li
             <p class="s-fasit"><b>Fasit:</b> samme <code>TeamIdentifier=N5BKVM258S</code> på begge.</p>
           </div>
           <div class="os" data-os="windows" data-navn="Windows">
-            <p>Windows-utgaven er ikke signert ennå. Til den er det, svarer kommandoen <code>NotSigned</code>, og da er sjekksummen i punkt 1 det som knytter filen til oss.</p>
+            <p>Windows-utgaven er signert av ESBJUG CONSULT. Kommandoen svarer <code>Valid</code> og viser navnet i sertifikatet.</p>
             <div class="cmd"><pre>Get-AuthenticodeSignature "$HOME\Downloads\Klart*.exe" | Format-List Status, SignerCertificate</pre></div>
-            <p class="s-fasit"><b>Fasit, når den er signert:</b> <code>Valid</code>, og vårt navn i <code>SignerCertificate</code>.</p>
+            <p class="s-fasit"><b>Fasit:</b> <code>Valid</code>, og vårt navn i <code>SignerCertificate</code>.</p>
           </div>
           <p class="s-beviser">
             <b>Beviser:</b> at koden er vår og ikke endret etterpå. Dette er testen mot en ombygd kopi.

@@ -128,16 +128,35 @@ export async function handleKlart(request, env, url) {
 // større enn det statiske filer på Cloudflare kan være (25 MB).
 // ---------------------------------------------------------------------------
 
+const DEB = "application/vnd.debian.binary-package";
+const EXE = "application/vnd.microsoft.portable-executable";
+const DMG = "application/x-apple-diskimage";
+// «key» er navnet i R2 (fra bygget), «navn» er det kunden får på disken: bare navnet på programmet, uten
+// versjonsnummer (eieren 11.11.2026; nummeret kommer med v2). Linux beholder nummeret og arkitekturen, slik
+// .deb-pakker pleier å hete. Byggene er fra 20.11.2026 (nøkkel på USB-minne, låste filer, FrostCopy).
+// De forrige ligger urørt i R2 under 2026-11-11/ og 2026-11-12b/.
 const FILER = {
-  // «key» er navnet i R2 (fra bygget), «navn» er det kunden får på disken: bare «Klart», uten
-  // versjonsnummer (eieren 11.11.2026; nummeret kommer med v2). Linux beholder nummeret og
-  // arkitekturen, slik .deb-pakker pleier å hete.
-  // Byggene fra 11.11.2026 (11a2aee), lagt i egen mappe så de gamle i mac/ og windows/ står urørt.
-  mac: { key: "2026-11-11/Klart_0.1.0_universal.dmg", navn: "Klart.dmg", type: "application/x-apple-diskimage" },
-  // Windows: signert med Azure Artifact Signing (ESBJUG CONSULT), bygd 12.11.2026 fra samme kode som 11.11.
-  windows: { key: "2026-11-12b/Klart_0.1.0_x64-setup.exe", navn: "Klart.exe", type: "application/vnd.microsoft.portable-executable" },
-  linux: { key: "2026-11-11/Klart_0.1.0_amd64.deb", navn: "Klart_0.1.0_amd64.deb", type: "application/vnd.debian.binary-package" },
-  "linux-arm": { key: "2026-11-11/Klart_0.1.0_arm64.deb", navn: "Klart_0.1.0_arm64.deb", type: "application/vnd.debian.binary-package" },
+  // Klart (norsk), /klart/last-ned/…
+  klart: {
+    mac: { key: "2026-11-20/Klart_0.1.0_universal.dmg", navn: "Klart.dmg", type: DMG },
+    windows: { key: "2026-11-20/Klart_0.1.0_x64-setup.exe", navn: "Klart.exe", type: EXE },
+    linux: { key: "2026-11-20/Klart_0.1.0_amd64.deb", navn: "Klart_0.1.0_amd64.deb", type: DEB },
+    "linux-arm": { key: "2026-11-20/Klart_0.1.0_arm64.deb", navn: "Klart_0.1.0_arm64.deb", type: DEB },
+  },
+  // Alles Klar (tysk), /alles-klar/last-ned/…
+  "alles-klar": {
+    mac: { key: "2026-11-20/de/Alles-Klar_0.1.0_universal.dmg", navn: "Alles Klar.dmg", type: DMG },
+    windows: { key: "2026-11-20/de/Alles-Klar_0.1.0_x64-setup.exe", navn: "Alles Klar.exe", type: EXE },
+    linux: { key: "2026-11-20/de/Alles-Klar_0.1.0_amd64.deb", navn: "Alles Klar_0.1.0_amd64.deb", type: DEB },
+    "linux-arm": { key: "2026-11-20/de/Alles-Klar_0.1.0_arm64.deb", navn: "Alles Klar_0.1.0_arm64.deb", type: DEB },
+  },
+  // FrostCopy (amerikansk), /frostcopy/download/…
+  frostcopy: {
+    mac: { key: "2026-11-20/us/FrostCopy_0.1.0_universal.dmg", navn: "FrostCopy.dmg", type: DMG },
+    windows: { key: "2026-11-20/us/FrostCopy_0.1.0_x64-setup.exe", navn: "FrostCopy.exe", type: EXE },
+    linux: { key: "2026-11-20/us/FrostCopy_0.1.0_amd64.deb", navn: "FrostCopy_0.1.0_amd64.deb", type: DEB },
+    "linux-arm": { key: "2026-11-20/us/FrostCopy_0.1.0_arm64.deb", navn: "FrostCopy_0.1.0_arm64.deb", type: DEB },
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -196,8 +215,9 @@ export async function handleTest(request, env, url) {
 }
 
 export async function handleNedlasting(request, env, url) {
-  const hva = url.pathname.replace(/^\/(klart|GDPR)\/last-ned\//, "").replace(/\/$/, "");
-  const fil = FILER[hva];
+  // /klart/last-ned/mac, /alles-klar/last-ned/mac og /frostcopy/download/mac: hver utgave har sine filer.
+  const treff = url.pathname.match(/^\/(klart|GDPR|alles-klar|frostcopy)\/(?:last-ned|download)\/([^/]+)\/?$/);
+  const fil = treff && FILER[treff[1] === "GDPR" ? "klart" : treff[1]][treff[2]];
   if (!fil || !["GET", "HEAD"].includes(request.method)) return new Response("Finnes ikke.", { status: 404 });
   // KLART_NEDLASTING = "pause" i wrangler.jsonc stenger nedlastingen, for eksempel
   // mens en feil rettes. Gamle lenker får da en forklaring, ikke en gammel fil.

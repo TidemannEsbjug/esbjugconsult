@@ -56,6 +56,21 @@ export default {
     // fortsatt, fordi Stripe-webhooken og eldre versjoner av appen bruker dem.
     if (/^\/(klart|GDPR)\/api\//.test(url.pathname)) return medHoder(await handleKlart(request, env, url));
     if (/^\/(klart|GDPR)\/last-ned\//.test(url.pathname)) return medHoder(await handleNedlasting(request, env, url));
+    // Alles Klar (tysk) og FrostCopy (amerikansk) har egne sider og egne installasjonsfiler.
+    if (/^\/(alles-klar\/last-ned|frostcopy\/(last-ned|download))\//.test(url.pathname)) return handleNedlasting(request, env, url);
+    // Skrivemåter folk prøver, og adressen FrostCopy-appen åpner for kjøp (/klart/us/buy).
+    if (/^\/(allesklar|allesklart|alles-klart)(\/|$)/.test(url.pathname)) {
+      url.pathname = url.pathname.replace(/^\/[^/]+/, "/alles-klar").replace(/^\/alles-klar$/, "/alles-klar/");
+      return Response.redirect(url.toString(), 301);
+    }
+    if (/^\/frost-copy(\/|$)/.test(url.pathname)) {
+      url.pathname = url.pathname.replace(/^\/[^/]+/, "/frostcopy").replace(/^\/frostcopy$/, "/frostcopy/");
+      return Response.redirect(url.toString(), 301);
+    }
+    if (/^\/klart\/us\/buy\/?$/.test(url.pathname)) {
+      url.pathname = "/frostcopy/buy/";
+      return Response.redirect(url.toString(), 302);
+    }
     // /login/ er kundeportalen, /kunde/ er lukket bak innlogging.
     if (url.pathname.startsWith("/login/") || url.pathname.startsWith("/kunde/")) {
       try { const visit = pageVisit(request, env, url); if (visit) ctx.waitUntil(visit); } catch {}

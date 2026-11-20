@@ -1,0 +1,107 @@
+/* Siden som står ute mens Klart bygges ferdig. Egen fil, ikke <style> i
+   hodet: siden svarer med style-src 'self', så innebygd CSS blir blokkert. */
+
+:root {
+  --ink: #15202e;
+  --ground: #eef3fb;
+  --sans: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Hele bildet skal være med, ikke en utsnitt av det: object-fit: contain
+   skalerer det ned til det får plass, og flata rundt er sidens egen farge.
+   Ordene står midt i, over bildet. */
+.scene {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: clamp(24px, 5vw, 64px);
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--ground);
+}
+
+.bilde {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  pointer-events: none;
+}
+
+/* Er vinduet høyere enn det er bredt, blir hele bildet en smal stripe midt på
+   skjermen med tomt over og under. Da er utsnittet det beste: det fyller flata,
+   og på en telefon ser man uansett bare en del av vidda. */
+@media (max-aspect-ratio: 1 / 1) {
+  .bilde {
+    object-fit: cover;
+    object-position: center 30%;
+  }
+}
+
+.ord {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: clamp(14px, 2vh, 24px);
+  text-align: center;
+}
+
+/* Litt lys bak ordene, så de kan leses uansett hva de ligger over. Ingen
+   firkant: en myk sirkel som toner ut lenge før kanten. */
+.ord::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 50%;
+  width: clamp(420px, 70vw, 1000px);
+  height: clamp(260px, 42vh, 460px);
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    rgba(238, 243, 251, 0.88),
+    rgba(238, 243, 251, 0) 72%
+  );
+}
+
+.merke {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: clamp(11px, 0.78vw, 13px);
+  font-weight: 500;
+  letter-spacing: 0.34em;
+  text-indent: 0.34em;
+  text-transform: uppercase;
+  color: var(--ink);
+  opacity: 0.72;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(38px, 6.4vw, 92px);
+  line-height: 1.02;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}

@@ -1,0 +1,309 @@
+<!doctype html>
+<!--
+  Personvern for Klart. Skrevet 11.11.2026 ut fra hva koden faktisk gjør:
+  programmet (ingen nettverkskode), nettsiden (/klart, .worker/index.js) og
+  kjøpet (.worker/klart.js). Endres koden, skal denne siden endres samme dag.
+
+  Det som er merket «avklares» (klassen s-avklar), er valg bare selgeren kan ta:
+  hvem som er behandlingsansvarlig, hvor lenge opplysningene blir liggende, og
+  grunnlaget for overføring til leverandører utenfor EØS. Siden skal ikke
+  publiseres før de er fylt ut.
+
+  Varsler til eierens telefon når noen er innom (pushVisit i .worker/chat.js)
+  er slått av nå (PUSH_PAUSET). Slås de på igjen, skal det stå under «Telling
+  av besøk»: by, land, enhet og side sendes da til telefonen via Apple.
+-->
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/alles-klar/favicon.png" />
+    <title>Datenschutz · Alles Klar</title>
+    <meta name="description" content="Was mit Ihren Daten im Programm Alles Klar, auf der Website und beim Kauf einer Lizenz geschieht." />
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="../fonts.css" />
+    <link rel="stylesheet" href="../sider.css" />
+  </head>
+  <body>
+    <header class="s-topp">
+      <div class="s-linje-topp">
+        <a class="s-merke" href="../">Alles Klar</a>
+        <nav class="s-nav" aria-label="Seiten">
+          <a href="../">Startseite</a>
+          <a href="../pris/">Preise</a>
+          <a href="../til-it.html">Für die IT</a>
+          <a href="./" aria-current="page">Datenschutz</a>
+        </nav>
+      </div>
+      <div class="s-hode">
+        <p class="s-over">Datenschutz</p>
+        <h1>Ihre Daten bleiben bei Ihnen.</h1>
+        <p class="s-ingress">
+          Alles Klar wurde entwickelt, damit personenbezogene Daten nicht in falsche Hände geraten.
+          Das gilt auch für Ihre. Hier erfahren Sie, was im Programm, auf der
+          Website und beim Kauf geschieht.
+        </p>
+      </div>
+    </header>
+
+    <div class="s-kropp">
+      <nav class="s-innhold" aria-label="Inhalt">
+        <p>Auf dieser Seite</p>
+        <ol>
+          <li><a href="#kort">Kurz gesagt</a></li>
+          <li><a href="#ansvarlig">Verantwortliche Stelle</a></li>
+          <li><a href="#programmet">Das Programm</a></li>
+          <li><a href="#nettsiden">Die Website</a></li>
+          <li><a href="#kjop">Beim Kauf</a></li>
+          <li><a href="#mottakere">Empfänger</a></li>
+          <li><a href="#grunnlag">Rechtsgrundlagen</a></li>
+          <li><a href="#lagring">Speicherdauer</a></li>
+          <li><a href="#rettigheter">Ihre Rechte</a></li>
+        </ol>
+      </nav>
+
+      <main class="s-tekst">
+        <section class="s-kort" id="kort">
+          <h2>Kurz gesagt</h2>
+          <ul>
+            <li><b>Das Programm sendet nichts.</b> Ihre Dokumente verlassen nie Ihr Gerät, und wir sehen sie nie.</li>
+            <li><b>Die Website verfolgt Sie nicht.</b> Die Seiten von Alles Klar setzen keine Cookies und enthalten weder Werbung noch Analysewerkzeuge Dritter.</li>
+            <li><b>Wenn Sie kaufen, speichern wir, was für die Lieferung nötig ist.</b> Das Unternehmen, die E-Mail-Adresse und die Zahlung.</li>
+          </ul>
+        </section>
+
+        <section class="s-del" id="ansvarlig">
+          <h2>Verantwortliche Stelle</h2>
+          <p>
+            Alles Klar wird verkauft von ESBJUG CONSULT, Org.-Nr.
+            938 441 405, Glenneveien 272B, 1455 Nordre Frogn, Norwegen.
+            Das Unternehmen ist Verantwortlicher im Sinne der DSGVO für die auf dieser Seite beschriebenen Daten.
+          </p>
+          <p>
+            Fragen zum Datenschutz richten Sie bitte an
+            <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a>.
+            Sie erhalten eine Antwort von einem Menschen.
+          </p>
+        </section>
+
+        <section class="s-del" id="programmet">
+          <h2>Das Programm</h2>
+          <p>
+            Alles Klar kann keine Verbindung zum Internet herstellen. Das Programm hat kein Konto, keine
+            Nutzungsstatistik, keine Fehlerberichte und keine automatischen Updates.
+            Es gibt nichts, was wir erheben könnten.
+          </p>
+          <dl class="s-tabell">
+            <div>
+              <dt>Ihre Dokumente</dt>
+              <dd>Sie werden auf Ihrem Gerät gelesen und bereinigt. Wir erhalten sie nie und verarbeiten sie nicht in Ihrem Auftrag. Für die Dokumente sind Sie bzw. Ihr Unternehmen der Verantwortliche.</dd>
+            </div>
+            <div>
+              <dt>Was Alles Klar speichert</dt>
+              <dd>Ihre Festlegungen für einen Ordner, Ihre eigenen Markierungen, Sicherungskopien und der Schlüssel liegen verschlüsselt auf Ihrem Gerät. Sie können sie jederzeit löschen.</dd>
+            </div>
+            <div>
+              <dt>Die Lizenz</dt>
+              <dd>Der Lizenzcode wird auf dem Gerät geprüft. Das Programm fragt nicht bei uns nach, ob er gültig ist.</dd>
+            </div>
+            <div>
+              <dt>Wenn das Programm die Website öffnet</dt>
+              <dd>Wenn Sie auf „Lizenz kaufen“ klicken, öffnet sich unsere Website in Ihrem Browser. Die Adresse enthält einen Gerätecode, der die Installation kennzeichnet. Er sagt nichts über Ihre Dokumente aus.</dd>
+            </div>
+          </dl>
+          <p>Ihre IT-Abteilung kann dies selbst überprüfen. <a href="../til-it.html">Zu den Prüfschritten auf der Seite für die IT</a>.</p>
+        </section>
+
+        <section class="s-del" id="nettsiden">
+          <h2>Die Website</h2>
+          <p>
+            Die Seiten von Alles Klar befinden sich unter esbjugconsult.com/alles-klar. Schriften,
+            Bilder und Karten werden von unserem eigenen Server geladen, nichts von anderen Websites.
+          </p>
+          <dl class="s-tabell">
+            <div>
+              <dt>Cookies</dt>
+              <dd>Die Seiten von Alles Klar setzen keine. Wenn Sie einen Einrichtungstag buchen, merkt sich Ihr Browser die Buchung, bis Sie von der Zahlung zurückkehren. Diese Angabe liegt nur im jeweiligen Tab und wird gelöscht, sobald Sie ihn schließen.</dd>
+            </div>
+            <div>
+              <dt>Zählung der Besuche</dt>
+              <dd>
+                Wir zählen Besuche, um zu sehen, ob die Seiten genutzt werden. Für jeden Besuch speichern wir den Zeitpunkt, die aufgerufene Seite,
+                Stadt und Land (geschätzt anhand der IP-Adresse) sowie, ob es sich um ein Mobilgerät oder einen PC handelte. Die IP-Adresse wird nicht gespeichert.
+              </dd>
+            </div>
+            <div>
+              <dt>Neuer oder wiederkehrender Besuch</dt>
+              <dd>
+                Um beides zu unterscheiden, bilden wir einen Code aus dem Netzwerk, aus dem Sie zugreifen. Aus diesem Code lässt sich die IP-Adresse nicht zurückrechnen.
+                Er wird zusammen mit der Stadt und dem Zeitpunkt gespeichert. Haben Sie auf der Startseite von esbjugconsult.com Cookies zugestimmt,
+                wird stattdessen dieser Cookie verwendet.
+              </dd>
+            </div>
+            <div>
+              <dt>Suche nach dem Unternehmen</dt>
+              <dd>Was Sie in das Feld eingeben, senden wir an das norwegische Unternehmensregister (Brønnøysundregistrene), um das Unternehmen zu finden. Dort ist erkennbar, dass die Anfrage von uns kommt, nicht von Ihnen. Ein Einzelunternehmen trägt oft den Namen seines Inhabers; in diesem Fall ist der Name ein personenbezogenes Datum.</dd>
+            </div>
+            <div>
+              <dt>Geräteprüfung</dt>
+              <dd>Was Sie unter „Läuft Alles Klar auf Ihrem Gerät?“ eingeben, schlagen wir in unserer eigenen Liste nach. Die Suche wird nicht gespeichert.</dd>
+            </div>
+            <div>
+              <dt>Download</dt>
+              <dd>Wir zählen keine Downloads und ordnen sie keinem Unternehmen zu.</dd>
+            </div>
+            <div>
+              <dt>Fehler bei uns</dt>
+              <dd>Wenn etwas schiefgeht, protokollieren wir den Fehler. Das Protokoll kann die Organisationsnummer enthalten, auf die sich die Abfrage bezog.</dd>
+            </div>
+          </dl>
+          <p>
+            Die Website wird bei Cloudflare betrieben. Wie bei jeder Website muss der Anbieter, der die Seite ausliefert,
+            Ihre IP-Adresse sehen, um Ihnen die Seite senden zu können.
+          </p>
+        </section>
+
+        <section class="s-del" id="kjop">
+          <h2>Beim Kauf</h2>
+          <p>
+            Für Privatpersonen ist Alles Klar kostenlos; in diesem Fall benötigen wir nichts von Ihnen.
+            Ein Unternehmen, das eine Lizenz kauft, übermittelt uns Folgendes:
+          </p>
+          <dl class="s-tabell">
+            <div>
+              <dt>Das Unternehmen</dt>
+              <dd>Organisationsnummer und Name. Anschrift, Zahl der Beschäftigten, Branche und den letzten Jahresabschluss beziehen wir aus dem norwegischen Unternehmensregister (Brønnøysundregistrene). Daraus wird der Preis berechnet.</dd>
+            </div>
+            <div>
+              <dt>E-Mail-Adressen</dt>
+              <dd>Die Adresse für die Rechnung und, falls abweichend, die Adresse für den Lizenzschlüssel.</dd>
+            </div>
+            <div>
+              <dt>Die Zahlung</dt>
+              <dd>Kartenzahlungen erfolgen über Stripe. Wir sehen die Kartennummer nie. Wählen Sie Zahlung per Rechnung, erstellt Stripe diese für uns. Im PEPPOL-Verzeichnis prüfen wir, ob das Unternehmen E-Rechnungen im Format EHF empfangen kann.</dd>
+            </div>
+            <div>
+              <dt>Der Lizenzschlüssel</dt>
+              <dd>Der Schlüssel enthält Name und Organisationsnummer des Unternehmens, die E-Mail-Adresse der kaufenden Person und den Gültigkeitszeitraum der Lizenz. Wer den Schlüssel erhält, kann diese Angaben lesen.</dd>
+            </div>
+            <div>
+              <dt>Einrichtungstag</dt>
+              <dd>Wenn Sie einen Tag mit uns buchen, benötigen wir Name, E-Mail-Adresse, die Anschrift, zu der wir kommen sollen, das Datum und Ihre Nachricht. Die Telefonnummer ist freiwillig. Die Anschrift schlagen wir bei der norwegischen Kartenbehörde (Kartverket) nach.</dd>
+            </div>
+            <div>
+              <dt>Fragen an uns</dt>
+              <dd>Wenn Sie uns über die Preisseite eine Frage senden, speichern wir Name, E-Mail-Adresse und Nachricht, damit wir antworten können.</dd>
+            </div>
+          </dl>
+          <p>Von den E-Mails, die wir versenden, bewahren wir eine Kopie auf, damit wir nachvollziehen können, was Sie erhalten haben.</p>
+        </section>
+
+        <section class="s-del" id="mottakere">
+          <h2>Empfänger</h2>
+          <p>Wir verkaufen keine Daten und geben sie nicht zu Werbezwecken weiter. Folgende Dienstleister helfen uns bei der Leistungserbringung:</p>
+          <dl class="s-tabell">
+            <div>
+              <dt>Cloudflare</dt>
+              <dd>Betreibt die Website und speichert die auf dieser Seite beschriebenen Daten.</dd>
+            </div>
+            <div>
+              <dt>Stripe</dt>
+              <dd>Wickelt Zahlungen ab und erstellt Rechnungen. Erhält Name, Anschrift und Organisationsnummer des Unternehmens, die E-Mail-Adresse und die Rechnungsreferenz.</dd>
+            </div>
+            <div>
+              <dt>Resend</dt>
+              <dd>Versendet unsere E-Mails. Erhält die Empfängeradresse und den Inhalt der E-Mail.</dd>
+            </div>
+            <div>
+              <dt>Brønnøysundregistrene</dt>
+              <dd>Das norwegische Unternehmensregister. Erhält die Organisationsnummer oder den Namen, den wir nachschlagen.</dd>
+            </div>
+            <div>
+              <dt>Kartverket</dt>
+              <dd>Die norwegische Kartenbehörde. Erhält die Anschrift, die wir bei der Buchung eines Einrichtungstags nachschlagen.</dd>
+            </div>
+            <div>
+              <dt>OpenFreeMap</dt>
+              <dd>Liefert die Karte auf der Preisseite. Die Karte wird über unseren Server geladen, sodass der Anbieter nicht erkennt, wer Sie sind.</dd>
+            </div>
+            <div>
+              <dt>PEPPOL-Verzeichnis</dt>
+              <dd>Erhält die Organisationsnummer, wenn wir prüfen, ob das Unternehmen E-Rechnungen im Format EHF empfangen kann.</dd>
+            </div>
+          </dl>
+          <p>
+            Cloudflare, Stripe und Resend sind US-amerikanische Unternehmen.
+            <span class="s-avklar">[Die Grundlage für die Übermittlung in Länder außerhalb des EWR wird noch geklärt.]</span>
+          </p>
+        </section>
+
+        <section class="s-del" id="grunnlag">
+          <h2>Rechtsgrundlagen</h2>
+          <dl class="s-tabell">
+            <div>
+              <dt>Vertrag mit Ihnen</dt>
+              <dd>Was wir benötigen, um die Lizenz und den Einrichtungstag zu liefern (Art. 6 Abs. 1 lit. b DSGVO).</dd>
+            </div>
+            <div>
+              <dt>Gesetzliche Pflicht</dt>
+              <dd>Buchhaltungsunterlagen müssen wir aufbewahren (Art. 6 Abs. 1 lit. c DSGVO).</dd>
+            </div>
+            <div>
+              <dt>Berechtigtes Interesse</dt>
+              <dd>Zählung der Besuche, Beantwortung von Fragen und Protokollierung von Fehlern (Art. 6 Abs. 1 lit. f DSGVO). Wir haben dies gegen Ihr Interesse am Schutz Ihrer Daten abgewogen und speichern deshalb die IP-Adresse nicht.</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="s-del" id="lagring">
+          <h2>Speicherdauer</h2>
+          <dl class="s-tabell">
+            <div>
+              <dt>Lizenzen</dt>
+              <dd>Solange die Lizenz gilt. <span class="s-avklar">[Wie lange danach, wird noch geklärt.]</span></dd>
+            </div>
+            <div>
+              <dt>Buchhaltung</dt>
+              <dd>So lange, wie es das norwegische Buchführungsgesetz (bokføringsloven) verlangt.</dd>
+            </div>
+            <div>
+              <dt>Fragen, Buchungen und E-Mail-Kopien</dt>
+              <dd><span class="s-avklar">[Frist wird noch geklärt.]</span></dd>
+            </div>
+            <div>
+              <dt>Besucherzahlen</dt>
+              <dd><span class="s-avklar">[Frist wird noch geklärt.]</span></dd>
+            </div>
+          </dl>
+          <p>Sie können uns in jedem Fall bitten, Ihre Daten zu löschen. Siehe unten.</p>
+        </section>
+
+        <section class="s-del" id="rettigheter">
+          <h2>Ihre Rechte</h2>
+          <p>Sie haben das Recht auf Auskunft darüber, was wir über Sie gespeichert haben, sowie auf Berichtigung und Löschung. Sie können der Verarbeitung außerdem widersprechen und die Herausgabe Ihrer Daten verlangen.</p>
+          <p>
+            Schreiben Sie an <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a>.
+            Das ist kostenlos, und Sie erhalten innerhalb eines Monats eine Antwort.
+          </p>
+          <p>
+            Wenn Sie der Ansicht sind, dass wir etwas falsch machen, können Sie sich bei
+            der norwegischen Datenschutzbehörde (Datatilsynet) beschweren. Sagen Sie uns gern zuerst Bescheid, dann beheben wir es.
+          </p>
+          <p class="s-dato">Zuletzt geändert am 11. November 2026.</p>
+        </section>
+      </main>
+    </div>
+
+    <footer class="s-bunn">
+      <p class="s-bunn-merke"><i>Alles Klar</i> <span>von Tidemann Esbjug</span></p>
+      <nav aria-label="Mehr über Alles Klar">
+        <a href="../">Startseite</a>
+        <a href="../pris/">Preise</a>
+        <a href="../hva-klart-tar.html">Was Alles Klar erkennt</a>
+        <a href="../til-it.html">Für die IT</a>
+        <a href="../vilkar/">Lizenzbedingungen</a>
+      </nav>
+      <p class="s-bunn-liten">Entwickelt in Norwegen</p>
+    </footer>
+  </body>
+</html>
