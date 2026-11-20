@@ -18,7 +18,9 @@ function update() {
   businessField.hidden = c.kind === "gov";
   const p = price(c);
   el("amount").textContent = p ? "$" + p.price.toLocaleString("en-US") : "";
-  el("how").textContent = p ? p.how : "Enter how many people work in the organization.";
+  // Only the price is shown, never how it was worked out (the owner, November 20, 2026).
+  el("how").textContent = p ? "" : "Enter how many people work in the organization.";
+  el("how").hidden = Boolean(p);
 }
 people.addEventListener("input", update);
 business.addEventListener("change", update);

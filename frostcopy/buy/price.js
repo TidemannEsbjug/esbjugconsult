@@ -31,17 +31,16 @@ function round(p) {
   const step = p < 1000 ? 10 : p < 10000 ? 50 : 100;
   return Math.round(p / step) * step;
 }
-const tall = (n) => n.toLocaleString("en-US");
 
-/** { price (whole dollars a year), how (one sentence), people, kind, business (name or null) }, or null for bad input. */
+/** { price (whole dollars a year), people, kind, business (name or null) }, or null for bad input. */
 export function price({ people, kind, business }) {
   const n = Math.floor(Number(people));
   if (!Number.isFinite(n) || n < 1 || n > MAX_PEOPLE) return null;
   if (kind === "gov") {
     const p = Math.min(GOV_CAP, round(loglog(GOV, n)));
-    return { price: p, people: n, kind: "gov", business: null, how: "Government price for " + tall(n) + (n === 1 ? " person." : " people.") + (p === GOV_CAP ? " This is the highest government price." : "") };
+    return { price: p, people: n, kind: "gov", business: null };
   }
-  if (n === 1) return { price: SOLO, people: 1, kind: "business", business: null, how: "The price for one person working alone." };
+  if (n === 1) return { price: SOLO, people: 1, kind: "business", business: null };
   const b = BUSINESS[Number(business)];
   if (!b) return null;
   const share = b[1], factor = b[2] || 1;
@@ -49,8 +48,5 @@ export function price({ people, kind, business }) {
   return {
     price: Math.max(SOLO, round(loglog(CURVE, counted) * factor)),
     people: n, kind: "business", business: b[0],
-    how: share === 1
-      ? "All " + tall(n) + " people are counted."
-      : "In " + b[0].toLowerCase() + ", " + Math.round(share * 100) + "% of the people are counted: " + tall(Math.round(counted * 10) / 10) + " of " + tall(n) + ".",
   };
 }
