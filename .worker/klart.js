@@ -17,10 +17,10 @@
 //   GET  /klart/api/status       hva som er åpent: kjøp
 //   POST /klart/api/prove        410: erstattet av forhåndsvisningen i appen
 //   GET  /klart/api/firma?orgnr=… → { orgnr, navn } fra Enhetsregisteret
-//   POST /klart/api/kjop         { maskin, orgnr, epost? } → adresse til Stripe Checkout
-//   GET  /klart/api/kvittering?session=cs_…          → koden etter betaling
+//   POST /klart/api/kjop         410: det gamle kortkjøpet per maskin. Kjøp skjer på /klart/pris/, på faktura.
+//   GET  /klart/api/kvittering   410: som over
 //   POST /klart/api/hent         { maskin, epost }   → ny kode til en betalt lisens
-//   POST /klart/api/stripe       Stripe-webhook
+//   POST /klart/api/stripe       Stripe-webhook, bare for kjøp som ble gjort før 20.11.2026 (se nederst)
 //
 // Prissiden (/klart/pris/) selger lisenser for hele virksomheten, priset fra antall ansatte:
 //
@@ -32,26 +32,27 @@
 //   GET  /klart/api/sjekk?orgnr=…         → virksomheten, om den er stor nok for skreddersydd oppsett, og
 //                                           lisensprisen etter prøven (forsiden viser den ved nedlasting).
 //   GET  /klart/api/pris?orgnr=…[&som=kunde]  → virksomheten, prisen og hvordan den kan betale
-//   POST /klart/api/kasse        { type, orgnr, betaling, kunder?, epost?, nokkelEpost?, referanse?, ehf? }
-//                                → adresse til Stripe Checkout, eller fakturaen og nøkkelen
-//   GET  /klart/api/ordre?session=cs_…   → nøkkelen etter betaling på prissiden
-//   POST /klart/api/kunder       { kode, kunder } → legger kunder til en tjenesteleverandørlisens
+//   POST /klart/api/kasse        { type, orgnr, kunder?, epost, referanse?, ehf? }
+//                                → bestillingen (K-1001 …). Ingen betaling her: kunden får beskjed om at
+//                                  fakturaen kommer, eieren får det han trenger for å sende den.
+//   GET  /klart/api/betalt?nr=…&t=…      → eierens lenke: viser bestillingen og knappen «betalt»
+//   POST /klart/api/betalt?nr=…&t=…      → fakturaen er betalt: lisensnøkkelen sendes kunden
+//   GET  /klart/api/ordre        410: kortkjøpet er borte
+//   POST /klart/api/kunder       { kode, kunder } → bestiller flere kunder til en tjenesteleverandørlisens
 //   POST /klart/api/sprint       kontaktskjemaet for sprinten (spørsmål før booking)
 //   GET  /klart/api/sprint/ledige?tilbud=oppsett|kort|sprint → ledige startdager (og de som blir forespørsler)
-//   POST /klart/api/sprint/book          { orgnr, tilbud, start, navn, epost, … } → Stripe Checkout, eller { forespurt }
-//   POST /klart/api/sprint/avbryt        { session } → slipper datoen når kunden går tilbake fra Stripe
-//   GET  /klart/api/sprint/kvittering?session=cs_…  → bookingen etter betaling
-//   GET  /klart/api/sprint/ics?session=cs_…         → kalenderfilen
+//   POST /klart/api/sprint/book          { orgnr, tilbud, start, navn, epost, … } → { bestilt, ordre }: datoen
+//                                           holdes, fakturaen kommer, og bookingen gjelder når den er betalt
 //   POST /klart/api/sprint/sperr         { fra, til } | { fjern } → sperrer dager (Bearer ADMIN_TOKEN)
-//   POST /klart/api/sprint/bekreft       { id } → betalingslenke for en forespurt sprint (Bearer ADMIN_TOKEN)
 //   GET  /klart/api/utboks       e-postene som skal ut, og henvendelsene (Bearer ADMIN_TOKEN)
 //
-// Hemmeligheter (wrangler secret put): KLART_LISENSNOKKEL (PEM, PKCS#8, Ed25519),
-// STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, KLART_PRISER (JSON, se klart-pris.js),
-// RESEND_API_KEY (valgfri; uten den blir e-postene liggende i utboksen). Innstillinger (vars i
-// wrangler.jsonc): STRIPE_PRICE_ID (tom = kjøp er ikke åpnet), KLART_MASKINER (maskiner per
-// lisens), KLART_MVA ("auto" = Stripe Tax legger på mva), KLART_EPOST_FRA (avsender),
-// STRIPE_MVA_ID (valgfri; ellers finnes eller lages en MVA-sats på 25 % i Stripe).
+// Ingen betaling går gjennom Stripe (eieren 20.11.2026): alt bestilles på faktura, eieren sender fakturaen
+// selv, og lisensnøkkelen sendes når han har merket bestillingen som betalt. E-posten går med Cloudflares
+// e-postutsending (bindingen EMAIL).
+//
+// Hemmeligheter (wrangler secret put): KLART_LISENSNOKKEL (PEM, PKCS#8, Ed25519), KLART_PRISER (JSON, se
+// klart-pris.js). STRIPE_SECRET_KEY og STRIPE_WEBHOOK_SECRET brukes bare av webhooken for eldre kjøp.
+// Innstillinger (vars i wrangler.jsonc): KLART_MASKINER (maskiner per lisens fra det gamle kortkjøpet).
 //
 // Ingen dokumenter, ingen innhold fra programmet, kommer hit. Bare maskinkoden,
 // som er en hash, og org.nr, firmanavn og e-post fra kjøpet.
@@ -99,8 +100,8 @@ export async function handleKlart(request, env, url) {
     if (sti === "status" && request.method === "GET") return json(await status(env));
     if (sti === "prove" && request.method === "POST") return await prove(request, env);
     if (sti === "firma" && request.method === "GET") return await firma(url);
-    if (sti === "kjop" && request.method === "POST") return await kjop(request, env, url);
-    if (sti === "kvittering" && request.method === "GET") return await kvittering(env, url);
+    if (sti === "kjop" && request.method === "POST") return flyttet();
+    if (sti === "kvittering" && request.method === "GET") return flyttet();
     if (sti === "hent" && request.method === "POST") return await hent(request, env);
     if (sti === "stripe" && request.method === "POST") return await webhook(request, env);
     if (sti === "sok" && request.method === "GET") return await sok(url);
@@ -109,8 +110,9 @@ export async function handleKlart(request, env, url) {
     if (sti.startsWith("kart/") && request.method === "GET") return await kartdata(url);
     if (sti === "sjekk" && request.method === "GET") return await sjekk(env, url);
     if (sti === "pris" && request.method === "GET") return await pris(env, url);
-    if (sti === "kasse" && request.method === "POST") return await kasse(request, env, url);
-    if (sti === "ordre" && request.method === "GET") return await ordre(env, url);
+    if (sti === "kasse" && request.method === "POST") return await kasse(request, env);
+    if (sti === "betalt" && ["GET", "POST"].includes(request.method)) return await betalt(request, env, url);
+    if (sti === "ordre" && request.method === "GET") return flyttet();
     if (sti === "kunder" && request.method === "POST") return await leggTilKunder(request, env);
     if (sti === "sprint" && request.method === "POST") return await sprint(request, env);
     if (sti.startsWith("sprint/")) return await sprintRute(request, env, url, sti.slice(7));
@@ -118,9 +120,7 @@ export async function handleKlart(request, env, url) {
     return json({ feil: "Finnes ikke." }, 404);
   } catch (err) {
     console.error("klart", sti, err && err.stack ? err.stack : err);
-    // I testmodus står den egentlige feilen med, så den kan rettes. Aldri i live.
-    const detalj = testmodus(env) ? ` (${err && err.message ? err.message : err})` : "";
-    return json({ feil: "Noe gikk galt hos oss. Prøv igjen om litt." + detalj }, 500);
+    return json({ feil: "Noe gikk galt hos oss. Prøv igjen om litt." }, 500);
   }
 }
 
@@ -576,9 +576,10 @@ function fraB64url(tekst) {
 async function lesKode(env, kode) {
   const m = String(kode || "").replace(/\s/g, "").match(/^KLART-([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]+)$/);
   if (!m) return null;
-  const innhold = fraB64url(m[1]);
-  if (!(await crypto.subtle.verify("Ed25519", await sjekknokkel(env), fraB64url(m[2]), innhold))) return null;
+  // En avkortet eller feillimt kode (feil lengde på signaturen, ugyldig base64) er bare en kode som ikke stemmer.
   try {
+    const innhold = fraB64url(m[1]);
+    if (!(await crypto.subtle.verify("Ed25519", await sjekknokkel(env), fraB64url(m[2]), innhold))) return null;
     return JSON.parse(new TextDecoder().decode(innhold));
   } catch {
     return null;
@@ -616,9 +617,10 @@ function nyId() {
 async function status(env) {
   return {
     prove: false,
-    kjop: Boolean(env.KLART_LISENSNOKKEL && env.STRIPE_SECRET_KEY && env.STRIPE_PRICE_ID),
+    // Det gamle kortkjøpet per maskin er borte. Lisenser bestilles på prissiden, på faktura.
+    kjop: false,
     pris: kjopApent(env),
-    test: testmodus(env),
+    test: false,
   };
 }
 
@@ -633,7 +635,8 @@ async function prove() {
 }
 
 // ---------------------------------------------------------------------------
-// Stripe
+// Stripe: bare for webhooken (kjøp som ble gjort før 20.11.2026). Ingen side og ingen adresse en kunde kan
+// nå, kaller stripe() lenger.
 // ---------------------------------------------------------------------------
 
 async function stripe(env, metode, sti, felt, idempotens) {
@@ -652,58 +655,9 @@ async function stripe(env, metode, sti, felt, idempotens) {
   return data;
 }
 
-/** Som stripe(), men null når objektet ikke finnes. */
-async function stripeFinn(env, sti) {
-  const svar = await fetch(`https://api.stripe.com/v1/${sti}`, {
-    headers: { authorization: `Bearer ${env.STRIPE_SECRET_KEY}` },
-  });
-  if (svar.status === 404) return null;
-  const data = await svar.json();
-  if (!svar.ok) throw new Error(`Stripe ${sti}: ${data.error?.message || svar.status}`);
-  return data;
-}
-
-async function kjop(request, env, url) {
-  const { maskin: rå, epost: råEpost, orgnr: råOrgnr } = await body(request);
-  const maskin = maskinFra(rå);
-  if (!maskin) return json({ feil: "Maskinkoden ser ikke riktig ut. Den står i lisensvinduet i Klart, øverst til høyre." }, 400);
-  const orgnr = orgnrFra(råOrgnr);
-  if (!orgnr) return json({ feil: "Lisenser selges til bedrifter. Skriv inn organisasjonsnummeret." }, 400);
-  if (!(await status(env)).kjop) return json({ feil: "Kjøp åpner snart." }, 503);
-  // Navnet hentes her, ikke fra siden, så lisensen alltid står på det registrerte navnet.
-  const bedrift = await slaaOppFirma(orgnr);
-  if (bedrift.feil) return json({ feil: bedrift.feil }, bedrift.kode);
-
-  const pris = await stripe(env, "GET", `prices/${env.STRIPE_PRICE_ID}`);
-  const abonnement = Boolean(pris.recurring);
-  const side = url.hostname === "localhost" ? `${url.origin}/klart/aktiver/` : SIDE;
-  const felt = {
-    mode: abonnement ? "subscription" : "payment",
-    "line_items[0][price]": env.STRIPE_PRICE_ID,
-    "line_items[0][quantity]": "1",
-    success_url: `${side}?session={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${side}?hva=kjop&maskin=${maskin}`,
-    client_reference_id: maskin,
-    "metadata[maskin]": maskin,
-    "metadata[orgnr]": orgnr,
-    "metadata[firma]": bedrift.navn,
-    locale: "nb",
-    allow_promotion_codes: "true",
-    "tax_id_collection[enabled]": "true",
-    billing_address_collection: "required",
-  };
-  if (abonnement) {
-    felt["subscription_data[metadata][maskin]"] = maskin;
-    felt["subscription_data[metadata][orgnr]"] = orgnr;
-    felt["subscription_data[metadata][firma]"] = bedrift.navn;
-  }
-  else felt["customer_creation"] = "always";
-  if (env.KLART_MVA === "auto") felt["automatic_tax[enabled]"] = "true";
-  const epost = epostFra(råEpost);
-  if (epost) felt.customer_email = epost;
-
-  const økt = await stripe(env, "POST", "checkout/sessions", felt);
-  return json({ adresse: økt.url });
+/** De gamle adressene for kortkjøp (eldre versjoner av appen og gamle lenker): kjøp skjer ikke her lenger. */
+function flyttet() {
+  return json({ feil: "Kjøp skjer nå på esbjugconsult.com/klart/pris/, og betales med faktura.", side: PRISSIDE }, 410);
 }
 
 /** Til og med-datoen lisensen gjelder, fra et Stripe-abonnement. */
@@ -736,14 +690,15 @@ async function lisensFraOkt(env, okt) {
   });
 }
 
-/** Med en testnøkkel fra Stripe kan hvem som helst «betale» med testkort. Da gir kjøpet
-    en lisens merket «test» som varer en uke, aldri en ekte lisens. */
-function testmodus(env) {
-  return String(env.STRIPE_SECRET_KEY || "").startsWith("sk_test_");
+/** Bare for lisenser fra de gamle kjøpene gjennom Stripe (id fra Stripe: sub_, cs_, in_): sto Stripe i testmodus,
+    kunne hvem som helst «betale» med testkort, og de lisensene gir fortsatt bare en kode merket «test» som varer
+    en uke. Bestillinger på faktura (ordre-…) og kommunenøkler (kommune-…) er aldri berørt av Stripe. */
+function gammelTest(env, lisens) {
+  return String(env.STRIPE_SECRET_KEY || "").startsWith("sk_test_") && !/^(ordre|kommune)-/.test(String(lisens.id || ""));
 }
 
 async function kodeTilLisens(env, lisens, maskin) {
-  const test = testmodus(env);
+  const test = gammelTest(env, lisens);
   const uke = omDager(7);
   return lagKode(env, {
     id: nyId(),
@@ -755,17 +710,6 @@ async function kodeTilLisens(env, lisens, maskin) {
     plan: test ? "test" : lisens.plan || null,
     utloper: test ? (lisens.utloper && lisens.utloper < uke ? lisens.utloper : uke) : lisens.utloper,
   });
-}
-
-async function kvittering(env, url) {
-  const id = url.searchParams.get("session") || "";
-  if (!/^cs_(test|live)_[A-Za-z0-9]+$/.test(id)) return json({ feil: "Fant ikke kjøpet." }, 400);
-  if (!(await status(env)).kjop) return json({ feil: "Kjøp er ikke åpnet." }, 503);
-  const okt = await stripe(env, "GET", `checkout/sessions/${id}?expand[]=subscription`);
-  const lisens = await lisensFraOkt(env, okt);
-  if (!lisens) return json({ feil: "Betalingen er ikke fullført ennå. Last siden på nytt om litt." }, 409);
-  const maskin = maskinFra(okt.metadata?.maskin || okt.client_reference_id);
-  return json({ kode: await kodeTilLisens(env, lisens, maskin), navn: lisens.navn, orgnr: lisens.orgnr, epost: lisens.epost, utloper: lisens.utloper });
 }
 
 async function hent(request, env) {
@@ -785,27 +729,24 @@ async function hent(request, env) {
 // Prissiden (/klart/pris/): én pris per virksomhet, fra antall ansatte i Enhetsregisteret
 // ---------------------------------------------------------------------------
 //
-// Prisen regnes ut her, aldri på siden, og går til Stripe som price_data. Lisensen gjelder hele
-// virksomheten: koden har ingen maskin, bare firmanavn, org.nr, plan og utløpsdato, og den sendes på
-// e-post ved kjøp og ved hver fornyelse. Lisensen står i lageret med maks = 0 og plan «org»,
-// «leverandor» eller «testing».
+// Prisen regnes ut her, aldri på siden. Lisensen gjelder hele virksomheten: koden har ingen maskin, bare
+// firmanavn, org.nr, plan og utløpsdato, og den sendes på e-post når fakturaen er betalt. Lisensen står i
+// lageret med maks = 0 og plan «org», «konsern» eller «leverandor». Den fornyes ikke av seg selv: når den
+// går ut, bestiller kunden på nytt.
 
 const PRISSIDE = "https://esbjugconsult.com/klart/pris/";
 const EIER = "tidemann@esbjugconsult.com";
 const IKKE_AKTIV = "Dette organisasjonsnummeret er ikke aktivt i Brønnøysundregistrene.";
-// Appen godtar bare kodene «prove», «lisens» og «gave» (les_kode i aktivering.rs i Klart). En kode for
-// utvidet testing avvises der til appen teller de 50 eksportene selv. Til da selges testingen bare i
-// testmodus. Sett til true når en versjon av appen som kan det, er ute.
-const TESTING_I_APPEN = false;
-const PRODUKT_LISENS = "klart_lisens";
-const PRODUKT_TESTING = "klart_testing";
+const MVA = 0.25; // lagt på alle beløp, som prissiden sier («25 % mva legges til på fakturaen»)
+const FRIST_DAGER = 7; // betalingsfristen prissiden oppgir
 
 function priser(env) {
   return lesPriser(env.KLART_PRISER);
 }
 
+/** Bestilling er åpen når prisene er satt, nøkler kan lages og e-posten kan gå ut. */
 function kjopApent(env) {
-  return Boolean(env.KLART_LISENSNOKKEL && env.STRIPE_SECRET_KEY && env.KLART_PRISER);
+  return Boolean(env.KLART_LISENSNOKKEL && env.KLART_PRISER && env.EMAIL);
 }
 
 function orgnrTekst(o) {
@@ -813,7 +754,8 @@ function orgnrTekst(o) {
 }
 
 function kroner(n) {
-  return `${new Intl.NumberFormat("nb-NO", { maximumFractionDigits: 2 }).format(n)} NOK`;
+  // Hele kroner uten desimaler, ellers to (3 437,50 NOK).
+  return `${new Intl.NumberFormat("nb-NO", { minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 }).format(n)} NOK`;
 }
 
 function datoTekst(iso) {
@@ -830,10 +772,6 @@ function tekstFra(verdi, maks) {
 
 function leggPaa(felt, prefiks, obj) {
   for (const [k, v] of Object.entries(obj)) felt[`${prefiks}[${k}]`] = v;
-}
-
-function sideFor(url) {
-  return ["localhost", "127.0.0.1"].includes(url.hostname) ? `${url.origin}/klart/pris/` : PRISSIDE;
 }
 
 function aboFra(faktura) {
@@ -989,7 +927,7 @@ async function slaaOppVirksomhet(orgnr, fersk = false) {
   return { feil: IKKE_AKTIV, kode: 404 };
 }
 
-/** Hva prisen bygger på, for metadata i Stripe (vises ikke for kunden). */
+/** Hva prisen bygger på, til eieren (vises ikke for kunden). */
 function prisgrunnlag(l, g) {
   if (l.fireAar) {
     return (
@@ -1032,8 +970,8 @@ async function kanEhf(orgnr) {
   }
 }
 
-/** Domenene en lisensnøkkel kan sendes til før betaling: virksomhetens eget, og kommunens for en del av
-    en kommune. Fra hjemmeside og e-post i Enhetsregisteret. */
+/** Domenene en lisensnøkkel kan sendes til uten betaling (bare kommuneGratis): virksomhetens eget, og
+    kommunens for en del av en kommune. Fra hjemmeside og e-post i Enhetsregisteret. */
 function egneDomener(v) {
   return [v.domene, v.kommune?.domene].filter(Boolean);
 }
@@ -1078,21 +1016,22 @@ async function kommuneGratis(env, v, k, epost) {
     forsteMaskin: null,
   });
   await lager(env).nyttKommunekjop(lisens.id, k.rot, v.orgnr, 0, k.forsteSlutt);
-  await sendNokkel(env, lisens);
-  await sendEpost(env, {
-    til: EIER,
-    emne: `Klart: ${v.navn} hentet nøkkelen for hele ${helhet(k.stat)}`,
-    tekst: `${v.navn} (org.nr ${orgnrTekst(v.orgnr)}) hentet nøkkelen gratis, sendt til ${epost}. Delene har betalt ${kroner(k.betalt)}. Gjelder til og med ${datoTekst(k.forsteSlutt)}.`,
-  });
+  const sendt = await klartEpost(env, nokkelEpost(lisens, await orgKode(env, lisens)));
+  await varsleEier(
+    env,
+    `Klart: ${v.navn} hentet nøkkelen for hele ${helhet(k.stat)}`,
+    `${v.navn} (org.nr ${orgnrTekst(v.orgnr)}) hentet nøkkelen gratis${sendt ? `, sendt til ${epost}` : `. E-POSTEN TIL ${epost} GIKK IKKE UT: send nøkkelen selv`}. Delene har betalt ${kroner(k.betalt)}. Gjelder til og med ${datoTekst(k.forsteSlutt)}.`
+  );
   // Nøkkelen er bare på e-post, ikke på siden.
   return { type: "lisens", fireAar: true, gratis: true, navn: lisens.navn, orgnr: lisens.orgnr, epost: lisens.epost, utloper: lisens.utloper };
 }
 
-/** Hvorfor en lisensnøkkel ikke kan sendes til e-postadressen før betaling, eller null. */
+/** Bare for nøkkelen som gis uten betaling (kommuneGratis): hvorfor den ikke kan sendes til e-postadressen,
+    eller null. Ved vanlig bestilling sendes nøkkelen etter betaling, til e-posten på bestillingen. */
 function domeneFeil(v, epost) {
   const domener = egneDomener(v);
   if (!domener.length) {
-    return `Fant ikke deres domene i Enhetsregisteret (hjemmeside eller e-post), så vi kan ikke sende nøkkelen før betaling. Skriv til ${EIER}.`;
+    return `Fant ikke deres domene i Enhetsregisteret (hjemmeside eller e-post), så vi kan ikke sende nøkkelen herfra. Skriv til ${EIER}.`;
   }
   if (!epostPaaDomene(epost, domener)) {
     return `Lisensnøkkelen sendes bare til en e-postadresse på deres eget domene (…@${domener[domener.length - 1]}).`;
@@ -1103,6 +1042,11 @@ function domeneFeil(v, epost) {
 /** Til og med-datoen for en fireårslisens som starter nå. */
 function fireAarFra(ms = Date.now()) {
   return dato(leggTilMaaneder(ms, 12 * 4) - 86400000);
+}
+
+/** Til og med-datoen for en lisens på ett år som starter nå (når fakturaen er betalt). */
+function ettAarFra(ms = Date.now()) {
+  return dato(leggTilMaaneder(ms, 12));
 }
 
 // --- Søk og sjekk (feltet på forsiden og prissiden) -------------------------------
@@ -1200,7 +1144,7 @@ async function pris(env, url) {
   if (url.searchParams.get("som") === "kunde") {
     return json({ orgnr: v.orgnr, navn: v.navn, ansatte: v.ansatte, konsern: g.konsern, pris: kundepris(p, g.v, g.regnskap) });
   }
-  const [k, ehf, testet] = await Promise.all([kommunestatus(env, g.v), kanEhf(v.orgnr), lager(env).harTestet(v.orgnr)]);
+  const [k, ehf] = await Promise.all([kommunestatus(env, g.v), kanEhf(v.orgnr)]);
   const l = lisenspris(p, g.v, g.regnskap, k?.betalt || 0);
   // Hva prisen bygger på (antall som telles, regnskap, påslag), sendes ikke ut. Siden viser bare prisen.
   return json({
@@ -1209,7 +1153,7 @@ async function pris(env, url) {
     ansatte: v.ansatte,
     konsern: g.konsern,
     // Kommuner og stat ser prisen per år, som alle andre (eieren 11.11.2026): en fjerdedel av
-    // fireårsprisen, og det er det de betaler hvert år (perAar i kassen).
+    // fireårsprisen, og det er det de bestiller og betaler for ett år om gangen (kassen).
     pris: l.fireAar ? Math.round(l.pris / 4) : l.pris,
     // Kommuner og delene av dem kjøper for fire år, betalt per år.
     fireAar: Boolean(l.fireAar),
@@ -1229,136 +1173,105 @@ async function pris(env, url) {
       : null,
     betaling: betalingFor(),
     besoksadresse: v.adresse?.postnummer ? `${(v.adresse.linjer || []).join(" ")}, ${v.adresse.postnummer} ${v.adresse.poststed}`.trim() : "",
-    // Tar de imot EHF, og hvilke domener lisensnøkkelen kan sendes til ved faktura.
+    // Tar de imot EHF (PEPPOL-katalogen). Avgjør hva som er forhåndsvalgt på siden.
     ehf,
-    domener: egneDomener(g.v),
-    testing: testet ? null : { pris: p.testing.pris, eksporter: p.testing.eksporter, apen: testmodus(env) || TESTING_I_APPEN },
     // Oppsettsdag og sprinter som gjelder (tom liste for de små), med prisene åpent.
     stor: sprintTilbud(p, g).length > 0,
     sprint: sprintTilbud(p, g),
     // Behandler trolig data for andre: da er det et eget steg i kassen.
     leverandorAktuell: leverandorAktuell(p, v),
     kjop: kjopApent(env),
-    test: testmodus(env),
   });
 }
 
-// --- Stripe-oppsett: produkter, MVA og kunder -----------------------------------
+// --- Bestilling på faktura (ingen Stripe) -------------------------------------------
+//
+// Kassen lagrer bestillingen (K-1001, K-1002 …) og sender to e-poster: kunden får beskjed om at fakturaen
+// kommer, eieren får det han trenger for å sende fakturaen selv, og en lenke signert med lisensnøkkelen.
+// Når fakturaen er betalt, åpner eieren lenken og trykker på knappen. Først da lages lisensen, og nøkkelen
+// sendes til e-posten på bestillingen. Ingen nøkkel går ut før betaling, så den trenger ikke gå til
+// virksomhetens eget domene.
 
-const produkterFinnes = new Set();
-let mvaCache = null;
-let betalingsoppsettCache;
+const KLART_AVSENDER = { email: "klart@esbjugconsult.com", name: "Klart" };
+const nrTekst = (nr) => "K-" + (1000 + nr);
+const inklMva = (n) => Math.round(n * (1 + MVA) * 100) / 100;
 
-/** Klarts eget oppsett av betalingsmåter, med Klarna av: den tar ikke bedriftskjøp, og i Norge bare
-    «betal hele». Eget oppsett, så resten av Stripe-kontoen (Esbjug Consult) ikke røres. Feiler det,
-    brukes kontoens standard, og kjøpet går likevel. */
-async function betalingsoppsett(env) {
-  if (betalingsoppsettCache !== undefined) return betalingsoppsettCache;
+/** Sender en e-post med Cloudflares utsending og fører den i utboksen. Gir false når den ikke gikk ut. */
+async function klartEpost(env, { til, emne, tekst, svarTil, vedlegg }) {
+  const id = await lager(env).iUtboks(til, emne, tekst);
+  if (!env.EMAIL) return false;
   try {
-    const navn = "Klart (uten Klarna)";
-    // Et nytt oppsett har ikke kort på av seg selv, så alt som skal gjelde, settes hver gang.
-    const valg = {
-      "card[display_preference][preference]": "on",
-      "apple_pay[display_preference][preference]": "on",
-      "google_pay[display_preference][preference]": "on",
-      "klarna[display_preference][preference]": "off",
-    };
-    const liste = await stripe(env, "GET", "payment_method_configurations?limit=100");
-    const funnet = liste.data.find((c) => c.name === navn && c.active);
-    betalingsoppsettCache = funnet
-      ? (await stripe(env, "POST", `payment_method_configurations/${funnet.id}`, valg)).id
-      : (await stripe(env, "POST", "payment_method_configurations", { name: navn, ...valg })).id;
+    await env.EMAIL.send({ to: til, from: KLART_AVSENDER, replyTo: svarTil || EIER, subject: emne, text: tekst, ...(vedlegg ? { attachments: vedlegg } : {}) });
+    await lager(env).sendt(id);
+    return true;
   } catch (err) {
-    console.error("klart betalingsoppsett", err.message);
-    betalingsoppsettCache = null;
+    console.error("klart epost", til, err && err.code, err && err.message);
+    return false;
   }
-  return betalingsoppsettCache;
 }
 
-/** Produktene har faste id-er, så de finnes eller lages, og brukes om igjen ved fornyelse. */
-async function produkt(env, id, navn, meta) {
-  if (produkterFinnes.has(id)) return id;
-  if (!(await stripeFinn(env, `products/${id}`))) {
-    const felt = { id, name: navn };
-    leggPaa(felt, "metadata", meta);
-    try {
-      await stripe(env, "POST", "products", felt);
-    } catch (err) {
-      if (!/already exists/i.test(err.message)) throw err;
-    }
-  }
-  produkterFinnes.add(id);
-  return id;
+async function betaltSignatur(env, nr) {
+  return b64url(await crypto.subtle.sign("Ed25519", await signeringsnokkel(env), new TextEncoder().encode(`klart-betalt|${nr}`)));
 }
 
-/** Én MVA-sats, 25 %, lagt på hver linje (exclusive). */
-async function mvaSats(env) {
-  if (env.STRIPE_MVA_ID) return env.STRIPE_MVA_ID;
-  if (mvaCache) return mvaCache;
-  const liste = await stripe(env, "GET", "tax_rates?active=true&inclusive=false&limit=100");
-  const funnet = liste.data.find((t) => t.metadata?.klart === "mva" && Number(t.percentage) === 25);
-  mvaCache = funnet
-    ? funnet.id
-    : (
-        await stripe(env, "POST", "tax_rates", {
-          display_name: "MVA",
-          description: "Merverdiavgift 25 %",
-          percentage: "25",
-          inclusive: "false",
-          country: "NO",
-          jurisdiction: "NO",
-          tax_type: "vat",
-          "metadata[klart]": "mva",
-        })
-      ).id;
-  return mvaCache;
+function adresseTekst(a) {
+  if (!a) return "(ingen adresse i Enhetsregisteret)";
+  return [...(a.linjer || []), `${a.postnummer} ${a.poststed}`.trim(), a.land && a.land !== "NO" ? a.land : ""].filter(Boolean).join(", ");
 }
 
-/** Stripe-kunden for et org.nr, med navn og adresse fra Enhetsregisteret. Én kunde per virksomhet. */
-async function stripeKunde(env, v, meta, { epost, referanse, ehf } = {}) {
-  let id = await lager(env).kundeFor(v.orgnr);
-  if (!id) {
-    const q = encodeURIComponent(`metadata['orgnr']:'${v.orgnr}'`);
-    id = (await stripe(env, "GET", `customers/search?query=${q}&limit=1`)).data[0]?.id || null;
-  }
-  const felt = { name: v.navn, "preferred_locales[0]": "nb" };
-  leggPaa(felt, "metadata", {
-    orgnr: v.orgnr,
-    company_name: v.navn,
-    tier: meta.tier,
-    sector: meta.sector,
-    employees_at_purchase: meta.employees_at_purchase,
-    document_workers: meta.document_workers,
-    value_factor: meta.value_factor,
-    accounts_year: meta.accounts_year,
-    scope: meta.scope,
-    license_type: meta.license_type,
+/** Linjene om beløpet, like i e-posten til kunden og til eieren. */
+function belopLinjer(o) {
+  return [
+    ...(o.linjer.length > 1 ? o.linjer.map((l) => `  ${l.tekst}: ${kroner(l.belop)}`) : []),
+    `Beløp eks. mva: ${kroner(o.belop)}`,
+    `Beløp inkl. 25 % mva: ${kroner(inklMva(o.belop))}`,
+  ];
+}
+
+/** Lagrer bestillingen og sender e-posten til kunden og til eieren. Gir { nr, ordre, sendt }. */
+async function nyBestilling(env, o, { emne, kunde, eier, naarBetalt }) {
+  const l = lager(env);
+  const nr = await l.nyOrdre(o.orgnr, o);
+  o.ordre = nrTekst(nr);
+  await l.oppdaterOrdre(nr, o);
+  const sendt = await klartEpost(env, { til: o.epost, emne: `Klart: ${emne} (${o.ordre})`, tekst: kunde(o).join("\n") });
+  const lenke = `https://esbjugconsult.com/klart/api/betalt?nr=${nr}&t=${await betaltSignatur(env, nr)}`;
+  await klartEpost(env, {
+    til: EIER,
+    svarTil: o.epost,
+    emne: `Klart-bestilling ${o.ordre}: ${o.navn}, ${kroner(o.belop)} eks. mva`,
+    tekst: [
+      `Ny bestilling på faktura. Fakturaen sender du selv: ${o.ehf == null ? "kunden er ikke spurt om EHF" : o.ehf ? "SEND SOM EHF" : "SEND PÅ E-POST"}.`,
+      ``,
+      `Bestilling: ${o.ordre}, ${datoTekst(o.dato)}`,
+      `Virksomhet: ${o.navn}`,
+      `Org.nr: ${orgnrTekst(o.orgnr)}`,
+      `Adresse (Enhetsregisteret): ${adresseTekst(o.adresse)}`,
+      `Registrert i Merverdiavgiftsregisteret: ${o.mvaRegistrert ? "ja" : "nei"}`,
+      `Kundens e-post: ${o.epost}`,
+      `Kundens referanse: ${o.referanse || "(ingen)"}`,
+      o.ehf == null
+        ? `Faktura: ikke spurt om EHF. PEPPOL-katalogen: ${o.kanEhf ? "de tar imot EHF" : o.kanEhf === false ? "de står ikke der, send på e-post" : "svarte ikke"}`
+        : o.ehf
+          ? `Faktura: send som EHF til org.nr ${orgnrTekst(o.orgnr)}${o.kanEhf === false ? " (NB: står ikke i PEPPOL-katalogen)" : o.kanEhf === null ? " (PEPPOL-katalogen svarte ikke)" : ""}`
+          : `Faktura: send på e-post til ${o.epost}${o.kanEhf ? " (de tar også imot EHF, men ba ikke om det)" : ""}`,
+      ``,
+      ...eier(o),
+      ...belopLinjer(o),
+      `Betalingsfrist kunden har fått oppgitt: ${FRIST_DAGER} dager`,
+      ``,
+      sendt ? `Kunden har fått e-post om at fakturaen kommer.` : `E-POSTEN TIL KUNDEN GIKK IKKE UT. Skriv til dem selv.`,
+      ``,
+      naarBetalt,
+      lenke,
+    ].join("\n"),
   });
-  if (v.adresse) {
-    felt["address[line1]"] = v.adresse.linjer[0] || "";
-    felt["address[line2]"] = v.adresse.linjer.slice(1).join(", ");
-    felt["address[postal_code]"] = v.adresse.postnummer;
-    felt["address[city]"] = v.adresse.poststed;
-    felt["address[country]"] = v.adresse.land;
-  }
-  if (epost) felt.email = epost;
-  if (referanse) {
-    felt["invoice_settings[custom_fields][0][name]"] = "Referanse";
-    felt["invoice_settings[custom_fields][0][value]"] = referanse;
-  }
-  if (ehf !== undefined) felt["metadata[ehf]"] = ehf ? "ja" : "nei";
-  if (!id && v.mva) {
-    felt["tax_id_data[0][type]"] = "no_vat";
-    felt["tax_id_data[0][value]"] = `${v.orgnr}MVA`;
-  }
-  const kunde = await stripe(env, "POST", id ? `customers/${id}` : "customers", felt);
-  await lager(env).lagreKunde(v.orgnr, kunde.id);
-  return kunde;
+  return { nr, ordre: o.ordre, sendt };
 }
 
-/** Kundene til en tjenesteleverandør, slått opp og priset hver for seg. Én linje (og ett produkt) per kunde.
-    «ledig» er hvor mange linjer det er plass til: Stripe tar 20 i ett abonnement, og den egne lisensen er én. */
-async function kunderFra(env, p, lev, liste, har = [], ledig = 19) {
+/** Kundene til en tjenesteleverandør, slått opp og priset hver for seg. Én linje per kunde.
+    «ledig» er hvor mange kunder det er plass til på lisensen (19, som før). */
+async function kunderFra(p, lev, liste, har = [], ledig = 19) {
   const orgnre = [...new Set((Array.isArray(liste) ? liste : []).map(orgnrFra).filter(Boolean))].filter(
     (o) => o !== lev.orgnr && !har.includes(o)
   );
@@ -1370,32 +1283,23 @@ async function kunderFra(env, p, lev, liste, har = [], ledig = 19) {
     if (o.feil) return { feil: `${orgnrTekst(k)}: ${o.feil}`, kode: o.kode };
     if (o.underenhet) return { feil: underenhetTekst(o), kode: 409 };
     const kv = o.virksomhet;
-    const id = await produkt(
-      env,
-      `klart_lev_${lev.orgnr}_${kv.orgnr}`,
-      `Klart – tjenesteleverandør for ${kv.navn} (org.nr ${orgnrTekst(kv.orgnr)})`,
-      { klart: "leverandor", leverandor: lev.orgnr, kunde: kv.orgnr }
-    );
     const kg = grunnlag(p, o);
-    linjer.push({ produkt: id, belop: kundepris(p, kg.v, kg.regnskap) * 100, kunde: kv });
+    linjer.push({
+      tekst: `Tjenesteleverandør for ${kv.navn} (org.nr ${orgnrTekst(kv.orgnr)})`,
+      belop: kundepris(p, kg.v, kg.regnskap),
+      kunde: { orgnr: kv.orgnr, navn: kv.navn },
+    });
   }
   return { linjer };
 }
 
-async function harTestetHosStripe(env, orgnr) {
-  if (await lager(env).harTestet(orgnr)) return true;
-  const q = encodeURIComponent(`metadata['orgnr']:'${orgnr}' AND metadata['license_type']:'testing' AND status:'succeeded'`);
-  return (await stripe(env, "GET", `payment_intents/search?query=${q}&limit=1`)).data.length > 0;
-}
-
 // --- Kasse --------------------------------------------------------------------
 
-async function kasse(request, env, url) {
+async function kasse(request, env) {
   const p = priser(env);
   if (!p || !kjopApent(env)) return json({ feil: "Kjøp er ikke åpnet ennå." }, 503);
   const inn = await body(request);
-  const type = ["lisens", "testing", "leverandor"].includes(inn.type) ? inn.type : null;
-  let betaling = ["kort", "faktura"].includes(inn.betaling) ? inn.betaling : "kort";
+  const type = ["lisens", "leverandor"].includes(inn.type) ? inn.type : null;
   const orgnr = orgnrFra(inn.orgnr);
   if (!type || !orgnr) return json({ feil: "Skriv inn et gyldig organisasjonsnummer." }, 400);
   // Alt slås opp på nytt her. Siden viser bare det samme som kommer tilbake.
@@ -1406,55 +1310,34 @@ async function kasse(request, env, url) {
   const g = grunnlag(p, o);
   const k = await kommunestatus(env, g.v);
   const l = lisenspris(p, g.v, g.regnskap, k?.betalt || 0);
-  // En kommune, eller en del av den, kjøper en lisens for fire år: på forskudd (én betaling eller én
-  // faktura) eller per år (fire betalinger). Det som er betalt i kommunen før, er trukket fra prisen.
+  // En kommune eller statlig virksomhet, eller en del av en, prises for fire år (kommunepris). Siden viser
+  // en fjerdedel som prisen per år (eieren 11.11.2026), og det er det de bestiller: ett år om gangen.
   const fireAar = type === "lisens" && Boolean(l.fireAar);
-  // Siden viser prisen per år, så kommuner og stat betaler alltid per år (eieren 11.11.2026).
-  const perAar = fireAar;
-  if (type === "testing") betaling = "kort";
   if (type === "leverandor" && l.fireAar) {
     return json({ feil: "Kommuner og statlige virksomheter kjøper sin egen lisens. Behandler dere data for andre, skriv til oss." }, 400);
   }
+  const epost = epostFra(inn.epost);
   if (fireAar) {
     const hinder = kommuneHinder(k, l);
     if (hinder) return json({ feil: hinder }, 409);
-    // Gratis når delene har betalt alt: nøkkelen bare på e-post, til kommunens eget domene (se under).
+    // Gratis når delene har betalt alt. Den nøkkelen gis uten betaling, så den går bare til kommunens eget domene.
     if (l.pris === 0) {
-      const feil = domeneFeil(v, epostFra(inn.epost));
+      const feil = domeneFeil(v, epost);
       if (feil) return json({ feil }, 400);
-      return json(await kommuneGratis(env, v, k, epostFra(inn.epost)));
+      return json(await kommuneGratis(env, v, k, epost));
     }
   }
-  const epost = epostFra(inn.epost);
-  if (betaling === "faktura" && !epost) return json({ feil: "Skriv inn e-postadressen fakturaen skal sendes til." }, 400);
-  // Med faktura gis nøkkelen før betaling. Da sendes den bare til en adresse på virksomhetens eget
-  // domene fra Enhetsregisteret. Ellers kunne hvem som helst bestilt en faktura i et annet firmas
-  // navn og fått nøkkelen med en gang. Fakturaen kan gå hvor som helst (ofte en skannetjeneste).
-  // Tomt felt betyr samme adresse som fakturaen — og da er det den som må stå på eget domene.
-  const nokkelEpost = betaling === "faktura" ? (inn.nokkelEpost ? epostFra(inn.nokkelEpost) : epost) : null;
-  if (betaling === "faktura" && inn.nokkelEpost && !nokkelEpost) {
-    return json({ feil: "Skriv inn en gyldig e-postadresse for lisensnøkkelen." }, 400);
-  }
-  if (betaling === "faktura") {
-    const feil = domeneFeil(v, nokkelEpost);
-    if (feil) return json({ feil }, 400);
-  }
+  if (!epost) return json({ feil: "Skriv inn e-postadressen fakturaen og lisensnøkkelen skal sendes til." }, 400);
 
+  const hvem = `${v.navn} (org.nr ${orgnrTekst(v.orgnr)})`;
   let linjer;
   let beskrivelse;
-  if (type === "testing") {
-    if (!testmodus(env) && !TESTING_I_APPEN) return json({ feil: "Utvidet testing åpner snart." }, 503);
-    if (await harTestetHosStripe(env, v.orgnr)) return json({ feil: "Denne virksomheten har allerede hatt utvidet testing." }, 409);
-    linjer = [{ produkt: await produkt(env, PRODUKT_TESTING, "Klart – utvidet testing", { klart: "testing" }), belop: p.testing.pris * 100 }];
-    beskrivelse = `Utvidet testing av Klart for ${v.navn} (org.nr ${orgnrTekst(v.orgnr)}): ${p.testing.eksporter} eksporter, uten tidsgrense. Beløpet godskrives lisensen.`;
-  } else if (type === "lisens") {
-    // En fireårslisens betalt per år: fire like beløp. Ellers hele summen.
-    const belop = perAar ? Math.round((l.pris * 100) / 4) : l.pris * 100;
-    linjer = [{ produkt: await produkt(env, PRODUKT_LISENS, "Klart – lisens for virksomheten", { klart: "lisens" }), belop }];
+  if (type === "lisens") {
+    linjer = [{ tekst: "Klart, lisens for virksomheten, ett år", belop: fireAar ? Math.round(l.pris / 4) : l.pris }];
     beskrivelse =
       (g.konsern
-        ? `Klart for ${v.navn} (org.nr ${orgnrTekst(v.orgnr)}) og hele konsernet. Alle brukere og enheter, konsernets egne data.`
-        : `Klart for ${v.navn} (org.nr ${orgnrTekst(v.orgnr)}). Alle brukere og enheter, virksomhetens egne data.`) +
+        ? `Klart for ${hvem} og hele konsernet. Alle brukere og enheter, konsernets egne data.`
+        : `Klart for ${hvem}. Alle brukere og enheter, virksomhetens egne data.`) +
       (fireAar
         ? // Kommuner og stat: årlig lisens uten binding, uten noe om fire år (eieren 11.11.2026).
           " Årlig lisens uten binding." +
@@ -1462,198 +1345,185 @@ async function kasse(request, env, url) {
           (l.betalt ? ` ${kroner(l.betalt)} som er betalt i ${helhet(l.stat)} før, er trukket fra.` : "")
         : "");
   } else {
-    // Egne data og kunders data i ett abonnement: virksomhetens egen lisens, og én linje per kunde.
-    const k = await kunderFra(env, p, v, inn.kunder);
-    if (k.feil) return json({ feil: k.feil }, k.kode || 400);
-    const egen = { produkt: await produkt(env, PRODUKT_LISENS, "Klart – lisens for virksomheten", { klart: "lisens" }), belop: l.pris * 100 };
-    linjer = [egen, ...k.linjer];
-    const antall = `${k.linjer.length} ${k.linjer.length === 1 ? "kunde" : "kunder"}`;
-    beskrivelse = `Klart for ${v.navn} (org.nr ${orgnrTekst(v.orgnr)}): egne data, og tjenesteleverandørlisens for ${antall}.`;
+    // Egne data og kunders data på én bestilling: virksomhetens egen lisens, og én linje per kunde.
+    const kl = await kunderFra(p, v, inn.kunder);
+    if (kl.feil) return json({ feil: kl.feil }, kl.kode || 400);
+    linjer = [{ tekst: "Klart, lisens for virksomheten, ett år", belop: l.pris }, ...kl.linjer];
+    const antall = `${kl.linjer.length} ${kl.linjer.length === 1 ? "kunde" : "kunder"}`;
+    beskrivelse = `Klart for ${hvem}: egne data, og tjenesteleverandørlisens for ${antall}.`;
   }
 
-  const meta = {
+  const bestilling = {
+    type,
     orgnr: v.orgnr,
-    company_name: v.navn,
-    tier: prisgrunnlag(l, g),
-    sector: l.sektor ? l.sektor.id : "",
-    employees_at_purchase: String(v.ansatte),
-    document_workers: String(l.ansatte),
-    value_factor: l.faktor.toFixed(2),
-    accounts_year: g.regnskap ? g.regnskap.aar : "",
-    // Priset på hele konsernet gjelder lisensen hele konsernet.
-    scope: g.konsern && type !== "testing" ? "konsern" : "virksomhet",
-    license_type: type,
-    betaling,
-    // Fireårslisens: «forskudd» eller «aarlig», kommunen den hører til, og hele beløpet eks. mva, så det kan
-    // trekkes fra når andre i kommunen kjøper.
-    fire_aar: fireAar ? (perAar ? "aarlig" : "forskudd") : "",
-    kommune_rot: fireAar ? k.rot : "",
-    kommune_belop: fireAar ? String(l.pris) : "",
-    // Faktura: nøkkelen går hit (eget domene), fakturaen til kundens e-post.
-    nokkel_epost: nokkelEpost || "",
-  };
-  if (nokkelEpost) meta.nokkel_epost = nokkelEpost;
-  const kunde = await stripeKunde(env, v, meta, {
+    navn: v.navn,
+    adresse: v.adresse,
+    mvaRegistrert: v.mva,
     epost,
-    referanse: tekstFra(inn.referanse, 140),
-    ehf: betaling === "faktura" ? Boolean(inn.ehf) : undefined,
+    referanse: tekstFra(inn.referanse, 140).replace(/\s+/g, " "),
+    ehf: Boolean(inn.ehf),
+    kanEhf: await kanEhf(v.orgnr),
+    beskrivelse,
+    linjer,
+    belop: linjer.reduce((s, x) => s + x.belop, 0),
+    plan: type === "leverandor" ? "leverandor" : g.konsern ? "konsern" : "org",
+    // Kommuner og stat: kommunen kjøpet hører til og hele fireårsprisen, så det trekkes fra når andre i
+    // kommunen kjøper (registreres når fakturaen er betalt, og gjelder så lenge lisensen gjør det).
+    kommune: fireAar ? { rot: k.rot, belop: l.pris } : null,
+    grunnlag: prisgrunnlag(l, g),
+    dato: idag(),
+  };
+  const hvor = bestilling.plan === "konsern" ? "hele konsernet" : "virksomheten";
+  const r = await nyBestilling(env, bestilling, {
+    emne: "bestillingen er mottatt",
+    kunde: (b) => [
+      `Hei,`,
+      ``,
+      `takk for bestillingen av Klart for ${hvem}.`,
+      ``,
+      `Bestilling: ${b.ordre}`,
+      b.beskrivelse,
+      ...belopLinjer(b),
+      ...(b.referanse ? [`Deres referanse: ${b.referanse}`] : []),
+      ``,
+      b.ehf
+        ? `Fakturaen kommer som EHF (e-faktura) til organisasjonsnummer ${orgnrTekst(b.orgnr)}.`
+        : `Fakturaen kommer på e-post til ${b.epost}.`,
+      `Betalingsfristen er ${FRIST_DAGER} dager. Denne e-posten bekrefter bestillingen. Selve fakturaen kommer for seg.`,
+      ``,
+      `Lisensnøkkelen sendes til ${b.epost} når fakturaen er betalt. Lisensen gjelder i ett år fra den dagen, for alle brukere og enheter i ${hvor}.`,
+      `Lisensen fornyes ikke av seg selv. Når den går ut, bestiller dere på nytt på ${PRISSIDE}`,
+      ``,
+      `Spørsmål? Svar på denne e-posten, eller skriv til ${EIER}.`,
+      ``,
+      `Klart`,
+    ],
+    eier: (b) => [
+      `Hva: ${b.beskrivelse}`,
+      `Periode: ett år fra dagen du merker den som betalt`,
+      `Prisgrunnlag: ${b.grunnlag}`,
+    ],
+    naarBetalt: `Når fakturaen er betalt, åpne denne lenken og trykk på knappen. Da får kunden lisensnøkkelen på e-post:`,
   });
-  const mva = await mvaSats(env);
-  if (betaling === "faktura") {
-    const svar = await (fireAar && !perAar ? fakturerForskudd : fakturer)(env, { kunde, meta, linjer, mva, beskrivelse });
-    // Kunden ba om EHF. Vi kan ikke sende EHF herfra ennå, så eieren får beskjed og sender den selv (eieren 20.11.2026).
-    if (inn.ehf) {
-      await varsleEier(env, `Klart: ${svar.navn} vil ha EHF-faktura (${svar.faktura?.nummer || "uten nummer"})`, [
-        `En virksomhet har bestilt Klart på faktura og bedt om EHF. EHF sendes ikke automatisk: send den selv.`,
+  return json({
+    type,
+    ordre: r.ordre,
+    navn: v.navn,
+    orgnr: v.orgnr,
+    epost,
+    ehf: bestilling.ehf,
+    belop: bestilling.belop,
+    belopInkl: inklMva(bestilling.belop),
+    frist: FRIST_DAGER,
+    sendt: r.sendt,
+  });
+}
+
+// --- Betalt: eierens lenke -----------------------------------------------------------
+
+function betaltSide(tittel, innhold) {
+  // Samme sikkerhetshoder som resten av /klart/: ingen inline-stil, bare stilarket fra samme domene.
+  return new Response(
+    `<!doctype html><html lang="nb"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>${esc(tittel)}</title>` +
+      `<link rel="icon" type="image/png" href="/klart/favicon.png"><link rel="stylesheet" href="/klart/pris/betalt.css"><body>${innhold}</body></html>`,
+    { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } }
+  );
+}
+
+/** GET viser bestillingen og knappen. POST: fakturaen er betalt, og kunden får det som er bestilt. */
+async function betalt(request, env, url) {
+  const nr = Number(url.searchParams.get("nr"));
+  const t = url.searchParams.get("t") || "";
+  if (!Number.isInteger(nr) || nr < 1 || !env.KLART_LISENSNOKKEL) return json({ feil: "Finnes ikke." }, 404);
+  const ventet = await betaltSignatur(env, nr);
+  if (t.length !== ventet.length || !likt(t, ventet)) return json({ feil: "Finnes ikke." }, 404);
+  const rad = await lager(env).ordre(nr);
+  if (!rad) return json({ feil: "Finnes ikke." }, 404);
+  const o = rad.data;
+  const hode =
+    `<h1>${esc(o.ordre)}: ${esc(o.navn)}</h1>` +
+    `<p>Org.nr ${esc(orgnrTekst(o.orgnr))}<br>${esc(o.epost)}<br>${esc(o.beskrivelse)}<br>` +
+    `${esc(kroner(o.belop))} eks. mva, ${esc(kroner(inklMva(o.belop)))} inkl. mva. Bestilt ${esc(datoTekst(o.dato))}.</p>`;
+  if (rad.betalt) return betaltSide(o.ordre, hode + `<p><b>${esc(rad.utfall || "Ferdig behandlet")} ${esc(datoTekst(rad.betalt.slice(0, 10)))}.</b></p>`);
+  if (request.method === "GET") {
+    const sporsmal =
+      o.type === "sprint"
+        ? `Er fakturaen betalt? Da blir datoen booket, og kunden får bekreftelsen med kalenderfil.`
+        : o.type === "kunder"
+          ? `Er fakturaen betalt? Da får kunden bekreftelsen på at kundene er lagt til, med nøkkelen.`
+          : `Er fakturaen betalt? Da sendes lisensnøkkelen til kunden, og den gjelder i ett år fra i dag.`;
+    return betaltSide(
+      o.ordre,
+      hode +
+        `<p>${sporsmal}</p><form method="post"><button name="hva" value="betalt">Betalt: send til kunden</button></form>` +
+        (o.type === "sprint" ? `<form method="post"><button class="svak" name="hva" value="slipp">Ikke betalt: slipp datoen</button></form>` : "")
+    );
+  }
+  const hva = (await request.formData().catch(() => null))?.get("hva") || "betalt";
+  const ferdig = async (utfall, tekst) => {
+    await lager(env).merkOrdreBetalt(nr, utfall.utloper || null, utfall.tekst);
+    return betaltSide(o.ordre, hode + `<p><b>${esc(tekst)}</b></p>`);
+  };
+  const feilet = (kode) =>
+    betaltSide(o.ordre, hode + `<p><b>E-posten til kunden gikk ikke ut.</b> Ingenting er merket som betalt. Prøv igjen${kode ? ", eller send nøkkelen selv:" : "."}</p>` + (kode ? `<textarea rows="6" readonly>${esc(kode)}</textarea>` : ""));
+
+  if (o.type === "sprint") {
+    if (hva === "slipp") {
+      await lager(env).fjernSperring(o.sprint);
+      return ferdig({ tekst: "Datoen ble sluppet" }, "Datoen er sluppet. Kunden har ikke fått beskjed: skriv til dem selv.");
+    }
+    const r = await lager(env).betalSprintId(o.sprint, o.epost);
+    if (!r) return betaltSide(o.ordre, hode + `<p><b>Fant ikke bookingen i kalenderen.</b> Den er trolig fjernet.</p>`);
+    if (r.ny) await sprintBekreftelse(env, r.rad, o.epost, `Bestilling: ${o.ordre}`, klartEpost, (ics) => [{ content: base64(ics), filename: "klart.ics", type: "text/calendar", disposition: "attachment" }]);
+    return ferdig({ tekst: "Booket og bekreftet" }, `Datoen er booket, og bekreftelsen er sendt til ${o.epost}.`);
+  }
+
+  if (o.type === "kunder") {
+    const lisens = await lager(env).finnLisens(o.lisens);
+    if (!lisens) return betaltSide(o.ordre, hode + `<p><b>Fant ikke leverandørlisensen.</b></p>`);
+    const kode = await orgKode(env, lisens);
+    const sendt = await klartEpost(env, {
+      til: o.epost,
+      emne: `Klart: kundene er lagt til lisensen for ${o.navn}`,
+      tekst: [
+        `Hei,`,
         ``,
-        `Virksomhet: ${svar.navn}`,
-        `Org.nr: ${orgnrTekst(svar.orgnr)}`,
-        `Hva: ${beskrivelse}`,
-        `Beløp med mva: ${svar.faktura ? kroner(svar.faktura.belop) : "ukjent"}`,
-        `Forfall: ${svar.faktura?.forfall || "ukjent"}`,
-        `Kundens referanse: ${tekstFra(inn.referanse, 140) || "(ingen)"}`,
-        `Fakturaen går til: ${svar.epost || "(ingen e-post)"}`,
-        `Lisensnøkkelen går til: ${svar.nokkelEpost || "(samme)"}`,
-        `Fakturanummer hos Stripe: ${svar.faktura?.nummer || "ukjent"}`,
-        `Fakturaen hos Stripe: ${svar.faktura?.adresse || "(ingen lenke)"}`,
-        ...(testmodus(env) ? [``, `NB: Nettstedet står i Stripes testmodus, så dette er en prøvebestilling.`] : []),
-      ].join("\n")).catch((err) => console.error("klart ehf-varsel", err));
-    }
-    // Nøkkelen er bare på e-post (til virksomhetens eget domene), ikke på siden.
-    delete svar.kode;
-    return json(svar);
-  }
-
-  const side = sideFor(url);
-  const abonnement = type !== "testing" && !(fireAar && !perAar);
-  const felt = {
-    mode: abonnement ? "subscription" : "payment",
-    customer: kunde.id,
-    locale: "nb",
-    success_url: `${side}?ordre={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${side}?orgnr=${v.orgnr}`,
-    client_reference_id: v.orgnr,
-  };
-  // Stripe tar ikke lenger payment_method_types i Checkout. Betalingsmåtene kommer fra et oppsett.
-  const oppsett = await betalingsoppsett(env);
-  if (oppsett) felt.payment_method_configuration = oppsett;
-  leggPaa(felt, "metadata", meta);
-  linjer.forEach((linje, i) => {
-    const f = `line_items[${i}]`;
-    felt[`${f}[price_data][currency]`] = "nok";
-    felt[`${f}[price_data][product]`] = linje.produkt;
-    felt[`${f}[price_data][unit_amount]`] = String(linje.belop);
-    if (abonnement) {
-      felt[`${f}[price_data][recurring][interval]`] = "year";
-      felt[`${f}[price_data][recurring][interval_count]`] = "1";
-    }
-    felt[`${f}[quantity]`] = "1";
-    felt[`${f}[tax_rates][0]`] = mva;
-  });
-  if (abonnement) {
-    leggPaa(felt, "subscription_data[metadata]", meta);
-    felt["subscription_data[description]"] = beskrivelse;
-  } else {
-    leggPaa(felt, "payment_intent_data[metadata]", meta);
-    felt["payment_intent_data[description]"] = beskrivelse;
-    felt["invoice_creation[enabled]"] = "true";
-    leggPaa(felt, "invoice_creation[invoice_data][metadata]", meta);
-  }
-  const okt = await stripe(env, "POST", "checkout/sessions", felt);
-  return json({ adresse: okt.url });
-}
-
-/** Faktura: abonnement som sendes som faktura med 7 dagers frist. Nøkkelen sendes når fakturaen er betalt (invoice.paid). */
-async function fakturer(env, { kunde, meta, linjer, mva, beskrivelse }) {
-  const felt = {
-    customer: kunde.id,
-    collection_method: "send_invoice",
-    days_until_due: "7",
-    description: beskrivelse,
-    "payment_settings[payment_method_types][0]": "card",
-    "expand[0]": "latest_invoice",
-  };
-  leggPaa(felt, "metadata", meta);
-  // En fireårslisens betalt per år stopper etter fire år.
-  if (meta.fire_aar === "aarlig") felt.cancel_at = String(Math.floor(leggTilMaaneder(Date.now(), 48) / 1000));
-  linjer.forEach((linje, i) => {
-    const f = `items[${i}]`;
-    felt[`${f}[price_data][currency]`] = "nok";
-    felt[`${f}[price_data][product]`] = linje.produkt;
-    felt[`${f}[price_data][unit_amount]`] = String(linje.belop);
-    felt[`${f}[price_data][recurring][interval]`] = "year";
-    felt[`${f}[tax_rates][0]`] = mva;
-  });
-  const abo = await stripe(env, "POST", "subscriptions", felt);
-  if (meta.fire_aar) await registrerKommunekjop(env, abo.id, meta);
-  let faktura = abo.latest_invoice;
-  // Med auto_advance sender Stripe fakturaen selv når den er ferdigstilt.
-  if (faktura.status === "draft") faktura = await stripe(env, "POST", `invoices/${faktura.id}/finalize`);
-  if (faktura.auto_advance === false) faktura = await stripe(env, "POST", `invoices/${faktura.id}/send`);
-  return {
-    type: meta.license_type,
-    navn: meta.company_name,
-    orgnr: orgnrFra(meta.orgnr),
-    epost: kunde.email,
-    nokkelEpost: meta.nokkel_epost || kunde.email,
-    faktura: {
-      nummer: faktura.number,
-      belop: faktura.total / 100,
-      forfall: faktura.due_date ? dato(faktura.due_date * 1000) : null,
-      adresse: faktura.hosted_invoice_url || null,
-    },
-  };
-}
-
-/** Faktura for en fireårslisens betalt på forskudd (kommuner): én faktura med 30 dagers frist, ikke et
-    abonnement. Nøkkelen, for alle fire årene, gis når fakturaen er sendt, som for årslisensene. */
-async function fakturerForskudd(env, { kunde, meta, linjer, mva, beskrivelse }) {
-  const felt = {
-    customer: kunde.id,
-    collection_method: "send_invoice",
-    days_until_due: "30",
-    description: beskrivelse,
-    pending_invoice_items_behavior: "exclude",
-    "payment_settings[payment_method_types][0]": "card",
-  };
-  leggPaa(felt, "metadata", meta);
-  let faktura = await stripe(env, "POST", "invoices", felt);
-  for (const linje of linjer) {
-    await stripe(env, "POST", "invoiceitems", {
-      customer: kunde.id,
-      invoice: faktura.id,
-      currency: "nok",
-      amount: String(linje.belop),
-      description: "Klart – lisens for virksomheten",
-      "tax_rates[0]": mva,
+        `takk, fakturaen for bestilling ${o.ordre} er betalt. Disse kundene er lagt til tjenesteleverandørlisensen for ${o.navn}:`,
+        ...o.linjer.map((x) => `  ${x.kunde.navn} (org.nr ${orgnrTekst(x.kunde.orgnr)})`),
+        ``,
+        `Lisensen gjelder som før til og med ${datoTekst(lisens.utloper)}. Her er nøkkelen på nytt:`,
+        ``,
+        kode,
+        ``,
+        `Spørsmål? Svar på denne e-posten, eller skriv til ${EIER}.`,
+        ``,
+        `Klart`,
+      ].join("\n"),
     });
+    if (!sendt) return feilet(kode);
+    return ferdig({ tekst: "Kundene ble lagt til", utloper: lisens.utloper }, `Bekreftelsen er sendt til ${o.epost}.`);
   }
-  faktura = await stripe(env, "POST", `invoices/${faktura.id}/finalize`);
-  if (faktura.auto_advance === false) faktura = await stripe(env, "POST", `invoices/${faktura.id}/send`);
-  const lisens = await forskuddsLisens(env, faktura.id, meta, kunde.email, kunde.id);
-  const kode = await sendNokkel(env, lisens);
-  return {
-    kode,
-    type: meta.license_type,
-    fireAar: true,
-    navn: lisens.navn,
-    orgnr: lisens.orgnr,
-    epost: lisens.epost,
-    fakturaEpost: kunde.email,
-    utloper: lisens.utloper,
-    faktura: {
-      nummer: faktura.number,
-      belop: faktura.total / 100,
-      forfall: faktura.due_date ? dato(faktura.due_date * 1000) : null,
-      adresse: faktura.hosted_invoice_url || null,
-    },
-  };
+
+  // Lisens for virksomheten (og kundene, for en tjenesteleverandør): ett år fra i dag.
+  const utloper = ettAarFra();
+  const lisens = { id: `ordre-${o.ordre}`, epost: o.epost, navn: o.navn, orgnr: o.orgnr, kunde: null, utloper, maks: 0, plan: o.plan, forsteMaskin: null };
+  const kode = await orgKode(env, lisens);
+  const sendt = await klartEpost(env, nokkelEpost(lisens, kode));
+  if (!sendt) return feilet(kode);
+  await lager(env).lagreLisens(lisens);
+  await lager(env).nyNokkel(lisens.id, utloper);
+  if (o.kommune) await registrerKommunekjop(env, lisens.id, { kommune_rot: o.kommune.rot, orgnr: o.orgnr, kommune_belop: o.kommune.belop }, utloper);
+  await varsleEier(env, `Klart ${o.ordre} betalt: nøkkelen er sendt til ${o.navn}`, `Lisensnøkkelen er sendt til ${o.epost}. Den gjelder til og med ${datoTekst(utloper)}.\n\n${kode}`);
+  return ferdig({ tekst: "Lisensnøkkelen ble sendt", utloper }, `Lisensnøkkelen er sendt til ${o.epost}. Den gjelder til og med ${datoTekst(utloper)}.`);
 }
 
-/** Hele beløpet for en fireårslisens lagres på kommunen, så det trekkes fra når andre i kommunen kjøper. */
-async function registrerKommunekjop(env, id, m) {
-  await lager(env).nyttKommunekjop(id, m.kommune_rot, orgnrFra(m.orgnr), Number(m.kommune_belop) || 0, fireAarFra());
+/** Hele beløpet for en fireårslisens lagres på kommunen, så det trekkes fra når andre i kommunen kjøper.
+    «til» er så lenge kjøpet gjelder: lisensens utløp for bestillinger på faktura, fire år for de gamle abonnementene. */
+async function registrerKommunekjop(env, id, m, til = fireAarFra()) {
+  await lager(env).nyttKommunekjop(id, m.kommune_rot, orgnrFra(m.orgnr), Number(m.kommune_belop) || 0, til);
 }
+
+// --- Eldre kjøp gjennom Stripe: bare webhooken kommer hit ------------------------------
 
 /** Lisensen for en fireårslisens betalt på forskudd: hele virksomheten, uten maskingrense, i fire år. */
 async function forskuddsLisens(env, id, m, epost, kunde) {
@@ -1746,8 +1616,9 @@ async function ordreFullfort(env, okt) {
 }
 
 async function orgKode(env, lisens) {
+  // Utvidet testing selges ikke lenger. Koder fra eldre kjøp lages som før (bare webhooken kommer hit med dem).
   if (lisens.plan === "testing") {
-    const test = testmodus(env);
+    const test = gammelTest(env, lisens);
     return lagKode(env, {
       id: nyId(),
       type: "testing",
@@ -1787,15 +1658,16 @@ function nokkelEpost(lisens, kode) {
   if (testing) {
     linjer.push("Koden gir 50 eksporter, uten tidsgrense. Hele beløpet godskrives lisensen når dere kjøper.");
   } else {
-    // Abonnementer får en ny nøkkel for hver periode. En fireårslisens betalt på forskudd har én nøkkel.
-    const fornyes = String(lisens.id).startsWith("sub_");
+    // De gamle abonnementene (sub_…) får en ny nøkkel for hver periode. En bestilling på faktura fornyes ikke.
+    const id = String(lisens.id);
     linjer.push(
       `Nøkkelen gjelder alle brukere og enheter i ${lisens.plan === "konsern" ? "hele konsernet" : "virksomheten"}` +
         `, til og med ${datoTekst(lisens.utloper)}.` +
-        (fornyes ? " Ved hver fornyelse kommer en ny nøkkel på e-post." : "")
+        (id.startsWith("sub_") ? " Ved hver fornyelse kommer en ny nøkkel på e-post." : "") +
+        (id.startsWith("ordre-") ? ` Lisensen fornyes ikke av seg selv. Når den går ut, bestiller dere på nytt på ${PRISSIDE}` : "")
     );
     if (lisens.plan === "leverandor") {
-      linjer.push("", "Når dere legger til kunder, får dere en ny nøkkel som erstatter denne.");
+      linjer.push("", "Legger dere til kunder senere, gjelder den samme nøkkelen videre.");
     }
   }
   linjer.push("", `Spørsmål? Svar på denne e-posten, eller skriv til ${EIER}.`, "", "Klart");
@@ -1806,27 +1678,8 @@ function nokkelEpost(lisens, kode) {
   };
 }
 
-async function ordre(env, url) {
-  const id = url.searchParams.get("session") || "";
-  if (!/^cs_(test|live)_[A-Za-z0-9]+$/.test(id)) return json({ feil: "Fant ikke kjøpet." }, 400);
-  if (!kjopApent(env)) return json({ feil: "Kjøp er ikke åpnet." }, 503);
-  const okt = await stripe(env, "GET", `checkout/sessions/${id}?expand[]=subscription`);
-  if (!okt.metadata?.license_type) return json({ feil: "Fant ikke kjøpet." }, 404);
-  const r = await ordreFullfort(env, okt);
-  if (!r) return json({ feil: "Betalingen er ikke fullført ennå. Last siden på nytt om litt." }, 409);
-  return json({
-    kode: r.kode,
-    type: okt.metadata.license_type,
-    fireAar: Boolean(okt.metadata.fire_aar),
-    perAar: okt.metadata.fire_aar === "aarlig",
-    navn: r.lisens.navn,
-    orgnr: r.lisens.orgnr,
-    epost: r.lisens.epost,
-    utloper: r.lisens.utloper,
-  });
-}
-
-/** En tjenesteleverandør legger til kunder midt i perioden. Nøkkelen beviser hvem de er. */
+/** En tjenesteleverandør bestiller flere kunder midt i perioden. Nøkkelen beviser hvem de er. Kundene prises
+    for resten av perioden, fakturaen sender eieren, og kundene er lagt til når den er betalt. */
 async function leggTilKunder(request, env) {
   const p = priser(env);
   if (!p || !kjopApent(env)) return json({ feil: "Kjøp er ikke åpnet ennå." }, 503);
@@ -1834,31 +1687,69 @@ async function leggTilKunder(request, env) {
   const lapp = await lesKode(env, inn.kode);
   if (!lapp || !lapp.orgnr) return json({ feil: "Lisensnøkkelen stemmer ikke. Lim inn hele nøkkelen dere fikk på e-post." }, 400);
   const lisens = await lager(env).finnLeverandor(lapp.orgnr, idag());
-  if (!lisens) return json({ feil: "Fant ingen aktiv leverandørlisens for denne nøkkelen." }, 404);
+  if (!lisens || !lisens.utloper) return json({ feil: "Fant ingen aktiv leverandørlisens for denne nøkkelen." }, 404);
+  if (!lisens.epost) return json({ feil: `Lisensen mangler e-postadresse. Skriv til ${EIER}.` }, 409);
   const o = await slaaOppVirksomhet(lapp.orgnr);
   if (!o.virksomhet) return json({ feil: o.feil || IKKE_AKTIV }, 409);
-  const abo = await stripe(env, "GET", `subscriptions/${lisens.id}?expand[]=items.data.price.product`);
-  const har = abo.items.data.map((i) => i.price.product?.metadata?.kunde).filter(Boolean);
-  const k = await kunderFra(env, p, o.virksomhet, inn.kunder, har, 20 - abo.items.data.length);
+  const v = o.virksomhet;
+  // Kundene som alt står på lisensen: fra bestillingene som er betalt i denne perioden.
+  const har = (await lager(env).betalteOrdrer(v.orgnr))
+    .filter((r) => r.data.lisens === lisens.id || `ordre-${r.data.ordre}` === lisens.id)
+    .flatMap((r) => r.data.linjer.map((x) => x.kunde?.orgnr).filter(Boolean));
+  const k = await kunderFra(p, v, inn.kunder, har, 19 - har.length);
   if (k.feil) return json({ feil: k.feil }, k.kode || 400);
-  const mva = await mvaSats(env);
-  for (const [i, linje] of k.linjer.entries()) {
-    await stripe(env, "POST", "subscription_items", {
-      subscription: abo.id,
-      "price_data[currency]": "nok",
-      "price_data[product]": linje.produkt,
-      "price_data[unit_amount]": String(linje.belop),
-      "price_data[recurring][interval]": "year",
-      quantity: "1",
-      "tax_rates[0]": mva,
-      // Forholdsmessig pris fram til leverandørens fornyelsesdato, samlet på én faktura med den siste linjen.
-      proration_behavior: i === k.linjer.length - 1 ? "always_invoice" : "create_prorations",
-    });
-  }
-  // Nøkkelen har ingen kundeliste, men hver endring gir en ny nøkkel som erstatter den gamle.
-  const kode = await orgKode(env, lisens);
-  if (lisens.epost) await sendEpost(env, nokkelEpost(lisens, kode));
-  return json({ kode, kunder: k.linjer.map((l) => ({ orgnr: l.kunde.orgnr, navn: l.kunde.navn })), utloper: lisens.utloper });
+  // Forholdsmessig pris fram til lisensen går ut.
+  const dager = Math.max(0, Math.round((Date.parse(lisens.utloper) - Date.parse(idag())) / 86_400_000));
+  const linjer = k.linjer.map((x) => ({ ...x, tekst: `${x.tekst}, til og med ${datoTekst(lisens.utloper)}`, belop: Math.round((x.belop * Math.min(dager, 365)) / 365) }));
+  const hvem = `${v.navn} (org.nr ${orgnrTekst(v.orgnr)})`;
+  const bestilling = {
+    type: "kunder",
+    lisens: lisens.id,
+    orgnr: v.orgnr,
+    navn: v.navn,
+    adresse: v.adresse,
+    mvaRegistrert: v.mva,
+    epost: lisens.epost,
+    referanse: tekstFra(inn.referanse, 140).replace(/\s+/g, " "),
+    // Fakturamåten spørres det ikke om her. Eieren ser i katalogen hva de tar imot.
+    ehf: null,
+    kanEhf: await kanEhf(v.orgnr),
+    beskrivelse: `Klart for ${hvem}: ${linjer.length} ${linjer.length === 1 ? "kunde" : "kunder"} til på tjenesteleverandørlisensen, til og med ${datoTekst(lisens.utloper)}.`,
+    linjer,
+    belop: linjer.reduce((s, x) => s + x.belop, 0),
+    dato: idag(),
+  };
+  const r = await nyBestilling(env, bestilling, {
+    emne: "bestillingen av flere kunder er mottatt",
+    kunde: (b) => [
+      `Hei,`,
+      ``,
+      `takk for bestillingen. Disse kundene legges til tjenesteleverandørlisensen for ${hvem}:`,
+      ...b.linjer.map((x) => `  ${x.kunde.navn} (org.nr ${orgnrTekst(x.kunde.orgnr)}): ${kroner(x.belop)}`),
+      ``,
+      `Bestilling: ${b.ordre}`,
+      `Prisen gjelder resten av perioden, til og med ${datoTekst(lisens.utloper)}.`,
+      `Beløp eks. mva: ${kroner(b.belop)}`,
+      `Beløp inkl. 25 % mva: ${kroner(inklMva(b.belop))}`,
+      ``,
+      `Fakturaen kommer for seg, på samme måte som sist. Betalingsfristen er ${FRIST_DAGER} dager.`,
+      `Kundene er lagt til når fakturaen er betalt. Da får dere en bekreftelse på e-post. Nøkkelen dere har, gjelder videre.`,
+      ``,
+      `Spørsmål? Svar på denne e-posten, eller skriv til ${EIER}.`,
+      ``,
+      `Klart`,
+    ],
+    eier: (b) => [`Hva: ${b.beskrivelse}`, `Lisensen det gjelder: ${lisens.id}`],
+    naarBetalt: `Når fakturaen er betalt, åpne denne lenken og trykk på knappen. Da får kunden bekreftelsen:`,
+  });
+  return json({
+    ordre: r.ordre,
+    kunder: linjer.map((x) => x.kunde),
+    belop: bestilling.belop,
+    belopInkl: inklMva(bestilling.belop),
+    epost: lisens.epost,
+    utloper: lisens.utloper,
+  });
 }
 
 async function sprint(request, env) {
@@ -1881,7 +1772,7 @@ async function sprint(request, env) {
     ansatte: v?.ansatte ?? null,
   };
   await lager(env).nyHenvendelse("sprint", data);
-  await sendEpost(env, {
+  await klartEpost(env, {
     til: EIER,
     svarTil: epost,
     emne: `Klart: sprintsamtale for ${data.firma || navn}`,
@@ -1904,25 +1795,21 @@ async function sprint(request, env) {
 // Reglene i kalenderen (ledigFor):
 // - To sprinter kan ikke overlappe. En oppsettsdag kan ikke ligge på samme dag som en annen.
 // - En sprint blokkerer bare oppstartsdagen og avslutningsdagen for oppsettsdager, så de kan ligge inne i den.
-// - Bookes en sprint over en dag der det alt ligger en oppsettsdag, blir den «forespurt»: ingen betaling,
-//   eieren får beskjed, flytter oppsettsdagen og bekrefter med POST /klart/api/sprint/bekreft { id }. Det gir
-//   en betalingslenke (Stripe Checkout, gyldig i 24 timer) som også sendes til kunden.
-// Datoen holdes mens kunden er i Stripe (31 minutter) og blir booket når betalingen er gjennom (siden eller
-// webhooken). Tidsrom eieren ikke kan, sperres med POST /klart/api/sprint/sperr { fra, til }; { fjern: id }
-// fjerner en sperring eller en forespørsel (Bearer ADMIN_TOKEN).
+// - En sprint kan bestilles over en dag der det alt ligger en oppsettsdag. Eieren får beskjed om det i
+//   e-posten og flytter oppsettsdagen før han fakturerer.
+// Ingen betaling på siden (eieren 20.11.2026: ikke Stripe). Bestillingen holder datoen («forespurt»), kunden får
+// beskjed om at fakturaen kommer, og eieren får en lenke (se betalt): «betalt» booker datoen og sender
+// bekreftelsen med kalenderfil, «slipp» gjør datoen ledig igjen. Tidsrom eieren ikke kan, sperres med
+// POST /klart/api/sprint/sperr { fra, til }; { fjern: id } fjerner en sperring eller en bestilling som ikke
+// er betalt (Bearer ADMIN_TOKEN).
 
 const SPRINT_VARSEL = 14;
 const SPRINT_HORISONT = 180;
-const SPRINT_OKT_MIN = 31;
 const OPPSETT_FRADRAG_DAGER = 92; // en kort sprint innen tre måneder etter oppsettsdagen får den trukket fra
-const PRODUKTER = {
-  oppsett: { id: "klart_oppsettsdag", navn: "Klart – oppsettsdag" },
-  kort: { id: "klart_kort_sprint", navn: "Klart – grunnhonorar for kort sprint" },
-  sprint: { id: "klart_sprint", navn: "Klart – grunnhonorar for sprint" },
-};
+const SPRINT_LINJE = { oppsett: "Oppsettsdag, fast pris", kort: "Grunnhonorar for kort sprint", sprint: "Grunnhonorar for sprint" };
 const ISO_DAG = /^\d{4}-\d{2}-\d{2}$/;
 const OKT_ID = /^cs_(test|live)_[A-Za-z0-9]+$/;
-// Samme kriterium som på prissiden (/klart/pris/), i Stripe og e-postene.
+// Samme kriterium som på prissiden (/klart/pris/) og i e-postene.
 const SPRINT_KRITERIER =
   "Suksesskriteriet: før sprinten blir vi enige om hvordan et renset dokument skal se ut. Det testes i runder på 100 tilfeldige dokumenter fra egne arkiver (eller høyst 1 000 sider). " + "Går Klart glipp av noe, rettes modellen, og " +
   "dokumentene blir treningsmateriale; så tas 100 nye. Kriteriet er nådd når en ny runde blir 100 % ren på første " +
@@ -1995,19 +1882,19 @@ function offentligKunde(v) {
   return Boolean(v.stat || v.kommune || KOMMUNEFORMER.has(v.form));
 }
 
-/** Det kunden betaler ved booking, eks. mva: fast pris for oppsettsdagen, ellers grunnhonoraret. */
+/** Det som faktureres ved booking, eks. mva: fast pris for oppsettsdagen, ellers grunnhonoraret. */
 function forskudd(t) {
   return t.fast ?? t.grunn;
 }
 
 async function sprintRute(request, env, url, del) {
   if (del === "ledige" && request.method === "GET") return await sprintLedige(env, url);
-  if (del === "book" && request.method === "POST") return await sprintBook(request, env, url);
-  if (del === "avbryt" && request.method === "POST") return await sprintAvbryt(request, env);
-  if (del === "kvittering" && request.method === "GET") return await sprintKvittering(env, url);
+  if (del === "book" && request.method === "POST") return await sprintBook(request, env);
+  // Fra kortbetalingen som er borte: sider som står åpne fra før, får et rolig svar.
+  if (del === "avbryt" && request.method === "POST") return json({ ok: true });
+  if (del === "kvittering" && request.method === "GET") return flyttet();
   if (del === "ics" && request.method === "GET") return await sprintIcsSvar(env, url);
   if (del === "sperr" && request.method === "POST") return await sprintSperr(request, env);
-  if (del === "bekreft" && request.method === "POST") return await sprintBekreft(request, env, url);
   return json({ feil: "Finnes ikke." }, 404);
 }
 
@@ -2019,33 +1906,12 @@ async function sprintLedige(env, url) {
   return json({ dager, ...(await ledigeStarter(env, { id, dager }, url.searchParams.get("reise") === "1")) });
 }
 
-function sprintMeta(p, g, v, t, id, start, slutt) {
-  const l = lisenspris(p, g.v, g.regnskap);
-  return {
-    orgnr: v.orgnr,
-    company_name: v.navn,
-    tier: prisgrunnlag(l, g),
-    sector: l.sektor ? l.sektor.id : "",
-    employees_at_purchase: String(v.ansatte),
-    document_workers: String(l.ansatte),
-    value_factor: l.faktor.toFixed(2),
-    accounts_year: g.regnskap ? g.regnskap.aar : "",
-    scope: g.konsern ? "konsern" : "virksomhet",
-    sprint: String(id),
-    sprint_offer: t.id,
-    sprint_start: start,
-    sprint_end: slutt,
-    sprint_tier: t.trinn,
-    sprint_total: String(t.total ?? t.fast),
-  };
-}
-
 function tidTekst(start, slutt) {
   return start === slutt ? datoTekst(start) : `${datoTekst(start)}–${datoTekst(slutt)}`;
 }
 
-/** Beskrivelsen i Stripe (betalingen og kvitteringen). */
-function stripeBeskrivelse(t, firma, orgnr, start, slutt) {
+/** Hva som er bestilt, til bestillingen og e-posten til eieren. */
+function sprintBeskrivelse(t, firma, orgnr, start, slutt) {
   const hos = `hos ${firma} (org.nr ${orgnrTekst(orgnr)}), ${tidTekst(start, slutt)}.`;
   if (t.id === "oppsett") return `Oppsettsdag for Klart ${hos} Fast pris. ${OPPSETT_INNHOLD}`;
   return (
@@ -2055,44 +1921,7 @@ function stripeBeskrivelse(t, firma, orgnr, start, slutt) {
   );
 }
 
-/** Stripe Checkout for det som betales ved booking. «minutter» er hvor lenge økten varer (31 min til 24 t). */
-async function sprintCheckout(env, side, rad, meta, minutter) {
-  const t = rad.data;
-  const finnes = await lager(env).kundeFor(rad.orgnr);
-  // En kunde som alt har lisens, beholder sin Stripe-kunde som den er.
-  const kunde = finnes
-    ? { id: finnes }
-    : await stripeKunde(env, { orgnr: rad.orgnr, navn: t.firma, adresse: t.adresse || null, mva: Boolean(t.mva) }, { ...meta, license_type: "sprint" }, { epost: t.epost });
-  const mva = await mvaSats(env);
-  const produktet = PRODUKTER[t.id];
-  const beskrivelse = stripeBeskrivelse(t, t.firma, rad.orgnr, rad.start, rad.slutt);
-  const felt = {
-    mode: "payment",
-    customer: kunde.id,
-    locale: "nb",
-    success_url: `${side}?sprint={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${side}?orgnr=${rad.orgnr}&vis=oppsett&avbrutt=1`,
-    client_reference_id: rad.orgnr,
-    expires_at: String(Math.floor(Date.now() / 1000) + minutter * 60),
-    "line_items[0][price_data][currency]": "nok",
-    "line_items[0][price_data][product]": await produkt(env, produktet.id, produktet.navn, { klart: t.id }),
-    "line_items[0][price_data][unit_amount]": String(forskudd(t) * 100),
-    "line_items[0][quantity]": "1",
-    "line_items[0][tax_rates][0]": mva,
-    "payment_intent_data[description]": beskrivelse.slice(0, 1000),
-    "invoice_creation[enabled]": "true",
-  };
-  const oppsett = await betalingsoppsett(env);
-  if (oppsett) felt.payment_method_configuration = oppsett;
-  leggPaa(felt, "metadata", meta);
-  leggPaa(felt, "payment_intent_data[metadata]", meta);
-  leggPaa(felt, "invoice_creation[invoice_data][metadata]", meta);
-  const okt = await stripe(env, "POST", "checkout/sessions", felt);
-  await lager(env).sprintOkt(rad.id, okt.id);
-  return okt;
-}
-
-async function sprintBook(request, env, url) {
+async function sprintBook(request, env) {
   const p = priser(env);
   if (!p || !kjopApent(env)) return json({ feil: "Booking er ikke åpnet ennå." }, 503);
   const inn = await body(request);
@@ -2131,21 +1960,64 @@ async function sprintBook(request, env, url) {
     km: sted.km,
     reise: sted.reise,
   };
-  // Holdt litt lenger enn økten, så en betaling i siste sekund ikke mister datoen.
-  const holdtTil = new Date(Date.now() + (SPRINT_OKT_MIN + 2) * 60_000).toISOString();
-  const h = await lager(env).holdSprint(kalenderType(t.id), start, slutt, holdtTil, orgnr, data);
+  // Datoen holdes fra bestillingen («forespurt») til eieren har merket fakturaen som betalt, eller slipper den.
+  const h = await lager(env).holdSprint(kalenderType(t.id), start, slutt, null, orgnr, data);
   if (!h) return json({ feil: "Den datoen ble nettopp tatt. Velg en annen." }, 409);
-
-  if (h.forespurt) {
-    await sprintForespurtVarsel(env, h.id, data, orgnr, start, slutt);
-    return json({ forespurt: true, start, slutt });
-  }
   try {
-    const rad = { id: h.id, orgnr, start, slutt, data };
-    const okt = await sprintCheckout(env, sideFor(url), rad, sprintMeta(p, g, v, t, h.id, start, slutt), SPRINT_OKT_MIN);
-    return json({ adresse: okt.url, okt: okt.id });
+    const hva = t.id === "oppsett" ? "oppsettsdag" : t.id === "kort" ? "kort sprint" : "sprint";
+    const tid = tidTekst(start, slutt);
+    const belop = forskudd(t);
+    // En sprint over en oppsettsdag: eieren flytter oppsettsdagen før han fakturerer.
+    const over = h.forespurt ? (await lager(env).oppsettIPerioden(start, slutt)).map((r) => `${datoTekst(r.start)} (${r.data.firma})`) : [];
+    const bestilling = {
+      type: "sprint",
+      sprint: h.id,
+      orgnr,
+      navn: v.navn,
+      adresse: v.adresse,
+      mvaRegistrert: v.mva,
+      epost,
+      referanse: "",
+      // Bookingskjemaet spør ikke om EHF. Eieren ser i katalogen hva de tar imot.
+      ehf: null,
+      kanEhf: await kanEhf(orgnr),
+      beskrivelse: sprintBeskrivelse(t, v.navn, orgnr, start, slutt),
+      linjer: [{ tekst: SPRINT_LINJE[t.id], belop }],
+      belop,
+      dato: idag(),
+    };
+    const r = await nyBestilling(env, bestilling, {
+      emne: `bestillingen av ${hva} er mottatt`,
+      kunde: (b) => [
+        `Hei ${navn},`,
+        ``,
+        `takk for bestillingen av ${hva} hos ${v.navn} ${tid}. Datoen er holdt av til dere.`,
+        ...(h.forespurt ? [`Det ligger en annen avtale i perioden, som jeg flytter først. Jeg bekrefter datoene før fakturaen sendes.`] : []),
+        ``,
+        `Bestilling: ${b.ordre}`,
+        `${SPRINT_LINJE[t.id]}: ${kroner(belop)} eks. mva, ${kroner(inklMva(belop))} inkl. 25 % mva.`,
+        ...(t.id === "oppsett" ? [] : [`Resten, ${kroner(t.total - t.grunn)} eks. mva, faktureres bare hvis suksesskriteriet er nådd. Ellers faller den bort.`]),
+        `Fakturaen kommer for seg, med ${FRIST_DAGER} dagers betalingsfrist. Bookingen gjelder når fakturaen er betalt. Da får dere bekreftelsen med kalenderfil.`,
+        ``,
+        ...stedLinjer(data),
+        ``,
+        `Spørsmål? Svar på denne e-posten, eller skriv til ${EIER}.`,
+        ``,
+        `Hilsen Esbjug Consult`,
+      ],
+      eier: (b) => [
+        `Hva: ${b.beskrivelse}`,
+        `Kontakt: ${navn} <${epost}>${data.telefon ? `, ${data.telefon}` : ""}`,
+        `Størrelse: ${t.trinn}`,
+        ...(data.sted ? [`Sted: ${data.sted} (${data.km} km)${data.reise ? ". Reisedag dagen før, den er holdt av i kalenderen." : "."}`] : []),
+        ...(h.forespurt ? [`NB: Det ligger en oppsettsdag i perioden: ${over.join(", ") || "se kalenderen"}. Flytt den før du fakturerer.`] : []),
+        `Melding: ${data.melding || "(ingen)"}`,
+      ],
+      naarBetalt: `Datoen er holdt av i kalenderen. Åpne denne lenken når fakturaen er betalt (da bookes datoen og kunden får bekreftelsen med kalenderfil), eller for å slippe datoen:`,
+    });
+    return json({ bestilt: true, ordre: r.ordre, start, slutt, epost, belop, belopInkl: inklMva(belop), frist: FRIST_DAGER, flyttes: Boolean(h.forespurt) });
   } catch (err) {
-    await lager(env).slippSprint(h.id);
+    await lager(env).fjernSperring(h.id);
     throw err;
   }
 }
@@ -2156,93 +2028,23 @@ function stedLinjer(d) {
   return [`Sted: ${d.sted}.`, d.reise ? "Jeg reiser dagen før. Reise og hotell ordner og dekker jeg selv." : "Reise ordner og dekker jeg selv."];
 }
 
-async function sprintForespurtVarsel(env, id, d, orgnr, start, slutt) {
-  const tid = tidTekst(start, slutt);
-  const hva = d.id === "kort" ? "kort sprint" : "sprint";
-  const over = (await lager(env).oppsettIPerioden(start, slutt)).map((r) => `${datoTekst(r.start)} (${r.data.firma})`);
-  await sendEpost(env, {
-    til: EIER,
-    svarTil: d.epost,
-    emne: `Klart: forespørsel om ${hva} hos ${d.firma}, ${tid}`,
-    tekst: [
-      `${d.navn} <${d.epost}>${d.telefon ? `, ${d.telefon}` : ""}`,
-      `${d.firma}, org.nr ${orgnrTekst(orgnr)}, ${d.trinn}: ${hva}, ${tid}.`,
-      ...stedLinjer(d),
-      `Det ligger en oppsettsdag i perioden: ${over.join(", ")}. Flytt den, og bekreft med`,
-      `POST /klart/api/sprint/bekreft {"id": ${id}} (Bearer ADMIN_TOKEN). Det gir betalingslenken til kunden.`,
-      "",
-      d.melding || "(ingen melding)",
-    ].join("\n"),
-  });
-  await sendEpost(env, {
-    til: d.epost,
-    emne: `Klart: forespørsel mottatt for ${tid}`,
-    tekst: [
-      `Hei ${d.navn},`,
-      "",
-      `Jeg har mottatt forespørselen om ${hva} hos ${d.firma} ${tid}.`,
-      "Det ligger en annen avtale i perioden, som jeg flytter først. Jeg bekrefter så snart jeg kan og sender en",
-      `betalingslenke for grunnhonoraret på ${kroner(d.grunn)} eks. mva. Ingenting er betalt ennå.`,
-      "",
-      "Hilsen Esbjug Consult",
-    ].join("\n"),
-  });
-}
-
-/** Eieren bekrefter en forespurt sprint: betalingslenke (24 timer) til kunden. */
-async function sprintBekreft(request, env, url) {
-  const hode = request.headers.get("authorization") || "";
-  const ventet = `Bearer ${env.ADMIN_TOKEN || ""}`;
-  if (!env.ADMIN_TOKEN || hode.length !== ventet.length || !likt(hode, ventet)) return json({ feil: "Ikke tilgang." }, 401);
-  const p = priser(env);
-  const rad = await lager(env).sprintRad(Number((await body(request)).id));
-  if (!rad || rad.status !== "forespurt") return json({ feil: "Fant ingen forespørsel med den id-en." }, 404);
-  const o = await slaaOppVirksomhet(rad.orgnr);
-  if (o.feil) return json({ feil: o.feil }, o.kode);
-  const g = grunnlag(p, o);
-  const meta = sprintMeta(p, g, o.virksomhet, rad.data, rad.id, rad.start, rad.slutt);
-  const okt = await sprintCheckout(env, sideFor(url), rad, meta, 24 * 60);
-  const d = rad.data;
-  await sendEpost(env, {
-    til: d.epost,
-    emne: `Klart: sprinten ${tidTekst(rad.start, rad.slutt)} er bekreftet`,
-    tekst: [
-      `Hei ${d.navn},`,
-      "",
-      `Datoene er klare. Betal grunnhonoraret på ${kroner(d.grunn)} eks. mva her innen 24 timer, så er sprinten booket:`,
-      okt.url,
-      "",
-      "Hilsen Esbjug Consult",
-    ].join("\n"),
-  });
-  return json({ adresse: okt.url, utloper: okt.expires_at });
-}
-
-/** Kunden trykket tilbake i Stripe: økten avsluttes og datoen slippes med en gang (ikke en forespørsel). */
-async function sprintAvbryt(request, env) {
-  const id = String((await body(request)).session || "");
-  if (!OKT_ID.test(id)) return json({ ok: true });
-  const okt = await stripeFinn(env, `checkout/sessions/${id}`);
-  if (okt?.metadata?.sprint && okt.status === "open") {
-    const rad = await lager(env).sprintForOkt(id);
-    if (rad && rad.status === "holdt") {
-      await stripe(env, "POST", `checkout/sessions/${id}/expire`).catch(() => null);
-      await lager(env).slippOkt(id);
-    }
-  }
-  return json({ ok: true });
-}
-
-/** Etter betaling: datoen er booket, og begge får bekreftelse med kalenderfil én gang. */
+/** Eldre kortbetalinger (webhooken): datoen er booket, og begge får bekreftelse med kalenderfil én gang. */
 async function sprintBetalt(env, okt) {
   if (okt.status !== "complete" || okt.payment_status !== "paid") return null;
   const epost = (okt.customer_details?.email || okt.customer_email || "").toLowerCase();
   const r = await lager(env).betalSprint(okt.id, epost);
   if (!r) return null;
-  if (r.ny) {
+  if (r.ny) await sprintBekreftelse(env, r.rad, epost, `Stripe: ${okt.id}`, sendEpost, (ics) => [{ filename: "klart.ics", content: base64(ics) }]);
+  return r.rad;
+}
+
+/** Bekreftelsen til kunden og eieren når en booking er betalt. «send» er e-postutsendingen, «vedleggFra» lager
+    vedlegget slik den vil ha det. */
+async function sprintBekreftelse(env, rad, epost, sporing, send, vedleggFra) {
+  const r = { rad };
+  {
     const d = r.rad.data;
-    const ics = sprintIcs(r.rad);
-    const vedlegg = [{ filename: "klart.ics", content: base64(ics) }];
+    const vedlegg = vedleggFra(sprintIcs(r.rad));
     const tid = tidTekst(r.rad.start, r.rad.slutt);
     const mottaker = d.epost || epost;
     const hva = d.id === "oppsett" ? "Oppsettsdagen" : d.id === "kort" ? "Den korte sprinten" : "Sprinten";
@@ -2271,13 +2073,13 @@ async function sprintBetalt(env, okt) {
             "Dere stiller med et arbeidsrom hos dere der jeg kan jobbe uforstyrret, 12–14 timer om dagen.",
             "Jeg tar kontakt for å avtale hvordan et renset dokument skal se ut, skriftlig før dag én.",
           ];
-    await sendEpost(env, {
+    await send(env, {
       til: mottaker,
       emne: `Klart: ${hva.toLowerCase()} er booket ${tid}`,
       tekst: [`Hei ${d.navn},`, "", ...linjer, "", ...stedLinjer(d), "", "Kalenderfilen ligger vedlagt.", "", "Hilsen Esbjug Consult"].join("\n"),
       vedlegg,
     });
-    await sendEpost(env, {
+    await send(env, {
       til: EIER,
       svarTil: mottaker,
       emne: `Klart: ${hva.toLowerCase()} booket hos ${d.firma}, ${tid}`,
@@ -2289,34 +2091,13 @@ async function sprintBetalt(env, okt) {
           ? `Oppsettsdag betalt: ${kroner(d.fast)} eks. mva.`
           : `Grunnhonorar betalt (beholdes): ${kroner(d.grunn)} eks. mva. Resten ved nådd kriterium: ${kroner(d.total - d.grunn)} eks. mva.`,
         fradrag ? `Trekk fra oppsettsdagen ${datoTekst(fradrag.start)}: ${kroner(fradrag.data.fast)}.` : "",
-        `Stripe: ${okt.id}`,
+        sporing,
         "",
         d.melding || "(ingen melding)",
       ].join("\n"),
       vedlegg,
     });
   }
-  return r.rad;
-}
-
-async function sprintKvittering(env, url) {
-  const id = url.searchParams.get("session") || "";
-  if (!OKT_ID.test(id)) return json({ feil: "Fant ikke bookingen." }, 400);
-  const okt = await stripe(env, "GET", `checkout/sessions/${id}`);
-  if (!okt.metadata?.sprint) return json({ feil: "Fant ikke bookingen." }, 404);
-  const rad = await sprintBetalt(env, okt);
-  if (!rad) return json({ feil: "Betalingen er ikke fullført ennå. Last siden på nytt om litt." }, 409);
-  return json({
-    tilbud: rad.data.id || "sprint",
-    navn: rad.data.firma,
-    orgnr: rad.orgnr,
-    start: rad.start,
-    slutt: rad.slutt,
-    fast: rad.data.fast ?? null,
-    grunn: rad.data.grunn ?? null,
-    total: rad.data.total ?? null,
-    epost: rad.epost || rad.data.epost,
-  });
 }
 
 function base64(tekst) {
@@ -2526,7 +2307,8 @@ async function betalingFeilet(env, faktura) {
 
 // --- E-post -------------------------------------------------------------------
 
-/** Alt som skal ut, havner i utboksen i lageret. Med RESEND_API_KEY og KLART_EPOST_FRA sendes det også. */
+/** Bare for e-postene fra webhooken (eldre kjøp gjennom Stripe). Alt annet går med klartEpost.
+    Havner i utboksen i lageret. Med RESEND_API_KEY og KLART_EPOST_FRA sendes det også. */
 async function sendEpost(env, { til, emne, tekst, svarTil, vedlegg }) {
   const id = await lager(env).iUtboks(til, emne, tekst);
   if (!env.RESEND_API_KEY || !env.KLART_EPOST_FRA) return;
@@ -2661,10 +2443,14 @@ export class KlartLager extends DurableObject {
     // FrostCopy: bestillinger på faktura. id er løpenummeret fakturanummeret lages av (FC-1001, FC-1002 …).
     this.sql.exec(`CREATE TABLE IF NOT EXISTS us_ordrer (
       id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT, laget TEXT, betalt TEXT, utloper TEXT)`);
+    // Klart: bestillinger på faktura. id er løpenummeret bestillingsnummeret lages av (K-1001, K-1002 …).
+    // «betalt» settes når eieren har merket bestillingen som ferdig, «utfall» sier hva som da skjedde.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS ordrer (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, orgnr TEXT, data TEXT, laget TEXT, betalt TEXT, utloper TEXT, utfall TEXT)`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS henvendelser (
       id INTEGER PRIMARY KEY AUTOINCREMENT, hva TEXT, data TEXT, laget TEXT)`);
-    // Kalenderen for oppsett og sprinter: status «holdt» (i Stripe nå, til holdt_til), «betalt», «forespurt»
-    // (sprint over en oppsettsdag, venter på eieren) eller «sperret» (eieren kan ikke).
+    // Kalenderen for oppsett og sprinter: status «forespurt» (bestilt på faktura, venter på at eieren merker
+    // den som betalt), «betalt», «sperret» (eieren kan ikke), og «holdt» (fra kortbetalingen som er borte).
     this.sql.exec(`CREATE TABLE IF NOT EXISTS sprinter (
       id INTEGER PRIMARY KEY AUTOINCREMENT, start TEXT, slutt TEXT, status TEXT, holdt_til TEXT,
       okt TEXT, orgnr TEXT, epost TEXT, data TEXT, laget TEXT, betalt TEXT)`);
@@ -2715,7 +2501,8 @@ export class KlartLager extends DurableObject {
   }
 
   /** Holder datoen hvis kalenderen tillater det (ledigFor). Sjekk og innsetting i samme kall, så to kan ikke
-      få samme dag. En sprint over en oppsettsdag lagres som «forespurt». { id, forespurt } eller null. */
+      få samme dag. Uten «holdtTil» (bestilling på faktura) lagres den som «forespurt» og holdes til eieren
+      booker eller slipper den. { id, forespurt } eller null; forespurt = en oppsettsdag ligger i perioden. */
   holdSprint(type, start, slutt, holdtTil, orgnr, data) {
     const fra = data.reise ? forrigeDag(start) : start;
     const l = ledigFor(this.sprintOpptatt(fra, slutt, new Date().toISOString()), type, fra, slutt);
@@ -2726,7 +2513,7 @@ export class KlartLager extends DurableObject {
         type,
         start,
         slutt,
-        l.forespurt ? "forespurt" : "holdt",
+        l.forespurt || !holdtTil ? "forespurt" : "holdt",
         l.forespurt ? null : holdtTil,
         orgnr,
         JSON.stringify(data),
@@ -2736,10 +2523,10 @@ export class KlartLager extends DurableObject {
     return { id, forespurt: l.forespurt };
   }
 
-  /** Oppsettsdagene (betalte eller holdte) i perioden: de eieren må flytte før en forespurt sprint bekreftes. */
+  /** Oppsettsdagene (betalte eller bestilte) i perioden: de eieren må flytte før han fakturerer en sprint over dem. */
   oppsettIPerioden(fra, til) {
     return this.sql
-      .exec(`SELECT * FROM sprinter WHERE type = 'oppsett' AND status IN ('betalt', 'holdt') AND start <= ? AND slutt >= ?`, til, fra)
+      .exec(`SELECT * FROM sprinter WHERE type = 'oppsett' AND status IN ('betalt', 'holdt', 'forespurt') AND start <= ? AND slutt >= ?`, til, fra)
       .toArray()
       .map((r) => ({ ...r, data: JSON.parse(r.data || "{}") }));
   }
@@ -2786,6 +2573,15 @@ export class KlartLager extends DurableObject {
       r.id
     );
     return { rad: this.sprintForOkt(okt), ny: true };
+  }
+
+  /** Booker en bestilt dato når fakturaen er betalt. «ny» er true bare første gang. */
+  betalSprintId(id, epost) {
+    const r = this.sprintRad(id);
+    if (!r || r.status === "sperret") return null;
+    if (r.status === "betalt") return { rad: r, ny: false };
+    this.sql.exec(`UPDATE sprinter SET status = 'betalt', epost = ?, betalt = ? WHERE id = ?`, epost || null, new Date().toISOString(), id);
+    return { rad: this.sprintRad(id), ny: true };
   }
 
   sperrSprint(fra, til, notat) {
@@ -2876,6 +2672,26 @@ export class KlartLager extends DurableObject {
   }
   usMerkBetalt(id, utloper) {
     this.sql.exec(`UPDATE us_ordrer SET betalt = ?, utloper = ? WHERE id = ?`, new Date().toISOString(), utloper, id);
+  }
+  nyOrdre(orgnr, data) {
+    return this.sql.exec(`INSERT INTO ordrer (orgnr, data, laget) VALUES (?, ?, ?) RETURNING id`, orgnr, JSON.stringify(data), new Date().toISOString()).one().id;
+  }
+  oppdaterOrdre(id, data) {
+    this.sql.exec(`UPDATE ordrer SET data = ? WHERE id = ?`, JSON.stringify(data), id);
+  }
+  ordre(id) {
+    const r = this.sql.exec(`SELECT data, laget, betalt, utloper, utfall FROM ordrer WHERE id = ?`, id).toArray()[0];
+    return r ? { ...r, data: JSON.parse(r.data) } : null;
+  }
+  merkOrdreBetalt(id, utloper, utfall) {
+    this.sql.exec(`UPDATE ordrer SET betalt = ?, utloper = ?, utfall = ? WHERE id = ?`, new Date().toISOString(), utloper, utfall, id);
+  }
+  /** Bestillingene for et org.nr som er betalt og gjelder ennå (kundene på en leverandørlisens). */
+  betalteOrdrer(orgnr) {
+    return this.sql
+      .exec(`SELECT data FROM ordrer WHERE orgnr = ? AND betalt IS NOT NULL AND utloper >= ?`, orgnr, idag())
+      .toArray()
+      .map((r) => ({ data: JSON.parse(r.data) }));
   }
   iUtboks(til, emne, tekst) {
     return this.sql

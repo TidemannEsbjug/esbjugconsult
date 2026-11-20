@@ -2,7 +2,7 @@
   var q = new URLSearchParams(location.search);
   // «Kjøp lisens» i appen åpner denne siden med ?hva=kjop. Kjøpet skjer nå på prissiden, der
   // lisensen gjelder hele virksomheten og prisen følger antall ansatte.
-  if (q.get("hva") === "kjop" && !q.get("session")) {
+  if (q.get("hva") === "kjop") {
     location.replace("/alles-klar/pris/?from=upgrade");
     return;
   }
@@ -92,23 +92,13 @@
   }
 
   $("kjop").addEventListener("click", function () {
-    var m = gyldigMaskin();
-    if (!m) return;
     if (!firma) {
       feil("Geben Sie die Organisationsnummer Ihres Unternehmens ein. Lizenzen werden an Unternehmen verkauft.");
       orgnr.focus();
       return;
     }
-    opptatt(this, true);
-    var knapp = this;
-    api("kjop", { maskin: m, orgnr: firma.orgnr, epost: $("epost").value })
-      .then(function (svar) {
-        location.href = svar.adresse;
-      })
-      .catch(function (e) {
-        feil(e.message);
-        opptatt(knapp, false);
-      });
+    // Kjøpet skjer på prissiden, på faktura. Virksomheten følger med dit.
+    location.href = "/alles-klar/pris/?orgnr=" + firma.orgnr;
   });
 
   $("hent").addEventListener("click", function () {
@@ -138,37 +128,9 @@
     });
   });
 
-  // Hva som er åpent: kjøp er stengt til prisen er satt.
-  api("status")
-    .then(function (s) {
-      $("kjop").disabled = !s.kjop;
-      $("kjop-tekst").textContent = s.kjop
-        ? s.test
-          ? "Testmodus: Verwenden Sie die Testkarte 4242 4242 4242 4242."
-          : "Bezahlen Sie per Karte über Stripe."
-        : "Der Kauf ist bald möglich.";
-    })
-    .catch(function () {});
+  $("kjop").disabled = false;
 
   var hva = q.get("hva");
   if (hva === "kjop") $("tittel").textContent = "Alles Klar kaufen";
   if (hva === "aktiver") $("tittel").textContent = "Lizenz aktivieren";
-
-  // Tilbake fra Stripe: vis koden med en gang.
-  var okt = q.get("session");
-  if (okt) {
-    $("tittel").textContent = "Vielen Dank für Ihren Kauf";
-    $("ingress").textContent = "Ihr Lizenzcode wird abgerufen.";
-    $("valg").hidden = true;
-    $("firma-blokk").hidden = true;
-    api("kvittering?session=" + encodeURIComponent(okt))
-      .then(function (svar) {
-        var hvem = svar.orgnr ? svar.navn + " (Org.-Nr. " + svar.orgnr.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3") + ")" : svar.navn;
-        $("ingress").textContent = "Die Lizenz ist registriert auf " + hvem + (svar.epost ? ", mit " + svar.epost + "." : ".");
-        visKode(svar, "Hier ist Ihr Lizenzcode");
-      })
-      .catch(function (e) {
-        feil(e.message);
-      });
-  }
 })();

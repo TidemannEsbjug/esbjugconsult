@@ -25,7 +25,7 @@
   // Jev (TypeSafe) via jev-workeren, som har nøkkelen: søket i avspillingen på /hjem/ (POST /chat/sok).
   // Hemmeligheten INTERN_KEY er den samme i begge workerne.
   "services": [{ "binding": "JEV", "service": "esbjug-jev" }],
-  // E-post ut (Cloudflare Email Sending, slått på for esbjugconsult.com): FrostCopy-fakturaer og lisenser.
+  // E-post ut (Cloudflare Email Sending, slått på for esbjugconsult.com): bestillinger og lisensnøkler for Klart, FrostCopy-fakturaer og lisenser.
   "send_email": [{ "name": "EMAIL", "remote": true }],
   "r2_buckets": [
     { "binding": "FILES", "bucket_name": "esbjug-chat-files" },
@@ -39,20 +39,18 @@
   "vars": {
     "APNS_TEAM_ID": "N5BKVM258S",
     "APNS_TOPIC": "deviatehigh.EsbjugChat",
-    // Klart. Tom STRIPE_PRICE_ID = «Kjøp åpner snart». KLART_MVA "auto" = Stripe Tax legger på mva.
-    // Hemmeligheter (wrangler secret put): KLART_LISENSNOKKEL, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET.
-    // Testpris fra Stripes sandkasse («Klart (test)»). Byttes med den ekte live-prisen ved lansering.
-    "STRIPE_PRICE_ID": "price_1UTKGlKHn2XFxWXM9gD79OHl",
+    // Klart. Ingen betaling går gjennom Stripe (20.11.2026): alt bestilles på faktura, se .worker/klart.js.
+    // Hemmeligheter (wrangler secret put): KLART_LISENSNOKKEL og KLART_PRISER. STRIPE_SECRET_KEY og
+    // STRIPE_WEBHOOK_SECRET brukes bare av webhooken for kjøp som ble gjort før det.
     // "pause" stenger nedlastingen av Klart (se handleNedlasting). Tom = åpen.
     "KLART_NEDLASTING": "",
     // "ja" = bare «Kommer snart» på /klart. Aktiveringen og /klart/api/ går som før.
     "KLART_SNART": "",
     "KLART_MASKINER": "2",
-    "KLART_MVA": "",
     // Prissiden (/klart/pris/). Prisene er hemmeligheten KLART_PRISER (verktoy/klart-priser.sh i det
-    // private repoet). E-post går ut via Resend når RESEND_API_KEY (hemmelighet) og avsenderen her er
-    // satt, f.eks. "Klart <lisens@esbjugconsult.com>". Til da blir e-postene liggende i utboksen
-    // (GET /klart/api/utboks med ADMIN_TOKEN).
+    // private repoet). E-posten om bestillinger og lisensnøkler går med bindingen EMAIL over. Avsenderen
+    // her og RESEND_API_KEY gjelder bare e-postene fra Stripe-webhooken (eldre kjøp). Alt som sendes,
+    // står også i utboksen (GET /klart/api/utboks med ADMIN_TOKEN).
     "KLART_EPOST_FRA": ""
   },
   "routes": [

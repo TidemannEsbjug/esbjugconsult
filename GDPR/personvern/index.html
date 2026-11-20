@@ -68,7 +68,7 @@
           <ul>
             <li><b>Programmet sender ingenting.</b> Dokumentene dine forlater aldri maskinen, og vi ser dem aldri.</li>
             <li><b>Nettsiden sporer deg ikke.</b> Sidene til Klart setter ingen informasjonskapsler, og har ingen annonser og ingen analyseverktøy fra andre.</li>
-            <li><b>Kjøper du, lagrer vi det som trengs for å levere.</b> Virksomheten, e-postadressen og betalingen.</li>
+            <li><b>Kjøper du, lagrer vi det som trengs for å levere.</b> Virksomheten, e-postadressen og bestillingen.</li>
           </ul>
         </section>
 
@@ -123,7 +123,7 @@
           <dl class="s-tabell">
             <div>
               <dt>Informasjonskapsler</dt>
-              <dd>Sidene til Klart setter ingen. Når du bestiller en oppsettsdag, husker nettleseren bestillingen til du er tilbake fra betalingen. Det ligger bare i fanen, og blir borte når du lukker den.</dd>
+              <dd>Sidene til Klart setter ingen.</dd>
             </div>
             <div>
               <dt>Telling av besøk</dt>
@@ -176,11 +176,11 @@
             </div>
             <div>
               <dt>E-postadresser</dt>
-              <dd>Adressen fakturaen skal til, og adressen lisensnøkkelen skal til hvis den er en annen.</dd>
+              <dd>Adressen bekreftelsen, fakturaen og lisensnøkkelen skal til.</dd>
             </div>
             <div>
               <dt>Betalingen</dt>
-              <dd>Kort betales hos Stripe. Vi ser aldri kortnummeret. Velger dere faktura, lager Stripe den for oss. Vi sjekker i PEPPOL-katalogen om virksomheten kan ta imot EHF.</dd>
+              <dd>Alt betales med faktura, som vi sender selv, på e-post eller som EHF. Vi tar ikke imot kort. Vi lagrer bestillingen, fakturareferansen og om fakturaen er betalt. Vi sjekker i PEPPOL-katalogen om virksomheten kan ta imot EHF.</dd>
             </div>
             <div>
               <dt>Lisensnøkkelen</dt>
@@ -204,11 +204,7 @@
           <dl class="s-tabell">
             <div>
               <dt>Cloudflare</dt>
-              <dd>Drifter nettsiden og lagrer det som står på denne siden.</dd>
-            </div>
-            <div>
-              <dt>Stripe</dt>
-              <dd>Tar imot betaling og lager fakturaer. Får virksomhetens navn, adresse og organisasjonsnummer, e-postadressen og fakturareferansen.</dd>
+              <dd>Drifter nettsiden, lagrer det som står på denne siden, og sender e-postene om bestillingen og lisensnøkkelen. Får da mottakeradressen og innholdet i e-posten.</dd>
             </div>
             <div>
               <dt>Resend</dt>
@@ -232,7 +228,7 @@
             </div>
           </dl>
           <p>
-            Cloudflare, Stripe og Resend er amerikanske selskaper.
+            Cloudflare og Resend er amerikanske selskaper.
             <span class="s-avklar">[Grunnlaget for overføring ut av EØS avklares.]</span>
           </p>
         </section>

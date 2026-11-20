@@ -183,8 +183,8 @@ const gammel = { sprint: { fra: 251, trinn: [{ til: 1000, navn: "x", grunn: 5000
 assert.equal(sprintFor(gammel, 5000).total, 400000);
 assert.equal(sprintFor(gammel, 250), null);
 
-// Betaling: kort eller faktura for alle, uansett størrelse
-assert.deepEqual(betalingFor(), { kort: true, faktura: true });
+// Betaling: bare faktura, for alle
+assert.deepEqual(betalingFor(), { faktura: true });
 
 // Ugyldig kurve stoppes
 assert.throws(() => lesPriser(JSON.stringify({ kurve: { solo: 3000, punkter: [[1, 5000], [1, 6000]] } })));

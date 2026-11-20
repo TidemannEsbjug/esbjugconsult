@@ -305,9 +305,9 @@ function tusen(n) {
   return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "\u00a0");
 }
 
-/** Hva virksomheten kan betale med. Alle kan velge kort eller faktura, uansett størrelse. */
+/** Hva virksomheten kan betale med: faktura, for alle (eieren 20.11.2026: ikke kort, ikke Stripe). */
 export function betalingFor() {
-  return { kort: true, faktura: true };
+  return { faktura: true };
 }
 
 /** Hvor langt fra eieren adressen er, og om det trengs en reisedag før oppstart. Luftlinje fra Drøbak;

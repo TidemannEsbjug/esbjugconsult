@@ -2,7 +2,7 @@
   var q = new URLSearchParams(location.search);
   // «Kjøp lisens» i appen åpner denne siden med ?hva=kjop. Kjøpet skjer nå på prissiden, der
   // lisensen gjelder hele virksomheten og prisen følger antall ansatte.
-  if (q.get("hva") === "kjop" && !q.get("session")) {
+  if (q.get("hva") === "kjop") {
     location.replace("/klart/pris/?from=upgrade");
     return;
   }
@@ -92,23 +92,13 @@
   }
 
   $("kjop").addEventListener("click", function () {
-    var m = gyldigMaskin();
-    if (!m) return;
     if (!firma) {
       feil("Skriv inn bedriftens organisasjonsnummer. Lisenser selges til bedrifter.");
       orgnr.focus();
       return;
     }
-    opptatt(this, true);
-    var knapp = this;
-    api("kjop", { maskin: m, orgnr: firma.orgnr, epost: $("epost").value })
-      .then(function (svar) {
-        location.href = svar.adresse;
-      })
-      .catch(function (e) {
-        feil(e.message);
-        opptatt(knapp, false);
-      });
+    // Kjøpet skjer på prissiden, på faktura. Virksomheten følger med dit.
+    location.href = "/klart/pris/?orgnr=" + firma.orgnr;
   });
 
   $("hent").addEventListener("click", function () {
@@ -138,37 +128,9 @@
     });
   });
 
-  // Hva som er åpent: kjøp er stengt til prisen er satt.
-  api("status")
-    .then(function (s) {
-      $("kjop").disabled = !s.kjop;
-      $("kjop-tekst").textContent = s.kjop
-        ? s.test
-          ? "Testmodus: bruk testkort 4242 4242 4242 4242."
-          : "Betal med kort hos Stripe."
-        : "Kjøp åpner snart.";
-    })
-    .catch(function () {});
+  $("kjop").disabled = false;
 
   var hva = q.get("hva");
   if (hva === "kjop") $("tittel").textContent = "Kjøp Klart";
   if (hva === "aktiver") $("tittel").textContent = "Aktiver lisensen din";
-
-  // Tilbake fra Stripe: vis koden med en gang.
-  var okt = q.get("session");
-  if (okt) {
-    $("tittel").textContent = "Takk for kjøpet";
-    $("ingress").textContent = "Vi henter lisenskoden din.";
-    $("valg").hidden = true;
-    $("firma-blokk").hidden = true;
-    api("kvittering?session=" + encodeURIComponent(okt))
-      .then(function (svar) {
-        var hvem = svar.orgnr ? svar.navn + " (org.nr " + svar.orgnr.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3") + ")" : svar.navn;
-        $("ingress").textContent = "Lisensen er registrert på " + hvem + (svar.epost ? ", med " + svar.epost + "." : ".");
-        visKode(svar, "Her er lisenskoden din");
-      })
-      .catch(function (e) {
-        feil(e.message);
-      });
-  }
 })();

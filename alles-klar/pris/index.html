@@ -121,12 +121,11 @@
                 <ul class="vilkar" id="r-vilkar"></ul>
                 <div class="knapper">
                   <button type="button" class="btn" id="pris-videre">Weiter</button>
-                  <span class="smaa" id="kjop-stengt" hidden>Die Zahlung ist bald möglich.</span>
+                  <span class="smaa" id="kjop-stengt" hidden>Die Bestellung ist bald möglich.</span>
                 </div>
                 <p class="ekstra">
                   <button type="button" class="lenke" id="til-dekker" hidden>Verarbeiten Sie Daten für andere Unternehmen?</button>
-                  <button type="button" class="lenke" id="til-testing" hidden>Möchten Sie erst noch mehr testen?</button>
-                  <a class="lenke" href="/alles-klar/#last-ned">Alles Klar noch nicht ausprobiert? Kostenlos testen, ohne Registrierung und ohne Karte.</a>
+                  <a class="lenke" href="/alles-klar/#last-ned">Alles Klar noch nicht ausprobiert? Kostenlos testen, ohne Registrierung.</a>
                 </p>
               </div>
               <aside class="oppsett-kort" id="r-oppsett" hidden>
@@ -150,7 +149,7 @@
             </div>
           </div>
 
-          <!-- Skreddersydd oppsett: hva det er, prisen åpent, og «Betal og book» (startdato + grunnhonorar i Stripe). -->
+          <!-- Skreddersydd oppsett: hva det er, prisen åpent, og booking på faktura (startdato; grunnhonoraret faktureres). -->
           <div class="steg" id="s-oppsett" hidden>
             <button type="button" class="tilbake" data-tilbake>← Zurück</button>
                 <div class="op-hode">
@@ -171,13 +170,13 @@
                     <div class="sprint-pris" data-blokk="oppsett" hidden>
                       <p class="merke" data-felt="trinn"></p>
                       <p class="pristall"><b data-felt="fast"></b> <span>zzgl. MwSt., Festpreis</span></p>
-                      <p>Zahlbar bei Buchung.</p>
+                      <p>Wird bei Buchung in Rechnung gestellt.</p>
                     </div>
                     <div class="sprint-pris" id="sp-pris" data-blokk="sprint" hidden>
                       <p class="merke" data-felt="trinn"></p>
                       <p class="pristall"><b data-felt="total"></b> <span>zzgl. MwSt., wenn das Kriterium erreicht ist</span></p>
                       <p>
-                        Das Grundhonorar von <b data-felt="grunn"></b> zzgl. MwSt. wird bei Buchung bezahlt und nicht erstattet. Der Rest,
+                        Das Grundhonorar von <b data-felt="grunn"></b> zzgl. MwSt. wird bei Buchung in Rechnung gestellt und nicht erstattet. Der Rest,
                         <b data-felt="rest"></b>, wird nur in Rechnung gestellt, wenn das Erfolgskriterium erreicht ist. Andernfalls entfällt er.
                       </p>
                     </div>
@@ -249,7 +248,7 @@
                         <li>Reise und Hotel organisiere und bezahle ich selbst</li>
                         <li data-kun="kort">Tag 1 ist der Einrichtungstag, und er ist inbegriffen</li>
                         <li>Wie ein bereinigtes Dokument aussehen soll, wird vor Tag 1 schriftlich vereinbart</li>
-                        <li>Das Grundhonorar wird bei Buchung bezahlt und nicht erstattet</li>
+                        <li>Das Grundhonorar wird bei Buchung in Rechnung gestellt und nicht erstattet</li>
                         <li>Kriterium erreicht: Der Restbetrag wird in Rechnung gestellt</li>
                         <li>Kriterium bis zum Ende des Sprints nicht erreicht: Der Rest entfällt, und Sie zahlen nur das Grundhonorar</li>
                         <li data-kun="kort">
@@ -444,33 +443,13 @@
               <div class="book-kolonne">
               <dl class="sammendrag" id="bk-liste"></dl>
               <p class="feil" id="bk-feil" role="alert" hidden></p>
-              <button type="submit" class="btn" id="bk-knapp">Bezahlen und buchen</button>
-              <p class="smaa" id="bk-info">Zahlung per Karte über Stripe. Der Termin wird 30 Minuten für Sie reserviert, während Sie bezahlen.</p>
+              <button type="submit" class="btn" id="bk-knapp">Auf Rechnung buchen</button>
+              <p class="smaa" id="bk-info">Wird mit 7 Tagen Zahlungsziel in Rechnung gestellt. Der Termin wird für Sie reserviert.</p>
               </div>
             </form>
             <div id="bk-ferdig" hidden>
-              <p class="merke ok">Anfrage gesendet</p>
+              <p class="merke ok">Bestellung eingegangen</p>
               <p class="tekst" id="bk-ferdig-tekst"></p>
-            </div>
-          </div>
-
-          <!-- Utvidet testing -->
-          <div class="steg" id="s-testing" hidden>
-            <button type="button" class="tilbake" data-tilbake>← Zurück</button>
-            <p class="merke">Erweiterter Test</p>
-            <h2 tabindex="-1">Testen Sie mit weiteren eigenen Dateien</h2>
-            <p class="ingress">
-              Alles Klar wird so verkauft, wie es ist. In einzelnen Fällen kann etwas übersehen werden. Prüfen Sie es daher zuerst
-              an Ihren eigenen Dateien.
-            </p>
-            <p class="kortpris"><span id="t-pris"></span> <small>zzgl. MwSt.</small></p>
-            <ul class="vilkar" id="t-vilkar"></ul>
-            <p class="tekst">
-              Jeder Export wird erneut geöffnet und vor der Ausgabe geprüft. Eine Datei, die die Prüfung nicht besteht, wird
-              zurückgehalten und nie gezählt.
-            </p>
-            <div class="knapper">
-              <button type="button" class="btn" id="t-videre">Weiter</button>
             </div>
           </div>
 
@@ -521,25 +500,21 @@
             </div>
           </div>
 
-          <!-- 4. Betaling: bare det virksomheten kan bruke -->
+          <!-- 4. Faktura: ingen betaling på siden. E-post, referanse og om fakturaen skal komme som EHF. -->
           <div class="steg" id="s-betaling" hidden>
             <button type="button" class="tilbake" data-tilbake>← Zurück</button>
-            <p class="merke">Zahlung</p>
-            <h2 tabindex="-1">Wie möchten Sie bezahlen?</h2>
-            <div class="valgliste" role="radiogroup" aria-label="Zahlung">
-              <button type="button" class="valg" role="radio" data-betaling="kort" aria-checked="false">
-                <strong>Karte</strong>
-                <span>Jährliche Zahlung.</span>
-              </button>
-              <button type="button" class="valg" role="radio" data-betaling="faktura" aria-checked="false">
-                <strong>Rechnung</strong>
-                <span>7 Tage Zahlungsziel. Zugang, sobald sie bezahlt ist. Auch als EHF.</span>
-              </button>
-            </div>
-            <div class="underpanel skjema" id="faktura-felt" hidden>
+            <p class="merke">Rechnung</p>
+            <h2 tabindex="-1">Die Rechnung kommt per E-Mail oder als EHF</h2>
+            <p class="ingress">Sie bestellen hier, und die Rechnung kommt gesondert, mit 7 Tagen Zahlungsziel. Der Lizenzschlüssel wird gesendet, sobald die Rechnung bezahlt ist.</p>
+            <div class="skjema" id="faktura-felt">
               <div>
-                <label for="b-epost">E-Mail-Adresse für die Rechnung</label>
-                <input id="b-epost" type="email" autocomplete="email" placeholder="rechnung@unternehmen.de" />
+                <label for="b-epost">E-Mail-Adresse</label>
+                <input id="b-epost" type="email" autocomplete="email" placeholder="name@unternehmen.no" />
+                <p class="smaa">Hierhin gehen die Bestätigung und der Lizenzschlüssel. Auch die Rechnung, wenn sie nicht als EHF gesendet wird.</p>
+              </div>
+              <div>
+                <label for="b-ref">Ihre Referenz (optional)</label>
+                <input id="b-ref" type="text" autocomplete="off" maxlength="140" placeholder="Bestellnummer, Name oder Abteilung" />
               </div>
               <div>
                 <span class="etikett">EHF-Rechnung</span>
@@ -555,34 +530,6 @@
             </div>
           </div>
 
-          <!-- 4b. Faktura: hvor nøkkelen skal sendes. Eget steg, så det er én beslutning om gangen. -->
-          <div class="steg" id="s-nokkel" hidden>
-            <button type="button" class="tilbake" data-tilbake>← Zurück</button>
-            <p class="merke">Der Lizenzschlüssel</p>
-            <h2 tabindex="-1">Wohin soll der Lizenzschlüssel gesendet werden?</h2>
-            <p class="ingress">Er kommt per E-Mail, sobald die Rechnung bezahlt ist.</p>
-            <div class="valgliste" role="radiogroup" aria-label="Wohin der Lizenzschlüssel gesendet werden soll">
-              <button type="button" class="valg" role="radio" data-nokkel="samme" aria-checked="true">
-                <strong>Dieselbe E-Mail-Adresse wie für die Rechnung</strong>
-                <span id="nokkel-samme"></span>
-              </button>
-              <button type="button" class="valg" role="radio" data-nokkel="annen" aria-checked="false">
-                <strong>Eine andere E-Mail-Adresse</strong>
-                <span>Zum Beispiel an die Person, die Alles Klar installieren soll.</span>
-              </button>
-            </div>
-            <div class="underpanel skjema" id="nokkel-felt" hidden>
-              <div>
-                <label for="b-nokkel">E-Mail-Adresse für den Lizenzschlüssel</label>
-                <input id="b-nokkel" type="email" autocomplete="off" placeholder="it@unternehmen.de" />
-              </div>
-            </div>
-            <p class="feil" id="nokkel-feil" role="alert" hidden></p>
-            <div class="knapper">
-              <button type="button" class="btn" id="nokkel-videre">Weiter</button>
-            </div>
-          </div>
-
           <!-- 5. Bekreft -->
           <div class="steg" id="s-bekreft" hidden>
             <button type="button" class="tilbake" data-tilbake>← Zurück</button>
@@ -590,47 +537,33 @@
             <h2 id="b-tittel" tabindex="-1"></h2>
             <dl class="sammendrag" id="b-liste"></dl>
             <p class="mvamerk" id="b-mva"></p>
-            <p class="testmerk" id="b-test" hidden>Testmodus: keine echte Zahlung. Verwenden Sie die Testkarte 4242 4242 4242 4242.</p>
             <p class="feil" id="b-feil" role="alert" hidden></p>
             <div class="knapper">
               <button type="button" class="btn" id="b-ok"></button>
             </div>
           </div>
 
-          <!-- Faktura sendt -->
+          <!-- Bestillingen er mottatt -->
           <div class="steg" id="s-ferdig" hidden>
             <a class="ferdig-logo" href="/alles-klar/">Alles Klar</a>
             <div class="ferdig-topp">
               <svg viewBox="0 0 56 56" aria-hidden="true"><circle cx="28" cy="28" r="28" /><path d="M17 29l8 8 15-17" /></svg>
               <div>
-                <h2 tabindex="-1">Die Rechnung wurde gesendet</h2>
+                <h2 tabindex="-1" id="f-overskrift">Die Bestellung ist eingegangen</h2>
                 <p class="ferdig-firma" id="f-tittel"></p>
               </div>
             </div>
             <dl class="sammendrag mt-22" id="f-liste"></dl>
-            <p class="ferdig-tittel">So geht es weiter</p>
-            <ol class="ferdig-videre">
-              <li>Bezahlen Sie die Rechnung <b id="f-frist"></b>.</li>
-              <li>Der Lizenzschlüssel geht an <b id="f-nokkel-til"></b>, sobald die Zahlung eingegangen ist.</li>
+            <p class="ferdig-tittel" id="f-videre-tittel">So geht es weiter</p>
+            <ol class="ferdig-videre" id="f-videre">
+              <li>Die Rechnung kommt <b id="f-hvordan"></b>, mit 7 Tagen Zahlungsziel. Die Bestätigung wurde an <b id="f-epost"></b> gesendet.</li>
+              <li>Der Lizenzschlüssel geht an <b id="f-nokkel-til"></b>, sobald die Rechnung bezahlt ist.</li>
               <li>Fügen Sie den Schlüssel in Alles Klar ein. Dann funktioniert es nach der Testphase weiter.</li>
             </ol>
+            <p class="smaa" id="f-usendt" hidden>Die Bestätigung konnte nicht per E-Mail gesendet werden. Die Bestellung ist trotzdem registriert.</p>
             <div class="knapper">
-              <a class="btn" id="f-faktura" href="#" target="_blank" rel="noopener" hidden>Rechnung öffnen</a>
               <a class="btn ghost" href="/alles-klar/#last-ned">Alles Klar herunterladen</a>
             </div>
-          </div>
-
-          <!-- Tilbake fra Stripe -->
-          <div class="steg" id="s-kvittering" hidden>
-            <p class="merke">Alles Klar · Quittung</p>
-            <h1 id="k-tittel">Vielen Dank für Ihren Kauf</h1>
-            <p class="ingress" id="k-tekst">Der Lizenzschlüssel wird abgerufen.</p>
-            <div id="k-nokkel"></div>
-            <div class="knapper" id="k-ics-rad" hidden>
-              <a class="btn ghost" id="k-ics" href="#">Zum Kalender hinzufügen</a>
-            </div>
-            <p class="feil" id="k-feil" role="alert" hidden></p>
-            <p class="ekstra"><a class="lenke" href="./">Zurück zum Preis</a></p>
           </div>
         </div>
       </section>
@@ -649,7 +582,7 @@
             <summary>Wie wird unser Preis festgelegt?</summary>
             <p>
               Anhand der Angaben, die im Brønnøysund-Register zum Unternehmen eingetragen sind: Zahl der Beschäftigten, Branche und
-              letzter Jahresabschluss. Das wird beim Kauf und bei jeder Verlängerung geprüft.
+              letzter Jahresabschluss. Das wird bei jeder Bestellung geprüft.
             </p>
           </details>
           <details>

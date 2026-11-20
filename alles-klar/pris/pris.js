@@ -4,20 +4,19 @@
     return document.getElementById(id);
   };
   var tall = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 2 });
+  var tallOre = new Intl.NumberFormat("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   var orgnrTekst = KlartOrgfelt.tekst;
 
   // Det kjøperen har valgt så langt.
   var tilbud = null; // svaret fra /klart/api/pris
   var dekker = "egen"; // «egen» eller «kunder»
   var kunder = []; // { orgnr, navn, ansatte, konsern, pris }
-  var betaling = null; // «kort» eller «faktura»
-  var kjop = null; // «lisens» eller «testing»
   var historikk = []; // stegene vi har vært på, for «Tilbake»
 
   // ---------- Hjelpere ----------
 
   function nok(n) {
-    return tall.format(n) + " NOK";
+    return (Number.isInteger(n) ? tall : tallOre).format(n) + " NOK";
   }
   function ansatteTekst(n) {
     return n === 1 ? "1 registrierter Beschäftigter" : tall.format(n) + " registrierte Beschäftigte";
@@ -178,9 +177,9 @@
 
   // ---------- Stegene: ett om gangen i samme kort ----------
 
-  var STEG = ["s-port", "s-pris", "s-oppsett", "s-testing", "s-dekker", "s-book-sted", "s-book-dato", "s-book-kontakt", "s-betaling", "s-nokkel", "s-bekreft", "s-ferdig", "s-kvittering"];
+  var STEG = ["s-port", "s-pris", "s-oppsett", "s-dekker", "s-book-sted", "s-book-dato", "s-book-kontakt", "s-betaling", "s-bekreft", "s-ferdig"];
   // Kortet er bredere der det er mer å se.
-  var BREDDE = { "s-oppsett": "bred", "s-book-sted": "bred", "s-book-dato": "bred", "s-book-kontakt": "bred", "s-dekker": "middels", "s-betaling": "middels", "s-nokkel": "middels", "s-bekreft": "middels", "s-ferdig": "middels", "s-testing": "middels" };
+  var BREDDE = { "s-oppsett": "bred", "s-book-sted": "bred", "s-book-dato": "bred", "s-book-kontakt": "bred", "s-dekker": "middels", "s-betaling": "middels", "s-bekreft": "middels", "s-ferdig": "middels" };
 
   /** Slår opp virksomheten fra adressen: kortet er skjult til svaret er her (pris-tidlig.js). */
   function ferdigStartet() {
@@ -219,12 +218,6 @@
 
   document.querySelectorAll("[data-tilbake]").forEach(function (b) {
     b.addEventListener("click", function () {
-      // Fra fakturafeltene går «Tilbake» først til valget mellom kort og faktura.
-      if (b.closest("#s-betaling") && betaling === "faktura") {
-        betaling = "kort";
-        visBetaling();
-        return;
-      }
       var forrige = historikk.pop();
       if (!forrige && FRA_FORSIDEN) return tilForsiden();
       vis(forrige || "s-pris");
@@ -239,17 +232,17 @@
   $("r-tilbake").hidden = !FRA_FORSIDEN;
   $("r-tilbake").addEventListener("click", tilForsiden);
 
-  /** Stegraden øverst: Pris · (Lisensen) · Betaling · Bekreft. «Lisensen» er bare med når den er et steg. */
+  /** Stegraden øverst: Pris · (Lisensen) · Faktura · Bekreft. «Lisensen» er bare med når den er et steg. */
   function tegnStegrad(steg) {
     if (steg.indexOf("s-book") === 0) return tegnBookrad(steg);
     var rekke = ["s-pris", "s-dekker", "s-betaling", "s-bekreft"];
-    var navn = { "s-pris": "Preis", "s-dekker": "Lizenz", "s-betaling": "Zahlung", "s-bekreft": "Bestätigen" };
+    var navn = { "s-pris": "Preis", "s-dekker": "Lizenz", "s-betaling": "Rechnung", "s-bekreft": "Bestätigen" };
     var med = rekke.filter(function (s) {
       return s !== "s-dekker" || (tilbud && (tilbud.leverandorAktuell || dekker === "kunder" || steg === "s-dekker"));
     });
-    var i = med.indexOf(steg === "s-nokkel" ? "s-betaling" : steg);
+    var i = med.indexOf(steg);
     var rad = $("stegrad");
-    rad.hidden = i < 0 || kjop === "testing";
+    rad.hidden = i < 0;
     rad.replaceChildren();
     med.forEach(function (s, j) {
       var el = li(navn[s]);
@@ -260,44 +253,6 @@
       }
       rad.appendChild(el);
     });
-  }
-
-  /** Nøkkelen i en boks med kopier-knapp. */
-  function nokkelBoks(mal, svar) {
-    mal.replaceChildren();
-    var boks = document.createElement("div");
-    boks.className = "nokkel";
-    var etikett = document.createElement("span");
-    etikett.className = "etikett";
-    etikett.textContent = svar.type === "testing" ? "Code für den erweiterten Test" : "Lizenzschlüssel";
-    var felt = document.createElement("textarea");
-    felt.readOnly = true;
-    felt.value = svar.kode;
-    var rad = document.createElement("div");
-    rad.className = "rad";
-    var tekst = document.createElement("p");
-    var hva = "Fügen Sie ihn in Alles Klar ein: Klicken Sie oben rechts auf die Lizenzanzeige (dort steht „Test: noch … Tage“ oder „Lizenz“) und fügen Sie den Schlüssel in das Feld dort ein.";
-    if (svar.type === "testing") hva = "Der Code ermöglicht 50 Exporte ohne Zeitlimit. Er lässt sich ab der nächsten Version von Alles Klar verwenden.";
-    else if (svar.utloper) hva += " Gültig bis einschließlich " + datoTekst(svar.utloper) + ".";
-    tekst.textContent = hva;
-    var kopier = document.createElement("button");
-    kopier.type = "button";
-    kopier.className = "btn sm";
-    kopier.textContent = "Kopieren";
-    kopier.addEventListener("click", function () {
-      navigator.clipboard.writeText(felt.value).then(function () {
-        kopier.textContent = "Kopiert";
-        setTimeout(function () {
-          kopier.textContent = "Kopieren";
-        }, 1600);
-      });
-    });
-    rad.appendChild(tekst);
-    rad.appendChild(kopier);
-    boks.appendChild(etikett);
-    boks.appendChild(felt);
-    boks.appendChild(rad);
-    mal.appendChild(boks);
   }
 
   // ---------- 1. Virksomheten ----------
@@ -361,8 +316,6 @@
     tilbud = d;
     dekker = "egen";
     kunder = [];
-    betaling = null;
-    kjop = "lisens";
     historikk = [];
 
     $("r-hvem").replaceChildren();
@@ -384,31 +337,14 @@
     v.appendChild(li("Gilt für alle Nutzer und Geräte im " + hvem + "."));
     v.appendChild(li((d.konsern ? "Deckt die Dokumente im gesamten Konzern ab" : "Deckt die Dokumente im Unternehmen ab") + ", auch die über Ihre Kunden."));
     // Kommuner og stat: ingen binding (eieren 11.11.2026).
-    v.appendChild(li((d.fireAar ? "Jährliche Lizenz ohne Mindestlaufzeit." : "Jährliche Lizenz.") + " Sie werden 14 Tage vor der Verlängerung erinnert."));
+    v.appendChild(li((d.fireAar ? "Jährliche Lizenz ohne Mindestlaufzeit." : "Jährliche Lizenz.") + " Sie verlängert sich nicht automatisch. Wenn sie abläuft, bestellen Sie neu."));
 
     $("pris-videre").disabled = !d.kjop;
     $("kjop-stengt").hidden = d.kjop;
     // Behandler de trolig data for andre, blir det et eget steg. Ellers bare en lenke.
     $("til-dekker").hidden = d.leverandorAktuell;
-    $("til-testing").hidden = !d.testing;
     $("r-oppsett").hidden = !d.stor;
     visSprintPris(d);
-    if (d.testing) {
-      $("t-pris").textContent = nok(d.testing.pris);
-      var t = $("t-vilkar");
-      t.replaceChildren();
-      t.appendChild(li(d.testing.eksporter + " Exporte. Kein Zeitlimit."));
-      t.appendChild(li("Einmal pro Unternehmen."));
-      t.appendChild(li("Der volle Betrag von " + nok(d.testing.pris) + " wird auf die Lizenz angerechnet."));
-      $("t-videre").disabled = !d.kjop || !d.testing.apen;
-      $("t-videre").textContent = d.testing.apen ? "Weiter" : "Bald verfügbar";
-    }
-
-    // Betalingsmåtene virksomheten kan bruke. De andre vises ikke.
-    document.querySelectorAll("[data-betaling]").forEach(function (b) {
-      b.hidden = !d.betaling[b.getAttribute("data-betaling")];
-    });
-
     velgEn(null, "data-dekker", "egen");
     velgEn(null, "data-ehf", d.ehf ? "ja" : "nei");
     $("kunde-panel").hidden = true;
@@ -437,23 +373,16 @@
   });
 
   $("pris-videre").addEventListener("click", function () {
-    kjop = "lisens";
     if (!tilbud.leverandorAktuell) forberedBetaling();
     gaaTil(tilbud.leverandorAktuell ? "s-dekker" : "s-betaling");
   });
   $("til-dekker").addEventListener("click", function () {
-    kjop = "lisens";
     gaaTil("s-dekker");
   });
   $("til-oppsett").addEventListener("click", function () {
     gaaTil("s-oppsett");
   });
-  $("til-testing").addEventListener("click", function () {
-    kjop = "testing";
-    gaaTil("s-testing");
-  });
-
-  // ---------- Oppsett og sprint: tilbudene, prisen og «Betal og book» ----------
+  // ---------- Oppsett og sprint: tilbudene, prisen og booking på faktura ----------
 
   var valgtTilbud = null; // ett av tilbud.sprint: { id: oppsett|kort|sprint, dager, fast | grunn+total }
   var ledige = null; // ledige startdager (ÅÅÅÅ-MM-DD) fra /klart/api/sprint/ledige
@@ -567,11 +496,10 @@
     var foresp = valgtStart && forespurte && forespurte.has(valgtStart);
     $("book-aapne").disabled = !kjop;
     $("bk-knapp").disabled = !kjop;
-    $("bk-knapp").textContent = !kjop ? "Buchung bald möglich" : foresp ? "Anfrage senden" : nok(forskudd(t) * 1.25) + " bezahlen und buchen";
-    $("bk-info").textContent = foresp
-      ? "In diesem Zeitraum liegt ein Einrichtungstag, den ich zuerst verschiebe. Sie zahlen jetzt nichts; ich sende Ihnen einen Zahlungslink, sobald die Termine bestätigt sind."
-      : (t.id === "oppsett" ? "Der Preis" : "Das Grundhonorar") +
-        " inkl. 25 % MwSt. Zahlung per Karte über Stripe. Der Termin wird 30 Minuten für Sie reserviert, während Sie bezahlen.";
+    $("bk-knapp").textContent = !kjop ? "Buchung bald möglich" : "Auf Rechnung buchen";
+    $("bk-info").textContent =
+      (t.id === "oppsett" ? "Der Preis" : "Das Grundhonorar") + " von " + nok(forskudd(t)) + " zzgl. MwSt. (" + nok(forskudd(t) * 1.25) + " inkl. 25 % MwSt.) wird mit 7 Tagen Zahlungsziel in Rechnung gestellt. Der Termin wird für Sie reserviert, und die Buchung gilt, sobald die Rechnung bezahlt ist." +
+      (foresp ? " In diesem Zeitraum liegt ein Einrichtungstag, den ich zuerst verschiebe." : "");
   }
 
   function lastLedige() {
@@ -827,18 +755,11 @@
     opptatt($("bk-knapp"), true);
     api("sprint/book", data)
       .then(function (svar) {
-        if (svar.forespurt) {
-          glid($("book-skjema"), false);
-          glid($("bk-ferdig"), true);
-          $("bk-ferdig-tekst").textContent =
-            "Ich verschiebe den Einrichtungstag, der in diesem Zeitraum liegt, und sende einen Zahlungslink an " + data.epost +
-            ", sobald der Zeitraum " + datoTekst(svar.start) + " – " + datoTekst(svar.slutt) + " bestätigt ist. Es wurde noch nichts bezahlt.";
-          return;
-        }
-        try {
-          sessionStorage.setItem("klart-sprint-okt", svar.okt);
-        } catch (err) {}
-        location.href = svar.adresse;
+        var tid = svar.start === svar.slutt ? datoTekst(svar.start) : datoTekst(svar.start) + " – " + datoTekst(svar.slutt);
+        glid($("book-skjema"), false);
+        glid($("bk-ferdig"), true);
+        $("bk-ferdig-tekst").textContent =
+          "Bestellung " + svar.ordre + ". " + tid + " ist für Sie reserviert. Die Rechnung über " + nok(svar.belop) + " zzgl. MwSt. (" + nok(svar.belopInkl) + " inkl. 25 % MwSt.) kommt gesondert. Die Buchung gilt, sobald sie bezahlt ist. Dann erhalten Sie die Bestätigung mit Kalenderdatei per E-Mail an " + svar.epost + "." + (svar.flyttes ? " Zuerst verschiebe ich den Einrichtungstag, der in diesem Zeitraum liegt." : "");
       })
       .catch(function (err) {
         feil("bk-feil", err.message);
@@ -850,20 +771,6 @@
   $("til-samtale").addEventListener("click", function () {
     glid($("samtale-skjema"), $("samtale-skjema").hidden);
   });
-
-  // Tilbake fra Stripe uten å betale: økten avsluttes, og datoen blir ledig igjen med en gang.
-  if (q.get("avbrutt")) {
-    var avbruttOkt = null;
-    try {
-      avbruttOkt = sessionStorage.getItem("klart-sprint-okt");
-      sessionStorage.removeItem("klart-sprint-okt");
-    } catch (err) {}
-    if (avbruttOkt) {
-      api("sprint/avbryt", { session: avbruttOkt }).finally(function () {
-        if (!$("s-oppsett").hidden) lastLedige();
-      });
-    }
-  }
 
   // ---------- Skreddersydd oppsett: spørsmål først ----------
 
@@ -893,14 +800,6 @@
       .finally(function () {
         skjema.classList.remove("venter");
       });
-  });
-
-  // ---------- Utvidet testing ----------
-
-  $("t-videre").addEventListener("click", function () {
-    kjop = "testing";
-    betaling = "kort";
-    visBekreft();
   });
 
   // ---------- 3. Hvem lisensen dekker ----------
@@ -1015,20 +914,16 @@
       }),
     })
       .then(function (svar) {
+        var navn = svar.kunder
+          .map(function (c) {
+            return c.navn;
+          })
+          .join(", ");
         var p = document.createElement("p");
         p.className = "tekst ok";
         p.textContent =
-          "Hinzugefügt: " +
-          svar.kunder
-            .map(function (c) {
-              return c.navn;
-            })
-            .join(", ") +
-          ". Der Preis für den Rest des Zeitraums wird jetzt in Rechnung gestellt. Der neue Schlüssel ersetzt den alten.";
+          "Bestellt (" + svar.ordre + "): " + navn + ". Die Rechnung für den Rest des Zeitraums, " + nok(svar.belop) + " zzgl. MwSt., kommt gesondert. Die Kunden sind hinzugefügt, sobald sie bezahlt ist. Ihr bisheriger Schlüssel gilt weiter.";
         $("lev-ferdig").appendChild(p);
-        var mal = document.createElement("div");
-        $("lev-ferdig").appendChild(mal);
-        nokkelBoks(mal, svar);
       })
       .catch(function (err) {
         feil("lev-feil", err.message);
@@ -1038,45 +933,12 @@
       });
   });
 
-  // ---------- 4. Betaling ----------
+  // ---------- 4. Faktura: e-post, referanse og EHF ----------
 
-  /** Viser valget. Er faktura valgt, skjules kort, og bare fakturafeltene står igjen. */
-  function visBetaling() {
-    velgEn(null, "data-betaling", betaling);
-    glid($("faktura-felt"), betaling === "faktura");
-    glid(document.querySelector('[data-betaling="kort"]'), betaling !== "faktura");
-  }
-
-  /** Velger den første betalingsmåten virksomheten kan bruke. */
   function forberedBetaling() {
-    var med = function (m) {
-      return tilbud.betaling[m];
-    };
-    document.querySelectorAll("[data-betaling]").forEach(function (b) {
-      b.hidden = !med(b.getAttribute("data-betaling"));
-    });
-    if (!betaling || !med(betaling)) betaling = ["kort", "faktura"].find(med);
-    visBetaling();
     feil("betaling-feil", "");
   }
 
-  document.querySelectorAll("[data-betaling]").forEach(function (b) {
-    b.addEventListener("click", function () {
-      betaling = b.getAttribute("data-betaling");
-      visBetaling();
-      if (betaling === "faktura") $("b-epost").focus({ preventScroll: true });
-    });
-  });
-  function annenNokkelEpost() {
-    return document.querySelector('[data-nokkel="annen"]').getAttribute("aria-checked") === "true";
-  }
-  document.querySelectorAll("[data-nokkel]").forEach(function (b) {
-    b.addEventListener("click", function () {
-      velgEn(null, "data-nokkel", b.getAttribute("data-nokkel"));
-      glid($("nokkel-felt"), annenNokkelEpost());
-      if (annenNokkelEpost()) $("b-nokkel").focus();
-    });
-  });
   document.querySelectorAll("[data-ehf]").forEach(function (b) {
     b.addEventListener("click", function () {
       velgEn(null, "data-ehf", b.getAttribute("data-ehf"));
@@ -1084,77 +946,49 @@
   });
 
   $("betaling-videre").addEventListener("click", function () {
-    if (betaling === "faktura" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($("b-epost").value.trim())) {
-      feil("betaling-feil", "Geben Sie die E-Mail-Adresse ein, an die die Rechnung gesendet werden soll.");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($("b-epost").value.trim())) {
+      feil("betaling-feil", "Geben Sie die E-Mail-Adresse ein, an die die Bestätigung und der Lizenzschlüssel gesendet werden sollen.");
       $("b-epost").focus();
       return;
     }
     feil("betaling-feil", "");
-    kjop = "lisens";
-    if (betaling === "faktura") {
-      $("nokkel-samme").textContent = $("b-epost").value.trim();
-      feil("nokkel-feil", "");
-      gaaTil("s-nokkel");
-      return;
-    }
-    visBekreft();
-  });
-
-  $("nokkel-videre").addEventListener("click", function () {
-    if (annenNokkelEpost() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($("b-nokkel").value.trim())) {
-      feil("nokkel-feil", "Geben Sie die E-Mail-Adresse ein, an die der Lizenzschlüssel gesendet werden soll.");
-      $("b-nokkel").focus();
-      return;
-    }
-    feil("nokkel-feil", "");
     visBekreft();
   });
 
   // ---------- 5. Bekreft ----------
 
-  var BETALING = { kort: "Karte, jährlich", faktura: "Rechnung, 7 Tage Zahlungsziel" };
-
   function visBekreft() {
+    var data = {
+      orgnr: tilbud.orgnr,
+      epost: $("b-epost").value.trim(),
+      referanse: $("b-ref").value.trim(),
+      ehf: document.querySelector('[data-ehf][aria-checked="true"]').getAttribute("data-ehf") === "ja",
+    };
     var rader = [
       ["Unternehmen", tilbud.navn],
       ["Org.-Nr.", orgnrTekst(tilbud.orgnr)],
+      ["Gilt für", tilbud.konsern ? "Den gesamten Konzern" : "Das Unternehmen"],
     ];
-    var data = { orgnr: tilbud.orgnr, betaling: betaling };
-    if (kjop === "testing") {
-      $("b-tittel").textContent = "Erweiterter Test für " + tilbud.navn;
-      $("b-merke").textContent = "Erweiterter Test";
-      rader.push(["Umfang", tilbud.testing.eksporter + " Exporte, ohne Zeitlimit"]);
-      rader.push(["Anrechnung", "Der volle Betrag, auf die Lizenz"]);
-      rader.push(["Preis, zzgl. MwSt.", nok(tilbud.testing.pris), "sum-rad"]);
-      data.type = "testing";
+    $("b-tittel").textContent = "Lizenz für " + tilbud.navn;
+    var sum = tilbud.pris;
+    if (dekker === "kunder") {
+      rader.push(["Eigene Lizenz", nok(tilbud.pris)]);
+      kunder.forEach(function (k) {
+        rader.push([k.navn, nok(k.pris)]);
+      });
+      sum += kundesum();
+      data.type = "leverandor";
+      data.kunder = kunder.map(function (k) {
+        return k.orgnr;
+      });
     } else {
-      $("b-tittel").textContent = "Lizenz für " + tilbud.navn;
-      $("b-merke").textContent = "Bestätigen";
-      rader.push(["Gilt für", tilbud.konsern ? "Den gesamten Konzern" : "Das Unternehmen"]);
-      var sum = tilbud.pris;
-      if (dekker === "kunder") {
-        rader.push(["Eigene Lizenz", nok(tilbud.pris)]);
-        kunder.forEach(function (k) {
-          rader.push([k.navn, nok(k.pris)]);
-        });
-        sum += kundesum();
-        data.type = "leverandor";
-        data.kunder = kunder.map(function (k) {
-          return k.orgnr;
-        });
-      } else {
-        data.type = "lisens";
-      }
-      rader.push(["Zahlung", BETALING[betaling]]);
-      rader.push(["Preis pro Jahr, zzgl. MwSt.", nok(sum), "sum-rad"]);
-      if (betaling === "faktura") {
-        data.epost = $("b-epost").value.trim();
-        if (annenNokkelEpost()) data.nokkelEpost = $("b-nokkel").value.trim();
-        data.ehf = document.querySelector('[data-ehf][aria-checked="true"]').getAttribute("data-ehf") === "ja";
-        rader.push(["Rechnung an", data.epost]);
-        rader.push(["Lizenzschlüssel an", data.nokkelEpost || data.epost]);
-      }
+      data.type = "lisens";
     }
+    rader.push(["Zahlung", "Rechnung, 7 Tage Zahlungsziel"]);
+    rader.push(["Preis pro Jahr, zzgl. MwSt.", nok(sum), "sum-rad"]);
+    rader.push(["Rechnung", data.ehf ? "Als EHF an Org.-Nr. " + orgnrTekst(tilbud.orgnr) : "Per E-Mail an " + data.epost]);
+    rader.push(["Lizenzschlüssel an", data.epost]);
+    if (data.referanse) rader.push(["Ihre Referenz", data.referanse]);
     var liste = $("b-liste");
     liste.replaceChildren();
     rader.forEach(function (r) {
@@ -1168,23 +1002,15 @@
       rad.appendChild(dd);
       liste.appendChild(rad);
     });
-    var faktura = betaling === "faktura";
-    $("b-mva").textContent = faktura ? "25 % MwSt. werden auf der Rechnung hinzugerechnet." : "25 % MwSt. werden an der Kasse hinzugerechnet.";
-    $("b-test").hidden = !tilbud.test || faktura;
-    $("b-ok").textContent = faktura ? "Rechnung senden" : "Zur Zahlung";
+    $("b-mva").textContent = "25 % MwSt. werden auf der Rechnung hinzugerechnet. Der Lizenzschlüssel wird gesendet, sobald die Rechnung bezahlt ist.";
+    $("b-ok").textContent = "Bestellung senden";
     $("b-ok").disabled = false;
     feil("b-feil", "");
     $("b-ok").onclick = function () {
       var knapp = this;
       opptatt(knapp, true);
       api("kasse", data)
-        .then(function (svar) {
-          if (svar.adresse) {
-            location.href = svar.adresse;
-            return;
-          }
-          visFaktura(svar);
-        })
+        .then(visBestilt)
         .catch(function (err) {
           feil("b-feil", err.message);
           opptatt(knapp, false);
@@ -1193,12 +1019,19 @@
     gaaTil("s-bekreft");
   }
 
-  function visFaktura(svar) {
-    var f = svar.faktura;
+  /** Bestillingen er mottatt: hva som er bestilt, og hva som skjer videre. Ingen betaling på siden. */
+  function visBestilt(svar) {
     $("f-tittel").textContent = svar.navn + " · Org.-Nr. " + orgnrTekst(svar.orgnr);
-    var rader = [["Betrag inkl. MwSt.", nok(f.belop)], ["Gesendet an", svar.epost]];
-    if (f.nummer) rader.unshift(["Rechnungsnummer", f.nummer]);
-    if (f.forfall) rader.push(["Fällig am", datoTekst(f.forfall)]);
+    // En kommune der delene har betalt alt, får nøkkelen uten faktura.
+    var gratis = Boolean(svar.gratis);
+    var rader = gratis
+      ? [["Gesendet an", svar.epost], ["Gültig bis einschließlich", datoTekst(svar.utloper)]]
+      : [
+          ["Bestellung", svar.ordre],
+          ["Betrag zzgl. MwSt.", nok(svar.belop)],
+          ["Betrag inkl. 25 % MwSt.", nok(svar.belopInkl)],
+          ["Rechnung", svar.ehf ? "Als EHF an Org.-Nr. " + orgnrTekst(svar.orgnr) : "Per E-Mail an " + svar.epost],
+        ];
     var liste = $("f-liste");
     liste.replaceChildren();
     rader.forEach(function (r) {
@@ -1211,70 +1044,24 @@
       rad.appendChild(dd);
       liste.appendChild(rad);
     });
-    $("f-frist").textContent = f.forfall ? "bis zum " + datoTekst(f.forfall) : "innerhalb von 7 Tagen";
-    $("f-nokkel-til").textContent = svar.nokkelEpost;
-    $("f-faktura").hidden = !f.adresse;
-    if (f.adresse) $("f-faktura").href = f.adresse;
+    $("f-overskrift").textContent = gratis ? "Der Schlüssel wurde gesendet" : "Die Bestellung ist eingegangen";
+    $("f-videre-tittel").hidden = gratis;
+    $("f-videre").hidden = gratis;
+    $("f-hvordan").textContent = svar.ehf ? "als EHF" : "per E-Mail";
+    $("f-epost").textContent = svar.epost;
+    $("f-nokkel-til").textContent = svar.epost;
+    $("f-usendt").hidden = gratis || svar.sendt !== false;
     historikk = [];
     vis("s-ferdig");
   }
 
-  // ---------- Tilbake fra Stripe, eller fra «Avbryt» der ----------
+  // ---------- Start: virksomheten fra adressen ----------
 
-  var ordre = q.get("ordre");
-  var sprintOkt = q.get("sprint");
-  if (sprintOkt) {
-    vis("s-kvittering");
-    $("k-tittel").textContent = "Gebucht";
-    $("k-tekst").textContent = "Die Buchung wird abgerufen.";
-    api("sprint/kvittering?session=" + encodeURIComponent(sprintOkt))
-      .then(function (svar) {
-        var hvem = svar.navn + " (Org.-Nr. " + orgnrTekst(svar.orgnr) + ")";
-        if (svar.tilbud === "oppsett") {
-          $("k-tittel").textContent = "Der Einrichtungstag ist gebucht";
-          $("k-tekst").textContent =
-            "Der Einrichtungstag bei " + hvem + " ist für den " + datoTekst(svar.start) + " gebucht. " + nok(svar.fast) +
-            " zzgl. MwSt. wurden bezahlt. Die Bestätigung wurde an " + svar.epost + " gesendet. Ich sende Ihnen die Checkliste vor dem Termin.";
-        } else {
-          $("k-tittel").textContent = svar.tilbud === "kort" ? "Der kurze Sprint ist gebucht" : "Der Sprint ist gebucht";
-          $("k-tekst").textContent =
-            (svar.tilbud === "kort" ? "Der kurze Sprint" : "Der Sprint") + " bei " + hvem + " ist gebucht für " +
-            datoTekst(svar.start) + " – " + datoTekst(svar.slutt) + ". Das Grundhonorar von " + nok(svar.grunn) +
-            " zzgl. MwSt. wurde bezahlt und wird nicht erstattet. Der Rest wird nur in Rechnung gestellt, wenn das Erfolgskriterium erreicht ist. Die Bestätigung wurde an " + svar.epost +
-            " gesendet. Ich melde mich, um vor Tag 1 schriftlich zu vereinbaren, wie ein bereinigtes Dokument aussehen soll.";
-        }
-        $("k-ics").href = "/klart/api/sprint/ics?session=" + encodeURIComponent(sprintOkt);
-        $("k-ics-rad").hidden = false;
-      })
-      .catch(function (err) {
-        $("k-tekst").textContent = "";
-        feil("k-feil", err.message);
-      });
-  } else if (ordre) {
-    vis("s-kvittering");
-    api("ordre?session=" + encodeURIComponent(ordre))
-      .then(function (svar) {
-        var hvem = svar.navn + " (Org.-Nr. " + orgnrTekst(svar.orgnr) + ")";
-        if (svar.type === "testing") {
-          $("k-tittel").textContent = "Der erweiterte Test ist bereit";
-          $("k-tekst").textContent = "Registriert auf " + hvem + ". Der volle Betrag wird auf die Lizenz angerechnet, wenn Sie kaufen.";
-        } else {
-          $("k-tekst").textContent =
-            "Die Lizenz ist auf " + hvem + " registriert. Bewahren Sie den Schlüssel gut auf. Bei jeder Verlängerung erhalten Sie einen neuen per E-Mail.";
-        }
-        nokkelBoks($("k-nokkel"), svar);
-      })
-      .catch(function (err) {
-        $("k-tekst").textContent = "";
-        feil("k-feil", err.message);
-      });
+  var start = String(q.get("orgnr") || "").replace(/\D/g, "");
+  if (KlartOrgfelt.gyldig(start)) {
+    $("orgnr").value = orgnrTekst(start);
+    slaaOpp(start);
   } else {
-    var start = String(q.get("orgnr") || "").replace(/\D/g, "");
-    if (KlartOrgfelt.gyldig(start)) {
-      $("orgnr").value = orgnrTekst(start);
-      slaaOpp(start);
-    } else {
-      ferdigStartet();
-    }
+    ferdigStartet();
   }
 })();
