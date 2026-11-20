@@ -24,14 +24,20 @@
 
           <div class="us-valg" role="radiogroup" aria-label="Kind of organization">
             <label><input type="radio" name="kind" value="private" checked /><span>Business or nonprofit</span></label>
-            <label><input type="radio" name="kind" value="gov" /><span>Government</span></label>
+            <label><input type="radio" name="kind" value="federal" /><span>Federal agency</span></label>
+            <label><input type="radio" name="kind" value="state" /><span>State agency</span></label>
+            <label><input type="radio" name="kind" value="local" /><span>City, county or school</span></label>
           </div>
 
           <div class="us-to-felt">
             <div>
-              <label for="people">People in the organization</label>
+              <label for="people" id="peopleLabel">People in the organization</label>
               <input id="people" type="number" min="1" step="1" value="25" inputmode="numeric" />
-              <p class="smaa">Everyone on the payroll. Enter 1 if it is just you.</p>
+              <p class="smaa" id="peopleHint">Everyone on the payroll. Enter 1 if it is just you.</p>
+            </div>
+            <div id="stateField" hidden>
+              <label for="state">State</label>
+              <select id="state"></select>
             </div>
             <div id="businessField">
               <label for="business">What you do</label>

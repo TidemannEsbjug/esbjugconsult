@@ -84,7 +84,7 @@ import KOMMUNEANSATTE from "./kommuneansatte.json";
 import STATSANSATTE from "./statsansatte.json";
 import { ansatteITre, delAvKommunen, statlig, SAMLET_STAT } from "./kommunetre.js";
 import { sokMaskin } from "./klart-maskin.js";
-import { price as usPris } from "../frostcopy/buy/price.js";
+import { price as usPris, STATES as US_STATER } from "../frostcopy/buy/price.js";
 import { preis as dePreis } from "../alles-klar/pris/preis.js";
 
 const NADE_DAGER = 14; // lisensen varer så mange dager etter at perioden er betalt til
@@ -337,7 +337,7 @@ async function usSignatur(env, nr) {
 }
 
 function usFaktura(o) {
-  const linje = `FrostCopy license for one year, for the whole organization (${o.people.toLocaleString("en-US")} ${o.people === 1 ? "person" : "people"}, ${o.kind === "gov" ? "government" : o.business || "one person"})`;
+  const linje = `FrostCopy license for one year, for the whole organization (${usHvem(o)})`;
   const kunde = [o.navn, ...o.adresse.split("\n")];
   const tekst = [
     `INVOICE ${o.faktura}`,
@@ -385,22 +385,30 @@ function usFaktura(o) {
   return { tekst, html };
 }
 
+/** Hvem lisensen er for, slik det står på fakturaen: «25 people, Law firm» eller «40 users, state agency, Texas». */
+function usHvem(o) {
+  const n = o.people.toLocaleString("en-US");
+  if (o.kind === "federal") return `${n} ${o.people === 1 ? "user" : "users"}, federal agency`;
+  if (o.kind === "state" || o.kind === "local") return `${n} ${o.people === 1 ? "user" : "users"}, ${o.kind === "state" ? "state agency" : "local government"}, ${US_STATER[o.state]?.[0] || o.state}`;
+  return `${n} ${o.people === 1 ? "person" : "people"}, ${o.business || "one person"}`;
+}
+
 async function usBestill(request, env) {
   if (!env.KLART_LISENSNOKKEL) return json({ error: "Ordering is not open yet." }, 503);
   const b = await body(request);
   // Et felt mennesker ikke ser. Roboter fyller det ut; de får et vanlig svar, og ingenting skjer.
   if (b.website) return json({ ok: true, invoice: "FC-0", price: 0, sent: true });
-  const p = usPris({ people: b.people, kind: b.kind === "gov" ? "gov" : "business", business: b.business });
+  const p = usPris({ people: b.people, kind: ["federal", "state", "local"].includes(b.kind) ? b.kind : "business", business: b.business, state: String(b.state || "") });
   const navn = tekstFra(b.name, 120).replace(/\s+/g, " ");
   const epost = epostFra(b.email);
   const adresse = String(b.address || "").split(/\r?\n/).map((l) => l.replace(/\s+/g, " ").trim()).filter(Boolean).slice(0, 6).map((l) => l.slice(0, 100)).join("\n");
   const referanse = tekstFra(b.reference, 80).replace(/\s+/g, " ");
-  if (!p) return json({ error: "Enter how many people work in the organization." }, 400);
+  if (!p) return json({ error: "Fill in the fields above the price first." }, 400);
   if (navn.length < 2) return json({ error: "Write the name of the organization." }, 400);
   if (!epost) return json({ error: "Write the email address the invoice should go to." }, 400);
   if (adresse.length < 8) return json({ error: "Write the billing address." }, 400);
   const dag = idag();
-  const o = { navn, epost, adresse, referanse, people: p.people, kind: p.kind, business: p.business, usd: p.price, dato: dag, forfall: omDager(US_FRIST_DAGER) };
+  const o = { navn, epost, adresse, referanse, people: p.people, kind: p.kind, state: p.state || null, business: p.business, usd: p.price, dato: dag, forfall: omDager(US_FRIST_DAGER) };
   const nr = await lager(env).usNyOrdre(o);
   o.faktura = usNr(nr);
   await lager(env).usOppdater(nr, o);
@@ -414,7 +422,7 @@ async function usBestill(request, env) {
       `Ny bestilling på faktura.`,
       ``,
       `${navn} (${epost})`,
-      `${o.people} personer, ${o.kind === "gov" ? "offentlig" : o.business || "én person"}`,
+      usHvem(o),
       `Beløp: ${usd(o.usd)}, forfall ${o.forfall}`,
       sendt ? `Fakturaen er sendt til kunden.` : `FAKTURAEN GIKK IKKE UT PÅ E-POST. Send den selv; teksten står under.`,
       ``,
