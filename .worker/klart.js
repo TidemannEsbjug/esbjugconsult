@@ -83,6 +83,7 @@ import KOMMUNEANSATTE from "./kommuneansatte.json";
 import STATSANSATTE from "./statsansatte.json";
 import { ansatteITre, delAvKommunen, statlig, SAMLET_STAT } from "./kommunetre.js";
 import { sokMaskin } from "./klart-maskin.js";
+import { price as usPris } from "../frostcopy/buy/price.js";
 
 const NADE_DAGER = 14; // lisensen varer så mange dager etter at perioden er betalt til
 const MASKINKODE = /^[0-9A-HJKMNP-TV-Z]{4}(-[0-9A-HJKMNP-TV-Z]{4}){3}$/;
@@ -248,6 +249,88 @@ export async function handleNedlasting(request, env, url) {
   }
   hoder.set("content-length", String(obj.size));
   return new Response(request.method === "HEAD" ? null : obj.body, { headers: hoder });
+}
+
+// ---------------------------------------------------------------------------
+// FrostCopy (den amerikanske utgaven): /frostcopy/api/checkout og /frostcopy/api/order
+// ---------------------------------------------------------------------------
+//
+// Kjøperen velger størrelse og bransje (eller offentlig), og prisen regnes ut her med den samme filen som siden
+// viser prisen med (frostcopy/buy/price.js). Ikke noe registeroppslag. Betalingen er én betaling i dollar for ett
+// år (Stripe Checkout, ikke abonnement): lisensen varer 365 dager fra betalingen og fornyes ved å kjøpe på nytt.
+// Ingenting lagres her: lisensen lages fra betalingen hver gang kunden åpner siden med betalingens id, så den kan
+// hentes fram igjen fra samme adresse. Koden har merket FROSTCOPY-, som appen viser og leser (aktivering.rs).
+
+const US_SIDE = "https://esbjugconsult.com/frostcopy/buy/";
+
+function usSvar(data, status = 200) {
+  return json(data, status);
+}
+
+export async function handleFrostCopy(request, env, url) {
+  const sti = url.pathname.replace(/^\/frostcopy\/api\//, "");
+  try {
+    if (sti === "checkout" && request.method === "POST") return await usKasse(request, env);
+    if (sti === "order" && request.method === "GET") return await usOrdre(env, url);
+    return usSvar({ error: "Not found." }, 404);
+  } catch (err) {
+    console.error("frostcopy", sti, err);
+    const detalj = testmodus(env) ? ` (${err && err.message ? err.message : err})` : "";
+    return usSvar({ error: "Something went wrong on our side. Try again in a moment." + detalj }, 500);
+  }
+}
+
+async function usKasse(request, env) {
+  if (!env.KLART_LISENSNOKKEL || !env.STRIPE_SECRET_KEY) return usSvar({ error: "Buying online is not open yet." }, 503);
+  const b = await body(request);
+  const p = usPris({ people: b.people, kind: b.kind === "gov" ? "gov" : "business", business: b.business });
+  const navn = String(b.name || "").replace(/\s+/g, " ").trim().slice(0, 120);
+  const epost = epostFra(b.email);
+  if (!p) return usSvar({ error: "Enter how many people work in the organization." }, 400);
+  if (navn.length < 2) return usSvar({ error: "Write the name of the organization." }, 400);
+  if (!epost) return usSvar({ error: "Write your email address." }, 400);
+  const hva = p.kind === "gov" ? "government" : p.business || "one person";
+  const okt = await stripe(env, "POST", "checkout/sessions", {
+    mode: "payment",
+    "line_items[0][quantity]": "1",
+    "line_items[0][price_data][currency]": "usd",
+    "line_items[0][price_data][unit_amount]": String(p.price * 100),
+    "line_items[0][price_data][product_data][name]": `FrostCopy license for one year: ${navn}`,
+    "line_items[0][price_data][product_data][description]": `One license for the whole organization (${p.people.toLocaleString("en-US")} ${p.people === 1 ? "person" : "people"}, ${hva}). Valid for 365 days from payment. Does not renew by itself.`,
+    customer_email: epost,
+    "payment_intent_data[description]": `FrostCopy license, one year: ${navn}`,
+    "metadata[utgave]": "us",
+    "metadata[navn]": navn,
+    "metadata[people]": String(p.people),
+    "metadata[kind]": p.kind,
+    "metadata[business]": p.business || "",
+    "metadata[usd]": String(p.price),
+    success_url: `${US_SIDE}done/?session={CHECKOUT_SESSION_ID}`,
+    cancel_url: US_SIDE,
+  });
+  return usSvar({ url: okt.url, price: p.price });
+}
+
+async function usOrdre(env, url) {
+  const id = url.searchParams.get("session") || "";
+  if (!/^cs_(test|live)_[A-Za-z0-9]+$/.test(id)) return usSvar({ error: "No purchase found." }, 400);
+  if (!env.KLART_LISENSNOKKEL || !env.STRIPE_SECRET_KEY) return usSvar({ error: "Buying online is not open yet." }, 503);
+  const okt = await stripeFinn(env, `checkout/sessions/${id}`);
+  if (!okt || okt.metadata?.utgave !== "us") return usSvar({ error: "No purchase found." }, 404);
+  if (okt.status !== "complete" || okt.payment_status !== "paid") {
+    return usSvar({ error: "The payment is not through yet. Reload the page in a moment." }, 409);
+  }
+  const utloper = omDager(365, okt.created * 1000);
+  const epost = (okt.customer_details?.email || okt.customer_email || "").toLowerCase() || null;
+  const kode = await kodeTilLisens(env, { navn: okt.metadata.navn, orgnr: null, epost, plan: "org", utloper }, null);
+  const test = testmodus(env);
+  return usSvar({
+    code: kode.replace(/^KLART-/, "FROSTCOPY-"),
+    name: okt.metadata.navn,
+    // I testmodus varer koden høyst sju dager (kodeTilLisens), og siden sier det.
+    expires: test ? (utloper < omDager(7) ? utloper : omDager(7)) : utloper,
+    test,
+  });
 }
 
 function lager(env) {
@@ -2359,6 +2442,8 @@ async function webhook(request, env) {
     case "checkout.session.completed":
     case "checkout.session.async_payment_succeeded":
       // Kjøp fra prissiden har license_type, sprinten har sprint. De gamle, maskinbundne kjøpene har ingen av dem.
+      // FrostCopy (amerikansk): lisensen hentes fra betalingen når kunden kommer tilbake til siden, se handleFrostCopy.
+      if (obj.metadata?.utgave === "us") break;
       if (obj.metadata?.sprint) await sprintBetalt(env, obj);
       else if (obj.metadata?.license_type) await ordreFullfort(env, obj);
       else await lisensFraOkt(env, obj);

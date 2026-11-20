@@ -42,15 +42,31 @@
 
           <div class="us-prisboks" aria-live="polite">
             <p class="bekreftet">License for the whole organization</p>
-            <p class="pristall"><b id="amount">$0</b> <span>per year, before sales tax</span></p>
+            <p class="pristall"><b id="amount">$0</b> <span>for one year</span></p>
             <p class="us-hvordan" id="how"></p>
           </div>
 
-          <div class="knapper">
-            <button class="btn" type="button" id="buy">Buy a license</button>
-            <button class="btn us-ghost-lys" type="button" id="have">I have a license</button>
-          </div>
-          <p class="smaa">Buying online is not open yet.</p>
+          <form id="order" class="us-ordre" novalidate>
+            <div class="us-to-felt">
+              <div>
+                <label for="org">Name of the organization</label>
+                <input id="org" type="text" maxlength="120" autocomplete="organization" required />
+                <p class="smaa">This name is shown in FrostCopy on every computer that uses the license.</p>
+              </div>
+              <div>
+                <label for="email">Your email</label>
+                <input id="email" type="email" maxlength="200" autocomplete="email" required />
+                <p class="smaa">For the payment and the receipt.</p>
+              </div>
+            </div>
+            <div class="knapper">
+              <button class="btn" type="submit" id="buy">Buy a license</button>
+              <button class="btn us-ghost-lys" type="button" id="have">I have a license</button>
+            </div>
+            <p class="smaa us-feil" id="error" role="alert" hidden></p>
+            <p class="smaa">You pay by card on the next page. The license is shown as soon as the payment is through, and it lasts one year from that day. It does not renew by itself.</p>
+            <p class="smaa" id="haveText" hidden>Open FrostCopy and choose License at the top right. Paste the code that starts with FROSTCOPY-, or drop the license file on the window.</p>
+          </form>
 
           <h3 class="vilkar-tittel">Before you buy</h3>
           <p class="us-avsnitt"><b>30 days with all of FrostCopy.</b> Try FrostCopy on your own files for 30 days before you decide. It is the full version. Trying it needs no sign-up.</p>
@@ -81,6 +97,6 @@
       </div>
     </footer>
 
-    <script src="buy.js"></script>
+    <script type="module" src="buy.js"></script>
   </body>
 </html>

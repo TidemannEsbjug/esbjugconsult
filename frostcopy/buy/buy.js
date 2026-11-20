@@ -1,78 +1,57 @@
-// The US price calculator. The numbers are the ones in the draft (us-kjopsside/buy.html, November 19, 2026):
-// the Norwegian curve in dollars. A straight line in log-log between the points, continuing with the last slope
-// above the last point. Nothing here is sent anywhere: the price is calculated in the browser.
-// The buttons "Buy a license" and "I have a license" do nothing yet. There is no ordering backend.
-(function () {
-  var SOLO = 300;
-  var CURVE = [[1, 500], [2, 600], [6, 1500], [23, 4500], [113, 12000], [500, 25000], [2000, 45000]];
-  // Government: its own table, never above 14,500 dollars a year.
-  var GOV = [[1, 240], [5, 590], [20, 1490], [50, 2900], [200, 5900], [1000, 9800], [3000, 14500]];
-  var GOV_CAP = 14500;
-  // The share of the people on the payroll that is counted. A third number is a factor on the price.
-  var BUSINESS = [
-    ["Law firm", 1], ["Accounting, tax or bookkeeping", 1], ["Finance or insurance", 1], ["Recruiting or HR services", 1],
-    ["Consulting, IT or other office work", 1], ["Real estate", 1], ["Nonprofit or association", 1],
-    ["Healthcare", 0.4], ["Schools and education", 0.4], ["Care and social services", 0.4],
-    ["Aviation", 0.3, 1.5], ["Retail", 0.2],
-    ["Construction and trades", 0.15], ["Manufacturing", 0.15], ["Transport and warehousing", 0.15],
-    ["Farming, forestry or fishing", 0.15], ["Mining", 0.15], ["Utilities and waste", 0.15], ["Auto repair", 0.15],
-    ["Hotels and restaurants", 0.1], ["Security", 0.1], ["Cleaning and property services", 0.1],
-    ["Staffing agency", 0.05],
-  ];
+// The US purchase page. The price shown here comes from price.js, the same file the server uses when it
+// creates the payment, so the two cannot disagree. Nothing is sent before "Buy a license" is pressed.
+import { BUSINESS, price } from "./price.js";
 
-  function loglog(points, x) {
-    if (x <= points[0][0]) return points[0][1];
-    var i = -1;
-    for (var k = 0; k < points.length; k++) {
-      if (points[k][0] >= x) { i = k; break; }
-    }
-    if (i === -1) i = points.length - 1;
-    var x0 = points[i - 1][0], y0 = points[i - 1][1], x1 = points[i][0], y1 = points[i][1];
-    return y0 * Math.exp((Math.log(x / x0) / Math.log(x1 / x0)) * Math.log(y1 / y0));
-  }
-  function round(p) {
-    var step = p < 1000 ? 10 : p < 10000 ? 50 : 100;
-    return Math.round(p / step) * step;
-  }
-  function tall(n) {
-    return n.toLocaleString("en-US");
-  }
+const el = (id) => document.getElementById(id);
+const people = el("people"), business = el("business"), businessField = el("businessField");
+BUSINESS.forEach((b, i) => business.add(new Option(b[0], i)));
 
-  var people = document.getElementById("people");
-  var business = document.getElementById("business");
-  var businessField = document.getElementById("businessField");
-  if (!people || !business) return;
-  BUSINESS.forEach(function (b, i) {
-    business.add(new Option(b[0], i));
-  });
+function choice() {
+  return {
+    people: Math.max(1, Math.floor(Number(people.value) || 1)),
+    kind: document.querySelector("input[name=kind]:checked").value === "gov" ? "gov" : "business",
+    business: Number(business.value),
+  };
+}
+function update() {
+  const c = choice();
+  businessField.hidden = c.kind === "gov";
+  const p = price(c);
+  el("amount").textContent = p ? "$" + p.price.toLocaleString("en-US") : "";
+  el("how").textContent = p ? p.how : "Enter how many people work in the organization.";
+}
+people.addEventListener("input", update);
+business.addEventListener("change", update);
+document.querySelectorAll("input[name=kind]").forEach((r) => r.addEventListener("change", update));
+update();
 
-  function update() {
-    var gov = document.querySelector("input[name=kind]:checked").value === "gov";
-    businessField.hidden = gov;
-    var n = Math.max(1, Math.floor(Number(people.value) || 1));
-    var price, how;
-    if (gov) {
-      price = Math.min(GOV_CAP, round(loglog(GOV, n)));
-      how = "Government price for " + tall(n) + (n === 1 ? " person." : " people.") + (price === GOV_CAP ? " This is the highest government price." : "");
-    } else if (n === 1) {
-      price = SOLO;
-      how = "The price for one person working alone.";
-    } else {
-      var b = BUSINESS[Number(business.value)];
-      var share = b[1], factor = b[2] || 1;
-      var counted = Math.max(1, n * share);
-      price = Math.max(SOLO, round(loglog(CURVE, counted) * factor));
-      how = share === 1
-        ? "All " + tall(n) + " people are counted."
-        : "In " + b[0].toLowerCase() + ", " + Math.round(share * 100) + "% of the people are counted: " + tall(Math.round(counted * 10) / 10) + " of " + tall(n) + ".";
-    }
-    document.getElementById("amount").textContent = "$" + tall(price);
-    document.getElementById("how").textContent = how;
+function fail(text) {
+  const e = el("error");
+  e.textContent = text;
+  e.hidden = !text;
+}
+el("have").addEventListener("click", () => {
+  el("haveText").hidden = !el("haveText").hidden;
+});
+el("order").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  fail("");
+  const name = el("org").value.trim(), email = el("email").value.trim();
+  if (name.length < 2) return fail("Write the name of the organization."), el("org").focus();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return fail("Write your email address."), el("email").focus();
+  const button = el("buy");
+  button.disabled = true;
+  try {
+    const answer = await fetch("/frostcopy/api/checkout", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ...choice(), name, email }),
+    });
+    const data = await answer.json().catch(() => ({}));
+    if (!answer.ok || !data.url) throw new Error(data.error || "Something went wrong on our side. Try again in a moment.");
+    location.href = data.url;
+  } catch (e) {
+    fail(e.message);
+    button.disabled = false;
   }
-  people.addEventListener("input", update);
-  business.addEventListener("change", update);
-  Array.prototype.forEach.call(document.querySelectorAll("input[name=kind]"), function (r) {
-    r.addEventListener("change", update);
-  });
-  update();
-})();
+});

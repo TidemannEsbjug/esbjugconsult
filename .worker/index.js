@@ -3,7 +3,7 @@
 // else is the static site. /login/ (customer portal) and /kunde/ (behind login) are in kunde.js.
 import { handleChat, pageVisit } from "./chat.js";
 import { handleKunde } from "./kunde.js";
-import { erLansert, handleKlart, handleNedlasting, handleTest, harTest } from "./klart.js";
+import { erLansert, handleFrostCopy, handleKlart, handleNedlasting, handleTest, harTest } from "./klart.js";
 export { ChatHub } from "./chat.js";
 export { KlartLager } from "./klart.js";
 
@@ -56,6 +56,8 @@ export default {
     // fortsatt, fordi Stripe-webhooken og eldre versjoner av appen bruker dem.
     if (/^\/(klart|GDPR)\/api\//.test(url.pathname)) return medHoder(await handleKlart(request, env, url));
     if (/^\/(klart|GDPR)\/last-ned\//.test(url.pathname)) return medHoder(await handleNedlasting(request, env, url));
+    // FrostCopy: kjøp i dollar etter størrelse og bransje (klart.js, handleFrostCopy).
+    if (url.pathname.startsWith("/frostcopy/api/")) return handleFrostCopy(request, env, url);
     // Alles Klar (tysk) og FrostCopy (amerikansk) har egne sider og egne installasjonsfiler.
     if (/^\/(alles-klar\/last-ned|frostcopy\/(last-ned|download))\//.test(url.pathname)) return handleNedlasting(request, env, url);
     // Skrivemåter folk prøver, og adressen FrostCopy-appen åpner for kjøp (/klart/us/buy).
