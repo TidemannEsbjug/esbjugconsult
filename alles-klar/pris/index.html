@@ -16,593 +16,159 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/png" href="/alles-klar/favicon.png" />
-    <title>Preis · Alles Klar</title>
-    <meta name="description" content="Alles Klar wird pro Unternehmen lizenziert. Geben Sie die Organisationsnummer ein, um den genauen Jahrespreis zu sehen." />
+    <title>Preis und Bestellung · Alles Klar</title>
+    <meta name="description" content="Was Alles Klar für Ihre Organisation kostet: für Unternehmen, Kommunen und Behörden. Eine Lizenz für alle, Bestellung auf Rechnung. Kostenlos für Privatpersonen." />
     <meta name="theme-color" content="#eef3fb" />
     <!-- Ikke indekser før Klart lanseres. Fjernes sammen med den på /alles-klar/. -->
     <meta name="robots" content="noindex" />
     <link rel="stylesheet" href="../fonts.css" />
     <link rel="stylesheet" href="../styles.css" />
     <link rel="stylesheet" href="pris.css" />
-    <script src="pris-tidlig.js"></script>
+    <link rel="stylesheet" href="bestellung.css" />
   </head>
   <body>
     <main>
       <section class="port" id="port">
         <!-- Veien tilbake til forsiden (eieren 11.11.2026: det gikk ikke an å komme tilbake). -->
         <a class="pris-hjem" href="/alles-klar/"><span aria-hidden="true">←</span> <i>Alles Klar</i></a>
-        <div class="kort" id="kort" aria-live="polite">
-          <ol class="stegrad" id="stegrad" hidden aria-label="Schritte"></ol>
+        <div class="kort middels" id="kort">
+          <!-- Privatpersoner betaler ikke; det skal stå først også her. -->
+          <p class="pris-privat"><b>Kostenlos für Privatpersonen.</b> <a href="/alles-klar/#last-ned">Alles Klar herunterladen</a></p>
+          <p class="merke">Für Organisationen</p>
+          <h1>Alles Klar für Ihre Organisation</h1>
+          <p class="ingress">Eine Lizenz gilt für alle in der Organisation. Keine Zählung von Arbeitsplätzen, keine Seitengrenzen.</p>
 
-          <!-- 1. Virksomheten -->
-          <div class="steg" id="s-port">
-            <p class="kvote" id="kvote" hidden>Die kostenlosen Exporte sind aufgebraucht. Die Vollversion hat keine Begrenzung.</p>
-            <!-- Privatpersoner betaler ikke; det skal stå først også her. -->
-            <p class="pris-privat"><b>Kostenlos für Privatpersonen.</b> <a href="/alles-klar/#last-ned">Alles Klar herunterladen</a></p>
-            <p class="merke">Für Unternehmen</p>
-            <h1>Ihren Preis ansehen</h1>
+          <!-- Tre slags kjøpere. Prisen kommer fra preis.js, den samme filen serveren regner med (bestellung.js). -->
+          <div class="de-valg" role="radiogroup" aria-label="Art der Organisation">
+            <label><input type="radio" name="art" value="unternehmen" checked /><span>Unternehmen, Kanzlei, Praxis oder Verein</span></label>
+            <label><input type="radio" name="art" value="kommune" /><span>Stadt, Gemeinde oder Landkreis</span></label>
+            <label><input type="radio" name="art" value="behoerde" /><span>Behörde des Bundes oder eines Landes</span></label>
+          </div>
+
+          <div class="de-to-felt" id="feld-unternehmen">
+            <div>
+              <label for="personen">Personen in der Organisation</label>
+              <input id="personen" type="number" min="1" step="1" value="25" inputmode="numeric" />
+              <p class="smaa">Alle Beschäftigten. Geben Sie 1 ein, wenn Sie allein arbeiten.</p>
+            </div>
+            <div id="feld-branche">
+              <label for="branche">Branche</label>
+              <select id="branche"></select>
+            </div>
+          </div>
+
+          <!-- Kommunen: kurven for fire år i euro (eieren 16.11.2026). Taket ligger under EU-terskelen på 140 000 €.
+               Punktene i data-punkter leses av kommune-eur.js og angebot.js; preis.js har de samme (se .worker/de-preis.test.mjs). -->
+          <form class="de-ett-felt" id="ke-skjema" novalidate hidden data-punkter="[[500,1500],[2000,2600],[5000,5000],[20000,14500],[50000,41000],[100000,70000],[250000,135000]]">
+            <label for="ke-innbyggere">Einwohnerzahl</label>
+            <input id="ke-innbyggere" type="text" inputmode="numeric" autocomplete="off" placeholder="z. B. 18.500" maxlength="12" />
+            <p class="smaa">Derselbe Preis für jede Kommune gleicher Größe, ohne Verhandlung.</p>
+          </form>
+
+          <div class="de-ett-felt" id="feld-behoerde" hidden>
+            <label for="beschaeftigte">Beschäftigte der Behörde</label>
+            <input id="beschaeftigte" type="number" min="1" step="1" inputmode="numeric" placeholder="z. B. 120" />
+            <p class="smaa">Auch für Gerichte, Hochschulen und Körperschaften des öffentlichen Rechts.</p>
+          </div>
+
+          <div class="de-prisboks" aria-live="polite">
+            <p class="bekreftet">Lizenz für die gesamte Organisation</p>
+            <p class="pristall" id="preiszeile"><b id="betrag"></b> <span>für ein Jahr</span></p>
+            <div id="ke-boks" hidden><p class="ke-svar" id="ke-svar" hidden></p></div>
+            <p class="de-hinweis" id="hinweis" hidden></p>
+            <p class="smaa">Nettopreis. Die Rechnung weist keine Umsatzsteuer aus; die Steuer schuldet der Leistungsempfänger (Reverse Charge).</p>
+          </div>
+
+          <form id="bestellung" class="de-ordre" novalidate>
+            <div class="de-to-felt">
+              <div>
+                <label for="org">Name der Organisation</label>
+                <input id="org" type="text" maxlength="120" autocomplete="organization" required />
+                <p class="smaa">Steht auf der Rechnung und in Alles Klar auf jedem Rechner, der die Lizenz verwendet.</p>
+              </div>
+              <div>
+                <label for="email">E-Mail für die Rechnung</label>
+                <input id="email" type="email" maxlength="200" autocomplete="email" required />
+                <p class="smaa">Hierhin geht die Rechnung und später der Lizenzschlüssel.</p>
+              </div>
+            </div>
+            <div class="de-to-felt">
+              <div>
+                <label for="adresse">Rechnungsadresse</label>
+                <textarea id="adresse" rows="4" maxlength="600" autocomplete="street-address" required></textarea>
+              </div>
+              <div>
+                <label for="zeichen">Ihre Bestellnummer oder Ihr Zeichen</label>
+                <input id="zeichen" type="text" maxlength="80" />
+                <p class="smaa">Freiwillig. Steht auf der Rechnung.</p>
+              </div>
+            </div>
+            <p class="de-skjult" aria-hidden="true"><label for="website">Dieses Feld bitte leer lassen</label><input id="website" type="text" tabindex="-1" autocomplete="off" /></p>
+            <div class="knapper">
+              <button class="btn" type="submit" id="bestellen">Auf Rechnung bestellen</button>
+              <button class="btn de-ghost-lys" type="button" id="habe">Ich habe schon einen Lizenzschlüssel</button>
+            </div>
+            <p class="smaa de-feil" id="fehler" role="alert" hidden></p>
+            <p class="smaa" id="ablauf">Die Rechnung kommt sofort per E-Mail. Sie zahlen innerhalb von 30 Tagen per SEPA-Überweisung in Euro. Der Lizenzschlüssel kommt per E-Mail, sobald die Zahlung eingegangen ist, und gilt ab diesem Tag ein Jahr. Bis dahin funktioniert Alles Klar 30 Tage in vollem Umfang.</p>
+            <p class="smaa" id="habeText" hidden>Öffnen Sie Alles Klar und klicken Sie oben rechts auf „Lizenz“ (während der Testphase steht dort „Test: noch … Tage“). Fügen Sie den Code ein, der mit ALLESKLAR- beginnt, und klicken Sie auf „Aktivieren“.</p>
+          </form>
+          <div id="danke" class="de-takk" hidden tabindex="-1">
+            <h2>Vielen Dank</h2>
+            <p id="dankeText"></p>
+            <p class="smaa">Fragen: <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a></p>
+          </div>
+
+          <!-- Bare for kommuner: prislisten og tilbudet som PDF (angebot.js; ingenting sendes til oss). -->
+          <section class="kommune-eur" id="kommune-eur" aria-labelledby="ke-tittel" hidden>
+            <p class="merke">Für Kommunen</p>
+            <h2 id="ke-tittel">Ein Preis nach Einwohnerzahl</h2>
             <p class="ingress">
-              Lizenziert pro Unternehmen. Geben Sie die Organisationsnummer ein, um den genauen Jahrespreis zu sehen.
+              Die Lizenz gilt für die ganze Verwaltung. Vier Jahre kosten höchstens 135.000 € und bleiben damit immer unter der EU-Schwelle:
+              keine europaweite Ausschreibung nötig. Bestellt und berechnet wird jeweils ein Jahr, ein Viertel des Betrags für vier Jahre.
             </p>
-            <form class="felt" id="port-skjema" novalidate>
-              <label for="orgnr">Organisationsnummer oder Name</label>
-              <div class="rad">
-                <div class="orgfelt">
-                  <input id="orgnr" type="text" autocomplete="off" spellcheck="false" placeholder="123 456 789" maxlength="80" />
-                  <ul class="orgforslag" id="orgnr-forslag" role="listbox" hidden></ul>
-                </div>
-                <button class="btn" type="submit" id="vis">Preis anzeigen</button>
-              </div>
-              <p class="smaa">Nur für norwegische Unternehmen.</p>
-              <p class="feil" id="port-feil" role="alert" hidden></p>
-              <div class="underenhet" id="underenhet" hidden>
-                <p id="underenhet-tekst"></p>
-                <button class="btn sm" type="button" id="underenhet-ja"></button>
-              </div>
+            <table class="ke-tabell">
+              <caption class="skjult-tekst">Preise für Kommunen, vier Jahre und pro Jahr, netto</caption>
+              <thead><tr><th scope="col">Einwohner</th><th scope="col">4 Jahre</th><th scope="col">pro Jahr</th></tr></thead>
+              <tbody>
+                <tr><td>500</td><td>1.500 €</td><td>375 €</td></tr>
+                <tr><td>2.000</td><td>2.600 €</td><td>650 €</td></tr>
+                <tr><td>5.000</td><td>5.000 €</td><td>1.250 €</td></tr>
+                <tr><td>20.000</td><td>14.500 €</td><td>3.625 €</td></tr>
+                <tr><td>50.000</td><td>41.000 €</td><td>10.250 €</td></tr>
+                <tr><td>100.000</td><td>70.000 €</td><td>17.500 €</td></tr>
+                <tr><td>ab 250.000</td><td>135.000 €</td><td>33.750 €</td></tr>
+              </tbody>
+            </table>
+
+            <form class="ke-angebot" id="ke-angebot" novalidate
+              data-selger="ESBJUG CONSULT|Glenneveien 272B|1455 Nordre Frogn, Norwegen|Org.-Nr. 938 441 405|tidemann@esbjugconsult.com"
+              data-epost="tidemann@esbjugconsult.com"
+              data-nettside="esbjugconsult.com/alles-klar/pris"
+              data-underskrift="Johan Tidemann Esbjug, ESBJUG CONSULT">
+              <h3>Schriftliches Angebot</h3>
+              <p class="smaa">Brauchen Sie vor der Bestellung ein Angebot für Ihre Akten? Es entsteht sofort als PDF, mit der Einwohnerzahl von oben. Nichts davon wird an uns gesendet.</p>
+              <label for="ka-kommune">Kommune</label>
+              <input id="ka-kommune" type="text" autocomplete="organization" placeholder="z. B. Stadt Musterstadt" maxlength="120" />
+              <label for="ka-adresse">Anschrift <span class="valgfri">(optional)</span></label>
+              <textarea id="ka-adresse" rows="2" autocomplete="street-address" placeholder="Rathausplatz 1, 12345 Musterstadt" maxlength="200"></textarea>
+              <label for="ka-person">Ansprechperson <span class="valgfri">(optional)</span></label>
+              <input id="ka-person" type="text" autocomplete="name" maxlength="120" />
+              <p class="ke-feil" id="ka-feil" role="alert" hidden></p>
+              <button type="submit" class="btn">Angebot als PDF</button>
             </form>
+          </section>
 
-            <!-- Kommunen: fast prisliste i euro (16.11.2026). Taket ligger under EU-terskelen på 140 000 €,
-                 så ingen kjøper trenger EU-anbud. Kalkulatoren er kommunen-eur.js, punktene står i data-punkter. -->
-            <section class="kommune-eur" id="kommune-eur" aria-labelledby="ke-tittel">
-              <p class="merke">Für Kommunen</p>
-              <h2 id="ke-tittel">Ein Preis nach Einwohnerzahl</h2>
-              <p class="ingress">
-                Lizenz für vier Jahre, für die ganze Verwaltung. Derselbe Preis für jede Kommune gleicher Größe, ohne Verhandlung.
-                Höchstens 135.000 € für vier Jahre, also immer unter der EU-Schwelle: keine europaweite Ausschreibung nötig.
-              </p>
-              <form class="felt" id="ke-skjema" novalidate data-punkter="[[500,1500],[2000,2600],[5000,5000],[20000,14500],[50000,41000],[100000,70000],[250000,135000]]">
-                <label for="ke-innbyggere">Einwohnerzahl Ihrer Kommune</label>
-                <input id="ke-innbyggere" type="text" inputmode="numeric" autocomplete="off" placeholder="z. B. 18.500" maxlength="12" />
-                <p class="ke-svar" id="ke-svar" aria-live="polite" hidden></p>
-              </form>
-              <table class="ke-tabell">
-                <caption class="skjult-tekst">Preise für Kommunen, vier Jahre, zzgl. MwSt.</caption>
-                <thead><tr><th scope="col">Einwohner</th><th scope="col">4 Jahre</th><th scope="col">pro Jahr</th></tr></thead>
-                <tbody>
-                  <tr><td>500</td><td>1.500 €</td><td>375 €</td></tr>
-                  <tr><td>2.000</td><td>2.600 €</td><td>650 €</td></tr>
-                  <tr><td>5.000</td><td>5.000 €</td><td>1.250 €</td></tr>
-                  <tr><td>20.000</td><td>14.500 €</td><td>3.625 €</td></tr>
-                  <tr><td>50.000</td><td>41.000 €</td><td>10.250 €</td></tr>
-                  <tr><td>100.000</td><td>70.000 €</td><td>17.500 €</td></tr>
-                  <tr><td>ab 250.000</td><td>135.000 €</td><td>33.750 €</td></tr>
-                </tbody>
-              </table>
-              <p class="smaa">Alle Preise zzgl. MwSt. Dazwischen steigt der Preis gleichmäßig.</p>
+          <h3 class="vilkar-tittel">Vor dem Kauf</h3>
+          <p class="de-avsnitt"><b>30 Tage mit dem vollen Alles Klar.</b> Testen Sie Alles Klar 30 Tage lang mit Ihren eigenen Dateien, bevor Sie sich entscheiden. Es ist die Vollversion, und der Test erfordert keine Registrierung.</p>
 
-              <form class="ke-angebot" id="ke-angebot" novalidate
-                data-selger="ESBJUG CONSULT|Glenneveien 272B|1455 Nordre Frogn, Norwegen|Org.-Nr. 938 441 405|tidemann@esbjugconsult.com"
-                data-epost="tidemann@esbjugconsult.com"
-                data-nettside="esbjugconsult.com/alles-klar/pris"
-                data-underskrift="Johan Tidemann Esbjug, ESBJUG CONSULT">
-                <h3>Schriftliches Angebot</h3>
-                <p class="smaa">Brauchen Sie ein Angebot für Ihre Akten? Es entsteht sofort als PDF, mit der Einwohnerzahl von oben. Nichts davon wird an uns gesendet.</p>
-                <label for="ka-kommune">Kommune</label>
-                <input id="ka-kommune" type="text" autocomplete="organization" placeholder="z. B. Stadt Musterstadt" maxlength="120" />
-                <label for="ka-adresse">Anschrift <span class="valgfri">(optional)</span></label>
-                <textarea id="ka-adresse" rows="2" autocomplete="street-address" placeholder="Rathausplatz 1, 12345 Musterstadt" maxlength="200"></textarea>
-                <label for="ka-person">Ansprechperson <span class="valgfri">(optional)</span></label>
-                <input id="ka-person" type="text" autocomplete="name" maxlength="120" />
-                <p class="ke-feil" id="ka-feil" role="alert" hidden></p>
-                <button type="submit" class="btn">Angebot als PDF</button>
-              </form>
-            </section>
-          </div>
-
-          <!-- 2. Prisen, og for de store: skreddersydd oppsett ved siden av -->
-          <div class="steg" id="s-pris" hidden>
-            <button type="button" class="tilbake" id="r-tilbake" hidden>← Zurück</button>
-            <div class="pris-grid">
-              <div>
-                <p class="bekreftet" id="r-hvem"></p>
-                <h2 class="pristall" id="r-pris" tabindex="-1"></h2>
-                <button type="button" class="lenke" data-endre>Nicht Ihr Unternehmen? Ändern.</button>
-                <h3 class="vilkar-tittel">Die Lizenz</h3>
-                <ul class="vilkar" id="r-vilkar"></ul>
-                <div class="knapper">
-                  <button type="button" class="btn" id="pris-videre">Weiter</button>
-                  <span class="smaa" id="kjop-stengt" hidden>Die Bestellung ist bald möglich.</span>
-                </div>
-                <p class="ekstra">
-                  <button type="button" class="lenke" id="til-dekker" hidden>Verarbeiten Sie Daten für andere Unternehmen?</button>
-                  <a class="lenke" href="/alles-klar/#last-ned">Alles Klar noch nicht ausprobiert? Kostenlos testen, ohne Registrierung.</a>
-                </p>
-              </div>
-              <aside class="oppsett-kort" id="r-oppsett" hidden>
-                <p class="merke">Für große Unternehmen</p>
-                <h3>Maßgeschneiderte Einrichtung</h3>
-                <p>Ein größeres Modell, feinabgestimmt auf Ihre eigenen Dokumente und bei Ihnen eingerichtet, auf Hardware, die Ihnen gehört.</p>
-                <svg viewBox="0 0 560 300" aria-hidden="true">
-                  <ellipse cx="280" cy="270" rx="230" ry="22" fill="#000" opacity="0.18" />
-                  <rect x="122" y="240" width="316" height="22" rx="9" fill="#9aa4b0" />
-                  <path d="M96 128 L128 82 Q134 74 146 74 L414 74 Q426 74 432 82 L464 128 Z" fill="#eef2f6" />
-                  <path d="M96 128 H464 V230 Q464 248 446 248 H114 Q96 248 96 230 Z" fill="#d9dfe6" />
-                  <path d="M96 128.5 H464" stroke="#fff" stroke-width="1.6" />
-                  <g fill="#2b3139">
-                    <rect x="128" y="178" width="22" height="8" rx="4" />
-                    <rect x="162" y="178" width="22" height="8" rx="4" />
-                    <rect x="386" y="180" width="42" height="4" rx="2" />
-                  </g>
-                </svg>
-                <button type="button" class="btn sm" id="til-oppsett">Mehr erfahren</button>
-              </aside>
-            </div>
-          </div>
-
-          <!-- Skreddersydd oppsett: hva det er, prisen åpent, og booking på faktura (startdato; grunnhonoraret faktureres). -->
-          <div class="steg" id="s-oppsett" hidden>
-            <button type="button" class="tilbake" data-tilbake>← Zurück</button>
-                <div class="op-hode">
-                  <div>
-                    <p class="merke" id="op-merke">Einrichtung bei Ihnen</p>
-                    <h2 tabindex="-1" id="op-tittel">Ein Sprint bei Ihnen</h2>
-                    <p class="ingress" data-blokk="oppsett" hidden>
-                      Ein Tag, vor Ort oder per Fernzugriff. Ich richte Alles Klar bei Ihnen ein und gehe es mit Ihnen an Ihren eigenen Dokumenten durch.
-                    </p>
-                    <p class="ingress" data-blokk="sprint" hidden>
-                      Ein eigenes Modell, feinabgestimmt auf Ihre echten Daten, auf Hardware, die Ihnen gehört. Bis zu
-                      <span data-felt="dager"></span> am Stück, in Kalendertagen gezählt, und der Sprint endet an dem Tag,
-                      an dem das Erfolgskriterium erreicht ist.
-                    </p>
-                  <!-- Valget og prisen hører sammen: bytter de tilbud, bytter prisen rett under. -->
-                  <div class="op-velg">
-                    <div class="tilbudvalg" id="op-valg" role="radiogroup" aria-label="Angebot wählen" hidden></div>
-                    <div class="sprint-pris" data-blokk="oppsett" hidden>
-                      <p class="merke" data-felt="trinn"></p>
-                      <p class="pristall"><b data-felt="fast"></b> <span>zzgl. MwSt., Festpreis</span></p>
-                      <p>Wird bei Buchung in Rechnung gestellt.</p>
-                    </div>
-                    <div class="sprint-pris" id="sp-pris" data-blokk="sprint" hidden>
-                      <p class="merke" data-felt="trinn"></p>
-                      <p class="pristall"><b data-felt="total"></b> <span>zzgl. MwSt., wenn das Kriterium erreicht ist</span></p>
-                      <p>
-                        Das Grundhonorar von <b data-felt="grunn"></b> zzgl. MwSt. wird bei Buchung in Rechnung gestellt und nicht erstattet. Der Rest,
-                        <b data-felt="rest"></b>, wird nur in Rechnung gestellt, wenn das Erfolgskriterium erreicht ist. Andernfalls entfällt er.
-                      </p>
-                    </div>
-                  </div>
-                  </div>
-                <div class="op-bilde">
-                  <figure class="mac" id="op-mac">
-                    <img src="../assets/klart-maskin-sno.jpg" width="1600" height="1200" decoding="sync" alt="Der Rechner mit Alles Klar und dem Schneelogo, im Schnee auf dem Berg stehend, mit einer kleinen roten Hütte davor" />
-                  </figure>
-                </div>
-                </div>
-
-                <!-- Oppsettsdag: fast pris, ingen egen modell, ingen suksesskriterier -->
-                <div class="op-innhold" data-blokk="oppsett" hidden>
-                  <div class="op-rutenett">
-                    <section class="op-del">
-                      <h3>Der Tag</h3>
-                      <ul class="vilkar">
-                        <li>Alles Klar wird auf einem Rechner installiert, den Sie bereitstellen</li>
-                        <li>
-                          Der interne Zugriff wird mit Ihrer IT eingerichtet: Wer ihn braucht, verbindet sich per Fernzugriff mit dem Rechner.
-                          Alles Klar selbst verbindet sich mit keinem Netzwerk
-                        </li>
-                        <li>Schulung</li>
-                        <li>Alles Klar läuft auf einer Auswahl Ihrer eigenen Dokumente, die wir gemeinsam durchgehen, Sie und ich</li>
-                        <li>Kein eigenes Modell und keine Erfolgskriterien</li>
-                      </ul>
-                    </section>
-                    <section class="op-del">
-                      <h3>Vor dem Tag</h3>
-                      <p class="tekst">
-                        Sie erhalten eine Checkliste: der Rechner, ein Ansprechpartner in der IT, die Zugänge und die Testdokumente. Ist das nicht
-                        bereit, wird der Tag verschoben.
-                      </p>
-                      <h3 class="op-under">Bedingungen</h3>
-                      <ul class="vilkar">
-                        <li>Reise und Hotel organisiere und bezahle ich selbst</li>
-                        <li>Mehr als ein Tag wird stundenweise abgerechnet</li>
-                        <li>Der Termin kann in seltenen Fällen nach Absprache verschoben werden. Dann erhalten Sie 10 % Rabatt</li>
-                        <li>Buchen Sie innerhalb von drei Monaten nach dem Einrichtungstag einen kurzen Sprint, wird der Einrichtungstag angerechnet</li>
-                      </ul>
-                      <p class="tekst"><b>Separat berechnet:</b> die jährliche Lizenz.</p>
-                    </section>
-                  </div>
-                </div>
-
-                <!-- Kort sprint (5 dager) og sprint (10 dager): grunnhonorar, egen modell og suksesskriteriet -->
-                <div class="op-innhold" data-blokk="sprint" hidden>
-                  <div class="op-rutenett">
-                    <section class="op-del hel">
-                      <h3>Warum ein eigenes Modell</h3>
-                      <div class="op-spalter">
-                        <p class="tekst">
-                          Alles Klar funktioniert gut bei den Dokumenten, an denen ich es getestet habe, aber jedes Unternehmen hat seine eigenen
-                          Dokumente, Vorlagen, Fachsysteme und Schreibweisen. Im Sprint passe ich ein Modell genau an Ihre Dokumente an und
-                          trainiere es. Übersieht Alles Klar etwas, korrigiere ich das in diesem Modell, bis das Kriterium erreicht ist.
-                        </p>
-                        <p class="tekst">
-                          Das Modell, das mit Alles Klar geliefert wird, ist bewusst klein, damit es auf einem normalen Arbeits-PC läuft, und es ist
-                          bereits so weit wie möglich abgestimmt. Ein Modell für ein einzelnes Unternehmen kann größer sein, mit Ihren
-                          Dokumenten trainiert werden und auf eigener Hardware laufen.
-                        </p>
-                      </div>
-                    </section>
-                    <section class="op-del">
-                      <h3>So sieht die Vereinbarung aus</h3>
-                      <ul class="vilkar">
-                        <li>Vor Ort, mit Verschwiegenheitserklärung und Auftragsverarbeitungsvertrag</li>
-                        <li>Reise und Hotel organisiere und bezahle ich selbst</li>
-                        <li data-kun="kort">Tag 1 ist der Einrichtungstag, und er ist inbegriffen</li>
-                        <li>Wie ein bereinigtes Dokument aussehen soll, wird vor Tag 1 schriftlich vereinbart</li>
-                        <li>Das Grundhonorar wird bei Buchung in Rechnung gestellt und nicht erstattet</li>
-                        <li>Kriterium erreicht: Der Restbetrag wird in Rechnung gestellt</li>
-                        <li>Kriterium bis zum Ende des Sprints nicht erreicht: Der Rest entfällt, und Sie zahlen nur das Grundhonorar</li>
-                        <li data-kun="kort">
-                          Wird das Kriterium nicht innerhalb von 5 Tagen erreicht, kann der Sprint auf 10 Tage verlängert werden, wenn Sie die
-                          Differenz bis zu <span data-felt="utvidet"></span> zzgl. MwSt. zahlen
-                        </li>
-                        <li data-kun="kort">Hatten Sie in den letzten drei Monaten einen Einrichtungstag, wird er angerechnet</li>
-                      </ul>
-                    </section>
-                    <section class="op-del">
-                      <h3>Sie stellen bereit</h3>
-                      <ul class="vilkar">
-                        <li data-kun="sprint">
-                          Einen Mac Studio in Topkonfiguration mit mindestens 128 GB gemeinsamem Arbeitsspeicher, von Ihnen gekauft und in Ihrem Besitz
-                        </li>
-                        <li data-kun="kort">Einen Mac Studio mit mindestens 64 GB gemeinsamem Arbeitsspeicher, von Ihnen gekauft und in Ihrem Besitz</li>
-                        <li>Claude-Abonnements und API-Kosten für den Sprint</li>
-                        <li>Einen Arbeitsraum bei Ihnen, in dem ich ungestört arbeiten kann, 12–14 Stunden am Tag</li>
-                      </ul>
-                    </section>
-                    <section class="op-del hel">
-                      <h3>Das Erfolgskriterium</h3>
-                      <p class="tekst">Bevor ich anfange, vereinbaren wir, wie ein bereinigtes Dokument für Sie aussehen soll. Mehr müssen Sie nicht tun. Der Rest ist meine Aufgabe.</p>
-                      <p class="tekst">Getestet wird in Runden mit Ihren eigenen Dokumenten, ohne feste Obergrenze für deren Anzahl.</p>
-                      <ul class="vilkar op-spalter">
-                        <li>
-                          <b>Eine Runde</b> umfasst 100 zufällige Dokumente aus Ihren eigenen Archiven oder höchstens 1.000 Seiten, damit große
-                          Fallakten nicht allein eine ganze Runde ausmachen.
-                        </li>
-                        <li>
-                          Übersieht Alles Klar in einer Runde etwas, korrigiere ich das Modell, und diese Dokumente werden zu Trainingsmaterial.
-                          Dann werden 100 neue genommen.
-                        </li>
-                        <li>
-                          <b>Das Kriterium ist erreicht</b>, wenn eine neue Runde beim ersten Versuch zu 100 % sauber ist, gemessen an Alles Klar allein:
-                          Alle direkten Identifikatoren (Personennummer, D-Nummer, Kontonummer und die weiteren vereinbarten) und alles andere
-                          Vereinbarte sind entfernt, und es sind keine erkennbaren Personen mehr übrig.
-                        </li>
-                        <li>
-                          Das Kriterium muss innerhalb der <span data-felt="dager"></span> des Sprints erreicht werden. Wird es nicht erreicht,
-                          entfällt der Rest des Honorars.
-                        </li>
-                      </ul>
-                      <p class="tekst">
-                        Das Kriterium gilt für die Runden, die ich teste, und ist keine Garantie für alle übrigen Dokumente. Sie lesen und
-                        prüfen die Kopien selbst, wie unter <a class="lenke" href="/alles-klar/#ansvar">Verantwortung</a> beschrieben. Das ist
-                        nicht Teil des Kriteriums.
-                      </p>
-                    </section>
-                    <section class="op-del">
-                      <h3>Interner Zugriff</h3>
-                      <p class="tekst">
-                        Alles Klar läuft lokal auf einem Rechner bei Ihnen. Wer intern Zugriff braucht, verbindet sich per Fernzugriff mit
-                        diesem Rechner, mit den Berechtigungen, die Sie vergeben, eingerichtet gemeinsam mit Ihrer IT. Alles Klar selbst
-                        verbindet sich weiterhin mit keinem Netzwerk. Der Fernzugriff ist Ihre eigene Einrichtung und gehört nicht zu Alles Klar.
-                        Die Einrichtung ist Teil der Leistung, gehört aber nicht zum Erfolgskriterium.
-                      </p>
-                    </section>
-                    <section class="op-del">
-                      <h3>Preis und Eigentum</h3>
-                      <p class="tekst">Alle Dateitypen, die Alles Klar unterstützt, sind enthalten. Kein Preis pro Dokumenttyp.</p>
-                      <p class="tekst"><b>Separat berechnet:</b> die jährliche Lizenz.</p>
-                      <p class="tekst">
-                        <b>Eigentum:</b> Ihre Daten und alles, was entsteht, gehören Ihnen. Die Software, die Architektur und allgemeine
-                        Verbesserungen verbleiben bei <span class="selger-navn">ESBJUG CONSULT</span> und können in das Kernprodukt einfließen.
-                      </p>
-                    </section>
-                  </div>
-                </div>
-
-                <!-- Bookingen: en stor blå modul nederst, i samme stil som «Skreddersydd oppsett» på forsiden.
-                     Merket over overskriften følger valgt tilbud (data-book-merke, se pris.js). -->
-                <div class="op-book">
-                <p class="merke" data-book-merke>Sprint buchen</p>
-                <h2 class="op-book-tittel">Bereit loszulegen?</h2>
-                <p class="op-book-tekst">Drei kurze Schritte: wohin ich kommen soll, wann und wen ich kontaktieren soll.</p>
-                <div class="book-start" id="book-start">
-                  <button type="button" class="btn" id="book-aapne">Sprint buchen</button>
-                </div>
-                <p class="ekstra">
-                  <button type="button" class="lenke" id="til-samtale">Erst Fragen? Schreiben Sie mir eine Nachricht.</button>
-                </p>
-                <form class="skjema" id="samtale-skjema" novalidate hidden>
-                  <div>
-                    <label for="sa-navn">Name</label>
-                    <input id="sa-navn" type="text" autocomplete="name" maxlength="120" />
-                  </div>
-                  <div>
-                    <label for="sa-epost">E-Mail</label>
-                    <input id="sa-epost" type="email" autocomplete="email" />
-                  </div>
-                  <div>
-                    <label for="sa-tlf">Telefon (optional)</label>
-                    <input id="sa-tlf" type="tel" autocomplete="tel" maxlength="40" />
-                  </div>
-                  <div>
-                    <label for="sa-melding">Was möchten Sie wissen?</label>
-                    <textarea id="sa-melding" rows="3" maxlength="3000"></textarea>
-                  </div>
-                  <div class="skjult-felt" aria-hidden="true">
-                    <label for="sa-nettside">Website</label>
-                    <input id="sa-nettside" type="text" tabindex="-1" autocomplete="off" />
-                  </div>
-                  <p class="feil" id="sa-feil" role="alert" hidden></p>
-                  <button type="submit" class="btn">Senden</button>
-                </form>
-                <div id="samtale-ferdig" hidden>
-                  <p class="merke ok mt-18">Gesendet</p>
-                  <p class="tekst">Danke. Ich antworte an die E-Mail-Adresse, die Sie angegeben haben.</p>
-                </div>
-                </div>
-          </div>
-
-          <!-- Booking, ett steg om gangen: hvor, når og hvem. -->
-          <div class="steg" id="s-book-sted" hidden>
-            <button type="button" class="tilbake" data-tilbake>← Zurück</button>
-            <p class="merke" data-book-merke>Sprint buchen</p>
-            <h2 tabindex="-1">Wohin soll ich kommen?</h2>
-            <div class="book-rute">
-            <div>
-            <p class="ingress">Geben Sie die Adresse ein, an der ich arbeiten soll.</p>
-            <div class="book-felt">
-              <label class="skjult-tekst" for="bs-adresse">Adresse</label>
-              <div class="orgfelt">
-                <input id="bs-adresse" type="text" autocomplete="off" spellcheck="false" placeholder="Straße und Hausnummer, Ort" maxlength="120" />
-                <ul class="orgforslag" id="bs-forslag" role="listbox" hidden></ul>
-              </div>
-            </div>
-            <p class="book-svar" id="bs-svar" hidden></p>
-            <p class="feil" id="bs-feil" role="alert" hidden></p>
-            <div class="knapper">
-              <button type="button" class="btn" id="bs-videre" disabled>Weiter</button>
-            </div>
-            </div>
-            <div>
-            <div class="book-kart" id="bs-kart" aria-hidden="true"></div>
-            <p class="book-kilde">Karte: © OpenStreetMap, OpenFreeMap. Adressen: Kartverket.</p>
-            </div>
-            </div>
-          </div>
-
-          <div class="steg" id="s-book-dato" hidden>
-            <button type="button" class="tilbake" data-tilbake>← Zurück</button>
-            <p class="merke" data-book-merke>Sprint buchen</p>
-            <h2 tabindex="-1">Wann soll ich kommen?</h2>
-            <div class="book-rute">
-            <div>
-            <p class="ingress" id="bd-ingress"></p>
-            <p class="valgt-tid" id="kal-valgt">Freie Termine werden geladen …</p>
-            <p class="feil" id="bd-feil" role="alert" hidden></p>
-            <div class="knapper">
-              <button type="button" class="btn" id="bd-videre">Weiter</button>
-            </div>
-            </div>
-            <div>
-            <span class="skjult-tekst" id="kal-etikett">Datum wählen</span>
-            <div class="kalender" aria-labelledby="kal-etikett">
-              <div class="kal-topp">
-                <button type="button" id="kal-forrige" aria-label="Vorheriger Monat">‹</button>
-                <span id="kal-maaned"></span>
-                <button type="button" id="kal-neste" aria-label="Nächster Monat">›</button>
-              </div>
-              <div class="kal-dager" id="kal-dager"></div>
-            </div>
-            </div>
-            </div>
-          </div>
-
-          <div class="steg" id="s-book-kontakt" hidden>
-            <button type="button" class="tilbake" data-tilbake>← Zurück</button>
-            <p class="merke" data-book-merke>Sprint buchen</p>
-            <h2 tabindex="-1">Wen soll ich kontaktieren?</h2>
-            <form class="skjema book-rute" id="book-skjema" novalidate>
-              <div class="book-kolonne">
-              <div>
-                <label for="bk-navn">Name</label>
-                <input id="bk-navn" type="text" autocomplete="name" maxlength="120" />
-              </div>
-              <div>
-                <label for="bk-epost">E-Mail</label>
-                <input id="bk-epost" type="email" autocomplete="email" />
-              </div>
-              <div>
-                <label for="bk-tlf">Telefon (optional)</label>
-                <input id="bk-tlf" type="tel" autocomplete="tel" maxlength="40" />
-              </div>
-              <div class="skjult-felt" aria-hidden="true">
-                <label for="bk-nettside">Website</label>
-                <input id="bk-nettside" type="text" tabindex="-1" autocomplete="off" />
-              </div>
-              </div>
-              <div class="book-kolonne">
-              <dl class="sammendrag" id="bk-liste"></dl>
-              <p class="feil" id="bk-feil" role="alert" hidden></p>
-              <button type="submit" class="btn" id="bk-knapp">Auf Rechnung buchen</button>
-              <p class="smaa" id="bk-info">Wird mit 7 Tagen Zahlungsziel in Rechnung gestellt. Der Termin wird für Sie reserviert.</p>
-              </div>
-            </form>
-            <div id="bk-ferdig" hidden>
-              <p class="merke ok">Bestellung eingegangen</p>
-              <p class="tekst" id="bk-ferdig-tekst"></p>
-            </div>
-          </div>
-
-          <!-- 3. Hvem lisensen dekker -->
-          <div class="steg" id="s-dekker" hidden>
-            <button type="button" class="tilbake" data-tilbake>← Zurück</button>
-            <p class="merke">Die Lizenz</p>
-            <h2 tabindex="-1">Bereinigen Sie Dokumente für andere Unternehmen?</h2>
-            <div class="valgliste" role="radiogroup" aria-label="Wen die Lizenz abdeckt">
-              <button type="button" class="valg" role="radio" data-dekker="egen" aria-checked="true">
-                <strong>Nein, nur für uns selbst</strong>
-                <span>Die Dokumente in unserem eigenen Unternehmen, auch die über unsere Kunden.</span>
-              </button>
-              <button type="button" class="valg" role="radio" data-dekker="kunder" aria-checked="false">
-                <strong>Ja, auch im Auftrag anderer</strong>
-                <span>Wir bereinigen Dokumente für andere Unternehmen. Jedes davon wird einzeln berechnet.</span>
-              </button>
-            </div>
-            <div class="underpanel" id="kunde-panel" hidden>
-              <form id="kunde-skjema" novalidate>
-                <label for="kunde-orgnr">Organisationsnummer oder Name des Kunden</label>
-                <div class="rad">
-                  <div class="orgfelt">
-                    <input id="kunde-orgnr" type="text" autocomplete="off" spellcheck="false" placeholder="123 456 789" maxlength="80" />
-                    <ul class="orgforslag" id="kunde-forslag" role="listbox" hidden></ul>
-                  </div>
-                  <button class="btn ghost" type="submit">Kunden hinzufügen</button>
-                </div>
-                <p class="feil" id="kunde-feil" role="alert" hidden></p>
-              </form>
-              <ul class="kundeliste" id="kundeliste" aria-label="Kunden"></ul>
-              <div id="kunde-sum" hidden>
-                <p class="sum"><span>Eigene Lizenz</span><b id="sum-egen"></b></p>
-                <p class="sum"><span>Kunden</span><b id="sum-kunder"></b></p>
-                <p class="sum"><span><b>Gesamt pro Jahr, zzgl. MwSt.</b></span><b id="sum-totalt"></b></p>
-              </div>
-              <details class="har-lisens">
-                <summary>Haben Sie bereits eine Dienstleisterlizenz? Fügen Sie die Kunden hinzu.</summary>
-                <label for="lev-kode" class="etikett mt-12">Der Lizenzschlüssel, den Sie per E-Mail erhalten haben</label>
-                <textarea id="lev-kode" spellcheck="false" placeholder="KLART-…"></textarea>
-                <button type="button" class="btn sm" id="lev-legg-til">Kunden zur Lizenz hinzufügen</button>
-                <p class="feil" id="lev-feil" role="alert" hidden></p>
-                <div id="lev-ferdig"></div>
-              </details>
-            </div>
-            <div class="knapper">
-              <button type="button" class="btn" id="dekker-videre">Weiter</button>
-            </div>
-          </div>
-
-          <!-- 4. Faktura: ingen betaling på siden. E-post, referanse og om fakturaen skal komme som EHF. -->
-          <div class="steg" id="s-betaling" hidden>
-            <button type="button" class="tilbake" data-tilbake>← Zurück</button>
-            <p class="merke">Rechnung</p>
-            <h2 tabindex="-1">Die Rechnung kommt per E-Mail oder als EHF</h2>
-            <p class="ingress">Sie bestellen hier, und die Rechnung kommt gesondert, mit 7 Tagen Zahlungsziel. Der Lizenzschlüssel wird gesendet, sobald die Rechnung bezahlt ist.</p>
-            <div class="skjema" id="faktura-felt">
-              <div>
-                <label for="b-epost">E-Mail-Adresse</label>
-                <input id="b-epost" type="email" autocomplete="email" placeholder="name@unternehmen.no" />
-                <p class="smaa">Hierhin gehen die Bestätigung und der Lizenzschlüssel. Auch die Rechnung, wenn sie nicht als EHF gesendet wird.</p>
-              </div>
-              <div>
-                <label for="b-ref">Ihre Referenz (optional)</label>
-                <input id="b-ref" type="text" autocomplete="off" maxlength="140" placeholder="Bestellnummer, Name oder Abteilung" />
-              </div>
-              <div>
-                <span class="etikett">EHF-Rechnung</span>
-                <div class="valgliste valgliste-to" role="radiogroup" aria-label="EHF-Rechnung">
-                  <button type="button" class="valg" role="radio" data-ehf="ja" aria-checked="false"><strong>Ja</strong></button>
-                  <button type="button" class="valg" role="radio" data-ehf="nei" aria-checked="true"><strong>Nein</strong></button>
-                </div>
-              </div>
-            </div>
-            <p class="feil" id="betaling-feil" role="alert" hidden></p>
-            <div class="knapper">
-              <button type="button" class="btn" id="betaling-videre">Weiter</button>
-            </div>
-          </div>
-
-          <!-- 5. Bekreft -->
-          <div class="steg" id="s-bekreft" hidden>
-            <button type="button" class="tilbake" data-tilbake>← Zurück</button>
-            <p class="merke" id="b-merke">Bestätigen</p>
-            <h2 id="b-tittel" tabindex="-1"></h2>
-            <dl class="sammendrag" id="b-liste"></dl>
-            <p class="mvamerk" id="b-mva"></p>
-            <p class="feil" id="b-feil" role="alert" hidden></p>
-            <div class="knapper">
-              <button type="button" class="btn" id="b-ok"></button>
-            </div>
-          </div>
-
-          <!-- Bestillingen er mottatt -->
-          <div class="steg" id="s-ferdig" hidden>
-            <a class="ferdig-logo" href="/alles-klar/">Alles Klar</a>
-            <div class="ferdig-topp">
-              <svg viewBox="0 0 56 56" aria-hidden="true"><circle cx="28" cy="28" r="28" /><path d="M17 29l8 8 15-17" /></svg>
-              <div>
-                <h2 tabindex="-1" id="f-overskrift">Die Bestellung ist eingegangen</h2>
-                <p class="ferdig-firma" id="f-tittel"></p>
-              </div>
-            </div>
-            <dl class="sammendrag mt-22" id="f-liste"></dl>
-            <p class="ferdig-tittel" id="f-videre-tittel">So geht es weiter</p>
-            <ol class="ferdig-videre" id="f-videre">
-              <li>Die Rechnung kommt <b id="f-hvordan"></b>, mit 7 Tagen Zahlungsziel. Die Bestätigung wurde an <b id="f-epost"></b> gesendet.</li>
-              <li>Der Lizenzschlüssel geht an <b id="f-nokkel-til"></b>, sobald die Rechnung bezahlt ist.</li>
-              <li>Fügen Sie den Schlüssel in Alles Klar ein. Dann funktioniert es nach der Testphase weiter.</li>
-            </ol>
-            <p class="smaa" id="f-usendt" hidden>Die Bestätigung konnte nicht per E-Mail gesendet werden. Die Bestellung ist trotzdem registriert.</p>
-            <div class="knapper">
-              <a class="btn ghost" href="/alles-klar/#last-ned">Alles Klar herunterladen</a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="seksjon" id="sporsmal" hidden>
-        <h2 class="title">Fragen und Antworten</h2>
-        <div class="faq">
-          <details>
-            <summary>Wer kann kaufen?</summary>
-            <p>
-              Norwegische Unternehmen mit einer aktiven Organisationsnummer im Brønnøysund-Register, auch
-              Einzelunternehmen. Lizenzen werden nicht an Privatpersonen verkauft.
-            </p>
-          </details>
-          <details>
-            <summary>Wie wird unser Preis festgelegt?</summary>
-            <p>
-              Anhand der Angaben, die im Brønnøysund-Register zum Unternehmen eingetragen sind: Zahl der Beschäftigten, Branche und
-              letzter Jahresabschluss. Das wird bei jeder Bestellung geprüft.
-            </p>
-          </details>
-          <details>
-            <summary>Verlassen die Dateien unsere Rechner?</summary>
-            <p>Nein. Scan, Pseudonymisierung und Export erfolgen lokal. Die App funktioniert vollständig ohne Internet.</p>
-          </details>
-          <details>
-            <summary>Was deckt eine Lizenz ab?</summary>
-            <p>
-              Die Dokumente im Unternehmen, für alle Nutzer und Geräte, ein Jahr lang. Bereinigen Sie Dokumente im Auftrag
-              anderer Unternehmen, brauchen Sie eine Dienstleisterlizenz.
-            </p>
-          </details>
-          <details>
-            <summary>Was, wenn ein Export fehlschlägt?</summary>
-            <p>
-              Die App öffnet jeden Export erneut, um ihn zu prüfen. Eine fehlerhafte Datei wird zurückgehalten und nie auf ein
-              Probe- oder Testkontingent angerechnet.
-            </p>
-          </details>
+          <h3 class="vilkar-tittel">Im Preis enthalten</h3>
+          <ul class="vilkar">
+            <li>Word, Excel, PowerPoint, PDF, E-Mail, Textdateien, Scans und Fotos</li>
+            <li>Alles läuft auf Ihren eigenen Rechnern. Nichts wird hochgeladen</li>
+            <li>Mac, Windows und Linux, für alle Beschäftigten und auf beliebig vielen Rechnern</li>
+            <li>Updates während des Lizenzjahres</li>
+          </ul>
+          <p class="de-avsnitt">Bezahlt wird ausschließlich per Rechnung. <a class="lenke" href="/alles-klar/vilkar/">Lizenzbedingungen</a></p>
         </div>
       </section>
     </main>
@@ -619,14 +185,11 @@
       <div class="footmeta">
         <a href="/alles-klar/vilkar/">Lizenzbedingungen</a>
         <a href="/alles-klar/personvern/">Datenschutz</a>
-        <span>Mac Studio ist eine Marke der Apple Inc.</span>
       </div>
     </footer>
 
-    <script src="../orgfelt.js"></script>
-    <script src="kart.js"></script>
-    <script src="pris.js"></script>
     <script src="kommune-eur.js"></script>
     <script src="angebot.js"></script>
+    <script type="module" src="bestellung.js"></script>
   </body>
 </html>

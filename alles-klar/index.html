@@ -15,7 +15,6 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script src="forside-tidlig.js"></script>
     <link rel="icon" type="image/png" href="/alles-klar/favicon.png" />
     <title>Alles Klar - entfernt personenbezogene Daten aus Dokumenten, lokal auf Ihrem Rechner</title>
     <meta
@@ -52,6 +51,7 @@
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="forhandsvisning.css" />
     <link rel="stylesheet" href="videre.css" />
+    <link rel="stylesheet" href="de.css" />
   </head>
   <body>
     <!-- Filtype-ikoner: dokumentark bak, appflis foran. -->
@@ -249,78 +249,17 @@
               <p class="privat-fin">Keine Registrierung, keine Vertragsbindung.</p>
               <p class="eller"><span>oder</span></p>
             </div>
-            <!-- Nedlasting: virksomheten (orgfelt.js og skriptet nederst). Etter oppslaget: 30 dager gratis og hva lisensen koster etterpå. -->
-            <form class="orgport rise d-180" data-orgport novalidate>
-              <div data-orgport-sok>
-                <label class="skjult-tekst" for="orgport-topp">Organisationsnummer oder Name Ihres Unternehmens</label>
+            <!-- Virksomheter: ingen registeroppslag i den tyske utgaven. Knappen fører til prisen og bestillingen på faktura (pris/). -->
+            <div class="orgport de-pris rise d-180">
+              <div>
                 <div class="orgport-rad">
-                  <div class="orgfelt">
-                    <input id="orgport-topp" type="text" autocomplete="off" spellcheck="false" placeholder="Name des Unternehmens oder Org.-Nr. eingeben" maxlength="80" />
-                    <ul class="orgforslag" role="listbox" hidden></ul>
-                  </div>
-                  <button class="btn" type="submit">Alles Klar kostenlos testen</button>
+                  <a class="btn" href="pris/">Preis für Ihre Organisation ansehen</a>
                 </div>
-                <p class="orgport-feil" role="alert" hidden></p>
                 <p class="virk-linje">
-                  <span>Für Unternehmen: <b>30 Tage kostenlos</b>. Keine Registrierung, keine Kreditkarte.</span>
+                  <span>Für Organisationen: <b>30 Tage kostenlos</b>. Keine Registrierung. Danach Bestellung auf Rechnung.</span>
                 </p>
               </div>
-              <!-- Små: stort kort med navnet, «godkjent» og knappene. Store: bredere, med navnet og gratis prøve til venstre og
-                   skreddersydd oppsett med Mac Studio til høyre (klassen «stor» på skjemaet). -->
-              <div class="orgport-svar" data-orgport-svar hidden aria-live="polite">
-                <div class="orgport-svar-grid">
-                  <div class="orgport-svar-hoved">
-                    <div class="orgport-topp">
-                      <span class="orgport-segl" data-godkjent>
-                        <svg viewBox="0 0 56 56" aria-hidden="true">
-                          <circle cx="28" cy="28" r="25" pathLength="1" />
-                          <path d="M17 29l8 8 15-17" pathLength="1" />
-                        </svg>
-                      </span>
-                      <div>
-                        <p class="orgport-ok" data-godkjent>Bestätigt</p>
-                        <p class="orgport-firmanavn" data-navn></p>
-                        <p class="orgport-orgnr">Org.-Nr. <span data-orgnr></span></p>
-                      </div>
-                    </div>
-                    <!-- At dette er fullversjonen, så hva det koster, så knappene. Ingen sperre: knappene står som før. -->
-                    <div class="orgport-prove">
-                      <p class="orgport-prove-tittel">30 Tage mit dem vollen Alles Klar.</p>
-                      <p>Testen Sie Alles Klar 30 Tage lang mit Ihren eigenen Dateien, bevor Sie sich entscheiden. Ohne Einschränkungen, mit der Vollversion. Der Test erfordert keine Registrierung und ist völlig unverbindlich.</p>
-                    </div>
-                    <div class="orgport-pris" data-pris hidden>
-                      <a class="orgport-pris-celle valgt" href="#" data-til-knapper>
-                        <p class="orgport-pris-merke">Die ersten 30 Tage</p>
-                        <p class="orgport-belop">Kostenlos</p>
-                        <p>Keine Registrierung, keine Kreditkarte.</p>
-                      </a>
-                      <a class="orgport-pris-celle" data-prislenke href="pris/">
-                        <!-- Ikke «Etter 30 dager»: det hørtes ut som om kjøpet skjer av seg selv (eieren 11.11.2026). -->
-                        <p class="orgport-pris-merke">Wenn Sie kaufen möchten</p>
-                        <p class="orgport-belop" data-prisbelop></p>
-                        <p><span data-prisnaar>Pro Jahr</span> zzgl. MwSt. für <span data-prishvem></span>.<span data-binding hidden> Keine Vertragsbindung.</span></p>
-                        <span class="orgport-pris-lenke">Leistungsumfang ansehen →</span>
-                      </a>
-                    </div>
-                    <!-- Samme knapper som i heroen, med «Last ned» én gang over. -->
-                    <p class="last-ned-tittel">Herunterladen</p>
-                    <div class="get">
-                      <a class="btn ghost os os-win" href="/alles-klar/last-ned/windows" download aria-label="Für Windows herunterladen"><span class="os-navn">Windows</span></a>
-                      <a class="btn ghost os os-mac" href="/alles-klar/last-ned/mac" download aria-label="Für Mac herunterladen"><span class="os-glass" aria-hidden="true"></span><span class="os-navn">Mac</span></a>
-                      <a class="btn ghost os os-lin" href="/alles-klar/last-ned/linux" download aria-label="Für Linux herunterladen"><span class="os-figur os-pingvin" aria-hidden="true"><svg viewBox="0 0 24 28" width="24" height="28" focusable="false"><g class="os-pingvin-kropp"><ellipse cx="8.4" cy="26.4" rx="3.3" ry="1.4" fill="#f5a524"/><ellipse cx="15.6" cy="26.4" rx="3.3" ry="1.4" fill="#f5a524"/><ellipse cx="3.9" cy="17" rx="1.9" ry="5.4" transform="rotate(16 3.9 17)" fill="#0f2147"/><ellipse cx="20.1" cy="17" rx="1.9" ry="5.4" transform="rotate(-16 20.1 17)" fill="#0f2147"/><ellipse cx="12" cy="15" rx="8.4" ry="11.2" fill="#0f2147"/><ellipse cx="12" cy="18.4" rx="5.5" ry="7.6" fill="#fff"/><circle cx="9.7" cy="8.6" r="2" fill="#fff"/><circle cx="14.3" cy="8.6" r="2" fill="#fff"/><circle cx="10.1" cy="8.9" r="0.95" fill="#0f2147"/><circle cx="13.9" cy="8.9" r="0.95" fill="#0f2147"/><path d="M9.9 11.4 Q12 10.5 14.1 11.4 Q12 13.9 9.9 11.4Z" fill="#f5a524"/></g></svg></span><span class="os-navn">Linux</span></a>
-                    </div>
-                    <button type="button" class="orgport-endre" data-endre>Nicht Ihr Unternehmen?</button>
-                  </div>
-                  <aside class="orgport-oppsett" data-stor hidden>
-                    <p class="orgport-merke">Für große Unternehmen</p>
-                    <h3>Maßgeschneiderte Einrichtung</h3>
-                    <p>Ein größeres Modell, feinabgestimmt auf Ihre eigenen Dokumente und bei Ihnen eingerichtet, auf Hardware, die Ihnen gehört.</p>
-                    <svg class="orgport-mac" role="img" aria-label="Mac Studio"><use href="#mac-studio" /></svg>
-                    <a class="btn" data-oppsett href="pris/">Mehr zur maßgeschneiderten Einrichtung</a>
-                  </aside>
-                </div>
-              </div>
-            </form>
+            </div>
             <!-- Nedlastingen: kortet blir et eget nedlastingskort når de har valgt system.
                  Lyset rundt kanten følger hvor langt nedlastingen har kommet (forside.js). -->
             <div class="nedlasting" data-nedlasting hidden aria-live="polite">
@@ -1215,7 +1154,7 @@
             </div>
             <div>
               <dt>Was kostet es?</dt>
-              <dd>Für Privatpersonen ist Alles Klar kostenlos. Unternehmen testen 30 Tage kostenlos und kaufen dann eine Lizenz für das ganze Unternehmen. <a class="v-lenke" href="pris/">Zum Preis</a></dd>
+              <dd>Für Privatpersonen ist Alles Klar kostenlos. Unternehmen, Kommunen und Behörden testen 30 Tage kostenlos und bestellen dann auf Rechnung eine Lizenz für die ganze Organisation. <a class="v-lenke" href="pris/">Zum Preis</a></dd>
             </div>
           </dl>
         </section>
@@ -1641,8 +1580,8 @@
             </div>
             <!-- Bare den tyske siden: Linux på ARM64 har egen pakke. Samme nedlastingskort (forside.js). -->
             <p class="v-hent-arm" data-v-hent><a href="/alles-klar/last-ned/linux-arm" download>Linux auf ARM64 (.deb)</a></p>
-            <p class="v-hent-virk">Für Unternehmen: <b>30 Tage kostenlos</b>. Keine Registrierung, keine Kreditkarte.</p>
-            <p><a class="v-hent-pris" href="pris/">Preis für Ihr Unternehmen ansehen</a></p>
+            <p class="v-hent-virk">Für Organisationen: <b>30 Tage kostenlos</b>. Keine Registrierung. Danach Bestellung auf Rechnung.</p>
+            <p><a class="v-hent-pris" href="pris/">Preis für Ihre Organisation ansehen</a></p>
             </div>
           </div>
         </section>
@@ -1662,7 +1601,6 @@
       <p class="v-bunn-liten">Entwickelt in Norwegen · Keine Rechtsberatung</p>
     </footer>
 
-    <script src="orgfelt.js"></script>
     <script src="forside.js"></script>
     <script src="forhandsvisning.js"></script>
     <script src="videre.js"></script>

@@ -3,7 +3,7 @@
 // else is the static site. /login/ (customer portal) and /kunde/ (behind login) are in kunde.js.
 import { handleChat, pageVisit } from "./chat.js";
 import { handleKunde } from "./kunde.js";
-import { erLansert, handleFrostCopy, handleKlart, handleNedlasting, handleTest, harTest } from "./klart.js";
+import { erLansert, handleAllesKlar, handleFrostCopy, handleKlart, handleNedlasting, handleTest, harTest } from "./klart.js";
 export { ChatHub } from "./chat.js";
 export { KlartLager } from "./klart.js";
 
@@ -58,6 +58,12 @@ export default {
     if (/^\/(klart|GDPR)\/last-ned\//.test(url.pathname)) return medHoder(await handleNedlasting(request, env, url));
     // FrostCopy: kjøp i dollar etter størrelse og bransje (klart.js, handleFrostCopy).
     if (url.pathname.startsWith("/frostcopy/api/")) return handleFrostCopy(request, env, url);
+    // Alles Klar: kjøp i euro på faktura, for virksomheter, kommuner og myndigheter (klart.js, handleAllesKlar).
+    if (url.pathname.startsWith("/alles-klar/api/")) return handleAllesKlar(request, env, url);
+    // «Lizenz kaufen» i Alles Klar åpner /alles-klar/aktiver?hva=kjop&maskin=…: kjøpet skjer på prissiden.
+    if (/^\/alles-klar\/aktiver\/?$/.test(url.pathname) && url.searchParams.get("hva") === "kjop") {
+      return Response.redirect(url.origin + "/alles-klar/pris/", 302);
+    }
     // Alles Klar (tysk) og FrostCopy (amerikansk) har egne sider og egne installasjonsfiler.
     if (/^\/(alles-klar\/last-ned|frostcopy\/(last-ned|download))\//.test(url.pathname)) return handleNedlasting(request, env, url);
     // Skrivemåter folk prøver, og adressen FrostCopy-appen åpner for kjøp (/klart/us/buy).

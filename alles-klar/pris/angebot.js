@@ -126,7 +126,7 @@
     farge(0.1, 0.11, 0.13);
     tekst(V + 34, "Gesamtbetrag netto", 10.5, true); tekst(H, euro(k.fire), 12, true, true); y -= 15;
     farge(0.32, 0.35, 0.4);
-    tekst(V + 34, "entspricht " + euro(k.aar) + " pro Jahr, zzgl. gesetzlicher MwSt.", 9.5); y -= 30;
+    tekst(V + 34, "entspricht " + euro(k.aar) + " pro Jahr, netto (Reverse Charge).", 9.5); y -= 30;
 
     farge(0.1, 0.11, 0.13);
     tekst(V, "Leistungsumfang", 11, true); y -= 17;

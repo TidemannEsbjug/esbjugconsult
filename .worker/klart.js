@@ -85,6 +85,7 @@ import STATSANSATTE from "./statsansatte.json";
 import { ansatteITre, delAvKommunen, statlig, SAMLET_STAT } from "./kommunetre.js";
 import { sokMaskin } from "./klart-maskin.js";
 import { price as usPris } from "../frostcopy/buy/price.js";
+import { preis as dePreis } from "../alles-klar/pris/preis.js";
 
 const NADE_DAGER = 14; // lisensen varer så mange dager etter at perioden er betalt til
 const MASKINKODE = /^[0-9A-HJKMNP-TV-Z]{4}(-[0-9A-HJKMNP-TV-Z]{4}){3}$/;
@@ -465,6 +466,224 @@ async function usBetalt(request, env, url) {
   await lager(env).usMerkBetalt(nr, utloper);
   await usEpost(env, { til: EIER, emne: `FrostCopy ${o.faktura} betalt: lisensen er sendt til ${o.navn}`, tekst: `Lisensen er sendt til ${o.epost}. Den varer til ${utloper}.\n\n${kode}` });
   return usHtmlSide(o.faktura, hode + `<p><b>Lisensen er sendt til ${esc(o.epost)}.</b> Den varer til ${esc(utloper)}.</p>`);
+}
+
+// ---------------------------------------------------------------------------
+// Alles Klar (den tyske utgaven): kjøp på faktura i euro, /alles-klar/api/…
+// ---------------------------------------------------------------------------
+//
+// Som FrostCopy over, på tysk og med tre slags kjøpere: virksomhet (personer og bransje), kommune (innbyggere;
+// kurven gir fire år, og det bestilles og faktureres ett år om gangen) og statlig eller delstatlig myndighet
+// (ansatte). Prisen regnes ut her med den samme filen som siden viser prisen med (alles-klar/pris/preis.js).
+// Ikke noe registeroppslag og ingen betalingsleverandør (eieren 20.11.2026: faktura).
+//
+//   POST /alles-klar/api/bestellung   bestillingen: lagres, får fakturanummer (AK-1001 …), og fakturaen sendes
+//                                     kunden på e-post (30 dager, SEPA-overføring i euro). Eieren får en lenke.
+//   GET  /alles-klar/api/bezahlt      lenken fra den e-posten: viser bestillingen og knappen «betalt».
+//   POST /alles-klar/api/bezahlt      eieren har sett pengene: lisensen (ALLESKLAR-…, 365 dager fra nå) sendes kunden.
+//
+// Lisensnøkkelen sendes først når fakturaen er betalt. Lenken er signert med lisensnøkkelen, med sin egen merkelapp.
+
+const DE_AVSENDER = { email: "allesklar@esbjugconsult.com", name: "Alles Klar" };
+const DE_FRIST_DAGER = 30;
+const DE_SELGER = ["ESBJUG CONSULT", "Glenneveien 272B", "1455 Nordre Frogn", "Norwegen", "Org.-Nr. 938 441 405"];
+const DE_BANK = [
+  ["Kontoinhaber", "ESBJUG CONSULT"],
+  ["IBAN", "NO91 1080 2731 456"],
+  ["BIC", "SPTRNO22"],
+  ["Bank", "SpareBank 1 Østfold Akershus, Postboks 130, 1501 Moss, Norwegen"],
+];
+const DE_MWST = "Kein Ausweis von Umsatzsteuer. Steuerschuldnerschaft des Leistungsempfängers (Reverse Charge).";
+const DE_SCHLUESSEL =
+  "Den Lizenzschlüssel senden wir an diese E-Mail-Adresse, sobald die Zahlung eingegangen ist. Bis dahin funktioniert Alles Klar 30 Tage ab der ersten Verwendung in vollem Umfang.";
+
+// Egen tusenskiller og dato, så teksten ikke avhenger av hvilke språk kjøremiljøet har.
+const deTall = (n) => String(Math.round(Number(n))).replace(/\B(?=(\d{3})+$)/g, ".");
+const eur = (n) => deTall(n) + " €";
+const deDato = (iso) => `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(0, 4)}`;
+const deNr = (nr) => "AK-" + (1000 + nr);
+
+export async function handleAllesKlar(request, env, url) {
+  const sti = url.pathname.replace(/^\/alles-klar\/api\//, "");
+  try {
+    if (sti === "bestellung" && request.method === "POST") return await deBestill(request, env);
+    if (sti === "bezahlt" && ["GET", "POST"].includes(request.method)) return await deBetalt(request, env, url);
+    return json({ error: "Nicht gefunden." }, 404);
+  } catch (err) {
+    console.error("alles-klar", sti, err);
+    return json({ error: "Bei uns ist etwas schiefgegangen. Versuchen Sie es gleich noch einmal, oder schreiben Sie an " + EIER + "." }, 500);
+  }
+}
+
+/** Sender en e-post til kunden fra Alles Klar og fører den i utboksen. Gir false når den ikke gikk ut. */
+async function deEpost(env, { til, emne, tekst, html, vedlegg }) {
+  const id = await lager(env).iUtboks(til, emne, tekst);
+  if (!env.EMAIL) return false;
+  try {
+    await env.EMAIL.send({ to: til, from: DE_AVSENDER, replyTo: EIER, subject: emne, text: tekst, ...(html ? { html } : {}), ...(vedlegg ? { attachments: vedlegg } : {}) });
+    await lager(env).sendt(id);
+    return true;
+  } catch (err) {
+    console.error("alles-klar epost", til, err && err.code, err && err.message);
+    return false;
+  }
+}
+
+async function deSignatur(env, nr) {
+  return b64url(await crypto.subtle.sign("Ed25519", await signeringsnokkel(env), new TextEncoder().encode(`alles-klar-bezahlt|${nr}`)));
+}
+
+/** Det bestillingen gjelder, slik det står på fakturaen: «25 Personen, Immobilien», «18.500 Einwohner, Jahr 1 von 4». */
+function deGrunnlag(o) {
+  if (o.art === "kommune") return `${deTall(o.einwohner)} Einwohner, Jahr 1 von 4`;
+  if (o.art === "behoerde") return `${deTall(o.beschaeftigte)} Beschäftigte`;
+  return o.personen === 1 ? "1 Person" : `${deTall(o.personen)} Personen, ${o.branche}`;
+}
+
+function deFaktura(o) {
+  const linje = `Alles Klar, Lizenz für ein Jahr, für die gesamte Organisation (${deGrunnlag(o)})`;
+  const kunde = [o.navn, ...o.adresse.split("\n")];
+  const forfall = `${deDato(o.forfall)} (fällig in ${DE_FRIST_DAGER} Tagen)`;
+  const betal = `Bitte zahlen Sie per SEPA-Überweisung in Euro und geben Sie als Verwendungszweck ${o.faktura} an.`;
+  const tekst = [
+    `RECHNUNG Nr. ${o.faktura}`,
+    ``,
+    `Rechnungsdatum: ${deDato(o.dato)}`,
+    `Zahlbar bis: ${forfall}`,
+    ...(o.referanse ? [`Ihre Bestellnummer / Ihr Zeichen: ${o.referanse}`] : []),
+    ``,
+    `Von:`,
+    ...DE_SELGER.map((l) => "  " + l),
+    ``,
+    `An:`,
+    ...kunde.map((l) => "  " + l),
+    ``,
+    `${linje}: ${eur(o.eur)}`,
+    ``,
+    `Rechnungsbetrag: ${eur(o.eur)}`,
+    DE_MWST,
+    ``,
+    `Zahlung`,
+    betal,
+    ...DE_BANK.map(([k, v]) => `  ${k}: ${v}`),
+    `  Verwendungszweck: ${o.faktura}`,
+    ``,
+    DE_SCHLUESSEL,
+    ``,
+    `Fragen: ${EIER}`,
+  ].join("\n");
+  const rad = (k, v) => `<tr><td style="padding:2px 16px 2px 0;color:#5b6b8c">${esc(k)}</td><td style="padding:2px 0">${esc(v)}</td></tr>`;
+  const html =
+    `<div style="font:15px/1.5 -apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:#00205b;max-width:640px">` +
+    `<h1 style="font-size:24px;margin:0 0 4px">Rechnung Nr. ${esc(o.faktura)}</h1>` +
+    `<table style="border-collapse:collapse;margin:12px 0">${rad("Rechnungsdatum", deDato(o.dato))}${rad("Zahlbar bis", forfall)}${o.referanse ? rad("Ihre Bestellnummer / Ihr Zeichen", o.referanse) : ""}</table>` +
+    `<table style="border-collapse:collapse;width:100%;margin:12px 0"><tr>` +
+    `<td style="vertical-align:top;padding:0 24px 0 0"><b>Von</b><br>${DE_SELGER.map(esc).join("<br>")}</td>` +
+    `<td style="vertical-align:top"><b>An</b><br>${kunde.map(esc).join("<br>")}</td></tr></table>` +
+    `<table style="border-collapse:collapse;width:100%;margin:16px 0;border-top:2px solid #00205b;border-bottom:2px solid #00205b">` +
+    `<tr><td style="padding:10px 16px 10px 0">${esc(linje)}</td><td style="padding:10px 0;text-align:right;white-space:nowrap">${eur(o.eur)}</td></tr>` +
+    `<tr><td style="padding:10px 16px 10px 0;border-top:1px solid #c5cfe3"><b>Rechnungsbetrag</b><br><span style="color:#5b6b8c">${esc(DE_MWST)}</span></td><td style="padding:10px 0;text-align:right;white-space:nowrap;vertical-align:top;border-top:1px solid #c5cfe3"><b>${eur(o.eur)}</b></td></tr></table>` +
+    `<h2 style="font-size:17px;margin:20px 0 4px">Zahlung</h2>` +
+    `<p style="margin:0 0 8px">Bitte zahlen Sie per SEPA-Überweisung in Euro und geben Sie als Verwendungszweck <b>${esc(o.faktura)}</b> an.</p>` +
+    `<table style="border-collapse:collapse">${DE_BANK.map(([k, v]) => rad(k, v)).join("")}${rad("Verwendungszweck", o.faktura)}</table>` +
+    `<p style="margin:16px 0 0">${esc(DE_SCHLUESSEL)}</p>` +
+    `<p style="margin:16px 0 0;color:#5b6b8c">Fragen: <a href="mailto:${EIER}">${EIER}</a></p></div>`;
+  return { tekst, html };
+}
+
+async function deBestill(request, env) {
+  if (!env.KLART_LISENSNOKKEL) return json({ error: "Die Bestellung ist noch nicht geöffnet." }, 503);
+  const b = await body(request);
+  // Et felt mennesker ikke ser. Roboter fyller det ut; de får et vanlig svar, og ingenting skjer.
+  if (b.website) return json({ ok: true, rechnung: "AK-0", preis: 0, gesendet: true });
+  const art = ["kommune", "behoerde"].includes(b.art) ? b.art : "unternehmen";
+  const p = dePreis({ art, personen: b.personen, branche: b.branche, einwohner: b.einwohner, beschaeftigte: b.beschaeftigte });
+  const navn = tekstFra(b.name, 120).replace(/\s+/g, " ");
+  const epost = epostFra(b.email);
+  const adresse = String(b.adresse || "").split(/\r?\n/).map((l) => l.replace(/\s+/g, " ").trim()).filter(Boolean).slice(0, 6).map((l) => l.slice(0, 100)).join("\n");
+  const referanse = tekstFra(b.zeichen, 80).replace(/\s+/g, " ");
+  if (!p) {
+    return json({ error: art === "kommune" ? "Geben Sie die Einwohnerzahl ein." : art === "behoerde" ? "Geben Sie die Zahl der Beschäftigten ein." : "Geben Sie an, wie viele Personen in der Organisation arbeiten." }, 400);
+  }
+  if (navn.length < 2) return json({ error: "Geben Sie den Namen der Organisation ein." }, 400);
+  if (!epost) return json({ error: "Geben Sie die E-Mail-Adresse ein, an die die Rechnung gehen soll." }, 400);
+  if (adresse.length < 8) return json({ error: "Geben Sie die Rechnungsadresse ein." }, 400);
+  const o = {
+    navn, epost, adresse, referanse, art: p.art,
+    personen: p.personen ?? null, branche: p.branche ?? null, einwohner: p.einwohner ?? null, beschaeftigte: p.beschaeftigte ?? null,
+    eur: p.preis, vierJahre: p.vierJahre ?? null, dato: idag(), forfall: omDager(DE_FRIST_DAGER),
+  };
+  const nr = await lager(env).deNyOrdre(o);
+  o.faktura = deNr(nr);
+  await lager(env).deOppdater(nr, o);
+  const f = deFaktura(o);
+  const sendt = await deEpost(env, { til: epost, emne: `Rechnung ${o.faktura} für Alles Klar: ${navn}`, tekst: f.tekst, html: f.html });
+  const lenke = `https://esbjugconsult.com/alles-klar/api/bezahlt?nr=${nr}&t=${await deSignatur(env, nr)}`;
+  const hva = o.art === "kommune" ? `Kommune, ${deTall(o.einwohner)} innbyggere (fire år: ${eur(o.vierJahre)}; denne fakturaen er år 1 av 4)`
+    : o.art === "behoerde" ? `Statlig eller delstatlig myndighet, ${deTall(o.beschaeftigte)} ansatte`
+    : `Virksomhet, ${deTall(o.personen)} ${o.personen === 1 ? "person" : `personer, ${o.branche}`}`;
+  await varsleEier(
+    env,
+    `Alles Klar-bestilling ${o.faktura}: ${navn}, ${eur(o.eur)}`,
+    [
+      `Ny bestilling på faktura (Alles Klar, tysk).`,
+      ``,
+      `${navn} (${epost})`,
+      hva,
+      ...(referanse ? [`Kundens referanse: ${referanse}`] : []),
+      `Beløp: ${eur(o.eur)} for ett år, forfall ${o.forfall}`,
+      sendt ? `Fakturaen er sendt til kunden.` : `FAKTURAEN GIKK IKKE UT PÅ E-POST. Send den selv; teksten står under.`,
+      ``,
+      `Når pengene er kommet inn, åpne denne lenken og trykk på knappen. Da får kunden lisensnøkkelen på e-post:`,
+      lenke,
+      ``,
+      `----- Fakturaen -----`,
+      f.tekst,
+    ].join("\n")
+  );
+  return json({ ok: true, rechnung: o.faktura, preis: o.eur, faellig: o.forfall, gesendet: sendt });
+}
+
+async function deBetalt(request, env, url) {
+  const nr = Number(url.searchParams.get("nr"));
+  const t = url.searchParams.get("t") || "";
+  if (!Number.isInteger(nr) || nr < 1 || !env.KLART_LISENSNOKKEL) return json({ error: "Nicht gefunden." }, 404);
+  const ventet = await deSignatur(env, nr);
+  if (t.length !== ventet.length || !likt(t, ventet)) return json({ error: "Nicht gefunden." }, 404);
+  const rad = await lager(env).deOrdre(nr);
+  if (!rad) return json({ error: "Nicht gefunden." }, 404);
+  const o = rad.data;
+  const hode = `<h1 style="font-size:22px">${esc(o.faktura)}: ${esc(o.navn)}</h1><p>${esc(o.epost)}<br>${esc(deGrunnlag(o))}<br>${eur(o.eur)}, bestilt ${esc(o.dato)}, forfall ${esc(o.forfall)}</p>`;
+  if (rad.betalt) return usHtmlSide(o.faktura, hode + `<p><b>Lisensnøkkelen ble sendt ${esc(rad.betalt.slice(0, 10))}.</b></p>`);
+  if (request.method === "GET") {
+    return usHtmlSide(o.faktura, hode + `<p>Er pengene kommet inn? Da sendes lisensnøkkelen til kunden, og den varer i 365 dager fra i dag.</p>` +
+      `<form method="post"><button style="font:inherit;padding:12px 20px;border:0;border-radius:999px;background:#00205b;color:#fff;cursor:pointer">Betalt: send lisensnøkkelen</button></form>`);
+  }
+  const utloper = omDager(365);
+  const kode = (await lagKode(env, { id: nyId(), type: "lisens", navn: o.navn, orgnr: null, epost: o.epost, maskin: null, plan: "org", utloper })).replace(/^KLART-/, "ALLESKLAR-");
+  // Samme tekst som appen selv skriver i en lisensfil (aktivierung.rs, lizenz_speichere_datei).
+  const fil = `Lizenz für Alles Klar: ${o.navn}\n\nDoppelklicken Sie auf diese Datei oder ziehen Sie sie in das Alles-Klar-Fenster, dann ist Alles Klar aktiviert.\nSie können den Code unten auch in Alles Klar › Lizenz einfügen.\n\n${kode}\n`;
+  const tekst = [
+    `Vielen Dank. Die Zahlung für die Rechnung ${o.faktura} ist eingegangen. Hier ist der Lizenzschlüssel für ${o.navn}.`,
+    ``,
+    `Öffnen Sie Alles Klar und klicken Sie oben rechts auf „Lizenz“ (während der Testphase steht dort „Test: noch … Tage“). Fügen Sie den Code unten in das Feld ein und klicken Sie auf „Aktivieren“.`,
+    `Auf dem Mac können Sie stattdessen die angehängte Datei doppelklicken oder in das Alles-Klar-Fenster ziehen.`,
+    `Alle in der Organisation verwenden denselben Lizenzschlüssel. Unter Lizenz › „Mit Kollegen teilen“ geben Sie ihn weiter. Er gilt bis einschließlich ${deDato(utloper)}.`,
+    ``,
+    kode,
+    ``,
+    `Fragen: ${EIER}`,
+  ].join("\n");
+  const sendt = await deEpost(env, {
+    til: o.epost,
+    emne: `Ihr Lizenzschlüssel für Alles Klar: ${o.navn}`,
+    tekst,
+    vedlegg: [{ content: btoa(String.fromCharCode(...new TextEncoder().encode(fil))), filename: "Alles Klar Lizenz.allesklarlizenz", type: "text/plain", disposition: "attachment" }],
+  });
+  if (!sendt) return usHtmlSide(o.faktura, hode + `<p><b>E-posten gikk ikke ut.</b> Ingenting er merket som betalt. Prøv igjen, eller send koden selv:</p><textarea rows="6" style="width:100%">${esc(kode)}</textarea>`);
+  await lager(env).deMerkBetalt(nr, utloper);
+  await varsleEier(env, `Alles Klar ${o.faktura} betalt: lisensnøkkelen er sendt til ${o.navn}`, `Lisensnøkkelen er sendt til ${o.epost}. Den varer til ${utloper}.\n\n${kode}`);
+  return usHtmlSide(o.faktura, hode + `<p><b>Lisensnøkkelen er sendt til ${esc(o.epost)}.</b> Den varer til ${esc(utloper)}.</p>`);
 }
 
 function lager(env) {
@@ -2443,6 +2662,9 @@ export class KlartLager extends DurableObject {
     // FrostCopy: bestillinger på faktura. id er løpenummeret fakturanummeret lages av (FC-1001, FC-1002 …).
     this.sql.exec(`CREATE TABLE IF NOT EXISTS us_ordrer (
       id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT, laget TEXT, betalt TEXT, utloper TEXT)`);
+    // Alles Klar: bestillinger på faktura i euro. id er løpenummeret fakturanummeret lages av (AK-1001, AK-1002 …).
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS de_ordrer (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT, laget TEXT, betalt TEXT, utloper TEXT)`);
     // Klart: bestillinger på faktura. id er løpenummeret bestillingsnummeret lages av (K-1001, K-1002 …).
     // «betalt» settes når eieren har merket bestillingen som ferdig, «utfall» sier hva som da skjedde.
     this.sql.exec(`CREATE TABLE IF NOT EXISTS ordrer (
@@ -2672,6 +2894,19 @@ export class KlartLager extends DurableObject {
   }
   usMerkBetalt(id, utloper) {
     this.sql.exec(`UPDATE us_ordrer SET betalt = ?, utloper = ? WHERE id = ?`, new Date().toISOString(), utloper, id);
+  }
+  deNyOrdre(data) {
+    return this.sql.exec(`INSERT INTO de_ordrer (data, laget) VALUES (?, ?) RETURNING id`, JSON.stringify(data), new Date().toISOString()).one().id;
+  }
+  deOppdater(id, data) {
+    this.sql.exec(`UPDATE de_ordrer SET data = ? WHERE id = ?`, JSON.stringify(data), id);
+  }
+  deOrdre(id) {
+    const r = this.sql.exec(`SELECT data, laget, betalt, utloper FROM de_ordrer WHERE id = ?`, id).toArray()[0];
+    return r ? { data: JSON.parse(r.data), laget: r.laget, betalt: r.betalt, utloper: r.utloper } : null;
+  }
+  deMerkBetalt(id, utloper) {
+    this.sql.exec(`UPDATE de_ordrer SET betalt = ?, utloper = ? WHERE id = ?`, new Date().toISOString(), utloper, id);
   }
   nyOrdre(orgnr, data) {
     return this.sql.exec(`INSERT INTO ordrer (orgnr, data, laget) VALUES (?, ?, ?) RETURNING id`, orgnr, JSON.stringify(data), new Date().toISOString()).one().id;

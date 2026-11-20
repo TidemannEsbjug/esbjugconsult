@@ -1,4 +1,5 @@
 // Prisen for kommuner i euro (Alles Klar): fire år, rett linje mellom punktene i data-punkter, tak på siste punkt.
+// Viser svaret i prisboksen (#ke-svar). Bestillingen regnes med preis.js, som har de samme punktene.
 (function () {
   var skjema = document.getElementById("ke-skjema");
   if (!skjema) return;
@@ -24,7 +25,7 @@
     var b = document.createElement("b");
     b.textContent = euro(fire);
     svar.appendChild(b);
-    svar.appendChild(document.createTextNode(" für vier Jahre (" + euro(Math.round(fire / 4)) + " pro Jahr), zzgl. MwSt."));
+    svar.appendChild(document.createTextNode(" für vier Jahre (" + euro(Math.round(fire / 4)) + " pro Jahr)"));
     svar.hidden = false;
   }
 
