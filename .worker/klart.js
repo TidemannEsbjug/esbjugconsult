@@ -252,85 +252,205 @@ export async function handleNedlasting(request, env, url) {
 }
 
 // ---------------------------------------------------------------------------
-// FrostCopy (den amerikanske utgaven): /frostcopy/api/checkout og /frostcopy/api/order
+// FrostCopy (den amerikanske utgaven): kjøp på faktura, /frostcopy/api/…
 // ---------------------------------------------------------------------------
 //
 // Kjøperen velger størrelse og bransje (eller offentlig), og prisen regnes ut her med den samme filen som siden
-// viser prisen med (frostcopy/buy/price.js). Ikke noe registeroppslag. Betalingen er én betaling i dollar for ett
-// år (Stripe Checkout, ikke abonnement): lisensen varer 365 dager fra betalingen og fornyes ved å kjøpe på nytt.
-// Ingenting lagres her: lisensen lages fra betalingen hver gang kunden åpner siden med betalingens id, så den kan
-// hentes fram igjen fra samme adresse. Koden har merket FROSTCOPY-, som appen viser og leser (aktivering.rs).
+// viser prisen med (frostcopy/buy/price.js). Ikke noe registeroppslag og ikke Stripe (eieren 20.11.2026: faktura).
+//
+//   POST /frostcopy/api/order   bestillingen: lagres, får fakturanummer, og fakturaen sendes kunden på e-post
+//                               (30 dager, bankoverføring i dollar). Eieren får en e-post med en lenke.
+//   GET  /frostcopy/api/paid    lenken fra den e-posten: viser bestillingen og knappen «betalt».
+//   POST /frostcopy/api/paid    eieren har sett pengene: lisensen (FROSTCOPY-…, 365 dager fra nå) sendes kunden.
+//
+// Lisensen sendes først når fakturaen er betalt (eieren). Lenken er signert med lisensnøkkelen, så bare den som
+// har fått e-posten, kan utløse lisensen. E-posten går med Cloudflares e-postutsending (bindingen EMAIL).
 
-const US_SIDE = "https://esbjugconsult.com/frostcopy/buy/";
+const US_AVSENDER = { email: "frostcopy@esbjugconsult.com", name: "FrostCopy" };
+const US_FRIST_DAGER = 30;
+const US_SELGER = ["ESBJUG CONSULT", "Glenneveien 272B", "1455 Nordre Frogn", "Norway", "Org. no. 938 441 405"];
+// Kontoen fakturaen betales til (eieren 20.11.2026). BIC og bankens adresse er fra bankens side «Motta penger fra
+// utlandet» (SpareBank 1 Østfold Akershus).
+const US_BANK = [
+  ["Account holder", "ESBJUG CONSULT"],
+  ["IBAN", "NO91 1080 2731 456"],
+  ["BIC / SWIFT", "SPTRNO22"],
+  ["Bank", "SpareBank 1 Østfold Akershus, Postboks 130, 1501 Moss, Norway"],
+];
 
-function usSvar(data, status = 200) {
-  return json(data, status);
+const usd = (n) => "$" + Number(n).toLocaleString("en-US");
+const usDato = (iso) => new Date(iso + "T12:00:00Z").toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
+const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const usNr = (nr) => "FC-" + (1000 + nr);
+
+function usHtmlSide(tittel, innhold) {
+  return new Response(
+    `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>${esc(tittel)}</title>` +
+      `<body style="font:16px/1.5 system-ui,sans-serif;max-width:40em;margin:3em auto;padding:0 1em;color:#00205b">${innhold}</body></html>`,
+    { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } }
+  );
 }
 
 export async function handleFrostCopy(request, env, url) {
   const sti = url.pathname.replace(/^\/frostcopy\/api\//, "");
   try {
-    if (sti === "checkout" && request.method === "POST") return await usKasse(request, env);
-    if (sti === "order" && request.method === "GET") return await usOrdre(env, url);
-    return usSvar({ error: "Not found." }, 404);
+    if (sti === "order" && request.method === "POST") return await usBestill(request, env);
+    if (sti === "paid" && ["GET", "POST"].includes(request.method)) return await usBetalt(request, env, url);
+    return json({ error: "Not found." }, 404);
   } catch (err) {
     console.error("frostcopy", sti, err);
-    const detalj = testmodus(env) ? ` (${err && err.message ? err.message : err})` : "";
-    return usSvar({ error: "Something went wrong on our side. Try again in a moment." + detalj }, 500);
+    return json({ error: "Something went wrong on our side. Try again in a moment, or write to " + EIER + "." }, 500);
   }
 }
 
-async function usKasse(request, env) {
-  if (!env.KLART_LISENSNOKKEL || !env.STRIPE_SECRET_KEY) return usSvar({ error: "Buying online is not open yet." }, 503);
+/** Sender en e-post med Cloudflares utsending og fører den i utboksen. Gir false når den ikke gikk ut. */
+async function usEpost(env, { til, emne, tekst, html, vedlegg }) {
+  const id = await lager(env).iUtboks(til, emne, tekst);
+  if (!env.EMAIL) return false;
+  try {
+    await env.EMAIL.send({ to: til, from: US_AVSENDER, replyTo: EIER, subject: emne, text: tekst, ...(html ? { html } : {}), ...(vedlegg ? { attachments: vedlegg } : {}) });
+    await lager(env).sendt(id);
+    return true;
+  } catch (err) {
+    console.error("frostcopy epost", til, err && err.code, err && err.message);
+    return false;
+  }
+}
+
+async function usSignatur(env, nr) {
+  return b64url(await crypto.subtle.sign("Ed25519", await signeringsnokkel(env), new TextEncoder().encode(`frostcopy-betalt|${nr}`)));
+}
+
+function usFaktura(o) {
+  const linje = `FrostCopy license for one year, for the whole organization (${o.people.toLocaleString("en-US")} ${o.people === 1 ? "person" : "people"}, ${o.kind === "gov" ? "government" : o.business || "one person"})`;
+  const kunde = [o.navn, ...o.adresse.split("\n")];
+  const tekst = [
+    `INVOICE ${o.faktura}`,
+    ``,
+    `Invoice date: ${usDato(o.dato)}`,
+    `Due date: ${usDato(o.forfall)} (${US_FRIST_DAGER} days)`,
+    ...(o.referanse ? [`Your reference: ${o.referanse}`] : []),
+    ``,
+    `From:`,
+    ...US_SELGER.map((l) => "  " + l),
+    ``,
+    `To:`,
+    ...kunde.map((l) => "  " + l),
+    ``,
+    `${linje}: ${usd(o.usd)}`,
+    ``,
+    `Total to pay: ${usd(o.usd)} (US dollars). No VAT or sales tax is added.`,
+    ``,
+    `How to pay`,
+    `Pay by international bank transfer in US dollars. Write ${o.faktura} in the message field.`,
+    ...US_BANK.map(([k, v]) => `  ${k}: ${v}`),
+    `Please choose to cover the transfer fees yourself, so the full amount arrives.`,
+    ``,
+    `The license is sent to this email address when the payment has arrived. Until then FrostCopy works in full for 30 days from the first use.`,
+    ``,
+    `Questions: ${EIER}`,
+  ].join("\n");
+  const rad = (k, v) => `<tr><td style="padding:2px 16px 2px 0;color:#5b6b8c">${esc(k)}</td><td style="padding:2px 0">${esc(v)}</td></tr>`;
+  const html =
+    `<div style="font:15px/1.5 -apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:#00205b;max-width:640px">` +
+    `<h1 style="font-size:24px;margin:0 0 4px">Invoice ${esc(o.faktura)}</h1>` +
+    `<table style="border-collapse:collapse;margin:12px 0">${rad("Invoice date", usDato(o.dato))}${rad("Due date", `${usDato(o.forfall)} (${US_FRIST_DAGER} days)`)}${o.referanse ? rad("Your reference", o.referanse) : ""}</table>` +
+    `<table style="border-collapse:collapse;width:100%;margin:12px 0"><tr>` +
+    `<td style="vertical-align:top;padding:0 24px 0 0"><b>From</b><br>${US_SELGER.map(esc).join("<br>")}</td>` +
+    `<td style="vertical-align:top"><b>To</b><br>${kunde.map(esc).join("<br>")}</td></tr></table>` +
+    `<table style="border-collapse:collapse;width:100%;margin:16px 0;border-top:2px solid #00205b;border-bottom:2px solid #00205b">` +
+    `<tr><td style="padding:10px 16px 10px 0">${esc(linje)}</td><td style="padding:10px 0;text-align:right;white-space:nowrap">${usd(o.usd)}</td></tr>` +
+    `<tr><td style="padding:10px 16px 10px 0;border-top:1px solid #c5cfe3"><b>Total to pay</b> (US dollars). No VAT or sales tax is added.</td><td style="padding:10px 0;text-align:right;white-space:nowrap;border-top:1px solid #c5cfe3"><b>${usd(o.usd)}</b></td></tr></table>` +
+    `<h2 style="font-size:17px;margin:20px 0 4px">How to pay</h2>` +
+    `<p style="margin:0 0 8px">Pay by international bank transfer in US dollars. Write <b>${esc(o.faktura)}</b> in the message field.</p>` +
+    `<table style="border-collapse:collapse">${US_BANK.map(([k, v]) => rad(k, v)).join("")}</table>` +
+    `<p style="margin:8px 0 0">Please choose to cover the transfer fees yourself, so the full amount arrives.</p>` +
+    `<p style="margin:16px 0 0">The license is sent to this email address when the payment has arrived. Until then FrostCopy works in full for 30 days from the first use.</p>` +
+    `<p style="margin:16px 0 0;color:#5b6b8c">Questions: <a href="mailto:${EIER}">${EIER}</a></p></div>`;
+  return { tekst, html };
+}
+
+async function usBestill(request, env) {
+  if (!env.KLART_LISENSNOKKEL) return json({ error: "Ordering is not open yet." }, 503);
   const b = await body(request);
+  // Et felt mennesker ikke ser. Roboter fyller det ut; de får et vanlig svar, og ingenting skjer.
+  if (b.website) return json({ ok: true, invoice: "FC-0", price: 0, sent: true });
   const p = usPris({ people: b.people, kind: b.kind === "gov" ? "gov" : "business", business: b.business });
-  const navn = String(b.name || "").replace(/\s+/g, " ").trim().slice(0, 120);
+  const navn = tekstFra(b.name, 120).replace(/\s+/g, " ");
   const epost = epostFra(b.email);
-  if (!p) return usSvar({ error: "Enter how many people work in the organization." }, 400);
-  if (navn.length < 2) return usSvar({ error: "Write the name of the organization." }, 400);
-  if (!epost) return usSvar({ error: "Write your email address." }, 400);
-  const hva = p.kind === "gov" ? "government" : p.business || "one person";
-  const okt = await stripe(env, "POST", "checkout/sessions", {
-    mode: "payment",
-    "line_items[0][quantity]": "1",
-    "line_items[0][price_data][currency]": "usd",
-    "line_items[0][price_data][unit_amount]": String(p.price * 100),
-    "line_items[0][price_data][product_data][name]": `FrostCopy license for one year: ${navn}`,
-    "line_items[0][price_data][product_data][description]": `One license for the whole organization (${p.people.toLocaleString("en-US")} ${p.people === 1 ? "person" : "people"}, ${hva}). Valid for 365 days from payment. Does not renew by itself.`,
-    customer_email: epost,
-    "payment_intent_data[description]": `FrostCopy license, one year: ${navn}`,
-    "metadata[utgave]": "us",
-    "metadata[navn]": navn,
-    "metadata[people]": String(p.people),
-    "metadata[kind]": p.kind,
-    "metadata[business]": p.business || "",
-    "metadata[usd]": String(p.price),
-    success_url: `${US_SIDE}done/?session={CHECKOUT_SESSION_ID}`,
-    cancel_url: US_SIDE,
+  const adresse = String(b.address || "").split(/\r?\n/).map((l) => l.replace(/\s+/g, " ").trim()).filter(Boolean).slice(0, 6).map((l) => l.slice(0, 100)).join("\n");
+  const referanse = tekstFra(b.reference, 80).replace(/\s+/g, " ");
+  if (!p) return json({ error: "Enter how many people work in the organization." }, 400);
+  if (navn.length < 2) return json({ error: "Write the name of the organization." }, 400);
+  if (!epost) return json({ error: "Write the email address the invoice should go to." }, 400);
+  if (adresse.length < 8) return json({ error: "Write the billing address." }, 400);
+  const dag = idag();
+  const o = { navn, epost, adresse, referanse, people: p.people, kind: p.kind, business: p.business, usd: p.price, dato: dag, forfall: omDager(US_FRIST_DAGER) };
+  const nr = await lager(env).usNyOrdre(o);
+  o.faktura = usNr(nr);
+  await lager(env).usOppdater(nr, o);
+  const f = usFaktura(o);
+  const sendt = await usEpost(env, { til: epost, emne: `Invoice ${o.faktura} for FrostCopy: ${navn}`, tekst: f.tekst, html: f.html });
+  const lenke = `https://esbjugconsult.com/frostcopy/api/paid?nr=${nr}&t=${await usSignatur(env, nr)}`;
+  await usEpost(env, {
+    til: EIER,
+    emne: `FrostCopy-bestilling ${o.faktura}: ${navn}, ${usd(o.usd)}`,
+    tekst: [
+      `Ny bestilling på faktura.`,
+      ``,
+      `${navn} (${epost})`,
+      `${o.people} personer, ${o.kind === "gov" ? "offentlig" : o.business || "én person"}`,
+      `Beløp: ${usd(o.usd)}, forfall ${o.forfall}`,
+      sendt ? `Fakturaen er sendt til kunden.` : `FAKTURAEN GIKK IKKE UT PÅ E-POST. Send den selv; teksten står under.`,
+      ``,
+      `Når pengene er kommet inn, åpne denne lenken og trykk på knappen. Da får kunden lisensen på e-post:`,
+      lenke,
+      ``,
+      `----- Fakturaen -----`,
+      f.tekst,
+    ].join("\n"),
   });
-  return usSvar({ url: okt.url, price: p.price });
+  return json({ ok: true, invoice: o.faktura, price: o.usd, due: o.forfall, sent: sendt });
 }
 
-async function usOrdre(env, url) {
-  const id = url.searchParams.get("session") || "";
-  if (!/^cs_(test|live)_[A-Za-z0-9]+$/.test(id)) return usSvar({ error: "No purchase found." }, 400);
-  if (!env.KLART_LISENSNOKKEL || !env.STRIPE_SECRET_KEY) return usSvar({ error: "Buying online is not open yet." }, 503);
-  const okt = await stripeFinn(env, `checkout/sessions/${id}`);
-  if (!okt || okt.metadata?.utgave !== "us") return usSvar({ error: "No purchase found." }, 404);
-  if (okt.status !== "complete" || okt.payment_status !== "paid") {
-    return usSvar({ error: "The payment is not through yet. Reload the page in a moment." }, 409);
+async function usBetalt(request, env, url) {
+  const nr = Number(url.searchParams.get("nr"));
+  const t = url.searchParams.get("t") || "";
+  if (!Number.isInteger(nr) || nr < 1 || !env.KLART_LISENSNOKKEL) return json({ error: "Not found." }, 404);
+  const ventet = await usSignatur(env, nr);
+  if (t.length !== ventet.length || !likt(t, ventet)) return json({ error: "Not found." }, 404);
+  const rad = await lager(env).usOrdre(nr);
+  if (!rad) return json({ error: "Not found." }, 404);
+  const o = rad.data;
+  const hode = `<h1 style="font-size:22px">${esc(o.faktura)}: ${esc(o.navn)}</h1><p>${esc(o.epost)}<br>${usd(o.usd)}, bestilt ${esc(o.dato)}, forfall ${esc(o.forfall)}</p>`;
+  if (rad.betalt) return usHtmlSide(o.faktura, hode + `<p><b>Lisensen ble sendt ${esc(rad.betalt.slice(0, 10))}.</b></p>`);
+  if (request.method === "GET") {
+    return usHtmlSide(o.faktura, hode + `<p>Er pengene kommet inn? Da sendes lisensen til kunden, og den varer i 365 dager fra i dag.</p>` +
+      `<form method="post"><button style="font:inherit;padding:12px 20px;border:0;border-radius:999px;background:#00205b;color:#fff;cursor:pointer">Betalt: send lisensen</button></form>`);
   }
-  const utloper = omDager(365, okt.created * 1000);
-  const epost = (okt.customer_details?.email || okt.customer_email || "").toLowerCase() || null;
-  const kode = await kodeTilLisens(env, { navn: okt.metadata.navn, orgnr: null, epost, plan: "org", utloper }, null);
-  const test = testmodus(env);
-  return usSvar({
-    code: kode.replace(/^KLART-/, "FROSTCOPY-"),
-    name: okt.metadata.navn,
-    // I testmodus varer koden høyst sju dager (kodeTilLisens), og siden sier det.
-    expires: test ? (utloper < omDager(7) ? utloper : omDager(7)) : utloper,
-    test,
+  const utloper = omDager(365);
+  const kode = (await lagKode(env, { id: nyId(), type: "lisens", navn: o.navn, orgnr: null, epost: o.epost, maskin: null, plan: "org", utloper })).replace(/^KLART-/, "FROSTCOPY-");
+  const fil = `License for FrostCopy: ${o.navn}\n\nDouble-click this file, or drop it on the FrostCopy window, and FrostCopy is activated.\nYou can also paste the code below in FrostCopy › License.\n\n${kode}\n`;
+  const tekst = [
+    `Thank you. The payment for invoice ${o.faktura} has arrived, and here is the license for ${o.navn}.`,
+    ``,
+    `Open FrostCopy and choose License at the top right. Paste the code below, or drop the attached file on the FrostCopy window.`,
+    `Everyone in the organization uses the same license. It lasts until ${usDato(utloper)}.`,
+    ``,
+    kode,
+    ``,
+    `Questions: ${EIER}`,
+  ].join("\n");
+  const sendt = await usEpost(env, {
+    til: o.epost,
+    emne: `Your FrostCopy license: ${o.navn}`,
+    tekst,
+    vedlegg: [{ content: btoa(String.fromCharCode(...new TextEncoder().encode(fil))), filename: "FrostCopy license.frostcopylicense", type: "text/plain", disposition: "attachment" }],
   });
+  if (!sendt) return usHtmlSide(o.faktura, hode + `<p><b>E-posten gikk ikke ut.</b> Ingenting er merket som betalt. Prøv igjen, eller send koden selv:</p><textarea rows="6" style="width:100%">${esc(kode)}</textarea>`);
+  await lager(env).usMerkBetalt(nr, utloper);
+  await usEpost(env, { til: EIER, emne: `FrostCopy ${o.faktura} betalt: lisensen er sendt til ${o.navn}`, tekst: `Lisensen er sendt til ${o.epost}. Den varer til ${utloper}.\n\n${kode}` });
+  return usHtmlSide(o.faktura, hode + `<p><b>Lisensen er sendt til ${esc(o.epost)}.</b> Den varer til ${esc(utloper)}.</p>`);
 }
 
 function lager(env) {
@@ -2442,8 +2562,6 @@ async function webhook(request, env) {
     case "checkout.session.completed":
     case "checkout.session.async_payment_succeeded":
       // Kjøp fra prissiden har license_type, sprinten har sprint. De gamle, maskinbundne kjøpene har ingen av dem.
-      // FrostCopy (amerikansk): lisensen hentes fra betalingen når kunden kommer tilbake til siden, se handleFrostCopy.
-      if (obj.metadata?.utgave === "us") break;
       if (obj.metadata?.sprint) await sprintBetalt(env, obj);
       else if (obj.metadata?.license_type) await ordreFullfort(env, obj);
       else await lisensFraOkt(env, obj);
@@ -2508,6 +2626,9 @@ export class KlartLager extends DurableObject {
       lisens TEXT, utloper TEXT, sendt TEXT, PRIMARY KEY (lisens, utloper))`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS utboks (
       id INTEGER PRIMARY KEY AUTOINCREMENT, til TEXT, emne TEXT, tekst TEXT, laget TEXT, sendt TEXT)`);
+    // FrostCopy: bestillinger på faktura. id er løpenummeret fakturanummeret lages av (FC-1001, FC-1002 …).
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS us_ordrer (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT, laget TEXT, betalt TEXT, utloper TEXT)`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS henvendelser (
       id INTEGER PRIMARY KEY AUTOINCREMENT, hva TEXT, data TEXT, laget TEXT)`);
     // Kalenderen for oppsett og sprinter: status «holdt» (i Stripe nå, til holdt_til), «betalt», «forespurt»
@@ -2711,6 +2832,19 @@ export class KlartLager extends DurableObject {
     );
   }
 
+  usNyOrdre(data) {
+    return this.sql.exec(`INSERT INTO us_ordrer (data, laget) VALUES (?, ?) RETURNING id`, JSON.stringify(data), new Date().toISOString()).one().id;
+  }
+  usOppdater(id, data) {
+    this.sql.exec(`UPDATE us_ordrer SET data = ? WHERE id = ?`, JSON.stringify(data), id);
+  }
+  usOrdre(id) {
+    const r = this.sql.exec(`SELECT data, laget, betalt, utloper FROM us_ordrer WHERE id = ?`, id).toArray()[0];
+    return r ? { data: JSON.parse(r.data), laget: r.laget, betalt: r.betalt, utloper: r.utloper } : null;
+  }
+  usMerkBetalt(id, utloper) {
+    this.sql.exec(`UPDATE us_ordrer SET betalt = ?, utloper = ? WHERE id = ?`, new Date().toISOString(), utloper, id);
+  }
   iUtboks(til, emne, tekst) {
     return this.sql
       .exec(

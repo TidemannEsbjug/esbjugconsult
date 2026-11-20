@@ -51,22 +51,39 @@
               <div>
                 <label for="org">Name of the organization</label>
                 <input id="org" type="text" maxlength="120" autocomplete="organization" required />
-                <p class="smaa">This name is shown in FrostCopy on every computer that uses the license.</p>
+                <p class="smaa">Shown on the invoice, and in FrostCopy on every computer that uses the license.</p>
               </div>
               <div>
-                <label for="email">Your email</label>
+                <label for="email">Email for the invoice</label>
                 <input id="email" type="email" maxlength="200" autocomplete="email" required />
-                <p class="smaa">For the payment and the receipt.</p>
+                <p class="smaa">The invoice goes here, and later the license.</p>
               </div>
             </div>
+            <div class="us-to-felt">
+              <div>
+                <label for="address">Billing address</label>
+                <textarea id="address" rows="4" maxlength="600" autocomplete="street-address" required></textarea>
+              </div>
+              <div>
+                <label for="reference">Your reference or PO number</label>
+                <input id="reference" type="text" maxlength="80" />
+                <p class="smaa">Optional. Printed on the invoice.</p>
+              </div>
+            </div>
+            <p class="us-skjult" aria-hidden="true"><label for="website">Leave this field empty</label><input id="website" type="text" tabindex="-1" autocomplete="off" /></p>
             <div class="knapper">
-              <button class="btn" type="submit" id="buy">Buy a license</button>
+              <button class="btn" type="submit" id="buy">Order with invoice</button>
               <button class="btn us-ghost-lys" type="button" id="have">I have a license</button>
             </div>
             <p class="smaa us-feil" id="error" role="alert" hidden></p>
-            <p class="smaa">You pay by card on the next page. The license is shown as soon as the payment is through, and it lasts one year from that day. It does not renew by itself.</p>
+            <p class="smaa">We email the invoice at once. You pay by bank transfer in US dollars within 30 days. The license is emailed when the payment has arrived, and it lasts one year from that day. FrostCopy works in full for 30 days meanwhile.</p>
             <p class="smaa" id="haveText" hidden>Open FrostCopy and choose License at the top right. Paste the code that starts with FROSTCOPY-, or drop the license file on the window.</p>
           </form>
+          <div id="thanks" class="us-takk" hidden tabindex="-1">
+            <h2>Thank you</h2>
+            <p id="thanksText"></p>
+            <p class="smaa">Questions: <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a></p>
+          </div>
 
           <h3 class="vilkar-tittel">Before you buy</h3>
           <p class="us-avsnitt"><b>30 days with all of FrostCopy.</b> Try FrostCopy on your own files for 30 days before you decide. It is the full version. Trying it needs no sign-up.</p>

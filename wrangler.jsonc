@@ -25,6 +25,8 @@
   // Jev (TypeSafe) via jev-workeren, som har nøkkelen: søket i avspillingen på /hjem/ (POST /chat/sok).
   // Hemmeligheten INTERN_KEY er den samme i begge workerne.
   "services": [{ "binding": "JEV", "service": "esbjug-jev" }],
+  // E-post ut (Cloudflare Email Sending, slått på for esbjugconsult.com): FrostCopy-fakturaer og lisenser.
+  "send_email": [{ "name": "EMAIL", "remote": true }],
   "r2_buckets": [
     { "binding": "FILES", "bucket_name": "esbjug-chat-files" },
     { "binding": "KLART_FILER", "bucket_name": "klart-nedlasting" }
