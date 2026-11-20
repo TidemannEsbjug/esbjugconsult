@@ -303,6 +303,20 @@ export async function handleFrostCopy(request, env, url) {
   }
 }
 
+/** Beskjed til eieren på e-post (Cloudflares utsending), og i utboksen. Gir false når den ikke gikk ut. */
+async function varsleEier(env, emne, tekst) {
+  const id = await lager(env).iUtboks(EIER, emne, tekst);
+  if (!env.EMAIL) return false;
+  try {
+    await env.EMAIL.send({ to: EIER, from: { email: "klart@esbjugconsult.com", name: "Klart" }, subject: emne, text: tekst });
+    await lager(env).sendt(id);
+    return true;
+  } catch (err) {
+    console.error("klart varsel", err && err.code, err && err.message);
+    return false;
+  }
+}
+
 /** Sender en e-post med Cloudflares utsending og fører den i utboksen. Gir false når den ikke gikk ut. */
 async function usEpost(env, { til, emne, tekst, html, vedlegg }) {
   const id = await lager(env).iUtboks(til, emne, tekst);
@@ -1487,6 +1501,24 @@ async function kasse(request, env, url) {
   const mva = await mvaSats(env);
   if (betaling === "faktura") {
     const svar = await (fireAar && !perAar ? fakturerForskudd : fakturer)(env, { kunde, meta, linjer, mva, beskrivelse });
+    // Kunden ba om EHF. Vi kan ikke sende EHF herfra ennå, så eieren får beskjed og sender den selv (eieren 20.11.2026).
+    if (inn.ehf) {
+      await varsleEier(env, `Klart: ${svar.navn} vil ha EHF-faktura (${svar.faktura?.nummer || "uten nummer"})`, [
+        `En virksomhet har bestilt Klart på faktura og bedt om EHF. EHF sendes ikke automatisk: send den selv.`,
+        ``,
+        `Virksomhet: ${svar.navn}`,
+        `Org.nr: ${orgnrTekst(svar.orgnr)}`,
+        `Hva: ${beskrivelse}`,
+        `Beløp med mva: ${svar.faktura ? kroner(svar.faktura.belop) : "ukjent"}`,
+        `Forfall: ${svar.faktura?.forfall || "ukjent"}`,
+        `Kundens referanse: ${tekstFra(inn.referanse, 140) || "(ingen)"}`,
+        `Fakturaen går til: ${svar.epost || "(ingen e-post)"}`,
+        `Lisensnøkkelen går til: ${svar.nokkelEpost || "(samme)"}`,
+        `Fakturanummer hos Stripe: ${svar.faktura?.nummer || "ukjent"}`,
+        `Fakturaen hos Stripe: ${svar.faktura?.adresse || "(ingen lenke)"}`,
+        ...(testmodus(env) ? [``, `NB: Nettstedet står i Stripes testmodus, så dette er en prøvebestilling.`] : []),
+      ].join("\n")).catch((err) => console.error("klart ehf-varsel", err));
+    }
     // Nøkkelen er bare på e-post (til virksomhetens eget domene), ikke på siden.
     delete svar.kode;
     return json(svar);
