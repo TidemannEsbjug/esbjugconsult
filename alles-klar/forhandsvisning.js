@@ -51,7 +51,7 @@
   var knapper = kv.querySelectorAll(".kv-kapitler button");
   var LES = 1700; // lesehodet over én side (CSS)
 
-  var DOKTYPE = { vedtak: "PDF", epost: "E-POST", liste: "REGNEARK", ppt: "POWERPOINT" };
+  var DOKTYPE = { vedtak: "PDF", epost: "E-MAIL", liste: "TABELLE", ppt: "POWERPOINT" };
   var REGISTER_STEDER = 0;
   each(register, function (li) {
     REGISTER_STEDER += +li.getAttribute("data-s");
@@ -92,9 +92,9 @@
   function filLest(i, medUavklart) {
     var li = filer[i];
     var u = medUavklart && li.getAttribute("data-uavklart");
-    var meta = li.getAttribute("data-steder") + " steder";
+    var meta = li.getAttribute("data-steder") + " Stellen";
     if (li.getAttribute("data-ekstra")) meta += " · " + li.getAttribute("data-ekstra");
-    fil(i, u ? "uavklart" : "", meta + (u ? " · " + u + " uavklart" : ""));
+    fil(i, u ? "uavklart" : "", meta + (u ? " · " + u + " ungeklärt" : ""));
   }
 
   // Registeret fylles i takt med filene som er lest (andel 0–1).
@@ -105,7 +105,7 @@
       var s = Math.round(+li.getAttribute("data-s") * andel);
       sum += n;
       li.classList.toggle("tom", !s);
-      li.querySelector("em").textContent = n + " · " + s + (s === 1 ? " sted" : " steder");
+      li.querySelector("em").textContent = n + " · " + s + (s === 1 ? " Stelle" : " Stellen");
     });
     tekst("opplysninger", sum);
     tekst("skjules", Math.round(REGISTER_STEDER * andel));
@@ -194,12 +194,12 @@
     });
     kv.classList.toggle("svart", navn === "svart");
     kv.classList.add("kopi");
-    tekst("kopimerke", navn === "svart" ? "Kopien · svart sladd, som PDF" : "Kopien · kodeliste bakerst");
+    tekst("kopimerke", navn === "svart" ? "Kopie · Schwärzung, als PDF" : "Kopie · Codeliste am Ende");
   }
   function ubtn(n) {
     var b = $("ubtn");
     b.textContent = "";
-    b.append(document.createElement("i"), "Uavklart " + n);
+    b.append(document.createElement("i"), "Ungeklärt " + n);
   }
   function ansikter(klasse) {
     ansikt1.className = "kv-ansikt a1" + (klasse ? " " + klasse : "");
@@ -266,15 +266,15 @@
 
   // Tekstverktøyet, fane 1: meldingen som skrives inn.
   var MELDING = [
-    ["Hei! Kan du ringe "],
-    ["Kari Nordmann", "Person 6311794", "Person"],
-    [" på "],
-    ["922 11 334", "Telefon 6289990", "Telefon"],
-    [" i dag? Hun har flyttet til "],
-    ["Glenneveien 272", "Adresse 8950779", "Adresse"],
-    [", og lønnen skal nå gå til konto "],
-    ["1503 42 17886", "Kontonummer 7719741", "Kontonummer"],
-    ["."]
+    ["Hallo! Können Sie heute "],
+    ["Karin Neumann", "Person 6311794", "Person"],
+    [" unter "],
+    ["0221 555 0134", "Telefon 6289990", "Telefon"],
+    [" anrufen? Sie ist in die "],
+    ["Lindenstraße 27", "Adresse 8950779", "Adresse"],
+    [" umgezogen, und ihr Gehalt soll jetzt auf das Konto "],
+    ["DE89 3704 0044 0532 0130 00", "Kontonummer 7719741", "IBAN"],
+    [" gehen."]
   ];
   function listepunkt(lapp, verdi) {
     var li = document.createElement("li");
@@ -291,15 +291,15 @@
 
   // Svaret fra KI-en: med kodene, aldri med navnene.
   var SVAR = [
-    ["Hei! Jeg ringer "],
-    ["Kari Nordmann", "Person 6311794"],
-    [" på "],
-    ["922 11 334", "Telefon 6289990"],
-    [" i ettermiddag. Den nye adressen, "],
-    ["Glenneveien 272", "Adresse 8950779"],
-    [", er lagt inn, og lønnen går til "],
-    ["1503 42 17886", "Kontonummer 7719741"],
-    [" fra neste utbetaling."]
+    ["Hallo! Ich rufe "],
+    ["Karin Neumann", "Person 6311794"],
+    [" heute Nachmittag unter "],
+    ["0221 555 0134", "Telefon 6289990"],
+    [" an. Die neue Adresse, "],
+    ["Lindenstraße 27", "Adresse 8950779"],
+    [", ist eingetragen, und das Gehalt geht ab der nächsten Abrechnung auf das Konto "],
+    ["DE89 3704 0044 0532 0130 00", "Kontonummer 7719741"],
+    ["."]
   ];
   var svar = skriver($("kisvartekst"), SVAR, "kode");
 
@@ -325,7 +325,7 @@
     melding.nullstill();
     svar.nullstill();
     $("rtliste").textContent = "";
-    tekst("rtlistetittel", "Skjules");
+    tekst("rtlistetittel", "Wird ausgeblendet");
     $("rtorig").classList.add("på");
     $("rtrenset").classList.remove("på");
     $("fanerens").classList.add("på");
@@ -369,7 +369,7 @@
     }
     each(filer, function (_, i) {
       if (o.lest) filLest(i, !o.avklart);
-      else fil(i, "ko", "I kø");
+      else fil(i, "ko", "wartet");
     });
     fyllRegister(o.lest ? 1 : 0);
     if (o.avklart) {
@@ -380,10 +380,10 @@
     skilt.className = "kv-skilt" + (o.dekket ? " dekket" : "");
     visDok(o.dok || "vedtak");
     tekst("leser", filnavn(0));
-    tekst("nr", "1 av " + filer.length);
-    tekst("vis", "Vis kopien");
-    tekst("lag", "Lag 10 kopier");
-    tekst("lagnaa", "Lag 10 kopier");
+    tekst("nr", "1 von " + filer.length);
+    tekst("vis", "Kopie zeigen");
+    tekst("lag", "10 Kopien erstellen");
+    tekst("lagnaa", "10 Kopien erstellen");
     ubtn(2);
     $("u1").classList.remove("avgjort");
     $("u2").classList.remove("avgjort");
@@ -442,9 +442,9 @@
   each(filer, function (li, i) {
     var dok = li.getAttribute("data-dok");
     etter(i ? 0 : 400, function () {
-      fil(i, "leses", "leses …");
+      fil(i, "leses", "wird gelesen …");
       tekst("leser", filnavn(i));
-      tekst("nr", i + 1 + " av " + filer.length);
+      tekst("nr", i + 1 + " von " + filer.length);
       if (dok) visDok(dok);
     });
     if (dok) {
@@ -481,9 +481,9 @@
   etter(300, function () {
     kv.classList.add("gaar-gjennom");
     velgMerke(merknad);
-    tekst("gkode", "Merknad 2760056");
-    tekst("gnr", "1 av 2");
-    tekst("ghvorfor", "Klart er usikker på om dette er en merknad om en person. · 02-vedtak-vergemal.pdf");
+    tekst("gkode", "Anmerkung 2760056");
+    tekst("gnr", "1 von 2");
+    tekst("ghvorfor", "Alles Klar ist unsicher, ob dies zur Kategorie „Anmerkung“ gehört. · 02-beschluss-betreuung.pdf");
     $("gstrek").style.width = "50%";
   });
   trykkPå(function () {
@@ -495,9 +495,9 @@
   });
   etter(600, function () {
     velgMerke(arbeid);
-    tekst("gkode", "Arbeidsplass 5521093");
-    tekst("gnr", "2 av 2");
-    tekst("ghvorfor", "Klart er usikker på om dette er en arbeidsplass. · 02-vedtak-vergemal.pdf");
+    tekst("gkode", "Organisation 5521093");
+    tekst("gnr", "2 von 2");
+    tekst("ghvorfor", "Alles Klar ist unsicher, ob dies zur Kategorie „Organisation“ gehört. · 02-beschluss-betreuung.pdf");
     $("gstrek").style.width = "100%";
   });
   trykkPå(function () {
@@ -525,7 +525,7 @@
   });
   etter(360, function () {
     kv.classList.add("kopi");
-    tekst("vis", "Vis originalen");
+    tekst("vis", "Original zeigen");
     side("vedtak").classList.remove("bytter");
   });
   trykkPå(function () {
@@ -557,7 +557,7 @@
   }, 900);
   each([3, 6, 10], function (n) {
     etter(420, function () {
-      tekst("lagnaa", "Lager kopi " + n + " av 10 …");
+      tekst("lagnaa", "Kopie " + n + " von 10 wird erstellt …");
     });
   });
   etter(420, function () {
@@ -597,8 +597,8 @@
   etter(300, function () {
     $("meny").classList.remove("vis");
     $("undermeny").classList.remove("vis");
-    tekst("vtittel", "Renser «kundesaker» …");
-    tekst("vtekst", "Kopiene legges ved siden av. Du får beskjed når de er klare.");
+    tekst("vtittel", "„Mandantenakten“ wird bereinigt …");
+    tekst("vtekst", "Die Kopien werden daneben abgelegt. Sie erhalten eine Mitteilung, wenn sie fertig sind.");
     $("varsel").classList.add("vis");
     hvil();
   });
@@ -606,8 +606,8 @@
     $("varsel").classList.remove("vis");
   });
   etter(500, function () {
-    tekst("vtittel", "«kundesaker» er renset");
-    tekst("vtekst", "10 kopier i «kundesaker-klar».");
+    tekst("vtittel", "„Mandantenakten“ ist bereinigt");
+    tekst("vtekst", "10 Kopien in „Mandantenakten-klar“.");
     $("varsel").classList.add("vis");
     $("fmappe").classList.remove("valgt");
     $("fny").classList.add("vis", "valgt");
@@ -636,7 +636,7 @@
   trykkPå(function () {
     return $("rtkopier");
   }, 1000, function () {
-    tekst("toast", "Kopiert med kodene");
+    tekst("toast", "Mit den Codes kopiert");
     $("toast").classList.add("vis");
   });
   etter(1300, function () {
@@ -676,7 +676,7 @@
     kv.classList.remove("renset");
     kv.classList.add("tbtekst");
     $("rtliste").textContent = "";
-    tekst("rtlistetittel", "Tilbakeført");
+    tekst("rtlistetittel", "Zurückgeführt");
   });
   etter(1300, function () {
     tbMerker.forEach(function (mk) {
@@ -689,7 +689,7 @@
   trykkPå(function () {
     return $("rtkopier");
   }, 1900, function () {
-    tekst("toast", "Kopiert med navnene tilbake");
+    tekst("toast", "Mit den Namen kopiert");
     $("toast").classList.add("vis");
   });
   etter(2400, function () {
