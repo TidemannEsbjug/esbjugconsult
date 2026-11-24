@@ -26,6 +26,9 @@ export default {
   selger: ["ESBJUG CONSULT", "Glenneveien 272B", "1455 Nordre Frogn", "Noorwegen", "Org.nr. 938 441 405"],
   filer: {
     mac: { key: "2026-11-24/nl/Klip-en-Klaar_0.1.0_universal.dmg", navn: "Klip en Klaar.dmg" },
+    windows: { key: "2026-11-24/nl/Klip-en-Klaar_0.1.0_x64-setup.exe", navn: "Klip en Klaar.exe" },
+    linux: { key: "2026-11-24/nl/Klip-en-Klaar_0.1.0_amd64.deb", navn: "Klip-en-Klaar_0.1.0_amd64.deb" },
+    "linux-arm": { key: "2026-11-24/nl/Klip-en-Klaar_0.1.0_arm64.deb", navn: "Klip-en-Klaar_0.1.0_arm64.deb" },
   },
   t: {
     ikkeFunnet: "Niet gevonden.",

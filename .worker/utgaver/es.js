@@ -27,6 +27,9 @@ export default {
   // Solo existe la versión para Mac (primer paquete del 24.11.2026). Windows y Linux, cuando estén construidos.
   filer: {
     mac: { key: "2026-11-24/es/Clarisimo_0.1.0_universal.dmg", navn: "Clarísimo.dmg" },
+    windows: { key: "2026-11-24/es/Clarisimo_0.1.0_x64-setup.exe", navn: "Clarísimo.exe" },
+    linux: { key: "2026-11-24/es/Clarisimo_0.1.0_amd64.deb", navn: "Clarisimo_0.1.0_amd64.deb" },
+    "linux-arm": { key: "2026-11-24/es/Clarisimo_0.1.0_arm64.deb", navn: "Clarisimo_0.1.0_arm64.deb" },
   },
   t: {
     ikkeFunnet: "No encontrado.",
