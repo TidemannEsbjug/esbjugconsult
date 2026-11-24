@@ -315,11 +315,12 @@ export async function handleFrostCopy(request, env, url) {
 }
 
 /** Beskjed til eieren på e-post (Cloudflares utsending), og i utboksen. Gir false når den ikke gikk ut. */
-async function varsleEier(env, emne, tekst) {
+/** fra: utgavens egen avsender (Alles Klar, C’est Clair …), så eieren ser hvilken utgave bestillingen gjelder. */
+async function varsleEier(env, emne, tekst, fra = { email: "klart@esbjugconsult.com", name: "Klart" }) {
   const id = await lager(env).iUtboks(EIER, emne, tekst);
   if (!env.EMAIL) return false;
   try {
-    await env.EMAIL.send({ to: EIER, from: { email: "klart@esbjugconsult.com", name: "Klart" }, subject: emne, text: tekst });
+    await env.EMAIL.send({ to: EIER, from: fra, subject: emne, text: tekst });
     await lager(env).sendt(id);
     return true;
   } catch (err) {
@@ -657,7 +658,8 @@ async function deBestill(request, env) {
       ``,
       `----- Fakturaen -----`,
       f.tekst,
-    ].join("\n")
+    ].join("\n"),
+    DE_AVSENDER
   );
   return json({ ok: true, rechnung: o.faktura, preis: o.eur, faellig: o.forfall, gesendet: sendt });
 }
@@ -700,7 +702,7 @@ async function deBetalt(request, env, url) {
   });
   if (!sendt) return usHtmlSide(o.faktura, hode + `<p><b>E-posten gikk ikke ut.</b> Ingenting er merket som betalt. Prøv igjen, eller send koden selv:</p><textarea rows="6" style="width:100%">${esc(kode)}</textarea>`);
   await lager(env).deMerkBetalt(nr, utloper);
-  await varsleEier(env, `Alles Klar ${o.faktura} betalt: lisensnøkkelen er sendt til ${o.navn}`, `Lisensnøkkelen er sendt til ${o.epost}. Den varer til ${utloper}.\n\n${kode}`);
+  await varsleEier(env, `Alles Klar ${o.faktura} betalt: lisensnøkkelen er sendt til ${o.navn}`, `Lisensnøkkelen er sendt til ${o.epost}. Den varer til ${utloper}.\n\n${kode}`, DE_AVSENDER);
   return usHtmlSide(o.faktura, hode + `<p><b>Lisensnøkkelen er sendt til ${esc(o.epost)}.</b> Den varer til ${esc(utloper)}.</p>`);
 }
 
@@ -843,7 +845,8 @@ async function utBestill(request, env, u) {
       ``,
       `----- Fakturaen -----`,
       f.tekst,
-    ].join("\n")
+    ].join("\n"),
+    u.avsender
   );
   return json({ ok: true, invoice: o.faktura, price: o.pris, due: o.forfall, sent: sendt });
 }
@@ -880,7 +883,7 @@ async function utBetalt(request, env, url, u) {
   });
   if (!sendt) return usHtmlSide(o.faktura, hode + `<p><b>E-posten gikk ikke ut.</b> Ingenting er merket som betalt. Prøv igjen, eller send koden selv:</p><textarea rows="6" style="width:100%">${esc(kode)}</textarea>`);
   await lager(env).utMerkBetalt(nr, utloper);
-  await varsleEier(env, `${u.navn} ${o.faktura} betalt: lisensnøkkelen er sendt til ${o.navn}`, `Lisensnøkkelen er sendt til ${o.epost}. Den varer til ${utloper}.\n\n${kode}`);
+  await varsleEier(env, `${u.navn} ${o.faktura} betalt: lisensnøkkelen er sendt til ${o.navn}`, `Lisensnøkkelen er sendt til ${o.epost}. Den varer til ${utloper}.\n\n${kode}`, u.avsender);
   return usHtmlSide(o.faktura, hode + `<p><b>Lisensnøkkelen er sendt til ${esc(o.epost)}.</b> Den varer til ${esc(utloper)}.</p>`);
 }
 
