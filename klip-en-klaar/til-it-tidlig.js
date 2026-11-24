@@ -1,6 +1,6 @@
 (function () {
   var rot = document.documentElement;
+  var os = location.hash.slice(1);
   rot.classList.add("js");
-  // Klip en Klaar finnes bare for Mac ennå: siden viser bare Mac-sjekkene.
-  rot.setAttribute("data-vis", "mac");
+  if (os === "mac" || os === "windows") rot.setAttribute("data-vis", os);
 })();

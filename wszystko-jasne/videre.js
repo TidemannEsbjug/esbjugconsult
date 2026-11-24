@@ -62,4 +62,4 @@
   });
 })();
 
-// Wszystko Jasne: maskinsøket (/klart/api/maskin) er tatt ut; det svarer på norsk og om Windows/Linux.
+// Wszystko Jasne: maskinsøket (/klart/api/maskin) er tatt ut fordi det svarer på norsk; forsiden viser systemkravene.

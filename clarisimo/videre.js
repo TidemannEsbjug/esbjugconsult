@@ -73,19 +73,23 @@
   var felt = boks.querySelector("input");
   var liste = boks.querySelector("[data-v-svar]");
   var melding = boks.querySelector("[data-v-melding]");
-  var ORD = { ja: "Sí", usikkert: "Pronto", nei: "No" };
+  var ORD = { ja: "Sí", usikkert: "Quizá", nei: "No" };
   var SLAG = { "Bærbar": "Portátil", "Stasjonær": "Sobremesa", "Nettbrett": "Tableta", "Telefon": "Teléfono" };
-  // Svarene fra /klart/api/maskin er norske og gjelder Klart på Mac, Windows og Linux. Clarísimo finnes
-  // foreløpig bare for Mac, så svaret oversettes her, og PC-er får «Pronto» (Windows og Linux kommer).
+  // Svarene fra /klart/api/maskin er norske og gjelder Klart på Mac, Windows og Linux, som Clarísimo.
+  // Her oversettes de til spansk. ARM-Linux får «Quizá»: det finnes en arm64-pakke, men den er ikke prøvd på modellen.
   function spansk(m) {
     var t = m.tekst || "";
     var v;
     if (/^Alle Mac-er/.test(t)) return ["ja", "Todos los Mac con procesador Apple ejecutan Clarísimo."];
     if ((v = /^Med macOS (\S+) eller nyere/.exec(t))) return ["ja", "Con macOS " + v[1] + " o posterior."];
     if ((v = /^Den kan ikke få macOS (\S+)/.exec(t))) return ["nei", "No puede tener macOS " + v[1] + ", que Clarísimo necesita."];
+    if ((v = /^Med Windows 10 eller 11\. Vi anbefaler (\d+) GB/.exec(t))) return ["ja", "Con Windows 10 u 11. Recomendamos " + v[1] + " GB de memoria."];
+    if ((v = /^Med en nyere Linux\. Vi anbefaler (\d+) GB/.exec(t))) return ["ja", "Con un Linux reciente. Recomendamos " + v[1] + " GB de memoria."];
+    if (/^Den har ARM-prosessor\. Klart for Linux/.test(t)) return ["usikkert", "Tiene procesador ARM. Clarísimo tiene una descarga para Linux en ARM (arm64), pero no se ha probado en este modelo."];
+    if (/^Den har ARM-prosessor/.test(t)) return ["usikkert", "Tiene procesador ARM. Clarísimo para Windows está hecho para Intel y AMD, y no se ha probado en este equipo."];
+    if (/^Klart trenger Windows/.test(t)) return ["nei", "Clarísimo necesita Windows 10 u 11."];
     if (/Chromebook/.test(t)) return ["nei", "Clarísimo no funciona en Chromebook."];
-    if (/Windows|Linux|ARM/.test(t)) return ["usikkert", "Por ahora Clarísimo solo existe para Mac. Las versiones para Windows y Linux llegarán pronto."];
-    return ["nei", "Clarísimo es un programa para ordenador. Por ahora existe para Mac."];
+    return ["nei", "Clarísimo es un programa para Mac, Windows y Linux."];
   }
   var venter = null;
   var runde = 0;
@@ -111,7 +115,7 @@
     if (!svar || !svar.treff) return si("");
     if (!svar.treff.length) {
       // Verken modellen, merket eller systemet er kjent: be om det, i stedet for å gjette.
-      return si(svar.generelt ? "No hemos encontrado este equipo. Pruebe con la marca y el modelo, por ejemplo MacBook Air." : "");
+      return si(svar.generelt ? "No hemos encontrado este equipo. Pruebe con la marca y el modelo, por ejemplo ThinkPad T14." : "");
     }
     if (svar.generelt && svar.merke) si("No hemos encontrado exactamente este modelo. Para un equipo de " + svar.merke + " vale lo siguiente:");
     else if (svar.generelt) si("No hemos encontrado exactamente este modelo. Para equipos así vale lo siguiente:");

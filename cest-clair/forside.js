@@ -77,8 +77,55 @@ document.querySelectorAll(".hero .os-mac, .v-hent .os-mac").forEach(function (ma
   });
 });
 
-// Terminalen som vises når man holder over Linux-knappen, er tatt ut: C’est Clair har bare Mac-bygget
-// ennå (24.11.2026), så siden har ingen Linux-knapp.
+// Terminalen i kortet når man holder over Linux: linjene renner nedover bak
+// innholdet og ligger delvis bak knappene og feltet. Klart installeres med apt
+// (på fransk, slik det står i en fransk terminal), sladder et dokument, og har
+// et lite Star Wars-nikk: Jedi-trikset og «May the source be with you».
+// Kommandoene skrives i tastefart, utdata kommer linje for linje
+// (CSS: .kort-terminal). Starter på nytt hver gang, fordi laget vises på nytt.
+(function () {
+  var tekst = document.querySelector(".hero .scene-tekst");
+  if (!tekst || !window.matchMedia("(hover: hover)").matches) return;
+  // Skriften lastes med en gang; ellers bytter den mens første linje skrives,
+  // og teksten hopper.
+  if (document.fonts && document.fonts.load) document.fonts.load('500 12.5px "JetBrains Mono"');
+  var linjer = [
+    ["$ sudo apt install cestclair", "kommando"],
+    ["Lecture des listes de paquets… Fait"],
+    ["Construction de l’arbre des dépendances… Fait"],
+    ["Lecture des informations d’état… Fait"],
+    ["Les NOUVEAUX paquets suivants seront installés :"],
+    ["  cestclair"],
+    ["0 mis à jour, 1 nouvellement installés, 0 à enlever et 0 non mis à jour."],
+    ["Paramétrage de cestclair (0.1.0) …"],
+    ["$ cestclair --jedi", "kommando"],
+    ["Ce ne sont pas les données personnelles que vous recherchez."],
+    ["$ cestclair clean ~/Documents/rapport.docx", "kommando"],
+    ["Lecture de rapport.docx… 14 données personnelles trouvées"],
+    ["Occultés : 6 noms, 4 numéros de sécurité sociale, 3 adresses, 1 numéro de téléphone"],
+    ['$ echo "May the source be with you."', "kommando"],
+    ["May the source be with you."],
+    ["$ ", "kommando markor"],
+  ];
+  var term = document.createElement("div");
+  term.className = "kort-terminal";
+  term.setAttribute("aria-hidden", "true");
+  var tid = 150;
+  linjer.forEach(function (l) {
+    var el = document.createElement("span");
+    el.textContent = l[0];
+    if (l[1]) el.className = l[1];
+    var n = Math.max(l[0].length, 1);
+    var kommando = l[1] && l[1].indexOf("kommando") > -1;
+    el.style.setProperty("--n", n);
+    el.style.setProperty("--f", tid + "ms");
+    // Kommandoer skrives i tastefart med en liten pause etter; utdata kommer linje for linje.
+    tid += kommando ? n * 24 + 300 : 120;
+    term.appendChild(el);
+  });
+  // Foran innholdet i rekkefølgen, så knappene og feltet tegnes oppå den.
+  tekst.insertBefore(term, tekst.querySelector(".privat"));
+})();
 
 // Snøen i heroen, fra forsiden på esbjugconsult.com: hvert fnugg har en avstand
 // z (0 langt borte, 1 nærmest). Nære fnugg er større og faller fortere. Musa
@@ -640,9 +687,13 @@ function nedlastingskort(tekst, kort, knapper) {
   if (!tekst || !kort) return;
   var SIMULER = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) || /[?&]nedlasting=sim\b/.test(location.search);
 
-  // Bare Mac-bygget finnes for C’est Clair (24.11.2026). Windows og Linux kommer; da legges de til her og på siden.
+  // Windows- og Linux-pakkene kom 24.11.2026 (signert .exe, .deb for amd64 og arm64).
   var SYSTEM = {
+    windows: { navn: "Windows", fil: "C'est Clair.exe", mb: 272, neste: "Ouvrez le fichier pour installer C’est Clair." },
     mac: { navn: "Mac", fil: "C'est Clair.dmg", mb: 317, neste: "Ouvrez le fichier et faites glisser C’est Clair dans le dossier « Applications »." },
+    linux: { navn: "Linux", fil: "Cest-Clair_0.1.0_amd64.deb", mb: 270, neste: "Ouvrez le fichier pour installer C’est Clair." },
+    // ARM64-pakken: størrelsen her brukes bare av simuleringen lokalt; på nettet kommer den fra content-length.
+    "linux-arm": { navn: "Linux (ARM64)", fil: "Cest-Clair_0.1.0_arm64.deb", mb: 270, neste: "Ouvrez le fichier pour installer C’est Clair." },
   };
 
   var merke = kort.querySelector("[data-merke]");

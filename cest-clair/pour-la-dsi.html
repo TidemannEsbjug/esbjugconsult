@@ -11,8 +11,9 @@
   - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
     Vi vil heller høre det fra deg enn fra en kunde.
 
-  Den franske utgaven, 24.11.2026. Bare Mac finnes ennå, så Windows-blokkene er tatt ut og siden viser
-  bare Mac (til-it-tidlig.js setter data-vis="mac"). Fasitene for Mac er kjørt mot det signerte og
+  Den franske utgaven, 24.11.2026. Windows-blokkene er satt inn igjen som på alles-klar, med navnene fra
+  Klart-fr (tauri.fr.conf.json, windows/brannmur-fr.nsh, retningslinjer.rs) og sjekksummene fra Klart-utgivelse.
+  Windows-fasitene er ikke kjørt på en maskin. Fasitene for Mac er kjørt mot det signerte og
   notariserte bygget i Klart-utgivelse/mac-fr-prove-2026-11-24 (Klart-fr 3fdb9be2): navnene, størrelsene,
   TeamIdentifier, entitlements, spctl og otool/nm. Filnavnene i datamappen, retningslinjene og loggen er
   de norske, som i FrostCopy (src-tauri/src/retningslinjer.rs, integrasjon/*.schema.json).
@@ -28,7 +29,7 @@
       content="Les contrôles qui montrent que C’est Clair ne communique pas avec le réseau, ce qui se trouve dans le paquet et sur le disque, et comment la DSI pilote C’est Clair de façon centralisée. Avec les commandes, les résultats attendus et ce que prouve chaque contrôle."
     />
     <meta name="robots" content="noindex" />
-    <!-- Ingen skrifter, bilder eller skript utenfra. Skriptene viser Mac-blokkene og kopierer kommandoene. -->
+    <!-- Ingen skrifter, bilder eller skript utenfra. De to skriptene bytter mellom Mac og Windows og kopierer kommandoene. -->
     <script src="til-it-tidlig.js"></script>
     <link rel="stylesheet" href="fonts.css" />
     <link rel="stylesheet" href="sider.css" />
@@ -87,10 +88,13 @@
           </ul>
         </section>
 
-        <p class="s-notis">
-          <b>C’est Clair est disponible pour l’instant sur Mac.</b> Les versions Windows et Linux arrivent bientôt&nbsp;;
-          cette page sera complétée pour elles à leur sortie.
-        </p>
+        <div class="s-velg">
+          <p id="velg-tittel">Quel système vérifiez-vous&nbsp;?</p>
+          <div class="s-velg-knapper" role="group" aria-labelledby="velg-tittel">
+            <button type="button" data-velg="mac" aria-pressed="false">Mac</button>
+            <button type="button" data-velg="windows" aria-pressed="false">Windows</button>
+          </div>
+        </div>
         <p class="s-skjult" id="melding" role="status" aria-live="polite"></p>
 
         <!-- ============ 1 ============ -->
@@ -99,9 +103,16 @@
           <div class="os" data-os="mac" data-navn="Mac">
             <div class="cmd"><pre>shasum -a 256 ~/Downloads/C*Clair*.dmg</pre></div>
           </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-FileHash "$HOME\Downloads\C*Clair*.exe"</pre></div>
+          </div>
+          <p>Sous Linux&nbsp;: <code>sha256sum ~/Téléchargements/Cest-Clair_*.deb</code> (ou <code>~/Downloads</code>).</p>
           <p class="s-fasit"><b>Résultat attendu&nbsp;:</b> la longue suite de chiffres et de lettres correspond à la somme de contrôle que nous avons publiée pour la version.</p>
           <dl class="s-tabell">
             <div><dt>C’est Clair.dmg</dt><dd><code>dc7a5142474b9cb6<wbr />ea35130274c78e13<wbr />6f5f783ec474b4f5<wbr />f660992ceef62328</code></dd></div>
+            <div><dt>C’est Clair.exe</dt><dd><code>0f7643e904dc6245<wbr />0bf656f4dde8112f<wbr />2eaeae480e6df47f<wbr />d6e4926c5be3f03f</code></dd></div>
+            <div><dt>Cest-Clair_0.1.0_amd64.deb</dt><dd><code>98ccfba3b27e2b1e<wbr />d6aa1639321d9db7<wbr />18459109df79477e<wbr />d5411263e8d399fa</code></dd></div>
+            <div><dt>Cest-Clair_0.1.0_arm64.deb</dt><dd><code>26da092cff809b36<wbr />b218ae73d797f995<wbr />c010c397f58cd805<wbr />75d0ef05a2e7d4eb</code></dd></div>
           </dl>
           <p class="s-beviser"><b>Prouve&nbsp;:</b> que le fichier est celui que nous avons publié. Rien de plus. Une somme de contrôle ne dit rien de ce que fait le logiciel.</p>
         </section>
@@ -122,6 +133,11 @@
             <div class="cmd"><pre>codesign -dv "/Applications/C'est Clair.app/Contents/MacOS/klart-hvelv" 2>&amp;1 | grep TeamIdentifier
 codesign -dv "/Applications/C'est Clair.app/Contents/Resources/bundled/engine/pdfium/libpdfium.dylib" 2>&amp;1 | grep TeamIdentifier</pre></div>
             <p class="s-fasit"><b>Résultat attendu&nbsp;:</b> le même <code>TeamIdentifier=N5BKVM258S</code> pour les deux.</p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>La version Windows est signée par ESBJUG CONSULT. La commande affiche <code>Valid</code> et le nom figurant dans le certificat.</p>
+            <div class="cmd"><pre>Get-AuthenticodeSignature "$HOME\Downloads\C*Clair*.exe" | Format-List Status, SignerCertificate</pre></div>
+            <p class="s-fasit"><b>Résultat attendu&nbsp;:</b> <code>Valid</code> et notre nom dans <code>SignerCertificate</code>.</p>
           </div>
           <p class="s-beviser">
             <b>Prouve&nbsp;:</b> que le code vient de nous et n’a pas été modifié depuis. C’est le contrôle contre une copie retouchée.
@@ -148,6 +164,13 @@ codesign -dv "/Applications/C'est Clair.app/Contents/Resources/bundled/engine/pd
             </p>
             <p class="s-beviser"><b>Prouve&nbsp;:</b> que le logiciel ne peut pas piloter d’autres logiciels, charger du code étranger ni accéder à iCloud. À lui seul, il ne prouve rien sur le réseau.</p>
           </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>
+              Windows ne connaît pas de droits équivalents pour les logiciels de bureau ordinaires. Un logiciel installé
+              avec un .exe ne demande pas l’accès au réseau. Il l’a. C’est pourquoi il n’y a pas de commande ici.
+            </p>
+            <p class="s-beviser"><b>Prouve&nbsp;:</b> rien, sous Windows. Le verrou est la règle de pare-feu plus bas, et la preuve que le logiciel reste muet est le point&nbsp;4.</p>
+          </div>
         </section>
 
         <!-- ============ 4 ============ -->
@@ -171,6 +194,23 @@ codesign -dv "/Applications/C'est Clair.app/Contents/Resources/bundled/engine/pd
               Attention à <code>-a</code>. Sans cette option, <code>lsof</code> combine les critères avec «&nbsp;ou&nbsp;», et vous obtenez tout
               le trafic de l’ordinateur dans la liste. LuLu ou Little Snitch donnent le même résultat, si vous préférez le voir ainsi.
             </p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-Process cestclair, tesseract -ErrorAction SilentlyContinue |
+ForEach-Object {
+  "$($_.ProcessName) tourne (processus $($_.Id))"
+  Get-NetTCPConnection -OwningProcess $_.Id -ErrorAction SilentlyContinue
+  Get-NetUDPEndpoint -OwningProcess $_.Id -ErrorAction SilentlyContinue
+}</pre></div>
+            <p class="s-fasit"><b>Résultat attendu&nbsp;:</b> uniquement les lignes indiquant que <code>cestclair</code> tourne, et <code>tesseract</code> pendant que C’est Clair lit une image. Aucun tableau d’adresses ni de ports.</p>
+            <p>
+              La fenêtre de C’est Clair est affichée par WebView2, qui vient de Microsoft et fait partie de Windows. Il tourne dans
+              ses propres processus, <code>msedgewebview2.exe</code>. Le contenu de la fenêtre ne peut rien aller chercher&nbsp;:
+              les règles du point&nbsp;5 l’en empêchent. WebView2 lui-même peut toutefois communiquer avec Microsoft, par exemple pour
+              ses propres mises à jour. C’est du trafic de Microsoft, et il ne contient rien de C’est Clair ni des documents.
+              Si vous voulez un silence complet, bloquez les deux dans le pare-feu.
+            </p>
+            <p>Le Moniteur de ressources (<code>resmon</code>), onglet Réseau, donne le même résultat, si vous préférez le voir ainsi.</p>
           </div>
           <p class="s-beviser"><b>Prouve&nbsp;:</b> que le logiciel, tel qu’il tourne chez vous, n’a aucune issue vers l’extérieur. C’est le contrôle auquel nous faisons nous-mêmes le plus confiance.</p>
         </section>
@@ -252,7 +292,7 @@ nm -u "/Applications/C'est Clair.app/Contents/MacOS/cestclair" | grep -E '_(bind
             <div><dt>PDF</dt><dd>PDFium 158, pdf.js 4.10.38 et pdf-lib 1.17.1. pdf.js fonctionne sans <code>eval</code>.</dd></div>
             <div><dt>Word</dt><dd>JSZip 3.10.1 et docx-preview 0.4.1.</dd></div>
             <div><dt>Excel</dt><dd>SheetJS (xlsx) 0.18.5.</dd></div>
-            <div><dt>Images</dt><dd>Apple Vision, intégré à macOS.</dd></div>
+            <div><dt>Images</dt><dd>Apple Vision sur Mac. La reconnaissance de texte intégrée à Windows et Tesseract sous Windows, Tesseract sous Linux.</dd></div>
             <div><dt>Phrases</dt><dd>distilbert-base-fr-cased ajusté, exécuté avec tract-onnx 0.23.</dd></div>
           </dl>
           <p class="s-beviser"><b>Prouve&nbsp;:</b> qu’il n’y a dans le logiciel aucun code capable d’envoyer quoi que ce soit. Avec le code source, vous pouvez le compiler vous-mêmes et comparer.</p>
@@ -266,6 +306,20 @@ nm -u "/Applications/C'est Clair.app/Contents/MacOS/cestclair" | grep -E '_(bind
             <p>Le pare-feu intégré à macOS ne bloque que le trafic entrant. Indiquez le chemin dans une règle du filtre réseau de votre solution MDM, ou dans LuLu ou Little Snitch&nbsp;:</p>
             <div class="cmd" data-hvor="Chemin"><pre>/Applications/C'est Clair.app/Contents/MacOS/cestclair</pre></div>
           </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Le programme d’installation (.exe) tente de créer la règle lui-même. Voici comment vérifier qu’elle existe&nbsp;:</p>
+            <div class="cmd"><pre>Get-NetFirewallRule -DisplayName "CestClair*" | Get-NetFirewallApplicationFilter</pre></div>
+            <p class="s-fasit"><b>Résultat attendu&nbsp;:</b> une règle nommée «&nbsp;CestClair - bloquer les sorties&nbsp;» avec le chemin de <code>cestclair.exe</code>.</p>
+            <p>Si elle manque, créez-la ainsi, dans PowerShell en tant qu’administrateur&nbsp;:</p>
+            <div class="cmd"><pre>New-NetFirewallRule -DisplayName "CestClair - bloquer les sorties" `
+  -Direction Outbound -Action Block -Profile Any `
+  -Program (Get-Process cestclair).Path</pre></div>
+            <p>
+              Exécutez la commande pendant que C’est Clair est ouvert&nbsp;: elle trouve alors le chemin elle-même. Ajoutez aussi <code>tesseract.exe</code>,
+              qui se trouve dans le dossier <code>bundled</code> sous C’est Clair. C’est un exécutable distinct.
+              Avec Intune&nbsp;: créez les mêmes règles dans une stratégie de pare-feu, sous Sécurité du point de terminaison.
+            </p>
+          </div>
           <p>Dès que la règle vient de vous, vous n’avez à nous croire sur rien de ce qui précède.</p>
         </section>
 
@@ -274,7 +328,7 @@ nm -u "/Applications/C'est Clair.app/Contents/MacOS/cestclair" | grep -E '_(bind
           <h2>Ce qui se trouve sur le disque</h2>
           <p>
             C’est Clair conserve toutes ses données dans un dossier par utilisateur&nbsp;:
-            <code>~/Library/Application Support/fr.cestclair.app/</code>. Les noms des dossiers et des fichiers à l’intérieur sont norvégiens dans cette version.
+            <code>~/Library/Application Support/fr.cestclair.app/</code> sur Mac, <code>%APPDATA%\fr.cestclair.app\</code> sous Windows. Les noms des dossiers et des fichiers à l’intérieur sont norvégiens dans cette version.
           </p>
           <dl class="s-tabell">
             <div>
@@ -283,7 +337,7 @@ nm -u "/Applications/C'est Clair.app/Contents/MacOS/cestclair" | grep -E '_(bind
             </div>
             <div>
               <dt><code>pseudonym/</code></dt>
-              <dd>La clé (<code>nokkel.nokkelring</code>), les anciennes clés mises de côté et le carnet de numéros. Le carnet relie les codes à des numéros et ne contient aucun nom.</dd>
+              <dd>La clé (<code>nokkel.nokkelring</code> sur Mac, <code>nokkel.dpapi</code> sous Windows), les anciennes clés mises de côté et le carnet de numéros. Le carnet relie les codes à des numéros et ne contient aucun nom.</dd>
             </div>
             <div>
               <dt><code>secure-enclave.nokkel</code></dt>
@@ -308,15 +362,15 @@ nm -u "/Applications/C'est Clair.app/Contents/MacOS/cestclair" | grep -E '_(bind
           </dl>
           <h3>Comment les clés sont protégées</h3>
           <p>
-            La clé est enveloppée par une autre clé qui se trouve dans le trousseau (service
-            <code>no.klart.pseudonym.fr.cestclair.app</code>), et par la Secure Enclave lorsqu’il y en a une.
+            Sur Mac, la clé est enveloppée par une autre clé qui se trouve dans le trousseau (service
+            <code>no.klart.pseudonym.fr.cestclair.app</code>), et par la Secure Enclave lorsqu’il y en a une. Sous Windows, c’est DPAPI pour l’utilisateur.
             Cela protège contre un autre utilisateur et contre un disque égaré. Cela ne protège pas contre un logiciel qui
-            tourne sous le même utilisateur. C’est la limite du trousseau, et vous devez la connaître.
+            tourne sous le même utilisateur. C’est la limite du trousseau comme de DPAPI, et vous devez la connaître.
           </p>
           <h3>Sauvegarde et recherche</h3>
           <p>
             <code>prosjekter/</code>, <code>sikkerhetskopier/</code> et <code>revisjon/</code> sont exclus de Spotlight et de
-            Time Machine. <code>ror/</code> et <code>pseudonym/</code> sont inclus dans Time Machine. Ils sont
+            Time Machine (et de la recherche Windows). <code>ror/</code> et <code>pseudonym/</code> sont inclus dans Time Machine. Ils sont
             chiffrés, et le fichier de clé ne peut être ouvert qu’avec le trousseau de l’ordinateur d’où il vient.
           </p>
           <h3>Ce que C’est Clair installe dans le système</h3>
@@ -334,6 +388,9 @@ rm -f ~/Library/Preferences/fr.cestclair.app.plist
 rm -rf ~/Library/Services/*C\'est\ Clair*.workflow
 security delete-generic-password -s no.klart.pseudonym.fr.cestclair.app</pre></div>
           </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Désinstallez le logiciel, puis supprimez <code>%APPDATA%\fr.cestclair.app\</code>, <code>%LOCALAPPDATA%\fr.cestclair.app\</code> et <code>%ProgramData%\CestClair\</code>.</p>
+          </div>
           <p class="s-notis varsel">
             <b>Mettez d’abord la clé en lieu sûr.</b> Si le dossier de données est supprimé avant que la clé ait été notée ou enregistrée comme fichier de clé,
             plus aucune copie avec des codes ne pourra être restaurée.
@@ -344,12 +401,13 @@ security delete-generic-password -s no.klart.pseudonym.fr.cestclair.app</pre></d
         <section class="s-del" id="styring">
           <h2>Piloter C’est Clair de façon centralisée</h2>
           <p>
-            Un seul fichier détermine ce que l’utilisateur choisit sinon lui-même. Déployez-le par MDM ou par script.
-            L’emplacement exige des droits d’administrateur en écriture, de sorte que l’utilisateur ne peut pas lever ce que vous avez verrouillé.
+            Un seul fichier détermine ce que l’utilisateur choisit sinon lui-même. Déployez-le par MDM, Intune, stratégie de groupe ou script.
+            Les deux emplacements exigent des droits d’administrateur en écriture, de sorte que l’utilisateur ne peut pas lever ce que vous avez verrouillé.
             Le nom du fichier et des champs est norvégien dans cette version.
           </p>
           <dl class="s-tabell">
             <div><dt>Mac</dt><dd><code>/Library/Application Support/CestClair/retningslinjer.json</code></dd></div>
+            <div><dt>Windows</dt><dd><code>%ProgramData%\CestClair\retningslinjer.json</code></dd></div>
           </dl>
           <div class="cmd" data-hvor="retningslinjer.json"><pre>{
   "versjon": 1,
@@ -441,6 +499,7 @@ security delete-generic-password -s no.klart.pseudonym.fr.cestclair.app</pre></d
             que vous indiquez. Rien n’ouvre de port.
           </p>
           <div class="cmd"><pre>CESTCLAIR="/Applications/C'est Clair.app/Contents/MacOS/cestclair"
+# Windows : "C:\Program Files\C’est Clair\cestclair.exe"   Linux : /usr/bin/cestclair
 
 "$CESTCLAIR" scan  ~/Dossiers/2026-114                     # analyser à l’avance
 "$CESTCLAIR" clean ~/Dossiers/2026-114 --out ~/Pour-IA     # créer les copies occultées
@@ -466,7 +525,7 @@ security delete-generic-password -s no.klart.pseudonym.fr.cestclair.app</pre></d
           <dl class="s-tabell">
             <div><dt>La clé</dt><dd>32 octets aléatoires fournis par le système d’exploitation. Sous-clés par HKDF-SHA256.</dd></div>
             <div><dt>Les codes</dt><dd>Qui c’est&nbsp;: HMAC-SHA256. Le texte d’origine&nbsp;: AES-SIV (RFC 5297), déterministe et authentifié.</dd></div>
-            <div><dt>La clé sur le disque</dt><dd>Le trousseau et la Secure Enclave.</dd></div>
+            <div><dt>La clé sur le disque</dt><dd>Mac&nbsp;: le trousseau et la Secure Enclave. Windows&nbsp;: DPAPI.</dd></div>
             <div><dt>Fichier de clé</dt><dd>Argon2id (64&nbsp;Mio, 3&nbsp;passes) et AES-256-GCM.</dd></div>
             <div><dt>Les 24 mots</dt><dd>Une clé de 256&nbsp;bits et une somme de contrôle de 8&nbsp;bits, 11&nbsp;bits par mot, tirés d’une liste de 2&nbsp;048 mots norvégiens.</dd></div>
             <div><dt>Enregistrement</dt><dd>X25519.</dd></div>
@@ -482,9 +541,10 @@ security delete-generic-password -s no.klart.pseudonym.fr.cestclair.app</pre></d
           <h2>Configuration requise</h2>
           <dl class="s-tabell">
             <div><dt>Mac</dt><dd>macOS&nbsp;13 ou plus récent. Processeurs Intel et Apple dans le même paquet.</dd></div>
-            <div><dt>Windows et Linux</dt><dd>Les versions arrivent bientôt.</dd></div>
+            <div><dt>Windows</dt><dd>Windows&nbsp;10 ou&nbsp;11, 64&nbsp;bits avec Intel ou AMD. Installation pour tous les utilisateurs, par le .exe.</dd></div>
+            <div><dt>Linux</dt><dd>Paquet .deb <code>cestclair</code> pour Debian, Ubuntu et dérivés, en amd64 ou arm64. Il dépend de <code>tesseract-ocr</code>.</dd></div>
             <div><dt>Mémoire</dt><dd>Nous recommandons 8&nbsp;Go dans l’ordinateur.</dd></div>
-            <div><dt>Disque</dt><dd>Environ 373&nbsp;Mo une fois installé. S’y ajoutent les sauvegardes et ce que C’est Clair mémorise des dossiers.</dd></div>
+            <div><dt>Disque</dt><dd>Environ 373&nbsp;Mo une fois installé sur le Mac. S’y ajoutent les sauvegardes et ce que C’est Clair mémorise des dossiers.</dd></div>
             <div><dt>Carte graphique</dt><dd>Inutile. Tout tourne sur le processeur.</dd></div>
             <div><dt>Réseau</dt><dd>Inutile, que ce soit pour l’installation, l’activation ou l’utilisation.</dd></div>
           </dl>

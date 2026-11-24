@@ -11,9 +11,10 @@
   - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
     Vi vil heller høre det fra deg enn fra en kunde.
 
-  Den italienske utgaven (24.11.2026). Bare Mac-bygget finnes ennå, så siden viser bare Mac;
-  Windows og Linux står som «in arrivo». Mac-fasitene (punkt 1, 2, 3 og 5) er kjørt mot
+  Den italienske utgaven (24.11.2026). Mac-fasitene (punkt 1, 2, 3 og 5) er kjørt mot
   Chiarissimo_0.1.0_universal.dmg fra 24.11.2026 (Klart-it 334ba185, signert og notarisert).
+  Windows og Linux kom med samme dag (Klart-it ae510c73), etter alles-klar/til-it.html; navnene er
+  hentet fra tauri.it.conf.json og windows/brannmur-it.nsh, Windows-fasitene er ikke kjørt.
   Feltnavn, grupper, kommandoer og loggfelt er de norske/engelske, som i FrostCopy: det er slik
   den italienske utgaven leser dem (retningslinjer.rs, integrasjon.rs, revisjon.rs).
 -->
@@ -28,7 +29,8 @@
       content="Le verifiche che mostrano che Chiarissimo non comunica con la rete, che cosa c'è nel pacchetto e sul disco, e come l'IT gestisce Chiarissimo in modo centralizzato. Con i comandi, i risultati attesi e ciò che ogni verifica dimostra."
     />
     <meta name="robots" content="noindex" />
-    <!-- Ingen skrifter, bilder eller skript utenfra. Skriptene kopierer kommandoene. -->
+    <!-- Ingen skrifter, bilder eller skript utenfra. De to skriptene bytter mellom Mac og
+         Windows og kopierer kommandoene. Uten skript vises begge systemene, og alt kan markeres. -->
     <script src="til-it-tidlig.js"></script>
     <link rel="stylesheet" href="fonts.css" />
     <link rel="stylesheet" href="sider.css" />
@@ -87,10 +89,13 @@
           </ul>
         </section>
 
-        <p class="s-notis">
-          <b>Per ora Chiarissimo è disponibile per Mac.</b> Le versioni per Windows e Linux sono in arrivo; i comandi per
-          questi sistemi compariranno qui quando le versioni saranno disponibili.
-        </p>
+        <div class="s-velg">
+          <p id="velg-tittel">Quale sistema sta verificando?</p>
+          <div class="s-velg-knapper" role="group" aria-labelledby="velg-tittel">
+            <button type="button" data-velg="mac" aria-pressed="false">Mac</button>
+            <button type="button" data-velg="windows" aria-pressed="false">Windows</button>
+          </div>
+        </div>
         <p class="s-skjult" id="melding" role="status" aria-live="polite"></p>
 
         <!-- ============ 1 ============ -->
@@ -99,9 +104,17 @@
           <div class="os" data-os="mac" data-navn="Mac">
             <div class="cmd"><pre>shasum -a 256 ~/Downloads/Chiarissimo*.dmg</pre></div>
           </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-FileHash "$HOME\Downloads\Chiarissimo*.exe"</pre></div>
+          </div>
+          <div class="cmd" data-hvor="Linux"><pre>sha256sum ~/Scaricati/Chiarissimo_*.deb</pre></div>
           <p class="s-fasit"><b>Risultato atteso:</b> la lunga sequenza di cifre e lettere coincide con il checksum indicato qui per il file.</p>
+          <!-- Fra SHA256.txt i Klart-utgivelse/{mac,windows,linux}-it-2026-11-24. -->
           <dl class="s-tabell">
             <div><dt>Chiarissimo.dmg</dt><dd><code>a1a85e19ca6012a0<wbr />e0cde0a64df98fae<wbr />985ae5777a3c9072<wbr />dd6cb09121f56292</code></dd></div>
+            <div><dt>Chiarissimo.exe</dt><dd><code>2043aa8626fa0ee4<wbr />35a70728c7dd60f9<wbr />bfdeda7f2ecf7ae9<wbr />11de4f8dcd44f6fc</code></dd></div>
+            <div><dt>Chiarissimo_0.1.0_amd64.deb</dt><dd><code>0a7c1eae0fe67552<wbr />269717e2bf8cc1c3<wbr />2cd82113e47b8dc5<wbr />aea6549001f22914</code></dd></div>
+            <div><dt>Chiarissimo_0.1.0_arm64.deb</dt><dd><code>2893371d4f180d32<wbr />153735d2d8340cbd<wbr />26a10b2d5bd166e6<wbr />cee9e8b371b94ef5</code></dd></div>
           </dl>
           <p class="s-beviser"><b>Dimostra:</b> che il file è quello che abbiamo pubblicato. Nient'altro. Un checksum non dice nulla su ciò che il programma fa.</p>
         </section>
@@ -122,6 +135,11 @@
             <div class="cmd"><pre>codesign -dv /Applications/Chiarissimo.app/Contents/MacOS/klart-hvelv 2>&amp;1 | grep TeamIdentifier
 codesign -dv /Applications/Chiarissimo.app/Contents/Resources/bundled/engine/pdfium/libpdfium.dylib 2>&amp;1 | grep TeamIdentifier</pre></div>
             <p class="s-fasit"><b>Risultato atteso:</b> lo stesso <code>TeamIdentifier=N5BKVM258S</code> per entrambi.</p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>La versione per Windows è firmata da ESBJUG CONSULT. Il comando restituisce <code>Valid</code> e mostra il nome nel certificato.</p>
+            <div class="cmd"><pre>Get-AuthenticodeSignature "$HOME\Downloads\Chiarissimo*.exe" | Format-List Status, SignerCertificate</pre></div>
+            <p class="s-fasit"><b>Risultato atteso:</b> <code>Valid</code> e il nostro nome in <code>SignerCertificate</code>.</p>
           </div>
           <p class="s-beviser">
             <b>Dimostra:</b> che il codice è nostro e non è stato modificato in seguito. È la verifica contro una copia ricostruita.
@@ -148,6 +166,13 @@ codesign -dv /Applications/Chiarissimo.app/Contents/Resources/bundled/engine/pdf
             </p>
             <p class="s-beviser"><b>Dimostra:</b> che il programma non può controllare altri programmi, non può caricare codice esterno e non ha accesso a iCloud. Sulla rete, da sola, non dimostra nulla.</p>
           </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>
+              Windows non prevede autorizzazioni di questo tipo per i normali programmi desktop. Un programma installato
+              con un file .exe non chiede l'accesso alla rete. Lo ha. Per questo qui non c'è alcun comando.
+            </p>
+            <p class="s-beviser"><b>Dimostra:</b> su Windows, nulla. Il blocco è la regola del firewall più sotto, e la prova che il programma tace è il punto 4.</p>
+          </div>
         </section>
 
         <!-- ============ 4 ============ -->
@@ -171,6 +196,23 @@ codesign -dv /Applications/Chiarissimo.app/Contents/Resources/bundled/engine/pdf
               Attenzione a <code>-a</code>. Senza, <code>lsof</code> combina i criteri con «oppure» e nell'elenco compare tutto il
               traffico del computer. LuLu o Little Snitch danno lo stesso risultato, se preferisce vederlo così.
             </p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-Process chiarissimo, tesseract -ErrorAction SilentlyContinue |
+ForEach-Object {
+  "$($_.ProcessName) è in esecuzione (processo $($_.Id))"
+  Get-NetTCPConnection -OwningProcess $_.Id -ErrorAction SilentlyContinue
+  Get-NetUDPEndpoint -OwningProcess $_.Id -ErrorAction SilentlyContinue
+}</pre></div>
+            <p class="s-fasit"><b>Risultato atteso:</b> solo le righe che dicono che <code>chiarissimo</code> è in esecuzione, e <code>tesseract</code> mentre Chiarissimo legge un'immagine. Nessuna tabella con indirizzi e porte.</p>
+            <p>
+              La finestra di Chiarissimo è disegnata da WebView2, che è di Microsoft e fa parte di Windows. Gira in
+              processi propri, <code>msedgewebview2.exe</code>. Il contenuto della finestra non può scaricare nulla:
+              lo impediscono le regole del punto 5. WebView2 stesso può però comunicare con Microsoft, ad esempio per i propri
+              aggiornamenti. È traffico di Microsoft, e non contiene nulla di Chiarissimo né dei documenti.
+              Se vuole il silenzio completo, blocchi entrambi nel firewall.
+            </p>
+            <p>Monitoraggio risorse (<code>resmon</code>), scheda Rete, dà lo stesso risultato, se preferisce vederlo così.</p>
           </div>
           <p class="s-beviser"><b>Dimostra:</b> che il programma, così come gira da Lei, non ha alcuna via d'uscita. È la verifica di cui ci fidiamo di più.</p>
         </section>
@@ -257,7 +299,7 @@ nm -u /Applications/Chiarissimo.app/Contents/MacOS/chiarissimo | grep -E '_(bind
             <div><dt>PDF</dt><dd>PDFium 158, pdf.js 4.10.38 e pdf-lib 1.17.1. pdf.js gira senza <code>eval</code>.</dd></div>
             <div><dt>Word</dt><dd>JSZip 3.10.1 e docx-preview 0.4.1.</dd></div>
             <div><dt>Excel</dt><dd>SheetJS (xlsx) 0.18.5.</dd></div>
-            <div><dt>Immagini</dt><dd>Apple Vision su Mac.</dd></div>
+            <div><dt>Immagini</dt><dd>Apple Vision su Mac. Il riconoscimento del testo integrato in Windows e Tesseract su Windows, Tesseract su Linux.</dd></div>
             <div><dt>Frasi</dt><dd>distilbert-base-it-cased addestrato per Chiarissimo, eseguito con tract-onnx 0.23.</dd></div>
           </dl>
           <p class="s-beviser"><b>Dimostra:</b> che nel programma non c'è codice in grado di inviare qualcosa. Con il codice sorgente può compilarlo da sé e confrontare.</p>
@@ -271,6 +313,20 @@ nm -u /Applications/Chiarissimo.app/Contents/MacOS/chiarissimo | grep -E '_(bind
             <p>Il firewall integrato in macOS blocca solo il traffico in entrata. Inserisca il percorso in una regola del filtro di rete del Suo MDM, oppure in LuLu o Little Snitch:</p>
             <div class="cmd" data-hvor="Percorso"><pre>/Applications/Chiarissimo.app/Contents/MacOS/chiarissimo</pre></div>
           </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Il programma di installazione (.exe) prova a creare la regola da sé. Ecco come vedere se c'è:</p>
+            <div class="cmd"><pre>Get-NetFirewallRule -DisplayName "Chiarissimo*" | Get-NetFirewallApplicationFilter</pre></div>
+            <p class="s-fasit"><b>Risultato atteso:</b> una regola chiamata «Chiarissimo - blocca uscite» con il percorso di <code>chiarissimo.exe</code>.</p>
+            <p>Se manca, la crei così, in PowerShell come amministratore:</p>
+            <div class="cmd"><pre>New-NetFirewallRule -DisplayName "Chiarissimo - blocca uscite" `
+  -Direction Outbound -Action Block -Profile Any `
+  -Program (Get-Process chiarissimo).Path</pre></div>
+            <p>
+              Esegua il comando mentre Chiarissimo è aperto, così trova da sé il percorso. Aggiunga anche <code>tesseract.exe</code>,
+              che si trova nella cartella <code>bundled</code> sotto Chiarissimo. È un file eseguibile a sé.
+              Con Intune: crei le stesse regole in un criterio firewall in Sicurezza degli endpoint.
+            </p>
+          </div>
           <p>Quando la regola è Sua, non deve credere sulla parola a nulla di quanto scritto sopra.</p>
         </section>
 
@@ -279,7 +335,8 @@ nm -u /Applications/Chiarissimo.app/Contents/MacOS/chiarissimo | grep -E '_(bind
           <h2>Che cosa c'è sul disco</h2>
           <p>
             Chiarissimo salva tutti i propri dati in una cartella per utente. Su Mac è
-            <code>~/Library/Application Support/it.chiarissimo.app/</code>.
+            <code>~/Library/Application Support/it.chiarissimo.app/</code>, su Windows
+            <code>%APPDATA%\it.chiarissimo.app\</code>, su Linux <code>~/.local/share/it.chiarissimo.app/</code>.
           </p>
           <dl class="s-tabell">
             <div>
@@ -288,7 +345,7 @@ nm -u /Applications/Chiarissimo.app/Contents/MacOS/chiarissimo | grep -E '_(bind
             </div>
             <div>
               <dt><code>pseudonym/</code></dt>
-              <dd>La chiave (<code>nokkel.nokkelring</code>), le chiavi precedenti messe da parte e il registro dei numeri. Il registro dei numeri associa i codici a numeri e non contiene nomi.</dd>
+              <dd>La chiave (<code>nokkel.nokkelring</code> su Mac e Linux, <code>nokkel.dpapi</code> su Windows), le chiavi precedenti messe da parte e il registro dei numeri. Il registro dei numeri associa i codici a numeri e non contiene nomi.</dd>
             </div>
             <div>
               <dt><code>secure-enclave.nokkel</code></dt>
@@ -315,13 +372,14 @@ nm -u /Applications/Chiarissimo.app/Contents/MacOS/chiarissimo | grep -E '_(bind
           <p>
             Su Mac la chiave è avvolta da un'altra chiave che si trova nel portachiavi (servizio
             <code>no.klart.pseudonym.it.chiarissimo.app</code>) e, se presente, dalla Secure Enclave.
+            Su Linux si usa il portachiavi dell'utente tramite Secret Service (GNOME Keyring o KWallet), su Windows DPAPI per l'utente.
             Ciò protegge da altri utenti e da un disco smarrito. Non protegge da un programma che gira
-            con lo stesso utente. È il limite del portachiavi, ed è bene che lo conosca.
+            con lo stesso utente. È il limite sia del portachiavi sia di DPAPI, ed è bene che lo conosca.
           </p>
           <h3>Backup e ricerca</h3>
           <p>
             <code>prosjekter/</code>, <code>sikkerhetskopier/</code> e <code>revisjon/</code> sono esclusi da Spotlight e
-            Time Machine. <code>ror/</code> e <code>pseudonym/</code> sono inclusi in Time Machine. Sono
+            Time Machine (e dalla ricerca di Windows). <code>ror/</code> e <code>pseudonym/</code> sono inclusi in Time Machine. Sono
             cifrati, e il file della chiave si apre solo con il portachiavi del computer da cui proviene.
           </p>
           <h3>Che cosa installa Chiarissimo nel sistema</h3>
@@ -339,6 +397,9 @@ rm -f ~/Library/Preferences/it.chiarissimo.app.plist
 rm -rf ~/Library/Services/*Chiarissimo.workflow
 security delete-generic-password -s no.klart.pseudonym.it.chiarissimo.app</pre></div>
           </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Disinstalli il programma ed elimini poi <code>%APPDATA%\it.chiarissimo.app\</code>, <code>%LOCALAPPDATA%\it.chiarissimo.app\</code> e <code>%ProgramData%\Chiarissimo\</code>.</p>
+          </div>
           <p class="s-notis varsel">
             <b>Metta prima al sicuro la chiave.</b> Se la cartella dei dati viene eliminata prima che la chiave sia stata annotata o salvata come file della chiave,
             nessuna copia con codici potrà più essere ripristinata.
@@ -349,12 +410,13 @@ security delete-generic-password -s no.klart.pseudonym.it.chiarissimo.app</pre><
         <section class="s-del" id="styring">
           <h2>Gestire Chiarissimo centralmente</h2>
           <p>
-            Un unico file stabilisce ciò che altrimenti sceglie l'utente. Lo distribuisca tramite MDM o con uno script.
-            Per scrivere nella cartella servono i diritti di amministratore, così l'utente non può sbloccare ciò che Lei ha bloccato.
+            Un unico file stabilisce ciò che altrimenti sceglie l'utente. Lo distribuisca tramite MDM, Intune, Criteri di gruppo o con uno script.
+            Per scrivere in entrambe le cartelle servono i diritti di amministratore, così l'utente non può sbloccare ciò che Lei ha bloccato.
             In questa versione il nome del file e i nomi dei campi sono in norvegese.
           </p>
           <dl class="s-tabell">
             <div><dt>Mac</dt><dd><code>/Library/Application Support/Chiarissimo/retningslinjer.json</code></dd></div>
+            <div><dt>Windows</dt><dd><code>%ProgramData%\Chiarissimo\retningslinjer.json</code></dd></div>
           </dl>
           <div class="cmd" data-hvor="retningslinjer.json"><pre>{
   "versjon": 1,
@@ -446,6 +508,7 @@ security delete-generic-password -s no.klart.pseudonym.it.chiarissimo.app</pre><
             che indica Lei. Nulla apre una porta.
           </p>
           <div class="cmd"><pre>CHIARISSIMO=/Applications/Chiarissimo.app/Contents/MacOS/chiarissimo
+# Windows: "C:\Program Files\Chiarissimo\chiarissimo.exe"   Linux: /usr/bin/chiarissimo
 
 $CHIARISSIMO scan ~/Pratiche/2026-114                          # analisi preventiva
 $CHIARISSIMO clean ~/Pratiche/2026-114 --out ~/Per-IA          # creare copie oscurate
@@ -470,7 +533,7 @@ $CHIARISSIMO forget ~/Pratiche/2026-114                        # dimenticare tut
           <dl class="s-tabell">
             <div><dt>La chiave</dt><dd>32 byte casuali forniti dal sistema operativo. Sottochiavi con HKDF-SHA256.</dd></div>
             <div><dt>I codici</dt><dd>Chi è: HMAC-SHA256. Il testo originale: AES-SIV (RFC 5297), deterministico e autenticato.</dd></div>
-            <div><dt>La chiave sul disco</dt><dd>Portachiavi e Secure Enclave del Mac.</dd></div>
+            <div><dt>La chiave sul disco</dt><dd>Mac: portachiavi e Secure Enclave. Windows: DPAPI. Linux: il portachiavi dell'utente (Secret Service).</dd></div>
             <div><dt>File della chiave</dt><dd>Argon2id (64 MiB, 3 passaggi) e AES-256-GCM.</dd></div>
             <div><dt>Le 24 parole</dt><dd>Chiave di 256 bit e checksum di 8 bit, 11 bit per parola, da un elenco di 2048 parole norvegesi.</dd></div>
             <div><dt>Adesione</dt><dd>X25519.</dd></div>
@@ -486,9 +549,10 @@ $CHIARISSIMO forget ~/Pratiche/2026-114                        # dimenticare tut
           <h2>Requisiti di sistema</h2>
           <dl class="s-tabell">
             <div><dt>Mac</dt><dd>macOS 13 o successivo. Processori Intel e Apple nello stesso pacchetto.</dd></div>
-            <div><dt>Windows e Linux</dt><dd>In arrivo.</dd></div>
+            <div><dt>Windows</dt><dd>Windows 10 o 11, 64 bit con Intel o AMD. Installazione per tutti gli utenti, con il file .exe firmato da ESBJUG CONSULT.</dd></div>
+            <div><dt>Linux</dt><dd>Pacchetto .deb <code>chiarissimo</code> per amd64 e arm64, per esempio Debian 12 o Ubuntu 22.04 e successivi. Richiede <code>libwebkit2gtk-4.1-0</code>, <code>libgtk-3-0</code>, <code>tesseract-ocr</code> e <code>xdg-utils</code>, che apt installa insieme al pacchetto.</dd></div>
             <div><dt>Memoria</dt><dd>Chiarissimo usa più memoria mentre il modello delle frasi è caricato. Consigliamo 8 GB nel computer.</dd></div>
-            <div><dt>Disco</dt><dd>Circa 376 MB installato su Mac. A ciò si aggiungono i backup e ciò che Chiarissimo ricorda delle cartelle.</dd></div>
+            <div><dt>Disco</dt><dd>Circa 376 MB installato su Mac, circa 350 MB su Linux. A ciò si aggiungono i backup e ciò che Chiarissimo ricorda delle cartelle.</dd></div>
             <div><dt>Scheda grafica</dt><dd>Non necessaria. Tutto gira sul processore.</dd></div>
             <div><dt>Rete</dt><dd>Non necessaria, né per l'installazione, né per l'attivazione, né per l'uso.</dd></div>
           </dl>
@@ -507,7 +571,7 @@ $CHIARISSIMO forget ~/Pratiche/2026-114                        # dimenticare tut
             Rispondiamo personalmente e preferiamo saperlo da Lei che da un cliente.
             Veda anche <a href="/.well-known/security.txt">security.txt</a>.
           </p>
-          <p class="s-dato">Ultima modifica: 24 novembre 2026. I risultati attesi per Mac ai punti 1, 2, 3 e 5 sono stati verificati sulla build del 24 novembre 2026.</p>
+          <p class="s-dato">Ultima modifica: 24 novembre 2026. I risultati attesi per Mac ai punti 1, 2, 3 e 5 sono stati verificati sulla build del 24 novembre 2026. Le versioni per Windows e Linux sono dello stesso giorno.</p>
         </section>
       </main>
     </div>

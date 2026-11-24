@@ -687,9 +687,12 @@ function nedlastingskort(tekst, kort, knapper) {
   if (!tekst || !kort) return;
   var SIMULER = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) || /[?&]nedlasting=sim\b/.test(location.search);
 
-  // Bare Mac-bygget finnes for Chiarissimo (24.11.2026). Størrelsen brukes bare av simuleringen lokalt.
   var SYSTEM = {
+    windows: { navn: "Windows", fil: "Chiarissimo.exe", mb: 266, neste: "Apra il file per installare Chiarissimo." },
     mac: { navn: "Mac", fil: "Chiarissimo.dmg", mb: 285, neste: "Apra il file e trascini Chiarissimo nella cartella «Applicazioni»." },
+    linux: { navn: "Linux", fil: "Chiarissimo_0.1.0_amd64.deb", mb: 264, neste: "Apra il file per installare Chiarissimo." },
+    // ARM64-pakken: størrelsen her brukes bare av simuleringen lokalt; på nettet kommer den fra content-length.
+    "linux-arm": { navn: "Linux (ARM64)", fil: "Chiarissimo_0.1.0_arm64.deb", mb: 264, neste: "Apra il file per installare Chiarissimo." },
   };
   var merke = kort.querySelector("[data-merke]");
   var prosentEl = kort.querySelector("[data-prosent]");

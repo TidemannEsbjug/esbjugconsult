@@ -10,8 +10,8 @@
     uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
   - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
 
-  Den polske utgaven finnes foreløpig bare for Mac, så siden viser bare Mac.
-  Navn og stier er hentet fra Klart-pl (claude/pl) 24.11.2026.
+  Mac, Windows og Linux som på den tyske siden (24.11.2026). Navn, stier og brannmurregelen er
+  hentet fra Klart-pl (claude/pl dbfd45ae), sjekksummene fra Klart-utgivelse/*-pl-2026-11-24.
 -->
 <html lang="pl">
   <head>
@@ -83,7 +83,13 @@
           </ul>
         </section>
 
-        <p class="s-notis">Wszystko Jasne jest na razie dostępne na Maca. Wersje na Windows i Linux pojawią się wkrótce, a kontrole dla tych systemów dodamy razem z nimi.</p>
+        <div class="s-velg">
+          <p id="velg-tittel">Który system Państwo sprawdzają?</p>
+          <div class="s-velg-knapper" role="group" aria-labelledby="velg-tittel">
+            <button type="button" data-velg="mac" aria-pressed="false">Mac</button>
+            <button type="button" data-velg="windows" aria-pressed="false">Windows</button>
+          </div>
+        </div>
         <p class="s-skjult" id="melding" role="status" aria-live="polite"></p>
 
         <!-- ============ 1 ============ -->
@@ -92,9 +98,16 @@
           <div class="os" data-os="mac" data-navn="Mac">
             <div class="cmd"><pre>shasum -a 256 ~/Downloads/Wszystko*Jasne*.dmg</pre></div>
           </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-FileHash "$HOME\Downloads\Wszystko*Jasne*.exe"</pre></div>
+          </div>
+          <p>Na Linuksie: <code>sha256sum ~/Pobrane/Wszystko-Jasne_0.1.0_*.deb</code></p>
           <p class="s-fasit"><b>Oczekiwany wynik:</b> długi ciąg cyfr i liter zgadza się z sumą kontrolną, którą opublikowaliśmy dla tego wydania.</p>
           <dl class="s-tabell">
             <div><dt>Wszystko Jasne.dmg</dt><dd><code>aa46a3333a1e72b3<wbr />28b7d3bd154b31dd<wbr />82eab18a8816668a<wbr />415ae8ee73208c93</code></dd></div>
+            <div><dt>Wszystko Jasne.exe</dt><dd><code>945de1c29ce14482<wbr />62232bdf3c621c59<wbr />58a36d70870eefec<wbr />deaf0d73a8ed8352</code></dd></div>
+            <div><dt>Wszystko-Jasne_0.1.0_amd64.deb</dt><dd><code>0f3a199870634a61<wbr />b9eb3e5a41e1516f<wbr />057a9da93ef9c51e<wbr />7326a736618c7e5c</code></dd></div>
+            <div><dt>Wszystko-Jasne_0.1.0_arm64.deb</dt><dd><code>5d2365e1744307d3<wbr />56578ec8d6c5d44e<wbr />ec709f66fbc21b3f<wbr />58b62e355e81d1fa</code></dd></div>
           </dl>
           <p class="s-beviser"><b>Dowodzi:</b> że plik jest tym, który opublikowaliśmy. Niczego więcej. Suma kontrolna nie mówi nic o tym, co program robi.</p>
         </section>
@@ -115,6 +128,11 @@
             <div class="cmd"><pre>codesign -dv "/Applications/Wszystko Jasne.app/Contents/MacOS/klart-hvelv" 2>&amp;1 | grep TeamIdentifier
 codesign -dv "/Applications/Wszystko Jasne.app/Contents/Resources/bundled/engine/pdfium/libpdfium.dylib" 2>&amp;1 | grep TeamIdentifier</pre></div>
             <p class="s-fasit"><b>Oczekiwany wynik:</b> w obu przypadkach ten sam <code>TeamIdentifier=N5BKVM258S</code>.</p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Wersja na Windows jest podpisana przez ESBJUG CONSULT. Polecenie wypisuje <code>Valid</code> i pokazuje nazwę w certyfikacie.</p>
+            <div class="cmd"><pre>Get-AuthenticodeSignature "$HOME\Downloads\Wszystko*Jasne*.exe" | Format-List Status, SignerCertificate</pre></div>
+            <p class="s-fasit"><b>Oczekiwany wynik:</b> <code>Valid</code> i nasza nazwa w <code>SignerCertificate</code>.</p>
           </div>
           <p class="s-beviser">
             <b>Dowodzi:</b> że kod pochodzi od nas i nie został później zmieniony. To kontrola przeciwko przerobionej kopii.
@@ -141,6 +159,13 @@ codesign -dv "/Applications/Wszystko Jasne.app/Contents/Resources/bundled/engine
             </p>
             <p class="s-beviser"><b>Dowodzi:</b> że program nie może sterować innymi programami, ładować obcego kodu ani sięgać do iCloud. Sam w sobie nie dowodzi niczego o sieci.</p>
           </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>
+              Windows nie ma odpowiednich uprawnień dla zwykłych programów na komputer. Program zainstalowany z pliku .exe
+              nie prosi o dostęp do sieci. Po prostu go ma. Dlatego nie ma tu polecenia.
+            </p>
+            <p class="s-beviser"><b>Dowodzi:</b> w systemie Windows niczego. Blokadą jest reguła zapory opisana niżej, a dowodem, że program milczy, jest punkt 4.</p>
+          </div>
         </section>
 
         <!-- ============ 4 ============ -->
@@ -164,6 +189,23 @@ codesign -dv "/Applications/Wszystko Jasne.app/Contents/Resources/bundled/engine
               Proszę zwrócić uwagę na <code>-a</code>. Bez tej opcji <code>lsof</code> łączy kryteria przez „lub” i na liście pojawia się cały
               ruch komputera. LuLu lub Little Snitch dają ten sam wynik, jeśli wolą Państwo go tak zobaczyć.
             </p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-Process wszystkojasne, tesseract -ErrorAction SilentlyContinue |
+ForEach-Object {
+  "$($_.ProcessName) działa (proces $($_.Id))"
+  Get-NetTCPConnection -OwningProcess $_.Id -ErrorAction SilentlyContinue
+  Get-NetUDPEndpoint -OwningProcess $_.Id -ErrorAction SilentlyContinue
+}</pre></div>
+            <p class="s-fasit"><b>Oczekiwany wynik:</b> tylko wiersze mówiące, że działa <code>wszystkojasne</code>, oraz <code>tesseract</code>, gdy Wszystko Jasne odczytuje obraz. Żadnych tabel z adresami i portami.</p>
+            <p>
+              Okno Wszystko Jasne jest wyświetlane przez WebView2, który pochodzi od Microsoftu i jest częścią Windows. Działa we
+              własnych procesach, <code>msedgewebview2.exe</code>. Zawartość okna nie może niczego pobierać:
+              uniemożliwiają to reguły z punktu 5. Sam WebView2 może jednak komunikować się z Microsoftem, na przykład w sprawie
+              własnych aktualizacji. To ruch Microsoftu i nie zawiera niczego z Wszystko Jasne ani z dokumentów.
+              Jeśli chcą Państwo zupełnej ciszy, proszę zablokować oba w zaporze.
+            </p>
+            <p>Monitor zasobów (<code>resmon</code>), karta Sieć, daje ten sam wynik, jeśli wolą Państwo go tak zobaczyć.</p>
           </div>
           <p class="s-beviser"><b>Dowodzi:</b> że program, tak jak działa u Państwa, nie ma drogi na zewnątrz. Tej kontroli sami ufamy najbardziej.</p>
         </section>
@@ -244,7 +286,7 @@ nm -u "/Applications/Wszystko Jasne.app/Contents/MacOS/wszystkojasne" | grep -E 
             <div><dt>PDF</dt><dd>PDFium, pdf.js i pdf-lib. pdf.js działa bez <code>eval</code>.</dd></div>
             <div><dt>Word</dt><dd>JSZip i docx-preview.</dd></div>
             <div><dt>Excel</dt><dd>SheetJS (xlsx).</dd></div>
-            <div><dt>Obrazy</dt><dd>Apple Vision na Macu.</dd></div>
+            <div><dt>Obrazy</dt><dd>Apple Vision na Macu. Wbudowane rozpoznawanie tekstu Windows i Tesseract w systemie Windows, Tesseract w systemie Linux.</dd></div>
             <div><dt>Zdania</dt><dd>distilbert-base-pl-cased, uruchamiany przez tract-onnx.</dd></div>
           </dl>
           <p class="s-beviser"><b>Dowodzi:</b> że w programie nie ma kodu, który mógłby cokolwiek wysłać. Mając kod źródłowy, mogą go Państwo zbudować samodzielnie i porównać.</p>
@@ -258,6 +300,20 @@ nm -u "/Applications/Wszystko Jasne.app/Contents/MacOS/wszystkojasne" | grep -E 
             <p>Wbudowana zapora macOS blokuje tylko ruch przychodzący. Proszę wpisać ścieżkę do reguły w filtrze sieciowym swojego rozwiązania MDM albo w LuLu lub Little Snitch:</p>
             <div class="cmd" data-hvor="Ścieżka"><pre>/Applications/Wszystko Jasne.app/Contents/MacOS/wszystkojasne</pre></div>
           </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Instalator (.exe) próbuje sam utworzyć regułę. Tak można sprawdzić, czy istnieje:</p>
+            <div class="cmd"><pre>Get-NetFirewallRule -DisplayName "Wszystko Jasne*" | Get-NetFirewallApplicationFilter</pre></div>
+            <p class="s-fasit"><b>Oczekiwany wynik:</b> reguła o nazwie „Wszystko Jasne - blokuj wychodzace” ze ścieżką do <code>wszystkojasne.exe</code>.</p>
+            <p>Jeśli jej brakuje, proszę ją utworzyć tak, w PowerShell jako administrator:</p>
+            <div class="cmd"><pre>New-NetFirewallRule -DisplayName "Wszystko Jasne - blokuj wychodzace" `
+  -Direction Outbound -Action Block -Profile Any `
+  -Program (Get-Process wszystkojasne).Path</pre></div>
+            <p>
+              Proszę wykonać polecenie, gdy Wszystko Jasne jest otwarte, wtedy samo ustali ścieżkę. Proszę dodać także <code>tesseract.exe</code>,
+              który leży w folderze <code>bundled</code> pod Wszystko Jasne. To osobny plik wykonywalny.
+              Przez Intune: te same reguły można utworzyć w zasadach zapory w obszarze Zabezpieczenia punktu końcowego.
+            </p>
+          </div>
           <p>Gdy reguła pochodzi od Państwa, nie muszą Państwo wierzyć nam w nic z powyższego.</p>
         </section>
 
@@ -266,7 +322,7 @@ nm -u "/Applications/Wszystko Jasne.app/Contents/MacOS/wszystkojasne" | grep -E 
           <h2>Co leży na dysku</h2>
           <p>
             Wszystko Jasne przechowuje wszystkie swoje dane w jednym folderze na użytkownika:
-            <code>~/Library/Application Support/pl.wszystkojasne.app/</code>. Nazwy folderów wewnątrz są wspólne dla wszystkich wydań i dlatego po norwesku.
+            <code>~/Library/Application Support/pl.wszystkojasne.app/</code> (w systemie Windows <code>%APPDATA%\pl.wszystkojasne.app\</code>). Nazwy folderów wewnątrz są wspólne dla wszystkich wydań i dlatego po norwesku.
           </p>
           <dl class="s-tabell">
             <div>
@@ -296,17 +352,17 @@ nm -u "/Applications/Wszystko Jasne.app/Contents/MacOS/wszystkojasne" | grep -E 
           </dl>
           <h3>Jak chronione są klucze</h3>
           <p>
-            Klucz jest zawinięty kolejnym kluczem z pęku kluczy (usługa
-            <code>no.klart.pseudonym.pl.wszystkojasne.app</code>), a dodatkowo przez Secure Enclave, jeśli komputer ją ma.
+            Na Macu klucz jest zawinięty kolejnym kluczem z pęku kluczy (usługa
+            <code>no.klart.pseudonym.pl.wszystkojasne.app</code>), a dodatkowo przez Secure Enclave, jeśli komputer ją ma. W systemie Windows używane jest DPAPI dla użytkownika.
             Chroni to przed innymi użytkownikami i przed utraconym dyskiem. Nie chroni przed programem, który
-            działa jako ten sam użytkownik. To granica pęku kluczy i warto ją znać.
+            działa jako ten sam użytkownik. To granica zarówno pęku kluczy, jak i DPAPI, i warto ją znać.
           </p>
           <p>
             Klucze mogą też leżeć na nośniku USB z kluczem. Wtedy program ma do nich dostęp tylko wtedy, gdy nośnik jest podłączony.
           </p>
           <h3>Co Wszystko Jasne instaluje w systemie</h3>
           <dl class="s-tabell">
-            <div><dt>Usługi w Finderze</dt><dd>Przy uruchomieniu Wszystko Jasne zapisuje cztery usługi w <code>~/Library/Services/</code>: „Oczyść za pomocą Wszystko Jasne” i „Przywróć za pomocą Wszystko Jasne” dla plików oraz „Oczyść tekst za pomocą Wszystko Jasne” i „Przywróć tekst za pomocą Wszystko Jasne” dla zaznaczonego tekstu. Dwie ostatnie przejmują zaznaczony tekst z innych programów. <code>"kommandolinje": false</code> w zasadach usuwa wszystkie cztery.</dd></div>
+            <div><dt>Usługi w Finderze</dt><dd>Na Macu przy uruchomieniu Wszystko Jasne zapisuje cztery usługi w <code>~/Library/Services/</code>: „Oczyść za pomocą Wszystko Jasne” i „Przywróć za pomocą Wszystko Jasne” dla plików oraz „Oczyść tekst za pomocą Wszystko Jasne” i „Przywróć tekst za pomocą Wszystko Jasne” dla zaznaczonego tekstu. Dwie ostatnie przejmują zaznaczony tekst z innych programów. <code>"kommandolinje": false</code> w zasadach usuwa wszystkie cztery.</dd></div>
             <div><dt>Adresy i typy plików</dt><dd>Wszystko Jasne przyjmuje linki <code>wszystkojasne://</code> oraz pliki <code>.wszystkojasnelicencja</code>, <code>.wszystkojasneoznaczenia</code> i <code>.wszystkojasneprojekt</code>. Link może zaproponować licencję. Użytkownik jest zawsze pytany, a pakiet klucza nadal wymaga swojego kodu.</dd></div>
             <div><dt>Nic w tle</dt><dd>Żadnej usługi, żadnego wpisu autostartu i żadnego procesu, który działa po zamknięciu okna.</dd></div>
             <div><dt>Co zobaczy monitoring</dt><dd>Wszystko Jasne uruchamia kilka krótkotrwałych pomocników systemowych, między innymi <code>klart-hvelv</code> (klucz), <code>ioreg</code> (kod komputera), <code>tmutil</code> (wyłączenie folderów z Time Machine), <code>open</code> (pokazanie folderu z kopiami) i <code>osascript</code> (powiadomienia).</dd></div>
@@ -319,6 +375,9 @@ rm -f ~/Library/Preferences/pl.wszystkojasne.app.plist
 rm -rf ~/Library/Services/*Wszystko\ Jasne*.workflow
 security delete-generic-password -s no.klart.pseudonym.pl.wszystkojasne.app</pre></div>
           </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Proszę odinstalować program, a następnie usunąć <code>%APPDATA%\pl.wszystkojasne.app\</code>, <code>%LOCALAPPDATA%\pl.wszystkojasne.app\</code> i <code>%ProgramData%\WszystkoJasne\</code>.</p>
+          </div>
           <p class="s-notis varsel">
             <b>Najpierw proszę zabezpieczyć klucz.</b> Jeśli folder danych zostanie usunięty, zanim klucz zostanie zapisany jako słowa lub plik klucza,
             żadnej kopii z kodami nie da się już przywrócić.
@@ -329,11 +388,12 @@ security delete-generic-password -s no.klart.pseudonym.pl.wszystkojasne.app</pre
         <section class="s-del" id="styring">
           <h2>Centralne sterowanie Wszystko Jasne</h2>
           <p>
-            Jeden plik określa to, co użytkownik w przeciwnym razie wybiera sam. Można go rozdystrybuować przez MDM lub skrypt.
-            Zapis w tym miejscu wymaga uprawnień administratora, więc użytkownik nie może znieść tego, co Państwo zablokowali.
+            Jeden plik określa to, co użytkownik w przeciwnym razie wybiera sam. Można go rozdystrybuować przez MDM, Intune, zasady grupy lub skrypt.
+            Zapis w obu miejscach wymaga uprawnień administratora, więc użytkownik nie może znieść tego, co Państwo zablokowali.
           </p>
           <dl class="s-tabell">
             <div><dt>Mac</dt><dd><code>/Library/Application Support/WszystkoJasne/retningslinjer.json</code></dd></div>
+            <div><dt>Windows</dt><dd><code>%ProgramData%\WszystkoJasne\retningslinjer.json</code></dd></div>
           </dl>
           <p>Klucze w pliku są wspólne dla wszystkich wydań, dlatego są po norwesku.</p>
           <div class="cmd" data-hvor="retningslinjer.json"><pre>{
@@ -422,6 +482,8 @@ security delete-generic-password -s no.klart.pseudonym.pl.wszystkojasne.app</pre
             które Państwo wskażą. Nic nie otwiera portu.
           </p>
           <div class="cmd"><pre>WJ="/Applications/Wszystko Jasne.app/Contents/MacOS/wszystkojasne"
+# Windows: "C:\Program Files\Wszystko Jasne\wszystkojasne.exe"   Linux: /usr/bin/wszystkojasne
+
 "$WJ" scan  ~/Akta/2026-114                      # sprawdzić najpierw
 "$WJ" clean ~/Akta/2026-114 --out ~/Do-AI        # utworzyć oczyszczone kopie
 "$WJ" clean ~/Akta/2026-114 --out ~/Do-AI --changed-only
@@ -445,7 +507,7 @@ security delete-generic-password -s no.klart.pseudonym.pl.wszystkojasne.app</pre
           <dl class="s-tabell">
             <div><dt>Klucz</dt><dd>32 losowe bajty z systemu operacyjnego. Podklucze przez HKDF-SHA256.</dd></div>
             <div><dt>Kody</dt><dd>Kim jest osoba: HMAC-SHA256. Pierwotny tekst: AES-SIV (RFC 5297), deterministyczny i uwierzytelniony.</dd></div>
-            <div><dt>Klucz na dysku</dt><dd>Pęk kluczy i Secure Enclave.</dd></div>
+            <div><dt>Klucz na dysku</dt><dd>Mac: pęk kluczy i Secure Enclave. Windows: DPAPI. Linux: pęk kluczy (Secret Service).</dd></div>
             <div><dt>Plik klucza</dt><dd>Argon2id (64 MiB, 3 przebiegi) i AES-256-GCM.</dd></div>
             <div><dt>24 słowa</dt><dd>256 bitów klucza i 8 bitów sumy kontrolnej, 11 bitów na słowo, z listy 2048 norweskich słów.</dd></div>
             <div><dt>Dołączanie</dt><dd>X25519.</dd></div>
@@ -461,7 +523,8 @@ security delete-generic-password -s no.klart.pseudonym.pl.wszystkojasne.app</pre
           <h2>Wymagania systemowe</h2>
           <dl class="s-tabell">
             <div><dt>Mac</dt><dd>macOS 13 lub nowszy. Procesory Intel i Apple w tym samym pakiecie.</dd></div>
-            <div><dt>Windows i Linux</dt><dd>Wersje pojawią się wkrótce.</dd></div>
+            <div><dt>Windows</dt><dd>Windows 10 lub 11, 64 bity z procesorem Intel lub AMD. Instalacja dla wszystkich użytkowników, plikiem .exe.</dd></div>
+            <div><dt>Linux</dt><dd>Pakiet .deb (Debian, Ubuntu i pokrewne) dla amd64 lub ARM64. Pakiet nazywa się <code>wszystkojasne</code> i wymaga <code>tesseract-ocr</code> oraz <code>xdg-utils</code>.</dd></div>
             <div><dt>Pamięć</dt><dd>Wszystko Jasne zajmuje około pół gigabajta, gdy model zdań jest załadowany. Zalecamy 8 GB w komputerze.</dd></div>
             <div><dt>Karta graficzna</dt><dd>Niewymagana. Wszystko działa na procesorze.</dd></div>
             <div><dt>Sieć</dt><dd>Niewymagana, ani przy instalacji, ani przy aktywacji, ani w użyciu.</dd></div>

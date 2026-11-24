@@ -73,28 +73,28 @@
   var felt = boks.querySelector("input");
   var liste = boks.querySelector("[data-v-svar]");
   var melding = boks.querySelector("[data-v-melding]");
-  var ORD = { ja: "Oui", usikkert: "Incertain", nei: "Non", snart: "Bientôt" };
+  var ORD = { ja: "Oui", usikkert: "Incertain", nei: "Non" };
   // Kontrollen (/klart/api/maskin) deles med den norske siden og svarer på norsk. Svarene er et lite, fast sett,
   // så de kjennes igjen her og vises på fransk: [mønster, svar som vises i stedet (eller null), fransk tekst].
-  // En setning som ikke står i listen, utelates; den vises aldri på norsk. C’est Clair finnes foreløpig bare for
-  // Mac, så Windows- og Linux-maskiner får «Bientôt» i stedet for «Oui».
+  // En setning som ikke står i listen, utelates; den vises aldri på norsk. Windows og Linux finnes fra 24.11.2026,
+  // så svarene vises som kontrollen gir dem.
   var SLAG = { "Bærbar": "Portable", "Stasjonær": "Fixe", "Nettbrett": "Tablette", "Telefon": "Téléphone" };
-  var SNART = "C’est Clair est disponible pour l’instant sur Mac. Les versions Windows et Linux arrivent bientôt.";
   var TEKST = [
     [/^Alle Mac-er med Apple-prosessor/, null, "Tous les Mac à processeur Apple font fonctionner C’est Clair."],
     [/^Med macOS (\d+) eller nyere/, null, "Avec macOS $1 ou une version plus récente."],
     [/^Den kan ikke få macOS (\d+)/, null, "Il ne peut pas recevoir macOS $1, dont C’est Clair a besoin."],
-    [/^Med Windows/, "snart", SNART],
-    [/^Med en nyere Linux/, "snart", SNART],
-    [/^Den har ARM-prosessor/, "snart", SNART],
-    [/^Klart trenger Windows/, "nei", "C’est Clair n’est pas disponible pour cette version de Windows."],
+    [/^Med Windows (\d+) eller (\d+)/, null, "Avec Windows $1 ou $2. Nous recommandons 8 Go de mémoire vive."],
+    [/^Med en nyere Linux/, null, "Avec une version récente de Linux. Nous recommandons 8 Go de mémoire vive."],
+    [/^Den har ARM-prosessor\. Klart er laget for Intel og AMD/, null, "Il a un processeur ARM. C’est Clair est conçu pour Intel et AMD et n’a pas été essayé sur cet appareil."],
+    [/^Den har ARM-prosessor\. Klart for Linux/, null, "Il a un processeur ARM. C’est Clair pour Linux est conçu pour Intel et AMD."],
+    [/^Klart trenger Windows/, null, "C’est Clair a besoin de Windows 10 ou 11."],
     [/Chromebook/, null, "C’est Clair ne fonctionne pas sur Chromebook."],
-    [/^Klart er et program for Mac, Windows og Linux/, null, "C’est Clair est un programme pour ordinateur, disponible pour l’instant sur Mac."],
+    [/^Klart er et program for Mac, Windows og Linux/, null, "C’est Clair est un logiciel pour Mac, Windows et Linux."],
   ];
   function fransk(m) {
     for (var i = 0; i < TEKST.length; i++) {
       var t = TEKST[i], treff = t[0].exec(m.tekst || "");
-      if (treff) return { svar: t[1] || m.svar, tekst: t[2].replace("$1", treff[1] || "") };
+      if (treff) return { svar: t[1] || m.svar, tekst: t[2].replace("$1", treff[1] || "").replace("$2", treff[2] || "") };
     }
     return { svar: m.svar, tekst: "" };
   }
@@ -132,8 +132,7 @@
     svar.treff.forEach(function (m) {
       var li = el("li");
       var f = fransk(m);
-      // «Bientôt» bruker samme farge som «usikkert».
-      li.appendChild(el("span", "v-svar " + (f.svar === "snart" ? "usikkert" : ORD[f.svar] ? f.svar : "usikkert"), ORD[f.svar] || ORD.usikkert));
+      li.appendChild(el("span", "v-svar " + (ORD[f.svar] ? f.svar : "usikkert"), ORD[f.svar] || ORD.usikkert));
       var navn = el("span", "v-sjekk-navn", m.navn);
       navn.appendChild(el("small", "", [m.merke, SLAG[m.slag] || ""].filter(Boolean).join(" · ")));
       li.appendChild(navn);

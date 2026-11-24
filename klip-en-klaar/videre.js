@@ -73,9 +73,9 @@
   var felt = boks.querySelector("input");
   var liste = boks.querySelector("[data-v-svar]");
   var melding = boks.querySelector("[data-v-melding]");
-  var ORD = { ja: "Ja", usikkert: "Onzeker", nei: "Nee", senere: "Volgt" };
-  // Maskinlisten (/klart/api/maskin) svarer på norsk og for Klart på Mac, Windows og Linux. Klip en Klaar finnes
-  // foreløpig bare for Mac, så svaret og forklaringen skrives om her: Mac-ene som før, alt annet «volgt».
+  var ORD = { ja: "Ja", usikkert: "Onzeker", nei: "Nee" };
+  // Maskinlisten (/klart/api/maskin) svarer på norsk, så svaret og forklaringen oversettes her. Windows og Linux
+  // finnes fra 24.11.2026; Linux på ARM64 har egen pakke, men er ikke prøvd på slike maskiner, så «onzeker».
   var SLAG = { "Bærbar": "Laptop", "Stasjonær": "Desktop", "Nettbrett": "Tablet", "Telefon": "Telefoon" };
   function nl(m) {
     var t = String(m.tekst || "");
@@ -86,8 +86,15 @@
     if (macos && m.svar === "ja") return { svar: "ja", tekst: "Met macOS " + macos[1] + " of nieuwer.", navn: navn, slag: slag };
     if (macos) return { svar: "nei", tekst: "Deze kan macOS " + macos[1] + " niet krijgen, en dat heeft Klip en Klaar nodig.", navn: navn, slag: slag };
     if (/Chromebook/.test(t)) return { svar: "nei", tekst: "Klip en Klaar werkt niet op een Chromebook.", navn: navn, slag: slag };
-    if (m.svar === "ja" || m.svar === "usikkert") return { svar: "senere", tekst: "Klip en Klaar is er nu voor de Mac. Windows en Linux volgen.", navn: navn, slag: slag };
-    return { svar: "nei", tekst: "Klip en Klaar is een programma voor de Mac. Windows en Linux volgen.", navn: navn, slag: slag };
+    var win = t.match(/Windows (\d+) eller (\d+)/);
+    var winKrav = win ? "Windows " + win[1] + " of " + win[2] : "Windows 10 of 11";
+    var minne = (t.match(/(\d+) GB/) || [])[1] || "8";
+    if (/^Med Windows/.test(t)) return { svar: "ja", tekst: "Met " + winKrav + ". Wij raden " + minne + " GB werkgeheugen aan.", navn: navn, slag: slag };
+    if (/^Med en nyere Linux/.test(t)) return { svar: "ja", tekst: "Met een recente Linux. Wij raden " + minne + " GB werkgeheugen aan.", navn: navn, slag: slag };
+    if (/Klart for Linux/.test(t)) return { svar: "usikkert", tekst: "Deze heeft een ARM-processor. Er is een Linux-pakket voor ARM64, maar het is op dit apparaat niet geprobeerd.", navn: navn, slag: slag };
+    if (/ARM-prosessor/.test(t)) return { svar: "usikkert", tekst: "Deze heeft een ARM-processor. Klip en Klaar is gemaakt voor Intel en AMD en is hierop niet geprobeerd.", navn: navn, slag: slag };
+    if (/^Klart trenger Windows/.test(t)) return { svar: "nei", tekst: "Klip en Klaar heeft " + winKrav + " nodig.", navn: navn, slag: slag };
+    return { svar: m.svar === "ja" ? "ja" : m.svar === "usikkert" ? "usikkert" : "nei", tekst: "Klip en Klaar is een programma voor Mac, Windows en Linux.", navn: navn, slag: slag };
   }
   var venter = null;
   var runde = 0;
@@ -124,7 +131,7 @@
       var m = nl(rad);
       m.merke = rad.merke;
       var li = el("li");
-      li.appendChild(el("span", "v-svar " + (m.svar === "senere" ? "usikkert" : m.svar), ORD[m.svar] || ORD.usikkert));
+      li.appendChild(el("span", "v-svar " + (ORD[m.svar] ? m.svar : "usikkert"), ORD[m.svar] || ORD.usikkert));
       var navn = el("span", "v-sjekk-navn", m.navn);
       navn.appendChild(el("small", "", [m.merke, m.slag].filter(Boolean).join(" · ")));
       li.appendChild(navn);

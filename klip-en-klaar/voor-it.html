@@ -25,9 +25,11 @@
       content="De controles die laten zien dat Klip en Klaar niet met het netwerk praat, wat er in het pakket en op de schijf staat en hoe IT Klip en Klaar centraal instelt. Met opdrachten, verwachte uitkomsten en wat elke controle bewijst."
     />
     <meta name="robots" content="noindex" />
-    <!-- Ingen skrifter, bilder eller skript utenfra. Den nederlandske utgaven finnes bare for Mac ennå, så siden viser
-         bare Mac-sjekkene (til-it-tidlig.js setter data-vis="mac"); til-it.js kopierer kommandoene.
-         Fasitene er kjørt mot Klip-en-Klaar_0.1.0_universal.dmg fra 24.11.2026 (Klart-nl 749b4352). -->
+    <!-- Ingen skrifter, bilder eller skript utenfra. De to skriptene bytter mellom Mac og
+         Windows og kopierer kommandoene. Uten skript vises begge systemene, og alt kan markeres.
+         Mac-fasitene er kjørt mot Klip-en-Klaar_0.1.0_universal.dmg fra 24.11.2026 (Klart-nl 749b4352).
+         Windows- og Linux-delene lagt til 24.11.2026 etter Klart-nl d2b4f8a3 (brannmur-nl.nsh, tauri.nl.conf.json,
+         .deb-pakken); Windows-fasitene er ikke kjørt mot bygget. -->
     <script src="til-it-tidlig.js"></script>
     <link rel="stylesheet" href="fonts.css" />
     <link rel="stylesheet" href="sider.css" />
@@ -86,7 +88,13 @@
           </ul>
         </section>
 
-        <p class="s-notis">Klip en Klaar is er nu voor de Mac. Windows en Linux volgen; de controles voor die systemen komen dan op deze pagina.</p>
+        <div class="s-velg">
+          <p id="velg-tittel">Welk systeem controleert u?</p>
+          <div class="s-velg-knapper" role="group" aria-labelledby="velg-tittel">
+            <button type="button" data-velg="mac" aria-pressed="false">Mac</button>
+            <button type="button" data-velg="windows" aria-pressed="false">Windows</button>
+          </div>
+        </div>
         <p class="s-skjult" id="melding" role="status" aria-live="polite"></p>
 
         <!-- ============ 1 ============ -->
@@ -95,9 +103,16 @@
           <div class="os" data-os="mac" data-navn="Mac">
             <div class="cmd"><pre>shasum -a 256 ~/Downloads/Klip*Klaar*.dmg</pre></div>
           </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-FileHash "$HOME\Downloads\Klip*Klaar*.exe"</pre></div>
+          </div>
+          <p>Op Linux: <code>sha256sum ~/Downloads/Klip-en-Klaar_0.1.0_*.deb</code>.</p>
           <p class="s-fasit"><b>Verwachte uitkomst:</b> de lange reeks cijfers en letters is gelijk aan de controlesom die wij voor de versie publiceren.</p>
           <dl class="s-tabell">
             <div><dt>Klip en Klaar.dmg</dt><dd><code>72c64e57b4a429a6<wbr />df4a470324aaf588<wbr />0537a1e5b8040406<wbr />46772ffd80a311d7</code></dd></div>
+            <div><dt>Klip en Klaar.exe</dt><dd><code>20a7fe07ccb41be0<wbr />80514aa902366193<wbr />6c992cabf37e597e<wbr />efc0c2b92f62d410</code></dd></div>
+            <div><dt>Klip-en-Klaar_0.1.0_amd64.deb</dt><dd><code>f58a21bc51d0882f<wbr />b151e991bcbbdb22<wbr />fdb172cd6c401166<wbr />486aaa0dd77b6116</code></dd></div>
+            <div><dt>Klip-en-Klaar_0.1.0_arm64.deb</dt><dd><code>cb27e60c9af864bc<wbr />e88b86026643a924<wbr />f0736b8e0d798d82<wbr />d461a11a1363ee61</code></dd></div>
           </dl>
           <p class="s-beviser"><b>Bewijst:</b> dat het bestand het bestand is dat wij hebben gepubliceerd. Meer niet. Een controlesom zegt niets over wat het programma doet.</p>
         </section>
@@ -118,6 +133,11 @@
             <div class="cmd"><pre>codesign -dv "/Applications/Klip en Klaar.app/Contents/MacOS/klart-hvelv" 2>&amp;1 | grep TeamIdentifier
 codesign -dv "/Applications/Klip en Klaar.app/Contents/Resources/bundled/engine/pdfium/libpdfium.dylib" 2>&amp;1 | grep TeamIdentifier</pre></div>
             <p class="s-fasit"><b>Verwachte uitkomst:</b> bij beide dezelfde <code>TeamIdentifier=N5BKVM258S</code>.</p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>De Windows-versie is ondertekend door ESBJUG CONSULT. De opdracht geeft <code>Valid</code> en toont de naam in het certificaat.</p>
+            <div class="cmd"><pre>Get-AuthenticodeSignature "$HOME\Downloads\Klip*Klaar*.exe" | Format-List Status, SignerCertificate</pre></div>
+            <p class="s-fasit"><b>Verwachte uitkomst:</b> <code>Valid</code> en onze naam in <code>SignerCertificate</code>.</p>
           </div>
           <p class="s-beviser">
             <b>Bewijst:</b> dat de code van ons komt en achteraf niet is gewijzigd. Dit is de controle tegen een omgebouwde kopie.
@@ -144,6 +164,13 @@ codesign -dv "/Applications/Klip en Klaar.app/Contents/Resources/bundled/engine/
             </p>
             <p class="s-beviser"><b>Bewijst:</b> dat het programma geen andere programma's kan besturen, geen vreemde code kan laden en niet bij iCloud kan. Over het netwerk bewijst het op zichzelf niets.</p>
           </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>
+              Windows kent voor gewone desktopprogramma's geen vergelijkbare rechten. Een programma dat met een .exe is
+              geïnstalleerd, vraagt niet om netwerktoegang. Het heeft die. Daarom staat hier geen opdracht.
+            </p>
+            <p class="s-beviser"><b>Bewijst:</b> op Windows niets. De afsluiting is de firewallregel verderop, en het bewijs dat het programma stil is, is punt 4.</p>
+          </div>
         </section>
 
         <!-- ============ 4 ============ -->
@@ -167,6 +194,23 @@ codesign -dv "/Applications/Klip en Klaar.app/Contents/Resources/bundled/engine/
               Let op <code>-a</code>. Zonder die optie combineert <code>lsof</code> de voorwaarden met “of”, en krijgt u al het
               verkeer van de computer in de lijst. LuLu of Little Snitch geven hetzelfde resultaat, als u het liever zo ziet.
             </p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-Process klipenklaar, tesseract -ErrorAction SilentlyContinue |
+ForEach-Object {
+  "$($_.ProcessName) draait (proces $($_.Id))"
+  Get-NetTCPConnection -OwningProcess $_.Id -ErrorAction SilentlyContinue
+  Get-NetUDPEndpoint -OwningProcess $_.Id -ErrorAction SilentlyContinue
+}</pre></div>
+            <p class="s-fasit"><b>Verwachte uitkomst:</b> alleen de regels die melden dat <code>klipenklaar</code> draait, en <code>tesseract</code> terwijl Klip en Klaar een afbeelding leest. Geen tabellen met adressen en poorten.</p>
+            <p>
+              Het venster van Klip en Klaar wordt getekend door WebView2, dat van Microsoft komt en bij Windows hoort. Het draait in
+              eigen processen, <code>msedgewebview2.exe</code>. De inhoud van het venster mag niets ophalen:
+              de regels uit punt 5 verhinderen dat. WebView2 zelf kan wel met Microsoft praten, bijvoorbeeld voor eigen
+              updates. Dat is verkeer van Microsoft, en er zit niets van Klip en Klaar of uit de documenten in.
+              Wilt u volledige stilte, blokkeer dan beide in de firewall.
+            </p>
+            <p>Broncontrole (<code>resmon</code>), tabblad Netwerk, geeft hetzelfde resultaat, als u het liever zo ziet.</p>
           </div>
           <p class="s-beviser"><b>Bewijst:</b> dat het programma, zoals het bij u draait, geen weg naar buiten heeft. Deze controle vertrouwen we zelf het meest.</p>
         </section>
@@ -247,7 +291,7 @@ nm -u "/Applications/Klip en Klaar.app/Contents/MacOS/klipenklaar" | grep -E '_(
             <div><dt>PDF</dt><dd>PDFium, pdf.js 4.10.38 en pdf-lib 1.17.1. pdf.js draait zonder <code>eval</code>.</dd></div>
             <div><dt>Word</dt><dd>JSZip 3.10.1 en docx-preview 0.4.1.</dd></div>
             <div><dt>Excel</dt><dd>SheetJS (xlsx) 0.18.5.</dd></div>
-            <div><dt>Afbeeldingen</dt><dd>Apple Vision op de Mac.</dd></div>
+            <div><dt>Afbeeldingen</dt><dd>Apple Vision op de Mac. De ingebouwde tekstherkenning van Windows en Tesseract op Windows, Tesseract op Linux.</dd></div>
             <div><dt>Zinnen</dt><dd>distilbert-base-nl-cased, uitgevoerd met tract-onnx 0.23.</dd></div>
           </dl>
           <p class="s-beviser"><b>Bewijst:</b> dat er in het programma geen code is die iets kan versturen. Met de broncode kunt u het zelf bouwen en vergelijken.</p>
@@ -261,6 +305,20 @@ nm -u "/Applications/Klip en Klaar.app/Contents/MacOS/klipenklaar" | grep -E '_(
             <p>De ingebouwde firewall van macOS blokkeert alleen inkomend verkeer. Zet het pad in een regel in het netwerkfilter van uw MDM-oplossing, of in LuLu of Little Snitch:</p>
             <div class="cmd" data-hvor="Pad"><pre>/Applications/Klip en Klaar.app/Contents/MacOS/klipenklaar</pre></div>
           </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Het installatieprogramma (.exe) probeert de regel zelf te maken. Zo ziet u of hij er is:</p>
+            <div class="cmd"><pre>Get-NetFirewallRule -DisplayName "Klip en Klaar*" | Get-NetFirewallApplicationFilter</pre></div>
+            <p class="s-fasit"><b>Verwachte uitkomst:</b> een regel met de naam “Klip en Klaar - uitgaand blokkeren” en het pad naar <code>klipenklaar.exe</code>.</p>
+            <p>Ontbreekt hij, maak hem dan zo, in PowerShell als beheerder:</p>
+            <div class="cmd"><pre>New-NetFirewallRule -DisplayName "Klip en Klaar - uitgaand blokkeren" `
+  -Direction Outbound -Action Block -Profile Any `
+  -Program (Get-Process klipenklaar).Path</pre></div>
+            <p>
+              Voer de opdracht uit terwijl Klip en Klaar open is, dan vindt hij het pad zelf. Neem ook <code>tesseract.exe</code> op,
+              die in de map <code>bundled</code> onder Klip en Klaar staat. Dat is een eigen uitvoerbaar bestand.
+              Via Intune: maak dezelfde regels in een firewallbeleid onder Eindpuntbeveiliging.
+            </p>
+          </div>
           <p>Zodra de regel van u is, hoeft u niets van het bovenstaande van ons aan te nemen.</p>
         </section>
 
@@ -268,8 +326,9 @@ nm -u "/Applications/Klip en Klaar.app/Contents/MacOS/klipenklaar" | grep -E '_(
         <section class="s-del" id="disk">
           <h2>Wat er op de schijf staat</h2>
           <p>
-            Klip en Klaar bewaart al zijn gegevens in één map per gebruiker:
-            <code>~/Library/Application Support/nl.klipenklaar.app/</code>. De mapnamen daarin zijn intern en niet vertaald.
+            Klip en Klaar bewaart al zijn gegevens in één map per gebruiker. Op de Mac is dat
+            <code>~/Library/Application Support/nl.klipenklaar.app/</code>, op Windows
+            <code>%APPDATA%\nl.klipenklaar.app\</code>. De mapnamen daarin zijn intern en niet vertaald.
           </p>
           <dl class="s-tabell">
             <div>
@@ -303,10 +362,11 @@ nm -u "/Applications/Klip en Klaar.app/Contents/MacOS/klipenklaar" | grep -E '_(
           </dl>
           <h3>Hoe de sleutels zijn beschermd</h3>
           <p>
-            De sleutel is omhuld met een tweede sleutel uit de sleutelhanger, en daarnaast met de Secure Enclave als die er is.
+            Op de Mac is de sleutel omhuld met een tweede sleutel uit de sleutelhanger, en daarnaast met de Secure Enclave als die er is.
+            Op Windows wordt DPAPI voor de gebruiker gebruikt (<code>nokkel.dpapi</code>).
             U kunt de sleutel ook alleen op een usb-stick bewaren (de sleutelstick), vergrendeld met een wachtzin.
             Dat beschermt tegen andere gebruikers en tegen een verloren schijf. Het beschermt niet tegen een programma dat
-            onder dezelfde gebruiker draait. Dat is de grens van de sleutelhanger, en die moet u kennen.
+            onder dezelfde gebruiker draait. Dat is de grens van zowel de sleutelhanger als DPAPI, en die moet u kennen.
           </p>
           <h3>Wat Klip en Klaar in het systeem instelt</h3>
           <dl class="s-tabell">
@@ -322,6 +382,9 @@ rm -f ~/Library/Preferences/nl.klipenklaar.app.plist
 rm -rf ~/Library/Services/*Klip\ en\ Klaar*.workflow
 security delete-generic-password -s no.klart.pseudonym.nl.klipenklaar.app</pre></div>
           </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Verwijder het programma en daarna <code>%APPDATA%\nl.klipenklaar.app\</code>, <code>%LOCALAPPDATA%\nl.klipenklaar.app\</code> en <code>%ProgramData%\KlipEnKlaar\</code>.</p>
+          </div>
           <p class="s-notis varsel">
             <b>Zet eerst de sleutel veilig.</b> Wordt de gegevensmap verwijderd zonder dat de sleutel is genoteerd, als sleutelbestand is bewaard of op een sleutelstick staat,
             dan kan geen enkele kopie met codes meer worden hersteld.
@@ -332,12 +395,13 @@ security delete-generic-password -s no.klart.pseudonym.nl.klipenklaar.app</pre><
         <section class="s-del" id="styring">
           <h2>Klip en Klaar centraal instellen</h2>
           <p>
-            Eén bestand bepaalt wat de gebruiker anders zelf kiest. Verdeel het via MDM of een script.
-            Voor schrijven in deze map zijn beheerdersrechten nodig, zodat de gebruiker niet kan opheffen wat u heeft vastgezet.
+            Eén bestand bepaalt wat de gebruiker anders zelf kiest. Verdeel het via MDM, Intune, groepsbeleid of een script.
+            Voor schrijven op beide plekken zijn beheerdersrechten nodig, zodat de gebruiker niet kan opheffen wat u heeft vastgezet.
             De veldnamen zijn Noors, net als in de andere uitgaven.
           </p>
           <dl class="s-tabell">
             <div><dt>Mac</dt><dd><code>/Library/Application Support/KlipEnKlaar/retningslinjer.json</code></dd></div>
+            <div><dt>Windows</dt><dd><code>%ProgramData%\KlipEnKlaar\retningslinjer.json</code></dd></div>
           </dl>
           <div class="cmd" data-hvor="retningslinjer.json"><pre>{
   "versjon": 1,
@@ -426,6 +490,7 @@ security delete-generic-password -s no.klart.pseudonym.nl.klipenklaar.app</pre><
             die u opgeeft. Niets opent een poort.
           </p>
           <div class="cmd"><pre>KLIPENKLAAR="/Applications/Klip en Klaar.app/Contents/MacOS/klipenklaar"
+# Windows: "C:\Program Files\Klip en Klaar\klipenklaar.exe"   Linux: /usr/bin/klipenklaar
 
 "$KLIPENKLAAR" scan  ~/Dossiers/2026-114                    # vooraf doorzoeken
 "$KLIPENKLAAR" clean ~/Dossiers/2026-114 --out ~/Naar-AI    # gelakte kopieën maken
@@ -450,7 +515,7 @@ security delete-generic-password -s no.klart.pseudonym.nl.klipenklaar.app</pre><
           <dl class="s-tabell">
             <div><dt>De sleutel</dt><dd>32 willekeurige bytes van het besturingssysteem. Deelsleutels met HKDF-SHA256.</dd></div>
             <div><dt>De codes</dt><dd>Wie het is: HMAC-SHA256. De oorspronkelijke tekst: AES-SIV (RFC 5297), deterministisch en geauthenticeerd.</dd></div>
-            <div><dt>De sleutel op de schijf</dt><dd>Sleutelhanger en Secure Enclave.</dd></div>
+            <div><dt>De sleutel op de schijf</dt><dd>Mac: sleutelhanger en Secure Enclave. Windows: DPAPI.</dd></div>
             <div><dt>Sleutelbestand</dt><dd>Argon2id en AES-256-GCM.</dd></div>
             <div><dt>Aanmelden</dt><dd>X25519.</dd></div>
             <div><dt>Projecten, eigen markeringen en teksten</dt><dd>AES-256-GCM, met sleutels uit HKDF-SHA256. De bestandsnamen zijn HMAC-vingerafdrukken.</dd></div>
@@ -465,9 +530,10 @@ security delete-generic-password -s no.klart.pseudonym.nl.klipenklaar.app</pre><
           <h2>Systeemeisen</h2>
           <dl class="s-tabell">
             <div><dt>Mac</dt><dd>macOS 13 of nieuwer. Intel- en Apple-processors in hetzelfde pakket.</dd></div>
-            <div><dt>Windows en Linux</dt><dd>Volgen.</dd></div>
+            <div><dt>Windows</dt><dd>Windows 10 of 11, 64 bit met Intel of AMD. Installatie voor alle gebruikers, met het .exe-installatieprogramma.</dd></div>
+            <div><dt>Linux</dt><dd>Debian, Ubuntu en verwante distributies, 64 bit (amd64 of arm64). Het .deb-pakket heet <code>klipenklaar</code> en installeert <code>/usr/bin/klipenklaar</code>.</dd></div>
             <div><dt>Geheugen</dt><dd>Wij raden 8 GB in de computer aan.</dd></div>
-            <div><dt>Schijf</dt><dd>Ongeveer 372 MB geïnstalleerd. Daarbij komen de back-ups en wat Klip en Klaar over de mappen onthoudt.</dd></div>
+            <div><dt>Schijf</dt><dd>Ongeveer 372 MB geïnstalleerd op de Mac. Daarbij komen de back-ups en wat Klip en Klaar over de mappen onthoudt.</dd></div>
             <div><dt>Grafische kaart</dt><dd>Niet nodig. Alles draait op de processor.</dd></div>
             <div><dt>Netwerk</dt><dd>Niet nodig, niet bij installeren, activeren of gebruiken.</dd></div>
           </dl>

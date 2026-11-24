@@ -97,9 +97,17 @@
           <div class="os" data-os="mac" data-navn="Mac">
             <div class="cmd"><pre>shasum -a 256 ~/Downloads/Clar*.dmg</pre></div>
           </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-FileHash "$HOME\Downloads\Clar*.exe"</pre></div>
+          </div>
+          <p>En Linux: <code>sha256sum ~/Downloads/Clarisimo_*.deb</code></p>
           <p class="s-fasit"><b>Resultado esperado:</b> la larga serie de cifras y letras coincide con la suma de comprobación que hemos publicado para la versión.</p>
           <dl class="s-tabell">
             <div><dt>Clarísimo.dmg</dt><dd><code>db597ee182b149da<wbr />9c895d85f32f736a<wbr />cd708f04064bab70<wbr />1212af6ae473e7d3</code></dd></div>
+            <!-- Windows og Linux fra 24.11.2026, kopiert fra SHA256.txt i Klart-utgivelse/{windows,linux}-es-2026-11-24. -->
+            <div><dt>Clarísimo.exe</dt><dd><code>e126e5c21afe496c<wbr />8bc56da8a0e75a14<wbr />8c92140fad34ce50<wbr />9e8b20a87efc4d3b</code></dd></div>
+            <div><dt>Clarisimo_0.1.0_amd64.deb</dt><dd><code>822d5f2fe4f0b82d<wbr />5d9caade18d56bf6<wbr />23792e20b00918d7<wbr />65584e052c0a8843</code></dd></div>
+            <div><dt>Clarisimo_0.1.0_arm64.deb</dt><dd><code>69c5ebb065c38bc8<wbr />6aa561cd0f0df390<wbr />9f79a5f1a91ab07b<wbr />0c2aaa46602995e1</code></dd></div>
           </dl>
           <p class="s-beviser"><b>Demuestra:</b> que el archivo es el que hemos publicado. Nada más. Una suma de comprobación no dice nada sobre lo que hace el programa.</p>
         </section>
@@ -122,7 +130,7 @@ codesign -dv "/Applications/Clarísimo.app/Contents/Resources/bundled/engine/pdf
             <p class="s-fasit"><b>Resultado esperado:</b> el mismo <code>TeamIdentifier=N5BKVM258S</code> en ambos.</p>
           </div>
           <div class="os" data-os="windows" data-navn="Windows">
-            <p>La versión para Windows, que está en camino, irá firmada por ESBJUG CONSULT. El comando devuelve <code>Valid</code> y muestra el nombre del certificado.</p>
+            <p>La versión para Windows está firmada por ESBJUG CONSULT. El comando devuelve <code>Valid</code> y muestra el nombre del certificado.</p>
             <div class="cmd"><pre>Get-AuthenticodeSignature "$HOME\Downloads\Clar*.exe" | Format-List Status, SignerCertificate</pre></div>
             <p class="s-fasit"><b>Resultado esperado:</b> <code>Valid</code> y nuestro nombre en <code>SignerCertificate</code>.</p>
           </div>
@@ -191,7 +199,7 @@ ForEach-Object {
 }</pre></div>
             <p class="s-fasit"><b>Resultado esperado:</b> solo las líneas que indican que <code>clarisimo</code> se está ejecutando, y <code>tesseract</code> mientras Clarísimo lee una imagen. Ninguna tabla con direcciones y puertos.</p>
             <p>
-              En la versión para Windows, cuando llegue, la ventana de Clarísimo la dibuja WebView2, que es de Microsoft y forma parte de Windows. Se ejecuta en
+              En Windows, la ventana de Clarísimo la dibuja WebView2, que es de Microsoft y forma parte de Windows. Se ejecuta en
               procesos propios, <code>msedgewebview2.exe</code>. El contenido de la ventana no puede descargar nada:
               las reglas del punto 5 lo impiden. Sin embargo, WebView2 puede comunicarse con Microsoft, por ejemplo por sus propias
               actualizaciones. Ese es tráfico de Microsoft, y no contiene nada de Clarísimo ni de los documentos.
@@ -278,7 +286,7 @@ nm -u "/Applications/Clarísimo.app/Contents/MacOS/clarisimo" | grep -E '_(bind|
             <div><dt>PDF</dt><dd>PDFium 158, pdf.js 4.10.38 y pdf-lib 1.17.1. pdf.js se ejecuta sin <code>eval</code>.</dd></div>
             <div><dt>Word</dt><dd>JSZip 3.10.1 y docx-preview 0.4.1.</dd></div>
             <div><dt>Excel</dt><dd>SheetJS (xlsx) 0.18.5.</dd></div>
-            <div><dt>Imágenes</dt><dd>Apple Vision en Mac. En las versiones para Windows y Linux, cuando lleguen: el reconocimiento de texto propio de Windows y Tesseract en Windows, y Tesseract en Linux.</dd></div>
+            <div><dt>Imágenes</dt><dd>Apple Vision en Mac. El reconocimiento de texto propio de Windows y Tesseract en Windows, y Tesseract en Linux.</dd></div>
             <div><dt>Frases</dt><dd>distilbert-base-es-cased ajustado por nosotros, ejecutado con tract-onnx 0.23.</dd></div>
           </dl>
           <p class="s-beviser"><b>Demuestra:</b> que en el programa no hay código capaz de enviar nada. Con el código fuente puede compilarlo usted mismo y comparar.</p>
@@ -293,7 +301,7 @@ nm -u "/Applications/Clarísimo.app/Contents/MacOS/clarisimo" | grep -E '_(bind|
             <div class="cmd" data-hvor="Ruta"><pre>/Applications/Clarísimo.app/Contents/MacOS/clarisimo</pre></div>
           </div>
           <div class="os" data-os="windows" data-navn="Windows">
-            <p>En la versión para Windows, cuando llegue, el instalador (.exe) intenta crear la regla él mismo. Así puede ver si existe:</p>
+            <p>El instalador (.exe) intenta crear la regla él mismo. Así puede ver si existe:</p>
             <div class="cmd"><pre>Get-NetFirewallRule -DisplayName "Clarisimo*" | Get-NetFirewallApplicationFilter</pre></div>
             <p class="s-fasit"><b>Resultado esperado:</b> una regla llamada «Clarisimo - bloquear salidas» con la ruta a <code>clarisimo.exe</code>.</p>
             <p>Si falta, créela así, en PowerShell como administrador:</p>
@@ -314,7 +322,7 @@ nm -u "/Applications/Clarísimo.app/Contents/MacOS/clarisimo" | grep -E '_(bind|
           <h2>Qué hay en el disco</h2>
           <p>
             Clarísimo guarda todos sus datos en una carpeta por usuario. En Mac es
-            <code>~/Library/Application Support/es.clarisimo.app/</code>; en Windows, cuando llegue esa versión,
+            <code>~/Library/Application Support/es.clarisimo.app/</code>; en Windows,
             <code>%APPDATA%\es.clarisimo.app\</code>. Los nombres de las carpetas y los archivos están en noruego.
           </p>
           <dl class="s-tabell">
@@ -486,6 +494,7 @@ security delete-generic-password -s no.klart.pseudonym.es.clarisimo.app</pre></d
             que usted indique. Nada abre un puerto.
           </p>
           <div class="cmd"><pre>CLARISIMO="/Applications/Clarísimo.app/Contents/MacOS/clarisimo"
+# Windows: "C:\Program Files\Clarísimo\clarisimo.exe"   Linux: /usr/bin/clarisimo
 
 "$CLARISIMO" scan  ~/Expedientes/2026-114                   # analizar por adelantado
 "$CLARISIMO" clean ~/Expedientes/2026-114 --out ~/Para-IA   # crear copias limpias
@@ -525,7 +534,8 @@ security delete-generic-password -s no.klart.pseudonym.es.clarisimo.app</pre></d
           <h2>Requisitos del sistema</h2>
           <dl class="s-tabell">
             <div><dt>Mac</dt><dd>macOS 13 o posterior. Procesadores Intel y Apple en el mismo paquete.</dd></div>
-            <div><dt>Windows</dt><dd>La versión para Windows está en camino. Por ahora solo existe la versión para Mac.</dd></div>
+            <div><dt>Windows</dt><dd>Windows 10 u 11, de 64 bits con Intel o AMD. Instalación para todos los usuarios con el archivo .exe.</dd></div>
+            <div><dt>Linux</dt><dd>Un paquete .deb para amd64 (Intel o AMD) y otro para arm64. Depende de tesseract-ocr y xdg-utils, que instala el gestor de paquetes.</dd></div>
             <div><dt>Memoria</dt><dd>Clarísimo usa más memoria mientras el modelo de frases está cargado. Recomendamos 8 GB en el ordenador.</dd></div>
             <div><dt>Disco</dt><dd>Espacio para el programa instalado, más las copias de seguridad y lo que Clarísimo recuerda de las carpetas.</dd></div>
             <div><dt>Tarjeta gráfica</dt><dd>No es necesaria. Todo se ejecuta en el procesador.</dd></div>

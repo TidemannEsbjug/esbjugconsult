@@ -688,9 +688,11 @@ function nedlastingskort(tekst, kort, knapper) {
   var SIMULER = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) || /[?&]nedlasting=sim\b/.test(location.search);
 
   var SYSTEM = {
-    // Wszystko Jasne: bare Mac så langt (Windows og Linux kommer). Størrelsen brukes bare av simuleringen lokalt;
-    // på nettet kommer den fra content-length.
+    // Størrelsen brukes bare av simuleringen lokalt; på nettet kommer den fra content-length.
+    windows: { navn: "Windows", fil: "Wszystko Jasne.exe", mb: 259, neste: "Proszę otworzyć plik, aby zainstalować Wszystko Jasne." },
     mac: { navn: "Mac", fil: "Wszystko Jasne.dmg", mb: 317, neste: "Proszę otworzyć plik i przeciągnąć Wszystko Jasne do folderu „Aplikacje”." },
+    linux: { navn: "Linux", fil: "Wszystko-Jasne_0.1.0_amd64.deb", mb: 257, neste: "Proszę otworzyć plik, aby zainstalować Wszystko Jasne." },
+    "linux-arm": { navn: "Linux (ARM64)", fil: "Wszystko-Jasne_0.1.0_arm64.deb", mb: 257, neste: "Proszę otworzyć plik, aby zainstalować Wszystko Jasne." },
   };
   var merke = kort.querySelector("[data-merke]");
   var prosentEl = kort.querySelector("[data-prosent]");

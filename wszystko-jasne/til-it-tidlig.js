@@ -1,6 +1,6 @@
 (function () {
-  // Wszystko Jasne finnes foreløpig bare for Mac, så siden viser alltid Mac-sjekkene.
   var rot = document.documentElement;
+  var os = location.hash.slice(1);
   rot.classList.add("js");
-  rot.setAttribute("data-vis", "mac");
+  if (os === "mac" || os === "windows") rot.setAttribute("data-vis", os);
 })();

@@ -1,6 +1,6 @@
 (function () {
   var rot = document.documentElement;
-  // Chiarissimo: bare Mac-bygget finnes ennå, så siden viser alltid Mac (Windows og Linux er «in arrivo»).
+  var os = location.hash.slice(1);
   rot.classList.add("js");
-  rot.setAttribute("data-vis", "mac");
+  if (os === "mac" || os === "windows") rot.setAttribute("data-vis", os);
 })();

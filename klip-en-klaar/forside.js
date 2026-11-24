@@ -688,9 +688,11 @@ function nedlastingskort(tekst, kort, knapper) {
   var SIMULER = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) || /[?&]nedlasting=sim\b/.test(location.search);
 
   var SYSTEM = {
-    // Bare Mac-pakken finnes for Klip en Klaar; Windows og Linux kommer (siden sier det). Størrelsen brukes bare av
-    // simuleringen lokalt; på nettet kommer den fra content-length.
+    windows: { navn: "Windows", fil: "Klip en Klaar.exe", mb: 294, neste: "Open het bestand om Klip en Klaar te installeren." },
     mac: { navn: "Mac", fil: "Klip en Klaar.dmg", mb: 317, neste: "Open het bestand en sleep Klip en Klaar naar de map „Apps”." },
+    linux: { navn: "Linux", fil: "Klip-en-Klaar_0.1.0_amd64.deb", mb: 292, neste: "Open het bestand om Klip en Klaar te installeren." },
+    // ARM64-pakken: størrelsen her brukes bare av simuleringen lokalt; på nettet kommer den fra content-length.
+    "linux-arm": { navn: "Linux (ARM64)", fil: "Klip-en-Klaar_0.1.0_arm64.deb", mb: 292, neste: "Open het bestand om Klip en Klaar te installeren." },
   };
   var merke = kort.querySelector("[data-merke]");
   var prosentEl = kort.querySelector("[data-prosent]");

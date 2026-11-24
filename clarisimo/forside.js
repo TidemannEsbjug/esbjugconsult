@@ -90,8 +90,14 @@ document.querySelectorAll(".hero .os-mac, .v-hent .os-mac").forEach(function (ma
   // og teksten hopper.
   if (document.fonts && document.fonts.load) document.fonts.load('500 12.5px "JetBrains Mono"');
   var linjer = [
-    ["$ clarisimo --version", "kommando"],
-    ["clarisimo 0.1.0"],
+    ["$ sudo apt install clarisimo", "kommando"],
+    ["Leyendo lista de paquetes... Hecho"],
+    ["Creando árbol de dependencias... Hecho"],
+    ["Leyendo la información de estado... Hecho"],
+    ["Se instalarán los siguientes paquetes NUEVOS:"],
+    ["  clarisimo"],
+    ["0 actualizados, 1 nuevos se instalarán, 0 para eliminar y 0 no actualizados."],
+    ["Configurando clarisimo (0.1.0) ..."],
     ["$ clarisimo --jedi", "kommando"],
     ["Estos no son los datos personales que busca."],
     ["$ clarisimo clean ~/Documentos/informe.docx", "kommando"],
@@ -682,8 +688,11 @@ function nedlastingskort(tekst, kort, knapper) {
   var SIMULER = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) || /[?&]nedlasting=sim\b/.test(location.search);
 
   var SYSTEM = {
-    // Bare Mac finnes ennå. Størrelsen brukes bare av simuleringen lokalt; på nettet kommer den fra content-length.
+    // Alle tre systemer siden 24.11.2026. Størrelsen brukes bare av simuleringen lokalt; på nettet kommer den fra content-length.
+    windows: { navn: "Windows", fil: "Clarísimo.exe", mb: 286, neste: "Abra el archivo para instalar Clarísimo." },
     mac: { navn: "Mac", fil: "Clarísimo.dmg", mb: 317, neste: "Abra el archivo y arrastre Clarísimo a la carpeta «Aplicaciones»." },
+    linux: { navn: "Linux", fil: "Clarisimo_0.1.0_amd64.deb", mb: 284, neste: "Abra el archivo para instalar Clarísimo." },
+    "linux-arm": { navn: "Linux (ARM64)", fil: "Clarisimo_0.1.0_arm64.deb", mb: 284, neste: "Abra el archivo para instalar Clarísimo." },
   };
   var merke = kort.querySelector("[data-merke]");
   var prosentEl = kort.querySelector("[data-prosent]");
