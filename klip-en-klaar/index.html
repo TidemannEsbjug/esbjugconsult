@@ -1,0 +1,1595 @@
+<!doctype html>
+<!--
+  Hei, du som leser kildekoden. Det var deg vi håpet på.
+
+  Klart lover at dokumentene aldri forlater maskinen. Et sånt løfte skal ikke
+  tas på ordet, så sjekk det:
+
+  - Programmet: /klip-en-klaar/voor-it har kommandoene som viser hva det snakker med.
+  - Denne siden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
+    uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
+  - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
+    Vi vil heller høre det fra deg enn fra en kunde.
+-->
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/klip-en-klaar/favicon.png" />
+    <title>Klip en Klaar - lakt persoonsgegevens in documenten, op uw eigen computer</title>
+    <meta
+      name="description"
+      content="Klip en Klaar is een programma uit Noorwegen voor de Mac: een lokale AI lakt persoonsgegevens in een hele map met Word-, Excel-, PowerPoint-, pdf- en e-mailbestanden. Voor Woo-verzoeken, inzageverzoeken, delen, archief, opleiding of AI-tools, zonder internet en zonder account."
+    />
+    <!-- Himmelen øverst i heroen; forside.js bytter til sidens lyse farge når man har blat forbi. -->
+    <meta name="theme-color" content="#6593c3" />
+    <meta
+      property="og:title"
+      content="Klip en Klaar - lakt persoonsgegevens in documenten, op uw eigen computer"
+    />
+    <meta
+      property="og:description"
+      content="Programma uit Noorwegen voor de Mac. Een lokale AI leest Word, Excel, PowerPoint, pdf, e-mail en tekst, vindt Nederlandse persoonsgegevens en schrijft een gelakte kopie die u zelf controleert. Niets verlaat de computer."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="nl_NL" />
+    <meta property="og:url" content="https://esbjugconsult.com/klip-en-klaar/" />
+    <!-- Delingsbildet (Snapchat, iMessage, Facebook): krystallen på vinterbildet, 1200 × 630.
+         Uten det tok Snapchat et tilfeldig bilde fra siden, mappeikonet (eieren 11.11.2026). -->
+    <meta property="og:image" content="https://esbjugconsult.com/alles-klar/assets/klart-deling.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Klip en Klaar: het zilveren kristal op een winterfoto met een skispoor" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://esbjugconsult.com/alles-klar/assets/klart-deling.jpg" />
+    <link rel="apple-touch-icon" href="/klip-en-klaar/ikon.png" />
+    <!-- Ikke indekser før nedlastingene er på plass. Fjern når Klart lanseres. -->
+    <meta name="robots" content="noindex" />
+    <!-- Fontene ligger på siden selv. Henter vi dem fra Google, får Google
+         IP-adressen til hver besøkende - ikke noe en GDPR-side skal gjøre. -->
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="forhandsvisning.css" />
+    <link rel="stylesheet" href="videre.css" />
+    <link rel="stylesheet" href="de.css" />
+  </head>
+  <body>
+    <!-- Filtype-ikoner: dokumentark bak, appflis foran. -->
+    <svg class="ikonark" width="0" height="0" aria-hidden="true">
+      <defs>
+        <g id="page">
+          <rect
+            x="16"
+            y="2"
+            width="26"
+            height="32"
+            rx="3.5"
+            fill="#fff"
+            stroke="#dcdfda"
+            stroke-width="1.3"
+          />
+          <g fill="#e4e7e2">
+            <rect x="26" y="9" width="12" height="2.4" rx="1.2" />
+            <rect x="26" y="15" width="12" height="2.4" rx="1.2" />
+          </g>
+        </g>
+
+        <symbol id="i-word" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#185abd" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">W</text>
+        </symbol>
+
+        <symbol id="i-excel" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#107c41" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">X</text>
+        </symbol>
+
+        <symbol id="i-ppt" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#c43e1c" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">P</text>
+        </symbol>
+
+        <symbol id="i-pdf" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#c8322b" />
+          <text x="17.5" y="31" text-anchor="middle" font-size="11">PDF</text>
+        </symbol>
+
+        <symbol id="i-mail" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#0f6cbd" />
+          <rect
+            x="8.5"
+            y="20"
+            width="18"
+            height="13.5"
+            rx="1.8"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2.1"
+          />
+          <path
+            d="M9.2 21.2l8.3 6.4 8.3-6.4"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2.1"
+          />
+        </symbol>
+
+        <symbol id="i-bilde" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#7a4fd6" />
+          <circle cx="23" cy="20" r="3" fill="#fff" />
+          <path d="M7.5 36l7.5-10 5.5 6.5 3.5-4 6.5 7.5z" fill="#fff" />
+        </symbol>
+
+        <symbol id="i-text" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#5b6569" />
+          <g fill="#fff">
+            <rect x="9" y="19.5" width="17" height="2.4" rx="1.2" />
+            <rect x="9" y="25.3" width="17" height="2.4" rx="1.2" />
+            <rect x="9" y="31.1" width="10" height="2.4" rx="1.2" />
+          </g>
+        </symbol>
+
+        <!-- Mac Studio for skreddersydd oppsett. Ligger her én
+             gang, så de to nedlastingsfeltene kan bruke den uten like id-er. -->
+        <linearGradient id="mac-front" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f3f5f8" />
+          <stop offset="0.55" stop-color="#e1e6ec" />
+          <stop offset="1" stop-color="#c4cbd4" />
+        </linearGradient>
+        <linearGradient id="mac-kant" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#6d7783" stop-opacity="0.28" />
+          <stop offset="0.08" stop-color="#6d7783" stop-opacity="0" />
+          <stop offset="0.92" stop-color="#6d7783" stop-opacity="0" />
+          <stop offset="1" stop-color="#6d7783" stop-opacity="0.32" />
+        </linearGradient>
+        <linearGradient id="mac-topp" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#e9edf2" />
+          <stop offset="1" stop-color="#fbfcfd" />
+        </linearGradient>
+        <radialGradient id="mac-skygge" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="#050d1f" stop-opacity="0.45" />
+          <stop offset="1" stop-color="#050d1f" stop-opacity="0" />
+        </radialGradient>
+        <symbol id="mac-studio" viewBox="60 80 440 240">
+          <ellipse cx="280" cy="292" rx="236" ry="26" fill="url(#mac-skygge)" />
+          <rect x="122" y="262" width="316" height="24" rx="9" fill="#8d96a1" />
+          <rect x="128" y="276" width="304" height="6" rx="3" fill="#6e7782" />
+          <path d="M96 150 L128 104 Q134 96 146 96 L414 96 Q426 96 432 104 L464 150 Z" fill="url(#mac-topp)" stroke="#d3d9e1" stroke-width="1.2" />
+          <path d="M96 150 H464 V252 Q464 270 446 270 H114 Q96 270 96 252 Z" fill="url(#mac-front)" />
+          <path d="M96 150 H464 V252 Q464 270 446 270 H114 Q96 270 96 252 Z" fill="url(#mac-kant)" />
+          <path d="M96 150.5 H464" stroke="#ffffff" stroke-width="1.6" />
+          <g fill="#2b3139">
+            <rect x="128" y="200" width="22" height="8" rx="4" />
+            <rect x="162" y="200" width="22" height="8" rx="4" />
+            <rect x="386" y="202" width="42" height="4" rx="2" />
+          </g>
+          <circle cx="114" cy="254" r="2.4" fill="#ffffff" />
+          <circle cx="114" cy="254" r="5" fill="#ffffff" opacity="0.25" />
+        </symbol>
+      </defs>
+    </svg>
+
+    <!-- ================= Toppbar ================= -->
+    <header class="topbar">
+      <a class="wordmark" href="#top">
+        <b>Klip en Klaar</b>
+        <span>v0.1.0</span>
+      </a>
+      <nav class="topnav">
+        <a href="#hva">Wat is Klip en Klaar</a>
+        <a href="#kjernen">Zo werkt het</a>
+        <a href="#nokkel">De sleutel</a>
+        <a href="#trygt">Veiligheid</a>
+        <a href="#dybde">In detail</a>
+        <a href="#ansvar">Verantwoordelijkheid</a>
+        <a href="prijzen/">Prijs</a>
+      </nav>
+      <a class="btn sm topp-last" href="#top">Downloaden</a>
+      <!-- Mobil og nettbrett: e-post med lenken i stedet for «Last ned» (eieren 11.11.2026). -->
+      <a class="btn sm topp-send" href="mailto:?subject=Klip%20en%20Klaar&amp;body=https%3A%2F%2Fesbjugconsult.com%2Fklip-en-klaar">Stuur naar mijzelf</a>
+    </header>
+
+    <main id="top">
+      <!-- ================= Hero ================= -->
+      <section class="hero" id="programmet">
+        <!-- Scenen: vinterbildet fra appen. Skisporet leder opp mot hytta,
+             teksten står i himmelen og knappene nede i snøen. -->
+        <div class="scene">
+          <img class="scene-bilde" src="/alles-klar/assets/hero-vinter.jpg" width="2400" height="1600" fetchpriority="high" alt="" aria-hidden="true" />
+          <!-- Øverst toner himmelen over i én farge, den samme som linjen øverst på telefonen (eieren 11.11.2026). -->
+          <div class="scene-himmel" aria-hidden="true"></div>
+          <!-- Snøen fra forsiden på esbjugconsult.com, bak «Klart» og kortet (forside.js). -->
+          <canvas class="scene-sno" aria-hidden="true"></canvas>
+          <!-- Fnuggene som faller over kortets glass, bak innholdet i kortet. -->
+          <canvas class="scene-sno-midt" aria-hidden="true"></canvas>
+          <!-- Snøen som legger seg på «Klart» og kortet, foran innholdet. -->
+          <canvas class="scene-sno-lag" aria-hidden="true"></canvas>
+          <!-- Lett snø på mobil og nettbrett, bak «Klart» og kortet (forside.js). -->
+          <canvas class="scene-sno-mobil" aria-hidden="true"></canvas>
+
+          <!-- All teksten samlet, nede i snøen. Himmelen, hytta og sporet står fritt over. -->
+          <div class="scene-tekst">
+            <h1 class="rise d-60 hero-logo">
+              <!-- Krystallen over ordet på mobil, som på nedtellingssiden (eieren 11.11.2026). -->
+              <img class="hero-ikon" src="/klip-en-klaar/ikon.png" width="256" height="256" alt="" aria-hidden="true" />
+              <span class="logo-ord">Klip en Klaar</span>
+            </h1>
+            <!-- Privatpersoner laster ned og bruker Klart gratis; de skal ikke gjennom noe felt.
+                 Virksomheter går gjennom feltet under: 30 dager, så lisens. Blokka ligger rett over
+                 feltet (transform: translateY(-100%)), så feltet blir stående ved hytta som før,
+                 og viker når de begynner å skrive virksomhetsnavnet. -->
+            <div class="privat rise d-120">
+              <p class="privat-linje">
+                <span><b>Gratis voor privégebruik.</b></span>
+              </p>
+              <!-- Mobil og nettbrett: Klart kjører ikke der, så i stedet for nedlasting en e-post med lenken
+                   til seg selv eller andre (eieren 11.11.2026). Vises bare på berøringsskjermer (styles.css). -->
+              <div class="mobil-send">
+                <p class="mobil-send-tittel">Klip en Klaar is een programma voor de computer.</p>
+                <p class="mobil-send-tekst">Stuur uzelf de link per e-mail en download het programma op de Mac. Windows en Linux volgen.</p>
+                <a class="btn" href="mailto:?subject=Klip%20en%20Klaar&amp;body=https%3A%2F%2Fesbjugconsult.com%2Fklip-en-klaar">Stuur naar mijzelf</a>
+                <p class="mobil-send-andre">(Of naar iemand anders?)</p>
+              </div>
+              <p class="last-ned-tittel">Downloaden</p>
+              <div class="get">
+                <!-- Hver knapp får sitt systems kjennetegn når man holder over, uten logoer:
+                     Windows en ring i de fire fargene rundt knappen (en ring,
+                     ikke logoens ruter), Mac glass etter Apples egen beskrivelse, Linux en pingvin (egen tegning). -->
+                <a class="btn ghost os os-mac" href="/klip-en-klaar/download/mac" download aria-label="Downloaden voor Mac"><span class="os-glass" aria-hidden="true"></span><span class="os-navn">Mac</span></a>
+              </div>
+              <p class="privat-fin">Windows en Linux volgen. Geen registratie, geen contract.</p>
+              <p class="eller"><span>of</span></p>
+            </div>
+            <!-- Virksomheter: ingen registeroppslag i den nederlandske utgaven. Knappen fører til prisen og bestillingen på faktura (prijzen/). -->
+            <div class="orgport de-pris rise d-180">
+              <div>
+                <div class="orgport-rad">
+                  <a class="btn" href="prijzen/">Bekijk de prijs voor uw organisatie</a>
+                </div>
+                <p class="virk-linje">
+                  <span>Voor organisaties: <b>30 dagen gratis</b>. Geen registratie. Daarna bestellen op factuur.</span>
+                </p>
+              </div>
+            </div>
+            <!-- Nedlastingen: kortet blir et eget nedlastingskort når de har valgt system.
+                 Lyset rundt kanten følger hvor langt nedlastingen har kommet (forside.js). -->
+            <div class="nedlasting" data-nedlasting hidden aria-live="polite">
+              <div class="nedlasting-topp">
+                <span class="nedlasting-merke" data-merke aria-hidden="true"></span>
+                <div>
+                  <p class="nedlasting-tittel">Klip en Klaar voor <span data-os></span></p>
+                  <p class="nedlasting-fil" data-fil></p>
+                </div>
+              </div>
+              <p class="nedlasting-prosent"><span data-prosent>0</span><span class="nedlasting-pst">%</span></p>
+              <p class="nedlasting-status" data-status></p>
+              <div class="nedlasting-ferdig" data-ferdig hidden>
+                <span class="nedlasting-hake" aria-hidden="true"><svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="25" pathLength="1" /><path d="M17 29l8 8 15-17" pathLength="1" /></svg></span>
+                <p class="nedlasting-ferdig-tittel">Gedownload</p>
+                <p class="nedlasting-neste" data-neste></p>
+              </div>
+              <button type="button" class="nedlasting-tilbake" data-tilbake>Terug</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vis først, forklar etterpå: programvinduet rett under bildet, så filtypene,
+             og til slutt hva Klart er (boksen «om»). -->
+
+        <!-- Programvindu: en kopi av Klart slik appen ser ut fra november 2026 (src/ny og
+             src/editor/ui i appen), bygget i HTML og CSS, ikke film. forhandsvisning.js spiller
+             av fem kapitler, og raden under vinduet hopper mellom dem: rens en mappe (PDF,
+             e-post med bilde av en bil (Midjourney, fiktiv), regneark og PowerPoint leses;
+             ansiktene og skiltet pikseleres underveis),
+             gjennomgangen, kopiene (også svart sladd), høyreklikk i Finder, og en KI som får
+             teksten med koder og svarer, før svaret tilbakeføres i Klart. Lesingen vises rolig
+             (epilepsi og lysfølsomhet): ingen blink, ett lesehode som glir over hver side, og
+             merkene toner inn. Pekeren er alltid i bildet og glir mellom stedene. Uten JS, eller
+             med redusert bevegelse, står den stille i editoren med alt gjennomgått.
+             Stil: forhandsvisning.css. -->
+        <!-- Hva Klart er, rett over programvinduet (GDPR/index.html, eieren 19.-20.11.2026), på nederlandsk. -->
+        <section class="hva rise" aria-label="Klip en Klaar is een lokaal programma">
+          <div class="hva-venstre">
+            <!-- Det første man skal forstå, enkelt forklart. Den nederlandske utgaven har en nederlandsk språkmodell. -->
+            <ul class="hva-sjekk">
+              <li>AI-model voor Nederlandse teksten</li>
+              <li>Alles gebeurt op uw eigen computer</li>
+              <li>Gemaakt voor gewone computers</li>
+            </ul>
+          </div>
+          <!-- Logoen, og det viktigste under den. -->
+          <div class="hva-hoyre">
+            <p class="hva-logo"><img src="/klip-en-klaar/ikon.png" width="256" height="256" alt="" aria-hidden="true" /><span>Klip en Klaar</span></p>
+            <p class="hva-under">Lokaal programma · Zonder internet</p>
+          </div>
+        </section>
+        <figure class="kv rise avklart" data-scene="gjennom">
+          <div class="kv-ramme">
+          <div class="kv-app" aria-hidden="true">
+            <header class="kv-chrome">
+              <span class="kv-lys"><i></i><i></i><i></i></span>
+              <span class="kv-merke"><img src="/klip-en-klaar/ikon.png" alt="" />Klip en Klaar</span>
+              <span class="kv-sok"><svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.6" /><path d="M10.4 10.4L14 14" /></svg>Zoek in alle bestanden van de map<kbd>⌘F</kbd></span>
+              <span class="kv-hoyre">
+                <span class="kv-lagret">✓ Automatisch bewaard</span>
+                <span class="kv-lysknapp">Opties voor controle</span>
+                <span class="kv-lysknapp" data-kv="hjem">Beginscherm</span>
+                <span class="kv-lysknapp kv-sporsmal">?</span>
+              </span>
+            </header>
+
+            <div class="kv-flate">
+              <!-- Startskjermen: de tre verktøyene, og det som ble tilbakeført under dem -->
+              <div class="kv-scene kv-s-start">
+                <div class="kv-start-inn">
+                  <div class="kv-kortene">
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-rens.png" alt="" />
+                      <h4>Lakken</h4>
+                      <span class="kv-hvit" data-kv="velg">Kies een map of documenten …</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-tilbakefor.png" alt="" />
+                      <h4>Herstellen</h4>
+                      <span class="kv-hvit" data-kv="tbvelg">Kies kopieën …</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-tekst.png" alt="" />
+                      <h4>Teksttool</h4>
+                      <span class="kv-hvit" data-kv="tekstvelg">Openen …</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Editoren: filene, dokumentet og registeret for mappen -->
+              <div class="kv-scene kv-s-editor">
+                <aside class="kv-filer">
+                  <div class="kv-filer-topp"><b>Cliëntdossiers</b><span>10 bestanden</span></div>
+                  <ul data-kv="filer">
+                    <li data-steder="30"><i class="kv-fikon w">W</i><span class="kv-fnavn">01-arbeidsovereenkomst-acme.docx</span><span class="kv-fmeta">30 plekken</span><i class="kv-ring"></i></li>
+                    <li data-steder="41" data-uavklart="2" data-dok="vedtak" class="valgt"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">02-beschikking-bewind.pdf</span><span class="kv-fmeta">41 plekken</span><i class="kv-ring"></i></li>
+                    <li data-steder="45" data-ekstra="1 kenteken" data-dok="epost"><i class="kv-fikon epost">@</i><span class="kv-fnavn">03-e-mailwisseling.eml</span><span class="kv-fmeta">45 plekken</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon tekst">T</i><span class="kv-fnavn">04-personeelsnotitie.md</span><span class="kv-fmeta">21 plekken</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon w">W</i><span class="kv-fnavn">05-medische-verklaring.docx</span><span class="kv-fmeta">21 plekken</span><i class="kv-ring"></i></li>
+                    <li data-steder="16"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">06-factuur-noorderlicht.pdf</span><span class="kv-fmeta">16 plekken</span><i class="kv-ring"></i></li>
+                    <li data-steder="82" data-dok="liste"><i class="kv-fikon x">X</i><span class="kv-fnavn">08-clientenlijst.xlsx</span><span class="kv-fmeta">82 plekken</span><i class="kv-ring"></i></li>
+                    <li data-steder="43" data-ekstra="2 gezichten" data-dok="ppt"><i class="kv-fikon p">P</i><span class="kv-fnavn">09-voortgangsoverleg.pptx</span><span class="kv-fmeta">43 plekken · 2 gezichten</span><i class="kv-ring"></i></li>
+                    <li data-steder="18"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">11-gescande-bijlage.pdf</span><span class="kv-fmeta">18 plekken</span><i class="kv-ring"></i></li>
+                    <li data-steder="3" data-ekstra="1 gezicht"><i class="kv-fikon bilde">JPG</i><span class="kv-fnavn">16-toegangspas.jpg</span><span class="kv-fmeta">3 plekken · 1 gezicht</span><i class="kv-ring"></i></li>
+                  </ul>
+                </aside>
+
+                <div class="kv-midt">
+                  <div class="kv-docket">
+                    <b data-kv="docnavn">02-beschikking-bewind.pdf</b><span class="kv-type" data-kv="doctype">PDF</span>
+                    <span class="kv-kopimerke" data-kv="kopimerke">De kopie · codelijst achteraan</span>
+                    <span class="kv-verktoy">
+                      <span class="kv-zoom">− &nbsp;86 %&nbsp; +</span>
+                      <span class="kv-hvit" data-kv="vis">Toon de kopie</span>
+                    </span>
+                  </div>
+                  <div class="kv-bord">
+                    <div class="kv-pille" data-kv="pille"><i></i>Leest <b data-kv="leser">01-arbeidsovereenkomst-acme.docx</b><span data-kv="nr">1 van 10</span></div>
+
+                    <!-- PDF: vedtak om vergemål -->
+                    <article class="kv-side vist" data-dok="vedtak">
+                      <i class="kv-lesehode"></i>
+                      <p class="kv-avsender">Rechtbank Amsterdam · Kantonrechter</p>
+                      <h4>Beschikking tot instelling van een bewind</h4>
+                      <p class="kv-ref">Zaaknummer <mark class="s"><span class="o">C/13/751842 / BM RK 26-184</span><span class="k">[Zaaknummer 4906498]</span></mark> · 14.03.2026</p>
+                      <h5>Rechthebbende</h5>
+                      <dl>
+                        <dt>Naam</dt><dd><mark class="s"><span class="o">Karin de Vries</span><span class="k">[Persoon 6311794]</span></mark></dd>
+                        <dt>BSN</dt><dd><mark class="s"><span class="o">111222333</span><span class="k">[BSN 2215087]</span></mark></dd>
+                        <dt>Adres</dt><dd><mark class="s"><span class="o">Lindengracht 27, 1015 KD Amsterdam</span><span class="k">[Adres 8950779]</span></mark></dd>
+                      </dl>
+                      <h5>Benoemde bewindvoerder</h5>
+                      <dl>
+                        <dt>Naam</dt><dd><mark class="s"><span class="o">Lucas Jansen</span><span class="k">[Persoon 2656447]</span></mark>, <mark class="b" data-kv="arbeid"><span class="o">Noorderlicht Bewindvoering B.V.</span><span class="k">[Organisatie 5521093]</span></mark></dd>
+                        <dt>E-mail</dt><dd><mark class="s"><span class="o">lucas.jansen@noorderlicht.test</span><span class="k">[E-mail 3278678]</span></mark></dd>
+                        <dt>Telefoon</dt><dd><mark class="s"><span class="o">020 555 0134</span><span class="k">[Telefoon 6289990]</span></mark></dd>
+                      </dl>
+                      <h5>Gronden</h5>
+                      <p><mark class="s" data-kv="merknad"><span class="o">Rechthebbende is sinds januari opgenomen wegens een depressie en heeft hulp nodig bij haar financiën.</span><span class="k">[Privézin 2760056]</span></mark> Het bewind omvat het beheer van het tegoed op rekening <mark class="s"><span class="o">NL91 ABNA 0417 1643 00</span><span class="k">[Rekeningnummer 7719741]</span></mark>.</p>
+                      <p>Deze beschikking is uitvoerbaar bij voorraad. Tegen deze beschikking kan binnen drie maanden hoger beroep worden ingesteld.</p>
+                    </article>
+
+                    <!-- E-post -->
+                    <article class="kv-side kv-epost" data-dok="epost">
+                      <i class="kv-lesehode"></i>
+                      <dl class="kv-hode">
+                        <dt>Van</dt><dd><mark class="s"><span class="o">Sanne Bakker</span><span class="k">[Persoon 7320430]</span></mark> &lt;<mark class="s"><span class="o">sanne.bakker@noorderlicht.test</span><span class="k">[E-mail 5102284]</span></mark>&gt;</dd>
+                        <dt>Aan</dt><dd><mark class="s"><span class="o">Karin de Vries</span><span class="k">[Persoon 6311794]</span></mark></dd>
+                        <dt>Onderwerp</dt><dd><b>Naar aanleiding van ons gesprek</b></dd>
+                        <dt>Datum</dt><dd>12 maart 2026, 09:14</dd>
+                      </dl>
+                      <p>Hoi <mark class="s"><span class="o">Karin</span><span class="k">[Persoon 6311794]</span></mark>,</p>
+                      <p>bedankt voor het gesprek van gisteren. Zoals besproken stuur ik je een kopie van de medische verklaring. Je kunt me de hele week bereiken op <mark class="s"><span class="o">020 555 0134</span><span class="k">[Telefoon 6289990]</span></mark>.</p>
+                      <p>De auto van de zaak met kenteken <mark class="s"><span class="o">GZ-482-B</span><span class="k">[Kenteken 3071552]</span></mark> staat vanaf maandag voor je klaar. De foto zit in de bijlage.</p>
+                      <p>Met vriendelijke groet,<br /><mark class="s"><span class="o">Sanne Bakker</span><span class="k">[Persoon 7320430]</span></mark><br />Noorderlicht Bewindvoering B.V. · <mark class="s"><span class="o">Havenstraat 22, 9711 AB Groningen</span><span class="k">[Adres 6113936]</span></mark></p>
+                      <figure class="kv-vedlegg">
+                        <span class="kv-bilramme"><img src="/alles-klar/assets/visning/bil.jpg" alt="" /><span class="kv-skilt" data-kv="skilt"><img src="/alles-klar/assets/visning/bil-skilt.png" alt="" /><em data-kv="skiltlapp">Kenteken · wordt gelakt</em></span></span>
+                        <figcaption>auto.jpg · 1,2 MB</figcaption>
+                      </figure>
+                    </article>
+
+                    <!-- Regneark -->
+                    <article class="kv-side kv-ark" data-dok="liste">
+                      <i class="kv-lesehode"></i>
+                      <table>
+                        <thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead>
+                        <tbody>
+                          <tr><th>1</th><td><b>Naam</b></td><td><b>BSN</b></td><td><b>Telefoon</b></td><td><b>IBAN</b></td></tr>
+                          <tr><th>2</th><td><mark class="s"><span class="o">Daan Visser</span><span class="k">[Persoon 1180342]</span></mark></td><td><mark class="s"><span class="o">123456782</span><span class="k">[BSN 4402918]</span></mark></td><td><mark class="s"><span class="o">06 5550 0142</span><span class="k">[Telefoon 2290174]</span></mark></td><td><mark class="s"><span class="o">NL02 ABNA 0123 4567 89</span><span class="k">[Rekeningnummer 6630215]</span></mark></td></tr>
+                          <tr><th>3</th><td><mark class="s"><span class="o">Fatima El Amrani</span><span class="k">[Persoon 5523107]</span></mark></td><td><mark class="s"><span class="o">204563719</span><span class="k">[BSN 8817330]</span></mark></td><td><mark class="s"><span class="o">06 5550 0178</span><span class="k">[Telefoon 1047782]</span></mark></td><td><mark class="s"><span class="o">NL20 INGB 0001 2345 67</span><span class="k">[Rekeningnummer 3359810]</span></mark></td></tr>
+                          <tr><th>4</th><td><mark class="s"><span class="o">Mehmet Yılmaz</span><span class="k">[Persoon 9918066]</span></mark></td><td><mark class="s"><span class="o">999990019</span><span class="k">[BSN 2265419]</span></mark></td><td><mark class="s"><span class="o">06 5550 0111</span><span class="k">[Telefoon 7714203]</span></mark></td><td><mark class="s"><span class="o">NL44 RABO 0123 4567 89</span><span class="k">[Rekeningnummer 9046631]</span></mark></td></tr>
+                          <tr><th>5</th><td><mark class="s"><span class="o">Lotte van Dijk</span><span class="k">[Persoon 3301459]</span></mark></td><td><mark class="s"><span class="o">168275648</span><span class="k">[BSN 6158820]</span></mark></td><td><mark class="s"><span class="o">06 5550 0166</span><span class="k">[Telefoon 4420987]</span></mark></td><td><mark class="s"><span class="o">NL86 INGB 0002 4455 88</span><span class="k">[Rekeningnummer 1872264]</span></mark></td></tr>
+                          <tr><th>6</th><td><mark class="s"><span class="o">Jan de Boer</span><span class="k">[Persoon 8045126]</span></mark></td><td><mark class="s"><span class="o">245873910</span><span class="k">[BSN 5590743]</span></mark></td><td><mark class="s"><span class="o">06 5550 0127</span><span class="k">[Telefoon 3368201]</span></mark></td><td><mark class="s"><span class="o">NL39 RABO 0300 0652 64</span><span class="k">[Rekeningnummer 7701358]</span></mark></td></tr>
+                          <tr><th>7</th><td></td><td></td><td></td><td></td></tr>
+                          <tr><th>8</th><td></td><td></td><td></td><td></td></tr>
+                        </tbody>
+                      </table>
+                    </article>
+
+                    <!-- PowerPoint: lysbildet fra fellesturen, med to ansikter -->
+                    <article class="kv-side kv-ppt" data-dok="ppt">
+                      <i class="kv-lesehode"></i>
+                      <div class="kv-lysbilde">
+                        <p class="kv-lb-tittel">Teamuitje in februari</p>
+                        <p class="kv-lb-under">Dank aan <mark class="s"><span class="o">Hanna de Lange</span><span class="k">[Persoon 3390415]</span></mark> en <mark class="s"><span class="o">Pieter Strand</span><span class="k">[Persoon 8812706]</span></mark> voor de organisatie!</p>
+                        <div class="kv-lb-foto">
+                          <img src="/alles-klar/assets/visning/fagtur.jpg" alt="" />
+                          <span class="kv-ansikt a1" data-kv="ansikt1"><img src="/alles-klar/assets/visning/fagtur-ansikt-1.jpg" alt="" /><em>Gezicht · wordt gepixeld</em></span>
+                          <span class="kv-ansikt a2" data-kv="ansikt2"><img src="/alles-klar/assets/visning/fagtur-ansikt-2.jpg" alt="" /><em>Gezicht · wordt gepixeld</em></span>
+                        </div>
+                        <p class="kv-lb-bunn">Voortgangsoverleg · dia 4 van 12</p>
+                      </div>
+                    </article>
+
+                    <div class="kv-gjennom" data-kv="gjennom">
+                      <i class="kv-gjennom-strek" data-kv="gstrek"></i>
+                      <p class="kv-gjennom-topp"><code data-kv="gkode">Privézin 2760056</code><b>Open</b><span data-kv="gnr">1 van 2</span></p>
+                      <p class="kv-gjennom-hvorfor" data-kv="ghvorfor">Klip en Klaar weet niet zeker of dit onder “Privézinnen” valt. · 02-beschikking-bewind.pdf</p>
+                      <p class="kv-gjennom-knapper">
+                        <span class="kv-btn" data-kv="skjul">Lakken <kbd>↵</kbd></span>
+                        <span class="kv-btn hvit" data-kv="lastaa">Laten staan <kbd>B</kbd></span>
+                        <span class="kv-btn hvit av">Vorige <kbd>←</kbd></span>
+                        <span class="kv-btn hvit">Volgende <kbd>→</kbd></span>
+                        <span class="kv-btn hvit">Stop <kbd>Esc</kbd></span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <aside class="kv-panel">
+                  <div class="kv-uavklart" data-kv="uavklart">
+                    <h5><svg viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" rx="2" /><path d="M6 2.5v11" /></svg>Open</h5>
+                    <div class="kv-uboks">
+                      <p data-kv="u1"><code>Privézin 2760056</code><span>Rechthebbende is sinds januari …</span><em>1 open</em></p>
+                      <p data-kv="u2"><code>Organisatie 5521093</code><span>Noorderlicht Bewindvoering B.V.</span><em>1 open</em></p>
+                      <span class="kv-btn bred" data-kv="gaa">Alle 2 nakijken <kbd>G</kbd></span>
+                    </div>
+                  </div>
+                  <div class="kv-imappen">
+                    <h5>In de map <span><b data-kv="opplysninger">67</b> gegevens</span></h5>
+                    <ul data-kv="register">
+                      <li data-n="19" data-s="114"><span>Personen</span><em>19 · 114 plekken</em></li>
+                      <li data-n="7" data-s="24"><span>BSN's</span><em>7 · 24 plekken</em></li>
+                      <li data-n="12" data-s="43"><span>Telefoon</span><em>12 · 43 plekken</em></li>
+                      <li data-n="15" data-s="53"><span>E-mail</span><em>15 · 53 plekken</em></li>
+                      <li data-n="7" data-s="29"><span>Adressen</span><em>7 · 29 plekken</em></li>
+                      <li data-n="6" data-s="13"><span>Rekeningnummers</span><em>6 · 13 plekken</em></li>
+                      <li data-n="1" data-s="2"><span>Kentekens</span><em>1 · 2 plekken</em></li>
+                      <li data-n="3" data-s="12"><span>Gevoelig</span><em>3 · 12 plekken</em></li>
+                      <li data-n="3" data-s="3" data-kv="ansikter"><span>Gezichten</span><em>3 · 3 plekken</em></li>
+                    </ul>
+                  </div>
+                  <div class="kv-bunn">
+                    <p><b data-kv="skjules">292</b> lakken <b data-kv="faarstaa">1</b> laten staan</p>
+                    <p class="kv-bunn-knapper">
+                      <span class="kv-btn hvit oransje" data-kv="ubtn"><i></i>Open 2</span>
+                      <span class="kv-btn stor" data-kv="lag">Maak 10 kopieën</span>
+                    </p>
+                  </div>
+                </aside>
+              </div>
+
+              <!-- Tekstverktøy: et ark å skrive eller lime inn på -->
+              <div class="kv-scene kv-s-tekst">
+                <div class="kv-rt-linje">
+                  <span class="kv-rt-tilbake">‹ Beginscherm</span>
+                  <span class="kv-faner"><span class="på" data-kv="fanerens"><i>1</i>Lak tekst</span><span data-kv="fanetb"><i>2</i>Herstel tekst</span></span>
+                  <span class="kv-faner kv-rt-visning"><span class="på" data-kv="rtorig">Met namen</span><span data-kv="rtrenset">Gelakt</span></span>
+                  <span class="kv-btn" data-kv="rtkopier">Kopieer</span>
+                </div>
+                <div class="kv-rt-kropp">
+                  <div class="kv-rt-ark" data-kv="rtark"><p data-kv="rttekst"></p><i class="kv-markor"></i><p class="kv-rt-svar" data-kv="rtsvar"></p></div>
+                  <aside class="kv-rt-liste">
+                    <h5 data-kv="rtlistetittel">Klip en Klaar lakt</h5>
+                    <ul data-kv="rtliste"></ul>
+                    <p class="kv-rt-merke">Wordt op deze computer gelezen. Er wordt niets verstuurd.</p>
+                  </aside>
+                </div>
+                <p class="kv-toast" data-kv="toast">Gekopieerd</p>
+              </div>
+
+              <!-- Skrivebordet: Finder med høyreklikk › Hurtighandlinger › Rens med Klart -->
+              <div class="kv-scene kv-s-finder kv-skrivebord">
+                <div class="kv-finder">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><span class="kv-pil">‹ ›</span><b>Documenten</b></div>
+                  <div class="kv-finder-kropp">
+                    <ul class="kv-sidefelt">
+                      <li class="kv-sf-h">Favorieten</li>
+                      <li>Bureaublad</li>
+                      <li class="på">Documenten</li>
+                      <li>Downloads</li>
+                      <li class="kv-sf-h">Locaties</li>
+                      <li>iCloud Drive</li>
+                    </ul>
+                    <div class="kv-ikoner">
+                      <span class="kv-mappe" data-kv="fmappe"><i></i>Cliëntdossiers</span>
+                      <span class="kv-mappe"><i></i>Inzageverzoek maart</span>
+                      <span class="kv-mappe"><i></i>Boekhouding 2025</span>
+                      <span class="kv-dokikon"><i>PDF</i>overeenkomst-acme.pdf</span>
+                      <span class="kv-dokikon w"><i>W</i>Notulen 10-11.docx</span>
+                      <span class="kv-mappe ny" data-kv="fny"><i></i>Cliëntdossiers-klaar</span>
+                    </div>
+                  </div>
+                  <ul class="kv-meny" data-kv="meny">
+                    <li>Open</li>
+                    <li>Open in nieuwe tab</li>
+                    <li class="kv-skille"></li>
+                    <li>Verplaats naar prullenmand</li>
+                    <li class="kv-skille"></li>
+                    <li>Toon info</li>
+                    <li>Wijzig naam</li>
+                    <li>Comprimeer “Cliëntdossiers”</li>
+                    <li>Dupliceer</li>
+                    <li class="kv-skille"></li>
+                    <li>Kopieer</li>
+                    <li>Deel …</li>
+                    <li class="kv-skille"></li>
+                    <li class="kv-under" data-kv="hurtig">Snelle taken<span>›</span></li>
+                    <li class="kv-under">Voorzieningen<span>›</span></li>
+                  </ul>
+                  <ul class="kv-meny kv-undermeny" data-kv="undermeny">
+                    <li data-kv="rensmed">Lak met Klip en Klaar</li>
+                    <li>Herstel met Klip en Klaar</li>
+                    <li class="kv-skille"></li>
+                    <li>Pas aan …</li>
+                  </ul>
+                </div>
+                <div class="kv-varsel" data-kv="varsel">
+                  <img src="/klip-en-klaar/ikon.png" alt="" />
+                  <p><b data-kv="vtittel">“Cliëntdossiers” wordt gelakt…</b><span data-kv="vtekst">De kopieën worden ernaast gezet. U krijgt een melding als ze klaar zijn.</span></p>
+                  <small>nu</small>
+                </div>
+              </div>
+
+              <!-- Skrivebordet: et KI-verktøy som bare får kodene -->
+              <div class="kv-scene kv-s-ki kv-skrivebord">
+                <div class="kv-ki">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><b>AI-assistent</b></div>
+                  <div class="kv-ki-samtale">
+                    <div class="kv-ki-bruker" data-kv="kibruker">
+                      <p>Schrijf een kort antwoord op dit bericht:</p>
+                      <p class="kv-ki-sitat">Hallo! Kunt u vandaag <code>[Persoon 6311794]</code> bellen op <code>[Telefoon 6289990]</code>? Ze is verhuisd naar <code>[Adres 8950779]</code>, en haar salaris moet voortaan naar rekening <code>[Rekeningnummer 7719741]</code>.</p>
+                    </div>
+                    <div class="kv-ki-svar" data-kv="kisvar"><p data-kv="kisvartekst"></p><span class="kv-ki-kopier" data-kv="kikopier">Kopieer antwoord</span></div>
+                  </div>
+                  <div class="kv-ki-felt" data-kv="kifelt"><span>Schrijf een bericht …</span><i>↑</i></div>
+                </div>
+                <p class="kv-ki-merke">De AI krijgt alleen de codes. Naam, telefoon, adres en rekening blijven op de computer.</p>
+              </div>
+
+              <!-- «Før skanningen»: over startskjermen, når mappen er valgt -->
+              <div class="kv-slor kv-s-forvalg">
+                <div class="kv-modal">
+                  <h4>Cliëntdossiers</h4>
+                  <p class="kv-modal-under">10 bestanden · docx, eml, jpg, md, pdf, pptx, xlsx</p>
+                  <div class="kv-maate">
+                    <p class="på"><i></i><span><b>Met controle</b>Klip en Klaar leest de bestanden en markeert wat het vindt. U loopt ze na en beslist.</span></p>
+                    <p><i></i><span><b>Zonder controle</b>Er wordt niets vooraf gemarkeerd. U klikt op wat gelakt moet worden.</span></p>
+                  </div>
+                  <p class="kv-sammen"><span><small>De controle zoekt en lakt</small>Namen, BSN, telefoon en e-mail, gevoelig, kentekens, rekeningen, gezichten en 5 andere</span><em>Wijzig</em></p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Annuleer</span>
+                    <span class="kv-btn stor" data-kv="skann">Doorzoek <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- «Før kopiene lages»: formen kopiene får -->
+              <div class="kv-slor kv-s-kopivalg">
+                <div class="kv-modal kv-kopivalg">
+                  <h4>Voordat de kopieën worden gemaakt</h4>
+                  <p class="kv-modal-under">10 bestanden · de kopieën komen in Cliëntdossiers-klaar</p>
+                  <div class="kv-maate kv-former" data-kv="former">
+                    <p class="på" data-form="kort"><i></i><span><b>Korte code en codelijst</b>Goed leesbaar. Kan met de sleutel van uw organisatie worden hersteld.<code>[Persoon 4814887] + lijst</code></span></p>
+                    <p data-form="full"><i></i><span><b>Volledige code in de tekst</b>Geen lijst. Kan worden hersteld, maar leest moeilijk.</span></p>
+                    <p data-form="lapp"><i></i><span><b>Alleen labels</b>Goed leesbaar, maar het origineel kan niet worden hersteld.</span></p>
+                    <p data-form="svart"><i></i><span><b>Zwart lakken (pdf)</b>Wat er stond, is voorgoed weg.<code class="kv-svartprove"></code></span></p>
+                  </div>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Annuleer</span>
+                    <span class="kv-btn stor" data-kv="lagnaa">Maak 10 kopieën <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Kopiene er laget -->
+              <div class="kv-slor kv-s-ferdig">
+                <div class="kv-ferdig">
+                  <p class="kv-stor">Gereed.</p>
+                  <p>10 kopieën zijn gemaakt. De originelen zijn onaangeroerd. Lees de kopieën door voordat u ze deelt.</p>
+                  <p class="kv-sti"><span>Documenten/</span>Cliëntdossiers-klaar/</p>
+                  <p class="kv-liten">De codelijst staat achteraan elke kopie.</p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit">Terug naar de map</span>
+                    <span class="kv-btn">Open de kopieën</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+          <span class="kv-peker" aria-hidden="true"></span>
+          <!-- Kapitlene: hopper i avspillingen. Det som spilles nå, er markert. -->
+          <ol class="kv-kapitler" data-kv="kapitler" aria-label="Hoofdstukken van de voorvertoning">
+            <li><button type="button" data-kapittel="0">Een map lakken</button></li>
+            <li><button type="button" data-kapittel="1">Nakijken</button></li>
+            <li><button type="button" data-kapittel="2">De kopieën</button></li>
+            <li><button type="button" data-kapittel="3">Rechtsklik in Finder</button></li>
+            <li><button type="button" data-kapittel="4">Tekst lakken en herstellen</button></li>
+          </ol>
+          <!-- Lesingen spilles av mye raskere enn den går på en vanlig maskin. Det skal stå. -->
+          <p class="kv-spol" aria-hidden="true">
+            <svg viewBox="0 0 20 12"><path d="M1 1l8 5-8 5zM10 1l8 5-8 5z" /></svg>
+            <span>Versneld afgespeeld. Hoe lang het lezen duurt, verschilt per computer. Op een gewone laptop gaat het langzamer.</span>
+          </p>
+          <figcaption class="skjult-tekst">
+            Zo werkt Klip en Klaar. U kiest een map, en Klip en Klaar leest de bestanden, ook pdf,
+            e-mail, spreadsheets, PowerPoint en afbeeldingen, en markeert namen, BSN's, contactgegevens,
+            adressen, rekeningnummers, gevoelige gegevens, kentekens en gezichten, die worden gepixeld.
+            Waar Klip en Klaar niet zeker van is, kijkt u zelf na en beslist u: lakken of laten staan.
+            De kopieën kunnen korte codes met een codelijst krijgen, volledige codes, alleen labels of
+            zwarte lakken, en de originelen blijven onaangeroerd. In Finder lakt u een map met
+            rechtsklik › Snelle taken › Lak met Klip en Klaar. Tekst met codes kunt u aan een AI-tool
+            geven, en het antwoord wordt in Klip en Klaar hersteld, zodat de namen terugkomen zonder
+            dat de AI ze heeft gezien. Het lezen is versneld afgespeeld: hoe lang het duurt, verschilt
+            per computer.
+          </figcaption>
+        </figure>
+
+        <!-- Filtypene under programvinduet, over boksen. -->
+        <div class="formats rise">
+          <p>Leest de bestanden waarmee u toch al werkt</p>
+          <ul>
+            <li>
+              <svg class="ficon"><use href="#i-word" /></svg>
+              <span class="fname">Word</span>
+              <span class="fext">.docx</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-excel" /></svg>
+              <span class="fname">Excel</span>
+              <span class="fext">.xlsx · .xls · .csv</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-ppt" /></svg>
+              <span class="fname">PowerPoint</span>
+              <span class="fext">.pptx</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-pdf" /></svg>
+              <span class="fname">PDF</span>
+              <span class="fext">.pdf</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-mail" /></svg>
+              <span class="fname">E-mail</span>
+              <span class="fext">.eml</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-bilde" /></svg>
+              <span class="fname">Afbeeldingen</span>
+              <span class="fext">.jpg · .png · .tiff</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-text" /></svg>
+              <span class="fname">Tekst</span>
+              <span class="fext">.txt · .md</span>
+            </li>
+          </ul>
+          <!-- Eierens tekst (GDPR/index.html, 20.11.2026), på nederlandsk. -->
+          <p class="formats-unik"><b>Bijzonder:</b> Klip en Klaar kopieert de bestanden in het formaat waarin ze al staan, zodat u met de gelakte documenten verder kunt werken.</p>
+        </div>
+
+      </section>
+
+      <!-- =====================================================================
+           Resten av siden (videre.css og videre.js). Skrevet 11.11.2026 for
+           Klart slik programmet er nå: koder med faste numre, nøkkelen,
+           tilbakeføring, gjennomgangen, kopikontrollen og de fire kopiformene.
+
+           Rekkefølgen er lagt for en leser uten teknisk bakgrunn: først én idé
+           per skjerm, med et bilde og få ord. Så «I dybden», der hvert emne
+           kan åpnes av den som vil vite mer. Ordene er appens egne.
+           Bildene i krom er appens ikoner og velkomstbilder (/alles-klar/assets/krom/),
+           og fire nye laget i Midjourney med mappeikonet som stilreferanse.
+           ===================================================================== -->
+      <div class="videre">
+        <!-- ============ Hva Klart gir deg (før hva det gjør; eieren 11.11.2026: selg ferien,
+             ikke flyturen) ============ -->
+        <section class="v-del v-hva" id="hva">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Deel de zaak. Houd de namen.</h2>
+            <p class="v-ingress">
+              Stuur documenten naar een adviseur, beantwoord een Woo- of inzageverzoek of stel een vraag aan een AI-tool, zonder dat de namen meegaan. Het lakken gaat veel sneller dan met de hand, pagina voor pagina.
+            </p>
+          </div>
+          <ul class="v-tre-ord rise">
+            <li><b>Gebruik AI voor echte zaken.</b> De tool ziet codes in plaats van mensen.</li>
+            <li><b>Zeg ja tegen delen.</b> Met de accountant, de advocaat of een andere overheidsorganisatie, nog dezelfde dag.</li>
+            <li><b>Haal de namen terug wanneer u wilt.</b> Alleen u heeft de sleutel.</li>
+          </ul>
+          <p class="v-hva-er rise">Klip en Klaar is een programma op uw eigen computer. De documenten verlaten die nooit.</p>
+        </section>
+
+        <!-- ============ 1. Kjernen: navn blir koder ============ -->
+        <section class="v-del v-kjerne" id="kjernen">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Namen worden codes.</h2>
+            <p class="v-ingress">
+              Klip en Klaar maakt een kopie van uw documenten. In de kopie staat een code waar eerst een naam, een BSN of iets anders over een persoon stond.
+            </p>
+          </div>
+
+          <!-- To ark fra samme mappe. Bryteren viser originalen eller kopien; den går av seg
+               selv til noen tar i den (videre.js). Uten JS står arkene som kopi. -->
+          <figure class="v-ark-scene rise" data-v-bytt data-vis="kopi">
+            <div class="v-bryter" role="group" aria-label="Toon het origineel of de kopie">
+              <button type="button" data-v-vis="original" aria-pressed="false">Origineel</button>
+              <button type="button" data-v-vis="kopi" aria-pressed="true">Kopie</button>
+            </div>
+            <div class="v-ark-par" aria-hidden="true">
+              <article class="v-ark v-ark-a">
+                <header class="v-ark-topp">
+                  <svg class="v-ark-ikon"><use href="#i-pdf" /></svg>
+                  <span>beschikking-bewind.pdf</span>
+                </header>
+                <p class="v-ark-h">Beschikking over het bewind</p>
+                <dl class="v-ark-rader">
+                  <div>
+                    <dt>Rechthebbende</dt>
+                    <dd><span class="v-bytt v-samme"><span class="v-o"><i>Anna de Jong</i></span><span class="v-k"><i>[Persoon 4829133]</i></span></span></dd>
+                  </div>
+                  <div>
+                    <dt>BSN</dt>
+                    <dd><span class="v-bytt"><span class="v-o"><i>110779 41012</i></span><span class="v-k"><i>[BSN 2204716]</i></span></span></dd>
+                  </div>
+                  <div>
+                    <dt>Adres</dt>
+                    <dd><span class="v-bytt"><span class="v-o"><i>Glenneveien 272</i></span><span class="v-k"><i>[Adres 3310482]</i></span></span></dd>
+                  </div>
+                  <div>
+                    <dt>Bewindvoerder</dt>
+                    <dd><span class="v-bytt"><span class="v-o"><i>Lars Hansen</i></span><span class="v-k"><i>[Persoon 6071542]</i></span></span></dd>
+                  </div>
+                </dl>
+                <p class="v-ark-p">
+                  De bewindvoerder helpt bij financiële zaken.
+                  <span class="v-bytt"><span class="v-o"><i>Anna is tot 30 april ziek gemeld.</i></span><span class="v-k"><i>[Notitie 2760056]</i></span></span>
+                </p>
+              </article>
+              <article class="v-ark v-ark-b">
+                <header class="v-ark-topp">
+                  <svg class="v-ark-ikon"><use href="#i-mail" /></svg>
+                  <span>antwoord-van-de-bank.eml</span>
+                </header>
+                <p class="v-ark-h">RE: Beheer van de rekening</p>
+                <p class="v-ark-p">
+                  Goedendag, wij verwijzen naar het gesprek met
+                  <span class="v-bytt v-samme"><span class="v-o"><i>Anna de Jong</i>.</span><span class="v-k"><i>[Persoon 4829133]</i>.</span></span>
+                </p>
+                <p class="v-ark-p">
+                  De rekening is nu ingericht zoals de bewindvoerder heeft gevraagd. U kunt ons bereiken op
+                  <span class="v-bytt"><span class="v-o"><i>922 11 334</i>.</span><span class="v-k"><i>[Telefoon 7745190]</i>.</span></span>
+                </p>
+                <p class="v-ark-p v-ark-hilsen">
+                  Met vriendelijke groet<br />
+                  <span class="v-bytt"><span class="v-o"><i>Ingrid Berg</i></span><span class="v-k"><i>[Persoon 5530871]</i></span></span><br />
+                  Klantadviseur
+                </p>
+              </article>
+            </div>
+            <figcaption class="v-samme-linje">
+              <span class="v-kode">[Persoon 4829133]</span>
+              <span>Dezelfde persoon krijgt altijd dezelfde code, in alle documenten.</span>
+            </figcaption>
+          </figure>
+
+          <ul class="v-tre-ord rise">
+            <li><b>De kopie ziet eruit als het origineel.</b> Opmaak, tabellen en logo's blijven staan.</li>
+            <li><b>Wie haar leest, begrijpt de zaak.</b> Alleen niet om wie het gaat.</li>
+            <li><b>De originelen blijven onaangeroerd.</b> Klip en Klaar zet nieuwe bestanden ernaast.</li>
+          </ul>
+        </section>
+
+        <!-- ============ 2. De tre tingene på startskjermen ============ -->
+        <section class="v-del v-verktoy" id="verktoy">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Drie dingen die u kunt doen.</h2>
+          </div>
+          <div class="v-kort-rad">
+            <article class="v-kort rise">
+              <img src="/alles-klar/assets/krom/rens.webp" width="512" height="512" alt="" loading="lazy" decoding="async" />
+              <h3>Lakken</h3>
+              <p>Kies een map of losse documenten. U krijgt kopieën met codes in plaats van persoonsgegevens.</p>
+            </article>
+            <article class="v-kort rise d-60">
+              <img src="/alles-klar/assets/krom/tilbakefor.webp" width="512" height="512" alt="" loading="lazy" decoding="async" />
+              <h3>Herstellen</h3>
+              <p>Zet de codes weer om in namen wanneer u ze nodig heeft.</p>
+            </article>
+            <article class="v-kort rise d-120">
+              <img src="/alles-klar/assets/krom/tekst.webp" width="512" height="512" alt="" loading="lazy" decoding="async" />
+              <h3>Teksttool</h3>
+              <p>Typ of plak tekst. Hij wordt gelakt terwijl u kijkt.</p>
+            </article>
+          </div>
+
+          <!-- Rens, steg for steg. Streken mellom stegene er et skispor. -->
+          <ol class="v-steg rise">
+            <li><b>Kies een map</b><span>Of sleep hem naar het venster.</span></li>
+            <li><b>Klip en Klaar leest</b><span>U kunt intussen doorwerken.</span></li>
+            <li><b>U kijkt na</b><span>Lakken of laten staan.</span></li>
+            <li><b>Klip en Klaar controleert</b><span>Elke kopie wordt opnieuw gelezen.</span></li>
+            <li><b>De kopieën staan klaar</b><span>In een eigen map ernaast.</span></li>
+          </ol>
+        </section>
+
+        <!-- ============ 3. Nøkkelen ============ -->
+        <section class="v-del v-nokkel" id="nokkel">
+          <div class="v-nokkel-inn">
+            <img class="v-nokkel-bilde rise" src="/alles-klar/assets/krom/nokkel-blaa.webp" width="800" height="386" alt="" loading="lazy" decoding="async" />
+            <div class="v-hode rise">
+              <h2 class="v-tittel">Alleen de sleutel maakt van codes weer namen.</h2>
+              <p class="v-ingress">
+                De sleutel ontstaat op uw computer wanneer u Klip en Klaar voor het eerst opent, en is alleen van u. Zonder de sleutel is een code alleen een code.
+              </p>
+              <!-- Viktig (eieren 11.11.2026): ingen skal tro at alle med Klart kan gjøre om kodene. -->
+              <p class="v-nokkel-bare">
+                <b>Anderen met Klip en Klaar kunnen uw codes niet terugzetten.</b>
+                Zij hebben hun eigen sleutel, en daarmee blijven uw codes gewoon codes.
+              </p>
+            </div>
+
+            <!-- Hvorfor det er nyttig at kodene kan gjøres om: runden ut og hjem igjen. -->
+            <ol class="v-runde rise">
+              <li>
+                <span class="v-runde-nr">1</span>
+                <b>Lakken</b>
+                <span class="v-linje">Rechthebbende: <i class="v-kode lys">[Persoon 4829133]</i></span>
+              </li>
+              <li>
+                <span class="v-runde-nr">2</span>
+                <b>Deel de kopie</b>
+                <span class="v-runde-tekst">Met een adviseur, een andere overheidsorganisatie of een AI-tool.</span>
+              </li>
+              <li>
+                <span class="v-runde-nr">3</span>
+                <b>Herstel het antwoord</b>
+                <span class="v-linje">Rechthebbende: <i class="v-navn">Anna de Jong</i></span>
+              </li>
+            </ol>
+
+            <div class="v-nokkel-par rise">
+              <img src="/alles-klar/assets/krom/skrin-blaa.webp" width="640" height="630" alt="" loading="lazy" decoding="async" />
+              <div>
+                <article>
+                  <h3>Bewaar de sleutel goed</h3>
+                  <p>24 woorden op papier of een sleutelbestand. Zo kunnen de codes altijd weer namen worden.</p>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ Én nøkkel for hele virksomheten ============ -->
+        <section class="v-del v-kontor" id="virksomhet">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Dezelfde code bij alle collega's.</h2>
+            <p class="v-ingress">
+              Met één sleutel voor de hele organisatie is Anna de Jong op alle computers dezelfde code. Een collega kan een kopie herstellen die u heeft gemaakt.
+            </p>
+          </div>
+          <div class="v-nett rise" aria-hidden="true">
+            <img src="/alles-klar/assets/krom/nokkel.webp" width="800" height="386" alt="" loading="lazy" decoding="async" />
+            <div class="v-nett-rad">
+              <p><span>Behandeling</span><i class="v-kode">[Persoon 4829133]</i></p>
+              <p><span>Personeelszaken</span><i class="v-kode">[Persoon 4829133]</i></p>
+              <p><span>Archief</span><i class="v-kode">[Persoon 4829133]</i></p>
+            </div>
+          </div>
+          <ul class="v-tre-ord rise">
+            <li><b>Eén persoon is verantwoordelijk.</b> De sleutelbeheerder maakt de sleutel en geeft hem aan de collega's.</li>
+            <li><b>De sleutel wordt in twee delen verstuurd.</b> Een sleutelpakket en een sleutelcode, los van elkaar.</li>
+            <li><b>IT kan gezamenlijke regels vastleggen.</b> Bijvoorbeeld wat altijd wordt gelakt.</li>
+          </ul>
+          <!-- Samarbeid på tvers: nøkler fra andre legges inn ved siden av ens egen. -->
+          <div class="v-andres rise">
+            <img src="/alles-klar/assets/krom/nokkel-blaa.webp" width="800" height="386" alt="" loading="lazy" decoding="async" />
+            <div>
+              <h3>U kunt ook sleutels van anderen toevoegen</h3>
+              <p>
+                Werkt u samen met een andere organisatie, dan kan die haar sleutel met u delen. Dan herstelt u haar kopieën, en zij de uwe als u uw sleutel deelt. Uw eigen sleutel blijft hetzelfde, en u bepaalt wie hem krijgt.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ Dette ser Klart etter ============ -->
+        <!-- Oversikten over hva skanningen ser etter. Ansikter står her, som én av gruppene
+             (eieren 11.11.2026), ikke som en egen omtale under kopiformene. -->
+        <section class="v-del v-ser" id="ser-etter">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Hiernaar zoekt Klip en Klaar.</h2>
+            <p class="v-ingress">Tien soorten gegevens staan vanaf het begin aan. U kiest zelf wat erbij hoort.</p>
+          </div>
+          <ul class="v-ser-liste rise">
+            <li><b>Personen</b><span>Namen van personen, ook met voorletters en tussenvoegsels</span></li>
+            <li><b>BSN's en documenten</b><span>BSN, paspoort, ID-kaart, rijbewijs, V-nummer en andere nummers</span></li>
+            <li><b>Telefoon en e-mail</b><span>Nummers en adressen</span></li>
+            <li><b>Adressen en postcodes</b><span>Straat, huisnummer, postcode en woonplaats</span></li>
+            <li><b>Gevoelig</b><span>Gezondheid, vakbond, geloof en strafrechtelijke gegevens</span></li>
+            <li><b>Privézinnen</b><span>Hele zinnen en notities over een persoon</span></li>
+            <li><b>Rekeningnummers</b><span>Rekeningnummers, betaalpassen en IBAN</span></li>
+            <li><b>Wachtwoorden</b><span>Wachtwoorden en sleutels</span></li>
+            <li><b>Kentekens</b><span>In teksten en op afbeeldingen</span></li>
+            <li class="v-ser-ansikt">
+              <b>Gezichten</b><span>Worden gepixeleerd in afbeeldingen en gescande pagina's</span>
+            </li>
+          </ul>
+          <p class="v-ser-fot rise">
+            Datums, werkgever en zaaknummers zet u erbij als dat nodig is.
+            <a class="v-lenke" href="wat-het-lakt.html">Bekijk wat Klip en Klaar herkent en wat niet</a>
+          </p>
+        </section>
+
+        <!-- ============ 4. Du bestemmer ============ -->
+        <section class="v-del v-avgjor" id="du-bestemmer">
+          <div class="v-to">
+            <div class="v-hode rise">
+              <h2 class="v-tittel">U bepaalt wat wordt gelakt.</h2>
+              <p class="v-ingress">
+                Klip en Klaar markeert wat het vindt. Twijfelt het, dan vraagt het u.
+              </p>
+              <ul class="v-punkter">
+                <li>Eén klik op een woord lakt het in de hele map.</li>
+                <li>Klip en Klaar onthoudt wat u markeert. De volgende map wordt met uw woorden gelezen.</li>
+                <li>De eigen gegevens van uw organisatie blijven staan.</li>
+                <li>Alles kan ongedaan worden gemaakt.</li>
+              </ul>
+            </div>
+
+            <!-- Gjennomgangen slik den ser ut i appen: tre slags merker og linjen nederst
+                 som spør. Fargene og strekene er appens (heltrukket, stiplet, prikket). -->
+            <figure class="v-gjennom rise" aria-hidden="true">
+              <div class="v-gjennom-ark">
+                <p>Direct leidinggevende is <span class="v-m skjul">Lars Hansen</span>.</p>
+                <p><span class="v-m uavklart">Visser</span> heeft vanaf mei een geleidelijke re-integratie geadviseerd.</p>
+                <p>Afspraken via de receptie op <span class="v-m staa">22 00 00 00</span>.</p>
+              </div>
+              <div class="v-spor">
+                <p class="v-spor-topp">
+                  <span class="v-kode">Persoon 5530871</span>
+                  <b>Open</b>
+                  <span class="v-spor-tall">1 van 5</span>
+                </p>
+                <p class="v-spor-grunn">Staat aan het begin van de zin. Is het de naam of het woord „visser”?</p>
+                <p class="v-spor-knapper">
+                  <span class="v-knapp">Lakken <kbd>↵</kbd></span>
+                  <span class="v-knapp lys">Laten staan <kbd>B</kbd></span>
+                  <span class="v-knapp lys">Volgende <kbd>→</kbd></span>
+                </p>
+              </div>
+              <p class="v-forklaring">
+                <span><i class="v-m skjul">Aa</i> Wordt gelakt</span>
+                <span><i class="v-m uavklart">Aa</i> Open</span>
+                <span><i class="v-m staa">Aa</i> Blijft staan</span>
+              </p>
+            </figure>
+          </div>
+        </section>
+
+        <!-- ============ 5. Trygt ============ -->
+        <!-- Hytta fra heroen, på nært hold: dokumentene blir hjemme. Bildet er laget i Midjourney
+             med vinterbildet fra heroen som stilreferanse. -->
+        <section class="v-del v-trygt" id="trygt">
+          <figure class="v-plate rise">
+            <img src="/alles-klar/assets/foto/hytte.webp" width="2200" height="1232" alt="Een klein rood huisje in diepe sneeuw onder een blauwe lucht." loading="lazy" decoding="async" />
+            <figcaption>
+              <h2 class="v-tittel">De documenten blijven op de computer.</h2>
+            </figcaption>
+          </figure>
+          <div class="v-kort-rad">
+            <article class="v-kort v-hvit rise">
+              <img src="/alles-klar/assets/krom/laas.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>Geen weg naar buiten</h3>
+              <p>Klip en Klaar kan geen verbinding maken met internet.</p>
+              <p><a class="v-lenke" href="voor-it.html">IT kan het zelf controleren</a></p>
+            </article>
+            <article class="v-kort v-hvit rise d-60">
+              <img src="/alles-klar/assets/krom/maskin.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>De AI zit erin</h3>
+              <p>Ze zit in het programma en is klein. Een gewone kantoorcomputer of Mac is genoeg, zonder grafische kaart.</p>
+            </article>
+            <article class="v-kort v-hvit rise d-120">
+              <img src="/alles-klar/assets/krom/hvelv.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>De originelen blijven onaangeroerd</h3>
+              <p>Klip en Klaar schrijft alleen nieuwe kopieën, in een eigen map. Voor de start kunt u een versleutelde back-up maken.</p>
+            </article>
+            <article class="v-kort v-hvit rise d-180">
+              <img src="/alles-klar/assets/krom/lupe.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>Controle voordat de kopie wordt gemaakt</h3>
+              <p>Klip en Klaar leest elke kopie zoals een ontvanger dat zou doen. Staat er nog iets in, dan wordt het bestand niet gemaakt.</p>
+            </article>
+          </div>
+        </section>
+
+        <!-- ============ 6. Slik kan kopien se ut ============ -->
+        <section class="v-del v-former" id="kopien">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Kies hoe de kopie eruitziet.</h2>
+            <p class="v-ingress">Vier vormen. U kiest vlak voordat de kopieën worden gemaakt.</p>
+          </div>
+          <div class="v-form-rad">
+            <article class="v-form rise">
+              <p class="v-form-merke">Meest gebruikt</p>
+              <div class="v-prove">
+                <span>Rechthebbende: <i class="v-kode">[Persoon 4829133]</i></span>
+                <span class="v-prove-liste">+ codelijst achteraan</span>
+              </div>
+              <h3>Korte code en codelijst</h3>
+              <p>Goed leesbaar. Met de sleutel te herstellen.</p>
+            </article>
+            <article class="v-form rise d-60">
+              <div class="v-prove">
+                <span>Rechthebbende: <i class="v-kode lang">[PERSOON_VBTF60YD0E-Q7MZ2KXA4RWN]</i></span>
+              </div>
+              <h3>Volledige code in de tekst</h3>
+              <p>Geen lijst. Te herstellen, maar moeilijker te lezen.</p>
+            </article>
+            <article class="v-form rise d-120">
+              <div class="v-prove">
+                <span>Rechthebbende: <i class="v-kode">[Persoon 4829133]</i></span>
+              </div>
+              <h3>Alleen labels</h3>
+              <p>Goed leesbaar. Niet te herstellen.</p>
+            </article>
+            <article class="v-form rise d-180">
+              <div class="v-prove">
+                <span>Rechthebbende: <i class="v-sladd"><i>5.1.2.e Woo</i></i></span>
+              </div>
+              <h3>Zwart lakken (pdf)</h3>
+              <p>Wat er stond, is voorgoed weg. De lakgrond kan op het zwarte vlak staan. Voorlopig alleen op de Mac.</p>
+            </article>
+          </div>
+
+        </section>
+
+        <!-- ============ 7. Brukes til ============ -->
+        <section class="v-del v-bruk" id="bruk">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Als documenten verder gaan.</h2>
+          </div>
+          <ul class="v-bruk-liste rise">
+            <li><b>Woo en inzage</b><span>Woo- en inzageverzoeken beantwoorden zonder pagina voor pagina te lakken.</span></li>
+            <li><b>Delen</b><span>Met accountants, advocaten, dienstverleners of andere overheidsorganisaties.</span></li>
+            <li><b>AI-tools</b><span>Dezelfde persoon heeft dezelfde code, zo begrijpt de tool het verband.</span></li>
+            <li><b>Opleiding</b><span>Echte zaken als voorbeeld, zonder dat iemand herkenbaar is.</span></li>
+            <li><b>Testgegevens</b><span>Realistische documenten voor nieuwe systemen.</span></li>
+            <li><b>Statistiek</b><span>Inhoud gebruiken zonder te zien over wie het gaat.</span></li>
+          </ul>
+        </section>
+
+        <!-- ============ Vanlige spørsmål ============ -->
+        <section class="v-del v-spm" id="sporsmal">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Veelgestelde vragen.</h2>
+          </div>
+          <dl class="v-spm-liste rise">
+            <div>
+              <dt>Is de kopie anoniem?</dt>
+              <dd>Nee. Wie de sleutel heeft, kan de codes weer in namen omzetten. Kies „Alleen labels” of „Zwart lakken (pdf)” als de kopie nooit te herstellen mag zijn, en lees haar altijd door voordat u haar deelt.</dd>
+            </div>
+            <div>
+              <dt>Kunnen anderen met Klip en Klaar mijn codes terugzetten?</dt>
+              <dd>Nee. De codes kunnen alleen met uw sleutel worden teruggezet. Anderen hebben hun eigen sleutel, en daarmee zijn uw codes alleen codes. Moet iemand uw kopieën kunnen herstellen, deel dan uw sleutel met die persoon.</dd>
+            </div>
+            <div>
+              <dt>Wat als ik de sleutel kwijtraak?</dt>
+              <dd>Dan kan niemand de codes weer in namen omzetten. Uw originelen blijven onaangeroerd. Daarom vraagt Klip en Klaar u de sleutel veilig te stellen, met 24 woorden op papier of een sleutelbestand.</dd>
+            </div>
+            <div>
+              <dt>Heeft Klip en Klaar internet nodig?</dt>
+              <dd>Nee. Klip en Klaar maakt nooit verbinding met internet en werkt offline net zo goed.</dd>
+            </div>
+            <div>
+              <dt>Werkt het op mijn computer?</dt>
+              <dd>Waarschijnlijk. Klip en Klaar werkt op gewone kantoorcomputers, zonder grafische kaart. <a class="v-lenke" href="#maskin">Controleer uw computer</a></dd>
+            </div>
+            <div>
+              <dt>Kan een collega een kopie herstellen die ik heb gemaakt?</dt>
+              <dd>Ja, als u dezelfde sleutel heeft of uw collega de uwe heeft toegevoegd.</dd>
+            </div>
+            <div>
+              <dt>Leert Klip en Klaar van mij?</dt>
+              <dd>Ja, van wat u doet. Markeert u een naam, een bijnaam of een woord dat Klip en Klaar heeft gemist, dan onthoudt het dat en lakt het in alles wat het daarna leest. De lijst heet „Altijd lakken”. Hij staat versleuteld op uw computer, en u kunt er woorden uit verwijderen. Er wordt niets naar ons gestuurd, en uw documenten worden niet gebruikt om een model te trainen.</dd>
+            </div>
+            <div>
+              <dt>Wat als Klip en Klaar iets mist?</dt>
+              <dd>Dat kan gebeuren. Daarom kijkt u na wat Klip en Klaar vindt, en controleert Klip en Klaar elke kopie voordat die wordt gemaakt. <a class="v-lenke" href="wat-het-lakt.html">Bekijk wat Klip en Klaar herkent en wat niet</a></dd>
+            </div>
+            <div>
+              <dt>Wat gebeurt er met de originelen?</dt>
+              <dd>Niets. Klip en Klaar schrijft alleen nieuwe bestanden, in een eigen map ernaast.</dd>
+            </div>
+            <div>
+              <dt>Wat kost het?</dt>
+              <dd>Voor privégebruik is Klip en Klaar gratis. Bedrijven, gemeenten en overheidsorganisaties proberen het 30 dagen gratis en bestellen daarna op factuur een licentie voor de hele organisatie. <a class="v-lenke" href="prijzen/">Naar de prijs</a></dd>
+            </div>
+          </dl>
+        </section>
+
+        <!-- ============ 8. I dybden ============ -->
+        <section class="v-del v-dybde" id="dybde">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">In detail.</h2>
+            <p class="v-ingress">Voor wie meer wil weten. Open wat u interesseert.</p>
+          </div>
+
+          <div class="v-fag rise">
+            <details name="v-dybde">
+              <summary><span>Waar Klip en Klaar naar zoekt</span></summary>
+              <div class="v-fag-inn">
+                <p>U kiest zelf waar de controle naar zoekt. De tien groepen die vanaf het begin aan staan, vindt u onder <a class="v-lenke" href="#ser-etter">Hiernaar zoekt Klip en Klaar</a>.</p>
+                <p>Deze zet u erbij als dat nodig is: <b>Datums</b>, <b>Werkgever</b> (organisatie, KvK- en btw-nummer) en <b>Zaaknummers</b>.</p>
+                <p>
+                  BSN, IBAN en btw-nummer worden aan de hand van hun controlegetal gecontroleerd (de elfproef en modulo 97). Een willekeurig getal van negen cijfers wordt niet voor een BSN gehouden. Klip en Klaar kent ook A-nummers, V-nummers, kentekens, postcodes en Belgische rijksregisternummers.
+                </p>
+                <p>
+                  De eigen gegevens van uw organisatie blijven staan: adres, algemeen nummer, KvK-nummer en zakelijke rekening.
+                </p>
+                <p><a class="v-lenke" href="wat-het-lakt.html">Wat Klip en Klaar herkent en wat niet</a></p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Welke bestanden Klip en Klaar leest en hoe de kopie eruitziet</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Word, Excel en PowerPoint</dt>
+                    <dd>Hetzelfde bestand, met de codes op de plek van de gegevens. Opmaak, logo's en tabellen blijven staan. Opmerkingen, macro's, ingesloten bestanden en verborgen gegevens in afbeeldingen worden verwijderd.</dd>
+                  </div>
+                  <div>
+                    <dt>Pdf, ook gescand</dt>
+                    <dd>Elke pagina wordt een afbeelding waarop de codes over de gegevens zijn getekend. Daaronder ligt een onzichtbare tekstlaag, zodat de kopie doorzoekbaar blijft.</dd>
+                  </div>
+                  <div>
+                    <dt>Afbeeldingen</dt>
+                    <dd>Klip en Klaar leest de tekst in de afbeelding. Gegevens worden overgetekend en gezichten gepixeleerd.</dd>
+                  </div>
+                  <div>
+                    <dt>E-mail</dt>
+                    <dd>Leest .eml, Outlook (.msg), Apple Mail (.emlx) en .mbox. De kopie wordt een .eml. Bijlagen worden verwijderd, en de kopie meldt dat.</dd>
+                  </div>
+                  <div>
+                    <dt>Tekst</dt>
+                    <dd>.txt, .md, .csv, .json en .rtf.</dd>
+                  </div>
+                </dl>
+                <p>Ook bestands- en mapnamen worden gelakt. De kopieën komen samen met een rapport in een nieuwe map naast het origineel, met „-klaar” achter de naam.</p>
+                <p>Bestanden met een wachtwoord opent Klip en Klaar als u het wachtwoord opgeeft. Oude .ppt-bestanden kunnen niet worden gelezen. Klip en Klaar meldt dat.</p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Zo leest Klip en Klaar de documenten</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Eerst regels</dt>
+                    <dd>Nederlandse patronen, controlegetallen, namenlijsten en adressen. De regels lopen over elk bestand.</dd>
+                  </div>
+                  <div>
+                    <dt>Dan een klein Nederlands taalmodel</dt>
+                    <dd>Een DistilBERT-model voor het Nederlands (Geotrend/distilbert-base-nl-cased), door ons bijgetraind. Het beoordeelt of een zin iets privés over een persoon prijsgeeft. Het is ongeveer 240 MB groot en heeft geen grafische kaart nodig.</dd>
+                  </div>
+                  <div>
+                    <dt>Tekst in afbeeldingen</dt>
+                    <dd>Gescande pagina's en afbeeldingen worden met tekstherkenning op de computer gelezen.</dd>
+                  </div>
+                  <div>
+                    <dt>Gezichten</dt>
+                    <dd>Klip en Klaar vindt gezichten en pixeleert ze. U kunt een gezicht ook laten staan.</dd>
+                  </div>
+                </dl>
+                <p>Klip en Klaar heeft geen chatbot en stuurt niets naar een AI-dienst.</p>
+                <p>U kunt een map ook zonder controle openen. Dan markeert u zelf wat gelakt moet worden.</p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>De codes en de sleutel</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Vaste nummers</dt>
+                    <dd>Het nummer in de code wordt berekend uit de sleutel en het gegeven. Daarom is Anna de Jong <i class="v-kode">[Persoon 4829133]</i> in elke map, bij alle collega's met dezelfde sleutel.</dd>
+                  </div>
+                  <div>
+                    <dt>De naam zit versleuteld in de kopie</dt>
+                    <dd>De codelijst achteraan de kopie bevat de volledige codes. Daarin zit de oorspronkelijke tekst, versleuteld met AES-SIV. Alleen de sleutel maakt ze weer leesbaar. Er is geen codeboek waar u op moet passen.</dd>
+                  </div>
+                  <div>
+                    <dt>Alleen uw sleutel</dt>
+                    <dd>Elke installatie maakt haar eigen sleutel. Iemand anders met Klip en Klaar kan uw codes niet terugzetten: zonder uw sleutel zijn het alleen codes, ook voor ons.</dd>
+                  </div>
+                  <div>
+                    <dt>Waar de sleutel staat</dt>
+                    <dd>Hij wordt beschermd door het besturingssysteem: door de sleutelhanger op de Mac. U kunt hem ook op een sleutelstick bewaren.</dd>
+                  </div>
+                  <div>
+                    <dt>Reserve</dt>
+                    <dd>24 woorden op papier of een sleutelbestand, beveiligd met een wachtzin die u zelf kiest.</dd>
+                  </div>
+                  <div>
+                    <dt>In de organisatie</dt>
+                    <dd>De sleutelbeheerder is verantwoordelijk voor de sleutel en geeft hem als sleutelpakket aan de collega's. Pakket en sleutelcode worden apart verstuurd. IT kan het exporteren van de sleutel blokkeren.</dd>
+                  </div>
+                  <div>
+                    <dt>Sleutels van anderen</dt>
+                    <dd>Onder „Sleutel” › Samenwerking voegt u de sleutel van een andere organisatie toe. Hij staat naast uw eigen sleutel. De kopie verraadt met welke sleutel ze is gemaakt, zodat Klip en Klaar bij het herstellen de juiste kiest.</dd>
+                  </div>
+                  <div>
+                    <dt>Herstellen</dt>
+                    <dd>Klip en Klaar maakt een nieuwe map met „-hersteld” achter de naam. De kopie blijft onaangeroerd. Bij afbeeldingen en pdf-pagina's staat wat onder de vlakken stond versleuteld in de kopie, en het wordt teruggezet.</dd>
+                  </div>
+                </dl>
+                <p>Codes zijn geen anonimisering. Wie de sleutel heeft, kan ze terugzetten, dus een kopie met codes bevat nog steeds persoonsgegevens (pseudonimisering volgens art. 4, punt 5, AVG).</p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Woo, inzage en zwart lakken</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Zwart lakken (pdf)</dt>
+                    <dd>Elke kopie wordt een pdf met zwarte vlakken. De overige tekst kunt u nog steeds selecteren en doorzoeken. Voorlopig alleen op de Mac.</dd>
+                  </div>
+                  <div>
+                    <dt>De lakgrond op het vlak</dt>
+                    <dd>Elk vlak kan de lakgrond dragen waarop het berust, bijvoorbeeld „5.1.2.e Woo” of „5.2 Woo”. De volledige lakgronden worden voor uw antwoordbrief in een eigen bestand geschreven, „Lakgronden.txt”.</dd>
+                  </div>
+                  <div>
+                    <dt>Alleen deze persoon laten staan</dt>
+                    <dd>Voor een inzageverzoek van iemand over zichzelf: deze persoon blijft staan, alle anderen worden gelakt.</dd>
+                  </div>
+                  <div>
+                    <dt>Meerdere versies van dezelfde map</dt>
+                    <dd>Een voor de betrokkene, een voor de pers, elk met eigen instellingen.</dd>
+                  </div>
+                  <div>
+                    <dt>Vervagen</dt>
+                    <dd>Teken een rechthoek, een ovaal of een vrije vorm over een deel van een afbeelding of een pagina.</dd>
+                  </div>
+                </dl>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Tijdens het werk</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Automatisch bewaard</dt>
+                    <dd>Uw keuzes worden versleuteld op de computer bewaard. U gaat verder waar u gebleven was.</dd>
+                  </div>
+                  <div>
+                    <dt>Wijzigingen</dt>
+                    <dd>Elke wijziging staat in een lijst. Maak er een ongedaan of ga terug naar het begin. De lijst kunt u als pdf of csv bewaren.</dd>
+                  </div>
+                  <div>
+                    <dt>Eigen markeringen</dt>
+                    <dd>Wat u zelf markeert, geldt in alle mappen en teksten. De lijst kunt u met collega's delen.</dd>
+                  </div>
+                  <div>
+                    <dt>Zoeken</dt>
+                    <dd>Doorzoek alle bestanden in de map tegelijk.</dd>
+                  </div>
+                  <div>
+                    <dt>Back-up</dt>
+                    <dd>Een versleutelde kopie van de map, gemaakt voor de controle. Klip en Klaar herinnert u er na 30 dagen aan.</dd>
+                  </div>
+                  <div>
+                    <dt>Vanuit de Finder</dt>
+                    <dd>Op de Mac: rechtsklik op een bestand of een map en kies „Lak met Klip en Klaar”.</dd>
+                  </div>
+                </dl>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Voor IT</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Geen netwerkcode</dt>
+                    <dd>Het programma heeft geen TLS, kan geen namen op het netwerk opzoeken en luistert op geen enkele poort. <a class="v-lenke" href="voor-it.html">Controles die u zelf kunt uitvoeren</a></dd>
+                  </div>
+                  <div>
+                    <dt>Beleid in één bestand</dt>
+                    <dd>Leg vast wat altijd wordt gelakt, zet de kopievorm vast, verplicht een controle en bepaal of de sleutel mag worden geëxporteerd.</dd>
+                  </div>
+                  <div>
+                    <dt>Auditlogboek</dt>
+                    <dd>Kan worden aangezet. Het bevat geen bestandsnamen en geen gegevens uit de documenten.</dd>
+                  </div>
+                  <div>
+                    <dt>Opdrachtregel</dt>
+                    <dd><code>klipenklaar clean</code> en <code>klipenklaar restore</code>, met uitvoer in JSON. Klip en Klaar kan ook een map in de gaten houden.</dd>
+                  </div>
+                  <div>
+                    <dt>Licentie zonder internet</dt>
+                    <dd>Een ondertekende code die op de computer wordt gecontroleerd. Eén licentie geldt voor de hele organisatie.</dd>
+                  </div>
+                </dl>
+              </div>
+            </details>
+          </div>
+        </section>
+
+        <!-- ============ Full nerd-out ============ -->
+        <!-- Hele programmet, forklart for den som vil vite hvordan det virker. Veien en fil går
+             står alltid framme; resten åpnes. Tallene og navnene er fra appens kildekode. -->
+        <section class="v-del v-nerd" id="nerd">
+          <div class="v-hode rise">
+            <p class="v-nerd-over">Voor de echte liefhebber</p>
+            <h2 class="v-tittel">Voor techneuten.</h2>
+            <p class="v-ingress">De hele weg van een bestand door Klip en Klaar, en wat er bij elke stap gebeurt.</p>
+          </div>
+
+          <ol class="v-ror rise">
+            <li><b>Lezen</b><span>Word, Excel, pdf, e-mail en afbeeldingen worden opgedeeld in tekst en plaats op de pagina.</span></li>
+            <li><b>Regels</b><span>Patronen, controlegetallen, namen- en woordenlijsten.</span></li>
+            <li><b>Zinnen</b><span>Een klein Nederlands taalmodel beoordeelt hele zinnen.</span></li>
+            <li><b>Afbeeldingen</b><span>Tekstherkenning en gezichten, op de computer.</span></li>
+            <li><b>Register</b><span>De vondsten worden voor de hele map verzameld. Dezelfde persoon, dezelfde code.</span></li>
+            <li><b>U</b><span>Lakt, laat staan en beslist wat nog open is.</span></li>
+            <li><b>Schrijven</b><span>Elk bestandstype wordt op zijn eigen manier teruggeschreven.</span></li>
+            <li><b>Controle</b><span>De kopie wordt opnieuw gelezen. Staat er nog iets in, dan wordt ze tegengehouden.</span></li>
+          </ol>
+
+          <details class="v-nerd-alt rise">
+            <summary><span><i class="v-nar-lukket">Open de machinekamer</i><i class="v-nar-aapen">Sluit de machinekamer</i></span></summary>
+            <div class="v-nerd-inn">
+              <article>
+                <h3>Wat er in het pakket zit</h3>
+                <p>
+                  Klip en Klaar is een gewoon desktopprogramma. De schil is geschreven in Rust (Tauri), het venster is een webweergave met een interface in TypeScript. Alles wat nodig is, zit in het installatiebestand. Achteraf wordt er niets gedownload.
+                </p>
+                <dl class="v-spek">
+                  <div><dt>Regelengine</dt><dd>TypeScript. Draait in het programma, zonder server.</dd></div>
+                  <div><dt>Zinsmodel</dt><dd>Geotrend/distilbert-base-nl-cased (Apache 2.0), door ons bijgetraind, ongeveer 240 MB. Draait op de processor met <code>tract</code>, in puur Rust.</dd></div>
+                  <div><dt>Tekst in afbeeldingen</dt><dd>Apple Vision op de Mac.</dd></div>
+                  <div><dt>Gezichten</dt><dd>Apple Vision op de Mac.</dd></div>
+                  <div><dt>PDF</dt><dd>PDFium tekent de pagina's en leest de tekstlaag.</dd></div>
+                  <div><dt>Geen groot taalmodel</dt><dd>Klip en Klaar heeft geen LLM en geen chatbot. De build stopt als er een in het pakket zit.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Van bestand naar vondst</h3>
+                <p>
+                  Elk bestand wordt opgedeeld in stukken tekst die weten waar ze staan: alinea, cel, tekstvak, koptekst of een plek op een pdf-pagina. Dan gaan drie lezers over de tekst.
+                </p>
+                <dl class="v-spek">
+                  <div><dt>De regels</dt><dd>BSN en btw-nummer moeten de elfproef of modulo 97 doorstaan, IBAN heeft zijn eigen controle. Klip en Klaar kent ook A-nummers, V-nummers, paspoort- en rijbewijsnummers, KvK-nummers, AGB-codes, kentekens en postcodes. Namen worden gevonden via namenlijsten en via hun plek, bijvoorbeeld achter „Naam:” of in een ondertekening, ook met voorletters en tussenvoegsels („A. van der Linden”).</dd></div>
+                  <div><dt>Gevoelige woorden</dt><dd>Een woordenlijst voor gezondheid, vakbond, geloof en strafrechtelijke gegevens, met alle vervoegingen. „ziek gemeld”, „ziekmelding” en „ziekgemeld” zijn dezelfde treffer.</dd></div>
+                  <div><dt>De zinslezer</dt><dd>Het taalmodel geeft elke zin over een persoon een waarde voor hoe privé die is. Samen met een lezer op basis van woorden bepaalt dat of de zin een „Privézin” wordt.</dd></div>
+                  <div><dt>Eigen gegevens van de organisatie</dt><dd>Het adres in het briefhoofd, het algemene nummer, het KvK-nummer en de zakelijke rekening worden herkend en blijven staan. E-mailadressen worden toch gelakt.</dd></div>
+                </dl>
+                <p>
+                  Tot slot worden de vondsten in het register van de map verzameld. „Anna”, „Anna de Jong” en „ANNA DE JONG” worden één persoon, in alle bestanden. Wat Klip en Klaar niet zeker weet, komt met een reden in de rij „Open”: de naam staat aan het begin van de zin, twee personen heten hetzelfde, of het woord is later toegevoegd.
+                </p>
+              </article>
+
+              <article>
+                <h3>De codes</h3>
+                <p>Een code heeft twee delen. Het ene zegt wie het is. Het andere is de oorspronkelijke tekst, versleuteld.</p>
+                <p class="v-kodelinje"><code>[PERSOON_VBTF60YD0E-J94DW5ZFTYA2GWTWAXFKK0XYBF1KTY19BED6E5TJ832VZ00]</code></p>
+                <dl class="v-spek">
+                  <div><dt>De persoonscode</dt><dd>HMAC-SHA256 van soort en waarde, ingekort tot tien tekens. Gelijk voor alle schrijfwijzen van dezelfde naam, zodat een AI-tool ziet dat het om dezelfde persoon gaat.</dd></div>
+                  <div><dt>Het versleutelde deel</dt><dd>AES-SIV (RFC 5297) van de tekst precies zoals hij stond. Dezelfde tekst geeft altijd dezelfde code. Een gewijzigde code of een code die met een andere sleutel is gemaakt, wordt geweigerd. Klip en Klaar zet nooit iets verkeerds terug.</dd></div>
+                  <div><dt>Het korte nummer</dt><dd>Het nummer in <code>[Persoon 4829133]</code> wordt berekend uit de sleutel en de waarde. Daarom is het op alle computers met dezelfde sleutel gelijk, zonder dat die met elkaar communiceren.</dd></div>
+                  <div><dt>De codelijst</dt><dd>In de gewone kopievorm staat het korte nummer in de tekst en staan de volledige codes in een lijst achteraan. Samen met de sleutel is de lijst alles wat nodig is om de kopie te herstellen.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>De sleutel</h3>
+                <dl class="v-spek">
+                  <div><dt>Wat hij is</dt><dd>32 willekeurige bytes, gemaakt op de computer bij de eerste start van Klip en Klaar. Subsleutels voor codes, nummers en afbeeldingen worden afgeleid met HKDF-SHA256.</dd></div>
+                  <div><dt>Waar hij staat</dt><dd>Beschermd door het besturingssysteem: de sleutelhanger en de Secure Enclave op de Mac, of alleen op een sleutelstick. De sleutel wordt in het Rust-deel van het programma bewaard. Het venster krijgt hem alleen als u de 24 woorden wilt zien.</dd></div>
+                  <div><dt>24 woorden</dt><dd>De sleutel kan worden opgeschreven als 24 woorden uit een vaste lijst van 2048. De woorden bestaan alleen uit a–z, en geen twee lijken op elkaar. De eerste vier letters zijn genoeg om een woord te herkennen.</dd></div>
+                  <div><dt>Sleutelbestand</dt><dd>De sleutel, versleuteld met een wachtzin van minstens twaalf tekens (Argon2id en AES-256-GCM).</dd></div>
+                  <div><dt>Sleutel-ID</dt><dd>Een kort kenmerk zoals <code>WJ0R-Q3R5</code>. Het laat zien met welke sleutel een kopie is gemaakt, maar is niet de sleutel zelf.</dd></div>
+                  <div><dt>Meerdere sleutels</dt><dd>Wisselt u van sleutel, dan wordt de oude apart gezet. Bij het herstellen probeert Klip en Klaar eerst de huidige sleutel, dan de eerdere.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Zo wordt de kopie geschreven</h3>
+                <dl class="v-spek">
+                  <div><dt>Word, Excel, PowerPoint</dt><dd>Het bestand is een zip met XML. Klip en Klaar vervangt de waarden ter plekke, ook als Word een naam in meerdere stukken heeft opgedeeld. Daarna wordt het bestand opgeschoond: opmerkingen, macro's, ingesloten bestanden, de voorvertoning en verborgen gegevens in afbeeldingen worden verwijderd.</dd></div>
+                  <div><dt>PDF</dt><dd>Elke pagina wordt getekend als afbeelding van 200 dpi, bij kleine letters 300. De codes worden over de gegevens getekend, en de gelakte tekst ligt onzichtbaar daaronder, zodat de kopie doorzoekbaar is.</dd></div>
+                  <div><dt>Afbeeldingen</dt><dd>De vlakken worden overgetekend en de gezichten gepixeleerd.</dd></div>
+                  <div><dt>Wat eronder stond</dt><dd>Moet de kopie te herstellen zijn, dan legt Klip en Klaar de oorspronkelijke pixels onder elk vlak versleuteld in de kopie (AES-256-GCM). Gewone programma's slaan ze over.</dd></div>
+                  <div><dt>E-mail</dt><dd>De kopie wordt een opgeschoonde .eml. Technische kopregels over de weg van de e-mail worden verwijderd.</dd></div>
+                  <div><dt>Bestandsnamen</dt><dd>Staat er een naam in de bestands- of mapnaam, dan wordt die ook vervangen.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>De controle voordat de kopie wordt gemaakt</h3>
+                <p>
+                  Voordat een kopie wordt geschreven, leest Klip en Klaar haar zoals een ander programma dat zou doen: elk deel van het zipbestand, elk XML-attribuut, elk object in de pdf en de tekst in elke afbeelding. Vindt het iets dat gelakt had moeten worden, of een deel dat het niet kan lezen, dan wordt het bestand niet gemaakt. U ziet dan waar het om gaat.
+                </p>
+              </article>
+
+              <article>
+                <h3>Wat Klip en Klaar bewaart</h3>
+                <dl class="v-spek">
+                  <div><dt>Het project</dt><dd>Uw keuzes over een map worden versleuteld op de computer bewaard en uitgesloten van Spotlight en Time Machine. Een project dat niet wordt gebruikt, wordt na 30 dagen weggegooid.</dd></div>
+                  <div><dt>De back-up</dt><dd>Een kopie van de originelen. De inhoud is versleuteld met AES-256-GCM en alleen leesbaar op de computer waarop ze is gemaakt. De bestandsnamen blijven ongewijzigd.</dd></div>
+                  <div><dt>Eigen markeringen</dt><dd>De lijst met wat Klip en Klaar op uw verzoek lakt, wordt versleuteld bewaard.</dd></div>
+                  <div><dt>De originelen</dt><dd>Klip en Klaar schrijft alleen in mappen die het zelf heeft gemaakt. Elke plek in de code die een bestand verwijdert of verplaatst, heeft een schriftelijke reden nodig. Anders stopt een test de build.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Wat er niet is</h3>
+                <p>
+                  Het programma heeft geen TLS, kan geen namen op het netwerk opzoeken en luistert op geen enkele poort. Er is geen account, geen gebruiksstatistiek, geen foutrapportage en geen automatische update. De licentie is een ondertekende code (Ed25519) die op de computer wordt gecontroleerd. Het enige wat Klip en Klaar richting internet doet: het opent onze website in uw eigen browser als u op „Koop een licentie” klikt.
+                </p>
+                <p><a class="v-lenke" href="voor-it.html">Controles die IT zelf kan uitvoeren</a></p>
+              </article>
+            </div>
+          </details>
+        </section>
+
+        <!-- ============ 9. Ansvar ============ -->
+        <section class="v-del v-ansvar" id="ansvar">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Een hulpmiddel. Geen garantie.</h2>
+          </div>
+          <ul class="v-ansvar-liste rise">
+            <li><b>Klip en Klaar kan iets missen.</b> Lees de kopieën door voordat u ze deelt.</li>
+            <li><b>Codes zijn geen anonimisering.</b> Wie de sleutel heeft, kan ze terugzetten.</li>
+            <li><b>De verantwoordelijkheid ligt bij u.</b> Klip en Klaar is geen juridisch advies, en u beslist wat wordt verstrekt.</li>
+          </ul>
+          <p class="rise"><a class="v-lenke" href="wat-het-lakt.html">Bekijk wat Klip en Klaar herkent en wat niet</a></p>
+        </section>
+
+        <!-- ============ Går Klart på maskinen din? ============ -->
+        <!-- Et praktisk oppslag rett før nedlastingen, ikke et salgspunkt. Søket spør
+             GET /klart/api/maskin?q=… (.worker/klart-maskin.js): en liste hos oss over et par tusen
+             maskiner. Svaret bygger på systemkravene, ikke på at hver modell er prøvd. -->
+        <section class="v-del v-maskin" id="maskin">
+          <div class="v-sjekk rise" data-v-maskin>
+            <h2 id="v-sjekk-tittel">Werkt Klip en Klaar op uw computer?</h2>
+            <p class="v-sjekk-om">Klip en Klaar werkt op gewone kantoorcomputers. Typ de uwe in en zie het zelf.</p>
+            <form class="v-sjekk-felt" role="search" aria-labelledby="v-sjekk-tittel" novalidate>
+              <input type="search" name="q" autocomplete="off" spellcheck="false" maxlength="80" placeholder="Typ merk en model" aria-label="Merk en model" />
+            </form>
+            <p class="v-sjekk-forslag">
+              <button type="button" data-v-prov="MacBook Air">MacBook Air</button>
+              <button type="button" data-v-prov="ThinkPad T14">ThinkPad T14</button>
+              <button type="button" data-v-prov="EliteBook 840">EliteBook 840</button>
+              <button type="button" data-v-prov="Latitude 5420">Latitude 5420</button>
+            </p>
+            <p class="v-sjekk-melding" data-v-melding hidden></p>
+            <ul class="v-sjekk-svar" data-v-svar aria-live="polite"></ul>
+            <p class="v-sjekk-fot">
+              Niet gevonden? Klip en Klaar werkt op de Mac vanaf macOS 13. Windows en Linux volgen. Wij raden 8 GB werkgeheugen aan.
+            </p>
+          </div>
+        </section>
+
+        <!-- ============ 10. Last ned ============ -->
+        <section class="v-hent" id="last-ned">
+          <img class="v-hent-bilde" src="/alles-klar/assets/klart-vinter.jpg" width="1600" height="1067" alt="" loading="lazy" decoding="async" />
+          <div class="v-hent-kort rise">
+            <!-- Samme nedlastingskort som i heroen; vises her når de velger system (forside.js). -->
+            <div class="nedlasting" data-nedlasting hidden aria-live="polite">
+              <div class="nedlasting-topp">
+                <span class="nedlasting-merke" data-merke aria-hidden="true"></span>
+                <div>
+                  <p class="nedlasting-tittel">Klip en Klaar voor <span data-os></span></p>
+                  <p class="nedlasting-fil" data-fil></p>
+                </div>
+              </div>
+              <p class="nedlasting-prosent"><span data-prosent>0</span><span class="nedlasting-pst">%</span></p>
+              <p class="nedlasting-status" data-status></p>
+              <div class="nedlasting-ferdig" data-ferdig hidden>
+                <span class="nedlasting-hake" aria-hidden="true"><svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="25" pathLength="1" /><path d="M17 29l8 8 15-17" pathLength="1" /></svg></span>
+                <p class="nedlasting-ferdig-tittel">Gedownload</p>
+                <p class="nedlasting-neste" data-neste></p>
+              </div>
+              <button type="button" class="nedlasting-tilbake" data-tilbake>Terug</button>
+            </div>
+            <div class="v-hent-inn">
+            <!-- Mobil og nettbrett: samme e-post som i heroen i stedet for nedlastingen (eieren 11.11.2026). -->
+            <div class="mobil-send">
+              <p class="mobil-send-tittel">Klip en Klaar is een programma voor de computer.</p>
+              <p class="mobil-send-tekst">Stuur uzelf de link per e-mail en download het programma op de Mac. Windows en Linux volgen.</p>
+              <a class="btn" href="mailto:?subject=Klip%20en%20Klaar&amp;body=https%3A%2F%2Fesbjugconsult.com%2Fklip-en-klaar">Stuur naar mijzelf</a>
+              <p class="mobil-send-andre">(Of naar iemand anders?)</p>
+            </div>
+            <h2>Probeer Klip en Klaar op een map.</h2>
+            <p class="v-hent-privat"><b>Gratis voor privégebruik.</b></p>
+            <!-- Samme knapper som i heroen (kjennetegnene når man holder over). Ved et klikk
+                 vises nedlastingen vises her i kortet (forside.js). -->
+            <div class="v-hent-knapper get" data-v-hent>
+              <a class="btn ghost os os-mac" href="/klip-en-klaar/download/mac" download aria-label="Downloaden voor Mac"><span class="os-glass" aria-hidden="true"></span><span class="os-navn">Mac</span></a>
+            </div>
+            <p class="v-hent-arm">Windows en Linux volgen.</p>
+            <p class="v-hent-virk">Voor organisaties: <b>30 dagen gratis</b>. Geen registratie. Daarna bestellen op factuur.</p>
+            <p><a class="v-hent-pris" href="prijzen/">Bekijk de prijs voor uw organisatie</a></p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- ================= Bunn ================= -->
+    <footer class="v-bunn">
+      <p class="v-bunn-merke"><i>Klip en Klaar</i> <span>van Tidemann Esbjug</span></p>
+      <nav class="v-bunn-lenker" aria-label="Meer over Klip en Klaar">
+        <a href="prijzen/">Prijs</a>
+        <a href="wat-het-lakt.html">Wat Klip en Klaar lakt</a>
+        <a href="voor-it.html">Voor IT</a>
+        <a href="voorwaarden/">Voorwaarden</a>
+        <a href="privacy/">Privacy</a>
+      </nav>
+      <nav class="v-bunn-lenker v-bunn-land" aria-label="Andere landen">
+        <a href="/klart/" hreflang="no" lang="no">Norge · Klart</a>
+        <a href="/alles-klar/" hreflang="de" lang="de">Deutschland · Alles Klar</a>
+        <a href="/frostcopy/" hreflang="en-US" lang="en-US">United States · FrostCopy</a>
+        <a href="/frostcopy-uk/" hreflang="en-GB" lang="en-GB">United Kingdom · FrostCopy UK</a>
+        <a href="/cest-clair/" hreflang="fr" lang="fr">France · C’est Clair</a>
+        <a href="/clarisimo/" hreflang="es" lang="es">España · Clarísimo</a>
+        <a href="/chiarissimo/" hreflang="it" lang="it">Italia · Chiarissimo</a>
+        <a href="/klip-en-klaar/" hreflang="nl" lang="nl" aria-current="page">Nederland · Klip en Klaar</a>
+        <a href="/wszystko-jasne/" hreflang="pl" lang="pl">Polska · Wszystko Jasne</a>
+      </nav>
+      <p class="v-bunn-liten">Gemaakt in Noorwegen · Geen juridisch advies</p>
+    </footer>
+
+    <script src="forside.js"></script>
+    <script src="forhandsvisning.js"></script>
+    <script src="videre.js"></script>
+  </body>
+</html>

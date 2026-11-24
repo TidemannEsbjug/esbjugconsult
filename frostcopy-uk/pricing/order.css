@@ -1,0 +1,131 @@
+/* The British price calculator and order form (pricing/index.html). Everything else comes from pris.css, the same card
+   as the Norwegian price page. Here: the choice between business and government, the two fields, and the table
+   on the pricing page. */
+.us-valg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 22px;
+  border: 0;
+  padding: 0;
+}
+.us-valg label {
+  position: relative;
+  margin: 0;
+  padding: 9px 16px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 14.5px;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.us-valg input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.us-valg label:has(input:checked) {
+  background: var(--signal);
+  border-color: var(--signal);
+  color: #fff;
+}
+.us-valg label:has(input:focus-visible) {
+  outline: 2px solid rgba(36, 86, 230, 0.35);
+  outline-offset: 2px;
+}
+.us-to-felt {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  gap: 14px;
+  margin-top: 18px;
+}
+@media (max-width: 560px) {
+  .us-to-felt {
+    grid-template-columns: 1fr;
+  }
+}
+.us-to-felt input[type="number"],
+.us-to-felt select {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  font: inherit;
+  font-size: 16px;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  user-select: text;
+  -webkit-user-select: text;
+}
+.us-to-felt select:focus {
+  outline: 2px solid rgba(36, 86, 230, 0.35);
+  outline-offset: 1px;
+  border-color: var(--signal-lit);
+}
+.us-to-felt .smaa {
+  margin-top: 7px;
+}
+.us-prisboks {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+}
+.us-prisboks .us-hvordan {
+  margin-top: 6px;
+  font-size: 15px;
+  color: var(--ink-2);
+}
+.btn.us-ghost-lys {
+  background: #fff;
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  box-shadow: none;
+}
+
+/* The pricing page: the price points as a table. */
+.us-pristabell {
+  width: 100%;
+  margin-top: 14px;
+  border-collapse: collapse;
+  font-size: 15.5px;
+  font-variant-numeric: tabular-nums;
+}
+.us-pristabell th,
+.us-pristabell td {
+  padding: 9px 0;
+  border-bottom: 1px solid var(--rule);
+  text-align: left;
+  font-weight: 400;
+}
+.us-pristabell thead th {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.us-pristabell td:last-child,
+.us-pristabell th:last-child {
+  text-align: right;
+}
+.us-pristabell tbody td:last-child {
+  font-weight: 600;
+}
+.kort p.us-avsnitt {
+  margin-top: 14px;
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+/* The order form under the price, and the thank-you note. */
+.us-ordre { margin-top: 18px; }
+.us-feil { color: #b3261e; font-weight: 600; }
+.us-ordre textarea { width: 100%; box-sizing: border-box; font: inherit; padding: 12px 14px; border: 1px solid rgba(0, 32, 91, 0.2); border-radius: 12px; background: #fff; color: inherit; resize: vertical; }
+.us-skjult { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.us-takk { margin-top: 18px; padding: 18px 20px; border-radius: 14px; background: rgba(0, 32, 91, 0.06); }
+.us-takk h2 { margin: 0 0 6px; }
+a.btn { text-decoration: none; display: inline-flex; align-items: center; }
+.kort [hidden] { display: none !important; }

@@ -1,0 +1,1475 @@
+<!doctype html>
+<!--
+  Hello, you who read the source. You are the one we hoped for.
+
+  FrostCopy promises that the documents never leave the computer. A promise like
+  that should not be taken on trust, so check it:
+
+  - The program: /frostcopy-uk/for-it.html has the commands that show what it talks to.
+  - This page: every file is loaded from this domain, and the code is not
+    minified, so it can be read as it is.
+  - Found something? Write to tidemann@esbjugconsult.com (see /.well-known/security.txt).
+    We would rather hear it from you than from a customer.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/frostcopy-uk/favicon.png" />
+    <title>FrostCopy UK: cleans documents of personal information, on your own computer</title>
+    <meta
+      name="description"
+      content="FrostCopy is a program for Mac, Windows and Linux that finds and removes personal information in a whole folder of Word, Excel, PowerPoint, PDF and email files, on your own computer. For subject access and FOI requests, sharing, archives, training or AI tools. No internet connection and no account."
+    />
+    <meta name="theme-color" content="#6593c3" />
+    <meta
+      property="og:title"
+      content="FrostCopy UK: cleans documents of personal information, on your own computer"
+    />
+    <meta
+      property="og:description"
+      content="A program for Mac, Windows and Linux. It reads Word, Excel, PowerPoint, PDF, email and text files on your own computer, finds British personal information and writes a cleaned copy that you review yourself. Nothing leaves the computer."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:url" content="https://esbjugconsult.com/frostcopy-uk/" />
+    <meta property="og:image" content="https://esbjugconsult.com/frostcopy/assets/klart-deling.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="FrostCopy: the silver crystal on a winter picture with ski tracks" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://esbjugconsult.com/frostcopy/assets/klart-deling.jpg" />
+    <link rel="apple-touch-icon" href="/frostcopy-uk/ikon.png" />
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="forhandsvisning.css" />
+    <link rel="stylesheet" href="videre.css" />
+    <link rel="stylesheet" href="us.css" />
+  </head>
+  <body>
+    <svg class="ikonark" width="0" height="0" aria-hidden="true">
+      <defs>
+        <g id="page">
+          <rect
+            x="16"
+            y="2"
+            width="26"
+            height="32"
+            rx="3.5"
+            fill="#fff"
+            stroke="#dcdfda"
+            stroke-width="1.3"
+          />
+          <g fill="#e4e7e2">
+            <rect x="26" y="9" width="12" height="2.4" rx="1.2" />
+            <rect x="26" y="15" width="12" height="2.4" rx="1.2" />
+          </g>
+        </g>
+
+        <symbol id="i-word" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#185abd" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">W</text>
+        </symbol>
+
+        <symbol id="i-excel" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#107c41" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">X</text>
+        </symbol>
+
+        <symbol id="i-ppt" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#c43e1c" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">P</text>
+        </symbol>
+
+        <symbol id="i-pdf" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#c8322b" />
+          <text x="17.5" y="31" text-anchor="middle" font-size="11">PDF</text>
+        </symbol>
+
+        <symbol id="i-mail" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#0f6cbd" />
+          <rect
+            x="8.5"
+            y="20"
+            width="18"
+            height="13.5"
+            rx="1.8"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2.1"
+          />
+          <path
+            d="M9.2 21.2l8.3 6.4 8.3-6.4"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2.1"
+          />
+        </symbol>
+
+        <symbol id="i-bilde" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#7a4fd6" />
+          <circle cx="23" cy="20" r="3" fill="#fff" />
+          <path d="M7.5 36l7.5-10 5.5 6.5 3.5-4 6.5 7.5z" fill="#fff" />
+        </symbol>
+
+        <symbol id="i-text" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#5b6569" />
+          <g fill="#fff">
+            <rect x="9" y="19.5" width="17" height="2.4" rx="1.2" />
+            <rect x="9" y="25.3" width="17" height="2.4" rx="1.2" />
+            <rect x="9" y="31.1" width="10" height="2.4" rx="1.2" />
+          </g>
+        </symbol>
+
+        <linearGradient id="mac-front" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f3f5f8" />
+          <stop offset="0.55" stop-color="#e1e6ec" />
+          <stop offset="1" stop-color="#c4cbd4" />
+        </linearGradient>
+        <linearGradient id="mac-kant" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#6d7783" stop-opacity="0.28" />
+          <stop offset="0.08" stop-color="#6d7783" stop-opacity="0" />
+          <stop offset="0.92" stop-color="#6d7783" stop-opacity="0" />
+          <stop offset="1" stop-color="#6d7783" stop-opacity="0.32" />
+        </linearGradient>
+        <linearGradient id="mac-topp" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#e9edf2" />
+          <stop offset="1" stop-color="#fbfcfd" />
+        </linearGradient>
+        <radialGradient id="mac-skygge" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="#050d1f" stop-opacity="0.45" />
+          <stop offset="1" stop-color="#050d1f" stop-opacity="0" />
+        </radialGradient>
+        <symbol id="mac-studio" viewBox="60 80 440 240">
+          <ellipse cx="280" cy="292" rx="236" ry="26" fill="url(#mac-skygge)" />
+          <rect x="122" y="262" width="316" height="24" rx="9" fill="#8d96a1" />
+          <rect x="128" y="276" width="304" height="6" rx="3" fill="#6e7782" />
+          <path d="M96 150 L128 104 Q134 96 146 96 L414 96 Q426 96 432 104 L464 150 Z" fill="url(#mac-topp)" stroke="#d3d9e1" stroke-width="1.2" />
+          <path d="M96 150 H464 V252 Q464 270 446 270 H114 Q96 270 96 252 Z" fill="url(#mac-front)" />
+          <path d="M96 150 H464 V252 Q464 270 446 270 H114 Q96 270 96 252 Z" fill="url(#mac-kant)" />
+          <path d="M96 150.5 H464" stroke="#ffffff" stroke-width="1.6" />
+          <g fill="#2b3139">
+            <rect x="128" y="200" width="22" height="8" rx="4" />
+            <rect x="162" y="200" width="22" height="8" rx="4" />
+            <rect x="386" y="202" width="42" height="4" rx="2" />
+          </g>
+          <circle cx="114" cy="254" r="2.4" fill="#ffffff" />
+          <circle cx="114" cy="254" r="5" fill="#ffffff" opacity="0.25" />
+        </symbol>
+      </defs>
+    </svg>
+
+    <header class="topbar">
+      <a class="wordmark" href="#top">
+        <b>FrostCopy</b>
+        <span>v0.1.0</span>
+      </a>
+      <nav class="topnav">
+        <a href="#hva">What FrostCopy is</a>
+        <a href="#kjernen">How it works</a>
+        <a href="#nokkel">The key</a>
+        <a href="#trygt">Safety</a>
+        <a href="#dybde">In depth</a>
+        <a href="#ansvar">Responsibility</a>
+        <a href="/frostcopy-uk/pricing/">Pricing</a>
+      </nav>
+      <a class="btn sm topp-last" href="#top">Download</a>
+      <a class="btn sm topp-send" href="mailto:?subject=FrostCopy&amp;body=https%3A%2F%2Fesbjugconsult.com%2Ffrostcopy-uk%2F">Send to yourself</a>
+    </header>
+
+    <main id="top">
+      <section class="hero" id="programmet">
+        <div class="scene">
+          <img class="scene-bilde" src="/frostcopy/assets/hero-vinter.jpg" width="2400" height="1600" fetchpriority="high" alt="" aria-hidden="true" />
+          <div class="scene-himmel" aria-hidden="true"></div>
+          <canvas class="scene-sno" aria-hidden="true"></canvas>
+          <canvas class="scene-sno-midt" aria-hidden="true"></canvas>
+          <canvas class="scene-sno-lag" aria-hidden="true"></canvas>
+          <canvas class="scene-sno-mobil" aria-hidden="true"></canvas>
+
+          <div class="scene-tekst">
+            <h1 class="rise d-60 hero-logo">
+              <img class="hero-ikon" src="/frostcopy-uk/ikon.png" width="256" height="256" alt="" aria-hidden="true" />
+              <span class="logo-ord">FrostCopy</span>
+            </h1>
+            <div class="privat rise d-120">
+              <p class="privat-linje">
+                <span><b>Free for private individuals.</b></span>
+              </p>
+              <div class="mobil-send">
+                <p class="mobil-send-tittel">FrostCopy is a program for computers.</p>
+                <p class="mobil-send-tekst">Email yourself the link, then download it on a Mac, Windows or Linux computer.</p>
+                <a class="btn" href="mailto:?subject=FrostCopy&amp;body=https%3A%2F%2Fesbjugconsult.com%2Ffrostcopy-uk%2F">Send to yourself</a>
+                <p class="mobil-send-andre">(And others?)</p>
+              </div>
+              <p class="last-ned-tittel">Download</p>
+              <div class="get">
+                <a class="btn ghost os os-win" href="/frostcopy-uk/download/windows" download aria-label="Download for Windows"><span class="os-navn">Windows</span></a>
+                <a class="btn ghost os os-mac" href="/frostcopy-uk/download/mac" download aria-label="Download for Mac"><span class="os-glass" aria-hidden="true"></span><span class="os-navn">Mac</span></a>
+                <a class="btn ghost os os-lin" href="/frostcopy-uk/download/linux" download aria-label="Download for Linux"><span class="os-figur os-pingvin" aria-hidden="true"><svg viewBox="0 0 24 28" width="24" height="28" focusable="false"><g class="os-pingvin-kropp"><ellipse cx="8.4" cy="26.4" rx="3.3" ry="1.4" fill="#f5a524"/><ellipse cx="15.6" cy="26.4" rx="3.3" ry="1.4" fill="#f5a524"/><ellipse cx="3.9" cy="17" rx="1.9" ry="5.4" transform="rotate(16 3.9 17)" fill="#0f2147"/><ellipse cx="20.1" cy="17" rx="1.9" ry="5.4" transform="rotate(-16 20.1 17)" fill="#0f2147"/><ellipse cx="12" cy="15" rx="8.4" ry="11.2" fill="#0f2147"/><ellipse cx="12" cy="18.4" rx="5.5" ry="7.6" fill="#fff"/><circle cx="9.7" cy="8.6" r="2" fill="#fff"/><circle cx="14.3" cy="8.6" r="2" fill="#fff"/><circle cx="10.1" cy="8.9" r="0.95" fill="#0f2147"/><circle cx="13.9" cy="8.9" r="0.95" fill="#0f2147"/><path d="M9.9 11.4 Q12 10.5 14.1 11.4 Q12 13.9 9.9 11.4Z" fill="#f5a524"/></g></svg></span><span class="os-navn">Linux</span></a>
+              </div>
+              <p class="privat-fin">No sign-up, no commitment. <a class="v-lenke" data-arm href="/frostcopy-uk/download/linux-arm" download>Linux on ARM</a></p>
+              <p class="eller"><span>or</span></p>
+            </div>
+            <div class="orgport us-pris rise d-180">
+              <div>
+                <div class="orgport-rad">
+                  <a class="btn" href="/frostcopy-uk/pricing/">See the price for your organisation</a>
+                </div>
+                <p class="virk-linje">
+                  <span>For organisations: <b>30 days free</b>. No sign-up, no card.</span>
+                </p>
+              </div>
+            </div>
+            <div class="nedlasting" data-nedlasting hidden aria-live="polite">
+              <div class="nedlasting-topp">
+                <span class="nedlasting-merke" data-merke aria-hidden="true"></span>
+                <div>
+                  <p class="nedlasting-tittel">FrostCopy for <span data-os></span></p>
+                  <p class="nedlasting-fil" data-fil></p>
+                </div>
+              </div>
+              <p class="nedlasting-prosent"><span data-prosent>0</span><span class="nedlasting-pst">%</span></p>
+              <p class="nedlasting-status" data-status></p>
+              <div class="nedlasting-ferdig" data-ferdig hidden>
+                <span class="nedlasting-hake" aria-hidden="true"><svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="25" pathLength="1" /><path d="M17 29l8 8 15-17" pathLength="1" /></svg></span>
+                <p class="nedlasting-ferdig-tittel">Downloaded</p>
+                <p class="nedlasting-neste" data-neste></p>
+              </div>
+              <button type="button" class="nedlasting-tilbake" data-tilbake>Back</button>
+            </div>
+          </div>
+        </div>
+
+
+        <section class="hva rise" aria-label="FrostCopy is a local program">
+          <div class="hva-venstre">
+            <ul class="hva-sjekk">
+              <li>Built-in AI model</li>
+              <li>Everything happens on your own computer</li>
+              <li>Made for ordinary computers</li>
+            </ul>
+          </div>
+          <div class="hva-hoyre">
+            <p class="hva-logo"><img src="/frostcopy-uk/ikon.png" width="256" height="256" alt="" aria-hidden="true" /><span>FrostCopy</span></p>
+            <p class="hva-under">Local Program · No Internet</p>
+          </div>
+        </section>
+        <figure class="kv rise avklart" data-scene="gjennom">
+          <div class="kv-ramme">
+          <div class="kv-app" aria-hidden="true">
+            <header class="kv-chrome">
+              <span class="kv-lys"><i></i><i></i><i></i></span>
+              <span class="kv-merke"><img src="/frostcopy-uk/ikon.png" alt="" />FrostCopy</span>
+              <span class="kv-sok"><svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.6" /><path d="M10.4 10.4L14 14" /></svg>Search all files in the folder<kbd>⌘F</kbd></span>
+              <span class="kv-hoyre">
+                <span class="kv-lagret">✓ Auto-saved</span>
+                <span class="kv-lysknapp">Scan options</span>
+                <span class="kv-lysknapp" data-kv="hjem">Start screen</span>
+                <span class="kv-lysknapp kv-sporsmal">?</span>
+              </span>
+            </header>
+
+            <div class="kv-flate">
+              <div class="kv-scene kv-s-start">
+                <div class="kv-start-inn">
+                  <div class="kv-kortene">
+                    <div class="kv-startkort">
+                      <img src="/frostcopy/assets/visning/ikon-rens.png" alt="" />
+                      <h4>Clean</h4>
+                      <span class="kv-hvit" data-kv="velg">Choose a folder or documents …</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="/frostcopy/assets/visning/ikon-tilbakefor.png" alt="" />
+                      <h4>Restore</h4>
+                      <span class="kv-hvit" data-kv="tbvelg">Choose copies …</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="/frostcopy/assets/visning/ikon-tekst.png" alt="" />
+                      <h4>Text tool</h4>
+                      <span class="kv-hvit" data-kv="tekstvelg">Open …</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="kv-scene kv-s-editor">
+                <aside class="kv-filer">
+                  <div class="kv-filer-topp"><b>client-files</b><span>10 files</span></div>
+                  <ul data-kv="filer">
+                    <li data-steder="30"><i class="kv-fikon w">W</i><span class="kv-fnavn">01-employment-contract-acme.docx</span><span class="kv-fmeta">30 found</span><i class="kv-ring"></i></li>
+                    <li data-steder="41" data-uavklart="2" data-dok="vedtak" class="valgt"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">02-deputyship-order.pdf</span><span class="kv-fmeta">41 found</span><i class="kv-ring"></i></li>
+                    <li data-steder="45" data-ekstra="1 plate" data-dok="epost"><i class="kv-fikon epost">@</i><span class="kv-fnavn">03-email-thread.eml</span><span class="kv-fmeta">45 found</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon tekst">T</i><span class="kv-fnavn">04-hr-note.md</span><span class="kv-fmeta">21 found</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon w">W</i><span class="kv-fnavn">05-fit-note.docx</span><span class="kv-fmeta">21 found</span><i class="kv-ring"></i></li>
+                    <li data-steder="16"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">06-invoice-northlight.pdf</span><span class="kv-fmeta">16 found</span><i class="kv-ring"></i></li>
+                    <li data-steder="82" data-dok="liste"><i class="kv-fikon x">X</i><span class="kv-fnavn">08-client-list.xlsx</span><span class="kv-fmeta">82 found</span><i class="kv-ring"></i></li>
+                    <li data-steder="43" data-ekstra="2 faces" data-dok="ppt"><i class="kv-fikon p">P</i><span class="kv-fnavn">09-status-meeting.pptx</span><span class="kv-fmeta">43 found · 2 faces</span><i class="kv-ring"></i></li>
+                    <li data-steder="18"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">11-scanned-attachment.pdf</span><span class="kv-fmeta">18 found</span><i class="kv-ring"></i></li>
+                    <li data-steder="3" data-ekstra="1 face"><i class="kv-fikon bilde">JPG</i><span class="kv-fnavn">16-access-badge.jpg</span><span class="kv-fmeta">3 found · 1 face</span><i class="kv-ring"></i></li>
+                  </ul>
+                </aside>
+
+                <div class="kv-midt">
+                  <div class="kv-docket">
+                    <b data-kv="docnavn">02-deputyship-order.pdf</b><span class="kv-type" data-kv="doctype">PDF</span>
+                    <span class="kv-kopimerke" data-kv="kopimerke">The copy · code list at the end</span>
+                    <span class="kv-verktoy">
+                      <span class="kv-zoom">− &nbsp;86%&nbsp; +</span>
+                      <span class="kv-hvit" data-kv="vis">Show the copy</span>
+                    </span>
+                  </div>
+                  <div class="kv-bord">
+                    <div class="kv-pille" data-kv="pille"><i></i>Reading <b data-kv="leser">01-employment-contract-acme.docx</b><span data-kv="nr">1 of 10</span></div>
+
+                    <article class="kv-side vist" data-dok="vedtak">
+                      <i class="kv-lesehode"></i>
+                      <p class="kv-avsender">Court of Protection</p>
+                      <h4>Order appointing a deputy</h4>
+                      <p class="kv-ref">Our ref. <mark class="s"><span class="o">2026/18442</span><span class="k">[Case number 4906498]</span></mark> · 14/03/2026</p>
+                      <h5>The person</h5>
+                      <dl>
+                        <dt>Name</dt><dd><mark class="s"><span class="o">Karen Nelson</span><span class="k">[Person 6311794]</span></mark></dd>
+                        <dt>National Insurance number</dt><dd><mark class="s"><span class="o">QQ 12 34 56 C</span><span class="k">[National Insurance number 2215087]</span></mark></dd>
+                        <dt>Address</dt><dd><mark class="s"><span class="o">27 Glen Road, Harrogate HG1 2AB</span><span class="k">[Address 8950779]</span></mark></dd>
+                      </dl>
+                      <h5>Appointed deputy</h5>
+                      <dl>
+                        <dt>Name</dt><dd><mark class="s"><span class="o">Lawrence Hansen</span><span class="k">[Person 2656447]</span></mark>, <mark class="b" data-kv="arbeid"><span class="o">Northlight Law LLP</span><span class="k">[Organisation 5521093]</span></mark></dd>
+                        <dt>Email</dt><dd><mark class="s"><span class="o">l.hansen@northlight.test</span><span class="k">[Email 3278678]</span></mark></dd>
+                        <dt>Phone</dt><dd><mark class="s"><span class="o">07700 900134</span><span class="k">[Phone 6289990]</span></mark></dd>
+                      </dl>
+                      <h5>Reasons</h5>
+                      <p><mark class="s" data-kv="merknad"><span class="o">The person has been in hospital with depression since January and needs help with finances.</span><span class="k">[Note 2760056]</span></mark> The deputyship covers the funds in account <mark class="s"><span class="o">41700923</span><span class="k">[Account number 7719741]</span></mark>.</p>
+                      <p>The deputyship takes effect on the date of this order. Any application to reconsider it must be made within 21 days.</p>
+                    </article>
+
+                    <article class="kv-side kv-epost" data-dok="epost">
+                      <i class="kv-lesehode"></i>
+                      <dl class="kv-hode">
+                        <dt>From</dt><dd><mark class="s"><span class="o">Sarah Johnson</span><span class="k">[Person 7320430]</span></mark> &lt;<mark class="s"><span class="o">sarah.johnson@northlight.test</span><span class="k">[Email 5102284]</span></mark>&gt;</dd>
+                        <dt>To</dt><dd><mark class="s"><span class="o">Karen Nelson</span><span class="k">[Person 6311794]</span></mark></dd>
+                        <dt>Subject</dt><dd><b>Follow-up after the meeting</b></dd>
+                        <dt>Date</dt><dd>12 Mar 2026, 09:14</dd>
+                      </dl>
+                      <p>Hi <mark class="s"><span class="o">Karen</span><span class="k">[Person 6311794]</span></mark>,</p>
+                      <p>Thanks for the talk yesterday. As agreed, I am sending a copy of the fit note. You can reach me at <mark class="s"><span class="o">07700 900134</span><span class="k">[Phone 6289990]</span></mark> all week.</p>
+                      <p>The company car, registration <mark class="s"><span class="o">KL21 MXR</span><span class="k">[Number plate 3071552]</span></mark> is ready from Monday. The picture is attached.</p>
+                      <p>Regards<br /><mark class="s"><span class="o">Sarah Johnson</span><span class="k">[Person 7320430]</span></mark><br />Northlight Services Ltd · <mark class="s"><span class="o">22 Harbour Street, Plymouth PL1 2AA</span><span class="k">[Address 6113936]</span></mark></p>
+                      <figure class="kv-vedlegg">
+                        <span class="kv-bilramme"><img src="/frostcopy/assets/visning/bil.jpg" alt="" /><span class="kv-skilt" data-kv="skilt"><img src="/frostcopy/assets/visning/bil-skilt.png" alt="" /><em data-kv="skiltlapp">Number plate · hidden</em></span></span>
+                        <figcaption>car.jpg · 1.2 MB</figcaption>
+                      </figure>
+                    </article>
+
+                    <article class="kv-side kv-ark" data-dok="liste">
+                      <i class="kv-lesehode"></i>
+                      <table>
+                        <thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead>
+                        <tbody>
+                          <tr><th>1</th><td><b>Name</b></td><td><b>NI number</b></td><td><b>Phone</b></td><td><b>Account number</b></td></tr>
+                          <tr><th>2</th><td><mark class="s"><span class="o">Olivia Hughes</span><span class="k">[Person 1180342]</span></mark></td><td><mark class="s"><span class="o">QQ 12 34 56 A</span><span class="k">[NI number 4402918]</span></mark></td><td><mark class="s"><span class="o">07700 900110</span><span class="k">[Phone 2290174]</span></mark></td><td><mark class="s"><span class="o">41229876</span><span class="k">[Account 6630215]</span></mark></td></tr>
+                          <tr><th>3</th><td><mark class="s"><span class="o">Priya Shah</span><span class="k">[Person 5523107]</span></mark></td><td><mark class="s"><span class="o">QQ 23 45 67 B</span><span class="k">[NI number 8817330]</span></mark></td><td><mark class="s"><span class="o">07700 900123</span><span class="k">[Phone 1047782]</span></mark></td><td><mark class="s"><span class="o">97100544</span><span class="k">[Account 3359810]</span></mark></td></tr>
+                          <tr><th>4</th><td><mark class="s"><span class="o">Ahmed Hassan</span><span class="k">[Person 9918066]</span></mark></td><td><mark class="s"><span class="o">QQ 34 56 78 C</span><span class="k">[NI number 2265419]</span></mark></td><td><mark class="s"><span class="o">07700 900117</span><span class="k">[Phone 7714203]</span></mark></td><td><mark class="s"><span class="o">12064833</span><span class="k">[Account 9046631]</span></mark></td></tr>
+                          <tr><th>5</th><td><mark class="s"><span class="o">Mary Sullivan</span><span class="k">[Person 3301459]</span></mark></td><td><mark class="s"><span class="o">QQ 45 67 89 D</span><span class="k">[NI number 6158820]</span></mark></td><td><mark class="s"><span class="o">07700 900164</span><span class="k">[Phone 4420987]</span></mark></td><td><mark class="s"><span class="o">30001782</span><span class="k">[Account 1872264]</span></mark></td></tr>
+                          <tr><th>6</th><td><mark class="s"><span class="o">Daniel Evans</span><span class="k">[Person 8045126]</span></mark></td><td><mark class="s"><span class="o">QQ 56 78 90 A</span><span class="k">[NI number 5590743]</span></mark></td><td><mark class="s"><span class="o">07700 900178</span><span class="k">[Phone 3368201]</span></mark></td><td><mark class="s"><span class="o">60120941</span><span class="k">[Account 7701358]</span></mark></td></tr>
+                          <tr><th>7</th><td></td><td></td><td></td><td></td></tr>
+                          <tr><th>8</th><td></td><td></td><td></td><td></td></tr>
+                        </tbody>
+                      </table>
+                    </article>
+
+                    <article class="kv-side kv-ppt" data-dok="ppt">
+                      <i class="kv-lesehode"></i>
+                      <div class="kv-lysbilde">
+                        <p class="kv-lb-tittel">The team away day in February</p>
+                        <p class="kv-lb-under">Thanks to <mark class="s"><span class="o">Hannah Lloyd</span><span class="k">[Person 3390415]</span></mark> and <mark class="s"><span class="o">Peter Walsh</span><span class="k">[Person 8812706]</span></mark> for the planning!</p>
+                        <div class="kv-lb-foto">
+                          <img src="/frostcopy/assets/visning/fagtur.jpg" alt="" />
+                          <span class="kv-ansikt a1" data-kv="ansikt1"><img src="/frostcopy/assets/visning/fagtur-ansikt-1.jpg" alt="" /><em>Face · pixelated</em></span>
+                          <span class="kv-ansikt a2" data-kv="ansikt2"><img src="/frostcopy/assets/visning/fagtur-ansikt-2.jpg" alt="" /><em>Face · pixelated</em></span>
+                        </div>
+                        <p class="kv-lb-bunn">Status meeting · slide 4 of 12</p>
+                      </div>
+                    </article>
+
+                    <div class="kv-gjennom" data-kv="gjennom">
+                      <i class="kv-gjennom-strek" data-kv="gstrek"></i>
+                      <p class="kv-gjennom-topp"><code data-kv="gkode">Note 2760056</code><b>Unresolved</b><span data-kv="gnr">1 of 2</span></p>
+                      <p class="kv-gjennom-hvorfor" data-kv="ghvorfor">FrostCopy is not sure this belongs in “Note”. · 02-deputyship-order.pdf</p>
+                      <p class="kv-gjennom-knapper">
+                        <span class="kv-btn" data-kv="skjul">Hide <kbd>↵</kbd></span>
+                        <span class="kv-btn hvit" data-kv="lastaa">Keep <kbd>B</kbd></span>
+                        <span class="kv-btn hvit av">Previous <kbd>←</kbd></span>
+                        <span class="kv-btn hvit">Next <kbd>→</kbd></span>
+                        <span class="kv-btn hvit">Stop <kbd>Esc</kbd></span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <aside class="kv-panel">
+                  <div class="kv-uavklart" data-kv="uavklart">
+                    <h5><svg viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" rx="2" /><path d="M6 2.5v11" /></svg>Unresolved</h5>
+                    <div class="kv-uboks">
+                      <p data-kv="u1"><code>Note 2760056</code><span>The person has been in hospital …</span><em>1 unresolved</em></p>
+                      <p data-kv="u2"><code>Organisation 5521093</code><span>Northlight Law LLP</span><em>1 unresolved</em></p>
+                      <span class="kv-btn bred" data-kv="gaa">Review all 2 <kbd>G</kbd></span>
+                    </div>
+                  </div>
+                  <div class="kv-imappen">
+                    <h5>In the folder <span><b data-kv="opplysninger">67</b> items</span></h5>
+                    <ul data-kv="register">
+                      <li data-n="19" data-s="114"><span>People</span><em>19 · 114 found</em></li>
+                      <li data-n="7" data-s="24"><span>National Insurance numbers</span><em>7 · 24 found</em></li>
+                      <li data-n="12" data-s="43"><span>Phone</span><em>12 · 43 found</em></li>
+                      <li data-n="15" data-s="53"><span>Email</span><em>15 · 53 found</em></li>
+                      <li data-n="7" data-s="29"><span>Addresses</span><em>7 · 29 found</em></li>
+                      <li data-n="6" data-s="13"><span>Account numbers</span><em>6 · 13 found</em></li>
+                      <li data-n="1" data-s="2"><span>Number plates</span><em>1 · 2 found</em></li>
+                      <li data-n="3" data-s="12"><span>Sensitive</span><em>3 · 12 found</em></li>
+                      <li data-n="3" data-s="3" data-kv="ansikter"><span>Faces</span><em>3 · 3 found</em></li>
+                    </ul>
+                  </div>
+                  <div class="kv-bunn">
+                    <p><b data-kv="skjules">292</b> hidden <b data-kv="faarstaa">1</b> kept</p>
+                    <p class="kv-bunn-knapper">
+                      <span class="kv-btn hvit oransje" data-kv="ubtn"><i></i>Unresolved 2</span>
+                      <span class="kv-btn stor" data-kv="lag">Make 10 copies</span>
+                    </p>
+                  </div>
+                </aside>
+              </div>
+
+              <div class="kv-scene kv-s-tekst">
+                <div class="kv-rt-linje">
+                  <span class="kv-rt-tilbake">‹ Start screen</span>
+                  <span class="kv-faner"><span class="på" data-kv="fanerens"><i>1</i>Clean text</span><span data-kv="fanetb"><i>2</i>Restore text</span></span>
+                  <span class="kv-faner kv-rt-visning"><span class="på" data-kv="rtorig">Original</span><span data-kv="rtrenset">Cleaned</span></span>
+                  <span class="kv-btn" data-kv="rtkopier">Copy</span>
+                </div>
+                <div class="kv-rt-kropp">
+                  <div class="kv-rt-ark" data-kv="rtark"><p data-kv="rttekst"></p><i class="kv-markor"></i><p class="kv-rt-svar" data-kv="rtsvar"></p></div>
+                  <aside class="kv-rt-liste">
+                    <h5 data-kv="rtlistetittel">Hidden</h5>
+                    <ul data-kv="rtliste"></ul>
+                    <p class="kv-rt-merke">Read on this computer. Nothing is sent.</p>
+                  </aside>
+                </div>
+                <p class="kv-toast" data-kv="toast">Copied</p>
+              </div>
+
+              <div class="kv-scene kv-s-finder kv-skrivebord">
+                <div class="kv-finder">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><span class="kv-pil">‹ ›</span><b>Documents</b></div>
+                  <div class="kv-finder-kropp">
+                    <ul class="kv-sidefelt">
+                      <li class="kv-sf-h">Favourites</li>
+                      <li>Desktop</li>
+                      <li class="på">Documents</li>
+                      <li>Downloads</li>
+                      <li class="kv-sf-h">Locations</li>
+                      <li>iCloud Drive</li>
+                    </ul>
+                    <div class="kv-ikoner">
+                      <span class="kv-mappe" data-kv="fmappe"><i></i>client-files</span>
+                      <span class="kv-mappe"><i></i>SAR March</span>
+                      <span class="kv-mappe"><i></i>accounts 2025</span>
+                      <span class="kv-dokikon"><i>PDF</i>contract-acme.pdf</span>
+                      <span class="kv-dokikon w"><i>W</i>minutes 10-11.docx</span>
+                      <span class="kv-mappe ny" data-kv="fny"><i></i>client-files-clean</span>
+                    </div>
+                  </div>
+                  <ul class="kv-meny" data-kv="meny">
+                    <li>Open</li>
+                    <li>Open in New Tab</li>
+                    <li class="kv-skille"></li>
+                    <li>Move to Bin</li>
+                    <li class="kv-skille"></li>
+                    <li>Get Info</li>
+                    <li>Rename</li>
+                    <li>Compress “client-files”</li>
+                    <li>Duplicate</li>
+                    <li class="kv-skille"></li>
+                    <li>Copy</li>
+                    <li>Share …</li>
+                    <li class="kv-skille"></li>
+                    <li class="kv-under" data-kv="hurtig">Quick Actions<span>›</span></li>
+                    <li class="kv-under">Services<span>›</span></li>
+                  </ul>
+                  <ul class="kv-meny kv-undermeny" data-kv="undermeny">
+                    <li data-kv="rensmed">Clean with FrostCopy</li>
+                    <li>Restore with FrostCopy</li>
+                    <li class="kv-skille"></li>
+                    <li>Customise …</li>
+                  </ul>
+                </div>
+                <div class="kv-varsel" data-kv="varsel">
+                  <img src="/frostcopy-uk/ikon.png" alt="" />
+                  <p><b data-kv="vtittel">Cleaning “client-files”…</b><span data-kv="vtekst">The copies are placed next to it. You are told when they are ready.</span></p>
+                  <small>now</small>
+                </div>
+              </div>
+
+              <div class="kv-scene kv-s-ki kv-skrivebord">
+                <div class="kv-ki">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><b>AI assistant</b></div>
+                  <div class="kv-ki-samtale">
+                    <div class="kv-ki-bruker" data-kv="kibruker">
+                      <p>Write a short reply to this message:</p>
+                      <p class="kv-ki-sitat">Hi! Can you call <code>[Person 6311794]</code> at <code>[Phone 6289990]</code> today? She has moved to <code>[Address 8950779]</code>, and her pay should now go to account <code>[Account number 7719741]</code>.</p>
+                    </div>
+                    <div class="kv-ki-svar" data-kv="kisvar"><p data-kv="kisvartekst"></p><span class="kv-ki-kopier" data-kv="kikopier">Copy the reply</span></div>
+                  </div>
+                  <div class="kv-ki-felt" data-kv="kifelt"><span>Write a message …</span><i>↑</i></div>
+                </div>
+                <p class="kv-ki-merke">The AI only gets the codes. Name, phone, address and account stay on the computer.</p>
+              </div>
+
+              <div class="kv-slor kv-s-forvalg">
+                <div class="kv-modal">
+                  <h4>client-files</h4>
+                  <p class="kv-modal-under">10 files · docx, eml, jpg, md, pdf, pptx, xlsx</p>
+                  <div class="kv-maate">
+                    <p class="på"><i></i><span><b>With scanning</b>FrostCopy reads the files and marks what it finds. You go through them and decide.</span></p>
+                    <p><i></i><span><b>Without scanning</b>Nothing is marked in advance. You click what should be hidden.</span></p>
+                  </div>
+                  <p class="kv-sammen"><span><small>The scan looks for and hides</small>Names, ID numbers, Phone and email, Sensitive, number plates, Accounts, Faces and 5 more</span><em>Change</em></p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Cancel</span>
+                    <span class="kv-btn stor" data-kv="skann">Scan <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <div class="kv-slor kv-s-kopivalg">
+                <div class="kv-modal kv-kopivalg">
+                  <h4>Before the copies are made</h4>
+                  <p class="kv-modal-under">10 files · the copies go in client-files-clean</p>
+                  <div class="kv-maate kv-former" data-kv="former">
+                    <p class="på" data-form="kort"><i></i><span><b>Short code and code list</b>Easy to read. Can be restored with your office's key.<code>[Person 4814887] + list</code></span></p>
+                    <p data-form="full"><i></i><span><b>Full code in the text</b>No list. Can be restored, but is hard to read.</span></p>
+                    <p data-form="lapp"><i></i><span><b>Labels only</b>Easy to read, but cannot be restored.</span></p>
+                    <p data-form="svart"><i></i><span><b>Black redaction (PDF)</b>What was there is gone for good.<code class="kv-svartprove"></code></span></p>
+                  </div>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Cancel</span>
+                    <span class="kv-btn stor" data-kv="lagnaa">Make 10 copies <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <div class="kv-slor kv-s-ferdig">
+                <div class="kv-ferdig">
+                  <p class="kv-stor">Done.</p>
+                  <p>10 copies were made. The originals are untouched. Read the copies through before you share them.</p>
+                  <p class="kv-sti"><span>Documents/</span>client-files-clean/</p>
+                  <p class="kv-liten">The code list is at the end of each copy.</p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit">Back to the folder</span>
+                    <span class="kv-btn">Open the copies</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+          <span class="kv-peker" aria-hidden="true"></span>
+          <ol class="kv-kapitler" data-kv="kapitler" aria-label="Chapters in the preview">
+            <li><button type="button" data-kapittel="0">Clean a folder</button></li>
+            <li><button type="button" data-kapittel="1">Review</button></li>
+            <li><button type="button" data-kapittel="2">The copies</button></li>
+            <li><button type="button" data-kapittel="3">Right-click in Finder</button></li>
+            <li><button type="button" data-kapittel="4">Clean and restore text</button></li>
+          </ol>
+          <p class="kv-spol" aria-hidden="true">
+            <svg viewBox="0 0 20 12"><path d="M1 1l8 5-8 5zM10 1l8 5-8 5z" /></svg>
+            <span>Sped up. How long the reading takes varies from computer to computer. On an ordinary laptop it is slower.</span>
+          </p>
+          <figcaption class="skjult-tekst">
+            How FrostCopy works. Choose a folder, and FrostCopy reads the files, including PDF, email, spreadsheets, PowerPoint and images, and marks names, National Insurance numbers, contact details, addresses, account numbers, sensitive information, number plates and faces, which are pixelated. What FrostCopy is unsure about, you go through and decide yourself: hide or keep. The copies can get short codes with a code list, full codes, labels only or black redaction, and the originals are untouched. In Finder, a folder can be cleaned with right-click › Quick Actions › Clean with FrostCopy. Text with codes can be given to an AI tool, and the reply is restored in FrostCopy, so the names come back without the AI having seen them. The reading is sped up: how long it takes varies from computer to computer.
+          </figcaption>
+        </figure>
+
+        <div class="formats rise">
+          <p>Reads the files you already work in</p>
+          <ul>
+            <li>
+              <svg class="ficon"><use href="#i-word" /></svg>
+              <span class="fname">Word</span>
+              <span class="fext">.docx</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-excel" /></svg>
+              <span class="fname">Excel</span>
+              <span class="fext">.xlsx · .xls · .csv</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-ppt" /></svg>
+              <span class="fname">PowerPoint</span>
+              <span class="fext">.pptx</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-pdf" /></svg>
+              <span class="fname">PDF</span>
+              <span class="fext">.pdf</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-mail" /></svg>
+              <span class="fname">Email</span>
+              <span class="fext">.eml</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-bilde" /></svg>
+              <span class="fname">Images</span>
+              <span class="fext">.jpg · .png · .tiff</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-text" /></svg>
+              <span class="fname">Text</span>
+              <span class="fext">.txt · .md</span>
+            </li>
+          </ul>
+          <p class="formats-unik"><b>Unique feature:</b> FrostCopy copies the files in the format they are in, so you can keep working with cleaned documents.</p>
+        </div>
+
+      </section>
+
+      <div class="videre">
+        <section class="v-del v-hva" id="hva">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Share the case. Keep the names.</h2>
+            <p class="v-ingress">
+              Send the documents to an adviser, answer a subject access or FOI request or ask an AI tool, without the names coming along. It is much faster than redacting by hand, page by page.
+            </p>
+          </div>
+          <ul class="v-tre-ord rise">
+            <li><b>Use AI on real cases.</b> The tool only sees codes.</li>
+            <li><b>Say yes to sharing.</b> With an accountant, a solicitor or another public body, the same day.</li>
+            <li><b>Get the names back whenever you want.</b> Only you have the key.</li>
+          </ul>
+          <p class="v-hva-er rise">FrostCopy is a program on your own computer. The documents never leave it.</p>
+        </section>
+
+        <section class="v-del v-kjerne" id="kjernen">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Names become codes.</h2>
+            <p class="v-ingress">
+              FrostCopy makes a copy of your documents. In the copy there is a code where there was a name, a National Insurance number or something else about a person.
+            </p>
+          </div>
+
+          <figure class="v-ark-scene rise" data-v-bytt data-vis="kopi">
+            <div class="v-bryter" role="group" aria-label="Show the original or the copy">
+              <button type="button" data-v-vis="original" aria-pressed="false">Original</button>
+              <button type="button" data-v-vis="kopi" aria-pressed="true">Copy</button>
+            </div>
+            <div class="v-ark-par" aria-hidden="true">
+              <article class="v-ark v-ark-a">
+                <header class="v-ark-topp">
+                  <svg class="v-ark-ikon"><use href="#i-pdf" /></svg>
+                  <span>deputyship-order.pdf</span>
+                </header>
+                <p class="v-ark-h">Order appointing a deputy</p>
+                <dl class="v-ark-rader">
+                  <div>
+                    <dt>The person</dt>
+                    <dd><span class="v-bytt v-samme"><span class="v-o"><i>Karen Nelson</i></span><span class="v-k"><i>[Person 4829133]</i></span></span></dd>
+                  </div>
+                  <div>
+                    <dt>National Insurance number</dt>
+                    <dd><span class="v-bytt"><span class="v-o"><i>QQ 12 34 56 C</i></span><span class="v-k"><i>[National Insurance number 2204716]</i></span></span></dd>
+                  </div>
+                  <div>
+                    <dt>Address</dt>
+                    <dd><span class="v-bytt"><span class="v-o"><i>27 Glen Road</i></span><span class="v-k"><i>[Address 3310482]</i></span></span></dd>
+                  </div>
+                  <div>
+                    <dt>Deputy</dt>
+                    <dd><span class="v-bytt"><span class="v-o"><i>Lawrence Hansen</i></span><span class="v-k"><i>[Person 6071542]</i></span></span></dd>
+                  </div>
+                </dl>
+                <p class="v-ark-p">
+                  The deputy will help with financial matters.
+                  <span class="v-bytt"><span class="v-o"><i>Karen is signed off sick until 30 April.</i></span><span class="v-k"><i>[Note 2760056]</i></span></span>
+                </p>
+              </article>
+              <article class="v-ark v-ark-b">
+                <header class="v-ark-topp">
+                  <svg class="v-ark-ikon"><use href="#i-mail" /></svg>
+                  <span>reply-from-the-bank.eml</span>
+                </header>
+                <p class="v-ark-h">Re: Access to the account</p>
+                <p class="v-ark-p">
+                  Hello. We refer to the conversation with
+                  <span class="v-bytt v-samme"><span class="v-o"><i>Karen Nelson</i>.</span><span class="v-k"><i>[Person 4829133]</i>.</span></span>
+                </p>
+                <p class="v-ark-p">
+                  The account is now set up as the deputy asked. Contact us at
+                  <span class="v-bytt"><span class="v-o"><i>07700 900134</i>.</span><span class="v-k"><i>[Phone 7745190]</i>.</span></span>
+                </p>
+                <p class="v-ark-p v-ark-hilsen">
+                  Kind regards<br />
+                  <span class="v-bytt"><span class="v-o"><i>Sian Morgan</i></span><span class="v-k"><i>[Person 5530871]</i></span></span><br />
+                  account manager
+                </p>
+              </article>
+            </div>
+            <figcaption class="v-samme-linje">
+              <span class="v-kode">[Person 4829133]</span>
+              <span>The same person always gets the same code, in all the documents.</span>
+            </figcaption>
+          </figure>
+
+          <ul class="v-tre-ord rise">
+            <li><b>The copy looks like the original.</b> Layout, tables and logos stay as they were.</li>
+            <li><b>The reader understands the case.</b> Just not who it is about.</li>
+            <li><b>The originals are not touched.</b> FrostCopy makes new files next to them.</li>
+          </ul>
+        </section>
+
+        <section class="v-del v-verktoy" id="verktoy">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Three things you can do.</h2>
+          </div>
+          <div class="v-kort-rad">
+            <article class="v-kort rise">
+              <img src="/frostcopy/assets/krom/rens.webp" width="512" height="512" alt="" loading="lazy" decoding="async" />
+              <h3>Clean</h3>
+              <p>Choose a folder or some documents. You get copies with codes in place of personal information.</p>
+            </article>
+            <article class="v-kort rise d-60">
+              <img src="/frostcopy/assets/krom/tilbakefor.webp" width="512" height="512" alt="" loading="lazy" decoding="async" />
+              <h3>Restore</h3>
+              <p>Turn the codes back into names when you need to.</p>
+            </article>
+            <article class="v-kort rise d-120">
+              <img src="/frostcopy/assets/krom/tekst.webp" width="512" height="512" alt="" loading="lazy" decoding="async" />
+              <h3>Text tool</h3>
+              <p>Type or paste a text. It is cleaned while you watch.</p>
+            </article>
+          </div>
+
+          <ol class="v-steg rise">
+            <li><b>Choose the folder</b><span>Or drop it in the window.</span></li>
+            <li><b>FrostCopy reads</b><span>You can work while it reads.</span></li>
+            <li><b>You review</b><span>Hide, or keep.</span></li>
+            <li><b>FrostCopy checks</b><span>Every copy is read again.</span></li>
+            <li><b>The copies are ready</b><span>In a separate folder next to the originals.</span></li>
+          </ol>
+        </section>
+
+        <section class="v-del v-nokkel" id="nokkel">
+          <div class="v-nokkel-inn">
+            <img class="v-nokkel-bilde rise" src="/frostcopy/assets/krom/nokkel-blaa.webp" width="800" height="386" alt="" loading="lazy" decoding="async" />
+            <div class="v-hode rise">
+              <h2 class="v-tittel">Only the key turns the codes back into names.</h2>
+              <p class="v-ingress">
+                The key is made on your computer the first time you open FrostCopy, and it is yours alone. Without it, a code is just a code.
+              </p>
+              <p class="v-nokkel-bare">
+                <b>Others who have FrostCopy cannot turn your codes back.</b>
+                They have their own key, and with it your codes are still just codes.
+              </p>
+            </div>
+
+            <ol class="v-runde rise">
+              <li>
+                <span class="v-runde-nr">1</span>
+                <b>Clean</b>
+                <span class="v-linje">Client: <i class="v-kode lys">[Person 4829133]</i></span>
+              </li>
+              <li>
+                <span class="v-runde-nr">2</span>
+                <b>Share the copy</b>
+                <span class="v-runde-tekst">With an adviser, another public body or an AI tool.</span>
+              </li>
+              <li>
+                <span class="v-runde-nr">3</span>
+                <b>Restore the reply</b>
+                <span class="v-linje">Client: <i class="v-navn">Karen Nelson</i></span>
+              </li>
+            </ol>
+
+            <div class="v-nokkel-par rise">
+              <img src="/frostcopy/assets/krom/skrin-blaa.webp" width="640" height="630" alt="" loading="lazy" decoding="async" />
+              <div>
+                <article>
+                  <h3>Keep the key safe</h3>
+                  <p>24 words on paper, or a key file. Then the codes can always be turned back into names.</p>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="v-del v-kontor" id="virksomhet">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">The same code for all your colleagues.</h2>
+            <p class="v-ingress">
+              With one key for the whole organisation, Karen Nelson is the same code on every computer. A colleague can restore a copy you made.
+            </p>
+          </div>
+          <div class="v-nett rise" aria-hidden="true">
+            <img src="/frostcopy/assets/krom/nokkel.webp" width="800" height="386" alt="" loading="lazy" decoding="async" />
+            <div class="v-nett-rad">
+              <p><span>Caseworker</span><i class="v-kode">[Person 4829133]</i></p>
+              <p><span>HR</span><i class="v-kode">[Person 4829133]</i></p>
+              <p><span>Information governance</span><i class="v-kode">[Person 4829133]</i></p>
+            </div>
+          </div>
+          <ul class="v-tre-ord rise">
+            <li><b>One person is in charge.</b> That person makes the key and gives it to the colleagues.</li>
+            <li><b>The key is sent in two parts.</b> A key package and a key code, each sent separately.</li>
+            <li><b>IT can set shared rules.</b> For example, what must always be hidden.</li>
+          </ul>
+          <div class="v-andres rise">
+            <img src="/frostcopy/assets/krom/nokkel-blaa.webp" width="800" height="386" alt="" loading="lazy" decoding="async" />
+            <div>
+              <h3>You can add other people's keys too</h3>
+              <p>
+                If you work with another organisation, they can share their key with you. Then you can restore their copies, and they can restore yours if you share your key. Your own key stays as it was, and you decide who gets it.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="v-del v-ser" id="ser-etter">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">This is what FrostCopy looks for.</h2>
+            <p class="v-ingress">Ten kinds of information are on from the start. You choose what to include.</p>
+          </div>
+          <ul class="v-ser-liste rise">
+            <li><b>Names</b><span>People's names</span></li>
+            <li><b>ID numbers</b><span>NI number, NHS number, UTR, driving licence, passport and other ID numbers</span></li>
+            <li><b>Phone and email</b><span>Numbers and addresses</span></li>
+            <li><b>Address and place</b><span>Street, town, postcode</span></li>
+            <li><b>Sensitive</b><span>Health, immigration, criminal history, religion, union</span></li>
+            <li><b>Private sentences</b><span>Whole sentences and notes about a person</span></li>
+            <li><b>Accounts</b><span>Bank account, card and IBAN numbers</span></li>
+            <li><b>Secrets</b><span>Passwords and keys</span></li>
+            <li><b>Number plates</b><span>Plates and VINs, also in images</span></li>
+            <li class="v-ser-ansikt">
+              <b>Faces</b><span>Pixelated in images and scanned pages</span>
+            </li>
+          </ul>
+          <p class="v-ser-fot rise">
+            Dates, employer and case numbers can be turned on when you need them.
+            <a class="v-lenke" href="/frostcopy-uk/what-it-catches.html">See what FrostCopy catches, and what it does not</a>
+          </p>
+        </section>
+
+        <section class="v-del v-avgjor" id="du-bestemmer">
+          <div class="v-to">
+            <div class="v-hode rise">
+              <h2 class="v-tittel">You decide what is hidden.</h2>
+              <p class="v-ingress">
+                FrostCopy marks what it finds. When it is unsure, it asks you.
+              </p>
+              <ul class="v-punkter">
+                <li>Click a word, and it is hidden in the whole folder.</li>
+                <li>FrostCopy remembers what you mark. The next folder is read with your words.</li>
+                <li>Your office's own details are kept.</li>
+                <li>Everything can be undone.</li>
+              </ul>
+            </div>
+
+            <figure class="v-gjennom rise" aria-hidden="true">
+              <div class="v-gjennom-ark">
+                <p>The immediate supervisor is <span class="v-m skjul">Lawrence Hansen</span>.</p>
+                <p><span class="v-m uavklart">Baker</span> has recommended a gradual return from May.</p>
+                <p>Call the front desk at <span class="v-m staa">01632 960100</span> to schedule a time.</p>
+              </div>
+              <div class="v-spor">
+                <p class="v-spor-topp">
+                  <span class="v-kode">Person 5530871</span>
+                  <b>Unresolved</b>
+                  <span class="v-spor-tall">1 of 5</span>
+                </p>
+                <p class="v-spor-grunn">It is first in a sentence. Is it the name, or the word “baker”?</p>
+                <p class="v-spor-knapper">
+                  <span class="v-knapp">Hide <kbd>↵</kbd></span>
+                  <span class="v-knapp lys">Keep <kbd>B</kbd></span>
+                  <span class="v-knapp lys">Next <kbd>→</kbd></span>
+                </p>
+              </div>
+              <p class="v-forklaring">
+                <span><i class="v-m skjul">Aa</i> Hidden</span>
+                <span><i class="v-m uavklart">Aa</i> Unresolved</span>
+                <span><i class="v-m staa">Aa</i> Kept</span>
+              </p>
+            </figure>
+          </div>
+        </section>
+
+        <section class="v-del v-trygt" id="trygt">
+          <figure class="v-plate rise">
+            <img src="/frostcopy/assets/foto/hytte.webp" width="2200" height="1232" alt="A small red cabin in deep snow under a blue sky." loading="lazy" decoding="async" />
+            <figcaption>
+              <h2 class="v-tittel">The documents stay on the computer.</h2>
+            </figcaption>
+          </figure>
+          <div class="v-kort-rad">
+            <article class="v-kort v-hvit rise">
+              <img src="/frostcopy/assets/krom/laas.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>No way out</h3>
+              <p>FrostCopy cannot connect to the internet.</p>
+              <p><a class="v-lenke" href="/frostcopy-uk/for-it.html">IT can check it themselves</a></p>
+            </article>
+            <article class="v-kort v-hvit rise d-60">
+              <img src="/frostcopy/assets/krom/maskin.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>The AI comes with it</h3>
+              <p>It is part of the program and it is small. An ordinary work PC or Mac is enough, with no graphics card.</p>
+            </article>
+            <article class="v-kort v-hvit rise d-120">
+              <img src="/frostcopy/assets/krom/hvelv.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>The originals are untouched</h3>
+              <p>FrostCopy only writes new copies, in a separate folder. You can make an encrypted backup before you start.</p>
+            </article>
+            <article class="v-kort v-hvit rise d-180">
+              <img src="/frostcopy/assets/krom/lupe.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>A check before the copy is made</h3>
+              <p>FrostCopy reads every copy the way a recipient would. If anything is left, the file is not made.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="v-del v-former" id="kopien">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Choose how the copy should look.</h2>
+            <p class="v-ingress">Four ways. You choose right before the copies are made.</p>
+          </div>
+          <div class="v-form-rad">
+            <article class="v-form rise">
+              <p class="v-form-merke">Most common</p>
+              <div class="v-prove">
+                <span>Client: <i class="v-kode">[Person 4829133]</i></span>
+                <span class="v-prove-liste">+ code list at the end</span>
+              </div>
+              <h3>Short code and code list</h3>
+              <p>Easy to read. Can be restored with the key.</p>
+            </article>
+            <article class="v-form rise d-60">
+              <div class="v-prove">
+                <span>Client: <i class="v-kode lang">[PERSON_VBTF60YD0E-Q7MZ2KXA4RWN]</i></span>
+              </div>
+              <h3>Full code in the text</h3>
+              <p>No list. Can be restored, but is harder to read.</p>
+            </article>
+            <article class="v-form rise d-120">
+              <div class="v-prove">
+                <span>Client: <i class="v-kode">[Person 4829133]</i></span>
+              </div>
+              <h3>Labels only</h3>
+              <p>Easy to read. Cannot be restored.</p>
+            </article>
+            <article class="v-form rise d-180">
+              <div class="v-prove">
+                <span>Client: <i class="v-sladd"><i>s.40(2)</i></i></span>
+              </div>
+              <h3>Black redaction as PDF</h3>
+              <p>What was there is gone for good. The exemption can be printed on the black box. Mac only for now.</p>
+            </article>
+          </div>
+
+        </section>
+
+        <section class="v-del v-bruk" id="bruk">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">When the documents need to go further.</h2>
+          </div>
+          <ul class="v-bruk-liste rise">
+            <li><b>SARs and FOI</b><span>Answer a subject access or FOI request without redacting page by page.</span></li>
+            <li><b>Sharing</b><span>With an accountant, a solicitor, a supplier or another public body.</span></li>
+            <li><b>AI tools</b><span>The same person has the same code, so the tool understands the context.</span></li>
+            <li><b>Training</b><span>Real cases as examples, with the names hidden.</span></li>
+            <li><b>Test data</b><span>Documents that resemble the real ones, for new systems.</span></li>
+            <li><b>Statistics</b><span>Use the content without seeing who it is about.</span></li>
+          </ul>
+        </section>
+
+        <section class="v-del v-spm" id="sporsmal">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Common questions.</h2>
+          </div>
+          <dl class="v-spm-liste rise">
+            <div>
+              <dt>Can a copy be traced back to people?</dt>
+              <dd>Yes. Whoever has the key can turn the codes back into names. Choose “Labels only” or “Black redaction” when the copy must never be restorable, and always read it through before you share it.</dd>
+            </div>
+            <div>
+              <dt>Can others who have FrostCopy turn my codes back?</dt>
+              <dd>No. The codes can only be turned back with your key. Others have their own key, and with it your codes are just codes. If you want someone to be able to restore your copies, you share the key with them.</dd>
+            </div>
+            <div>
+              <dt>What if I lose the key?</dt>
+              <dd>Then no one can turn the codes back into names. Your originals are untouched. That is why FrostCopy asks you to keep the key safe, as 24 words on paper or a key file.</dd>
+            </div>
+            <div>
+              <dt>Does FrostCopy need the internet?</dt>
+              <dd>No. FrostCopy never connects to the internet, and works just as well offline.</dd>
+            </div>
+            <div>
+              <dt>Will it run on my computer?</dt>
+              <dd>Probably. FrostCopy runs on ordinary work computers, with no graphics card. <a class="v-lenke" href="#maskin">Check your computer</a></dd>
+            </div>
+            <div>
+              <dt>Can a colleague restore a copy I made?</dt>
+              <dd>Yes, when you have the same key, or when the colleague has added yours.</dd>
+            </div>
+            <div>
+              <dt>Does FrostCopy learn from me?</dt>
+              <dd>Yes, from what you do. If you mark a name, a nickname or a word FrostCopy missed, FrostCopy remembers it and hides it in everything it reads afterwards. The list is called “Always hide”. It is stored encrypted on your computer, and you can take things out of it. Nothing is sent to us, and your documents are not used to train any model.</dd>
+            </div>
+            <div>
+              <dt>What if FrostCopy misses something?</dt>
+              <dd>It can happen. That is why you look over what FrostCopy finds, and FrostCopy checks every copy before it is made. <a class="v-lenke" href="/frostcopy-uk/what-it-catches.html">See what FrostCopy catches, and what it does not</a></dd>
+            </div>
+            <div>
+              <dt>What happens to the originals?</dt>
+              <dd>Nothing. FrostCopy only writes new files, in a separate folder next to them.</dd>
+            </div>
+            <div>
+              <dt>What does it cost?</dt>
+              <dd>FrostCopy is free for private individuals. Organisations try it free for 30 days, and then buy one licence for the whole organisation. <a class="v-lenke" href="/frostcopy-uk/pricing/">See the price</a></dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="v-del v-dybde" id="dybde">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">In depth.</h2>
+            <p class="v-ingress">For those who want to know more. Open what you are wondering about.</p>
+          </div>
+
+          <div class="v-fag rise">
+            <details name="v-dybde">
+              <summary><span>What FrostCopy looks for</span></summary>
+              <div class="v-fag-inn">
+                <p>You choose what the scan looks for. The ten groups that are on from the start are listed under <a class="v-lenke" href="#ser-etter">This is what FrostCopy looks for</a>.</p>
+                <p>You turn these on when you need them: <b>Dates</b>, <b>Employer</b> (organisation and company IDs) and <b>Case numbers</b>.</p>
+                <p>
+                  National Insurance numbers have no check digit, so FrostCopy goes by how they are written and by labels and column headers. NHS, CHI and UTR numbers, VAT numbers, pupil numbers and card numbers are checked against their check digits, so a random number of the same length is not taken for one of them.
+                </p>
+                <p>
+                  Your office's own details are kept: the address, the main phone number, the company or charity number and the office's own bank account.
+                </p>
+                <p><a class="v-lenke" href="/frostcopy-uk/what-it-catches.html">See the numbers: what FrostCopy catches, and what it does not</a></p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>The files FrostCopy reads, and how the copy turns out</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Word, Excel and PowerPoint</dt>
+                    <dd>The same file, with the codes where the information was. Layout, logos and tables stay as they were. Comments, macros, embedded files and hidden information in images are removed.</dd>
+                  </div>
+                  <div>
+                    <dt>PDF, including scans</dt>
+                    <dd>Each page becomes an image with the codes painted where the information was. Underneath is an invisible text layer, so you can still search the copy.</dd>
+                  </div>
+                  <div>
+                    <dt>Images</dt>
+                    <dd>FrostCopy reads the text in the image. Information is painted over, and faces are pixelated.</dd>
+                  </div>
+                  <div>
+                    <dt>Email</dt>
+                    <dd>Reads .eml, Outlook (.msg), Apple Mail (.emlx) and .mbox. The copy becomes an .eml. Attachments are taken out, and the copy says so.</dd>
+                  </div>
+                  <div>
+                    <dt>Text</dt>
+                    <dd>.txt, .md, .csv, .json and .rtf.</dd>
+                  </div>
+                </dl>
+                <p>File and folder names are cleaned too. The copies are placed in a new folder next to the original, with “-clean” after the name, together with a report.</p>
+                <p>Old .ppt files cannot be read, and FrostCopy tells you about them. Password-protected PDF and Office files are opened when you enter their password.</p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>How FrostCopy reads the documents</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Rules first</dt>
+                    <dd>British patterns, check digits, name lists, postcodes and addresses. The rules go through every file.</dd>
+                  </div>
+                  <div>
+                    <dt>Then a small English language model</dt>
+                    <dd>It is based on distilbert-base-cased and fine-tuned for FrostCopy. It judges whether a sentence says something private about a person. It needs no graphics card.</dd>
+                  </div>
+                  <div>
+                    <dt>Text in images</dt>
+                    <dd>Scanned pages and images are read with text recognition on the computer.</dd>
+                  </div>
+                  <div>
+                    <dt>Faces</dt>
+                    <dd>FrostCopy finds faces and pixelates them. You can keep a face.</dd>
+                  </div>
+                </dl>
+                <p>FrostCopy has no chatbot, and sends nothing to any AI service.</p>
+                <p>You can also open a folder without scanning. Then you mark what should be hidden yourself.</p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>The codes and the key</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Fixed numbers</dt>
+                    <dd>The number in the code is computed from the key and the information. That is why Karen Nelson is <i class="v-kode">[Person 4829133]</i> in every folder, for every colleague with the same key.</dd>
+                  </div>
+                  <div>
+                    <dt>The name is encrypted in the copy</dt>
+                    <dd>The code list at the end of the copy has the full codes. They contain the text as it was, encrypted with AES-SIV. The key alone turns them back. There is no codebook to look after.</dd>
+                  </div>
+                  <div>
+                    <dt>Only your key</dt>
+                    <dd>Each installation makes its own key. Someone else who has FrostCopy cannot turn your codes back: without your key they are just codes, for us as well.</dd>
+                  </div>
+                  <div>
+                    <dt>Where the key lives</dt>
+                    <dd>It is protected by the operating system: the keychain on Mac, DPAPI on Windows.</dd>
+                  </div>
+                  <div>
+                    <dt>Recovery</dt>
+                    <dd>24 words on paper, or a key file locked with a passphrase you choose.</dd>
+                  </div>
+                  <div>
+                    <dt>In an organisation</dt>
+                    <dd>One person is in charge of the key and gives it to colleagues as a key package. The package and the key code are sent separately. IT can block the key from being exported.</dd>
+                  </div>
+                  <div>
+                    <dt>Keys from others</dt>
+                    <dd>Under “Key” › Collaboration you add the key from another organisation. It sits next to your own. The copy says which key it was made with, so FrostCopy picks the right one when you restore.</dd>
+                  </div>
+                  <div>
+                    <dt>Restoring</dt>
+                    <dd>FrostCopy makes a new folder with “-restored” after the name. The copy is not touched. In images and PDF pages, what was under the boxes is stored encrypted in the copy, and is put back.</dd>
+                  </div>
+                </dl>
+                <p>Codes can be reversed. Whoever has the key can turn them back, so treat a copy with codes as a document that still contains personal information.</p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>SARs, FOI and redaction</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Black redaction as PDF</dt>
+                    <dd>Each copy becomes a PDF with black boxes. The rest of the text can still be selected and searched. Available on Mac for now.</dd>
+                  </div>
+                  <div>
+                    <dt>Exemption on the black box</dt>
+                    <dd>Each box can carry the exemption it is based on, for example “s.40(2) FOIA”, “s.38(1)(b) FOISA”, “reg. 13 EIR” or “Sch. 2 para. 16” in a subject access reply. You can also type your own. The full citations are written to a separate file for the response letter.</dd>
+                  </div>
+                  <div>
+                    <dt>Keep only this person</dt>
+                    <dd>For a subject access request: keep the person who asked, and hide everyone else.</dd>
+                  </div>
+                  <div>
+                    <dt>Several versions of the same folder</dt>
+                    <dd>One for the person who asked and one for an FOI reply, each with its own choices.</dd>
+                  </div>
+                  <div>
+                    <dt>Blur</dt>
+                    <dd>Draw a rectangle, an oval or a freehand shape over part of an image or a page.</dd>
+                  </div>
+                </dl>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Your work along the way</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Saved automatically</dt>
+                    <dd>What you have decided is stored encrypted on the computer. You pick up where you left off.</dd>
+                  </div>
+                  <div>
+                    <dt>Changes</dt>
+                    <dd>Every change is in a list. Take one out, or go back to how it was. The list can be saved as PDF or CSV.</dd>
+                  </div>
+                  <div>
+                    <dt>Your marks</dt>
+                    <dd>What you mark yourself is remembered in all folders and texts. The list can be shared with colleagues.</dd>
+                  </div>
+                  <div>
+                    <dt>Search</dt>
+                    <dd>Search all the files in the folder at once.</dd>
+                  </div>
+                  <div>
+                    <dt>Backup</dt>
+                    <dd>An encrypted copy of the folder, taken before the scan. FrostCopy reminds you about it after 30 days.</dd>
+                  </div>
+                  <div>
+                    <dt>From Finder</dt>
+                    <dd>On Mac: right-click a file or folder and choose “Clean with FrostCopy”.</dd>
+                  </div>
+                </dl>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>For IT</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>No network code</dt>
+                    <dd>The program has no TLS, cannot look up a name on the network and does not listen on any port. <a class="v-lenke" href="/frostcopy-uk/for-it.html">The checks you can run yourselves</a></dd>
+                  </div>
+                  <div>
+                    <dt>Policy in one file</dt>
+                    <dd>Decide what must always be hidden, lock the copy format, require scanning and control whether the key can be exported.</dd>
+                  </div>
+                  <div>
+                    <dt>Audit log</dt>
+                    <dd>Can be turned on. It contains no file names and no information from the documents.</dd>
+                  </div>
+                  <div>
+                    <dt>Command line</dt>
+                    <dd><code>frostcopy clean</code> and <code>frostcopy restore</code>, with replies in JSON. FrostCopy can also watch a folder.</dd>
+                  </div>
+                  <div>
+                    <dt>Licence without a network</dt>
+                    <dd>A signed code that is checked on the computer. One licence covers the whole organisation.</dd>
+                  </div>
+                </dl>
+              </div>
+            </details>
+          </div>
+        </section>
+
+        <section class="v-del v-nerd" id="nerd">
+          <div class="v-hode rise">
+            <p class="v-nerd-over">For the especially interested</p>
+            <h2 class="v-tittel">Full nerd-out.</h2>
+            <p class="v-ingress">The whole path a file takes through FrostCopy, and what happens at each step.</p>
+          </div>
+
+          <ol class="v-ror rise">
+            <li><b>Reader</b><span>Word, Excel, PDF, email and images are unpacked into text and position on the page.</span></li>
+            <li><b>Rules</b><span>Patterns, check digits, name lists and word lists.</span></li>
+            <li><b>Sentences</b><span>A small English language model judges whole sentences.</span></li>
+            <li><b>Images</b><span>Text recognition and faces, on the computer.</span></li>
+            <li><b>Register</b><span>The findings are gathered for the whole folder. Same person, same code.</span></li>
+            <li><b>You</b><span>Hide, keep and settle what is unresolved.</span></li>
+            <li><b>Writer</b><span>Each file type is written back in its own way.</span></li>
+            <li><b>Check</b><span>The copy is read again. If anything is left, it is stopped.</span></li>
+          </ol>
+
+          <details class="v-nerd-alt rise">
+            <summary><span><i class="v-nar-lukket">Open the engine room</i><i class="v-nar-aapen">Close the engine room</i></span></summary>
+            <div class="v-nerd-inn">
+              <article>
+                <h3>What is in the package</h3>
+                <p>
+                  FrostCopy is an ordinary desktop program. The shell is written in Rust (Tauri), and the window is a web view with an interface in TypeScript. Everything it needs is in the installer. Nothing is downloaded afterwards.
+                </p>
+                <dl class="v-spek">
+                  <div><dt>Rule engine</dt><dd>TypeScript. Runs in the program, with no server.</dd></div>
+                  <div><dt>Sentence model</dt><dd>Based on distilbert-base-cased by Hugging Face (Apache 2.0), fine-tuned for FrostCopy. It runs on the processor with <code>tract</code>, in pure Rust.</dd></div>
+                  <div><dt>Text in images</dt><dd>Apple Vision on Mac. Windows' own text recognition and Tesseract with English on Windows.</dd></div>
+                  <div><dt>Faces</dt><dd>Apple Vision on Mac. Small face models (YuNet and UltraFace) on Windows.</dd></div>
+                  <div><dt>PDF</dt><dd>PDFium draws the pages and reads the text layer.</dd></div>
+                  <div><dt>No large language model</dt><dd>FrostCopy has no LLM and no chatbot. The build stops if one is in the package.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>From file to finding</h3>
+                <p>
+                  Each file is unpacked into pieces of text that know where they are: paragraph, cell, text box, header or a place on a PDF page. Then three readers go over the text.
+                </p>
+                <dl class="v-spek">
+                  <div><dt>The rules</dt><dd>National Insurance numbers and driving licence numbers go by the written form and by labels and column headers. NHS, CHI and UTR numbers, VAT numbers, pupil numbers and card numbers (Luhn) must have the right check digits. IBAN has its own check. Postcodes must be real postcode forms. Names are found with name lists and by where they stand, such as after “Name:” or in a signature.</dd></div>
+                  <div><dt>Sensitive words</dt><dd>A word list for health, immigration, criminal history, religion and union membership, with the forms each word takes. Different forms of the same word count as the same hit.</dd></div>
+                  <div><dt>The sentence reader</dt><dd>The language model gives each sentence about a person a number for how private it is. Together with a word-based reader, that decides whether the sentence becomes a “Note”.</dd></div>
+                  <div><dt>Your office's own</dt><dd>The address in the letterhead, the main phone number, the company or charity number and the office’s own account are recognised and kept. Email addresses are hidden anyway.</dd></div>
+                </dl>
+                <p>
+                  Finally the findings are gathered in the folder's register. “Karen”, “Karen Nelson” and “KAREN NELSON” become one person, in all the files. What FrostCopy is not sure about goes in the “Unresolved” queue with the reason: the name is first in a sentence, two people have the same name, or the word was added afterwards.
+                </p>
+              </article>
+
+              <article>
+                <h3>The codes</h3>
+                <p>A code has two parts. One says who it is. The other is the text as it was, encrypted.</p>
+                <p class="v-kodelinje"><code>[PERSON_VBTF60YD0E-J94DW5ZFTYA2GWTWAXFKK0XYBF1KTY19BED6E5TJ832VZ00]</code></p>
+                <dl class="v-spek">
+                  <div><dt>The person code</dt><dd>HMAC-SHA256 of the type and the value, shortened to ten characters. The same for every spelling of the same name, so an AI tool sees that it is the same person.</dd></div>
+                  <div><dt>The encrypted part</dt><dd>AES-SIV (RFC 5297) of the text exactly as it was. The same text always gives the same code. A code that has been changed, or made with another key, is rejected. FrostCopy never restores to something wrong.</dd></div>
+                  <div><dt>The short number</dt><dd>The number in <code>[Person 4829133]</code> is computed from the key and the value. That is why it is the same on all computers with the same key, without them talking to each other.</dd></div>
+                  <div><dt>The code list</dt><dd>In the usual copy format, the short number is in the text and the full codes are in a list at the end. The list is all that is needed to restore the copy, together with the key.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>The key</h3>
+                <dl class="v-spek">
+                  <div><dt>What it is</dt><dd>32 random bytes, made on the computer the first time FrostCopy starts. Subkeys for codes, numbers and images are derived with HKDF-SHA256.</dd></div>
+                  <div><dt>Where it is kept</dt><dd>Protected by the operating system: the keychain and Secure Enclave on Mac, DPAPI on Windows. The key is held in the Rust part of the program. The window only gets it when you ask to see the 24 words.</dd></div>
+                  <div><dt>24 words</dt><dd>The key can be written down as 24 words from a list of 2,048. The words are Norwegian, use only the letters a to z, and no two look alike. The first four letters are enough to recognise a word.</dd></div>
+                  <div><dt>Key file</dt><dd>The key encrypted with a passphrase of at least twelve characters (Argon2id and AES-256-GCM).</dd></div>
+                  <div><dt>Key ID</dt><dd>A short identifier such as <code>WJ0R-Q3R5</code>. It says which key a copy was made with. It cannot be used as the key.</dd></div>
+                  <div><dt>Several keys</dt><dd>If you change keys, the old one is set aside. When restoring, FrostCopy tries the key in use first, then the earlier ones.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>How the copy is written</h3>
+                <dl class="v-spek">
+                  <div><dt>Word, Excel, PowerPoint</dt><dd>The file is a zip with XML. FrostCopy replaces the values where they are, also when Word has split a name into several pieces. Then the file is cleaned: comments, macros, embedded files, the preview and hidden information in the images are taken out.</dd></div>
+                  <div><dt>PDF</dt><dd>Each page is drawn as an image at 200 dots per inch, 300 when the type is small. The codes are painted where the information was, and the cleaned text is placed invisibly underneath, so the copy can be searched.</dd></div>
+                  <div><dt>Images</dt><dd>The boxes are painted over, and the faces are pixelated.</dd></div>
+                  <div><dt>What was underneath</dt><dd>When the copy should be restorable, FrostCopy stores the original pixels under each box encrypted in the copy (AES-256-GCM). Ordinary programs skip them.</dd></div>
+                  <div><dt>Email</dt><dd>The copy becomes a tidied .eml. Technical lines about the route the email took are removed.</dd></div>
+                  <div><dt>The file names</dt><dd>If there is a name in the file or folder name, it is replaced too.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>The check before the copy is made</h3>
+                <p>
+                  Before a copy is written, FrostCopy reads it the way another program would: every part of the zip file, every XML attribute, every object in the PDF and the text in every image. If it finds any of what was to be hidden, or a part it cannot read, the file is not made. You get to see what it concerns.
+                </p>
+              </article>
+
+              <article>
+                <h3>What FrostCopy stores</h3>
+                <dl class="v-spek">
+                  <div><dt>The project</dt><dd>What you have decided in a folder is stored encrypted on the computer, and kept out of Spotlight and Time Machine. A project that is not used is forgotten after 30 days.</dd></div>
+                  <div><dt>The backup</dt><dd>A copy of the originals. The content is encrypted with AES-256-GCM and can only be read on the computer it was made on. The file names are left as they are.</dd></div>
+                  <div><dt>Your marks</dt><dd>The list of what you have asked FrostCopy to hide is stored encrypted.</dd></div>
+                  <div><dt>The originals</dt><dd>FrostCopy only writes to folders it has made itself. Every place in the code that deletes or moves a file must have a written justification. Otherwise a test stops the build.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>What it does not have</h3>
+                <p>
+                  The program has no TLS, cannot look up a name on the network and does not listen on any port. It has no account, no usage statistics, no error reporting and no automatic updates. The licence is a signed code (Ed25519) that is checked on the computer. The only thing FrostCopy does towards the network is open our website in your own browser when you press “Buy a licence”.
+                </p>
+                <p><a class="v-lenke" href="/frostcopy-uk/for-it.html">The checks IT can run themselves</a></p>
+              </article>
+            </div>
+          </details>
+        </section>
+
+        <section class="v-del v-ansvar" id="ansvar">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">A tool that needs your review.</h2>
+          </div>
+          <ul class="v-ansvar-liste rise">
+            <li><b>FrostCopy can miss things.</b> Read the copies through before you share them.</li>
+            <li><b>Codes can be reversed.</b> Whoever has the key can turn them back.</li>
+            <li><b>The responsibility is yours.</b> FrostCopy is not legal advice, and you decide what is sent on.</li>
+          </ul>
+          <p class="rise"><a class="v-lenke" href="/frostcopy-uk/what-it-catches.html">See what FrostCopy catches, and what it does not</a></p>
+        </section>
+
+        <section class="v-del v-maskin" id="maskin">
+          <div class="v-sjekk rise" data-v-maskin>
+            <h2 id="v-sjekk-tittel">Will FrostCopy run on your computer?</h2>
+            <p class="v-sjekk-om">FrostCopy runs on ordinary work computers. Type yours in and see.</p>
+            <form class="v-sjekk-felt" role="search" aria-labelledby="v-sjekk-tittel" novalidate>
+              <input type="search" name="q" autocomplete="off" spellcheck="false" maxlength="80" placeholder="Type make and model" aria-label="Make and model" />
+            </form>
+            <p class="v-sjekk-forslag">
+              <button type="button" data-v-prov="MacBook Air">MacBook Air</button>
+              <button type="button" data-v-prov="ThinkPad T14">ThinkPad T14</button>
+              <button type="button" data-v-prov="EliteBook 840">EliteBook 840</button>
+              <button type="button" data-v-prov="Latitude 5420">Latitude 5420</button>
+            </p>
+            <p class="v-sjekk-melding" data-v-melding hidden></p>
+            <ul class="v-sjekk-svar" data-v-svar aria-live="polite"></ul>
+            <p class="v-sjekk-fot">
+              Can't find it? FrostCopy runs on Macs with macOS 13 or later, and on PCs with Windows 10 or 11. We recommend 8 GB of memory.
+            </p>
+          </div>
+        </section>
+
+        <section class="v-hent" id="last-ned">
+          <img class="v-hent-bilde" src="/frostcopy/assets/klart-vinter.jpg" width="1600" height="1067" alt="" loading="lazy" decoding="async" />
+          <div class="v-hent-kort rise">
+            <div class="nedlasting" data-nedlasting hidden aria-live="polite">
+              <div class="nedlasting-topp">
+                <span class="nedlasting-merke" data-merke aria-hidden="true"></span>
+                <div>
+                  <p class="nedlasting-tittel">FrostCopy for <span data-os></span></p>
+                  <p class="nedlasting-fil" data-fil></p>
+                </div>
+              </div>
+              <p class="nedlasting-prosent"><span data-prosent>0</span><span class="nedlasting-pst">%</span></p>
+              <p class="nedlasting-status" data-status></p>
+              <div class="nedlasting-ferdig" data-ferdig hidden>
+                <span class="nedlasting-hake" aria-hidden="true"><svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="25" pathLength="1" /><path d="M17 29l8 8 15-17" pathLength="1" /></svg></span>
+                <p class="nedlasting-ferdig-tittel">Downloaded</p>
+                <p class="nedlasting-neste" data-neste></p>
+              </div>
+              <button type="button" class="nedlasting-tilbake" data-tilbake>Back</button>
+            </div>
+            <div class="v-hent-inn">
+            <div class="mobil-send">
+              <p class="mobil-send-tittel">FrostCopy is a program for computers.</p>
+              <p class="mobil-send-tekst">Email yourself the link, then download it on a Mac, Windows or Linux computer.</p>
+              <a class="btn" href="mailto:?subject=FrostCopy&amp;body=https%3A%2F%2Fesbjugconsult.com%2Ffrostcopy-uk%2F">Send to yourself</a>
+              <p class="mobil-send-andre">(And others?)</p>
+            </div>
+            <h2>Try FrostCopy on a folder.</h2>
+            <p class="v-hent-privat"><b>Free for private individuals.</b></p>
+            <div class="v-hent-knapper get" data-v-hent>
+              <a class="btn ghost os os-win" href="/frostcopy-uk/download/windows" download aria-label="Download for Windows"><span class="os-navn">Windows</span></a>
+              <a class="btn ghost os os-mac" href="/frostcopy-uk/download/mac" download aria-label="Download for Mac"><span class="os-glass" aria-hidden="true"></span><span class="os-navn">Mac</span></a>
+              <a class="btn ghost os os-lin" href="/frostcopy-uk/download/linux" download aria-label="Download for Linux"><span class="os-figur os-pingvin" aria-hidden="true"><svg viewBox="0 0 24 28" width="24" height="28" focusable="false"><g class="os-pingvin-kropp"><ellipse cx="8.4" cy="26.4" rx="3.3" ry="1.4" fill="#f5a524"/><ellipse cx="15.6" cy="26.4" rx="3.3" ry="1.4" fill="#f5a524"/><ellipse cx="3.9" cy="17" rx="1.9" ry="5.4" transform="rotate(16 3.9 17)" fill="#0f2147"/><ellipse cx="20.1" cy="17" rx="1.9" ry="5.4" transform="rotate(-16 20.1 17)" fill="#0f2147"/><ellipse cx="12" cy="15" rx="8.4" ry="11.2" fill="#0f2147"/><ellipse cx="12" cy="18.4" rx="5.5" ry="7.6" fill="#fff"/><circle cx="9.7" cy="8.6" r="2" fill="#fff"/><circle cx="14.3" cy="8.6" r="2" fill="#fff"/><circle cx="10.1" cy="8.9" r="0.95" fill="#0f2147"/><circle cx="13.9" cy="8.9" r="0.95" fill="#0f2147"/><path d="M9.9 11.4 Q12 10.5 14.1 11.4 Q12 13.9 9.9 11.4Z" fill="#f5a524"/></g></svg></span><span class="os-navn">Linux</span></a>
+            </div>
+            <p class="v-hent-virk"><a class="v-lenke" data-arm href="/frostcopy-uk/download/linux-arm" download>Linux on ARM</a></p>
+            <p class="v-hent-virk">For organisations: <b>30 days free</b>. No sign-up, no card.</p>
+            <p><a class="v-hent-pris" href="/frostcopy-uk/pricing/">See the price for your organisation</a></p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="v-bunn">
+      <p class="v-bunn-merke"><i>FrostCopy</i> <span>by Tidemann Esbjug</span></p>
+      <nav class="v-bunn-lenker" aria-label="More about FrostCopy">
+        <a href="/frostcopy-uk/pricing/">Pricing</a>
+        <a href="/frostcopy-uk/what-it-catches.html">What FrostCopy catches</a>
+        <a href="/frostcopy-uk/for-it.html">For IT</a>
+        <a href="/frostcopy-uk/terms/">Terms</a>
+        <a href="/frostcopy-uk/privacy/">Privacy</a>
+      </nav>
+      <nav class="v-bunn-lenker v-bunn-land" aria-label="Other countries">
+        <a href="/klart/" hreflang="no" lang="no">Norge · Klart</a>
+        <a href="/alles-klar/" hreflang="de" lang="de">Deutschland · Alles Klar</a>
+        <a href="/frostcopy/" hreflang="en-US" lang="en-US">United States · FrostCopy</a>
+        <a href="/frostcopy-uk/" hreflang="en-GB" lang="en-GB" aria-current="page">United Kingdom · FrostCopy UK</a>
+        <a href="/cest-clair/" hreflang="fr" lang="fr">France · C’est Clair</a>
+        <a href="/clarisimo/" hreflang="es" lang="es">España · Clarísimo</a>
+        <a href="/chiarissimo/" hreflang="it" lang="it">Italia · Chiarissimo</a>
+        <a href="/klip-en-klaar/" hreflang="nl" lang="nl">Nederland · Klip en Klaar</a>
+        <a href="/wszystko-jasne/" hreflang="pl" lang="pl">Polska · Wszystko Jasne</a>
+      </nav>
+      <p class="v-bunn-liten">Made in Norway · Not legal advice</p>
+    </footer>
+
+    <script src="forside.js"></script>
+    <script src="forhandsvisning.js"></script>
+    <script src="videre.js"></script>
+  </body>
+</html>

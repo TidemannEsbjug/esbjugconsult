@@ -1,0 +1,281 @@
+<!doctype html>
+<!--
+  Personvern for Klart. Skrevet 11.11.2026 ut fra hva koden faktisk gjør:
+  programmet (ingen nettverkskode), nettsiden (/klart, .worker/index.js) og
+  kjøpet (.worker/klart.js). Endres koden, skal denne siden endres samme dag.
+
+  Det som er merket «avklares» (klassen s-avklar), er valg bare selgeren kan ta:
+  hvem som er behandlingsansvarlig, hvor lenge opplysningene blir liggende, og
+  grunnlaget for overføring til leverandører utenfor EØS. Siden skal ikke
+  publiseres før de er fylt ut.
+
+  Varsler til eierens telefon når noen er innom (pushVisit i .worker/chat.js)
+  er slått av nå (PUSH_PAUSET). Slås de på igjen, skal det stå under «Telling
+  av besøk»: by, land, enhet og side sendes da til telefonen via Apple.
+-->
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/cest-clair/favicon.png" />
+    <title>Confidentialité · C’est Clair</title>
+    <meta name="description" content="Ce qu’il advient de vos données dans le logiciel C’est Clair, sur le site et lors de l’achat d’une licence." />
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="../fonts.css" />
+    <link rel="stylesheet" href="../sider.css" />
+  </head>
+  <body>
+    <header class="s-topp">
+      <div class="s-linje-topp">
+        <a class="s-merke" href="../">C’est Clair</a>
+        <nav class="s-nav" aria-label="Pages">
+          <a href="../">Accueil</a>
+          <a href="../prix/">Prix</a>
+          <a href="../pour-la-dsi.html">Pour la DSI</a>
+          <a href="./" aria-current="page">Confidentialité</a>
+        </nav>
+      </div>
+      <div class="s-hode">
+        <p class="s-over">Confidentialité</p>
+        <h1>Vos données restent chez vous.</h1>
+        <p class="s-ingress">
+          C’est Clair a été conçu pour que les données personnelles ne tombent pas entre de mauvaises mains.
+          Cela vaut aussi pour les vôtres. Voici ce qui se passe dans le logiciel, sur le
+          site et lors de l’achat.
+        </p>
+      </div>
+    </header>
+
+    <div class="s-kropp">
+      <nav class="s-innhold" aria-label="Sommaire">
+        <p>Sur cette page</p>
+        <ol>
+          <li><a href="#kort">En bref</a></li>
+          <li><a href="#ansvarlig">Responsable du traitement</a></li>
+          <li><a href="#programmet">Le logiciel</a></li>
+          <li><a href="#nettsiden">Le site</a></li>
+          <li><a href="#kjop">Lors de la commande</a></li>
+          <li><a href="#mottakere">Destinataires</a></li>
+          <li><a href="#grunnlag">Bases légales</a></li>
+          <li><a href="#lagring">Durée de conservation</a></li>
+          <li><a href="#rettigheter">Vos droits</a></li>
+        </ol>
+      </nav>
+
+      <main class="s-tekst">
+        <section class="s-kort" id="kort">
+          <h2>En bref</h2>
+          <ul>
+            <li><b>Le logiciel n’envoie rien.</b> Vos documents ne quittent jamais votre ordinateur, et nous ne les voyons jamais.</li>
+            <li><b>Le site ne vous suit pas.</b> Les pages de C’est Clair ne déposent aucun cookie et ne contiennent ni publicité ni outil d’analyse de tiers.</li>
+            <li><b>Si vous commandez, nous conservons ce qui est nécessaire à la facture et à la livraison.</b> Le nom et l’adresse de l’organisation, l’adresse e-mail, votre référence ainsi que le type et la taille de l’organisation.</li>
+          </ul>
+        </section>
+
+        <section class="s-del" id="ansvarlig">
+          <h2>Responsable du traitement</h2>
+          <p>
+            C’est Clair est vendu par ESBJUG CONSULT, numéro d’organisation
+            938 441 405, Glenneveien 272B, 1455 Nordre Frogn, Norvège.
+            L’entreprise est responsable du traitement, au sens du RGPD, des données décrites sur cette page.
+          </p>
+          <p>
+            Pour toute question sur la protection des données, écrivez à
+            <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a>.
+            C’est une personne qui vous répond.
+          </p>
+        </section>
+
+        <section class="s-del" id="programmet">
+          <h2>Le logiciel</h2>
+          <p>
+            C’est Clair ne peut pas se connecter à Internet. Le logiciel n’a ni compte, ni statistiques
+            d’utilisation, ni rapports d’erreur, ni mises à jour automatiques.
+            Il n’y a rien que nous puissions collecter.
+          </p>
+          <dl class="s-tabell">
+            <div>
+              <dt>Vos documents</dt>
+              <dd>Ils sont lus et occultés sur votre ordinateur. Nous ne les recevons jamais et ne les traitons pas pour votre compte. Pour les documents, c’est vous, ou votre organisation, qui êtes responsable du traitement.</dd>
+            </div>
+            <div>
+              <dt>Ce que C’est Clair enregistre</dt>
+              <dd>Vos choix pour un dossier, vos propres marquages, les sauvegardes et la clé sont enregistrés chiffrés sur votre ordinateur. Vous pouvez les supprimer à tout moment.</dd>
+            </div>
+            <div>
+              <dt>La licence</dt>
+              <dd>Le code de licence est vérifié sur l’ordinateur. Le logiciel ne nous demande pas s’il est valable.</dd>
+            </div>
+            <div>
+              <dt>Quand le logiciel ouvre le site</dt>
+              <dd>Si vous cliquez sur « Acheter une licence », notre page de prix s’ouvre dans votre navigateur. L’adresse contient un code machine qui identifie l’installation. Il ne dit rien de vos documents, et nous ne le conservons pas.</dd>
+            </div>
+          </dl>
+          <p>Votre service informatique peut le vérifier lui-même. <a href="../pour-la-dsi.html">Voir les contrôles sur la page pour la DSI</a>.</p>
+        </section>
+
+        <section class="s-del" id="nettsiden">
+          <h2>Le site</h2>
+          <p>
+            Les pages de C’est Clair se trouvent sous esbjugconsult.com/cest-clair. Les polices,
+            les images et les scripts sont chargés depuis notre propre serveur, rien depuis d’autres sites.
+          </p>
+          <dl class="s-tabell">
+            <div>
+              <dt>Cookies</dt>
+              <dd>Les pages de C’est Clair n’en déposent aucun.</dd>
+            </div>
+            <div>
+              <dt>Comptage des visites</dt>
+              <dd>
+                Nous comptons les visites pour savoir si les pages sont consultées. Pour chaque visite, nous enregistrons l’heure, la page consultée,
+                la ville et le pays (estimés à partir de l’adresse IP) et s’il s’agit d’un mobile ou d’un ordinateur. L’adresse IP n’est pas enregistrée.
+              </dd>
+            </div>
+            <div>
+              <dt>Nouvelle visite ou retour</dt>
+              <dd>
+                Pour distinguer les deux, nous calculons un code à partir du réseau depuis lequel vous vous connectez. Ce code ne permet pas de retrouver l’adresse IP.
+                Il est enregistré avec la ville et l’heure. Si vous avez accepté les cookies sur la page d’accueil d’esbjugconsult.com,
+                c’est ce cookie qui est utilisé à la place.
+              </dd>
+            </div>
+            <div>
+              <dt>Vérification de l’ordinateur</dt>
+              <dd>Ce que vous saisissez sous « C’est Clair fonctionne-t-il sur votre ordinateur ? » est recherché dans notre propre liste. La recherche n’est pas enregistrée.</dd>
+            </div>
+            <div>
+              <dt>Téléchargement</dt>
+              <dd>Nous ne comptons pas les téléchargements et ne les rattachons à aucune organisation.</dd>
+            </div>
+            <div>
+              <dt>Erreurs de notre côté</dt>
+              <dd>Si quelque chose ne fonctionne pas, nous journalisons l’erreur. En cas d’erreur d’envoi d’un e-mail, le journal peut contenir l’adresse du destinataire.</dd>
+            </div>
+          </dl>
+          <p>
+            Le site est hébergé chez Cloudflare. Comme pour tout site, le prestataire qui délivre la page doit
+            voir votre adresse IP pour pouvoir vous l’envoyer.
+          </p>
+        </section>
+
+        <section class="s-del" id="kjop">
+          <h2>Lors de la commande</h2>
+          <p>
+            Pour les particuliers, C’est Clair est gratuit ; nous n’avons alors besoin de rien de votre part.
+            Une organisation qui commande une licence sur la page de prix nous transmet ce qui suit :
+          </p>
+          <dl class="s-tabell">
+            <div>
+              <dt>L’organisation</dt>
+              <dd>Le nom et l’adresse de facturation, tels que vous les saisissez. Nous ne consultons aucun registre. Une entreprise individuelle porte souvent le nom de son exploitant ; ce nom est alors une donnée personnelle.</dd>
+            </div>
+            <div>
+              <dt>Type et taille</dt>
+              <dd>S’il s’agit d’une entreprise, d’une collectivité ou d’un service de l’État, avec le nombre de personnes et le secteur, le nombre d’habitants ou le nombre d’agents. Le prix en dépend.</dd>
+            </div>
+            <div>
+              <dt>Adresse e-mail</dt>
+              <dd>L’adresse à laquelle sont envoyées la facture, puis la clé de licence.</dd>
+            </div>
+            <div>
+              <dt>Votre référence</dt>
+              <dd>Votre numéro de bon de commande ou votre référence, si vous en indiquez une. Elle figure sur la facture.</dd>
+            </div>
+            <div>
+              <dt>Le paiement</dt>
+              <dd>Le paiement se fait uniquement sur facture, que nous envoyons nous-mêmes par e-mail, par virement sur notre compte bancaire. Nous n’acceptons pas les cartes, et aucun prestataire de paiement n’intervient. Nous conservons la commande, le montant, la date de facture et le fait que la facture est payée ou non.</dd>
+            </div>
+            <div>
+              <dt>La clé de licence</dt>
+              <dd>La clé contient le nom de l’organisation, l’adresse e-mail de la commande et la période de validité de la licence. Toute personne qui reçoit la clé peut lire ces informations.</dd>
+            </div>
+          </dl>
+          <p>Nous gardons une copie des e-mails que nous envoyons, afin de savoir ce que vous avez reçu.</p>
+        </section>
+
+        <section class="s-del" id="mottakere">
+          <h2>Destinataires</h2>
+          <p>Nous ne vendons aucune donnée et ne la transmettons pas à des fins publicitaires. Les prestataires suivants nous aident à fournir le service :</p>
+          <dl class="s-tabell">
+            <div>
+              <dt>Cloudflare</dt>
+              <dd>Héberge le site, stocke les données décrites sur cette page et envoie les e-mails contenant la facture et la clé de licence. Reçoit à cette occasion l’adresse du destinataire et le contenu de l’e-mail.</dd>
+            </div>
+          </dl>
+          <p>
+            Cloudflare est une entreprise américaine.
+            <span class="s-avklar">[La base du transfert vers des pays situés hors de l’EEE reste à préciser.]</span>
+          </p>
+        </section>
+
+        <section class="s-del" id="grunnlag">
+          <h2>Bases légales</h2>
+          <dl class="s-tabell">
+            <div>
+              <dt>Contrat avec vous</dt>
+              <dd>Ce dont nous avons besoin pour établir la facture et livrer la licence (article 6, paragraphe 1, point b, du RGPD).</dd>
+            </div>
+            <div>
+              <dt>Obligation légale</dt>
+              <dd>Nous devons conserver les pièces comptables (article 6, paragraphe 1, point c, du RGPD).</dd>
+            </div>
+            <div>
+              <dt>Intérêt légitime</dt>
+              <dd>Le comptage des visites, les réponses aux questions et la journalisation des erreurs (article 6, paragraphe 1, point f, du RGPD). Nous l’avons mis en balance avec votre intérêt à la protection de vos données, et c’est pourquoi nous n’enregistrons pas l’adresse IP.</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="s-del" id="lagring">
+          <h2>Durée de conservation</h2>
+          <dl class="s-tabell">
+            <div>
+              <dt>Licences</dt>
+              <dd>Tant que la licence est valable. <span class="s-avklar">[La durée après expiration reste à préciser.]</span></dd>
+            </div>
+            <div>
+              <dt>Comptabilité</dt>
+              <dd>Aussi longtemps que l’exige la loi norvégienne sur la tenue des comptes (bokføringsloven).</dd>
+            </div>
+            <div>
+              <dt>Commandes et copies des e-mails</dt>
+              <dd><span class="s-avklar">[Durée à préciser.]</span></dd>
+            </div>
+            <div>
+              <dt>Statistiques de visite</dt>
+              <dd><span class="s-avklar">[Durée à préciser.]</span></dd>
+            </div>
+          </dl>
+          <p>Vous pouvez dans tous les cas nous demander d’effacer vos données. Voir ci-dessous.</p>
+        </section>
+
+        <section class="s-del" id="rettigheter">
+          <h2>Vos droits</h2>
+          <p>Vous avez le droit de savoir ce que nous avons enregistré à votre sujet, de le faire rectifier et de le faire effacer. Vous pouvez aussi vous opposer au traitement et demander à recevoir vos données.</p>
+          <p>
+            Écrivez à <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a>.
+            C’est gratuit, et vous recevez une réponse dans un délai d’un mois.
+          </p>
+          <p>
+            Si vous estimez que nous agissons mal, vous pouvez introduire une réclamation auprès de la CNIL (www.cnil.fr)
+            ou de l’autorité norvégienne de protection des données (Datatilsynet). N’hésitez pas à nous le dire d’abord : nous corrigerons.
+          </p>
+          <p class="s-dato">Dernière modification le 24 novembre 2026.</p>
+        </section>
+      </main>
+    </div>
+
+    <footer class="s-bunn">
+      <p class="s-bunn-merke"><i>C’est Clair</i> <span>par Tidemann Esbjug</span></p>
+      <nav aria-label="En savoir plus sur C’est Clair">
+        <a href="../">Accueil</a>
+        <a href="../prix/">Prix</a>
+        <a href="../ce-qu-il-trouve.html">Ce que C’est Clair trouve</a>
+        <a href="../pour-la-dsi.html">Pour la DSI</a>
+        <a href="../conditions/">Conditions de licence</a>
+      </nav>
+      <p class="s-bunn-liten">Conçu en Norvège</p>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,378 @@
+<!doctype html>
+<!-- Programvinduet fra /clarisimo alene (eieren 12.11.2026), til heroen på forsiden (esbjugconsult.com/), der det står i en iframe.
+     Kopiert fra GDPR/index.html (figure.kv); endres vinduet der, kjør pv.py igjen eller kopier det over hit.
+     Samme stiler og skript som på /klart, pluss programvindu.css og programvindu.js (høyden til forsiden). -->
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Clarísimo – la ventana del programa</title>
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="forhandsvisning.css" />
+    <link rel="stylesheet" href="programvindu.css" />
+  </head>
+  <body class="programvindu">
+        <figure class="kv avklart" data-scene="gjennom">
+          <div class="kv-ramme">
+          <div class="kv-app" aria-hidden="true">
+            <header class="kv-chrome">
+              <span class="kv-lys"><i></i><i></i><i></i></span>
+              <span class="kv-merke"><img src="/clarisimo/clarisimo-ikon.png" alt="" />Clarísimo</span>
+              <span class="kv-sok"><svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.6" /><path d="M10.4 10.4L14 14" /></svg>Buscar en todos los archivos de la carpeta<kbd>⌘F</kbd></span>
+              <span class="kv-hoyre">
+                <span class="kv-lagret">✓ Guardado automático</span>
+                <span class="kv-lysknapp">Opciones de análisis</span>
+                <span class="kv-lysknapp" data-kv="hjem">Pantalla de inicio</span>
+                <span class="kv-lysknapp kv-sporsmal">?</span>
+              </span>
+            </header>
+
+            <div class="kv-flate">
+              <!-- Startskjermen: de tre verktøyene, og det som ble tilbakeført under dem -->
+              <div class="kv-scene kv-s-start">
+                <div class="kv-start-inn">
+                  <div class="kv-kortene">
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-rens.png" alt="" />
+                      <h4>Ocultar</h4>
+                      <span class="kv-hvit" data-kv="velg">Elegir una carpeta o documentos…</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-tilbakefor.png" alt="" />
+                      <h4>Restaurar</h4>
+                      <span class="kv-hvit" data-kv="tbvelg">Elegir copias…</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-tekst.png" alt="" />
+                      <h4>Herramienta de texto</h4>
+                      <span class="kv-hvit" data-kv="tekstvelg">Abrir…</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Editoren: filene, dokumentet og registeret for mappen -->
+              <div class="kv-scene kv-s-editor">
+                <aside class="kv-filer">
+                  <div class="kv-filer-topp"><b>Expedientes</b><span>10 archivos</span></div>
+                  <ul data-kv="filer">
+                    <li data-steder="30"><i class="kv-fikon w">W</i><span class="kv-fnavn">01-contrato-trabajo-acme.docx</span><span class="kv-fmeta">30 lugares</span><i class="kv-ring"></i></li>
+                    <li data-steder="41" data-uavklart="2" data-dok="vedtak" class="valgt"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">02-resolucion-curatela.pdf</span><span class="kv-fmeta">41 lugares</span><i class="kv-ring"></i></li>
+                    <li data-steder="45" data-ekstra="1 matrícula" data-dok="epost"><i class="kv-fikon epost">@</i><span class="kv-fnavn">03-cadena-de-correos.eml</span><span class="kv-fmeta">45 lugares</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon tekst">T</i><span class="kv-fnavn">04-nota-de-personal.md</span><span class="kv-fmeta">21 lugares</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon w">W</i><span class="kv-fnavn">05-informe-medico.docx</span><span class="kv-fmeta">21 lugares</span><i class="kv-ring"></i></li>
+                    <li data-steder="16"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">06-factura-aurora.pdf</span><span class="kv-fmeta">16 lugares</span><i class="kv-ring"></i></li>
+                    <li data-steder="82" data-dok="liste"><i class="kv-fikon x">X</i><span class="kv-fnavn">08-lista-de-clientes.xlsx</span><span class="kv-fmeta">82 lugares</span><i class="kv-ring"></i></li>
+                    <li data-steder="43" data-ekstra="2 caras" data-dok="ppt"><i class="kv-fikon p">P</i><span class="kv-fnavn">09-reunion-de-seguimiento.pptx</span><span class="kv-fmeta">43 lugares · 2 caras</span><i class="kv-ring"></i></li>
+                    <li data-steder="18"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">11-anexo-escaneado.pdf</span><span class="kv-fmeta">18 lugares</span><i class="kv-ring"></i></li>
+                    <li data-steder="3" data-ekstra="1 cara"><i class="kv-fikon bilde">JPG</i><span class="kv-fnavn">16-tarjeta-de-acceso.jpg</span><span class="kv-fmeta">3 lugares · 1 cara</span><i class="kv-ring"></i></li>
+                  </ul>
+                </aside>
+
+                <div class="kv-midt">
+                  <div class="kv-docket">
+                    <b data-kv="docnavn">02-resolucion-curatela.pdf</b><span class="kv-type" data-kv="doctype">PDF</span>
+                    <span class="kv-kopimerke" data-kv="kopimerke">La copia · lista de códigos al final</span>
+                    <span class="kv-verktoy">
+                      <span class="kv-zoom">− &nbsp;86 %&nbsp; +</span>
+                      <span class="kv-hvit" data-kv="vis">Mostrar la copia</span>
+                    </span>
+                  </div>
+                  <div class="kv-bord">
+                    <div class="kv-pille" data-kv="pille"><i></i>Leyendo <b data-kv="leser">01-contrato-trabajo-acme.docx</b><span data-kv="nr">1 de 10</span></div>
+
+                    <!-- PDF: vedtak om vergemål -->
+                    <article class="kv-side vist" data-dok="vedtak">
+                      <i class="kv-lesehode"></i>
+                      <p class="kv-avsender">Juzgado de Primera Instancia</p>
+                      <h4>Auto de nombramiento de curador</h4>
+                      <p class="kv-ref">Expediente <mark class="s"><span class="o">412/2026</span><span class="k">[Expediente 4906498]</span></mark> · 14/03/2026</p>
+                      <h5>Persona afectada</h5>
+                      <dl>
+                        <dt>Nombre</dt><dd><mark class="s"><span class="o">Carmen Navarro Ruiz</span><span class="k">[Persona 6311794]</span></mark></dd>
+                        <dt>DNI</dt><dd><mark class="s"><span class="o">47302918Z</span><span class="k">[DNI 2215087]</span></mark></dd>
+                        <dt>Dirección</dt><dd><mark class="s"><span class="o">Calle del Olmo 27, 28012 Madrid</span><span class="k">[Dirección 8950779]</span></mark></dd>
+                      </dl>
+                      <h5>Curador designado</h5>
+                      <dl>
+                        <dt>Nombre</dt><dd><mark class="s"><span class="o">Lucas Herrera</span><span class="k">[Persona 2656447]</span></mark>, <mark class="b" data-kv="arbeid"><span class="o">Aurora Abogados SLP</span><span class="k">[Organización 5521093]</span></mark></dd>
+                        <dt>Correo</dt><dd><mark class="s"><span class="o">lucas.herrera@aurora.test</span><span class="k">[Correo 3278678]</span></mark></dd>
+                        <dt>Teléfono</dt><dd><mark class="s"><span class="o">910 555 134</span><span class="k">[Teléfono 6289990]</span></mark></dd>
+                      </dl>
+                      <h5>Fundamentos</h5>
+                      <p><mark class="s" data-kv="merknad"><span class="o">La persona afectada está ingresada desde enero por una depresión y necesita apoyo con sus finanzas.</span><span class="k">[Nota 2760056]</span></mark> La curatela incluye la gestión del saldo de la cuenta <mark class="s"><span class="o">ES91 2100 0418 4502 0005 1332</span><span class="k">[IBAN 7719741]</span></mark>.</p>
+                      <p>La resolución será eficaz desde su notificación. Contra ella cabe recurso de apelación en el plazo de veinte días.</p>
+                    </article>
+
+                    <!-- E-post -->
+                    <article class="kv-side kv-epost" data-dok="epost">
+                      <i class="kv-lesehode"></i>
+                      <dl class="kv-hode">
+                        <dt>De</dt><dd><mark class="s"><span class="o">Sabina Jiménez</span><span class="k">[Persona 7320430]</span></mark> &lt;<mark class="s"><span class="o">sabina.jimenez@aurora.test</span><span class="k">[Correo 5102284]</span></mark>&gt;</dd>
+                        <dt>Para</dt><dd><mark class="s"><span class="o">Carmen Navarro</span><span class="k">[Persona 6311794]</span></mark></dd>
+                        <dt>Asunto</dt><dd><b>Seguimiento de nuestra conversación</b></dd>
+                        <dt>Fecha</dt><dd>12 de marzo de 2026, 09:14</dd>
+                      </dl>
+                      <p>Hola, <mark class="s"><span class="o">Carmen</span><span class="k">[Persona 6311794]</span></mark>:</p>
+                      <p>gracias por la conversación de ayer. Como acordamos, te envío una copia del informe médico. Puedes llamarme toda la semana al <mark class="s"><span class="o">910 555 134</span><span class="k">[Teléfono 6289990]</span></mark>.</p>
+                      <p>El coche de empresa con matrícula <mark class="s"><span class="o">4821 KLM</span><span class="k">[Matrícula 3071552]</span></mark> estará listo a partir del lunes. Te adjunto la foto.</p>
+                      <p>Un saludo<br /><mark class="s"><span class="o">Sabina Jiménez</span><span class="k">[Persona 7320430]</span></mark><br />Aurora Servicios SL · <mark class="s"><span class="o">Calle del Puerto 22, 15001 A Coruña</span><span class="k">[Dirección 6113936]</span></mark></p>
+                      <figure class="kv-vedlegg">
+                        <span class="kv-bilramme"><img src="/alles-klar/assets/visning/bil.jpg" alt="" /><span class="kv-skilt" data-kv="skilt"><img src="/alles-klar/assets/visning/bil-skilt.png" alt="" /><em data-kv="skiltlapp">Matrícula · se oculta</em></span></span>
+                        <figcaption>coche.jpg · 1,2 MB</figcaption>
+                      </figure>
+                    </article>
+
+                    <!-- Regneark -->
+                    <article class="kv-side kv-ark" data-dok="liste">
+                      <i class="kv-lesehode"></i>
+                      <table>
+                        <thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead>
+                        <tbody>
+                          <tr><th>1</th><td><b>Nombre</b></td><td><b>DNI</b></td><td><b>Teléfono</b></td><td><b>N.º SS</b></td></tr>
+                          <tr><th>2</th><td><mark class="s"><span class="o">Javier Bermejo</span><span class="k">[Persona 1180342]</span></mark></td><td><mark class="s"><span class="o">52184736J</span><span class="k">[DNI 4402918]</span></mark></td><td><mark class="s"><span class="o">612 555 142</span><span class="k">[Teléfono 2290174]</span></mark></td><td><mark class="s"><span class="o">28 12345678 40</span><span class="k">[N.º SS 6630215]</span></mark></td></tr>
+                          <tr><th>3</th><td><mark class="s"><span class="o">Inés Lozano</span><span class="k">[Persona 5523107]</span></mark></td><td><mark class="s"><span class="o">30917452R</span><span class="k">[DNI 8817330]</span></mark></td><td><mark class="s"><span class="o">655 555 178</span><span class="k">[Teléfono 1047782]</span></mark></td><td><mark class="s"><span class="o">08 23456789 24</span><span class="k">[N.º SS 3359810]</span></mark></td></tr>
+                          <tr><th>4</th><td><mark class="s"><span class="o">Ahmed Hassan</span><span class="k">[Persona 9918066]</span></mark></td><td><mark class="s"><span class="o">71460385Y</span><span class="k">[DNI 2265419]</span></mark></td><td><mark class="s"><span class="o">699 555 111</span><span class="k">[Teléfono 7714203]</span></mark></td><td><mark class="s"><span class="o">41 34567890 23</span><span class="k">[N.º SS 9046631]</span></mark></td></tr>
+                          <tr><th>5</th><td><mark class="s"><span class="o">María Soler</span><span class="k">[Persona 3301459]</span></mark></td><td><mark class="s"><span class="o">26853019J</span><span class="k">[DNI 6158820]</span></mark></td><td><mark class="s"><span class="o">676 555 166</span><span class="k">[Teléfono 4420987]</span></mark></td><td><mark class="s"><span class="o">46 45678901 89</span><span class="k">[N.º SS 1872264]</span></mark></td></tr>
+                          <tr><th>6</th><td><mark class="s"><span class="o">Juan Vidal</span><span class="k">[Persona 8045126]</span></mark></td><td><mark class="s"><span class="o">44718203Q</span><span class="k">[DNI 5590743]</span></mark></td><td><mark class="s"><span class="o">651 555 127</span><span class="k">[Teléfono 3368201]</span></mark></td><td><mark class="s"><span class="o">29 56789012 92</span><span class="k">[N.º SS 7701358]</span></mark></td></tr>
+                          <tr><th>7</th><td></td><td></td><td></td><td></td></tr>
+                          <tr><th>8</th><td></td><td></td><td></td><td></td></tr>
+                        </tbody>
+                      </table>
+                    </article>
+
+                    <!-- PowerPoint: lysbildet fra fellesturen, med to ansikter -->
+                    <article class="kv-side kv-ppt" data-dok="ppt">
+                      <i class="kv-lesehode"></i>
+                      <div class="kv-lysbilde">
+                        <p class="kv-lb-tittel">Excursión de empresa en febrero</p>
+                        <p class="kv-lb-under">¡Gracias a <mark class="s"><span class="o">Ana Lara</span><span class="k">[Persona 3390415]</span></mark> y a <mark class="s"><span class="o">Pedro Santos</span><span class="k">[Persona 8812706]</span></mark> por organizarla!</p>
+                        <div class="kv-lb-foto">
+                          <img src="/alles-klar/assets/visning/fagtur.jpg" alt="" />
+                          <span class="kv-ansikt a1" data-kv="ansikt1"><img src="/alles-klar/assets/visning/fagtur-ansikt-1.jpg" alt="" /><em>Cara · se pixela</em></span>
+                          <span class="kv-ansikt a2" data-kv="ansikt2"><img src="/alles-klar/assets/visning/fagtur-ansikt-2.jpg" alt="" /><em>Cara · se pixela</em></span>
+                        </div>
+                        <p class="kv-lb-bunn">Reunión de seguimiento · Diapositiva 4 de 12</p>
+                      </div>
+                    </article>
+
+                    <div class="kv-gjennom" data-kv="gjennom">
+                      <i class="kv-gjennom-strek" data-kv="gstrek"></i>
+                      <p class="kv-gjennom-topp"><code data-kv="gkode">Nota 2760056</code><b>Pendiente</b><span data-kv="gnr">1 de 2</span></p>
+                      <p class="kv-gjennom-hvorfor" data-kv="ghvorfor">Clarísimo no está seguro de si esto pertenece a la categoría «Nota». · 02-resolucion-curatela.pdf</p>
+                      <p class="kv-gjennom-knapper">
+                        <span class="kv-btn" data-kv="skjul">Ocultar <kbd>↵</kbd></span>
+                        <span class="kv-btn hvit" data-kv="lastaa">Dejar <kbd>B</kbd></span>
+                        <span class="kv-btn hvit av">Volver <kbd>←</kbd></span>
+                        <span class="kv-btn hvit">Siguiente <kbd>→</kbd></span>
+                        <span class="kv-btn hvit">Terminar <kbd>Esc</kbd></span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <aside class="kv-panel">
+                  <div class="kv-uavklart" data-kv="uavklart">
+                    <h5><svg viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" rx="2" /><path d="M6 2.5v11" /></svg>Pendiente</h5>
+                    <div class="kv-uboks">
+                      <p data-kv="u1"><code>Nota 2760056</code><span>La persona afectada está ingresada desde enero…</span><em>1 pendiente</em></p>
+                      <p data-kv="u2"><code>Organización 5521093</code><span>Aurora Abogados SLP</span><em>1 pendiente</em></p>
+                      <span class="kv-btn bred" data-kv="gaa">Revisar los 2 <kbd>G</kbd></span>
+                    </div>
+                  </div>
+                  <div class="kv-imappen">
+                    <h5>En la carpeta <span><b data-kv="opplysninger">67</b> datos</span></h5>
+                    <ul data-kv="register">
+                      <li data-n="19" data-s="114"><span>Personas</span><em>19 · 114 lugares</em></li>
+                      <li data-n="7" data-s="24"><span>DNI / NIE</span><em>7 · 24 lugares</em></li>
+                      <li data-n="12" data-s="43"><span>Teléfono</span><em>12 · 43 lugares</em></li>
+                      <li data-n="15" data-s="53"><span>Correo</span><em>15 · 53 lugares</em></li>
+                      <li data-n="7" data-s="29"><span>Direcciones</span><em>7 · 29 lugares</em></li>
+                      <li data-n="6" data-s="13"><span>Cuentas</span><em>6 · 13 lugares</em></li>
+                      <li data-n="1" data-s="2"><span>Matrículas</span><em>1 · 2 lugares</em></li>
+                      <li data-n="3" data-s="12"><span>Sensible</span><em>3 · 12 lugares</em></li>
+                      <li data-n="3" data-s="3" data-kv="ansikter"><span>Caras</span><em>3 · 3 lugares</em></li>
+                    </ul>
+                  </div>
+                  <div class="kv-bunn">
+                    <p><b data-kv="skjules">292</b> ocultar <b data-kv="faarstaa">1</b> dejar</p>
+                    <p class="kv-bunn-knapper">
+                      <span class="kv-btn hvit oransje" data-kv="ubtn"><i></i>Pendiente 2</span>
+                      <span class="kv-btn stor" data-kv="lag">Crear 10 copias</span>
+                    </p>
+                  </div>
+                </aside>
+              </div>
+
+              <!-- Tekstverktøy: et ark å skrive eller lime inn på -->
+              <div class="kv-scene kv-s-tekst">
+                <div class="kv-rt-linje">
+                  <span class="kv-rt-tilbake">‹ Pantalla de inicio</span>
+                  <span class="kv-faner"><span class="på" data-kv="fanerens"><i>1</i>Ocultar en el texto</span><span data-kv="fanetb"><i>2</i>Restaurar el texto</span></span>
+                  <span class="kv-faner kv-rt-visning"><span class="på" data-kv="rtorig">Original</span><span data-kv="rtrenset">Limpio</span></span>
+                  <span class="kv-btn" data-kv="rtkopier">Copiar</span>
+                </div>
+                <div class="kv-rt-kropp">
+                  <div class="kv-rt-ark" data-kv="rtark"><p data-kv="rttekst"></p><i class="kv-markor"></i><p class="kv-rt-svar" data-kv="rtsvar"></p></div>
+                  <aside class="kv-rt-liste">
+                    <h5 data-kv="rtlistetittel">Se oculta</h5>
+                    <ul data-kv="rtliste"></ul>
+                    <p class="kv-rt-merke">Se lee en este ordenador. No se envía nada.</p>
+                  </aside>
+                </div>
+                <p class="kv-toast" data-kv="toast">Copiado</p>
+              </div>
+
+              <!-- Skrivebordet: Finder med høyreklikk › Hurtighandlinger › Rens med Klart -->
+              <div class="kv-scene kv-s-finder kv-skrivebord">
+                <div class="kv-finder">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><span class="kv-pil">‹ ›</span><b>Documentos</b></div>
+                  <div class="kv-finder-kropp">
+                    <ul class="kv-sidefelt">
+                      <li class="kv-sf-h">Favoritos</li>
+                      <li>Escritorio</li>
+                      <li class="på">Documentos</li>
+                      <li>Descargas</li>
+                      <li class="kv-sf-h">Ubicaciones</li>
+                      <li>iCloud Drive</li>
+                    </ul>
+                    <div class="kv-ikoner">
+                      <span class="kv-mappe" data-kv="fmappe"><i></i>Expedientes</span>
+                      <span class="kv-mappe"><i></i>Solicitudes de acceso marzo</span>
+                      <span class="kv-mappe"><i></i>Contabilidad 2025</span>
+                      <span class="kv-dokikon"><i>PDF</i>contrato-acme.pdf</span>
+                      <span class="kv-dokikon w"><i>W</i>Acta 10.11.docx</span>
+                      <span class="kv-mappe ny" data-kv="fny"><i></i>Expedientes-limpio</span>
+                    </div>
+                  </div>
+                  <ul class="kv-meny" data-kv="meny">
+                    <li>Abrir</li>
+                    <li>Abrir en una pestaña nueva</li>
+                    <li class="kv-skille"></li>
+                    <li>Trasladar a la papelera</li>
+                    <li class="kv-skille"></li>
+                    <li>Obtener información</li>
+                    <li>Renombrar</li>
+                    <li>Comprimir «Expedientes»</li>
+                    <li>Duplicar</li>
+                    <li class="kv-skille"></li>
+                    <li>Copiar</li>
+                    <li>Compartir…</li>
+                    <li class="kv-skille"></li>
+                    <li class="kv-under" data-kv="hurtig">Acciones rápidas<span>›</span></li>
+                    <li class="kv-under">Servicios<span>›</span></li>
+                  </ul>
+                  <ul class="kv-meny kv-undermeny" data-kv="undermeny">
+                    <li data-kv="rensmed">Ocultar con Clarísimo</li>
+                    <li>Restaurar con Clarísimo</li>
+                    <li class="kv-skille"></li>
+                    <li>Personalizar…</li>
+                  </ul>
+                </div>
+                <div class="kv-varsel" data-kv="varsel">
+                  <img src="/clarisimo/clarisimo-ikon.png" alt="" />
+                  <p><b data-kv="vtittel">Ocultando «Expedientes»…</b><span data-kv="vtekst">Las copias se guardan al lado. Recibirá un aviso cuando estén listas.</span></p>
+                  <small>ahora</small>
+                </div>
+              </div>
+
+              <!-- Skrivebordet: et KI-verktøy som bare får kodene -->
+              <div class="kv-scene kv-s-ki kv-skrivebord">
+                <div class="kv-ki">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><b>Asistente de IA</b></div>
+                  <div class="kv-ki-samtale">
+                    <div class="kv-ki-bruker" data-kv="kibruker">
+                      <p>Escribe una respuesta breve a este mensaje:</p>
+                      <p class="kv-ki-sitat">¡Hola! ¿Puede llamar hoy a <code>[Persona 6311794]</code> al <code>[Teléfono 6289990]</code>? Se ha mudado a <code>[Dirección 8950779]</code> y su nómina debe ir ahora a la cuenta <code>[IBAN 7719741]</code>.</p>
+                    </div>
+                    <div class="kv-ki-svar" data-kv="kisvar"><p data-kv="kisvartekst"></p><span class="kv-ki-kopier" data-kv="kikopier">Copiar la respuesta</span></div>
+                  </div>
+                  <div class="kv-ki-felt" data-kv="kifelt"><span>Escribe un mensaje…</span><i>↑</i></div>
+                </div>
+                <p class="kv-ki-merke">La IA solo recibe los códigos. El nombre, el teléfono, la dirección y la cuenta se quedan en el ordenador.</p>
+              </div>
+
+              <!-- «Før skanningen»: over startskjermen, når mappen er valgt -->
+              <div class="kv-slor kv-s-forvalg">
+                <div class="kv-modal">
+                  <h4>Expedientes</h4>
+                  <p class="kv-modal-under">10 archivos · docx, eml, jpg, md, pdf, pptx, xlsx</p>
+                  <div class="kv-maate">
+                    <p class="på"><i></i><span><b>Con análisis</b>Clarísimo lee los archivos y marca lo que encuentra. Usted lo revisa todo y decide.</span></p>
+                    <p><i></i><span><b>Sin análisis</b>No se marca nada de antemano. Usted hace clic en lo que quiere ocultar.</span></p>
+                  </div>
+                  <p class="kv-sammen"><span><small>El análisis busca y oculta</small>Nombres, números de identidad, teléfono y correo, sensible, matrículas, cuentas, caras y 5 más</span><em>Cambiar</em></p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Cancelar</span>
+                    <span class="kv-btn stor" data-kv="skann">Analizar <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- «Før kopiene lages»: formen kopiene får -->
+              <div class="kv-slor kv-s-kopivalg">
+                <div class="kv-modal kv-kopivalg">
+                  <h4>Antes de crear las copias</h4>
+                  <p class="kv-modal-under">10 archivos · las copias van a Expedientes-limpio</p>
+                  <div class="kv-maate kv-former" data-kv="former">
+                    <p class="på" data-form="kort"><i></i><span><b>Código corto y lista de códigos</b>Fácil de leer. Se puede restaurar con la clave de su oficina.<code>[Persona 4814887] + lista</code></span></p>
+                    <p data-form="full"><i></i><span><b>Código completo en el texto</b>Sin lista. Se puede restaurar, pero cuesta leerlo.</span></p>
+                    <p data-form="lapp"><i></i><span><b>Solo etiquetas</b>Fácil de leer, pero no se puede restaurar.</span></p>
+                    <p data-form="svart"><i></i><span><b>Tachado en negro (PDF)</b>Lo que había desaparece para siempre.<code class="kv-svartprove"></code></span></p>
+                  </div>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Cancelar</span>
+                    <span class="kv-btn stor" data-kv="lagnaa">Crear 10 copias <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Kopiene er laget -->
+              <div class="kv-slor kv-s-ferdig">
+                <div class="kv-ferdig">
+                  <p class="kv-stor">Listo.</p>
+                  <p>Se han creado 10 copias. Los originales no se tocan. Lea las copias antes de compartirlas.</p>
+                  <p class="kv-sti"><span>Documentos/</span>Expedientes-limpio/</p>
+                  <p class="kv-liten">La lista de códigos está al final de cada copia.</p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit">Volver a la carpeta</span>
+                    <span class="kv-btn">Abrir las copias</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+          <span class="kv-peker" aria-hidden="true"></span>
+          <!-- Kapitlene: hopper i avspillingen. Det som spilles nå, er markert. -->
+          <ol class="kv-kapitler" data-kv="kapitler" aria-label="Capítulos de la demostración">
+            <li><button type="button" data-kapittel="0">Ocultar una carpeta</button></li>
+            <li><button type="button" data-kapittel="1">Revisar</button></li>
+            <li><button type="button" data-kapittel="2">Las copias</button></li>
+            <li><button type="button" data-kapittel="3">Clic derecho en el Finder</button></li>
+            <li><button type="button" data-kapittel="4">Ocultar y restaurar texto</button></li>
+          </ol>
+          <!-- Lesingen spilles av mye raskere enn den går på en vanlig maskin. Det skal stå. -->
+          <p class="kv-spol" aria-hidden="true">
+            <svg viewBox="0 0 20 12"><path d="M1 1l8 5-8 5zM10 1l8 5-8 5z" /></svg>
+            <span>Acelerado. Lo que tarda la lectura varía de un ordenador a otro. En un portátil corriente va más despacio.</span>
+          </p>
+          <figcaption class="skjult-tekst">
+            Así trabaja Clarísimo. Elija una carpeta y Clarísimo lee los archivos, también PDF,
+            correo, hojas de cálculo, PowerPoint e imágenes, y marca nombres, números de DNI, datos de contacto,
+            direcciones, números de cuenta, datos sensibles, matrículas y caras, que se pixelan.
+            Donde Clarísimo tiene dudas, usted revisa y decide: ocultar o
+            dejar. Las copias pueden llevar códigos cortos con lista de códigos, códigos completos, solo etiquetas
+            o tachado en negro, y los originales no se tocan. En el Finder se puede ocultar
+            una carpeta con clic derecho › Acciones rápidas › Ocultar con Clarísimo. Un texto
+            con códigos se puede dar a una herramienta de IA, y la respuesta se restaura en Clarísimo,
+            de modo que los nombres vuelven sin que la IA los haya visto. La lectura
+            está acelerada: lo que tarda varía de un ordenador a otro.
+          </figcaption>
+        </figure>
+    <script src="forhandsvisning.js"></script>
+    <script src="programvindu.js"></script>
+  </body>
+</html>

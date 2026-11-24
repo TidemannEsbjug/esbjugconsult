@@ -1,0 +1,174 @@
+<!doctype html>
+<!--
+  Hei, du som leser kildekoden. Det var deg vi håpet på.
+
+  Klip en Klaar lover at dokumentene aldri forlater maskinen. Et sånt løfte skal ikke
+  tas på ordet, så sjekk det:
+
+  - Programmet: /klip-en-klaar/voor-it har kommandoene som viser hva det snakker med.
+  - Denne siden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
+    uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
+  - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
+    Vi vil heller høre det fra deg enn fra en kunde.
+-->
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/klip-en-klaar/favicon.png" />
+    <title>Prijs en bestellen · Klip en Klaar</title>
+    <meta name="description" content="Wat Klip en Klaar kost voor uw organisatie: voor bedrijven, gemeenten en overheidsorganisaties. Eén licentie voor iedereen, bestellen op factuur. Gratis voor privégebruik." />
+    <meta name="theme-color" content="#eef3fb" />
+    <!-- Ikke indekser før Klip en Klaar lanseres. Fjernes sammen med den på /klip-en-klaar/. -->
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="../fonts.css" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="pris.css" />
+    <link rel="stylesheet" href="bestelling.css" />
+  </head>
+  <body>
+    <main>
+      <section class="port" id="port">
+        <!-- Veien tilbake til forsiden. -->
+        <a class="pris-hjem" href="/klip-en-klaar/"><span aria-hidden="true">←</span> <i>Klip en Klaar</i></a>
+        <div class="kort middels" id="kort">
+          <!-- Privatpersoner betaler ikke; det skal stå først også her. -->
+          <p class="pris-privat"><b>Gratis voor privégebruik.</b> <a href="/klip-en-klaar/#last-ned">Download Klip en Klaar</a></p>
+          <p class="merke">Voor organisaties</p>
+          <h1>Klip en Klaar voor uw organisatie</h1>
+          <p class="ingress">Eén licentie geldt voor iedereen in de organisatie. U telt geen werkplekken, en er is geen grens aan het aantal pagina's.</p>
+
+          <!-- Tre slags kjøpere. Prisen kommer fra price.js, den samme filen serveren regner med (bestelling.js). -->
+          <div class="de-valg" role="radiogroup" aria-label="Soort organisatie">
+            <label><input type="radio" name="art" value="business" checked /><span>Bedrijf, kantoor, praktijk of stichting</span></label>
+            <label><input type="radio" name="art" value="municipal" /><span>Gemeente</span></label>
+            <label><input type="radio" name="art" value="state" /><span>Rijksoverheid, provincie, waterschap of ander overheidsorgaan</span></label>
+          </div>
+
+          <div class="de-to-felt" id="field-business">
+            <div>
+              <label for="persons">Mensen in de organisatie</label>
+              <input id="persons" type="number" min="1" step="1" value="25" inputmode="numeric" />
+              <p class="smaa">Alle medewerkers. Vul 1 in als u alleen werkt.</p>
+            </div>
+            <div id="field-sector">
+              <label for="sector">Sector</label>
+              <select id="sector"></select>
+            </div>
+          </div>
+
+          <!-- Gemeenter: kurven for fire år i euro (price.js, MUNICIPAL). Taket på 49 000 € for fire år ligger under
+               linjen for enkelvoudig onderhandse gunning (50 000 €), se kommentaren øverst i price.js. -->
+          <div class="de-ett-felt" id="field-municipal" hidden>
+            <label for="inhabitants">Aantal inwoners</label>
+            <input id="inhabitants" type="text" inputmode="numeric" autocomplete="off" placeholder="bijv. 18.500" maxlength="12" />
+            <p class="smaa">Dezelfde prijs voor elke gemeente van dezelfde grootte, zonder onderhandeling.</p>
+          </div>
+
+          <div class="de-ett-felt" id="field-state" hidden>
+            <label for="employees">Medewerkers van de organisatie</label>
+            <input id="employees" type="number" min="1" step="1" inputmode="numeric" placeholder="bijv. 120" />
+            <p class="smaa">Ook voor ministeries, uitvoeringsorganisaties, zbo's, rechtbanken, provincies en waterschappen.</p>
+          </div>
+
+          <div class="de-prisboks" aria-live="polite">
+            <p class="bekreftet">Licentie voor de hele organisatie</p>
+            <p class="pristall" id="priceline"><b id="amount"></b> <span>per jaar</span></p>
+            <p class="de-hinweis" id="note" hidden></p>
+            <p class="smaa">Prijs exclusief btw. Op de factuur staat geen btw: de btw is verlegd naar u als afnemer.</p>
+          </div>
+
+          <form id="order" class="de-ordre" novalidate>
+            <div class="de-to-felt">
+              <div>
+                <label for="org">Naam van de organisatie</label>
+                <input id="org" type="text" maxlength="120" autocomplete="organization" required />
+                <p class="smaa">Staat op de factuur en in Klip en Klaar op elke computer die de licentie gebruikt.</p>
+              </div>
+              <div>
+                <label for="email">E-mailadres voor de factuur</label>
+                <input id="email" type="email" maxlength="200" autocomplete="email" required />
+                <p class="smaa">Hierheen gaan de factuur en later de licentiecode.</p>
+              </div>
+            </div>
+            <div class="de-to-felt">
+              <div>
+                <label for="address">Factuuradres</label>
+                <textarea id="address" rows="4" maxlength="600" autocomplete="street-address" required></textarea>
+              </div>
+              <div>
+                <label for="reference">Uw inkoopordernummer of kenmerk</label>
+                <input id="reference" type="text" maxlength="80" />
+                <p class="smaa">Niet verplicht. Staat op de factuur.</p>
+              </div>
+            </div>
+            <p class="de-skjult" aria-hidden="true"><label for="website">Laat dit veld leeg</label><input id="website" type="text" tabindex="-1" autocomplete="off" /></p>
+            <div class="knapper">
+              <button class="btn" type="submit" id="buy">Bestel op factuur</button>
+              <button class="btn de-ghost-lys" type="button" id="have">Ik heb al een licentiecode</button>
+            </div>
+            <p class="smaa de-feil" id="error" role="alert" hidden></p>
+            <p class="smaa" id="flow">De factuur komt meteen per e-mail. U betaalt binnen 30 dagen per overschrijving in euro. De licentiecode komt per e-mail zodra de betaling binnen is, en geldt vanaf die dag een jaar. Tot dan werkt Klip en Klaar 30 dagen volledig.</p>
+            <p class="smaa" id="haveText" hidden>Open Klip en Klaar en klik rechtsboven op “Licentie” (tijdens de proefperiode staat daar “Proefperiode: nog … dagen”). Plak de code die begint met KLIPENKLAAR- en klik op “Activeer”.</p>
+          </form>
+          <div id="thanks" class="de-takk" hidden tabindex="-1">
+            <h2>Hartelijk dank</h2>
+            <p id="thanksText"></p>
+            <p class="smaa">Vragen: <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a></p>
+          </div>
+
+          <!-- Bare for gemeenter: prislisten. Punktene er de samme som MUNICIPAL i price.js. -->
+          <section class="kommune-eur" id="municipal-table" aria-labelledby="ke-tittel" hidden>
+            <p class="merke">Voor gemeenten</p>
+            <h2 id="ke-tittel">Eén prijs naar aantal inwoners</h2>
+            <p class="ingress">
+              De licentie geldt voor de hele gemeentelijke organisatie. Vier jaar kosten hoogstens € 49.000 en blijven daarmee onder
+              de grens van € 50.000 voor enkelvoudig onderhandse gunning. U bestelt en betaalt telkens een jaar, een kwart van het
+              bedrag voor vier jaar.
+            </p>
+            <table class="ke-tabell">
+              <caption class="skjult-tekst">Prijzen voor gemeenten, vier jaar en per jaar, exclusief btw</caption>
+              <thead><tr><th scope="col">Inwoners</th><th scope="col">4 jaar</th><th scope="col">per jaar</th></tr></thead>
+              <tbody>
+                <tr><td>tot 1.000</td><td>€ 4.900</td><td>€ 1.225</td></tr>
+                <tr><td>5.000</td><td>€ 6.600</td><td>€ 1.650</td></tr>
+                <tr><td>20.000</td><td>€ 12.900</td><td>€ 3.225</td></tr>
+                <tr><td>50.000</td><td>€ 24.900</td><td>€ 6.225</td></tr>
+                <tr><td>vanaf 100.000</td><td>€ 49.000</td><td>€ 12.250</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <h3 class="vilkar-tittel">Voordat u koopt</h3>
+          <p class="de-avsnitt"><b>30 dagen het volledige Klip en Klaar.</b> Probeer Klip en Klaar 30 dagen met uw eigen bestanden voordat u beslist. Het is de volledige versie, en voor de proefperiode hoeft u zich nergens te registreren.</p>
+
+          <h3 class="vilkar-tittel">Inbegrepen in de prijs</h3>
+          <ul class="vilkar">
+            <li>Word, Excel, PowerPoint, pdf, e-mail, tekstbestanden, scans en foto's</li>
+            <li>Alles draait op uw eigen computers. Er wordt niets geüpload</li>
+            <li>Voor alle medewerkers en op zoveel computers als u wilt. Nu voor de Mac; Windows en Linux volgen</li>
+            <li>Updates tijdens het licentiejaar</li>
+          </ul>
+          <p class="de-avsnitt">Betalen kan alleen op factuur. <a class="lenke" href="/klip-en-klaar/voorwaarden/">Licentievoorwaarden</a></p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bunnen er alltid synlig. Selgeren etter ehandelsloven § 8. Esbjug Consult er ikke MVA-registrert (Brønnøysund 19.11.2026). -->
+    <footer class="pris-bunn" id="pris-bunn">
+      <div class="colofon">
+        <p class="wordmark"><a href="/klip-en-klaar/"><b>Klip en Klaar</b></a> <span>v0.1.0</span></p>
+        <p class="selger">
+          Verkocht door <b class="selger-navn">ESBJUG CONSULT</b> · Glenneveien 272B, 1455 Nordre Frogn, Noorwegen ·
+          <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a> · Org.nr. 938 441 405
+        </p>
+      </div>
+      <div class="footmeta">
+        <a href="/klip-en-klaar/voorwaarden/">Licentievoorwaarden</a>
+        <a href="/klip-en-klaar/privacy/">Privacy</a>
+      </div>
+    </footer>
+
+    <script type="module" src="bestelling.js"></script>
+  </body>
+</html>

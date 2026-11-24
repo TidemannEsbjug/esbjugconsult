@@ -1,0 +1,173 @@
+<!doctype html>
+<!--
+  Hei, du som leser kildekoden. Det var deg vi håpet på.
+
+  Wszystko Jasne lover at dokumentene aldri forlater maskinen. Et sånt løfte skal ikke
+  tas på ordet, så sjekk det:
+
+  - Programmet: /wszystko-jasne/dla-it.html har kommandoene som viser hva det snakker med.
+  - Denne siden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
+    uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
+  - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
+-->
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/wszystko-jasne/favicon.png" />
+    <title>Cennik i zamówienie · Wszystko Jasne</title>
+    <meta name="description" content="Ile kosztuje Wszystko Jasne dla Państwa organizacji: dla firm, samorządów i jednostek państwowych. Jedna licencja dla wszystkich, zamówienie na fakturę. Bezpłatnie dla osób prywatnych." />
+    <meta name="theme-color" content="#eef3fb" />
+    <!-- Ikke indekser før lanseringen. -->
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="../fonts.css" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="pris.css" />
+    <link rel="stylesheet" href="zamowienie.css" />
+  </head>
+  <body>
+    <main>
+      <section class="port" id="port">
+        <a class="pris-hjem" href="/wszystko-jasne/"><span aria-hidden="true">←</span> <i>Wszystko Jasne</i></a>
+        <div class="kort middels" id="kort">
+          <p class="pris-privat"><b>Bezpłatnie dla osób prywatnych.</b> <a href="/wszystko-jasne/">Pobierz Wszystko Jasne</a></p>
+          <p class="merke">Dla organizacji</p>
+          <h1>Wszystko Jasne dla Państwa organizacji</h1>
+          <p class="ingress">Jedna licencja obejmuje wszystkich w organizacji. Bez liczenia stanowisk i bez limitów stron.</p>
+
+          <!-- Tre slags kjøpere. Prisen kommer fra price.js, den samme filen serveren regner med. -->
+          <div class="de-valg" role="radiogroup" aria-label="Rodzaj organizacji">
+            <label><input type="radio" name="art" value="business" checked /><span>Firma, kancelaria, gabinet lub stowarzyszenie</span></label>
+            <label><input type="radio" name="art" value="municipal" /><span>Gmina, miasto, powiat lub województwo</span></label>
+            <label><input type="radio" name="art" value="state" /><span>Jednostka administracji państwowej</span></label>
+          </div>
+
+          <div class="de-to-felt" id="pole-firma">
+            <div>
+              <label for="osoby">Osoby w organizacji</label>
+              <input id="osoby" type="number" min="1" step="1" value="25" inputmode="numeric" />
+              <p class="smaa">Wszyscy pracownicy. Proszę wpisać 1, jeśli pracują Państwo sami.</p>
+            </div>
+            <div id="pole-branza">
+              <label for="branza">Branża</label>
+              <select id="branza"></select>
+            </div>
+          </div>
+
+          <div class="de-ett-felt" id="ke-skjema" hidden>
+            <label for="ke-innbyggere">Liczba mieszkańców</label>
+            <input id="ke-innbyggere" type="text" inputmode="numeric" autocomplete="off" placeholder="np. 18 500" maxlength="12" />
+            <p class="smaa">Ta sama cena dla każdego samorządu tej samej wielkości, bez negocjacji.</p>
+          </div>
+
+          <div class="de-ett-felt" id="pole-panstwo" hidden>
+            <label for="pracownicy">Pracownicy jednostki</label>
+            <input id="pracownicy" type="number" min="1" step="1" inputmode="numeric" placeholder="np. 120" />
+            <p class="smaa">Także dla sądów, inspekcji, urzędów wojewódzkich i uczelni publicznych.</p>
+          </div>
+
+          <div class="de-prisboks" aria-live="polite">
+            <p class="bekreftet">Licencja dla całej organizacji</p>
+            <p class="pristall" id="linia-ceny"><b id="kwota"></b> <span>za rok</span></p>
+            <div id="ke-boks" hidden><p class="ke-svar" id="ke-svar"></p></div>
+            <p class="de-hinweis" id="uwaga" hidden></p>
+            <p class="smaa">Cena netto. Faktura nie zawiera polskiego VAT; podatek rozlicza nabywca (odwrotne obciążenie, import usług).</p>
+          </div>
+
+          <form id="zamowienie" class="de-ordre" novalidate>
+            <div class="de-to-felt">
+              <div>
+                <label for="org">Nazwa organizacji</label>
+                <input id="org" type="text" maxlength="120" autocomplete="organization" required />
+                <p class="smaa">Pojawia się na fakturze i w Wszystko Jasne na każdym komputerze, który używa licencji.</p>
+              </div>
+              <div>
+                <label for="email">E-mail do faktury</label>
+                <input id="email" type="email" maxlength="200" autocomplete="email" required />
+                <p class="smaa">Tutaj trafi faktura, a później klucz licencyjny.</p>
+              </div>
+            </div>
+            <div class="de-to-felt">
+              <div>
+                <label for="adres">Adres do faktury</label>
+                <textarea id="adres" rows="4" maxlength="600" autocomplete="street-address" required></textarea>
+                <p class="smaa">Proszę podać także NIP.</p>
+              </div>
+              <div>
+                <label for="znak">Numer zamówienia lub znak sprawy</label>
+                <input id="znak" type="text" maxlength="80" />
+                <p class="smaa">Opcjonalnie. Pojawi się na fakturze.</p>
+              </div>
+            </div>
+            <p class="de-skjult" aria-hidden="true"><label for="website">Proszę zostawić to pole puste</label><input id="website" type="text" tabindex="-1" autocomplete="off" /></p>
+            <div class="knapper">
+              <button class="btn" type="submit" id="zamow">Zamów na fakturę</button>
+              <button class="btn de-ghost-lys" type="button" id="mam">Mam już klucz licencyjny</button>
+            </div>
+            <p class="smaa de-feil" id="blad" role="alert" hidden></p>
+            <p class="smaa" id="przebieg">Faktura przychodzi od razu e-mailem. Płatność przelewem w złotych w ciągu 30 dni. Klucz licencyjny przychodzi e-mailem, gdy tylko wpłynie płatność, i jest ważny przez rok od tego dnia. Do tego czasu Wszystko Jasne działa w pełnym zakresie przez 30 dni.</p>
+            <p class="smaa" id="mamTekst" hidden>Proszę otworzyć Wszystko Jasne i kliknąć „Licencja” w prawym górnym rogu (w okresie próbnym widnieje tam „Okres próbny: zostało … dni”). Proszę wkleić kod zaczynający się od WSZYSTKOJASNE- i kliknąć „Aktywuj”.</p>
+          </form>
+          <div id="dzieki" class="de-takk" hidden tabindex="-1">
+            <h2>Dziękujemy</h2>
+            <p id="dziekiTekst"></p>
+            <p class="smaa">Pytania: <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a></p>
+          </div>
+
+          <!-- Bare for samorządy: prislisten. Punktene er de samme som MUNICIPAL i price.js. -->
+          <section class="kommune-eur" id="kommune-eur" aria-labelledby="ke-tittel" hidden>
+            <p class="merke">Dla samorządów</p>
+            <h2 id="ke-tittel">Jedna cena według liczby mieszkańców</h2>
+            <p class="ingress">
+              Licencja obejmuje cały urząd i jego pracowników. Cztery lata kosztują najwyżej 149&nbsp;000&nbsp;zł netto, czyli zawsze poniżej progu
+              170&nbsp;000&nbsp;zł, od którego stosuje się Prawo zamówień publicznych. Zamawia się i fakturuje po jednym roku, czyli jedną czwartą kwoty za cztery lata.
+            </p>
+            <table class="ke-tabell">
+              <caption class="skjult-tekst">Ceny dla samorządów, za cztery lata i za rok, netto</caption>
+              <thead><tr><th scope="col">Mieszkańcy</th><th scope="col">4 lata</th><th scope="col">rocznie</th></tr></thead>
+              <tbody>
+                <tr><td>do 2&nbsp;000</td><td>4&nbsp;900&nbsp;zł</td><td>1&nbsp;225&nbsp;zł</td></tr>
+                <tr><td>5&nbsp;000</td><td>9&nbsp;900&nbsp;zł</td><td>2&nbsp;475&nbsp;zł</td></tr>
+                <tr><td>10&nbsp;000</td><td>14&nbsp;900&nbsp;zł</td><td>3&nbsp;725&nbsp;zł</td></tr>
+                <tr><td>20&nbsp;000</td><td>24&nbsp;900&nbsp;zł</td><td>6&nbsp;225&nbsp;zł</td></tr>
+                <tr><td>50&nbsp;000</td><td>49&nbsp;900&nbsp;zł</td><td>12&nbsp;475&nbsp;zł</td></tr>
+                <tr><td>100&nbsp;000</td><td>79&nbsp;000&nbsp;zł</td><td>19&nbsp;750&nbsp;zł</td></tr>
+                <tr><td>250&nbsp;000</td><td>129&nbsp;000&nbsp;zł</td><td>32&nbsp;250&nbsp;zł</td></tr>
+                <tr><td>od 400&nbsp;000</td><td>149&nbsp;000&nbsp;zł</td><td>37&nbsp;250&nbsp;zł</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <h3 class="vilkar-tittel">Przed zakupem</h3>
+          <p class="de-avsnitt"><b>30 dni z pełnym Wszystko Jasne.</b> Proszę przetestować Wszystko Jasne przez 30 dni na własnych plikach, zanim podejmą Państwo decyzję. To pełna wersja, a test nie wymaga rejestracji.</p>
+
+          <h3 class="vilkar-tittel">W cenie</h3>
+          <ul class="vilkar">
+            <li>Word, Excel, PowerPoint, PDF, e-mail, pliki tekstowe, skany i zdjęcia</li>
+            <li>Wszystko działa na Państwa własnych komputerach. Nic nie jest wysyłane</li>
+            <li>Dla wszystkich pracowników i na dowolnej liczbie komputerów. Dziś na Macu, wersje na Windows i Linux pojawią się wkrótce</li>
+            <li>Aktualizacje w roku licencyjnym</li>
+          </ul>
+          <p class="de-avsnitt">Płatność wyłącznie na fakturę. <a class="lenke" href="/wszystko-jasne/warunki/">Warunki licencji</a></p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Selgeren står alltid nederst. Esbjug Consult er ikke MVA-registrert. -->
+    <footer class="pris-bunn" id="pris-bunn">
+      <div class="colofon">
+        <p class="wordmark"><a href="/wszystko-jasne/"><b>Wszystko Jasne</b></a> <span>v0.1.0</span></p>
+        <p class="selger">
+          Sprzedawca: <b class="selger-navn">ESBJUG CONSULT</b> · Glenneveien 272B, 1455 Nordre Frogn, Norwegia ·
+          <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a> · nr org. 938 441 405
+        </p>
+      </div>
+      <div class="footmeta">
+        <a href="/wszystko-jasne/warunki/">Warunki licencji</a>
+        <a href="/wszystko-jasne/prywatnosc/">Prywatność</a>
+      </div>
+    </footer>
+
+    <script type="module" src="zamowienie.js"></script>
+  </body>
+</html>

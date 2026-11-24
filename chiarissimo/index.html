@@ -1,0 +1,1581 @@
+<!doctype html>
+<!--
+  Hei, du som leser kildekoden. Det var deg vi håpet på.
+
+  Klart lover at dokumentene aldri forlater maskinen. Et sånt løfte skal ikke
+  tas på ordet, så sjekk det:
+
+  - Programmet: /chiarissimo/per-it.html har kommandoene som viser hva det snakker med.
+  - Denne siden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
+    uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
+  - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
+    Vi vil heller høre det fra deg enn fra en kunde.
+-->
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/chiarissimo/favicon.png" />
+    <title>Chiarissimo - oscura i dati personali nei documenti, in locale sul Suo computer</title>
+    <meta
+      name="description"
+      content="Chiarissimo è un programma per Mac sviluppato in Norvegia: un'IA locale oscura i dati personali in un'intera cartella di file Word, Excel, PowerPoint, PDF ed e-mail. Per richieste di accesso, condivisione, archivio, formazione o strumenti di IA, senza Internet e senza account."
+    />
+    <!-- Himmelen øverst i heroen; forside.js bytter til sidens lyse farge når man har blat forbi. -->
+    <meta name="theme-color" content="#6593c3" />
+    <meta
+      property="og:title"
+      content="Chiarissimo - oscura i dati personali nei documenti, in locale sul Suo computer"
+    />
+    <meta
+      property="og:description"
+      content="Programma per Mac sviluppato in Norvegia. Un'IA locale legge Word, Excel, PowerPoint, PDF, e-mail e testo, trova i dati personali e crea una copia oscurata che Lei verifica. Nulla lascia il computer."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="it_IT" />
+    <meta property="og:url" content="https://esbjugconsult.com/chiarissimo/" />
+    <!-- Delingsbildet (Snapchat, iMessage, Facebook): krystallen på vinterbildet, 1200 × 630. Felles med Alles Klar. -->
+    <meta property="og:image" content="https://esbjugconsult.com/alles-klar/assets/klart-deling.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Chiarissimo: il cristallo d'argento su un paesaggio invernale con una pista da sci" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://esbjugconsult.com/alles-klar/assets/klart-deling.jpg" />
+    <link rel="apple-touch-icon" href="/chiarissimo/chiarissimo-ikon.png" />
+    <!-- Ikke indekser før nedlastingene er på plass. Fjern når Klart lanseres. -->
+    <meta name="robots" content="noindex" />
+    <!-- Fontene ligger på siden selv. Henter vi dem fra Google, får Google
+         IP-adressen til hver besøkende - ikke noe en GDPR-side skal gjøre. -->
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="forhandsvisning.css" />
+    <link rel="stylesheet" href="videre.css" />
+    <link rel="stylesheet" href="de.css" />
+  </head>
+  <body>
+    <!-- Filtype-ikoner: dokumentark bak, appflis foran. -->
+    <svg class="ikonark" width="0" height="0" aria-hidden="true">
+      <defs>
+        <g id="page">
+          <rect
+            x="16"
+            y="2"
+            width="26"
+            height="32"
+            rx="3.5"
+            fill="#fff"
+            stroke="#dcdfda"
+            stroke-width="1.3"
+          />
+          <g fill="#e4e7e2">
+            <rect x="26" y="9" width="12" height="2.4" rx="1.2" />
+            <rect x="26" y="15" width="12" height="2.4" rx="1.2" />
+          </g>
+        </g>
+
+        <symbol id="i-word" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#185abd" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">W</text>
+        </symbol>
+
+        <symbol id="i-excel" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#107c41" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">X</text>
+        </symbol>
+
+        <symbol id="i-ppt" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#c43e1c" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">P</text>
+        </symbol>
+
+        <symbol id="i-pdf" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#c8322b" />
+          <text x="17.5" y="31" text-anchor="middle" font-size="11">PDF</text>
+        </symbol>
+
+        <symbol id="i-mail" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#0f6cbd" />
+          <rect
+            x="8.5"
+            y="20"
+            width="18"
+            height="13.5"
+            rx="1.8"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2.1"
+          />
+          <path
+            d="M9.2 21.2l8.3 6.4 8.3-6.4"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2.1"
+          />
+        </symbol>
+
+        <symbol id="i-bilde" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#7a4fd6" />
+          <circle cx="23" cy="20" r="3" fill="#fff" />
+          <path d="M7.5 36l7.5-10 5.5 6.5 3.5-4 6.5 7.5z" fill="#fff" />
+        </symbol>
+
+        <symbol id="i-text" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#5b6569" />
+          <g fill="#fff">
+            <rect x="9" y="19.5" width="17" height="2.4" rx="1.2" />
+            <rect x="9" y="25.3" width="17" height="2.4" rx="1.2" />
+            <rect x="9" y="31.1" width="10" height="2.4" rx="1.2" />
+          </g>
+        </symbol>
+
+        <!-- Mac Studio for skreddersydd oppsett. Ligger her én
+             gang, så de to nedlastingsfeltene kan bruke den uten like id-er. -->
+        <linearGradient id="mac-front" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f3f5f8" />
+          <stop offset="0.55" stop-color="#e1e6ec" />
+          <stop offset="1" stop-color="#c4cbd4" />
+        </linearGradient>
+        <linearGradient id="mac-kant" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#6d7783" stop-opacity="0.28" />
+          <stop offset="0.08" stop-color="#6d7783" stop-opacity="0" />
+          <stop offset="0.92" stop-color="#6d7783" stop-opacity="0" />
+          <stop offset="1" stop-color="#6d7783" stop-opacity="0.32" />
+        </linearGradient>
+        <linearGradient id="mac-topp" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#e9edf2" />
+          <stop offset="1" stop-color="#fbfcfd" />
+        </linearGradient>
+        <radialGradient id="mac-skygge" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="#050d1f" stop-opacity="0.45" />
+          <stop offset="1" stop-color="#050d1f" stop-opacity="0" />
+        </radialGradient>
+        <symbol id="mac-studio" viewBox="60 80 440 240">
+          <ellipse cx="280" cy="292" rx="236" ry="26" fill="url(#mac-skygge)" />
+          <rect x="122" y="262" width="316" height="24" rx="9" fill="#8d96a1" />
+          <rect x="128" y="276" width="304" height="6" rx="3" fill="#6e7782" />
+          <path d="M96 150 L128 104 Q134 96 146 96 L414 96 Q426 96 432 104 L464 150 Z" fill="url(#mac-topp)" stroke="#d3d9e1" stroke-width="1.2" />
+          <path d="M96 150 H464 V252 Q464 270 446 270 H114 Q96 270 96 252 Z" fill="url(#mac-front)" />
+          <path d="M96 150 H464 V252 Q464 270 446 270 H114 Q96 270 96 252 Z" fill="url(#mac-kant)" />
+          <path d="M96 150.5 H464" stroke="#ffffff" stroke-width="1.6" />
+          <g fill="#2b3139">
+            <rect x="128" y="200" width="22" height="8" rx="4" />
+            <rect x="162" y="200" width="22" height="8" rx="4" />
+            <rect x="386" y="202" width="42" height="4" rx="2" />
+          </g>
+          <circle cx="114" cy="254" r="2.4" fill="#ffffff" />
+          <circle cx="114" cy="254" r="5" fill="#ffffff" opacity="0.25" />
+        </symbol>
+      </defs>
+    </svg>
+
+    <!-- ================= Toppbar ================= -->
+    <header class="topbar">
+      <a class="wordmark" href="#top">
+        <b>Chiarissimo</b>
+        <span>v0.1.0</span>
+      </a>
+      <nav class="topnav">
+        <a href="#hva">Che cos'è Chiarissimo</a>
+        <a href="#kjernen">Come funziona</a>
+        <a href="#nokkel">La chiave</a>
+        <a href="#trygt">Sicurezza</a>
+        <a href="#dybde">Nel dettaglio</a>
+        <a href="#ansvar">Responsabilità</a>
+        <a href="prezzi/">Prezzi</a>
+      </nav>
+      <a class="btn sm topp-last" href="#top">Scarica</a>
+      <!-- Mobil og nettbrett: e-post med lenken i stedet for «Last ned» (eieren 11.11.2026). -->
+      <a class="btn sm topp-send" href="mailto:?subject=Chiarissimo&amp;body=https%3A%2F%2Fesbjugconsult.com%2Fchiarissimo">Invia a me</a>
+    </header>
+
+    <main id="top">
+      <!-- ================= Hero ================= -->
+      <section class="hero" id="programmet">
+        <!-- Scenen: vinterbildet fra appen. Skisporet leder opp mot hytta,
+             teksten står i himmelen og knappene nede i snøen. -->
+        <div class="scene">
+          <img class="scene-bilde" src="/alles-klar/assets/hero-vinter.jpg" width="2400" height="1600" fetchpriority="high" alt="" aria-hidden="true" />
+          <!-- Øverst toner himmelen over i én farge, den samme som linjen øverst på telefonen (eieren 11.11.2026). -->
+          <div class="scene-himmel" aria-hidden="true"></div>
+          <!-- Snøen fra forsiden på esbjugconsult.com, bak «Klart» og kortet (forside.js). -->
+          <canvas class="scene-sno" aria-hidden="true"></canvas>
+          <!-- Fnuggene som faller over kortets glass, bak innholdet i kortet. -->
+          <canvas class="scene-sno-midt" aria-hidden="true"></canvas>
+          <!-- Snøen som legger seg på «Klart» og kortet, foran innholdet. -->
+          <canvas class="scene-sno-lag" aria-hidden="true"></canvas>
+          <!-- Lett snø på mobil og nettbrett, bak «Klart» og kortet (forside.js). -->
+          <canvas class="scene-sno-mobil" aria-hidden="true"></canvas>
+
+          <!-- All teksten samlet, nede i snøen. Himmelen, hytta og sporet står fritt over. -->
+          <div class="scene-tekst">
+            <h1 class="rise d-60 hero-logo">
+              <!-- Krystallen over ordet på mobil, som på nedtellingssiden (eieren 11.11.2026). -->
+              <img class="hero-ikon" src="chiarissimo-ikon.png" width="256" height="256" alt="" aria-hidden="true" />
+              <span class="logo-ord">Chiarissimo</span>
+            </h1>
+            <!-- Privatpersoner laster ned og bruker Klart gratis; de skal ikke gjennom noe felt.
+                 Virksomheter går gjennom knappen under: 30 dager, så lisens. -->
+            <div class="privat rise d-120">
+              <p class="privat-linje">
+                <span><b>Gratuito per i privati.</b></span>
+              </p>
+              <!-- Mobil og nettbrett: Klart kjører ikke der, så i stedet for nedlasting en e-post med lenken
+                   til seg selv eller andre (eieren 11.11.2026). Vises bare på berøringsskjermer (styles.css). -->
+              <div class="mobil-send">
+                <p class="mobil-send-tittel">Chiarissimo è un programma per computer.</p>
+                <p class="mobil-send-tekst">Si invii il link per e-mail e scarichi il programma sul Mac.</p>
+                <a class="btn" href="mailto:?subject=Chiarissimo&amp;body=https%3A%2F%2Fesbjugconsult.com%2Fchiarissimo">Invia a me</a>
+                <p class="mobil-send-andre">(O a qualcun altro?)</p>
+              </div>
+              <p class="last-ned-tittel">Scarica</p>
+              <!-- Den italienske utgaven har bare Mac-bygget ennå (24.11.2026). Windows og Linux nevnes som på vei, uten knapper. -->
+              <div class="get">
+                <a class="btn ghost os os-mac" href="/chiarissimo/download/mac" download aria-label="Scarica per Mac"><span class="os-glass" aria-hidden="true"></span><span class="os-navn">Mac</span></a>
+              </div>
+              <p class="privat-fin">Windows e Linux sono in arrivo. Nessuna registrazione, nessun vincolo.</p>
+              <p class="eller"><span>oppure</span></p>
+            </div>
+            <!-- Virksomheter: ingen registeroppslag. Knappen fører til prisen og bestillingen på faktura (prezzi/). -->
+            <div class="orgport de-pris rise d-180">
+              <div>
+                <div class="orgport-rad">
+                  <a class="btn" href="prezzi/">Vedere il prezzo per la Sua organizzazione</a>
+                </div>
+                <p class="virk-linje">
+                  <span>Per le organizzazioni: <b>30 giorni gratis</b>. Nessuna registrazione. Poi ordine con fattura.</span>
+                </p>
+              </div>
+            </div>
+            <!-- Nedlastingen: kortet blir et eget nedlastingskort når de har valgt system.
+                 Lyset rundt kanten følger hvor langt nedlastingen har kommet (forside.js). -->
+            <div class="nedlasting" data-nedlasting hidden aria-live="polite">
+              <div class="nedlasting-topp">
+                <span class="nedlasting-merke" data-merke aria-hidden="true"></span>
+                <div>
+                  <p class="nedlasting-tittel">Chiarissimo per <span data-os></span></p>
+                  <p class="nedlasting-fil" data-fil></p>
+                </div>
+              </div>
+              <p class="nedlasting-prosent"><span data-prosent>0</span><span class="nedlasting-pst">%</span></p>
+              <p class="nedlasting-status" data-status></p>
+              <div class="nedlasting-ferdig" data-ferdig hidden>
+                <span class="nedlasting-hake" aria-hidden="true"><svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="25" pathLength="1" /><path d="M17 29l8 8 15-17" pathLength="1" /></svg></span>
+                <p class="nedlasting-ferdig-tittel">Scaricato</p>
+                <p class="nedlasting-neste" data-neste></p>
+              </div>
+              <button type="button" class="nedlasting-tilbake" data-tilbake>Indietro</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vis først, forklar etterpå: programvinduet rett under bildet, så filtypene,
+             og til slutt hva Klart er (boksen «om»). -->
+
+        <!-- Programvindu: en kopi av Klart slik appen ser ut fra november 2026, bygget i HTML og CSS,
+             ikke film. forhandsvisning.js spiller av kapitlene. Stil: forhandsvisning.css.
+             Samme innhold som finestra.html. -->
+        <!-- Hva Klart er, rett over programvinduet (GDPR/index.html, eieren 19.-20.11.2026), på italiensk.
+             Den italienske utgaven har en italiensk språkmodell (distilbert-base-it-cased). -->
+        <section class="hva rise" aria-label="Chiarissimo è un programma locale">
+          <div class="hva-venstre">
+            <ul class="hva-sjekk">
+              <li>Modello di IA per testi italiani</li>
+              <li>Tutto avviene sul Suo computer</li>
+              <li>Fatto per computer normali</li>
+            </ul>
+          </div>
+          <!-- Logoen, og det viktigste under den. -->
+          <div class="hva-hoyre">
+            <p class="hva-logo"><img src="chiarissimo-ikon.png" width="256" height="256" alt="" aria-hidden="true" /><span>Chiarissimo</span></p>
+            <p class="hva-under">Programma locale · Senza Internet</p>
+          </div>
+        </section>
+        <figure class="kv rise avklart" data-scene="gjennom">
+          <div class="kv-ramme">
+          <div class="kv-app" aria-hidden="true">
+            <header class="kv-chrome">
+              <span class="kv-lys"><i></i><i></i><i></i></span>
+              <span class="kv-merke"><img src="chiarissimo-ikon.png" alt="" />Chiarissimo</span>
+              <span class="kv-sok"><svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.6" /><path d="M10.4 10.4L14 14" /></svg>Cerca in tutti i file della cartella<kbd>⌘F</kbd></span>
+              <span class="kv-hoyre">
+                <span class="kv-lagret">✓ Salvataggio automatico</span>
+                <span class="kv-lysknapp">Analisi</span>
+                <span class="kv-lysknapp" data-kv="hjem">Schermata iniziale</span>
+                <span class="kv-lysknapp kv-sporsmal">?</span>
+              </span>
+            </header>
+
+            <div class="kv-flate">
+              <!-- Startskjermen: de tre verktøyene, og det som ble tilbakeført under dem -->
+              <div class="kv-scene kv-s-start">
+                <div class="kv-start-inn">
+                  <div class="kv-kortene">
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-rens.png" alt="" />
+                      <h4>Oscura</h4>
+                      <span class="kv-hvit" data-kv="velg">Scegli una cartella o dei documenti…</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-tilbakefor.png" alt="" />
+                      <h4>Ripristina</h4>
+                      <span class="kv-hvit" data-kv="tbvelg">Scegli le copie…</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-tekst.png" alt="" />
+                      <h4>Strumento testo</h4>
+                      <span class="kv-hvit" data-kv="tekstvelg">Apri…</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Editoren: filene, dokumentet og registeret for mappen -->
+              <div class="kv-scene kv-s-editor">
+                <aside class="kv-filer">
+                  <div class="kv-filer-topp"><b>Pratiche clienti</b><span>10 file</span></div>
+                  <ul data-kv="filer">
+                    <li data-steder="30"><i class="kv-fikon w">W</i><span class="kv-fnavn">01-contratto-lavoro-acme.docx</span><span class="kv-fmeta">30 occorrenze</span><i class="kv-ring"></i></li>
+                    <li data-steder="41" data-uavklart="2" data-dok="vedtak" class="valgt"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">02-decreto-amministrazione-sostegno.pdf</span><span class="kv-fmeta">41 occorrenze</span><i class="kv-ring"></i></li>
+                    <li data-steder="45" data-ekstra="1 targa" data-dok="epost"><i class="kv-fikon epost">@</i><span class="kv-fnavn">03-scambio-email.eml</span><span class="kv-fmeta">45 occorrenze</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon tekst">T</i><span class="kv-fnavn">04-nota-personale.md</span><span class="kv-fmeta">21 occorrenze</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon w">W</i><span class="kv-fnavn">05-certificato-medico.docx</span><span class="kv-fmeta">21 occorrenze</span><i class="kv-ring"></i></li>
+                    <li data-steder="16"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">06-fattura-studio-aurora.pdf</span><span class="kv-fmeta">16 occorrenze</span><i class="kv-ring"></i></li>
+                    <li data-steder="82" data-dok="liste"><i class="kv-fikon x">X</i><span class="kv-fnavn">08-elenco-clienti.xlsx</span><span class="kv-fmeta">82 occorrenze</span><i class="kv-ring"></i></li>
+                    <li data-steder="43" data-ekstra="2 volti" data-dok="ppt"><i class="kv-fikon p">P</i><span class="kv-fnavn">09-riunione-avanzamento.pptx</span><span class="kv-fmeta">43 occorrenze · 2 volti</span><i class="kv-ring"></i></li>
+                    <li data-steder="18"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">11-allegato-scansionato.pdf</span><span class="kv-fmeta">18 occorrenze</span><i class="kv-ring"></i></li>
+                    <li data-steder="3" data-ekstra="1 volto"><i class="kv-fikon bilde">JPG</i><span class="kv-fnavn">16-badge-accesso.jpg</span><span class="kv-fmeta">3 occorrenze · 1 volto</span><i class="kv-ring"></i></li>
+                  </ul>
+                </aside>
+
+                <div class="kv-midt">
+                  <div class="kv-docket">
+                    <b data-kv="docnavn">02-decreto-amministrazione-sostegno.pdf</b><span class="kv-type" data-kv="doctype">PDF</span>
+                    <span class="kv-kopimerke" data-kv="kopimerke">La copia · elenco dei codici alla fine</span>
+                    <span class="kv-verktoy">
+                      <span class="kv-zoom">− &nbsp;86 %&nbsp; +</span>
+                      <span class="kv-hvit" data-kv="vis">Mostra la copia</span>
+                    </span>
+                  </div>
+                  <div class="kv-bord">
+                    <div class="kv-pille" data-kv="pille"><i></i>Lettura <b data-kv="leser">01-contratto-lavoro-acme.docx</b><span data-kv="nr">1 di 10</span></div>
+
+                    <!-- PDF: decreto di nomina dell'amministratore di sostegno -->
+                    <article class="kv-side vist" data-dok="vedtak">
+                      <i class="kv-lesehode"></i>
+                      <p class="kv-avsender">Tribunale di Milano · Volontaria giurisdizione</p>
+                      <h4>Decreto di nomina dell'amministratore di sostegno</h4>
+                      <p class="kv-ref">R.G. <mark class="s"><span class="o">4821/2026</span><span class="k">[Numero di pratica 4906498]</span></mark> · 14/03/2026</p>
+                      <h5>Beneficiaria</h5>
+                      <dl>
+                        <dt>Nome</dt><dd><mark class="s"><span class="o">Giulia Bianchi</span><span class="k">[Nome 6311794]</span></mark></dd>
+                        <dt>Codice fiscale</dt><dd><mark class="s"><span class="o">BNCGLI85M52F205X</span><span class="k">[Codice fiscale 2215087]</span></mark></dd>
+                        <dt>Indirizzo</dt><dd><mark class="s"><span class="o">Via Lodovico il Moro 27, 20143 Milano</span><span class="k">[Indirizzo 8950779]</span></mark></dd>
+                      </dl>
+                      <h5>Amministratore di sostegno</h5>
+                      <dl>
+                        <dt>Nome</dt><dd><mark class="s"><span class="o">Luca Ferrari</span><span class="k">[Nome 2656447]</span></mark>, <mark class="b" data-kv="arbeid"><span class="o">Studio Legale Aurora</span><span class="k">[Ente 5521093]</span></mark></dd>
+                        <dt>E-mail</dt><dd><mark class="s"><span class="o">luca.ferrari@studioaurora.test</span><span class="k">[E-mail 3278678]</span></mark></dd>
+                        <dt>Telefono</dt><dd><mark class="s"><span class="o">02 555 0134</span><span class="k">[Telefono 6289990]</span></mark></dd>
+                      </dl>
+                      <h5>Motivi</h5>
+                      <p><mark class="s" data-kv="merknad"><span class="o">La beneficiaria è ricoverata da gennaio per una depressione e ha bisogno di aiuto nella gestione delle sue finanze.</span><span class="k">[Dato personale 2760056]</span></mark> L'amministrazione comprende la gestione del saldo sul conto <mark class="s"><span class="o">IT60 X054 2811 1010 0000 0123 456</span><span class="k">[IBAN 7719741]</span></mark>.</p>
+                      <p>Il decreto è immediatamente esecutivo. Contro di esso è ammesso reclamo entro dieci giorni dalla comunicazione.</p>
+                    </article>
+
+                    <!-- E-post -->
+                    <article class="kv-side kv-epost" data-dok="epost">
+                      <i class="kv-lesehode"></i>
+                      <dl class="kv-hode">
+                        <dt>Da</dt><dd><mark class="s"><span class="o">Chiara Russo</span><span class="k">[Nome 7320430]</span></mark> &lt;<mark class="s"><span class="o">chiara.russo@studioaurora.test</span><span class="k">[E-mail 5102284]</span></mark>&gt;</dd>
+                        <dt>A</dt><dd><mark class="s"><span class="o">Giulia Bianchi</span><span class="k">[Nome 6311794]</span></mark></dd>
+                        <dt>Oggetto</dt><dd><b>Seguito al nostro colloquio</b></dd>
+                        <dt>Data</dt><dd>12 marzo 2026, 09:14</dd>
+                      </dl>
+                      <p>Gentile <mark class="s"><span class="o">Giulia</span><span class="k">[Nome 6311794]</span></mark>,</p>
+                      <p>grazie per il colloquio di ieri. Come d'accordo Le invio una copia del certificato medico. Mi trova per tutta la settimana al numero <mark class="s"><span class="o">02 555 0134</span><span class="k">[Telefono 6289990]</span></mark>.</p>
+                      <p>L'auto aziendale targata <mark class="s"><span class="o">AB 123 CD</span><span class="k">[Targa 3071552]</span></mark> è disponibile da lunedì. La foto è in allegato.</p>
+                      <p>Cordiali saluti<br /><mark class="s"><span class="o">Chiara Russo</span><span class="k">[Nome 7320430]</span></mark><br />Aurora Servizi S.r.l. · <mark class="s"><span class="o">Corso Buenos Aires 22, 20124 Milano</span><span class="k">[Indirizzo 6113936]</span></mark></p>
+                      <figure class="kv-vedlegg">
+                        <span class="kv-bilramme"><img src="/alles-klar/assets/visning/bil.jpg" alt="" /><span class="kv-skilt" data-kv="skilt"><img src="/alles-klar/assets/visning/bil-skilt.png" alt="" /><em data-kv="skiltlapp">Targa · viene oscurata</em></span></span>
+                        <figcaption>auto.jpg · 1,2 MB</figcaption>
+                      </figure>
+                    </article>
+
+                    <!-- Regneark -->
+                    <article class="kv-side kv-ark" data-dok="liste">
+                      <i class="kv-lesehode"></i>
+                      <table>
+                        <thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead>
+                        <tbody>
+                          <tr><th>1</th><td><b>Nome</b></td><td><b>Codice fiscale</b></td><td><b>Telefono</b></td><td><b>Conto</b></td></tr>
+                          <tr><th>2</th><td><mark class="s"><span class="o">Marco Esposito</span><span class="k">[Nome 1180342]</span></mark></td><td><mark class="s"><span class="o">SPSMRC78C12F839K</span><span class="k">[Codice fiscale 4402918]</span></mark></td><td><mark class="s"><span class="o">347 555 0142</span><span class="k">[Telefono 2290174]</span></mark></td><td><mark class="s"><span class="o">000012345678</span><span class="k">[Conto bancario 6630215]</span></mark></td></tr>
+                          <tr><th>3</th><td><mark class="s"><span class="o">Francesca Romano</span><span class="k">[Nome 5523107]</span></mark></td><td><mark class="s"><span class="o">RMNFNC90E45L219P</span><span class="k">[Codice fiscale 8817330]</span></mark></td><td><mark class="s"><span class="o">333 555 0178</span><span class="k">[Telefono 1047782]</span></mark></td><td><mark class="s"><span class="o">000098765432</span><span class="k">[Conto bancario 3359810]</span></mark></td></tr>
+                          <tr><th>4</th><td><mark class="s"><span class="o">Youssef El Amrani</span><span class="k">[Nome 9918066]</span></mark></td><td><mark class="s"><span class="o">LMRYSF88T03Z330D</span><span class="k">[Codice fiscale 2265419]</span></mark></td><td><mark class="s"><span class="o">320 555 0111</span><span class="k">[Telefono 7714203]</span></mark></td><td><mark class="s"><span class="o">000045678901</span><span class="k">[Conto bancario 9046631]</span></mark></td></tr>
+                          <tr><th>5</th><td><mark class="s"><span class="o">Elena Colombo</span><span class="k">[Nome 3301459]</span></mark></td><td><mark class="s"><span class="o">CLMLNE82S60A794W</span><span class="k">[Codice fiscale 6158820]</span></mark></td><td><mark class="s"><span class="o">339 555 0166</span><span class="k">[Telefono 4420987]</span></mark></td><td><mark class="s"><span class="o">000023456789</span><span class="k">[Conto bancario 1872264]</span></mark></td></tr>
+                          <tr><th>6</th><td><mark class="s"><span class="o">Paolo Ricci</span><span class="k">[Nome 8045126]</span></mark></td><td><mark class="s"><span class="o">RCCPLA75B17H501T</span><span class="k">[Codice fiscale 5590743]</span></mark></td><td><mark class="s"><span class="o">348 555 0127</span><span class="k">[Telefono 3368201]</span></mark></td><td><mark class="s"><span class="o">000067890123</span><span class="k">[Conto bancario 7701358]</span></mark></td></tr>
+                          <tr><th>7</th><td></td><td></td><td></td><td></td></tr>
+                          <tr><th>8</th><td></td><td></td><td></td><td></td></tr>
+                        </tbody>
+                      </table>
+                    </article>
+
+                    <!-- PowerPoint: lysbildet fra fellesturen, med to ansikter -->
+                    <article class="kv-side kv-ppt" data-dok="ppt">
+                      <i class="kv-lesehode"></i>
+                      <div class="kv-lysbilde">
+                        <p class="kv-lb-tittel">La gita aziendale di febbraio</p>
+                        <p class="kv-lb-under">Grazie a <mark class="s"><span class="o">Sara Greco</span><span class="k">[Nome 3390415]</span></mark> e <mark class="s"><span class="o">Davide Marino</span><span class="k">[Nome 8812706]</span></mark> per l'organizzazione!</p>
+                        <div class="kv-lb-foto">
+                          <img src="/alles-klar/assets/visning/fagtur.jpg" alt="" />
+                          <span class="kv-ansikt a1" data-kv="ansikt1"><img src="/alles-klar/assets/visning/fagtur-ansikt-1.jpg" alt="" /><em>Volto · viene pixelato</em></span>
+                          <span class="kv-ansikt a2" data-kv="ansikt2"><img src="/alles-klar/assets/visning/fagtur-ansikt-2.jpg" alt="" /><em>Volto · viene pixelato</em></span>
+                        </div>
+                        <p class="kv-lb-bunn">Riunione di avanzamento · Diapositiva 4 di 12</p>
+                      </div>
+                    </article>
+
+                    <div class="kv-gjennom" data-kv="gjennom">
+                      <i class="kv-gjennom-strek" data-kv="gstrek"></i>
+                      <p class="kv-gjennom-topp"><code data-kv="gkode">Dato personale 2760056</code><b>In sospeso</b><span data-kv="gnr">1 di 2</span></p>
+                      <p class="kv-gjennom-hvorfor" data-kv="ghvorfor">Chiarissimo non è sicuro che si tratti di «Dato personale». · 02-decreto-amministrazione-sostegno.pdf</p>
+                      <p class="kv-gjennom-knapper">
+                        <span class="kv-btn" data-kv="skjul">Oscura <kbd>↵</kbd></span>
+                        <span class="kv-btn hvit" data-kv="lastaa">Lascia <kbd>B</kbd></span>
+                        <span class="kv-btn hvit av">Indietro <kbd>←</kbd></span>
+                        <span class="kv-btn hvit">Avanti <kbd>→</kbd></span>
+                        <span class="kv-btn hvit">Fine <kbd>Esc</kbd></span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <aside class="kv-panel">
+                  <div class="kv-uavklart" data-kv="uavklart">
+                    <h5><svg viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" rx="2" /><path d="M6 2.5v11" /></svg>In sospeso</h5>
+                    <div class="kv-uboks">
+                      <p data-kv="u1"><code>Dato personale 2760056</code><span>La beneficiaria è ricoverata da gennaio …</span><em>1 in sospeso</em></p>
+                      <p data-kv="u2"><code>Ente 5521093</code><span>Studio Legale Aurora</span><em>1 in sospeso</em></p>
+                      <span class="kv-btn bred" data-kv="gaa">Verifica tutte le 2 <kbd>G</kbd></span>
+                    </div>
+                  </div>
+                  <div class="kv-imappen">
+                    <h5>Nella cartella <span><b data-kv="opplysninger">67</b> dati</span></h5>
+                    <ul data-kv="register">
+                      <li data-n="19" data-s="114"><span>Nomi</span><em>19 · 114 occorrenze</em></li>
+                      <li data-n="7" data-s="24"><span>Codici fiscali</span><em>7 · 24 occorrenze</em></li>
+                      <li data-n="12" data-s="43"><span>Telefono</span><em>12 · 43 occorrenze</em></li>
+                      <li data-n="15" data-s="53"><span>E-mail / PEC</span><em>15 · 53 occorrenze</em></li>
+                      <li data-n="7" data-s="29"><span>Indirizzi</span><em>7 · 29 occorrenze</em></li>
+                      <li data-n="6" data-s="13"><span>IBAN e conti</span><em>6 · 13 occorrenze</em></li>
+                      <li data-n="1" data-s="2"><span>Targhe</span><em>1 · 2 occorrenze</em></li>
+                      <li data-n="3" data-s="12"><span>Categorie particolari</span><em>3 · 12 occorrenze</em></li>
+                      <li data-n="3" data-s="3" data-kv="ansikter"><span>Volti</span><em>3 · 3 occorrenze</em></li>
+                    </ul>
+                  </div>
+                  <div class="kv-bunn">
+                    <p><b data-kv="skjules">292</b> da oscurare <b data-kv="faarstaa">1</b> lasciati visibili</p>
+                    <p class="kv-bunn-knapper">
+                      <span class="kv-btn hvit oransje" data-kv="ubtn"><i></i>In sospeso 2</span>
+                      <span class="kv-btn stor" data-kv="lag">Crea 10 copie</span>
+                    </p>
+                  </div>
+                </aside>
+              </div>
+
+              <!-- Tekstverktøy: et ark å skrive eller lime inn på -->
+              <div class="kv-scene kv-s-tekst">
+                <div class="kv-rt-linje">
+                  <span class="kv-rt-tilbake">‹ Schermata iniziale</span>
+                  <span class="kv-faner"><span class="på" data-kv="fanerens"><i>1</i>Oscura il testo</span><span data-kv="fanetb"><i>2</i>Ripristina il testo</span></span>
+                  <span class="kv-faner kv-rt-visning"><span class="på" data-kv="rtorig">Originale</span><span data-kv="rtrenset">Oscurato</span></span>
+                  <span class="kv-btn" data-kv="rtkopier">Copia</span>
+                </div>
+                <div class="kv-rt-kropp">
+                  <div class="kv-rt-ark" data-kv="rtark"><p data-kv="rttekst"></p><i class="kv-markor"></i><p class="kv-rt-svar" data-kv="rtsvar"></p></div>
+                  <aside class="kv-rt-liste">
+                    <h5 data-kv="rtlistetittel">Oscurato</h5>
+                    <ul data-kv="rtliste"></ul>
+                    <p class="kv-rt-merke">Letto su questo computer. Nulla viene inviato.</p>
+                  </aside>
+                </div>
+                <p class="kv-toast" data-kv="toast">Copiato</p>
+              </div>
+
+              <!-- Skrivebordet: Finder med høyreklikk › Hurtighandlinger › Oscura con Chiarissimo -->
+              <div class="kv-scene kv-s-finder kv-skrivebord">
+                <div class="kv-finder">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><span class="kv-pil">‹ ›</span><b>Documenti</b></div>
+                  <div class="kv-finder-kropp">
+                    <ul class="kv-sidefelt">
+                      <li class="kv-sf-h">Preferiti</li>
+                      <li>Scrivania</li>
+                      <li class="på">Documenti</li>
+                      <li>Download</li>
+                      <li class="kv-sf-h">Posizioni</li>
+                      <li>iCloud Drive</li>
+                    </ul>
+                    <div class="kv-ikoner">
+                      <span class="kv-mappe" data-kv="fmappe"><i></i>Pratiche clienti</span>
+                      <span class="kv-mappe"><i></i>Accesso agli atti marzo</span>
+                      <span class="kv-mappe"><i></i>Contabilità 2025</span>
+                      <span class="kv-dokikon"><i>PDF</i>contratto-acme.pdf</span>
+                      <span class="kv-dokikon w"><i>W</i>Verbale 10.11.docx</span>
+                      <span class="kv-mappe ny" data-kv="fny"><i></i>Pratiche clienti-chiaro</span>
+                    </div>
+                  </div>
+                  <ul class="kv-meny" data-kv="meny">
+                    <li>Apri</li>
+                    <li>Apri in un nuovo pannello</li>
+                    <li class="kv-skille"></li>
+                    <li>Sposta nel Cestino</li>
+                    <li class="kv-skille"></li>
+                    <li>Ottieni informazioni</li>
+                    <li>Rinomina</li>
+                    <li>Comprimi «Pratiche clienti»</li>
+                    <li>Duplica</li>
+                    <li class="kv-skille"></li>
+                    <li>Copia</li>
+                    <li>Condividi…</li>
+                    <li class="kv-skille"></li>
+                    <li class="kv-under" data-kv="hurtig">Azioni rapide<span>›</span></li>
+                    <li class="kv-under">Servizi<span>›</span></li>
+                  </ul>
+                  <ul class="kv-meny kv-undermeny" data-kv="undermeny">
+                    <li data-kv="rensmed">Oscura con Chiarissimo</li>
+                    <li>Ripristina con Chiarissimo</li>
+                    <li class="kv-skille"></li>
+                    <li>Personalizza…</li>
+                  </ul>
+                </div>
+                <div class="kv-varsel" data-kv="varsel">
+                  <img src="chiarissimo-ikon.png" alt="" />
+                  <p><b data-kv="vtittel">Oscuramento di «Pratiche clienti»…</b><span data-kv="vtekst">Le copie vengono salvate accanto agli originali. Riceverà una notifica quando saranno pronte.</span></p>
+                  <small>ora</small>
+                </div>
+              </div>
+
+              <!-- Skrivebordet: et KI-verktøy som bare får kodene -->
+              <div class="kv-scene kv-s-ki kv-skrivebord">
+                <div class="kv-ki">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><b>Assistente IA</b></div>
+                  <div class="kv-ki-samtale">
+                    <div class="kv-ki-bruker" data-kv="kibruker">
+                      <p>Scrivi una breve risposta a questo messaggio:</p>
+                      <p class="kv-ki-sitat">Buongiorno! Può chiamare oggi <code>[Nome 6311794]</code> al numero <code>[Telefono 6289990]</code>? Si è trasferita in <code>[Indirizzo 8950779]</code> e da ora lo stipendio va accreditato sul conto <code>[IBAN 7719741]</code>.</p>
+                    </div>
+                    <div class="kv-ki-svar" data-kv="kisvar"><p data-kv="kisvartekst"></p><span class="kv-ki-kopier" data-kv="kikopier">Copia la risposta</span></div>
+                  </div>
+                  <div class="kv-ki-felt" data-kv="kifelt"><span>Scrivi un messaggio…</span><i>↑</i></div>
+                </div>
+                <p class="kv-ki-merke">L'IA riceve solo i codici. Nome, telefono, indirizzo e conto restano sul computer.</p>
+              </div>
+
+              <!-- «Før skanningen»: over startskjermen, når mappen er valgt -->
+              <div class="kv-slor kv-s-forvalg">
+                <div class="kv-modal">
+                  <h4>Pratiche clienti</h4>
+                  <p class="kv-modal-under">10 file · docx, eml, jpg, md, pdf, pptx, xlsx</p>
+                  <div class="kv-maate">
+                    <p class="på"><i></i><span><b>Con analisi</b>Chiarissimo legge i file e contrassegna ciò che trova. Lei verifica tutto e decide.</span></p>
+                    <p><i></i><span><b>Senza analisi</b>Nulla viene contrassegnato in anticipo. Lei fa clic su ciò che va oscurato.</span></p>
+                  </div>
+                  <p class="kv-sammen"><span><small>L'analisi cerca e oscura</small>Nomi, codice fiscale, telefono ed e-mail, categorie particolari, targhe, conti, volti e altri 5</span><em>Modifica</em></p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Annulla</span>
+                    <span class="kv-btn stor" data-kv="skann">Analizza <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- «Før kopiene lages»: formen kopiene får -->
+              <div class="kv-slor kv-s-kopivalg">
+                <div class="kv-modal kv-kopivalg">
+                  <h4>Prima di creare le copie</h4>
+                  <p class="kv-modal-under">10 file · le copie vanno in Pratiche clienti-chiaro</p>
+                  <div class="kv-maate kv-former" data-kv="former">
+                    <p class="på" data-form="kort"><i></i><span><b>Codice breve ed elenco dei codici</b>Facile da leggere. Si può ripristinare con la chiave del Suo ufficio.<code>[Nome 4814887] + elenco</code></span></p>
+                    <p data-form="full"><i></i><span><b>Codice completo nel testo</b>Senza elenco. Si può ripristinare, ma è difficile da leggere.</span></p>
+                    <p data-form="lapp"><i></i><span><b>Solo etichette</b>Facile da leggere, ma l'originale non si può ripristinare.</span></p>
+                    <p data-form="svart"><i></i><span><b>Riquadri neri (PDF)</b>Ciò che c'era sotto scompare per sempre.<code class="kv-svartprove"></code></span></p>
+                  </div>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Annulla</span>
+                    <span class="kv-btn stor" data-kv="lagnaa">Crea 10 copie <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Kopiene er laget -->
+              <div class="kv-slor kv-s-ferdig">
+                <div class="kv-ferdig">
+                  <p class="kv-stor">Fatto.</p>
+                  <p>10 copie sono state create. Gli originali non sono stati toccati. Legga le copie prima di condividerle.</p>
+                  <p class="kv-sti"><span>Documenti/</span>Pratiche clienti-chiaro/</p>
+                  <p class="kv-liten">L'elenco dei codici è alla fine di ogni copia.</p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit">Torna alla cartella</span>
+                    <span class="kv-btn">Apri le copie</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+          <span class="kv-peker" aria-hidden="true"></span>
+          <!-- Kapitlene: hopper i avspillingen. Det som spilles nå, er markert. -->
+          <ol class="kv-kapitler" data-kv="kapitler" aria-label="Capitoli dell'anteprima">
+            <li><button type="button" data-kapittel="0">Oscurare una cartella</button></li>
+            <li><button type="button" data-kapittel="1">Verificare</button></li>
+            <li><button type="button" data-kapittel="2">Le copie</button></li>
+            <li><button type="button" data-kapittel="3">Clic destro nel Finder</button></li>
+            <li><button type="button" data-kapittel="4">Oscurare e ripristinare un testo</button></li>
+          </ol>
+          <!-- Lesingen spilles av mye raskere enn den går på en vanlig maskin. Det skal stå. -->
+          <p class="kv-spol" aria-hidden="true">
+            <svg viewBox="0 0 20 12"><path d="M1 1l8 5-8 5zM10 1l8 5-8 5z" /></svg>
+            <span>Accelerato. Il tempo di lettura varia da computer a computer. Su un normale portatile è più lento.</span>
+          </p>
+          <figcaption class="skjult-tekst">
+            Così funziona Chiarissimo. Lei sceglie una cartella e Chiarissimo legge i file, anche PDF, e-mail,
+            fogli di calcolo, PowerPoint e immagini, e contrassegna nomi, codici fiscali, dati di contatto,
+            indirizzi, IBAN e numeri di conto, dati particolari, targhe e volti, che vengono pixelati.
+            Ciò su cui Chiarissimo non è sicuro lo verifica Lei e decide: oscurare o lasciare visibile.
+            Le copie possono avere codici brevi con elenco dei codici, codici completi, solo etichette o
+            riquadri neri, e gli originali non vengono toccati. Nel Finder una cartella si oscura con clic
+            destro › Azioni rapide › Oscura con Chiarissimo. Un testo con i codici può essere dato a uno
+            strumento di IA, e la risposta viene ripristinata in Chiarissimo, così i nomi tornano senza che
+            l'IA li abbia visti. La lettura è accelerata: il tempo che richiede varia da computer a computer.
+          </figcaption>
+        </figure>
+
+        <!-- Filtypene under programvinduet, over boksen. -->
+        <div class="formats rise">
+          <p>Legge i file con cui lavora già</p>
+          <ul>
+            <li>
+              <svg class="ficon"><use href="#i-word" /></svg>
+              <span class="fname">Word</span>
+              <span class="fext">.docx</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-excel" /></svg>
+              <span class="fname">Excel</span>
+              <span class="fext">.xlsx · .xls · .csv</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-ppt" /></svg>
+              <span class="fname">PowerPoint</span>
+              <span class="fext">.pptx</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-pdf" /></svg>
+              <span class="fname">PDF</span>
+              <span class="fext">.pdf</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-mail" /></svg>
+              <span class="fname">E-mail</span>
+              <span class="fext">.eml</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-bilde" /></svg>
+              <span class="fname">Immagini</span>
+              <span class="fext">.jpg · .png · .tiff</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-text" /></svg>
+              <span class="fname">Testo</span>
+              <span class="fext">.txt · .md</span>
+            </li>
+          </ul>
+          <!-- Eierens tekst (GDPR/index.html, 20.11.2026), på italiensk. -->
+          <p class="formats-unik"><b>Una particolarità:</b> Chiarissimo copia i file nel formato in cui si trovano, così può continuare a lavorare con i documenti oscurati.</p>
+        </div>
+
+      </section>
+
+      <!-- =====================================================================
+           Resten av siden (videre.css og videre.js). Skrevet 11.11.2026 for
+           Klart slik programmet er nå: koder med faste numre, nøkkelen,
+           tilbakeføring, gjennomgangen, kopikontrollen og de fire kopiformene.
+           Ordene er appens egne (Chiarissimo, src/ui og src/ny i Klart-it).
+           ===================================================================== -->
+      <div class="videre">
+        <!-- ============ Hva Klart gir deg ============ -->
+        <section class="v-del v-hva" id="hva">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Condividere la pratica. Tenere per sé i nomi.</h2>
+            <p class="v-ingress">
+              Mandi documenti a una consulente, risponda a una richiesta di accesso o chieda aiuto a uno strumento di IA,
+              senza che i nomi escano. Oscurare è molto più rapido che a mano, pagina per pagina.
+            </p>
+          </div>
+          <ul class="v-tre-ord rise">
+            <li><b>Usare l'IA su pratiche vere.</b> Lo strumento vede codici al posto delle persone.</li>
+            <li><b>Dire sì alla condivisione.</b> Con il commercialista, l'avvocata o un altro ente, in giornata.</li>
+            <li><b>Riavere i nomi quando vuole.</b> La chiave ce l'ha solo Lei.</li>
+          </ul>
+          <p class="v-hva-er rise">Chiarissimo è un programma sul Suo computer. I documenti non lo lasciano mai.</p>
+        </section>
+
+        <!-- ============ 1. Kjernen: navn blir koder ============ -->
+        <section class="v-del v-kjerne" id="kjernen">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">I nomi diventano codici.</h2>
+            <p class="v-ingress">
+              Chiarissimo crea una copia dei Suoi documenti. Nella copia c'è un codice dove prima c'erano un nome,
+              un codice fiscale o un'altra informazione su una persona.
+            </p>
+          </div>
+
+          <!-- To ark fra samme mappe. Bryteren viser originalen eller kopien; den går av seg
+               selv til noen tar i den (videre.js). Uten JS står arkene som kopi. -->
+          <figure class="v-ark-scene rise" data-v-bytt data-vis="kopi">
+            <div class="v-bryter" role="group" aria-label="Mostra l'originale o la copia">
+              <button type="button" data-v-vis="original" aria-pressed="false">Originale</button>
+              <button type="button" data-v-vis="kopi" aria-pressed="true">Copia</button>
+            </div>
+            <div class="v-ark-par" aria-hidden="true">
+              <article class="v-ark v-ark-a">
+                <header class="v-ark-topp">
+                  <svg class="v-ark-ikon"><use href="#i-pdf" /></svg>
+                  <span>decreto-amministrazione-sostegno.pdf</span>
+                </header>
+                <p class="v-ark-h">Decreto di nomina dell'amministratore di sostegno</p>
+                <dl class="v-ark-rader">
+                  <div>
+                    <dt>Beneficiaria</dt>
+                    <dd><span class="v-bytt v-samme"><span class="v-o"><i>Anna Ferri</i></span><span class="v-k"><i>[Nome 4829133]</i></span></span></dd>
+                  </div>
+                  <div>
+                    <dt>Codice fiscale</dt>
+                    <dd><span class="v-bytt"><span class="v-o"><i>FRRNNA79L51H501R</i></span><span class="v-k"><i>[Codice fiscale 2204716]</i></span></span></dd>
+                  </div>
+                  <div>
+                    <dt>Indirizzo</dt>
+                    <dd><span class="v-bytt"><span class="v-o"><i>Via dei Mille 14, Torino</i></span><span class="v-k"><i>[Indirizzo 3310482]</i></span></span></dd>
+                  </div>
+                  <div>
+                    <dt>Amministratore</dt>
+                    <dd><span class="v-bytt"><span class="v-o"><i>Paolo Conti</i></span><span class="v-k"><i>[Nome 6071542]</i></span></span></dd>
+                  </div>
+                </dl>
+                <p class="v-ark-p">
+                  L'amministratore assiste la beneficiaria negli atti di natura economica.
+                  <span class="v-bytt"><span class="v-o"><i>Anna è in malattia fino al 30 aprile.</i></span><span class="v-k"><i>[Dato personale 2760056]</i></span></span>
+                </p>
+              </article>
+              <article class="v-ark v-ark-b">
+                <header class="v-ark-topp">
+                  <svg class="v-ark-ikon"><use href="#i-mail" /></svg>
+                  <span>risposta-della-banca.eml</span>
+                </header>
+                <p class="v-ark-h">R: Operatività sul conto</p>
+                <p class="v-ark-p">
+                  Buongiorno, facciamo seguito al colloquio con
+                  <span class="v-bytt v-samme"><span class="v-o"><i>Anna Ferri</i>.</span><span class="v-k"><i>[Nome 4829133]</i>.</span></span>
+                </p>
+                <p class="v-ark-p">
+                  Il conto è ora impostato come richiesto dall'amministratore. Può contattarci al numero
+                  <span class="v-bytt"><span class="v-o"><i>011 555 0192</i>.</span><span class="v-k"><i>[Telefono 7745190]</i>.</span></span>
+                </p>
+                <p class="v-ark-p v-ark-hilsen">
+                  Cordiali saluti<br />
+                  <span class="v-bytt"><span class="v-o"><i>Elisa Moretti</i></span><span class="v-k"><i>[Nome 5530871]</i></span></span><br />
+                  Consulente clienti
+                </p>
+              </article>
+            </div>
+            <figcaption class="v-samme-linje">
+              <span class="v-kode">[Nome 4829133]</span>
+              <span>La stessa persona riceve sempre lo stesso codice, in tutti i documenti.</span>
+            </figcaption>
+          </figure>
+
+          <ul class="v-tre-ord rise">
+            <li><b>La copia ha l'aspetto dell'originale.</b> Impaginazione, tabelle e loghi restano.</li>
+            <li><b>Chi la legge capisce la pratica.</b> Solo non sa di chi si tratta.</li>
+            <li><b>Gli originali non vengono toccati.</b> Chiarissimo crea file nuovi accanto.</li>
+          </ul>
+        </section>
+
+        <!-- ============ 2. De tre tingene på startskjermen ============ -->
+        <section class="v-del v-verktoy" id="verktoy">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Tre cose che può fare.</h2>
+          </div>
+          <div class="v-kort-rad">
+            <article class="v-kort rise">
+              <img src="/alles-klar/assets/krom/rens.webp" width="512" height="512" alt="" loading="lazy" decoding="async" />
+              <h3>Oscura</h3>
+              <p>Scelga una cartella o singoli documenti. Riceve copie con codici al posto dei dati personali.</p>
+            </article>
+            <article class="v-kort rise d-60">
+              <img src="/alles-klar/assets/krom/tilbakefor.webp" width="512" height="512" alt="" loading="lazy" decoding="async" />
+              <h3>Ripristina</h3>
+              <p>Trasformi di nuovo i codici in nomi, quando Le servono.</p>
+            </article>
+            <article class="v-kort rise d-120">
+              <img src="/alles-klar/assets/krom/tekst.webp" width="512" height="512" alt="" loading="lazy" decoding="async" />
+              <h3>Strumento testo</h3>
+              <p>Scriva o incolli un testo. Viene oscurato sotto i Suoi occhi.</p>
+            </article>
+          </div>
+
+          <!-- Rens, steg for steg. Streken mellom stegene er et skispor. -->
+          <ol class="v-steg rise">
+            <li><b>Sceglie una cartella</b><span>Oppure la trascina nella finestra.</span></li>
+            <li><b>Chiarissimo legge</b><span>Lei intanto può continuare a lavorare.</span></li>
+            <li><b>Lei verifica</b><span>Oscurare o lasciare visibile.</span></li>
+            <li><b>Chiarissimo controlla</b><span>Ogni copia viene riletta.</span></li>
+            <li><b>Le copie sono pronte</b><span>In una cartella a parte, accanto.</span></li>
+          </ol>
+        </section>
+
+        <!-- ============ 3. Nøkkelen ============ -->
+        <section class="v-del v-nokkel" id="nokkel">
+          <div class="v-nokkel-inn">
+            <img class="v-nokkel-bilde rise" src="/alles-klar/assets/krom/nokkel-blaa.webp" width="800" height="386" alt="" loading="lazy" decoding="async" />
+            <div class="v-hode rise">
+              <h2 class="v-tittel">Solo la chiave trasforma di nuovo i codici in nomi.</h2>
+              <p class="v-ingress">
+                La chiave nasce sul Suo computer la prima volta che apre Chiarissimo, e appartiene solo a Lei.
+                Senza la chiave un codice resta un codice.
+              </p>
+              <!-- Viktig (eieren 11.11.2026): ingen skal tro at alle med Klart kan gjøre om kodene. -->
+              <p class="v-nokkel-bare">
+                <b>Altre persone con Chiarissimo non possono ritrasformare i Suoi codici.</b>
+                Hanno la propria chiave, e con quella i Suoi codici restano semplici codici.
+              </p>
+            </div>
+
+            <!-- Hvorfor det er nyttig at kodene kan gjøres om: runden ut og hjem igjen. -->
+            <ol class="v-runde rise">
+              <li>
+                <span class="v-runde-nr">1</span>
+                <b>Oscura</b>
+                <span class="v-linje">Beneficiaria: <i class="v-kode lys">[Nome 4829133]</i></span>
+              </li>
+              <li>
+                <span class="v-runde-nr">2</span>
+                <b>Condivida la copia</b>
+                <span class="v-runde-tekst">Con una consulente, un altro ente o uno strumento di IA.</span>
+              </li>
+              <li>
+                <span class="v-runde-nr">3</span>
+                <b>Ripristini la risposta</b>
+                <span class="v-linje">Beneficiaria: <i class="v-navn">Anna Ferri</i></span>
+              </li>
+            </ol>
+
+            <div class="v-nokkel-par rise">
+              <img src="/alles-klar/assets/krom/skrin-blaa.webp" width="640" height="630" alt="" loading="lazy" decoding="async" />
+              <div>
+                <article>
+                  <h3>Conservi la chiave al sicuro</h3>
+                  <p>24 parole su carta o un file della chiave. Così i codici si possono sempre ritrasformare in nomi.</p>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ Én nøkkel for hele virksomheten ============ -->
+        <section class="v-del v-kontor" id="virksomhet">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Lo stesso codice per tutti i colleghi.</h2>
+            <p class="v-ingress">
+              Con una chiave per tutta l'organizzazione, Anna Ferri ha lo stesso codice su tutti i
+              computer. Una collega può ripristinare una copia creata da Lei.
+            </p>
+          </div>
+          <div class="v-nett rise" aria-hidden="true">
+            <img src="/alles-klar/assets/krom/nokkel.webp" width="800" height="386" alt="" loading="lazy" decoding="async" />
+            <div class="v-nett-rad">
+              <p><span>Pratiche</span><i class="v-kode">[Nome 4829133]</i></p>
+              <p><span>Personale</span><i class="v-kode">[Nome 4829133]</i></p>
+              <p><span>Archivio</span><i class="v-kode">[Nome 4829133]</i></p>
+            </div>
+          </div>
+          <ul class="v-tre-ord rise">
+            <li><b>Una persona ne è responsabile.</b> Crea la chiave e la passa ai colleghi.</li>
+            <li><b>La chiave viaggia in due parti.</b> Un file della chiave e un codice, inviati separatamente.</li>
+            <li><b>L'IT può fissare regole comuni.</b> Per esempio, che cosa viene sempre oscurato.</li>
+          </ul>
+          <!-- Samarbeid på tvers: nøkler fra andre legges inn ved siden av ens egen. -->
+          <div class="v-andres rise">
+            <img src="/alles-klar/assets/krom/nokkel-blaa.webp" width="800" height="386" alt="" loading="lazy" decoding="async" />
+            <div>
+              <h3>Può aggiungere anche le chiavi di altri</h3>
+              <p>
+                Se lavora con un'altra organizzazione, questa può condividere con Lei la propria chiave.
+                Così Lei ripristina le sue copie, e lei le Sue, se Lei condivide la Sua.
+                La Sua chiave resta invariata, e decide Lei chi la riceve.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ Dette ser Klart etter ============ -->
+        <!-- Gruppene og standardvalgene er appens (src/engine/valg.ts, VALG_GRUPPER_IT): ni grupper på, pluss ansiktene. -->
+        <section class="v-del v-ser" id="ser-etter">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Ecco che cosa cerca Chiarissimo.</h2>
+            <p class="v-ingress">Dieci tipi di dati sono attivi fin dall'inizio. Che cosa includere lo sceglie Lei.</p>
+          </div>
+          <ul class="v-ser-liste rise">
+            <li><b>Nomi</b><span>Nomi di persone</span></li>
+            <li><b>Codici e documenti</b><span>Codice fiscale, carta d'identità, passaporto, tessera sanitaria e altri numeri</span></li>
+            <li><b>Telefono ed e-mail</b><span>Anche la PEC di una persona</span></li>
+            <li><b>Indirizzo e luogo</b><span>Via, CAP, comune</span></li>
+            <li><b>Categorie particolari</b><span>Salute, sindacato, religione e condanne penali</span></li>
+            <li><b>Frasi private</b><span>Frasi intere e note su una persona</span></li>
+            <li><b>Conti</b><span>Numeri di conto, carte e IBAN</span></li>
+            <li><b>Segreti</b><span>Password e chiavi</span></li>
+            <li><b>Targhe</b><span>Nei testi e nelle immagini</span></li>
+            <li class="v-ser-ansikt">
+              <b>Volti</b><span>Vengono pixelati in immagini e pagine scansionate</span>
+            </li>
+          </ul>
+          <p class="v-ser-fot rise">
+            Date, professione e parentela, età, datore di lavoro e numeri di pratica li aggiunge Lei quando servono.
+            <a class="v-lenke" href="cosa-trova.html">Veda che cosa Chiarissimo trova e che cosa no</a>
+          </p>
+        </section>
+
+        <!-- ============ 4. Du bestemmer ============ -->
+        <section class="v-del v-avgjor" id="du-bestemmer">
+          <div class="v-to">
+            <div class="v-hode rise">
+              <h2 class="v-tittel">Decide Lei che cosa oscurare.</h2>
+              <p class="v-ingress">
+                Chiarissimo contrassegna ciò che trova. Se non è sicuro, lo chiede a Lei.
+              </p>
+              <ul class="v-punkter">
+                <li>Un clic su una parola la oscura in tutta la cartella.</li>
+                <li>Chiarissimo ricorda ciò che Lei contrassegna. La cartella successiva viene letta con le Sue parole.</li>
+                <li>I dati della Sua organizzazione restano visibili.</li>
+                <li>Tutto si può annullare.</li>
+              </ul>
+            </div>
+
+            <!-- Gjennomgangen slik den ser ut i appen: tre slags merker og linjen nederst
+                 som spør. Fargene og strekene er appens (heltrukket, stiplet, prikket). -->
+            <figure class="v-gjennom rise" aria-hidden="true">
+              <div class="v-gjennom-ark">
+                <p>Il responsabile diretto è <span class="v-m skjul">Paolo Conti</span>.</p>
+                <p><span class="v-m uavklart">Serena</span> ha consigliato un rientro graduale da maggio.</p>
+                <p>Appuntamenti tramite il centralino, al numero <span class="v-m staa">011 555 0100</span>.</p>
+              </div>
+              <div class="v-spor">
+                <p class="v-spor-topp">
+                  <span class="v-kode">Nome 5530871</span>
+                  <b>In sospeso</b>
+                  <span class="v-spor-tall">1 di 5</span>
+                </p>
+                <p class="v-spor-grunn">È all'inizio della frase. È un nome o l'aggettivo «serena»?</p>
+                <p class="v-spor-knapper">
+                  <span class="v-knapp">Oscura <kbd>↵</kbd></span>
+                  <span class="v-knapp lys">Lascia visibile <kbd>B</kbd></span>
+                  <span class="v-knapp lys">Avanti <kbd>→</kbd></span>
+                </p>
+              </div>
+              <p class="v-forklaring">
+                <span><i class="v-m skjul">Aa</i> Viene oscurato</span>
+                <span><i class="v-m uavklart">Aa</i> In sospeso</span>
+                <span><i class="v-m staa">Aa</i> Resta visibile</span>
+              </p>
+            </figure>
+          </div>
+        </section>
+
+        <!-- ============ 5. Trygt ============ -->
+        <!-- Hytta fra heroen, på nært hold: dokumentene blir hjemme. Bildet er laget i Midjourney
+             med vinterbildet fra heroen som stilreferanse. -->
+        <section class="v-del v-trygt" id="trygt">
+          <figure class="v-plate rise">
+            <img src="/alles-klar/assets/foto/hytte.webp" width="2200" height="1232" alt="Una piccola baita rossa nella neve alta sotto un cielo azzurro." loading="lazy" decoding="async" />
+            <figcaption>
+              <h2 class="v-tittel">I documenti restano sul computer.</h2>
+            </figcaption>
+          </figure>
+          <div class="v-kort-rad">
+            <article class="v-kort v-hvit rise">
+              <img src="/alles-klar/assets/krom/laas.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>Nessuna via d'uscita</h3>
+              <p>Chiarissimo non può collegarsi a Internet.</p>
+              <p><a class="v-lenke" href="per-it.html">L'IT può verificarlo da sé</a></p>
+            </article>
+            <article class="v-kort v-hvit rise d-60">
+              <img src="/alles-klar/assets/krom/maskin.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>L'IA è inclusa</h3>
+              <p>È dentro il programma ed è piccola. Basta un normale Mac da ufficio, senza scheda grafica.</p>
+            </article>
+            <article class="v-kort v-hvit rise d-120">
+              <img src="/alles-klar/assets/krom/hvelv.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>Gli originali non vengono toccati</h3>
+              <p>Chiarissimo scrive solo copie nuove, in una cartella a parte. Prima di iniziare può creare un backup cifrato.</p>
+            </article>
+            <article class="v-kort v-hvit rise d-180">
+              <img src="/alles-klar/assets/krom/lupe.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>Controllo prima di creare</h3>
+              <p>Chiarissimo legge ogni copia come farebbe chi la riceve. Se resta qualcosa, il file non viene creato.</p>
+            </article>
+          </div>
+        </section>
+
+        <!-- ============ 6. Slik kan kopien se ut ============ -->
+        <section class="v-del v-former" id="kopien">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Scelga l'aspetto della copia.</h2>
+            <p class="v-ingress">Quattro varianti. La scelta si fa subito prima di creare le copie.</p>
+          </div>
+          <div class="v-form-rad">
+            <article class="v-form rise">
+              <p class="v-form-merke">La più usata</p>
+              <div class="v-prove">
+                <span>Beneficiaria: <i class="v-kode">[Nome 4829133]</i></span>
+                <span class="v-prove-liste">+ elenco dei codici alla fine</span>
+              </div>
+              <h3>Codice breve ed elenco dei codici</h3>
+              <p>Facile da leggere. Si può ripristinare con la chiave.</p>
+            </article>
+            <article class="v-form rise d-60">
+              <div class="v-prove">
+                <span>Beneficiaria: <i class="v-kode lang">[PERSON_VBTF60YD0E-Q7MZ2KXA4RWN]</i></span>
+              </div>
+              <h3>Codice completo nel testo</h3>
+              <p>Senza elenco. Si può ripristinare, ma è difficile da leggere.</p>
+            </article>
+            <article class="v-form rise d-120">
+              <div class="v-prove">
+                <span>Beneficiaria: <i class="v-kode">[Nome 4829133]</i></span>
+              </div>
+              <h3>Solo etichette</h3>
+              <p>Facile da leggere. Non si può ripristinare.</p>
+            </article>
+            <article class="v-form rise d-180">
+              <div class="v-prove">
+                <span>Beneficiaria: <i class="v-sladd"><i>art. 5-bis c.2 a)</i></i></span>
+              </div>
+              <h3>Riquadri neri (PDF)</h3>
+              <p>Ciò che c'era scompare per sempre. Sul riquadro può comparire la base giuridica.</p>
+            </article>
+          </div>
+
+        </section>
+
+        <!-- ============ 7. Brukes til ============ -->
+        <section class="v-del v-bruk" id="bruk">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Quando i documenti devono uscire.</h2>
+          </div>
+          <ul class="v-bruk-liste rise">
+            <li><b>Accesso</b><span>Rispondere alle richieste di accesso agli atti, di accesso civico o dell'interessato senza oscurare pagina per pagina.</span></li>
+            <li><b>Condivisione</b><span>Con commercialisti, avvocati, fornitori o altri enti.</span></li>
+            <li><b>Strumenti di IA</b><span>La stessa persona ha lo stesso codice, così lo strumento capisce il contesto.</span></li>
+            <li><b>Formazione</b><span>Casi veri come esempi, senza che nessuno sia riconoscibile.</span></li>
+            <li><b>Dati di prova</b><span>Documenti realistici per sistemi nuovi.</span></li>
+            <li><b>Statistica</b><span>Usare i contenuti senza vedere a chi si riferiscono.</span></li>
+          </ul>
+        </section>
+
+        <!-- ============ Vanlige spørsmål ============ -->
+        <section class="v-del v-spm" id="sporsmal">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Domande frequenti.</h2>
+          </div>
+          <dl class="v-spm-liste rise">
+            <div>
+              <dt>La copia è anonima?</dt>
+              <dd>No. Chi ha la chiave può ritrasformare i codici in nomi. Scelga «Solo etichette» o «Riquadri neri (PDF)» se la copia non deve mai poter essere ripristinata, e la rilegga sempre prima di condividerla.</dd>
+            </div>
+            <div>
+              <dt>Altre persone con Chiarissimo possono ritrasformare i miei codici?</dt>
+              <dd>No. I codici si ripristinano solo con la Sua chiave. Gli altri hanno la propria, e con quella i Suoi codici sono solo codici. Se qualcuno deve poter ripristinare le Sue copie, condivida con lui la Sua chiave.</dd>
+            </div>
+            <div>
+              <dt>E se perdo la chiave?</dt>
+              <dd>Allora nessuno può ritrasformare i codici in nomi. Gli originali restano intatti. Per questo Chiarissimo Le chiede di mettere al sicuro la chiave, con 24 parole su carta o un file della chiave.</dd>
+            </div>
+            <div>
+              <dt>Chiarissimo ha bisogno di Internet?</dt>
+              <dd>No. Chiarissimo non si collega mai a Internet e funziona allo stesso modo offline.</dd>
+            </div>
+            <div>
+              <dt>Funziona sul mio computer?</dt>
+              <dd>Su un Mac con macOS 13 o successivo, sì, senza scheda grafica. Le versioni per Windows e Linux sono in arrivo. <a class="v-lenke" href="#maskin">Requisiti di sistema</a></dd>
+            </div>
+            <div>
+              <dt>Una collega può ripristinare una copia creata da me?</dt>
+              <dd>Sì, se avete la stessa chiave o se la collega ha aggiunto la Sua.</dd>
+            </div>
+            <div>
+              <dt>Chiarissimo impara da me?</dt>
+              <dd>Sì, da ciò che fa Lei. Se contrassegna un nome, un soprannome o una parola che Chiarissimo non ha visto, lo ricorda e lo oscura in tutto ciò che legge dopo. L'elenco si chiama «Oscura sempre». È cifrato sul Suo computer e può togliervi delle voci. Nulla viene inviato a noi, e i Suoi documenti non servono ad addestrare alcun modello.</dd>
+            </div>
+            <div>
+              <dt>E se Chiarissimo non vede qualcosa?</dt>
+              <dd>Può succedere. Per questo Lei verifica ciò che Chiarissimo trova, e Chiarissimo controlla ogni copia prima di crearla. <a class="v-lenke" href="cosa-trova.html">Veda che cosa Chiarissimo trova e che cosa no</a></dd>
+            </div>
+            <div>
+              <dt>Che cosa succede agli originali?</dt>
+              <dd>Nulla. Chiarissimo scrive solo file nuovi, in una cartella a parte accanto.</dd>
+            </div>
+            <div>
+              <dt>Quanto costa?</dt>
+              <dd>Per i privati Chiarissimo è gratuito. Aziende, comuni ed enti pubblici lo provano gratis per 30 giorni e poi ordinano con fattura una licenza per tutta l'organizzazione. <a class="v-lenke" href="prezzi/">Vai ai prezzi</a></dd>
+            </div>
+          </dl>
+        </section>
+
+        <!-- ============ 8. I dybden ============ -->
+        <section class="v-del v-dybde" id="dybde">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Nel dettaglio.</h2>
+            <p class="v-ingress">Per chi vuole saperne di più. Apra ciò che La interessa.</p>
+          </div>
+
+          <div class="v-fag rise">
+            <details name="v-dybde">
+              <summary><span>Che cosa cerca Chiarissimo</span></summary>
+              <div class="v-fag-inn">
+                <p>Che cosa cerca l'analisi lo sceglie Lei. I dieci gruppi attivi fin dall'inizio sono in <a class="v-lenke" href="#ser-etter">Ecco che cosa cerca Chiarissimo</a>.</p>
+                <p>Questi li aggiunge quando servono: <b>Date</b>, <b>Professione e parentela</b>, <b>Età</b>, <b>Datore di lavoro</b> (ente, società e partita IVA) e <b>Numeri di pratica</b> (pratica, protocollo e ruolo).</p>
+                <p>
+                  Il codice fiscale viene controllato con il suo carattere di controllo, così come la partita IVA e l'IBAN.
+                  Una sequenza qualsiasi di sedici caratteri non viene scambiata per un codice fiscale.
+                </p>
+                <p>
+                  I dati della Sua organizzazione restano visibili: indirizzo, centralino, partita IVA e conto aziendale.
+                </p>
+                <p><a class="v-lenke" href="cosa-trova.html">I numeri: che cosa Chiarissimo trova e che cosa no</a></p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Quali file legge Chiarissimo e come appare la copia</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Word, Excel e PowerPoint</dt>
+                    <dd>Lo stesso file, con i codici al posto dei dati. Impaginazione, loghi e tabelle restano. Commenti, macro, file incorporati e dati nascosti nelle immagini vengono rimossi.</dd>
+                  </div>
+                  <div>
+                    <dt>PDF, anche scansionati</dt>
+                    <dd>Ogni pagina diventa un'immagine con i codici dipinti sopra i dati. Sotto c'è uno strato di testo invisibile, così nella copia si può ancora cercare.</dd>
+                  </div>
+                  <div>
+                    <dt>Immagini</dt>
+                    <dd>Chiarissimo legge il testo nell'immagine. I dati vengono coperti e i volti pixelati.</dd>
+                  </div>
+                  <div>
+                    <dt>E-mail</dt>
+                    <dd>Legge .eml, Outlook (.msg), Apple Mail (.emlx) e .mbox. La copia diventa un .eml. Gli allegati vengono rimossi, e la copia lo segnala.</dd>
+                  </div>
+                  <div>
+                    <dt>Testo</dt>
+                    <dd>.txt, .md, .csv, .json e .rtf.</dd>
+                  </div>
+                </dl>
+                <p>Vengono oscurati anche i nomi dei file e delle cartelle. Le copie finiscono, insieme a un rapporto, in una cartella nuova accanto all'originale, con «-chiaro» alla fine del nome.</p>
+                <p>I file protetti da password li apre se Lei indica la password. I vecchi file .ppt non si possono leggere. Chiarissimo lo segnala.</p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Come Chiarissimo legge i documenti</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Prima le regole</dt>
+                    <dd>Formati italiani, caratteri di controllo, elenchi di nomi e indirizzi. Le regole passano su ogni file.</dd>
+                  </div>
+                  <div>
+                    <dt>Poi un piccolo modello linguistico italiano</dt>
+                    <dd>Basato su distilbert-base-it-cased (Geotrend). Valuta se una frase rivela qualcosa di privato su una persona. Pesa circa 240 MB e non richiede una scheda grafica.</dd>
+                  </div>
+                  <div>
+                    <dt>Testo nelle immagini</dt>
+                    <dd>Le pagine scansionate e le immagini vengono lette con il riconoscimento del testo sul computer.</dd>
+                  </div>
+                  <div>
+                    <dt>Volti</dt>
+                    <dd>Chiarissimo trova i volti e li pixela. Può anche lasciare visibile un volto.</dd>
+                  </div>
+                </dl>
+                <p>Chiarissimo non ha un chatbot e non invia nulla a un servizio di IA.</p>
+                <p>Può anche aprire una cartella senza analisi. In quel caso contrassegna Lei ciò che va oscurato.</p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>I codici e la chiave</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Numeri fissi</dt>
+                    <dd>Il numero nel codice viene calcolato dalla chiave e dal dato. Per questo Anna Ferri è <i class="v-kode">[Nome 4829133]</i> in ogni cartella, presso tutti i colleghi con la stessa chiave.</dd>
+                  </div>
+                  <div>
+                    <dt>Il nome è nella copia, cifrato</dt>
+                    <dd>L'elenco dei codici alla fine della copia contiene i codici completi. In essi c'è il testo originale, cifrato con AES-SIV. Solo la chiave lo rende di nuovo leggibile. Non c'è nessun cifrario da custodire.</dd>
+                  </div>
+                  <div>
+                    <dt>Solo la Sua chiave</dt>
+                    <dd>Ogni installazione crea la propria chiave. Un'altra persona con Chiarissimo non può ripristinare i Suoi codici: senza la Sua chiave sono solo codici, anche per noi.</dd>
+                  </div>
+                  <div>
+                    <dt>Dove si trova la chiave</dt>
+                    <dd>È protetta dal sistema operativo, nel portachiavi del Mac. Se vuole, può tenerla su una chiavetta di sicurezza.</dd>
+                  </div>
+                  <div>
+                    <dt>Riserva</dt>
+                    <dd>24 parole su carta o un file della chiave, protetto da una frase segreta scelta da Lei.</dd>
+                  </div>
+                  <div>
+                    <dt>Nell'organizzazione</dt>
+                    <dd>Una persona è responsabile della chiave e la passa ai colleghi come file della chiave. File e codice vengono inviati separatamente. L'IT può impedire l'esportazione della chiave.</dd>
+                  </div>
+                  <div>
+                    <dt>Chiavi di altri</dt>
+                    <dd>In «Chiave» può aggiungere la chiave di un'altra organizzazione. Resta accanto alla Sua. La copia indica con quale chiave è stata creata, così Chiarissimo sceglie quella giusta quando ripristina.</dd>
+                  </div>
+                  <div>
+                    <dt>Ripristino</dt>
+                    <dd>Chiarissimo crea una cartella nuova con «-ripristinato» alla fine del nome. La copia non viene toccata. Per immagini e pagine PDF, ciò che stava sotto i riquadri è nella copia, cifrato, e viene rimesso al suo posto.</dd>
+                  </div>
+                </dl>
+                <p>I codici non sono un'anonimizzazione. Chi ha la chiave può ripristinarli, quindi una copia con i codici contiene ancora dati personali (pseudonimizzazione, art. 4, punto 5, GDPR).</p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Accesso e riquadri neri</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Riquadri neri (PDF)</dt>
+                    <dd>Ogni copia diventa un PDF con riquadri neri. Il resto del testo si può ancora selezionare e cercare.</dd>
+                  </div>
+                  <div>
+                    <dt>La base giuridica sul riquadro</dt>
+                    <dd>Ogni riquadro può riportare la base giuridica su cui si fonda, per esempio «art. 5-bis c.2 a)» del d.lgs. 33/2013 o «art. 7-bis c.4». Le basi giuridiche complete vengono scritte in un file a parte, per la risposta.</dd>
+                  </div>
+                  <div>
+                    <dt>Lascia visibile solo questa persona</dt>
+                    <dd>Per chi chiede i propri dati: questa persona resta visibile e tutte le altre vengono oscurate.</dd>
+                  </div>
+                  <div>
+                    <dt>Più versioni della stessa cartella</dt>
+                    <dd>Una per l'interessato, una per la pubblicazione, ognuna con le proprie impostazioni.</dd>
+                  </div>
+                  <div>
+                    <dt>Sfocatura</dt>
+                    <dd>Disegni un rettangolo, un ovale o una forma libera su una parte di un'immagine o di una pagina.</dd>
+                  </div>
+                </dl>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Mentre lavora</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Salvataggio automatico</dt>
+                    <dd>Le Sue decisioni vengono salvate cifrate sul computer. Riprende da dove si era fermato.</dd>
+                  </div>
+                  <div>
+                    <dt>Modifiche</dt>
+                    <dd>Ogni modifica è in un elenco. Ne annulli una o torni al punto di partenza. L'elenco si può esportare in PDF o CSV.</dd>
+                  </div>
+                  <div>
+                    <dt>I Suoi contrassegni</dt>
+                    <dd>Ciò che contrassegna Lei vale in tutte le cartelle e in tutti i testi. L'elenco si può condividere con i colleghi.</dd>
+                  </div>
+                  <div>
+                    <dt>Ricerca</dt>
+                    <dd>Cerchi in tutti i file della cartella in una volta.</dd>
+                  </div>
+                  <div>
+                    <dt>Backup</dt>
+                    <dd>Una copia cifrata della cartella, creata prima dell'analisi. Chiarissimo Le ricorda i backup più vecchi di 30 giorni.</dd>
+                  </div>
+                  <div>
+                    <dt>Dal Finder</dt>
+                    <dd>Clic destro su un file o una cartella e scelga «Oscura con Chiarissimo».</dd>
+                  </div>
+                </dl>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Per l'IT</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Nessun codice di rete</dt>
+                    <dd>Il programma non ha TLS, non può risolvere nomi in rete e non è in ascolto su nessuna porta. <a class="v-lenke" href="per-it.html">Verifiche che può fare da sé</a></dd>
+                  </div>
+                  <div>
+                    <dt>Regole in un file</dt>
+                    <dd>Stabilisca che cosa viene sempre oscurato, blocchi la variante della copia, renda obbligatoria l'analisi e decida se la chiave si può esportare.</dd>
+                  </div>
+                  <div>
+                    <dt>Registro delle attività</dt>
+                    <dd>Si può attivare in Impostazioni › Registro delle attività. Non contiene nomi di file né dati dei documenti.</dd>
+                  </div>
+                  <div>
+                    <dt>Riga di comando</dt>
+                    <dd><code>chiarissimo clean</code> e <code>chiarissimo restore</code>, con output in JSON. Chiarissimo può anche sorvegliare una cartella.</dd>
+                  </div>
+                  <div>
+                    <dt>Licenza senza Internet</dt>
+                    <dd>Un codice firmato, verificato sul computer. Una licenza vale per tutta l'organizzazione.</dd>
+                  </div>
+                </dl>
+              </div>
+            </details>
+          </div>
+        </section>
+
+        <!-- ============ Full nerd-out ============ -->
+        <!-- Hele programmet, forklart for den som vil vite hvordan det virker. Veien en fil går
+             står alltid framme; resten åpnes. Tallene og navnene er fra appens kildekode. -->
+        <section class="v-del v-nerd" id="nerd">
+          <div class="v-hode rise">
+            <p class="v-nerd-over">Per i più curiosi</p>
+            <h2 class="v-tittel">Per gli appassionati di tecnica.</h2>
+            <p class="v-ingress">Il percorso completo di un file attraverso Chiarissimo, e che cosa succede a ogni passo.</p>
+          </div>
+
+          <ol class="v-ror rise">
+            <li><b>Lettura</b><span>Word, Excel, PDF, e-mail e immagini vengono scomposti in testo e posizione sulla pagina.</span></li>
+            <li><b>Regole</b><span>Formati, caratteri di controllo, elenchi di nomi e di parole.</span></li>
+            <li><b>Frasi</b><span>Un piccolo modello linguistico italiano valuta frasi intere.</span></li>
+            <li><b>Immagini</b><span>Riconoscimento del testo e dei volti, sul computer.</span></li>
+            <li><b>Indice</b><span>I risultati vengono raccolti per tutta la cartella. Stessa persona, stesso codice.</span></li>
+            <li><b>Lei</b><span>Oscura, lascia visibile e decide ciò che è in sospeso.</span></li>
+            <li><b>Scrittura</b><span>Ogni tipo di file viene riscritto a modo suo.</span></li>
+            <li><b>Controllo</b><span>La copia viene riletta. Se resta qualcosa, viene fermata.</span></li>
+          </ol>
+
+          <details class="v-nerd-alt rise">
+            <summary><span><i class="v-nar-lukket">Apri la sala macchine</i><i class="v-nar-aapen">Chiudi la sala macchine</i></span></summary>
+            <div class="v-nerd-inn">
+              <article>
+                <h3>Che cosa c'è nel pacchetto</h3>
+                <p>
+                  Chiarissimo è un normale programma desktop. Il guscio è scritto in Rust (Tauri), la finestra è
+                  una vista web con un'interfaccia in TypeScript. Tutto il necessario è nel file di installazione.
+                  Dopo non viene scaricato nulla.
+                </p>
+                <dl class="v-spek">
+                  <div><dt>Motore delle regole</dt><dd>TypeScript. Gira nel programma, senza server.</dd></div>
+                  <div><dt>Modello delle frasi</dt><dd>distilbert-base-it-cased di Geotrend (Apache 2.0), addestrato ulteriormente per Chiarissimo, circa 240 MB. Gira sul processore, senza scheda grafica.</dd></div>
+                  <div><dt>Testo nelle immagini</dt><dd>Apple Vision sul Mac.</dd></div>
+                  <div><dt>Volti</dt><dd>Apple Vision sul Mac.</dd></div>
+                  <div><dt>PDF</dt><dd>PDFium disegna le pagine e legge lo strato di testo.</dd></div>
+                  <div><dt>Nessun grande modello linguistico</dt><dd>Chiarissimo non ha un LLM né un chatbot. La compilazione si interrompe se ce n'è uno nel pacchetto.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Dal file al risultato</h3>
+                <p>
+                  Ogni file viene scomposto in pezzi di testo che sanno dove si trovano: paragrafo, cella, casella di testo,
+                  intestazione o un punto su una pagina PDF. Poi tre lettori passano sul testo.
+                </p>
+                <dl class="v-spek">
+                  <div><dt>Le regole</dt><dd>Il codice fiscale deve avere il carattere di controllo giusto; anche la partita IVA e l'IBAN hanno il proprio controllo. I nomi si trovano con elenchi di nomi e con la loro posizione, per esempio dopo «Nome:» o in una firma.</dd></div>
+                  <div><dt>Parole delicate</dt><dd>Un elenco di parole su salute, sindacato, religione e condanne penali, con tutte le forme flesse. «ricoverato», «ricoverata» e «ricovero» sono lo stesso risultato.</dd></div>
+                  <div><dt>Il lettore di frasi</dt><dd>Il modello linguistico dà a ogni frase su una persona un valore che dice quanto è privata. Insieme a un lettore basato sulle parole, questo decide se la frase diventa «Dato personale».</dd></div>
+                  <div><dt>I dati dell'organizzazione</dt><dd>L'indirizzo nell'intestazione, il centralino, la partita IVA e il conto aziendale vengono riconosciuti e restano visibili. Gli indirizzi e-mail vengono comunque oscurati.</dd></div>
+                </dl>
+                <p>
+                  Alla fine i risultati vengono raccolti nell'indice della cartella. «Anna», «Anna Ferri» e «FERRI ANNA»
+                  diventano una persona, in tutti i file. Ciò su cui Chiarissimo non è sicuro finisce, con il motivo, nella coda «In sospeso»:
+                  il nome è all'inizio della frase, due persone si chiamano allo stesso modo, o la parola è stata aggiunta dopo.
+                </p>
+              </article>
+
+              <article>
+                <h3>I codici</h3>
+                <p>Un codice ha due parti. Una dice chi è. L'altra è il testo originale, cifrato.</p>
+                <p class="v-kodelinje"><code>[PERSON_VBTF60YD0E-J94DW5ZFTYA2GWTWAXFKK0XYBF1KTY19BED6E5TJ832VZ00]</code></p>
+                <dl class="v-spek">
+                  <div><dt>Il codice della persona</dt><dd>HMAC-SHA256 di tipo e valore, accorciato a dieci caratteri. Uguale per tutte le grafie dello stesso nome, così uno strumento di IA capisce che è la stessa persona.</dd></div>
+                  <div><dt>La parte cifrata</dt><dd>AES-SIV (RFC 5297) del testo esattamente com'era. Lo stesso testo dà sempre lo stesso codice. Un codice modificato o creato con un'altra chiave viene rifiutato. Chiarissimo non inserisce mai nulla di sbagliato.</dd></div>
+                  <div><dt>Il numero breve</dt><dd>Il numero in <code>[Nome 4829133]</code> viene calcolato dalla chiave e dal valore. Per questo è uguale su tutti i computer con la stessa chiave, senza che comunichino tra loro.</dd></div>
+                  <div><dt>L'elenco dei codici</dt><dd>Nella variante più usata, il numero breve è nel testo e i codici completi in un elenco alla fine. Insieme alla chiave, l'elenco è tutto ciò che serve per ripristinare la copia.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>La chiave</h3>
+                <dl class="v-spek">
+                  <div><dt>Che cos'è</dt><dd>32 byte casuali, creati sul computer al primo avvio di Chiarissimo. Le sottochiavi per codici, numeri e immagini vengono derivate con HKDF-SHA256.</dd></div>
+                  <div><dt>Dove si trova</dt><dd>Protetta dal sistema operativo: portachiavi e Secure Enclave sul Mac. La chiave resta nella parte in Rust del programma. La finestra la riceve solo se Lei vuole vedere le 24 parole.</dd></div>
+                  <div><dt>24 parole</dt><dd>La chiave si può scrivere come 24 parole norvegesi da un elenco di 2048. Le parole usano solo le lettere a–z, e non ce ne sono due simili. Bastano le prime quattro lettere per riconoscere una parola.</dd></div>
+                  <div><dt>File della chiave</dt><dd>La chiave, cifrata con una frase segreta di almeno dodici caratteri (Argon2id e AES-256-GCM).</dd></div>
+                  <div><dt>Impronta della chiave</dt><dd>Un breve contrassegno come <code>WJ0R-Q3R5</code>. Indica con quale chiave è stata creata una copia, ma non è la chiave stessa.</dd></div>
+                  <div><dt>Più chiavi</dt><dd>Se cambia chiave, quella vecchia viene messa da parte. Quando ripristina, Chiarissimo prova prima la chiave attuale, poi quelle precedenti.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Come viene scritta la copia</h3>
+                <dl class="v-spek">
+                  <div><dt>Word, Excel, PowerPoint</dt><dd>Il file è uno ZIP con XML. Chiarissimo sostituisce i valori sul posto, anche quando Word ha spezzato un nome in più pezzi. Poi il file viene ripulito: commenti, macro, file incorporati, l'anteprima e i dati nascosti nelle immagini vengono rimossi.</dd></div>
+                  <div><dt>PDF</dt><dd>Ogni pagina viene disegnata come immagine a 200 dpi, a 300 con caratteri piccoli. I codici vengono dipinti sopra i dati, e il testo oscurato è invisibile sotto, così nella copia si può cercare.</dd></div>
+                  <div><dt>Immagini</dt><dd>I riquadri vengono coperti e i volti pixelati.</dd></div>
+                  <div><dt>Ciò che c'era sotto</dt><dd>Se la copia deve poter essere ripristinata, Chiarissimo mette nella copia, cifrati, i pixel originali sotto ogni riquadro (AES-256-GCM). I programmi normali li ignorano.</dd></div>
+                  <div><dt>E-mail</dt><dd>La copia diventa un .eml in ordine. Le intestazioni tecniche sul percorso dell'e-mail vengono rimosse.</dd></div>
+                  <div><dt>Nomi dei file</dt><dd>Se un nome è nel nome di un file o di una cartella, viene sostituito anche lì.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Il controllo prima di creare</h3>
+                <p>
+                  Prima di scrivere una copia, Chiarissimo la legge come farebbe un altro programma: ogni parte del file ZIP,
+                  ogni attributo XML, ogni oggetto nel PDF e il testo in ogni immagine. Se trova qualcosa che andava oscurato,
+                  o una parte che non sa leggere, il file non viene creato. Lei vede allora di che cosa si tratta.
+                </p>
+              </article>
+
+              <article>
+                <h3>Che cosa conserva Chiarissimo</h3>
+                <dl class="v-spek">
+                  <div><dt>Il progetto</dt><dd>Le Sue decisioni su una cartella vengono salvate cifrate sul computer ed escluse da Spotlight e Time Machine. Un progetto non usato viene eliminato dopo 30 giorni.</dd></div>
+                  <div><dt>Il backup</dt><dd>Una copia degli originali. Il contenuto è cifrato con AES-256-GCM e leggibile solo sul computer su cui è stato creato. I nomi dei file restano invariati.</dd></div>
+                  <div><dt>I Suoi contrassegni</dt><dd>L'elenco di ciò che Chiarissimo oscura su Sua richiesta viene salvato cifrato.</dd></div>
+                  <div><dt>Gli originali</dt><dd>Chiarissimo scrive solo in cartelle che ha creato lui. Ogni punto del codice che elimina o sposta un file richiede una motivazione scritta. Altrimenti un test interrompe la compilazione.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Che cosa non c'è</h3>
+                <p>
+                  Il programma non ha TLS, non può risolvere nomi in rete e non è in ascolto su nessuna porta.
+                  Non ci sono account, statistiche d'uso, segnalazioni di errore né aggiornamenti automatici.
+                  La licenza è un codice firmato (Ed25519), verificato sul computer.
+                  L'unica cosa che Chiarissimo fa verso Internet: apre il nostro sito nel Suo browser quando fa clic su «Acquista una licenza».
+                </p>
+                <p><a class="v-lenke" href="per-it.html">Verifiche che l'IT può fare da sé</a></p>
+              </article>
+            </div>
+          </details>
+        </section>
+
+        <!-- ============ 9. Ansvar ============ -->
+        <section class="v-del v-ansvar" id="ansvar">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Uno strumento. Nessuna garanzia.</h2>
+          </div>
+          <ul class="v-ansvar-liste rise">
+            <li><b>Chiarissimo può non vedere qualcosa.</b> Rilegga le copie prima di condividerle.</li>
+            <li><b>I codici non sono un'anonimizzazione.</b> Chi ha la chiave può ripristinarli.</li>
+            <li><b>La responsabilità è Sua.</b> Chiarissimo non è consulenza legale, e decide Lei che cosa viene consegnato.</li>
+          </ul>
+          <p class="rise"><a class="v-lenke" href="cosa-trova.html">Veda che cosa Chiarissimo trova e che cosa no</a></p>
+        </section>
+
+        <!-- ============ Går Klart på maskinen din? ============ -->
+        <!-- Den italienske utgaven har bare Mac-bygget (24.11.2026). Søket i maskinlisten (/klart/api/maskin) svarer på
+             norsk og regner Windows-PC-er som støttet, så her står bare systemkravene. Uten data-v-maskin gjør videre.js ingenting. -->
+        <section class="v-del v-maskin" id="maskin">
+          <div class="v-sjekk rise">
+            <h2 id="v-sjekk-tittel">Chiarissimo funziona sul Suo computer?</h2>
+            <p class="v-sjekk-om">Chiarissimo funziona sui normali Mac da ufficio, con processore Apple o Intel.</p>
+            <p class="v-sjekk-fot">
+              Serve un Mac con macOS 13 o successivo. Consigliamo 8 GB di memoria.
+              Le versioni per Windows e Linux sono in arrivo.
+            </p>
+          </div>
+        </section>
+
+        <!-- ============ 10. Last ned ============ -->
+        <section class="v-hent" id="last-ned">
+          <img class="v-hent-bilde" src="/alles-klar/assets/klart-vinter.jpg" width="1600" height="1067" alt="" loading="lazy" decoding="async" />
+          <div class="v-hent-kort rise">
+            <!-- Samme nedlastingskort som i heroen; vises her når de velger system (forside.js). -->
+            <div class="nedlasting" data-nedlasting hidden aria-live="polite">
+              <div class="nedlasting-topp">
+                <span class="nedlasting-merke" data-merke aria-hidden="true"></span>
+                <div>
+                  <p class="nedlasting-tittel">Chiarissimo per <span data-os></span></p>
+                  <p class="nedlasting-fil" data-fil></p>
+                </div>
+              </div>
+              <p class="nedlasting-prosent"><span data-prosent>0</span><span class="nedlasting-pst">%</span></p>
+              <p class="nedlasting-status" data-status></p>
+              <div class="nedlasting-ferdig" data-ferdig hidden>
+                <span class="nedlasting-hake" aria-hidden="true"><svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="25" pathLength="1" /><path d="M17 29l8 8 15-17" pathLength="1" /></svg></span>
+                <p class="nedlasting-ferdig-tittel">Scaricato</p>
+                <p class="nedlasting-neste" data-neste></p>
+              </div>
+              <button type="button" class="nedlasting-tilbake" data-tilbake>Indietro</button>
+            </div>
+            <div class="v-hent-inn">
+            <!-- Mobil og nettbrett: samme e-post som i heroen i stedet for nedlastingen (eieren 11.11.2026). -->
+            <div class="mobil-send">
+              <p class="mobil-send-tittel">Chiarissimo è un programma per computer.</p>
+              <p class="mobil-send-tekst">Si invii il link per e-mail e scarichi il programma sul Mac.</p>
+              <a class="btn" href="mailto:?subject=Chiarissimo&amp;body=https%3A%2F%2Fesbjugconsult.com%2Fchiarissimo">Invia a me</a>
+              <p class="mobil-send-andre">(O a qualcun altro?)</p>
+            </div>
+            <h2>Provi Chiarissimo su una cartella.</h2>
+            <p class="v-hent-privat"><b>Gratuito per i privati.</b></p>
+            <!-- Bare Mac ennå. Ved et klikk vises nedlastingen her i kortet (forside.js). -->
+            <div class="v-hent-knapper get" data-v-hent>
+              <a class="btn ghost os os-mac" href="/chiarissimo/download/mac" download aria-label="Scarica per Mac"><span class="os-glass" aria-hidden="true"></span><span class="os-navn">Mac</span></a>
+            </div>
+            <!-- Bare Mac ennå: linjen under knappen (samme stil som ARM64-lenken på den tyske siden). -->
+            <p class="v-hent-arm">Windows e Linux sono in arrivo.</p>
+            <p class="v-hent-virk">Per le organizzazioni: <b>30 giorni gratis</b>. Nessuna registrazione. Poi ordine con fattura.</p>
+            <p><a class="v-hent-pris" href="prezzi/">Vedere il prezzo per la Sua organizzazione</a></p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- ================= Bunn ================= -->
+    <footer class="v-bunn">
+      <p class="v-bunn-merke"><i>Chiarissimo</i> <span>di Tidemann Esbjug</span></p>
+      <nav class="v-bunn-lenker" aria-label="Altro su Chiarissimo">
+        <a href="prezzi/">Prezzi</a>
+        <a href="cosa-trova.html">Che cosa trova Chiarissimo</a>
+        <a href="per-it.html">Per l'IT</a>
+        <a href="finestra.html">La finestra del programma</a>
+        <a href="condizioni/">Condizioni</a>
+        <a href="privacy/">Privacy</a>
+      </nav>
+      <nav class="v-bunn-lenker v-bunn-land" aria-label="Altri paesi">
+        <a href="/klart/" hreflang="no" lang="no">Norge · Klart</a>
+        <a href="/alles-klar/" hreflang="de" lang="de">Deutschland · Alles Klar</a>
+        <a href="/frostcopy/" hreflang="en-US" lang="en-US">United States · FrostCopy</a>
+        <a href="/frostcopy-uk/" hreflang="en-GB" lang="en-GB">United Kingdom · FrostCopy UK</a>
+        <a href="/cest-clair/" hreflang="fr" lang="fr">France · C’est Clair</a>
+        <a href="/clarisimo/" hreflang="es" lang="es">España · Clarísimo</a>
+        <a href="/chiarissimo/" hreflang="it" lang="it" aria-current="page">Italia · Chiarissimo</a>
+        <a href="/klip-en-klaar/" hreflang="nl" lang="nl">Nederland · Klip en Klaar</a>
+        <a href="/wszystko-jasne/" hreflang="pl" lang="pl">Polska · Wszystko Jasne</a>
+      </nav>
+      <p class="v-bunn-liten">Sviluppato in Norvegia · Non è consulenza legale</p>
+    </footer>
+
+    <script src="forside.js"></script>
+    <script src="forhandsvisning.js"></script>
+    <script src="videre.js"></script>
+  </body>
+</html>

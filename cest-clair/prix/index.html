@@ -1,0 +1,178 @@
+<!doctype html>
+<!--
+  Hei, du som leser kildekoden. Det var deg vi håpet på.
+
+  Klart lover at dokumentene aldri forlater maskinen. Et sånt løfte skal ikke
+  tas på ordet, så sjekk det:
+
+  - Programmet: /cest-clair/pour-la-dsi.html har kommandoene som viser hva det snakker med.
+  - Denne siden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
+    uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
+  - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
+    Vi vil heller høre det fra deg enn fra en kunde.
+-->
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/cest-clair/favicon.png" />
+    <title>Prix et commande · C’est Clair</title>
+    <meta name="description" content="Ce que coûte C’est Clair pour votre organisation : entreprises, collectivités et services de l’État. Une licence pour tous, commande sur facture. Gratuit pour les particuliers." />
+    <meta name="theme-color" content="#eef3fb" />
+    <!-- Ikke indekser før Klart lanseres. Fjernes sammen med den på /cest-clair/. -->
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="../fonts.css" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="pris.css" />
+    <link rel="stylesheet" href="bestellung.css" />
+  </head>
+  <body>
+    <main>
+      <section class="port" id="port">
+        <!-- Veien tilbake til forsiden (eieren 11.11.2026: det gikk ikke an å komme tilbake). -->
+        <a class="pris-hjem" href="/cest-clair/"><span aria-hidden="true">←</span> <i>C’est Clair</i></a>
+        <div class="kort middels" id="kort">
+          <!-- Privatpersoner betaler ikke; det skal stå først også her. -->
+          <p class="pris-privat"><b>Gratuit pour les particuliers.</b> <a href="/cest-clair/#last-ned">Télécharger C’est Clair</a></p>
+          <p class="merke">Pour les organisations</p>
+          <h1>C’est Clair pour votre organisation</h1>
+          <p class="ingress">Une licence vaut pour toute l’organisation. Pas de décompte des postes, pas de limite de pages.</p>
+
+          <!-- Tre slags kjøpere. Prisen kommer fra price.js, den samme filen serveren regner med (commande.js). -->
+          <div class="de-valg" role="radiogroup" aria-label="Type d’organisation">
+            <label><input type="radio" name="art" value="business" checked /><span>Entreprise, cabinet ou association</span></label>
+            <label><input type="radio" name="art" value="municipal" /><span>Commune, intercommunalité, département ou région</span></label>
+            <label><input type="radio" name="art" value="state" /><span>Service de l’État ou établissement public</span></label>
+          </div>
+
+          <div class="de-to-felt" id="champ-business">
+            <div>
+              <label for="persons">Personnes dans l’organisation</label>
+              <input id="persons" type="number" min="1" step="1" value="25" inputmode="numeric" />
+              <p class="smaa">Tout le personnel. Saisissez 1 si vous travaillez seul.</p>
+            </div>
+            <div id="champ-sector">
+              <label for="sector">Secteur</label>
+              <select id="sector"></select>
+            </div>
+          </div>
+
+          <!-- Collectivités: fire år i euro, under 60 000 € HT (CCP R2122-8). Punktene står i price.js (COMMUNE). -->
+          <form class="de-ett-felt" id="ke-skjema" novalidate hidden>
+            <label for="ke-innbyggere">Nombre d’habitants</label>
+            <input id="ke-innbyggere" type="text" inputmode="numeric" autocomplete="off" placeholder="par ex. 18 500" maxlength="12" />
+            <p class="smaa">Le même prix pour toute collectivité de même taille, sans négociation.</p>
+          </form>
+
+          <div class="de-ett-felt" id="champ-state" hidden>
+            <label for="employees">Agents du service</label>
+            <input id="employees" type="number" min="1" step="1" inputmode="numeric" placeholder="par ex. 120" />
+            <p class="smaa">Aussi pour les juridictions, les universités, les hôpitaux et les autres établissements publics.</p>
+          </div>
+
+          <div class="de-prisboks" aria-live="polite">
+            <p class="bekreftet">Licence pour toute l’organisation</p>
+            <p class="pristall" id="prixligne"><b id="montant"></b> <span>pour un an</span></p>
+            <div id="ke-boks" hidden><p class="ke-svar" id="ke-svar" hidden></p></div>
+            <p class="de-hinweis" id="indication" hidden></p>
+            <p class="smaa">Prix hors taxes. La facture ne comporte pas de TVA : la TVA est autoliquidée par le preneur.</p>
+          </div>
+
+          <form id="commande" class="de-ordre" novalidate>
+            <div class="de-to-felt">
+              <div>
+                <label for="org">Nom de l’organisation</label>
+                <input id="org" type="text" maxlength="120" autocomplete="organization" required />
+                <p class="smaa">Figure sur la facture et dans C’est Clair sur chaque ordinateur qui utilise la licence.</p>
+              </div>
+              <div>
+                <label for="email">E-mail pour la facture</label>
+                <input id="email" type="email" maxlength="200" autocomplete="email" required />
+                <p class="smaa">La facture, puis la clé de licence, sont envoyées à cette adresse.</p>
+              </div>
+            </div>
+            <div class="de-to-felt">
+              <div>
+                <label for="adresse">Adresse de facturation</label>
+                <textarea id="adresse" rows="4" maxlength="600" autocomplete="street-address" required></textarea>
+              </div>
+              <div>
+                <label for="reference">Votre bon de commande ou référence</label>
+                <input id="reference" type="text" maxlength="80" />
+                <p class="smaa">Facultatif. Figure sur la facture (par exemple le numéro d’engagement).</p>
+              </div>
+            </div>
+            <p class="de-skjult" aria-hidden="true"><label for="website">Laissez ce champ vide</label><input id="website" type="text" tabindex="-1" autocomplete="off" /></p>
+            <div class="knapper">
+              <button class="btn" type="submit" id="commander">Commander sur facture</button>
+              <button class="btn de-ghost-lys" type="button" id="deja">J’ai déjà une clé de licence</button>
+            </div>
+            <p class="smaa de-feil" id="erreur" role="alert" hidden></p>
+            <p class="smaa" id="deroulement">La facture arrive aussitôt par e-mail. Vous payez sous 30 jours par virement en euros. La clé de licence arrive par e-mail dès réception du paiement et vaut un an à partir de ce jour. D’ici là, C’est Clair fonctionne pleinement pendant 30 jours.</p>
+            <p class="smaa" id="dejaTexte" hidden>Ouvrez C’est Clair et cliquez sur « Licence » en haut à droite (pendant l’essai, il est écrit « Essai : … jours restants »). Collez le code qui commence par CESTCLAIR- et cliquez sur « Activer ».</p>
+          </form>
+          <div id="merci" class="de-takk" hidden tabindex="-1">
+            <h2>Merci</h2>
+            <p id="merciTexte"></p>
+            <p class="smaa">Des questions : <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a></p>
+          </div>
+
+          <!-- Bare for kommuner: prislisten (de samme punktene som COMMUNE i price.js). -->
+          <section class="kommune-eur" id="kommune-eur" aria-labelledby="ke-tittel" hidden>
+            <p class="merke">Pour les collectivités</p>
+            <h2 id="ke-tittel">Un prix selon le nombre d’habitants</h2>
+            <p class="ingress">
+              La licence vaut pour toute l’administration. Quatre ans coûtent au plus 58 000 € HT et restent donc toujours sous
+              le seuil de 60 000 € HT en dessous duquel un acheteur public peut acheter sans publicité ni mise en concurrence
+              (article R2122-8 du code de la commande publique). Chaque année, une année est commandée et facturée, soit un quart
+              du montant pour quatre ans.
+            </p>
+            <table class="ke-tabell">
+              <caption class="skjult-tekst">Prix pour les collectivités, quatre ans et par an, hors taxes</caption>
+              <thead><tr><th scope="col">Habitants</th><th scope="col">4 ans</th><th scope="col">par an</th></tr></thead>
+              <tbody>
+                <tr><td>500</td><td>1 200 €</td><td>300 €</td></tr>
+                <tr><td>2 000</td><td>2 400 €</td><td>600 €</td></tr>
+                <tr><td>5 000</td><td>4 800 €</td><td>1 200 €</td></tr>
+                <tr><td>20 000</td><td>12 000 €</td><td>3 000 €</td></tr>
+                <tr><td>50 000</td><td>24 000 €</td><td>6 000 €</td></tr>
+                <tr><td>100 000</td><td>36 000 €</td><td>9 000 €</td></tr>
+                <tr><td>250 000</td><td>50 000 €</td><td>12 500 €</td></tr>
+                <tr><td>à partir de 500 000</td><td>58 000 €</td><td>14 500 €</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <h3 class="vilkar-tittel">Avant l’achat</h3>
+          <p class="de-avsnitt"><b>30 jours avec C’est Clair complet.</b> Essayez C’est Clair pendant 30 jours sur vos propres fichiers avant de décider. C’est la version complète, et l’essai ne demande aucune inscription.</p>
+
+          <h3 class="vilkar-tittel">Compris dans le prix</h3>
+          <ul class="vilkar">
+            <li>Word, Excel, PowerPoint, PDF, e-mails, fichiers texte, documents numérisés et photos</li>
+            <li>Tout fonctionne sur vos propres ordinateurs. Rien n’est envoyé en ligne</li>
+            <li>Pour tout le personnel et sur autant d’ordinateurs que nécessaire. Disponible pour l’instant sur Mac ; les versions Windows et Linux arrivent bientôt et seront comprises dans la licence</li>
+            <li>Les mises à jour pendant l’année de licence</li>
+          </ul>
+          <p class="de-avsnitt">Le paiement se fait uniquement sur facture. <a class="lenke" href="/cest-clair/conditions/">Conditions de licence</a></p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bunnen er alltid synlig. Selgeren etter ehandelsloven § 8. Esbjug Consult er ikke MVA-registrert (Brønnøysund 19.11.2026). -->
+    <footer class="pris-bunn" id="pris-bunn">
+      <div class="colofon">
+        <p class="wordmark"><a href="/cest-clair/"><b>C’est Clair</b></a> <span>v0.1.0</span></p>
+        <p class="selger">
+          Vendu par <b class="selger-navn">ESBJUG CONSULT</b> · Glenneveien 272B, 1455 Nordre Frogn, Norvège ·
+          <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a> · N° d’organisation 938 441 405
+        </p>
+      </div>
+      <div class="footmeta">
+        <a href="/cest-clair/conditions/">Conditions de licence</a>
+        <a href="/cest-clair/confidentialite/">Confidentialité</a>
+      </div>
+    </footer>
+
+    <script type="module" src="commande.js"></script>
+  </body>
+</html>

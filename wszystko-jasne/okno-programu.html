@@ -1,0 +1,369 @@
+<!doctype html>
+<!-- Programvinduet fra /klart alene (eieren 12.11.2026), til heroen på forsiden (esbjugconsult.com/), der det står i en iframe.
+     Kopiert fra GDPR/index.html (figure.kv); endres vinduet der, kjør pv.py igjen eller kopier det over hit.
+     Samme stiler og skript som på /klart, pluss programvindu.css og programvindu.js (høyden til forsiden). -->
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Wszystko Jasne – okno programu</title>
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="forhandsvisning.css" />
+    <link rel="stylesheet" href="programvindu.css" />
+  </head>
+  <body class="programvindu">
+        <figure class="kv avklart" data-scene="gjennom">
+          <div class="kv-ramme">
+          <div class="kv-app" aria-hidden="true">
+            <header class="kv-chrome">
+              <span class="kv-lys"><i></i><i></i><i></i></span>
+              <span class="kv-merke"><img src="ikona.png" alt="" />Wszystko Jasne</span>
+              <span class="kv-sok"><svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.6" /><path d="M10.4 10.4L14 14" /></svg>Szukaj we wszystkich plikach folderu<kbd>⌘F</kbd></span>
+              <span class="kv-hoyre">
+                <span class="kv-lagret">✓ Zapisano automatycznie</span>
+                <span class="kv-lysknapp">Opcje analizy</span>
+                <span class="kv-lysknapp" data-kv="hjem">Ekran startowy</span>
+                <span class="kv-lysknapp kv-sporsmal">?</span>
+              </span>
+            </header>
+
+            <div class="kv-flate">
+              <!-- Startskjermen: de tre verktøyene, og det som ble tilbakeført under dem -->
+              <div class="kv-scene kv-s-start">
+                <div class="kv-start-inn">
+                  <div class="kv-kortene">
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-rens.png" alt="" />
+                      <h4>Oczyść</h4>
+                      <span class="kv-hvit" data-kv="velg">Wybierz folder lub dokumenty…</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-tilbakefor.png" alt="" />
+                      <h4>Przywróć</h4>
+                      <span class="kv-hvit" data-kv="tbvelg">Wybierz kopie…</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-tekst.png" alt="" />
+                      <h4>Narzędzie tekstowe</h4>
+                      <span class="kv-hvit" data-kv="tekstvelg">Otwórz…</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Editoren: filene, dokumentet og registeret for mappen -->
+              <div class="kv-scene kv-s-editor">
+                <aside class="kv-filer">
+                  <div class="kv-filer-topp"><b>Akta klientów</b><span>10 plików</span></div>
+                  <ul data-kv="filer">
+                    <li data-steder="30"><i class="kv-fikon w">W</i><span class="kv-fnavn">01-umowa-o-prace-acme.docx</span><span class="kv-fmeta">30 miejsc</span><i class="kv-ring"></i></li>
+                    <li data-steder="41" data-uavklart="2" data-dok="vedtak" class="valgt"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">02-postanowienie-kurator.pdf</span><span class="kv-fmeta">41 miejsc</span><i class="kv-ring"></i></li>
+                    <li data-steder="45" data-ekstra="1 numer rejestracyjny" data-dok="epost"><i class="kv-fikon epost">@</i><span class="kv-fnavn">03-watek-e-mail.eml</span><span class="kv-fmeta">45 miejsc</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon tekst">T</i><span class="kv-fnavn">04-notatka-kadrowa.md</span><span class="kv-fmeta">21 miejsc</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon w">W</i><span class="kv-fnavn">05-zaswiadczenie-lekarskie.docx</span><span class="kv-fmeta">21 miejsc</span><i class="kv-ring"></i></li>
+                    <li data-steder="16"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">06-faktura-zorza.pdf</span><span class="kv-fmeta">16 miejsc</span><i class="kv-ring"></i></li>
+                    <li data-steder="82" data-dok="liste"><i class="kv-fikon x">X</i><span class="kv-fnavn">08-lista-klientow.xlsx</span><span class="kv-fmeta">82 miejsca</span><i class="kv-ring"></i></li>
+                    <li data-steder="43" data-ekstra="2 twarze" data-dok="ppt"><i class="kv-fikon p">P</i><span class="kv-fnavn">09-spotkanie-statusowe.pptx</span><span class="kv-fmeta">43 miejsca · 2 twarze</span><i class="kv-ring"></i></li>
+                    <li data-steder="18"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">11-skan-zalacznika.pdf</span><span class="kv-fmeta">18 miejsc</span><i class="kv-ring"></i></li>
+                    <li data-steder="3" data-ekstra="1 twarz"><i class="kv-fikon bilde">JPG</i><span class="kv-fnavn">16-identyfikator.jpg</span><span class="kv-fmeta">3 miejsca · 1 twarz</span><i class="kv-ring"></i></li>
+                  </ul>
+                </aside>
+
+                <div class="kv-midt">
+                  <div class="kv-docket">
+                    <b data-kv="docnavn">02-postanowienie-kurator.pdf</b><span class="kv-type" data-kv="doctype">PDF</span>
+                    <span class="kv-kopimerke" data-kv="kopimerke">Kopia · lista kodów na końcu</span>
+                    <span class="kv-verktoy">
+                      <span class="kv-zoom">− &nbsp;86 %&nbsp; +</span>
+                      <span class="kv-hvit" data-kv="vis">Pokaż kopię</span>
+                    </span>
+                  </div>
+                  <div class="kv-bord">
+                    <div class="kv-pille" data-kv="pille"><i></i>Czyta <b data-kv="leser">01-umowa-o-prace-acme.docx</b><span data-kv="nr">1 z 10</span></div>
+
+                    <!-- PDF: vedtak om vergemål -->
+                    <article class="kv-side vist" data-dok="vedtak">
+                      <i class="kv-lesehode"></i>
+                      <p class="kv-avsender">Postanowienie</p>
+                      <h4>Postanowienie o ustanowieniu kuratora</h4>
+                      <p class="kv-ref">Sygnatura akt <mark class="s"><span class="o">I Ns 184/26</span><span class="k">[Sygnatura 4906498]</span></mark> · 14.03.2026</p>
+                      <h5>Uczestniczka</h5>
+                      <dl>
+                        <dt>Imię i nazwisko</dt><dd><mark class="s"><span class="o">Katarzyna Nowak</span><span class="k">[Imię i nazwisko 6311794]</span></mark></dd>
+                        <dt>PESEL</dt><dd><mark class="s"><span class="o">86 095 742 719</span><span class="k">[PESEL 2215087]</span></mark></dd>
+                        <dt>Adres</dt><dd><mark class="s"><span class="o">ul. Lipowa 27, 31-042 Kraków</span><span class="k">[Adres 8950779]</span></mark></dd>
+                      </dl>
+                      <h5>Ustanowiony kurator</h5>
+                      <dl>
+                        <dt>Imię i nazwisko</dt><dd><mark class="s"><span class="o">Łukasz Wiśniewski</span><span class="k">[Imię i nazwisko 2656447]</span></mark>, <mark class="b" data-kv="arbeid"><span class="o">Kancelaria Zorza sp.k.</span><span class="k">[Instytucja 5521093]</span></mark></dd>
+                        <dt>E-mail</dt><dd><mark class="s"><span class="o">lukasz.wisniewski@zorza.test</span><span class="k">[E-mail 3278678]</span></mark></dd>
+                        <dt>Telefon</dt><dd><mark class="s"><span class="o">0221 555 0134</span><span class="k">[Telefon 6289990]</span></mark></dd>
+                      </dl>
+                      <h5>Uzasadnienie</h5>
+                      <p><mark class="s" data-kv="merknad"><span class="o">Uczestniczka od stycznia przebywa w szpitalu z powodu depresji i potrzebuje pomocy w sprawach finansowych.</span><span class="k">[Dane osobowe 2760056]</span></mark> Kurator zarządza środkami na rachunku <mark class="s"><span class="o">PL61 1090 1014 0000 0712 1981 2874</span><span class="k">[IBAN 7719741]</span></mark>.</p>
+                      <p>Postanowienie jest skuteczne z chwilą ogłoszenia. Przysługuje na nie apelacja w terminie dwóch tygodni.</p>
+                    </article>
+
+                    <!-- E-post -->
+                    <article class="kv-side kv-epost" data-dok="epost">
+                      <i class="kv-lesehode"></i>
+                      <dl class="kv-hode">
+                        <dt>Od</dt><dd><mark class="s"><span class="o">Sabina Jankowska</span><span class="k">[Imię i nazwisko 7320430]</span></mark> &lt;<mark class="s"><span class="o">sabina.jankowska@zorza.test</span><span class="k">[E-mail 5102284]</span></mark>&gt;</dd>
+                        <dt>Do</dt><dd><mark class="s"><span class="o">Katarzyna Nowak</span><span class="k">[Imię i nazwisko 6311794]</span></mark></dd>
+                        <dt>Temat</dt><dd><b>Po naszej rozmowie</b></dd>
+                        <dt>Data</dt><dd>12 marca 2026, 09:14</dd>
+                      </dl>
+                      <p>Dzień dobry, Pani <mark class="s"><span class="o">Katarzyno</span><span class="k">[Imię i nazwisko 6311794]</span></mark>,</p>
+                      <p>dziękuję za wczorajszą rozmowę. Zgodnie z ustaleniami przesyłam kopię zaświadczenia lekarskiego. Przez cały tydzień jestem dostępna pod numerem <mark class="s"><span class="o">0221 555 0134</span><span class="k">[Telefon 6289990]</span></mark>.</p>
+                      <p>Samochód służbowy o numerze rejestracyjnym <mark class="s"><span class="o">WE 4821K</span><span class="k">[Numer rejestracyjny 3071552]</span></mark> będzie gotowy od poniedziałku. Zdjęcie w załączniku.</p>
+                      <p>Pozdrawiam serdecznie<br /><mark class="s"><span class="o">Sabina Jankowska</span><span class="k">[Imię i nazwisko 7320430]</span></mark><br />Zorza Serwis sp. z o.o. · <mark class="s"><span class="o">ul. Portowa 22, 81-337 Gdynia</span><span class="k">[Adres 6113936]</span></mark></p>
+                      <figure class="kv-vedlegg">
+                        <span class="kv-bilramme"><img src="/alles-klar/assets/visning/bil.jpg" alt="" /><span class="kv-skilt" data-kv="skilt"><img src="/alles-klar/assets/visning/bil-skilt.png" alt="" /><em data-kv="skiltlapp">Numer rejestracyjny · zostanie ukryty</em></span></span>
+                        <figcaption>auto.jpg · 1,2 MB</figcaption>
+                      </figure>
+                    </article>
+
+                    <!-- Regneark -->
+                    <article class="kv-side kv-ark" data-dok="liste">
+                      <i class="kv-lesehode"></i>
+                      <table>
+                        <thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead>
+                        <tbody>
+                          <tr><th>1</th><td><b>Imię i nazwisko</b></td><td><b>PESEL</b></td><td><b>Telefon</b></td><td><b>IBAN</b></td></tr>
+                          <tr><th>2</th><td><mark class="s"><span class="o">Jan Kowalczyk</span><span class="k">[Imię i nazwisko 1180342]</span></mark></td><td><mark class="s"><span class="o">47 036 892 816</span><span class="k">[PESEL 4402918]</span></mark></td><td><mark class="s"><span class="o">0171 555 0142</span><span class="k">[Telefon 2290174]</span></mark></td><td><mark class="s"><span class="o">0532 013 000</span><span class="k">[IBAN 6630215]</span></mark></td></tr>
+                          <tr><th>3</th><td><mark class="s"><span class="o">Irena Lewandowska</span><span class="k">[Imię i nazwisko 5523107]</span></mark></td><td><mark class="s"><span class="o">65 929 970 489</span><span class="k">[PESEL 8817330]</span></mark></td><td><mark class="s"><span class="o">0152 555 0178</span><span class="k">[Telefon 1047782]</span></mark></td><td><mark class="s"><span class="o">1020 304 050</span><span class="k">[IBAN 3359810]</span></mark></td></tr>
+                          <tr><th>4</th><td><mark class="s"><span class="o">Ahmed Hassan</span><span class="k">[Imię i nazwisko 9918066]</span></mark></td><td><mark class="s"><span class="o">57 549 285 017</span><span class="k">[PESEL 2265419]</span></mark></td><td><mark class="s"><span class="o">0160 555 0111</span><span class="k">[Telefon 7714203]</span></mark></td><td><mark class="s"><span class="o">0648 489 890</span><span class="k">[IBAN 9046631]</span></mark></td></tr>
+                          <tr><th>5</th><td><mark class="s"><span class="o">Maria Szymańska</span><span class="k">[Imię i nazwisko 3301459]</span></mark></td><td><mark class="s"><span class="o">25 768 131 411</span><span class="k">[PESEL 6158820]</span></mark></td><td><mark class="s"><span class="o">0176 555 0166</span><span class="k">[Telefon 4420987]</span></mark></td><td><mark class="s"><span class="o">2270 815 420</span><span class="k">[IBAN 1872264]</span></mark></td></tr>
+                          <tr><th>6</th><td><mark class="s"><span class="o">Jan Wójcik</span><span class="k">[Imię i nazwisko 8045126]</span></mark></td><td><mark class="s"><span class="o">81 872 495 633</span><span class="k">[PESEL 5590743]</span></mark></td><td><mark class="s"><span class="o">0151 555 0127</span><span class="k">[Telefon 3368201]</span></mark></td><td><mark class="s"><span class="o">0417 730 196</span><span class="k">[IBAN 7701358]</span></mark></td></tr>
+                          <tr><th>7</th><td></td><td></td><td></td><td></td></tr>
+                          <tr><th>8</th><td></td><td></td><td></td><td></td></tr>
+                        </tbody>
+                      </table>
+                    </article>
+
+                    <!-- PowerPoint: lysbildet fra fellesturen, med to ansikter -->
+                    <article class="kv-side kv-ppt" data-dok="ppt">
+                      <i class="kv-lesehode"></i>
+                      <div class="kv-lysbilde">
+                        <p class="kv-lb-tittel">Wyjazd integracyjny w lutym</p>
+                        <p class="kv-lb-under">Dziękujemy <mark class="s"><span class="o">Hannie Lis</span><span class="k">[Imię i nazwisko 3390415]</span></mark> i <mark class="s"><span class="o">Piotrowi Stawskiemu</span><span class="k">[Imię i nazwisko 8812706]</span></mark> za organizację!</p>
+                        <div class="kv-lb-foto">
+                          <img src="/alles-klar/assets/visning/fagtur.jpg" alt="" />
+                          <span class="kv-ansikt a1" data-kv="ansikt1"><img src="/alles-klar/assets/visning/fagtur-ansikt-1.jpg" alt="" /><em>Twarz · zostanie rozmyta</em></span>
+                          <span class="kv-ansikt a2" data-kv="ansikt2"><img src="/alles-klar/assets/visning/fagtur-ansikt-2.jpg" alt="" /><em>Twarz · zostanie rozmyta</em></span>
+                        </div>
+                        <p class="kv-lb-bunn">Spotkanie statusowe · slajd 4 z 12</p>
+                      </div>
+                    </article>
+
+                    <div class="kv-gjennom" data-kv="gjennom">
+                      <i class="kv-gjennom-strek" data-kv="gstrek"></i>
+                      <p class="kv-gjennom-topp"><code data-kv="gkode">Dane osobowe 2760056</code><b>Nierozstrzygnięte</b><span data-kv="gnr">1 z 2</span></p>
+                      <p class="kv-gjennom-hvorfor" data-kv="ghvorfor">Wszystko Jasne nie ma pewności, czy to należy do kategorii „Dane osobowe”. · 02-postanowienie-kurator.pdf</p>
+                      <p class="kv-gjennom-knapper">
+                        <span class="kv-btn" data-kv="skjul">Ukryj <kbd>↵</kbd></span>
+                        <span class="kv-btn hvit" data-kv="lastaa">Zostaw <kbd>Z</kbd></span>
+                        <span class="kv-btn hvit av">Wstecz <kbd>←</kbd></span>
+                        <span class="kv-btn hvit">Następny <kbd>→</kbd></span>
+                        <span class="kv-btn hvit">Zakończ <kbd>Esc</kbd></span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <aside class="kv-panel">
+                  <div class="kv-uavklart" data-kv="uavklart">
+                    <h5><svg viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" rx="2" /><path d="M6 2.5v11" /></svg>Nierozstrzygnięte</h5>
+                    <div class="kv-uboks">
+                      <p data-kv="u1"><code>Dane osobowe 2760056</code><span>Uczestniczka od stycznia przebywa…</span><em>1 nierozstrzygnięty</em></p>
+                      <p data-kv="u2"><code>Instytucja 5521093</code><span>Kancelaria Zorza sp.k.</span><em>1 nierozstrzygnięty</em></p>
+                      <span class="kv-btn bred" data-kv="gaa">Sprawdź wszystkie 2 <kbd>S</kbd></span>
+                    </div>
+                  </div>
+                  <div class="kv-imappen">
+                    <h5>W folderze <span><b data-kv="opplysninger">67</b> Dane</span></h5>
+                    <ul data-kv="register">
+                      <li data-n="19" data-s="114"><span>Imiona i nazwiska</span><em>19 · 114 miejsc</em></li>
+                      <li data-n="7" data-s="24"><span>PESEL</span><em>7 · 24 miejsca</em></li>
+                      <li data-n="12" data-s="43"><span>Telefon</span><em>12 · 43 miejsca</em></li>
+                      <li data-n="15" data-s="53"><span>E-mail</span><em>15 · 53 miejsca</em></li>
+                      <li data-n="7" data-s="29"><span>Adresy</span><em>7 · 29 miejsc</em></li>
+                      <li data-n="6" data-s="13"><span>Rachunki</span><em>6 · 13 miejsc</em></li>
+                      <li data-n="1" data-s="2"><span>Numery rejestracyjne</span><em>1 · 2 miejsca</em></li>
+                      <li data-n="3" data-s="12"><span>Szczególne kategorie</span><em>3 · 12 miejsc</em></li>
+                      <li data-n="3" data-s="3" data-kv="ansikter"><span>Twarze</span><em>3 · 3 miejsca</em></li>
+                    </ul>
+                  </div>
+                  <div class="kv-bunn">
+                    <p><b data-kv="skjules">292</b> ukryte <b data-kv="faarstaa">1</b> zostawione</p>
+                    <p class="kv-bunn-knapper">
+                      <span class="kv-btn hvit oransje" data-kv="ubtn"><i></i>Nierozstrzygnięte 2</span>
+                      <span class="kv-btn stor" data-kv="lag">Utwórz 10 kopii</span>
+                    </p>
+                  </div>
+                </aside>
+              </div>
+
+              <!-- Tekstverktøy: et ark å skrive eller lime inn på -->
+              <div class="kv-scene kv-s-tekst">
+                <div class="kv-rt-linje">
+                  <span class="kv-rt-tilbake">‹ Ekran startowy</span>
+                  <span class="kv-faner"><span class="på" data-kv="fanerens"><i>1</i>Oczyść tekst</span><span data-kv="fanetb"><i>2</i>Przywróć tekst</span></span>
+                  <span class="kv-faner kv-rt-visning"><span class="på" data-kv="rtorig">Oryginał</span><span data-kv="rtrenset">Oczyszczony</span></span>
+                  <span class="kv-btn" data-kv="rtkopier">Kopiuj</span>
+                </div>
+                <div class="kv-rt-kropp">
+                  <div class="kv-rt-ark" data-kv="rtark"><p data-kv="rttekst"></p><i class="kv-markor"></i><p class="kv-rt-svar" data-kv="rtsvar"></p></div>
+                  <aside class="kv-rt-liste">
+                    <h5 data-kv="rtlistetittel">Zostanie ukryte</h5>
+                    <ul data-kv="rtliste"></ul>
+                    <p class="kv-rt-merke">Tekst jest odczytywany na tym komputerze. Nic nie jest wysyłane.</p>
+                  </aside>
+                </div>
+                <p class="kv-toast" data-kv="toast">Skopiowano</p>
+              </div>
+
+              <!-- Skrivebordet: Finder med høyreklikk › Hurtighandlinger › Rens med Klart -->
+              <div class="kv-scene kv-s-finder kv-skrivebord">
+                <div class="kv-finder">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><span class="kv-pil">‹ ›</span><b>Dokumenty</b></div>
+                  <div class="kv-finder-kropp">
+                    <ul class="kv-sidefelt">
+                      <li class="kv-sf-h">Ulubione</li>
+                      <li>Biurko</li>
+                      <li class="på">Dokumenty</li>
+                      <li>Pobrane</li>
+                      <li class="kv-sf-h">Miejsca</li>
+                      <li>iCloud Drive</li>
+                    </ul>
+                    <div class="kv-ikoner">
+                      <span class="kv-mappe" data-kv="fmappe"><i></i>Akta klientów</span>
+                      <span class="kv-mappe"><i></i>Wniosek z marca</span>
+                      <span class="kv-mappe"><i></i>Księgowość 2025</span>
+                      <span class="kv-dokikon"><i>PDF</i>umowa-acme.pdf</span>
+                      <span class="kv-dokikon w"><i>W</i>Protokół 10.11.docx</span>
+                      <span class="kv-mappe ny" data-kv="fny"><i></i>Akta klientów-jasne</span>
+                    </div>
+                  </div>
+                  <ul class="kv-meny" data-kv="meny">
+                    <li>Otwórz</li>
+                    <li>Otwórz w nowej karcie</li>
+                    <li class="kv-skille"></li>
+                    <li>Przenieś do Kosza</li>
+                    <li class="kv-skille"></li>
+                    <li>Informacje</li>
+                    <li>Zmień nazwę</li>
+                    <li>Kompresuj „Akta klientów”</li>
+                    <li>Duplikuj</li>
+                    <li class="kv-skille"></li>
+                    <li>Kopiuj</li>
+                    <li>Udostępnij…</li>
+                    <li class="kv-skille"></li>
+                    <li class="kv-under" data-kv="hurtig">Szybkie czynności<span>›</span></li>
+                    <li class="kv-under">Usługi<span>›</span></li>
+                  </ul>
+                  <ul class="kv-meny kv-undermeny" data-kv="undermeny">
+                    <li data-kv="rensmed">Oczyść za pomocą Wszystko Jasne</li>
+                    <li>Przywróć za pomocą Wszystko Jasne</li>
+                    <li class="kv-skille"></li>
+                    <li>Dostosuj…</li>
+                  </ul>
+                </div>
+                <div class="kv-varsel" data-kv="varsel">
+                  <img src="ikona.png" alt="" />
+                  <p><b data-kv="vtittel">Trwa oczyszczanie „Akta klientów”…</b><span data-kv="vtekst">Kopie zostaną zapisane obok. Po zakończeniu pojawi się powiadomienie.</span></p>
+                  <small>teraz</small>
+                </div>
+              </div>
+
+              <!-- Skrivebordet: et KI-verktøy som bare får kodene -->
+              <div class="kv-scene kv-s-ki kv-skrivebord">
+                <div class="kv-ki">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><b>Asystent AI</b></div>
+                  <div class="kv-ki-samtale">
+                    <div class="kv-ki-bruker" data-kv="kibruker">
+                      <p>Napisz krótką odpowiedź na tę wiadomość:</p>
+                      <p class="kv-ki-sitat">Dzień dobry! Czy może Pan dziś zadzwonić do <code>[Imię i nazwisko 6311794]</code> pod numer <code>[Telefon 6289990]</code> ? Przeprowadziła się na <code>[Adres 8950779]</code> , a pensja ma teraz wpływać na rachunek <code>[IBAN 7719741]</code> .</p>
+                    </div>
+                    <div class="kv-ki-svar" data-kv="kisvar"><p data-kv="kisvartekst"></p><span class="kv-ki-kopier" data-kv="kikopier">Kopiuj odpowiedź</span></div>
+                  </div>
+                  <div class="kv-ki-felt" data-kv="kifelt"><span>Napisz wiadomość…</span><i>↑</i></div>
+                </div>
+                <p class="kv-ki-merke">AI dostaje tylko kody. Imię i nazwisko, telefon, adres i rachunek zostają na komputerze.</p>
+              </div>
+
+              <!-- «Før skanningen»: over startskjermen, når mappen er valgt -->
+              <div class="kv-slor kv-s-forvalg">
+                <div class="kv-modal">
+                  <h4>Akta klientów</h4>
+                  <p class="kv-modal-under">10 plików · docx, eml, jpg, md, pdf, pptx, xlsx</p>
+                  <div class="kv-maate">
+                    <p class="på"><i></i><span><b>Z analizą</b>Wszystko Jasne czyta pliki i zaznacza to, co znajdzie. Potem przegląda się wszystko i decyduje.</span></p>
+                    <p><i></i><span><b>Bez analizy</b>Nic nie jest zaznaczone z góry. Klika się to, co ma zostać ukryte.</span></p>
+                  </div>
+                  <p class="kv-sammen"><span><small>Analiza szuka i ukrywa</small>Imiona i nazwiska, numery i dokumenty, telefon i e-mail, szczególne kategorie, numery rejestracyjne, rachunki, twarze i 5 innych</span><em>Zmień</em></p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Anuluj</span>
+                    <span class="kv-btn stor" data-kv="skann">Analizuj <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- «Før kopiene lages»: formen kopiene får -->
+              <div class="kv-slor kv-s-kopivalg">
+                <div class="kv-modal kv-kopivalg">
+                  <h4>Przed utworzeniem kopii</h4>
+                  <p class="kv-modal-under">10 plików · kopie trafią do Akta klientów-jasne</p>
+                  <div class="kv-maate kv-former" data-kv="former">
+                    <p class="på" data-form="kort"><i></i><span><b>Krótki kod i lista kodów</b>Łatwe w czytaniu. Można odtworzyć kluczem organizacji.<code>[Imię i nazwisko 4814887] + lista</code></span></p>
+                    <p data-form="full"><i></i><span><b>Pełny kod w tekście</b>Bez listy. Można odtworzyć, ale trudno się czyta.</span></p>
+                    <p data-form="lapp"><i></i><span><b>Tylko etykiety</b>Łatwe w czytaniu, ale nie można odtworzyć oryginału.</span></p>
+                    <p data-form="svart"><i></i><span><b>Czarne pola (PDF)</b>To, co tam było, znika na dobre.<code class="kv-svartprove"></code></span></p>
+                  </div>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Anuluj</span>
+                    <span class="kv-btn stor" data-kv="lagnaa">Utwórz 10 kopii <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Kopiene er laget -->
+              <div class="kv-slor kv-s-ferdig">
+                <div class="kv-ferdig">
+                  <p class="kv-stor">Wszystko jasne.</p>
+                  <p>Utworzono 10 kopii. Oryginały pozostają nietknięte. Przed przekazaniem kopii trzeba je przeczytać.</p>
+                  <p class="kv-sti"><span>Dokumenty/</span>Akta klientów-jasne/</p>
+                  <p class="kv-liten">Lista kodów jest na końcu każdej kopii.</p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit">Wróć do folderu</span>
+                    <span class="kv-btn">Otwórz kopie</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+          <span class="kv-peker" aria-hidden="true"></span>
+          <!-- Kapitlene: hopper i avspillingen. Det som spilles nå, er markert. -->
+          <ol class="kv-kapitler" data-kv="kapitler" aria-label="Rozdziały podglądu">
+            <li><button type="button" data-kapittel="0">Oczyść folder</button></li>
+            <li><button type="button" data-kapittel="1">Przegląd</button></li>
+            <li><button type="button" data-kapittel="2">Kopie</button></li>
+            <li><button type="button" data-kapittel="3">Prawy przycisk w Finderze</button></li>
+            <li><button type="button" data-kapittel="4">Oczyść i przywróć tekst</button></li>
+          </ol>
+          <!-- Lesingen spilles av mye raskere enn den går på en vanlig maskin. Det skal stå. -->
+          <p class="kv-spol" aria-hidden="true">
+            <svg viewBox="0 0 20 12"><path d="M1 1l8 5-8 5zM10 1l8 5-8 5z" /></svg>
+            <span>Przewinięte. Czas odczytu zależy od komputera. Na zwykłym laptopie trwa to dłużej.</span>
+          </p>
+          <figcaption class="skjult-tekst">
+            Tak działa Wszystko Jasne. Po wybraniu folderu Wszystko Jasne czyta pliki, także PDF, e-maile, arkusze, PowerPoint i obrazy, i zaznacza imiona i nazwiska, numery PESEL, dane kontaktowe, adresy, numery rachunków, dane szczególnych kategorii, numery rejestracyjne oraz twarze, które zostaną rozmyte. To, czego Wszystko Jasne nie jest pewne, przegląda się samodzielnie i decyduje: ukryć czy zostawić. Kopie mogą zawierać krótkie kody z listą kodów, pełne kody, same etykiety albo czarne pola, a oryginały pozostają nietknięte. W Finderze folder można oczyścić prawym przyciskiem › Szybkie czynności › Oczyść za pomocą Wszystko Jasne. Tekst z kodami można przekazać narzędziu AI, a odpowiedź przywrócić w Wszystko Jasne, tak że imiona i nazwiska wracają, choć AI ich nie widziała. Odczyt jest przewinięty: czas zależy od komputera.
+          </figcaption>
+        </figure>
+    <script src="forhandsvisning.js"></script>
+    <script src="programvindu.js"></script>
+  </body>
+</html>

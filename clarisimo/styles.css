@@ -1,0 +1,4397 @@
+/* ==========================================================================
+   Klart - landingsside
+   Rolig, lys flate med god luft. Programvinduet er det eneste mørke objektet.
+   ========================================================================== */
+
+:root {
+  --ink: #15202e;
+  --ink-2: #4d5b6c;
+  --ink-3: #8492a4;
+  --ink-4: #adbbcb;
+
+  --ground: #eef3fb;
+  --ground-2: #e4ecf9;
+  --card: #ffffff;
+  --rule: #dbe4f1;
+  --rule-2: #e8eef8;
+
+  --signal: #2456e6;
+  --signal-deep: #1a3fb0;
+  --signal-lit: #6f9bf5;
+  --signal-soft: #e2ebfd;
+  --flag: #c02744;
+  --ok: #0e7a5a;
+
+  /* Programvinduet */
+  --chrome: #16233a;
+  --chrome-2: #1e2f4b;
+  --chrome-3: #27395a;
+  --chrome-line: rgba(255, 255, 255, 0.1);
+  --chrome-line-2: rgba(255, 255, 255, 0.19);
+  --chrome-fog: #ccd8ea;
+  --chrome-mist: #93a4bd;
+  --doc: #fbfcfe;
+
+  --sans: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+  --serif: "Newsreader", Georgia, serif;
+
+  --gut: clamp(22px, 6vw, 104px);
+  --r: 12px;
+  --r-sm: 8px;
+  --shadow: 0 1px 2px rgba(21, 32, 46, 0.04), 0 10px 28px -14px rgba(26, 63, 176, 0.22);
+  --ease: cubic-bezier(0.22, 0.7, 0.26, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 96px;
+}
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16.5px;
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+ul,
+ol,
+dl,
+figure {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.wrap {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+/* --------------------------------------------------------------------------
+   Toppbar
+   -------------------------------------------------------------------------- */
+
+/* Menyen er skjult øverst, så filmen får hele skjermen. Den glir inn når man
+   scroller (klassen «synlig» settes i index.html), eller når den får fokus. */
+.topbar {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 40;
+  transform: translateY(-100%);
+  opacity: 0;
+  transition: transform 420ms var(--ease), opacity 320ms var(--ease);
+}
+
+.topbar.synlig,
+.topbar:focus-within {
+  transform: none;
+  opacity: 1;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  height: 66px;
+  padding: 0 var(--gut);
+  background: rgba(238, 243, 251, 0.72);
+  -webkit-backdrop-filter: saturate(1.3) blur(14px);
+  backdrop-filter: saturate(1.3) blur(14px);
+}
+
+.wordmark {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: none;
+}
+
+.wordmark b {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.wordmark span {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-3);
+  padding-top: 2px;
+}
+
+.topnav {
+  display: flex;
+  gap: 28px;
+  margin-left: 14px;
+  font-size: 14.5px;
+  color: var(--ink-2);
+}
+
+.topnav a {
+  transition: color 160ms var(--ease);
+}
+
+.topnav a:hover {
+  color: var(--signal);
+}
+
+.topbar .btn {
+  margin-left: auto;
+  flex: none;
+}
+
+/* --------------------------------------------------------------------------
+   Knapper
+   -------------------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  height: 46px;
+  padding: 0 22px;
+  border-radius: 100px;
+  background: var(--signal);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.008em;
+  border: 1px solid var(--signal);
+  box-shadow: 0 8px 20px -10px rgba(36, 86, 230, 0.7);
+  transition: background 180ms var(--ease), border-color 180ms var(--ease),
+    color 180ms var(--ease), transform 180ms var(--ease),
+    box-shadow 180ms var(--ease);
+}
+
+.btn:hover {
+  background: var(--signal-deep);
+  border-color: var(--signal-deep);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px -10px rgba(36, 86, 230, 0.75);
+}
+
+.btn.sm {
+  height: 36px;
+  padding: 0 16px;
+  font-size: 13px;
+}
+
+.btn.ghost {
+  background: var(--card);
+  color: var(--ink);
+  border-color: var(--rule);
+  box-shadow: none;
+}
+
+.btn.ghost:hover {
+  background: var(--card);
+  color: var(--signal);
+  border-color: var(--signal-lit);
+  box-shadow: 0 10px 22px -12px rgba(36, 86, 230, 0.45);
+}
+
+.btn:has(.ned) {
+  gap: 0;
+}
+
+.btn .os {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  opacity: 0.6;
+}
+
+/* --------------------------------------------------------------------------
+   Seksjoner
+   -------------------------------------------------------------------------- */
+
+section {
+  padding: clamp(76px, 9.5vw, 152px) var(--gut);
+}
+
+.slug {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 26px;
+}
+
+.slug i {
+  font-style: normal;
+  color: var(--signal);
+  margin-right: 10px;
+}
+
+.title {
+  font-size: clamp(27px, 3.2vw, 42px);
+  line-height: 1.13;
+  font-weight: 700;
+  letter-spacing: -0.024em;
+  max-width: 18ch;
+}
+
+.title .mut {
+  color: var(--ink-3);
+}
+
+.sub {
+  max-width: 52ch;
+  color: var(--ink-2);
+  font-size: 17px;
+}
+
+.intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(26px, 5vw, 88px);
+  align-items: end;
+  margin-bottom: clamp(44px, 5.5vw, 76px);
+}
+
+/* --------------------------------------------------------------------------
+   Hero
+   -------------------------------------------------------------------------- */
+
+.hero {
+  position: relative;
+  padding-top: 0;
+  padding-bottom: clamp(46px, 6vw, 76px);
+  text-align: center;
+}
+
+/* Scenen: vinterbildet fra appen over hele bredden, med mye himmel og luft.
+   All teksten står samlet midt i bildet, uten slør over. */
+.scene {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: max(640px, 100svh);
+  margin: 0 calc(-1 * var(--gut));
+  /* Klassisk hero: teksten midt i bildet, med luft over og under. */
+  padding: clamp(72px, 10vh, 120px) var(--gut);
+  overflow: hidden;
+  isolation: isolate;
+  /* Uten dette kan en tynn strek av filmen skimte under den siste overgangen. */
+  margin-bottom: -1px;
+  background: #dfe8f2;
+}
+
+.scene-bilde {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 8%;
+  pointer-events: none;
+}
+
+.scene-tekst {
+  position: relative;
+}
+
+.hero .scene .tag {
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.hero .scene .lead {
+  color: var(--ink);
+  margin-top: 20px;
+}
+
+/* Hva Klart er, under filtypene: tre hvite kort etter hverandre med god luft mellom.
+   Ikonet på den ene siden og teksten på den andre; annethvert kort bytter side.
+   Ikonene har helt hvit bakgrunn, så de glir inn i kortet uten kant. Stables under 760px. */
+.hero .om {
+  display: grid;
+  gap: clamp(28px, 3.4vw, 48px);
+  max-width: 960px;
+  margin: clamp(64px, 7vw, 112px) auto 0;
+  text-align: left;
+}
+
+.hero .om-del {
+  display: grid;
+  grid-template-columns: clamp(160px, 17vw, 240px) minmax(0, 1fr);
+  grid-template-areas: "bilde tekst";
+  gap: clamp(32px, 4.4vw, 72px);
+  align-items: center;
+  padding: clamp(32px, 4vw, 56px) clamp(32px, 4.6vw, 72px);
+  border-radius: 28px;
+  background: #fff;
+  box-shadow: 0 1px 0 var(--rule), 0 24px 56px -28px rgba(26, 63, 176, 0.24);
+}
+
+.hero .om-del:nth-child(even) {
+  grid-template-columns: minmax(0, 1fr) clamp(160px, 17vw, 240px);
+  grid-template-areas: "tekst bilde";
+}
+
+.hero .om img {
+  grid-area: bilde;
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+}
+
+.hero .om-tekst {
+  grid-area: tekst;
+  max-width: 44ch;
+}
+
+.hero .om h3 {
+  color: var(--ink);
+  font-size: clamp(24px, 2.4vw, 34px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.hero .om p {
+  margin-top: 14px;
+  color: var(--ink-2);
+  font-size: clamp(16.5px, 1.25vw, 19px);
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.hero .om h3 + p {
+  margin-top: 18px;
+}
+
+.hero .om a {
+  color: var(--signal-deep);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.hero .om a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 760px) {
+  .hero .om-del,
+  .hero .om-del:nth-child(even) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "bilde" "tekst";
+    gap: 20px;
+    padding: 32px 24px 36px;
+    text-align: center;
+  }
+
+  .hero .om img {
+    width: 150px;
+    margin: 0 auto;
+  }
+
+  .hero .om-tekst {
+    margin: 0 auto;
+  }
+}
+
+.hero .scene .get {
+  margin-top: 30px;
+}
+
+.hero .scene .btn.ghost {
+  background: rgba(255, 255, 255, 0.88);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+/* Uten tåke over bildet: det som står rett på snøen, får en lys bakgrunn, og den blå linjen er mørkere mot himmelen. */
+.hero .scene .fineprint {
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 5px 14px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.hero .scene .fineprint {
+  color: var(--ink-2);
+}
+
+/* Overskriften ligger rett på fotografiet, og himmelen skifter fra lys til
+   mørk over bildet. Bak bokstavene ligger en dis: tre myke ellipser som
+   overlapper hverandre på skrå, så kanten aldri blir en firkant - den tynnes
+   ut som en sky. Et jevnt text-shadow ble prøvd først og forkastet: uansett
+   hvor mykt det var, la det seg som en rute rundt linja. Det tetteste laget
+   er igjen, bare for kanten på bokstavene. */
+.hero .scene h1 {
+  padding: clamp(10px, 1.6vh, 24px) clamp(20px, 4vw, 70px);
+  color: #fff;
+  /* Hvit skrift rett på fotografiet. Tre lag mørk skygge gir kant og løfter
+     den fra flata: ett tett for kanten, to myke for dybden. Dis bak mørk
+     skrift ble prøvd først - den leste greit, men hvit skrift holder hele
+     heroen i samme toneart som merket og kortet. */
+  text-shadow:
+    0 1px 2px rgba(10, 20, 34, 0.45),
+    0 2px 14px rgba(10, 20, 34, 0.4),
+    0 0 44px rgba(10, 20, 34, 0.3);
+}
+
+/* Store skjermer (1920 × 1080 og opp): teksten vokser med skjermen, så heroen
+   ikke ser liten ut. Laptop og mobil er som før. */
+@media (min-width: 1500px) {
+  .hero .scene h1 {
+    font-size: clamp(60px, 4.4vw, 104px);
+    max-width: 22ch;
+  }
+
+  .hero .scene .lead {
+    max-width: 62ch;
+    font-size: clamp(18px, 1.12vw, 24px);
+    margin-top: 28px;
+  }
+
+
+  .hero .scene .tag {
+    font-size: clamp(11.5px, 0.7vw, 14px);
+    padding: 9px 20px 8px;
+    margin-bottom: 36px;
+  }
+
+  .hero .scene .get {
+    margin-top: 42px;
+    gap: 16px;
+  }
+
+  .hero .scene .btn {
+    height: clamp(52px, 3.6vw, 66px);
+    padding: 0 clamp(24px, 1.9vw, 38px);
+    font-size: clamp(15px, 0.95vw, 19px);
+  }
+
+  .hero .scene .fineprint {
+    margin-top: 22px;
+    font-size: clamp(11px, 0.62vw, 13px);
+  }
+}
+
+/* Windows-knappen før pakken ligger ute. */
+.btn.kommer,
+.btn.kommer:hover {
+  cursor: default;
+  color: var(--ink-3);
+  background: rgba(255, 255, 255, 0.7);
+  border-color: var(--rule);
+  box-shadow: none;
+  transform: none;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--signal-deep);
+  background: var(--signal-soft);
+  border: 1px solid rgba(36, 86, 230, 0.18);
+  border-radius: 100px;
+  padding: 7px 15px 6px;
+  margin-bottom: 30px;
+}
+
+.tag em {
+  font-style: normal;
+  color: var(--signal-lit);
+}
+
+.hero h1 {
+  font-size: clamp(32px, 4.7vw, 60px);
+  line-height: 1.06;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  max-width: 25ch;
+  margin: 0 auto;
+}
+
+.hero h1 span {
+  display: block;
+  background: linear-gradient(96deg, var(--signal) 8%, var(--signal-lit) 92%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero .lead {
+  max-width: 58ch;
+  margin: 26px auto 0;
+  color: var(--ink-2);
+  font-size: 18px;
+}
+
+.get {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 38px;
+}
+
+.fineprint {
+  margin-top: 18px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: var(--ink-3);
+}
+
+/* --------------------------------------------------------------------------
+   Org.nr. eller navn, med forslag fra Enhetsregisteret (orgfelt.js).
+   Brukes på forsiden (nedlasting) og prissiden.
+   -------------------------------------------------------------------------- */
+
+.orgfelt {
+  position: relative;
+}
+
+.orgforslag {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  box-shadow: 0 18px 40px -16px rgba(21, 32, 46, 0.35);
+}
+
+.orgforslag button {
+  display: grid;
+  gap: 1px;
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 8px;
+  text-align: left;
+  font-size: 14.5px;
+  color: var(--ink);
+}
+
+.orgforslag button small {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+.orgforslag button.aktiv,
+.orgforslag button:hover {
+  background: var(--signal-soft);
+}
+
+/* Nedlasting på forsiden: virksomheten først, så knappene. Ingen pris her; den
+   kommer først når de vil kjøpe. Store virksomheter får høre om skreddersydd oppsett. */
+.orgport {
+  /* Over linja under, så forslagene ikke får den gjennom seg når feltet er løftet. */
+  position: relative;
+  z-index: 5;
+  width: min(580px, 100%);
+  margin: 22px auto 0;
+}
+
+.orgport-rad {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  text-align: left;
+}
+
+.orgport input {
+  width: 100%;
+  height: 60px;
+  padding: 0 24px;
+  font: inherit;
+  font-size: 17.5px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid var(--rule);
+  border-radius: 100px;
+  box-shadow: 0 12px 30px -16px rgba(21, 32, 46, 0.45);
+}
+
+.orgport input:focus {
+  outline: 2px solid rgba(36, 86, 230, 0.35);
+  outline-offset: 1px;
+  border-color: var(--signal-lit);
+}
+
+.orgport .btn {
+  height: 60px;
+  padding: 0 28px;
+  font-size: 16px;
+}
+
+.skjult-tekst {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   To veier videre. Privatpersoner laster ned og bruker Klart gratis, uten å
+   fylle ut noe; virksomheter går gjennom org.nr-feltet og får 30 dager.
+   Blokka står alltid rett over feltet, både i heroen og i bunnen.
+   -------------------------------------------------------------------------- */
+
+.privat {
+  width: min(580px, 100%);
+  margin: 22px auto 0;
+  text-align: center;
+}
+
+.privat .get {
+  margin-top: 0;
+}
+
+.privat-linje,
+.virk-linje {
+  margin: 0;
+  font-size: 15.5px;
+  color: var(--ink-2);
+  text-align: center;
+}
+
+/* Linja står over knappene, så luften hører hjemme under den. */
+.privat-linje {
+  margin-bottom: 14px;
+}
+
+.virk-linje {
+  margin-top: 12px;
+}
+
+.privat-linje b,
+.virk-linje b {
+  color: var(--ink);
+  font-weight: 650;
+}
+
+/* Skillet mellom de to veiene: en tynn strek med ordet midt i. */
+.eller {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 20px 0 0;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.eller::before,
+.eller::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+}
+
+/* Over vinterbildet er lys tekst på lys snø. Linjene får samme glass som
+   merkelappen øverst, så de kan leses uansett hva de ligger over. */
+.hero .scene .privat-linje span,
+.hero .scene .virk-linje span,
+.hero .scene .eller span {
+  display: inline-block;
+  padding: 6px 16px 7px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 10px 26px -18px rgba(21, 32, 46, 0.5);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+/* Streken ville skåret tvers over hytta. I bildet står ordet alene. */
+.hero .scene .eller::before,
+.hero .scene .eller::after {
+  display: none;
+}
+
+.hero .scene .eller {
+  justify-content: center;
+  /* Luften her løfter knappene og linja klar av hytta. */
+  margin-top: 46px;
+}
+
+/* Er virksomheten slått opp, er privatveien bare støy over kortet deres. */
+.privat:has(+ .orgport.svar) {
+  display: none;
+}
+
+/* Ordet «Klart» er overskriften, stort i himmelen der setningen sto. Settes
+   som appens .mark (src/styles.css): Literata kursiv i vekt 600. Bare 400
+   finnes som fil, så nettleseren lager halvfeten selv, akkurat som i appen. */
+.hero .scene .scene-tekst > h1.hero-logo {
+  max-width: none;
+  /* Skyggen ligger på ordet selv. Klipper boksen, blir skyggen kuttet i en
+     rett kant; derfor synlig overløp her. */
+  overflow: visible;
+  text-shadow: none;
+}
+
+.hero-logo .logo-ord {
+  font-family: "Literata", "Iowan Old Style", Georgia, serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(56px, 6.4vw, 124px);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: #fff;
+  background: none;
+  text-shadow: 0 1px 2px rgba(10, 20, 34, 0.2), 0 2px 12px rgba(10, 20, 34, 0.08);
+}
+
+/* Komposisjonen: overskriften i himmelen, feltet nede i snøen og hytta fri mellom dem.
+   Overskriften står høyere enn før, så de to veiene får plass mellom den og feltet. */
+.hero .scene {
+  justify-content: flex-start;
+  padding-top: clamp(48px, 9vh, 112px);
+  padding-bottom: clamp(84px, 16vh, 190px);
+}
+
+.hero .scene:has(.har-svar) {
+  justify-content: center;
+  padding-top: clamp(72px, 10vh, 120px);
+  padding-bottom: clamp(72px, 10vh, 120px);
+}
+
+.hero .scene-tekst {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero .scene-tekst.har-svar {
+  flex: none;
+  display: block;
+}
+
+.hero .scene-tekst:not(.har-svar) > .orgport {
+  margin-top: auto;
+}
+
+/* Overskriften øverst, nedlastingen og feltet samlet nede mot sporet, og luft
+   imellom som gir etter - men aldri helt. Rad 2 (minimum 28px) er grunnen til
+   at knappene ikke kan legge seg oppå overskriften, uansett vindusform; rad 5
+   holder gruppa litt over bunnen. Forholdet 1fr : 0,7fr gir mer luft over enn
+   under, så feltet lander nede i snøen der sporene møtes. */
+.hero .scene-tekst:not(.har-svar) {
+  display: grid;
+  grid-template-rows: auto minmax(28px, 1fr) auto auto minmax(0, 0.7fr);
+  align-content: stretch;
+  transition: grid-template-rows 520ms var(--ease);
+}
+
+/* Ordet og kortet står samlet midt i heroen, med fast avstand mellom seg.
+   Gjelder bare før de skriver; da tar .skriver over med sine egne rader. */
+.hero .scene-tekst:not(.har-svar):not(.skriver) {
+  grid-template-rows: auto clamp(24px, 4.2vh, 56px) auto auto 0px;
+  align-content: center;
+}
+
+.hero .scene-tekst:not(.har-svar) > h1 {
+  grid-row: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.hero .scene-tekst:not(.har-svar) > .privat {
+  grid-row: 3;
+  padding-bottom: 26px;
+}
+
+.hero .scene-tekst:not(.har-svar) > .orgport {
+  grid-row: 4;
+  margin-top: 0;
+}
+
+/* Tilbake fra prissiden: kortet står der med en gang, uten feltet først og uten animasjon. */
+.kommer-tilbake .hero .scene-tekst {
+  visibility: hidden;
+}
+
+.uten-feiring .orgport-svar-hoved,
+.uten-feiring .orgport-svar-hoved *,
+.uten-feiring .orgport-svar-hoved *::before,
+.uten-feiring .orgport-svar-hoved *::after {
+  animation: none !important;
+}
+
+/* Heroen har én oppgave: feltet og knappen, store og midt i bildet. Forklaringen står rett under bildet. */
+@media (min-width: 561px) {
+  .hero .scene .orgport:not(.svar),
+  .hero .scene .privat {
+    width: min(860px, 100%);
+  }
+
+  /* Gratis for privatpersoner er hovedtilbudet nå; knappene skal ikke være de minste i bildet. */
+  .hero .scene .privat .btn {
+    height: 60px;
+    padding: 0 32px;
+    font-size: 16.5px;
+  }
+
+  /* Knappen ligger inne i feltet, så de leses som én ting. */
+  .hero .scene .orgport:not(.svar) .orgport-rad {
+    position: relative;
+    display: block;
+  }
+
+  .hero .scene .orgport:not(.svar) input {
+    height: 84px;
+    padding: 0 250px 0 72px;
+    font-size: 22px;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232456e6' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M16.5 16.5 21 21'/%3E%3C/svg%3E") 30px center / 26px no-repeat;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 16px 40px -18px rgba(21, 32, 46, 0.5);
+    animation: felt-puls 2200ms ease-out 2;
+  }
+
+  .hero .scene .orgport:not(.svar) input::placeholder {
+    color: var(--ink-2);
+    opacity: 1;
+  }
+
+  .hero .scene .orgport:not(.svar) .btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+    height: 64px;
+    padding: 0 30px;
+    font-size: 18px;
+  }
+
+  /* Forslagene har samme størrelse som feltet. */
+  .hero .scene .orgforslag {
+    top: calc(100% + 10px);
+    max-height: calc(100vh - 220px);
+    overflow-y: auto;
+    padding: 10px;
+    border-radius: 24px;
+  }
+
+  .hero .scene .orgforslag button {
+    gap: 5px;
+    padding: 20px 26px;
+    border-radius: 16px;
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  .hero .scene .orgforslag button small {
+    font-size: 15px;
+    font-weight: 400;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Kortet i heroen. Begge veiene - nedlasting for privatpersoner og feltet for
+   virksomheter - ligger i ett hvitt kort på snøen. Da trenger ikke hver linje
+   sitt eget glass for å kunne leses, og de to leses som én ting.
+   Valgt 5.11.2026 av fem utkast; de fire andre ligger i git-historikken
+   (varianter.css, commit c253603).
+   -------------------------------------------------------------------------- */
+
+/* Ett kort, ikke to bokser oppå hverandre: flata er et eget felt i rutenettet
+   som dekker begge radene. To bokser viste en skjøt der de møttes. */
+.hero .scene-tekst:not(.har-svar)::after {
+  content: "";
+  grid-row: 3 / span 2;
+  grid-column: 1;
+  z-index: 0;
+  /* Rutenettet midtstiller feltene (align-items: center), så uten dette får
+     flata ingen høyde i det hele tatt. */
+  align-self: stretch;
+  width: min(760px, 100%);
+  justify-self: center;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.975);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 34px 80px -44px rgba(21, 32, 46, 0.75);
+}
+
+/* Uten dette havner de i en ny spalte ved siden av flata: et felt som ikke
+   selv sier hvilken spalte det hører til, blir flyttet dit det er ledig. */
+.hero .scene-tekst:not(.har-svar) > h1,
+.hero .scene-tekst:not(.har-svar) > .privat,
+.hero .scene-tekst:not(.har-svar) > .orgport {
+  grid-column: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.hero .scene-tekst:not(.har-svar) > .privat {
+  width: min(760px, 100%);
+  margin: 0 auto;
+  padding: 50px 44px 28px;
+}
+
+.hero .scene-tekst:not(.har-svar) > .orgport {
+  width: min(760px, 100%);
+  margin: 0 auto;
+  padding: 0 44px 38px;
+}
+
+.hero .scene .privat-linje span,
+.hero .scene .virk-linje span,
+.hero .scene .eller span {
+  padding: 0;
+  background: none;
+  border: none;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.hero .scene .eller {
+  margin-top: 20px;
+}
+
+.hero .scene .privat-linje {
+  margin-bottom: 30px;
+  font-size: clamp(24px, 2.1vw, 32px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.hero .scene .privat-linje b {
+  font-weight: 700;
+}
+
+/* «Last ned» står én gang over de tre knappene, som bare har navnet på
+   systemet. Overskriften over får mindre luft under seg, så de to linjene og
+   knappene leses som én blokk. */
+.hero .scene .privat .privat-linje {
+  margin-bottom: 18px;
+}
+
+.hero .scene .last-ned-tittel {
+  margin: 0 0 12px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: #fff;
+}
+
+.hero .scene .privat .last-ned-tittel + .get {
+  margin-top: 0;
+}
+
+/* Knappene har bare systemnavnet, så de kan være like brede. */
+.hero .scene .privat .get .btn {
+  min-width: 150px;
+  justify-content: center;
+}
+
+/* Knappene er hvite på et hvitt kort, og forsvinner. De får sin egen flate i
+   samme blå familie som merkelappen øverst på siden: tydelig at de kan
+   trykkes, uten at én av dem ser ut som den anbefalte. */
+.hero .scene .privat .get {
+  gap: 10px;
+}
+
+.hero .scene .privat .btn,
+.hero .scene .privat .btn.ghost {
+  height: 60px;
+  padding: 0 28px;
+  font-size: 16.5px;
+  font-weight: 600;
+  color: var(--signal-deep);
+  background: var(--signal-soft);
+  border-color: rgba(36, 86, 230, 0.16);
+  box-shadow: none;
+}
+
+.hero .scene .privat .btn:hover,
+.hero .scene .privat .btn.ghost:hover {
+  color: #fff;
+  background: var(--signal);
+  border-color: var(--signal);
+  box-shadow: 0 10px 24px -12px rgba(36, 86, 230, 0.8);
+}
+
+.hero .scene .eller::before,
+.hero .scene .eller::after {
+  display: block;
+  background: var(--rule);
+}
+
+@media (min-width: 561px) {
+  .hero .scene .orgport:not(.svar) input {
+    height: 60px;
+    padding: 0 200px 0 52px;
+    font-size: 17px;
+    background-position: 22px center;
+    background-size: 20px;
+    border-color: var(--rule);
+    box-shadow: none;
+    animation: none;
+  }
+
+  .hero .scene .orgport:not(.svar) .btn {
+    top: 7px;
+    right: 7px;
+    height: 46px;
+    padding: 0 22px;
+    font-size: 15px;
+  }
+}
+
+/* Privatdelen beholder margene sine mens den toner ut; bare raden den står i
+   faller sammen. Endrer marger seg underveis, hopper innholdet. */
+.hero .scene-tekst.skriver:not(.har-svar) > .privat {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Feltet trekker blikket til seg de første sekundene, så stopper pulsen. */
+@keyframes felt-puls {
+  0% {
+    box-shadow: 0 16px 40px -18px rgba(21, 32, 46, 0.5), 0 0 0 0 rgba(36, 86, 230, 0.4);
+  }
+  70%,
+  100% {
+    box-shadow: 0 16px 40px -18px rgba(21, 32, 46, 0.5), 0 0 0 16px rgba(36, 86, 230, 0);
+  }
+}
+
+/* Når de begynner å skrive, vet vi hva de vil: overskriften viker, og feltet glir opp, så forslagene får plassen. */
+.hero .scene .orgport.in {
+  transition: opacity 420ms var(--ease), transform 520ms var(--ease), visibility 420ms, width 420ms var(--ease), top 300ms var(--ease);
+  transition-delay: 0ms;
+}
+
+.hero .scene-tekst > h1.in {
+  transition: opacity 200ms ease-out, visibility 200ms;
+  transition-delay: 0ms;
+}
+
+.hero .scene .scene-tekst.skriver > h1.in {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* De skriver inn en virksomhet: da har de valgt vei, og privatveien viker med overskriften. */
+.hero .scene .privat.in {
+  transition: opacity 320ms var(--ease), visibility 320ms;
+  transition-delay: 0ms;
+}
+
+.hero .scene .scene-tekst.skriver > .privat {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* De skriver: overskriften, luften over kortet og privatdelen faller sammen,
+   så kortet krymper ned til feltet og forslagene får plassen under seg.
+   Rad 3 må med - uten den blir kortet stående med en tom hvit flate der
+   nedlastingen sto. */
+.hero .scene-tekst.skriver:not(.har-svar) {
+  /* Rad 3 beholder 30 px: luften i kortet over feltet. */
+  grid-template-rows: 0fr minmax(0, 0fr) 30px auto 1fr;
+}
+
+.orgport .btn:disabled {
+  opacity: 0.6;
+  transform: none;
+}
+
+.orgport-feil {
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--flag);
+  text-align: center;
+}
+
+.orgport-svar {
+  text-align: left;
+}
+
+/* Svaret tar hele plassen i heroen: overskriften og boksen viker, og kortet står alene og større. */
+.hero .scene .scene-tekst.har-svar > .tag,
+.hero .scene .scene-tekst.har-svar > h1,
+.hero .scene .scene-tekst.har-svar > .privat,
+.hero .scene .scene-tekst.har-svar > .lokal {
+  display: none;
+}
+
+.hero .scene .scene-tekst.har-svar .orgport.in,
+.hero .scene .scene-tekst.har-svar .orgport.in ~ .fineprint {
+  transform: none;
+  transition: none;
+}
+
+.hero .scene .scene-tekst.har-svar .orgport {
+  margin-top: 0;
+}
+
+.orgport.svar {
+  width: min(720px, 100%);
+}
+
+/* «hidden» skal vinne over display-reglene under (orgport-ok er inline-flex). */
+.orgport [hidden] {
+  display: none !important;
+}
+
+.orgport .orgport-svar .get {
+  justify-content: flex-start;
+  margin-top: 22px;
+}
+
+/* Etter oppslaget: et kort med navnet og «godkjent» øverst, så prøven, knappene og prisen etter prøven.
+   Litt gjennomsiktig, så snøen skimtes gjennom. */
+.orgport-svar-hoved {
+  position: relative;
+  padding: clamp(24px, 3.4vw, 44px);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.78);
+  -webkit-backdrop-filter: blur(24px) saturate(1.35);
+  backdrop-filter: blur(24px) saturate(1.35);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: 0 2px 4px rgba(20, 30, 40, 0.05), 0 22px 54px rgba(20, 40, 70, 0.16);
+  animation: orgport-kort 560ms cubic-bezier(0.2, 1.2, 0.4, 1) both;
+}
+
+/* Innholdet kommer etter tur, etter at merket og navnet har landet. */
+.orgport-svar-hoved > * {
+  position: relative;
+  animation: orgport-opp 520ms var(--ease) both;
+}
+
+.orgport-svar-hoved > .orgport-topp {
+  animation: none;
+  z-index: 2;
+}
+
+.orgport-svar-hoved > .orgport-prove {
+  animation-delay: 860ms;
+}
+
+.orgport-svar-hoved > .orgport-pris {
+  animation-delay: 950ms;
+}
+
+.orgport-svar-hoved > .get {
+  animation-delay: 1040ms;
+}
+
+.orgport-svar-hoved > .orgport-endre {
+  animation-delay: 1130ms;
+}
+
+.orgport-topp {
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 2.2vw, 22px);
+}
+
+.orgport-topp > div {
+  min-width: 0;
+}
+
+/* Godkjent-merket: en hel grønn sirkel spretter inn, haken tegnes, og én ring brer seg kort utover. */
+.orgport-segl {
+  position: relative;
+  flex: none;
+  width: clamp(60px, 7.4vw, 82px);
+  height: clamp(60px, 7.4vw, 82px);
+  animation: orgport-segl 620ms cubic-bezier(0.2, 0.9, 0.3, 1) 60ms both;
+}
+
+.orgport-segl::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--ok);
+  opacity: 0;
+  pointer-events: none;
+  animation: orgport-ring 760ms cubic-bezier(0.15, 0.7, 0.3, 1) 300ms both;
+}
+
+.orgport-segl svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  overflow: visible;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.orgport-segl circle {
+  fill: var(--ok);
+}
+
+.orgport-segl path {
+  stroke: #fff;
+  stroke-width: 4.5;
+  stroke-dasharray: 1;
+  animation: orgport-tegn 320ms ease-out 300ms both;
+}
+
+.orgport-ok {
+  font-size: clamp(15px, 1.5vw, 17px);
+  font-weight: 700;
+  color: var(--ok);
+  animation: orgport-sprett 520ms cubic-bezier(0.2, 1.5, 0.4, 1) 320ms both;
+  transform-origin: left center;
+}
+
+.orgport-firmanavn {
+  margin-top: 2px;
+  font-size: clamp(27px, 3.6vw, 44px);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  overflow-wrap: anywhere;
+  color: var(--ink);
+}
+
+.orgport-ord {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* Bokstavene lander grønt og tones til vanlig farge. */
+.orgport-bokstav {
+  display: inline-block;
+  animation: orgport-bokstav 760ms cubic-bezier(0.2, 1.4, 0.4, 1) calc(380ms + var(--i) * 22ms) both;
+}
+
+.orgport-orgnr {
+  margin-top: 6px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink-2);
+  animation: orgport-opp 480ms var(--ease) 760ms both;
+}
+
+.orgport-prove {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+.orgport-prove p + p {
+  margin-top: 6px;
+}
+
+.orgport-prove .orgport-prove-tittel {
+  font-size: clamp(18px, 1.9vw, 21px);
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.orgport-pris {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.orgport-pris-celle {
+  display: block;
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1px solid var(--rule);
+  font-size: 14.5px;
+  line-height: 1.45;
+  color: var(--ink-2);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 160ms var(--ease), border-color 160ms var(--ease), box-shadow 160ms var(--ease), transform 160ms var(--ease);
+}
+
+/* Hele boksen er klikkbar. Hover gir samme blåfarge som den valgte boksen. */
+.orgport-pris-celle.valgt,
+.orgport-pris-celle:hover,
+.orgport-pris-celle:focus-visible {
+  background: var(--signal-soft);
+  border-color: var(--signal);
+  box-shadow: inset 0 0 0 1px var(--signal);
+}
+
+.orgport-pris-celle:hover {
+  transform: translateY(-1px);
+}
+
+/* Bare én boks er blå om gangen: holder de over den andre, slipper «Gratis prøve» fargen. */
+.orgport-pris:has(.orgport-pris-celle:not(.valgt):hover) .orgport-pris-celle.valgt {
+  background: transparent;
+  border-color: var(--rule);
+  box-shadow: none;
+}
+
+.orgport-pris-celle:focus-visible {
+  outline: 2px solid var(--signal-lit);
+  outline-offset: 2px;
+}
+
+.orgport-pris-merke {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.orgport-belop {
+  margin: 2px 0 4px;
+  font-size: clamp(30px, 3.6vw, 38px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+.orgport-pris-celle.valgt .orgport-belop {
+  color: var(--signal-deep);
+}
+
+.orgport-pris:has(.orgport-pris-celle:not(.valgt):hover) .orgport-pris-celle.valgt .orgport-belop {
+  color: var(--ink);
+}
+
+.orgport-pris-celle:hover .orgport-belop {
+  color: var(--signal-deep);
+}
+
+.orgport-pris-lenke {
+  display: inline-block;
+  margin-top: 6px;
+  font-weight: 600;
+  color: var(--signal);
+}
+
+/* Klikk på «Gratis prøve»: knappene pulserer, så det er tydelig hvor de laster ned. */
+.orgport .get.pek .btn {
+  animation: orgport-pek 700ms var(--ease) 2;
+}
+
+/* Ingenting dukker opp i et hopp: feilmeldinger og forslag tones inn. */
+.orgport-feil:not([hidden]),
+.orgforslag:not([hidden]) {
+  animation: orgport-opp 260ms var(--ease) both;
+}
+
+@keyframes orgport-pek {
+  50% {
+    box-shadow: 0 0 0 6px rgba(36, 86, 230, 0.22);
+  }
+}
+
+@keyframes orgport-kort {
+  from {
+    opacity: 0;
+    transform: translateY(34px) scale(0.9);
+  }
+}
+
+@keyframes orgport-sprett {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+}
+
+@keyframes orgport-bokstav {
+  0% {
+    opacity: 0;
+    color: #37c99a;
+    transform: translateY(0.6em) scale(0.6) rotate(6deg);
+  }
+  45% {
+    opacity: 1;
+    color: var(--ok);
+  }
+}
+
+@keyframes orgport-opp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes orgport-segl {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1.14);
+  }
+  80% {
+    transform: scale(0.97);
+  }
+}
+
+@keyframes orgport-tegn {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes orgport-ring {
+  0% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+/* Store virksomheter: feltet blir bredere, med navnet og gratis prøve til venstre og skreddersydd
+   oppsett med Mac Studio til høyre. Ingen «godkjent»; de er selvsagt godkjent. */
+.orgport.stor {
+  width: min(880px, 100%);
+}
+
+/* De store er bare der: alt kommer samlet på et blunk, uten sprett, grønn eller rekkefølge.
+   Hastigheten er poenget. Den korte toningen holder regelen om at ingenting kommer i et hopp. */
+.orgport.stor .orgport-svar-hoved,
+.orgport.stor .orgport-oppsett {
+  animation: orgport-stor-inn 120ms ease-out both;
+}
+
+.orgport.stor .orgport-bokstav,
+.orgport.stor .orgport-orgnr,
+.orgport.stor .orgport-svar-hoved > * {
+  animation: none;
+}
+
+@keyframes orgport-stor-inn {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Navnet, prøven og prisen til venstre, skreddersydd oppsett til høyre. */
+.orgport.stor .orgport-svar-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.orgport.stor .orgport-svar-hoved {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(22px, 2.4vw, 28px);
+}
+
+.orgport.stor .orgport-firmanavn {
+  font-size: clamp(24px, 2.3vw, 30px);
+}
+
+.orgport.stor .orgport-prove {
+  font-size: 15px;
+}
+
+.orgport.stor .orgport-prove .orgport-prove-tittel {
+  font-size: 17px;
+}
+
+.orgport.stor .orgport-pris {
+  margin-top: 14px;
+}
+
+.orgport.stor .orgport-pris-celle {
+  padding: 12px 16px;
+  font-size: 14px;
+}
+
+.orgport.stor .orgport-belop {
+  font-size: clamp(26px, 2.6vw, 32px);
+}
+
+.orgport.stor .orgport-svar .get {
+  margin-top: 16px;
+}
+
+.orgport.stor .get .btn {
+  height: 50px;
+  padding: 0 20px;
+  font-size: 15px;
+}
+
+/* Prisen står alene her: at prøven er gratis, står i teksten over. */
+.orgport.stor .orgport-pris-celle.valgt {
+  display: none;
+}
+
+.orgport.stor .orgport-endre {
+  align-self: flex-start;
+}
+
+.orgport.stor .orgport-firmatekst {
+  margin-top: 10px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+/* Skreddersydd oppsett: teksten øverst, maskinen stor midt i med lys bak seg, knappen over hele bredden nederst. */
+.orgport-oppsett {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: clamp(22px, 2.4vw, 28px);
+  border-radius: 22px;
+  color: #fff;
+  text-align: left;
+  background: linear-gradient(165deg, #1f49c4 0%, #16348f 52%, #0d2159 100%);
+  box-shadow: 0 26px 56px -26px rgba(26, 63, 176, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.orgport-oppsett::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 56%;
+  width: 130%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, rgba(111, 155, 245, 0.55), rgba(111, 155, 245, 0.16) 55%, transparent);
+  pointer-events: none;
+}
+
+.orgport-merke {
+  align-self: flex-start;
+  padding: 5px 11px;
+  border-radius: 100px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.13);
+}
+
+.orgport-oppsett h3 {
+  margin-top: 12px;
+  font-size: clamp(24px, 2.3vw, 30px);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+.orgport-oppsett p:not(.orgport-merke) {
+  margin-top: 8px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.orgport-mac {
+  display: block;
+  flex: none;
+  width: 100%;
+  max-width: 270px;
+  aspect-ratio: 440 / 240;
+  margin: auto;
+  padding: 12px 0;
+  box-sizing: content-box;
+}
+
+.orgport-oppsett .btn {
+  flex: none;
+  justify-content: center;
+  width: 100%;
+  height: 50px;
+  font-size: 15px;
+  color: var(--signal-deep);
+  background: #fff;
+  border-color: #fff;
+}
+
+.orgport-oppsett .btn:hover {
+  color: var(--signal-deep);
+  background: var(--signal-soft);
+  border-color: var(--signal-soft);
+}
+
+@media (max-width: 760px) {
+  .orgport.stor .orgport-svar-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.orgport-endre {
+  margin-top: 14px;
+  padding: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+
+.orgport-endre:hover {
+  color: var(--signal);
+}
+
+@media (max-width: 560px) {
+  .orgport-rad {
+    grid-template-columns: 1fr;
+  }
+
+  .orgport .btn {
+    justify-content: center;
+  }
+
+  .orgport input,
+  .orgport .btn {
+    height: 56px;
+  }
+}
+
+@media (min-width: 1500px) {
+  .orgport {
+    width: min(640px, 100%);
+  }
+
+  .orgport input,
+  .orgport .btn {
+    height: clamp(60px, 3.6vw, 72px);
+  }
+
+  .orgport input {
+    font-size: clamp(17.5px, 1vw, 20px);
+  }
+
+  /* Kortet etter oppslaget: større på store skjermer, og alt inni vokser med. */
+  .orgport.svar {
+    width: min(880px, 100%);
+  }
+
+  .orgport-svar-hoved {
+    padding: 52px 56px;
+    border-radius: 26px;
+  }
+
+  .orgport-segl {
+    width: 96px;
+    height: 96px;
+  }
+
+  .orgport-ok {
+    font-size: 19px;
+  }
+
+  .orgport-firmanavn {
+    font-size: 52px;
+  }
+
+  .orgport-orgnr {
+    font-size: 15px;
+  }
+
+  .orgport-prove {
+    margin-top: 22px;
+    padding-top: 22px;
+    font-size: 18px;
+  }
+
+  .orgport-prove .orgport-prove-tittel {
+    font-size: 24px;
+  }
+
+  .orgport-pris {
+    gap: 14px;
+    margin-top: 26px;
+  }
+
+  .orgport-pris-celle {
+    padding: 20px 22px;
+    border-radius: 16px;
+    font-size: 16px;
+  }
+
+  .orgport-pris-merke {
+    font-size: 15px;
+  }
+
+  .orgport-belop {
+    font-size: 44px;
+  }
+
+  .orgport .orgport-svar .get {
+    margin-top: 28px;
+  }
+
+  .orgport .orgport-svar .get .btn {
+    height: 60px;
+    padding: 0 30px;
+    font-size: 17px;
+  }
+
+  .orgport-endre {
+    margin-top: 18px;
+    font-size: 15px;
+  }
+
+  /* Store virksomheter: to kort side om side, begge større. */
+  .orgport.stor {
+    width: min(1180px, 100%);
+  }
+
+  .orgport.stor .orgport-svar-grid {
+    gap: 24px;
+  }
+
+  .orgport.stor .orgport-svar-hoved,
+  .orgport-oppsett {
+    padding: 40px 44px;
+    border-radius: 26px;
+  }
+
+  .orgport.stor .orgport-firmanavn {
+    font-size: 40px;
+  }
+
+  .orgport.stor .orgport-firmatekst {
+    font-size: 18px;
+  }
+
+  .orgport.stor .orgport-prove {
+    font-size: 17px;
+  }
+
+  .orgport.stor .orgport-prove .orgport-prove-tittel {
+    font-size: 21px;
+  }
+
+  .orgport.stor .orgport-pris {
+    margin-top: 20px;
+  }
+
+  .orgport.stor .orgport-pris-celle {
+    padding: 18px 22px;
+    font-size: 16px;
+  }
+
+  .orgport.stor .orgport-belop {
+    font-size: 40px;
+  }
+
+  .orgport.stor .orgport-svar .get {
+    margin-top: 22px;
+  }
+
+  .orgport.stor .get .btn,
+  .orgport-oppsett .btn {
+    height: 58px;
+    padding: 0 26px;
+    font-size: 17px;
+  }
+
+  .orgport-merke {
+    padding: 6px 13px;
+    font-size: 12.5px;
+  }
+
+  .orgport-oppsett h3 {
+    margin-top: 16px;
+    font-size: 40px;
+  }
+
+  .orgport-oppsett p:not(.orgport-merke) {
+    margin-top: 10px;
+    font-size: 17.5px;
+  }
+
+  .orgport-mac {
+    max-width: 360px;
+    padding: 18px 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Filformater
+   -------------------------------------------------------------------------- */
+
+.formats {
+  margin-top: clamp(44px, 5.4vw, 76px);
+  text-align: center;
+}
+
+.formats > p {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 26px;
+}
+
+.formats ul {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 14px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.formats li {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 24px 10px 22px;
+  background: var(--card);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  transition: transform 220ms var(--ease), box-shadow 220ms var(--ease);
+}
+
+.formats li:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 1px 2px rgba(21, 32, 46, 0.05),
+    0 18px 36px -16px rgba(26, 63, 176, 0.4);
+}
+
+.ficon {
+  width: 48px;
+  height: 48px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.ficon text {
+  font-family: var(--sans);
+  font-weight: 700;
+  fill: #fff;
+}
+
+.formats .fname {
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+}
+
+.formats .fext {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--ink-3);
+}
+
+/* --------------------------------------------------------------------------
+   Programvindu
+   -------------------------------------------------------------------------- */
+
+.window {
+  background: var(--chrome);
+  color: var(--chrome-fog);
+  border-radius: var(--r);
+  box-shadow: 0 2px 6px rgba(27, 33, 35, 0.06),
+    0 40px 80px -40px rgba(27, 33, 35, 0.45);
+  overflow: hidden;
+  text-align: left;
+}
+
+.hero .window {
+  margin-top: clamp(56px, 7vw, 96px);
+}
+
+.titlebar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 36px;
+  padding: 0 14px;
+  background: var(--chrome-2);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--chrome-mist);
+}
+
+.dots {
+  display: flex;
+  gap: 6px;
+}
+
+.dots i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--chrome-line-2);
+}
+
+.titlebar .name {
+  margin: 0 auto;
+}
+
+.titlebar .os-tag {
+  opacity: 0.5;
+}
+
+.appbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--chrome-line);
+}
+
+.appbar .brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.appbar .brand b {
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: #fff;
+}
+
+.appbar .brand span {
+  font-size: 13px;
+  color: var(--chrome-mist);
+}
+
+.pulse {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--chrome-mist);
+  white-space: nowrap;
+}
+
+.pulse i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #3fc99a;
+  animation: beat 2.8s var(--ease) infinite;
+}
+
+@keyframes beat {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(63, 201, 154, 0.4);
+  }
+  55% {
+    box-shadow: 0 0 0 6px rgba(63, 201, 154, 0);
+  }
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: 236px minmax(0, 1fr) 260px;
+  min-height: 448px;
+}
+
+.pane {
+  border-right: 1px solid var(--chrome-line);
+  min-width: 0;
+  padding-bottom: 8px;
+}
+
+.pane:last-child {
+  border-right: 0;
+}
+
+.pane > h3 {
+  padding: 16px 16px 12px;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--chrome-mist);
+}
+
+.files li {
+  display: grid;
+  gap: 3px;
+  padding: 9px 16px;
+  border-left: 2px solid transparent;
+}
+
+.files li.on {
+  background: var(--chrome-2);
+  border-left-color: var(--signal);
+}
+
+.files .fn {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12.5px;
+  color: var(--chrome-fog);
+  min-width: 0;
+}
+
+.files .fn > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.files .fn svg {
+  flex: none;
+  width: 17px;
+  height: 17px;
+}
+
+.files .meta {
+  padding-left: 26px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--chrome-mist);
+}
+
+/* Dokumentflaten */
+.sheet-wrap {
+  padding: 20px 22px 22px;
+  height: 100%;
+}
+
+.sheet {
+  background: var(--doc);
+  color: #1b2735;
+  border-radius: var(--r-sm);
+  padding: 26px 30px 32px;
+  height: 100%;
+}
+
+.docket {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #93a2b5;
+  padding-bottom: 14px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e3eaf5;
+}
+
+.sheet p {
+  font-family: var(--serif);
+  font-size: 15px;
+  line-height: 1.75;
+  margin-bottom: 14px;
+}
+
+.sheet p:last-child {
+  margin-bottom: 0;
+}
+
+.sheet .head {
+  font-weight: 500;
+  font-size: 17px;
+}
+
+/* Markeringen skal ikke skyve på tegnsettingen - den legger seg utenpå. */
+mark {
+  background: rgba(36, 86, 230, 0.13);
+  color: inherit;
+  border-radius: 3px;
+  padding: 2px 3px;
+  margin: 0 -3px;
+}
+
+mark.flag {
+  background: rgba(192, 39, 68, 0.13);
+}
+
+mark.mute {
+  background: rgba(21, 32, 46, 0.08);
+}
+
+/* Funn */
+.hits {
+  display: flex;
+  flex-direction: column;
+}
+
+.hit-tools {
+  display: flex;
+  gap: 6px;
+  padding: 0 12px 12px;
+}
+
+.chipbtn {
+  font-family: var(--sans);
+  font-size: 11.5px;
+  padding: 6px 11px;
+  border-radius: 100px;
+  border: 1px solid var(--chrome-line-2);
+  color: var(--chrome-mist);
+}
+
+.hit-group > h4 {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 12px 7px;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--chrome-mist);
+}
+
+.hit {
+  display: grid;
+  gap: 4px;
+  margin: 0 9px 5px;
+  padding: 9px 12px;
+  border-radius: var(--r-sm);
+  background: var(--chrome-2);
+}
+
+.hit.on {
+  background: var(--chrome-3);
+  box-shadow: inset 2px 0 0 var(--signal);
+}
+
+.hit.off {
+  opacity: 0.38;
+}
+
+.hit .val {
+  font-family: var(--serif);
+  font-size: 14px;
+  color: #fff;
+}
+
+.hit .sub {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  max-width: none;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  color: var(--chrome-mist);
+}
+
+.hit .sub b {
+  font-weight: 400;
+  color: #93a9ff;
+}
+
+.hit.off .sub b {
+  color: var(--chrome-mist);
+}
+
+.statusline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 18px;
+  background: var(--chrome-2);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--chrome-mist);
+}
+
+.statusline b {
+  font-weight: 400;
+  color: #fff;
+}
+
+.statusline .actions {
+  display: flex;
+  gap: 8px;
+}
+
+.statusline .btn {
+  box-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   Nøkkeltall
+   -------------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------------
+   Kort
+   -------------------------------------------------------------------------- */
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(16px, 2vw, 24px);
+}
+
+.cards article {
+  padding: 34px 32px 38px;
+  background: var(--card);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+}
+
+.cards .idx {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--signal-soft);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+  color: var(--signal-deep);
+}
+
+.cards h3 {
+  margin: 18px 0 12px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.cards p {
+  color: var(--ink-2);
+  font-size: 15px;
+}
+
+/* --------------------------------------------------------------------------
+   Steg
+   -------------------------------------------------------------------------- */
+
+.steps {
+  display: grid;
+  gap: clamp(28px, 4vw, 56px);
+}
+
+.step {
+  display: grid;
+  grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+  gap: clamp(24px, 4.5vw, 72px);
+  align-items: center;
+}
+
+.step .no {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--signal-soft);
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--signal-deep);
+  margin-bottom: 18px;
+}
+
+.step h3 {
+  font-size: clamp(20px, 2.1vw, 26px);
+  font-weight: 700;
+  letter-spacing: -0.024em;
+  margin-bottom: 12px;
+}
+
+.step p {
+  color: var(--ink-2);
+  font-size: 15.5px;
+  max-width: 42ch;
+}
+
+.frag {
+  border-radius: var(--r);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  padding: 26px 28px;
+  min-width: 0;
+}
+
+.well {
+  border: 1px dashed var(--ink-4);
+  border-radius: var(--r-sm);
+  padding: 26px 28px;
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+}
+
+.well strong {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.well span {
+  font-size: 13.5px;
+  color: var(--ink-3);
+}
+
+.frag .scanhead {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  max-width: none;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+.frag .scanhead b {
+  font-weight: 400;
+  color: var(--signal);
+}
+
+.meter {
+  height: 4px;
+  border-radius: 4px;
+  background: var(--rule);
+  overflow: hidden;
+  margin: 12px 0 18px;
+}
+
+.meter i {
+  display: block;
+  height: 100%;
+  width: 4%;
+  border-radius: 4px;
+  background: var(--signal);
+  animation: fill 5.5s var(--ease) infinite;
+}
+
+@keyframes fill {
+  0% {
+    width: 4%;
+  }
+  70%,
+  100% {
+    width: 78%;
+  }
+}
+
+.scanrows {
+  display: grid;
+  gap: 2px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+}
+
+.scanrows li {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 8px 0;
+  color: var(--ink-2);
+}
+
+.scanrows .done {
+  color: var(--ok);
+}
+
+.scanrows .now {
+  color: var(--signal);
+}
+
+.scanrows .wait {
+  color: var(--ink-4);
+}
+
+.frag .hit {
+  margin: 0 0 8px;
+  padding: 12px 14px;
+  background: var(--ground);
+}
+
+.frag .hit:last-child {
+  margin-bottom: 0;
+}
+
+.frag .hit.on {
+  background: var(--signal-soft);
+  box-shadow: inset 2px 0 0 var(--signal);
+}
+
+.frag .hit .val {
+  color: var(--ink);
+}
+
+.frag .hit .sub {
+  color: var(--ink-3);
+  font-size: 10px;
+}
+
+.frag .hit .sub b {
+  color: var(--signal);
+}
+
+.frag .hit.off .sub b {
+  color: var(--ink-3);
+}
+
+.outbox {
+  display: grid;
+  gap: 12px;
+}
+
+.outbox .path {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--signal);
+  padding: 13px 15px;
+  border-radius: var(--r-sm);
+  background: var(--signal-soft);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.outbox .note {
+  font-size: 13.5px;
+  color: var(--ink-3);
+  max-width: none;
+}
+
+/* --------------------------------------------------------------------------
+   Før / etter
+   -------------------------------------------------------------------------- */
+
+.diff {
+  display: grid;
+  grid-template-columns: 1fr 14px 1fr;
+  background: var(--doc);
+  color: #1b2735;
+}
+
+.leaf {
+  padding: 34px 36px 38px;
+}
+
+.leaf p {
+  font-family: var(--serif);
+  font-size: 15px;
+  line-height: 1.78;
+  margin-bottom: 14px;
+}
+
+.leaf code {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--signal-deep);
+  background: var(--signal-soft);
+  border-radius: 3px;
+  padding: 2px 6px;
+}
+
+.perf {
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 9px,
+    #dae3f1 9px 17px
+  );
+}
+
+.diff-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 18px;
+  background: #e9f0fa;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: #78889c;
+  letter-spacing: 0.03em;
+}
+
+/* --------------------------------------------------------------------------
+   Norske felt
+   -------------------------------------------------------------------------- */
+
+.plate {
+  position: relative;
+  border-radius: var(--r);
+  overflow: hidden;
+  margin-bottom: clamp(16px, 2vw, 24px);
+  background: var(--signal-deep);
+}
+
+.plate img {
+  display: block;
+  width: 100%;
+  height: clamp(140px, 20vw, 240px);
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.06) brightness(1.06);
+  mix-blend-mode: luminosity;
+  opacity: 0.82;
+}
+
+/* Lyseblå dis over platen. */
+.plate::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(163, 205, 255, 0.34),
+    rgba(36, 86, 230, 0.1)
+  );
+}
+
+.register {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 24px);
+}
+
+.reg {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  padding: 28px 28px 32px;
+  background: var(--card);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  transition: transform 220ms var(--ease);
+}
+
+.reg:hover {
+  transform: translateY(-3px);
+}
+
+.reg .tok {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--signal);
+}
+
+.reg.flag .tok {
+  color: var(--flag);
+}
+
+.reg b {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.reg span:last-child {
+  font-size: 14px;
+  color: var(--ink-3);
+}
+
+.also {
+  margin-top: clamp(20px, 2.4vw, 28px);
+  padding: 18px 24px;
+  border-radius: var(--r);
+  background: var(--signal-soft);
+  font-size: 15px;
+  color: var(--ink-2);
+}
+
+.also b {
+  color: var(--signal-deep);
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   Spesifikasjon
+   -------------------------------------------------------------------------- */
+
+.spec-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(30px, 5vw, 88px);
+  align-items: start;
+}
+
+.spec {
+  border-radius: var(--r);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.spec dl {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.6fr) minmax(0, 1.4fr);
+}
+
+.spec dt,
+.spec dd {
+  padding: 20px 26px;
+  border-top: 1px solid var(--rule-2);
+  font-size: 15px;
+}
+
+.spec dl > :nth-child(-n + 2) {
+  border-top: 0;
+}
+
+.spec dt {
+  padding-top: 21px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.spec dd {
+  color: var(--ink-2);
+}
+
+.spec dd em {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--ok);
+}
+
+.spec dd code {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--signal);
+}
+
+.exts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.exts span {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 4px 9px;
+  border-radius: 100px;
+  background: var(--ground);
+  color: var(--ink-2);
+}
+
+/* --------------------------------------------------------------------------
+   Ansvar
+   -------------------------------------------------------------------------- */
+
+.ansvar {
+  background: var(--chrome);
+  color: var(--chrome-fog);
+}
+
+.ansvar .slug {
+  color: var(--chrome-mist);
+}
+
+.ansvar .slug i {
+  color: #93a9ff;
+}
+
+.ansvar .title {
+  color: #fff;
+}
+
+.legal {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(28px, 4vw, 56px);
+  margin-top: clamp(40px, 5vw, 64px);
+}
+
+.legal p {
+  font-size: 15px;
+  line-height: 1.72;
+  color: var(--chrome-mist);
+}
+
+.legal p b {
+  display: block;
+  color: #fff;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* --------------------------------------------------------------------------
+   Nedlasting
+   -------------------------------------------------------------------------- */
+
+.download {
+  position: relative;
+  text-align: center;
+  background: linear-gradient(180deg, var(--ground-2), var(--ground) 72%);
+}
+
+.download::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    900px 420px at 50% 12%,
+    rgba(111, 155, 245, 0.34),
+    transparent 66%
+  );
+}
+
+.download > * {
+  position: relative;
+}
+
+.download .title {
+  margin: 0 auto;
+  max-width: 24ch;
+}
+
+.download .sub {
+  margin: 22px auto 0;
+}
+
+/* --------------------------------------------------------------------------
+   Bunn
+   -------------------------------------------------------------------------- */
+
+footer {
+  padding: clamp(44px, 5vw, 68px) var(--gut) clamp(48px, 5vw, 72px);
+  background: var(--ground-2);
+  border-top: 1px solid var(--rule);
+}
+
+.colofon {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+  gap: clamp(24px, 5vw, 80px);
+  align-items: start;
+}
+
+.byline {
+  font-size: 16px;
+  line-height: 1.68;
+  color: var(--ink-2);
+  max-width: 58ch;
+}
+
+.byline b {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.footmeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 26px;
+  margin-top: clamp(32px, 4vw, 48px);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  color: var(--ink-3);
+}
+
+/* --------------------------------------------------------------------------
+   Bevegelse
+   -------------------------------------------------------------------------- */
+
+.rise {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 700ms var(--ease), transform 700ms var(--ease);
+  transition-delay: var(--d, 0ms);
+}
+
+.rise.in {
+  opacity: 1;
+  transform: none;
+}
+
+/* --------------------------------------------------------------------------
+   Responsivt
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 1180px) {
+  .topnav {
+    display: none;
+  }
+
+  .workspace {
+    grid-template-columns: 200px minmax(0, 1fr) 234px;
+  }
+
+  .register {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  body {
+    font-size: 16px;
+  }
+
+  .formats ul {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .spec-grid,
+  .colofon,
+  .intro,
+  .step {
+    grid-template-columns: 1fr;
+  }
+
+  .intro .sub {
+    max-width: none;
+  }
+
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .pane {
+    border-right: 0;
+    border-bottom: 1px solid var(--chrome-line);
+  }
+
+  .cards,
+  .legal,
+  .register {
+    grid-template-columns: 1fr;
+  }
+
+  .diff {
+    grid-template-columns: 1fr;
+  }
+
+  .perf {
+    height: 12px;
+  }
+}
+
+@media (max-width: 560px) {
+  /* Litt høyere scene og strammere tekst, så hytta står fri over overskriften. */
+  .scene {
+    min-height: max(640px, 100svh);
+    padding: 56px var(--gut) 40px;
+  }
+
+  .hero .scene .lead {
+    font-size: 15px;
+    margin-top: 14px;
+  }
+
+  .hero .scene .get {
+    margin-top: 22px;
+  }
+
+  .hero .scene .fineprint {
+    display: none;
+  }
+
+  .hero .scene .tag {
+    gap: 6px;
+    padding: 6px 12px 5px;
+    font-size: 9.5px;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .formats ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .formats li:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .titlebar .os-tag,
+  .appbar .brand span {
+    display: none;
+  }
+
+  .get .btn {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+
+  /* I heroen står de to nedlastingsknappene ved siden av hverandre. Stablet ville
+     gruppa blitt så høy at den la seg over hytta. */
+  .hero .scene .privat .get {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .hero .scene .privat .get .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 12px;
+    font-size: 15px;
+    white-space: nowrap;
+  }
+
+  .privat .btn .ned {
+    display: none;
+  }
+
+  .hero .scene .eller {
+    margin-top: 26px;
+  }
+
+  .privat-linje,
+  .virk-linje {
+    font-size: 14px;
+  }
+
+  .hero .scene .privat-linje span,
+  .hero .scene .virk-linje span,
+  .hero .scene .eller span {
+    padding: 5px 13px 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .rise {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Store skjermer (1920 × 1080 og opp), alt under heroen: innholdet holder seg
+   innenfor --innhold i stedet for å fylle bredden, og teksten er litt større.
+   1200px gir god luft på sidene på 1920 og lesbare linjer. Programvinduet, boksen
+   og filtypene under bildet følger samme bredde. Står sist så den slår grunnreglene over. */
+@media (min-width: 1500px) {
+  :root {
+    --innhold: 1200px;
+  }
+
+  section:not(.hero),
+  footer {
+    padding-left: max(var(--gut), calc((100% - var(--innhold)) / 2));
+    padding-right: max(var(--gut), calc((100% - var(--innhold)) / 2));
+  }
+
+  .hero > .window,
+  .hero > .kv,
+  .hero > .formats {
+    max-width: var(--innhold);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  body {
+    font-size: 18px;
+  }
+
+  .slug {
+    font-size: 12.5px;
+  }
+
+  .title {
+    font-size: clamp(42px, 2.7vw, 56px);
+  }
+
+  .sub {
+    font-size: 19px;
+  }
+
+  .cards h3 {
+    font-size: 23px;
+  }
+
+  .cards p,
+  .step p,
+  .legal p,
+  .spec dt,
+  .spec dd {
+    font-size: 17px;
+  }
+
+  .step h3 {
+    font-size: 28px;
+  }
+
+  .reg b {
+    font-size: 18px;
+  }
+
+  .reg span:last-child {
+    font-size: 15.5px;
+  }
+
+  .spec dt {
+    font-size: 12px;
+  }
+}
+
+/* Det som før sto i style="" i HTML-en. CSP-en tillater ikke inline-stil. */
+.ikonark { position: absolute; }
+.d-60 { --d: 60ms; }
+.d-120 { --d: 120ms; }
+.d-180 { --d: 180ms; }
+.d-230 { --d: 230ms; }
+.d-290 { --d: 290ms; }
+.mt-18 { margin-top: 18px !important; }
+.mt-22 { margin-top: 22px !important; }
+.lenke-signal { color: var(--signal); font-weight: 600; }
+
+/* Kortet i heroen: havblått frostglass med hvit skrift og hvite
+   nedlastingsknapper (valgt 10.11.2026 av ti + fem varianter). Ligger sist,
+   så det vinner over de hvite kortreglene lenger opp. */
+.hero .scene-tekst:not(.har-svar)::after {
+  background: rgba(10, 82, 190, 0.64);
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 34px 80px -44px rgba(10, 20, 50, 0.8);
+}
+
+.hero .scene .privat-linje,
+.hero .scene .privat-linje b,
+.hero .scene .virk-linje b {
+  color: #fff;
+}
+
+.hero .scene .virk-linje,
+.hero .scene .eller {
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.hero .scene .eller::before,
+.hero .scene .eller::after {
+  background: rgba(255, 255, 255, 0.26);
+}
+
+.hero .scene .privat .btn,
+.hero .scene .privat .btn.ghost {
+  color: #0a4aa8;
+  background: #fff;
+  border-color: #fff;
+}
+
+.hero .scene .privat .btn:hover,
+.hero .scene .privat .btn.ghost:hover {
+  color: #0a4aa8;
+  background: #dcecff;
+  border-color: #dcecff;
+  box-shadow: 0 10px 24px -12px rgba(5, 15, 40, 0.6);
+}
+
+.hero .scene .orgport:not(.svar) input {
+  border-color: rgba(255, 255, 255, 0.9);
+}
+
+.hero .scene .orgport:not(.svar) .btn {
+  color: #fff;
+  background: #0a4aa8;
+  border-color: #0a4aa8;
+}
+
+/* Ingenting i heroen skal kunne markeres, bortsett fra de to tilbudslinjene
+   og feltet man skriver i (uten markering kan Safari nekte å ta imot tekst i
+   et felt). Resten av siden er som før. */
+.hero {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.hero input,
+.hero .scene .privat-linje,
+.hero .scene .virk-linje {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Nedlastingsknappene løfter seg når man holder over. Linux har i tillegg en
+   pingvin (egen tegning, ikke Tux) som hopper opp fra bunnen av knappen og
+   vugger mens musa er der. Windows og macOS har ingen tegn: vindusknapper og
+   prikker ble prøvd, men leses som noe man kan trykke på.
+   Like brede knapper, så navnet kan flytte seg uten at raden endrer seg.
+   Bare på skjermer med mus; på mobil står de som før. */
+@media (min-width: 561px) {
+  :is(.hero .scene, .v-hent) .get .btn.os {
+    position: relative;
+    width: 172px;
+    min-width: 0;
+    padding: 0;
+    gap: 0;
+    overflow: hidden;
+    justify-content: center;
+    transition:
+      background-color 220ms ease,
+      border-color 220ms ease,
+      transform 260ms var(--ease),
+      box-shadow 260ms var(--ease);
+  }
+
+  .os-navn {
+    display: inline-block;
+    transition: transform 460ms var(--ease);
+  }
+
+  /* Pingvinen står til venstre, utenfor synsfeltet, til den trengs. */
+  .os-figur {
+    position: absolute;
+    left: 44px;
+    top: 50%;
+    width: 24px;
+    height: 28px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-34px, -52%);
+    transition: transform 460ms var(--ease), opacity 200ms ease;
+  }
+
+  .os-figur svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .os-pingvin-kropp {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+  }
+
+  /* Windows: en ring i logoens fire farger rundt knappen. Fargene står der
+     de står i logoen: rød oppe til venstre, grønn oppe til høyre, gul nede
+     til høyre, blå nede til venstre. En ring, aldri ruter. Den er der med én
+     gang man holder over; ingen bevegelse rundt. Knappen beholder formen og
+     den blå teksten. */
+  :is(.hero .scene, .v-hent) .get .btn.os-win::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 3px;
+    background: conic-gradient(
+      #7fba00 0deg 90deg,
+      #ffb900 90deg 180deg,
+      #00a4ef 180deg 270deg,
+      #f25022 270deg 360deg);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* macOS: glass slik Apple beskriver Liquid Glass (WWDC25, «Meet Liquid
+     Glass»): ingen strek rundt; formen tegnes av lys som ligger på kanten mot
+     lyskilden og på motsatt side, og som flytter seg (her: følger musa).
+     Kantene er tykke og bryter lyset. Ved trykk lyser det innenfra fra
+     punktet man trykker, og elementet gir etter. Kortet under er allerede
+     glass, og Apple sier «avoid glass on glass»: ingen egen uskarphet, bare
+     et tynt lys lag.
+     Glasset er et eget lag (.os-glass) bak teksten. Knappen med teksten står
+     stille: skaleres teksten, tegner Safari den som et bilde under bevegelsen
+     og skarpt igjen etterpå, og da hopper den litt. Glasset vokser heller
+     ikke, så det ikke tar plass fra nabo-knappene. --mx, --my og --vinkel
+     settes av forside.js. */
+  :is(.hero .scene, .v-hent) .get .btn.os-mac {
+    isolation: isolate;
+    overflow: visible;
+    transition:
+      background-color 320ms ease,
+      border-color 320ms ease,
+      color 320ms ease,
+      transform 260ms var(--ease),
+      box-shadow 320ms var(--ease);
+  }
+
+  .os-glass {
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow:
+      inset 0 3px 8px -2px rgba(255, 255, 255, 0.4),
+      inset 0 -4px 10px -3px rgba(0, 28, 90, 0.22),
+      0 16px 30px -16px rgba(4, 14, 40, 0.6);
+    opacity: 0;
+    transition:
+      opacity 320ms ease,
+      transform 520ms cubic-bezier(0.3, 1.6, 0.5, 1);
+    pointer-events: none;
+  }
+
+  .os-mac .os-navn {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Lyset innenfra, der musa er. */
+  .os-glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(var(--glod, 110px) var(--glod-h, 64px) at var(--mx, 50%) var(--my, 30%), rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0) 72%);
+  }
+
+  /* Lyset på kanten: tynn ring der bare sidene mot og bort fra lyset lyser. */
+  .os-glass::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.25px;
+    background: conic-gradient(from var(--vinkel, 315deg),
+      rgba(255, 255, 255, 0.95) 0deg,
+      rgba(255, 255, 255, 0.12) 55deg,
+      rgba(255, 255, 255, 0) 90deg,
+      rgba(255, 255, 255, 0.12) 145deg,
+      rgba(255, 255, 255, 0.55) 180deg,
+      rgba(255, 255, 255, 0.12) 215deg,
+      rgba(255, 255, 255, 0) 270deg,
+      rgba(255, 255, 255, 0.12) 305deg,
+      rgba(255, 255, 255, 0.95) 360deg);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  }
+}
+
+@media (hover: hover) and (min-width: 561px) {
+  :is(.hero .scene, .v-hent) .get .btn.os:is(:hover, :focus-visible) {
+    transform: translateY(-2px);
+    color: #0a4aa8;
+    background: #fff;
+    border-color: #fff;
+    box-shadow: 0 16px 30px -16px rgba(4, 14, 40, 0.7);
+  }
+
+  :is(.hero .scene, .v-hent) .get .btn.os:active {
+    transform: translateY(0) scale(0.98);
+    transition-duration: 90ms;
+  }
+
+  /* Navnet viker til høyre, og tegningen hopper opp med et lite overslag. */
+  .os-lin:is(:hover, :focus-visible) .os-navn {
+    transform: translateX(15px);
+  }
+
+  /* Den hvite kanten ville ligget som en strek utenfor ringen. */
+  :is(.hero .scene, .v-hent) .get .btn.os-win:is(:hover, :focus-visible) {
+    border-color: transparent;
+    background-clip: padding-box;
+  }
+
+  :is(.hero .scene, .v-hent) .get .btn.os-win:is(:hover, :focus-visible)::after {
+    opacity: 1;
+  }
+
+  /* macOS: selve knappen blir gjennomsiktig og løfter seg 2 px som de andre.
+     Ingen skalering: da hopper teksten i Safari. Glasslaget bak tar over. */
+  :is(.hero .scene, .v-hent) .get .btn.os-mac:is(:hover, :focus-visible) {
+    transform: translateY(-2px);
+    color: #fff;
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    text-shadow: 0 1px 6px rgba(10, 40, 100, 0.3);
+  }
+
+  :is(.hero .scene, .v-hent) .get .btn.os-mac:active {
+    transform: translateY(0);
+  }
+
+  /* Glasset kommer fram uten å bli større eller flytte seg, så det ikke tar
+     plass fra knappene ved siden av. */
+  .os-mac:is(:hover, :focus-visible) .os-glass {
+    opacity: 1;
+  }
+
+  /* Trykk: glasset gir etter, og gløden sprer seg fra punktet. */
+  .os-mac:active .os-glass {
+    transform: scale(0.97);
+    transition-duration: 320ms, 140ms;
+    --glod: 260px;
+    --glod-h: 140px;
+  }
+
+  /* Pingvinen vagger inn fra venstre: tre små steg på veien, så vugger den
+     rolig på stedet. */
+  .os-lin:is(:hover, :focus-visible) .os-figur {
+    opacity: 1;
+    transform: translate(0, -52%);
+  }
+
+  .os-lin:is(:hover, :focus-visible) .os-pingvin-kropp {
+    animation:
+      os-vagle 460ms ease-in-out,
+      os-vugg 1400ms ease-in-out 700ms infinite;
+  }
+
+
+}
+
+@keyframes os-vagle {
+  0% { transform: rotate(-9deg); }
+  33% { transform: rotate(9deg); }
+  66% { transform: rotate(-7deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes os-vugg {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-7deg); }
+  75% { transform: rotate(7deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.hero .scene, .v-hent) .get .btn.os,
+  .os-navn,
+  .os-figur,
+  .os-pingvin-kropp,
+  .os-win::after,
+  .os-glass {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Kortet svarer på knappen man holder over (bare med mus):
+   Windows en svak glød i de fire fargene langs bunnen. Mac: kortet blir
+   gjennomsiktig glass uten uskarphet, så landskapet står skarpt gjennom.
+   Linux: kortet blir en mørk terminal, og bak innholdet skriver en
+   installasjon med apt seg selv, på norsk slik det står i en norsk terminal.
+   Teksten lages av forside.js. */
+@media (hover: hover) and (min-width: 561px) {
+  /* Laget oppå flata (::after), under innholdet. Samme plass i rutenettet. */
+  .hero .scene-tekst:not(.har-svar)::before {
+    content: "";
+    grid-row: 3 / span 2;
+    grid-column: 1;
+    z-index: 1;
+    align-self: stretch;
+    justify-self: center;
+    width: min(760px, 100%);
+    border-radius: 30px;
+    opacity: 0;
+    transition: opacity 360ms ease;
+    pointer-events: none;
+  }
+
+  /* Bare fargen glir; uskarpheten byttes med én gang (Safari mister den
+     midt i en overgang). */
+  .hero .scene-tekst:not(.har-svar)::after {
+    transition: background-color 420ms ease;
+  }
+
+  .hero .scene-tekst:not(.har-svar):has(.os-win:hover)::before {
+    opacity: 1;
+    background: linear-gradient(90deg, #f25022, #7fba00, #00a4ef, #ffb900);
+    -webkit-mask: linear-gradient(to top, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0) 38%);
+    mask: linear-gradient(to top, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0) 38%);
+  }
+
+  .hero .scene-tekst:not(.har-svar):has(.os-mac:hover)::after {
+    background-color: rgba(10, 82, 190, 0.42);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  /* Mac: i det gjennomsiktige kortet flyter tre myke flekker av lys og dypere
+     blått sakte forbi hverandre, i hver sin takt, så glasset puster. Bare
+     kortet, ikke knappen. */
+  .hero .scene-tekst:not(.har-svar):has(.os-mac:hover)::before {
+    opacity: 1;
+    background:
+      radial-gradient(34% 50% at 50% 50%, rgba(170, 215, 255, 0.55), rgba(170, 215, 255, 0) 70%),
+      radial-gradient(38% 55% at 50% 50%, rgba(8, 60, 170, 0.55), rgba(8, 60, 170, 0) 70%),
+      radial-gradient(26% 40% at 50% 50%, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0) 70%);
+    background-size: 170% 170%, 180% 180%, 160% 160%;
+    background-repeat: no-repeat;
+    animation: kort-flyt 8s ease-in-out infinite alternate;
+  }
+
+  .hero .scene-tekst:not(.har-svar):has(.os-lin:hover)::after {
+    background-color: rgba(5, 18, 42, 0.86);
+  }
+
+  /* Terminalen bak innholdet: linjene renner nedover kortet og ligger delvis
+     bak knappene og feltet, som en ekte terminal i bakgrunnen. Kommandoer
+     skrives i tastefart, utdata kommer hele linja på én gang. Vises (og
+     starter på nytt) når Linux holdes over. */
+  .kort-terminal {
+    display: none;
+  }
+
+  .hero .scene-tekst:not(.har-svar):has(.os-lin:hover) > .kort-terminal {
+    display: block;
+    position: relative;
+    grid-row: 3 / span 2;
+    grid-column: 1;
+    z-index: 1;
+    align-self: stretch;
+    justify-self: center;
+    width: min(760px, 100%);
+    border-radius: 30px;
+    overflow: hidden;
+    padding: 20px 30px;
+    font: 500 12.5px/1.75 "JetBrains Mono", ui-monospace, monospace;
+    color: rgba(150, 230, 180, 0.42);
+    /* Kortet midtstiller teksten. Arvet hit flytter den ferdige linja seg et
+       halvt tegn mot høyre i det den er skrevet ferdig. */
+    text-align: left;
+    pointer-events: none;
+  }
+
+  .kort-terminal span {
+    display: block;
+    width: 0;
+    overflow: hidden;
+    white-space: pre;
+    animation: kort-skriv calc(var(--n) * 24ms) steps(var(--n), end) var(--f) forwards;
+  }
+
+  .kort-terminal span.kommando {
+    color: rgba(225, 240, 255, 0.6);
+  }
+
+  .kort-terminal span:not(.kommando) {
+    animation-duration: 1ms;
+  }
+
+  .kort-terminal span.markor {
+    overflow: visible;
+  }
+
+  .kort-terminal span.markor::after {
+    content: "";
+    display: inline-block;
+    width: 0.6em;
+    height: 1.05em;
+    vertical-align: -0.2em;
+    background: rgba(225, 240, 255, 0.7);
+    animation: kort-blink 1s steps(1, end) infinite;
+  }
+}
+
+@keyframes kort-flyt {
+  0% { background-position: 10% 20%, 90% 80%, 60% 10%; }
+  33% { background-position: 70% 40%, 30% 60%, 20% 80%; }
+  66% { background-position: 40% 90%, 80% 20%, 90% 50%; }
+  100% { background-position: 90% 60%, 10% 30%, 40% 30%; }
+}
+
+@keyframes kort-skriv {
+  to { width: calc(var(--n) * 1ch); }
+}
+
+@keyframes kort-blink {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero .scene-tekst::before {
+    animation: none !important;
+  }
+
+  .kort-terminal span {
+    animation: none !important;
+    width: auto !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Svarkortet etter oppslaget, i samme drakt som kortet i heroen: havblått
+   frostglass, hvit skrift, og de samme nedlastingsknappene med «Last ned»
+   én gang over. Gjelder små og store virksomheter.
+   -------------------------------------------------------------------------- */
+/* Sterk blå flate, som «Skreddersydd oppsett» ved siden av, ikke gjennomsiktig glass
+   (eieren 11.11.2026). */
+.hero .scene .orgport-svar-hoved {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  color: #fff;
+  background: linear-gradient(165deg, #1f49c4 0%, #16348f 52%, #0d2159 100%);
+  border: 0;
+  border-radius: 30px;
+  box-shadow: 0 26px 56px -26px rgba(26, 63, 176, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  transition: background-color 420ms ease;
+}
+
+/* «Godkjent» i hvitt på den blå flata: grønt på blått var vanskelig å se (eieren 11.11.2026). */
+.hero .scene .orgport-segl::after {
+  border-color: #fff;
+}
+
+.hero .scene .orgport-segl circle {
+  fill: #fff;
+}
+
+.hero .scene .orgport-segl path {
+  stroke: #1638a0;
+}
+
+.hero .scene .orgport-ok {
+  color: rgba(255, 255, 255, 0.86);
+}
+
+/* Kortet svarer på knappen man holder over, som kortet for privatpersoner: Windows en
+   glød i de fire fargene langs bunnen, Mac gjennomsiktig glass med lys som flyter, Linux
+   en mørk flate. Terminalen som skriver seg selv, er bare i kortet for privatpersoner: her
+   forstyrret den teksten (eieren 11.11.2026). */
+@media (hover: hover) and (min-width: 561px) {
+  .hero .scene .orgport-svar-hoved > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero .scene .orgport-svar-hoved::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 360ms ease;
+    pointer-events: none;
+  }
+
+  .hero .scene .orgport-svar-hoved:has(.os-win:hover)::before {
+    opacity: 1;
+    background: linear-gradient(90deg, #f25022, #7fba00, #00a4ef, #ffb900);
+    -webkit-mask: linear-gradient(to top, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0) 38%);
+    mask: linear-gradient(to top, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0) 38%);
+  }
+
+  .hero .scene .orgport-svar-hoved:has(.os-mac:hover) {
+    background: rgba(10, 82, 190, 0.42);
+  }
+
+  .hero .scene .orgport-svar-hoved:has(.os-mac:hover)::before {
+    opacity: 1;
+    background:
+      radial-gradient(34% 50% at 50% 50%, rgba(170, 215, 255, 0.55), rgba(170, 215, 255, 0) 70%),
+      radial-gradient(38% 55% at 50% 50%, rgba(8, 60, 170, 0.55), rgba(8, 60, 170, 0) 70%),
+      radial-gradient(26% 40% at 50% 50%, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0) 70%);
+    background-size: 170% 170%, 180% 180%, 160% 160%;
+    background-repeat: no-repeat;
+    animation: kort-flyt 8s ease-in-out infinite alternate;
+  }
+
+  .hero .scene .orgport-svar-hoved:has(.os-lin:hover) {
+    background: rgba(5, 18, 42, 0.94);
+  }
+}
+
+.hero .scene .orgport-firmanavn {
+  color: #fff;
+}
+
+.hero .scene .orgport-orgnr {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.hero .scene .orgport-prove {
+  border-top-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.hero .scene .orgport-prove .orgport-prove-tittel {
+  color: #fff;
+}
+
+.hero .scene .orgport-pris-celle {
+  color: rgba(255, 255, 255, 0.84);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+.hero .scene .orgport-pris-celle.valgt,
+.hero .scene .orgport-pris-celle:hover,
+.hero .scene .orgport-pris-celle:focus-visible {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.55);
+  box-shadow: none;
+}
+
+.hero .scene .orgport-pris:has(.orgport-pris-celle:not(.valgt):hover) .orgport-pris-celle.valgt {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+.hero .scene .orgport-pris-merke {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.hero .scene .orgport-belop,
+.hero .scene .orgport-pris-celle.valgt .orgport-belop,
+.hero .scene .orgport-pris-celle:hover .orgport-belop,
+.hero .scene .orgport-pris:has(.orgport-pris-celle:not(.valgt):hover) .orgport-pris-celle.valgt .orgport-belop {
+  color: #fff;
+}
+
+.hero .scene .orgport-pris-lenke {
+  color: #fff;
+}
+
+.hero .scene .orgport-endre {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.hero .scene .orgport-endre:hover {
+  color: #fff;
+}
+
+/* «Last ned» over de tre knappene, venstrestilt som resten av kortet. */
+.hero .scene .orgport-svar .last-ned-tittel {
+  margin: 22px 0 10px;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.hero .scene .orgport .orgport-svar .last-ned-tittel + .get {
+  margin-top: 0;
+}
+
+.hero .scene .orgport-svar .get .btn {
+  color: #0a4aa8;
+  background: #fff;
+  border-color: #fff;
+}
+
+/* Knappene deler raden likt, uansett hvor bredt kortet er. */
+@media (min-width: 561px) {
+  .hero .scene .orgport-svar .get {
+    flex-wrap: nowrap;
+    gap: 10px;
+  }
+
+  .hero .scene .orgport-svar .get .btn.os {
+    flex: 1 1 0;
+    width: auto;
+    height: 54px;
+    font-size: 16px;
+  }
+}
+
+/* Store virksomheter: bredere, og venstre kort bruker bredden. Navnet over
+   hele kortet, så prøven og prisen side om side, så nedlastingen. Lavere
+   kort, så det står midt i bildet også på brede skjermer. */
+@media (min-width: 900px) {
+  .hero .scene .orgport.stor {
+    width: min(1160px, 100%);
+  }
+
+  .hero .scene .orgport.stor .orgport-svar-grid {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .hero .scene .orgport.stor .orgport-svar-hoved {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 28px;
+    align-content: center;
+    padding: 34px 38px;
+    border-radius: 30px;
+  }
+
+  .hero .scene .orgport.stor .orgport-svar-hoved > * {
+    grid-column: 1 / -1;
+  }
+
+  .hero .scene .orgport.stor .orgport-topp {
+    padding-bottom: 20px;
+    margin-bottom: 22px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .hero .scene .orgport.stor .orgport-svar-hoved > .orgport-prove {
+    grid-column: 1;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 15.5px;
+  }
+
+  .hero .scene .orgport.stor .orgport-svar-hoved > .orgport-pris {
+    grid-column: 2;
+    align-self: start;
+    margin: 0;
+  }
+
+  .hero .scene .orgport.stor .orgport-firmanavn {
+    font-size: clamp(30px, 2.6vw, 40px);
+  }
+
+  .hero .scene .orgport.stor .orgport-belop {
+    font-size: clamp(28px, 2.3vw, 36px);
+  }
+
+  .hero .scene .orgport.stor .orgport-oppsett {
+    padding: 34px 38px;
+    border-radius: 30px;
+  }
+
+  .hero .scene .orgport.stor .orgport-oppsett h3 {
+    font-size: clamp(26px, 2.3vw, 34px);
+  }
+
+  .hero .scene .orgport.stor .orgport-oppsett p:not(.orgport-merke) {
+    font-size: 15.5px;
+  }
+
+  .hero .scene .orgport.stor .orgport-mac {
+    max-width: 280px;
+    padding: 10px 0;
+  }
+
+  .hero .scene .orgport.stor .orgport-oppsett .btn {
+    height: 54px;
+    font-size: 16px;
+  }
+}
+
+/* Snøen i heroen: samme snø som forsiden på esbjugconsult.com hadde, men alt
+   ligger bak «Klart» og kortet (over bildet, under innholdet). Kortet er
+   frostet glass, så snøen skimtes mykt gjennom det. Tegnes av forside.js. */
+.hero .scene-sno {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Fnuggene som faller over kortets glass: over flata (::after, z 0), under
+   innholdet i kortet (z 1, senere i rekkefølgen), så de går bak overskriften,
+   knappene og feltet. */
+.hero .scene-sno-midt {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Snøen som har lagt seg på «Klart» og oppå kortet: eget lag foran innholdet. */
+.hero .scene-sno-lag {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Nedlastingen: når de har valgt system, blir kortet et eget nedlastingskort.
+   Innholdet tones ut og nedlastingskortet tones inn på samme plass og i samme
+   størrelse, så ingenting hopper. Lyset rundt kanten (::before) fyller seg med
+   klokka etter hvor langt nedlastingen har kommet (--p, 0–100 %, settes av
+   forside.js). Ferdig: ringen lukkes, en hake og neste steg.
+   -------------------------------------------------------------------------- */
+.hero .scene-tekst.laster:not(.har-svar) > .privat,
+.hero .scene-tekst.laster:not(.har-svar) > .orgport,
+.hero .scene-tekst.laster:not(.har-svar) > .kort-terminal {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 240ms ease, visibility 240ms;
+}
+
+.hero .scene-tekst:not(.har-svar) > .nedlasting {
+  grid-row: 3 / span 2;
+  grid-column: 1;
+  z-index: 2;
+  align-self: stretch;
+  justify-self: center;
+  width: min(760px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 44px 30px;
+  text-align: center;
+  color: #fff;
+  animation: nedlasting-inn 420ms var(--ease) 120ms both;
+}
+
+.hero .scene-tekst > .nedlasting[hidden] {
+  display: none;
+}
+
+@keyframes nedlasting-inn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+/* Ferdig: hele kanten lyser jevnt. (Med verlauf ville start og slutt møtes i
+   en tynn strek øverst.) */
+.hero .scene .scene-tekst.laster.lastet:not(.har-svar)::before {
+  background: #fff;
+}
+
+/* Ringen rundt kortet. */
+.hero .scene .scene-tekst.laster:not(.har-svar)::before {
+  content: "";
+  grid-row: 3 / span 2;
+  grid-column: 1;
+  z-index: 2;
+  align-self: stretch;
+  justify-self: center;
+  width: min(760px, 100%);
+  border-radius: 30px;
+  padding: 2.5px;
+  opacity: 1;
+  background: conic-gradient(from 0deg, #fff 0 var(--p, 0%), rgba(255, 255, 255, 0.14) var(--p, 0%) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.55));
+  animation: none;
+  transition: opacity 300ms ease;
+  pointer-events: none;
+}
+
+.nedlasting-topp {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-align: left;
+}
+
+/* Systemets kjennetegn, i liten utgave. */
+.nedlasting-merke {
+  position: relative;
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+
+.nedlasting-merke.win {
+  background: conic-gradient(#7fba00 0deg 90deg, #ffb900 90deg 180deg, #00a4ef 180deg 270deg, #f25022 270deg 360deg);
+  -webkit-mask: radial-gradient(circle, transparent 0 18px, #000 18.5px);
+  mask: radial-gradient(circle, transparent 0 18px, #000 18.5px);
+}
+
+.nedlasting-merke[hidden] {
+  display: none;
+}
+
+/* Linux: bare pingvinen, litt større. */
+.nedlasting-merke.lin svg {
+  width: 40px;
+  height: 46px;
+}
+
+.nedlasting-tittel {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+
+.nedlasting-fil {
+  margin-top: 3px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.nedlasting-prosent {
+  margin-top: 26px;
+  font-size: clamp(60px, 6vw, 88px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+}
+
+.nedlasting-pst {
+  margin-left: 4px;
+  font-size: 0.42em;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.nedlasting-status {
+  margin-top: 14px;
+  min-height: 1.5em;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.nedlasting.ferdig .nedlasting-prosent,
+.nedlasting.ferdig .nedlasting-status {
+  display: none;
+}
+
+/* Ferdig: én midtakse. Haken der prosenten sto, «Lastet ned» stort under,
+   så neste steg. */
+.nedlasting-ferdig {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 26px;
+  text-align: center;
+  animation: nedlasting-inn 420ms var(--ease) both;
+}
+
+.nedlasting-ferdig[hidden] {
+  display: none;
+}
+
+.nedlasting-hake {
+  flex: none;
+  width: 72px;
+  height: 72px;
+  animation: orgport-segl 620ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+.nedlasting-hake svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.nedlasting-hake circle {
+  fill: #fff;
+}
+
+.nedlasting-hake path {
+  stroke: #0a4aa8;
+  stroke-width: 4.5;
+  stroke-dasharray: 1;
+  animation: orgport-tegn 320ms ease-out 260ms both;
+}
+
+.nedlasting-ferdig-tittel {
+  margin-top: 16px;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: #fff;
+}
+
+.nedlasting-neste {
+  margin-top: 6px;
+  font-size: 17px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.nedlasting-tilbake {
+  margin-top: 28px;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.nedlasting-tilbake:hover {
+  color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero .scene-tekst:not(.har-svar) > .nedlasting,
+  .nedlasting-ferdig,
+  .nedlasting-hake,
+  .nedlasting-hake path {
+    animation: none;
+  }
+}
+
+/* Mobil og nettbrett: Klart er for datamaskiner. I stedet for nedlastingsknappene og
+   virksomhetsfeltet står en e-post med lenken, til seg selv eller andre (eieren 11.11.2026). */
+.mobil-send {
+  display: none;
+}
+.hero .scene .privat-fin {
+  margin: 14px 0 0;
+  text-align: center;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.86);
+}
+@media (hover: none) and (pointer: coarse), (max-width: 560px) {
+  .hero .scene .privat > :not(.mobil-send),
+  .hero .scene-tekst > .orgport,
+  .hero .scene-tekst > .nedlasting {
+    display: none;
+  }
+  .hero .scene-tekst:not(.har-svar)::after {
+    grid-row: 3;
+  }
+  .hero .scene-tekst:not(.har-svar) > .privat {
+    padding: 34px 26px 30px;
+  }
+  .mobil-send {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    text-align: center;
+    color: #fff;
+  }
+  .mobil-send p {
+    margin: 0;
+  }
+  .mobil-send-tittel {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+  .mobil-send-tekst,
+  .mobil-send-andre {
+    font-size: 15px;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.86);
+  }
+  .mobil-send .btn {
+    margin-top: 6px;
+    height: 52px;
+    padding: 0 30px;
+    font-size: 16px;
+    background: #fff;
+    border-color: #fff;
+    color: #16348f;
+  }
+  .mobil-send-andre a {
+    color: #fff;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+/* Krystallen over «Klart» i heroen vises bare på mobil og nettbrett, som på
+   nedtellingssiden (eieren 11.11.2026). */
+.hero-ikon {
+  display: none;
+}
+@media (hover: none) and (pointer: coarse), (max-width: 560px) {
+  .hero .scene .scene-tekst > h1.hero-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .hero-ikon {
+    display: block;
+    width: 88px;
+    height: auto;
+    filter: drop-shadow(0 10px 24px rgba(10, 20, 34, 0.35));
+  }
+}
+
+/* Lett snø bak «Klart» og kortet på mobil og nettbrett (eieren 11.11.2026). */
+.hero .scene-sno-mobil {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+@media (hover: none) and (pointer: coarse) {
+  .hero .scene-sno-mobil {
+    display: block;
+  }
+}
+
+/* Toppen på iPhone (eieren 11.11.2026): Safari farger linjen øverst etter det som ligger der,
+   og etter en fast meny øverst, selv om den er skjøvet ut av bildet. Siden bak (html) har
+   himmelens farge mens heroen vises (forside.js bytter den til sidens lyse farge lenger ned),
+   og den skjulte menyen har ingen bakgrunn. */
+html:has(> body > main#top > .hero) {
+  background-color: var(--topp-farge, #6593c3);
+}
+body:has(> main#top > .hero) .topbar:not(.synlig):not(:focus-within) {
+  /* Safari på iPhone tar fargen fra den faste menyen øverst, også når den er skjult og
+     usynlig. Skjult har den derfor himmelens farge. */
+  background: var(--topp-farge, #6593c3);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+/* Himmelen øverst i heroen toner over i én farge (#6593c3, målt helt øverst i bildet der mobilen
+   viser det), så den går
+   sømløst over i linjen øverst på telefonen, som har samme farge (eieren 11.11.2026). */
+.hero .scene-himmel {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: -2;
+  /* Samme farge som bildet har øverst, så toningen bare jevner ut himmelen; mykt ut, med
+     fallende styrke, og ferdig lenge før logoen (eieren 11.11.2026). */
+  height: clamp(48px, 7%, 90px);
+  background: linear-gradient(
+    180deg,
+    rgba(101, 147, 195, 1) 0%,
+    rgba(101, 147, 195, 0.9) 12%,
+    rgba(101, 147, 195, 0.7) 28%,
+    rgba(101, 147, 195, 0.45) 48%,
+    rgba(101, 147, 195, 0.22) 68%,
+    rgba(101, 147, 195, 0.07) 86%,
+    rgba(101, 147, 195, 0) 100%
+  );
+  pointer-events: none;
+}
+
+/* Safari på iPhone farger toppen etter bakgrunnen på body når siden lastes. Body har derfor
+   himmelens farge, og innholdet sin egen lyse bakgrunn (eieren 11.11.2026). */
+body:has(> main#top > .hero) {
+  background-color: var(--topp-farge, #6593c3);
+}
+main#top:has(> .hero) {
+  background: var(--ground);
+}
+
+/* Toppmenyen: «Last ned» på datamaskin, «Send til deg selv» på mobil og nettbrett. */
+.topbar .topp-send {
+  display: none;
+}
+@media (hover: none) and (pointer: coarse), (max-width: 560px) {
+  .topbar .topp-last {
+    display: none;
+  }
+  .topbar .topp-send {
+    display: inline-flex;
+    white-space: nowrap;
+  }
+}
+
+/* Hva Klart er, rett over programvinduet (eieren 19.11.2026): et kort med merket (datamaskin uten nett)
+   til venstre, så det første man ser er at Klart er lokalt. Eierens tekst ordrett. Samme bredde som vinduet. */
+.hero > .hva {
+  width: 100%;
+  max-width: 1020px;
+  margin: clamp(56px, 7vw, 96px) auto 0;
+  padding: clamp(26px, 4vw, 56px);
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  text-align: left;
+}
+/* Smal skjerm: logoen øverst, så punktene, med luft mellom (eieren 20.11.2026). */
+@media (max-width: 899px) {
+  .hero > .hva {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .hva-hoyre {
+    padding: 20px 16px;
+  }
+}
+.hva-hoyre {
+  order: -1;
+}
+@media (min-width: 900px) {
+  .hero > .hva {
+    display: grid;
+    /* Klart til venstre, punktene til høyre (eieren 20.11.2026). */
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.85fr);
+    gap: clamp(32px, 4vw, 64px);
+    align-items: stretch;
+  }
+  /* Punktene fordeles med lik avstand over hele høyden til logofeltet. */
+  .hva-venstre {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .hva-venstre .hva-sjekk {
+    display: contents;
+  }
+}
+.hva-tittel {
+  margin: 0;
+  font: 600 clamp(36px, 4.2vw, 56px)/1.05 var(--serif);
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.hva-hoyre {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 14px 0;
+  border-radius: 16px;
+  background: var(--ground);
+}
+.hva-logo {
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 1.4vw, 20px);
+  margin: 0;
+}
+.hva-logo img {
+  width: clamp(48px, 5vw, 68px);
+  height: auto;
+  border-radius: 22%;
+  filter: drop-shadow(0 8px 18px rgba(26, 63, 176, 0.22));
+}
+.hva-logo span {
+  font: italic 600 clamp(44px, 5vw, 72px)/1 "Literata", "Iowan Old Style", Georgia, serif;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.hva-under {
+  margin: 10px 0 0;
+  font: 600 clamp(15px, 1.25vw, 17px)/1.3 var(--sans);
+  letter-spacing: 0.01em;
+  color: var(--ink-2);
+}
+.hva-sjekk {
+    display: contents;
+  }
+}
+.hva-tittel {
+  margin: 0;
+  font: 600 clamp(36px, 4.2vw, 56px)/1.05 var(--serif);
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.hva-klart {
+  margin: 18px 0 0;
+  font: 400 clamp(18px, 1.55vw, 21px)/1.55 var(--serif);
+  color: var(--ink);
+  text-wrap: pretty;
+}
+.hva-klart .hva-ny {
+  display: block;
+  margin-top: 0.8em;
+}
+.hva-sjekk {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.hva-sjekk li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font: 600 clamp(17px, 1.45vw, 20px)/1.3 var(--sans);
+  color: var(--ink);
+}
+.hva-sjekk li::before {
+  content: "";
+  flex: none;
+  width: 22px;
+  height: 22px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230e7a5a' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12.5l5 5L20 6.5'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.hero > .hva + .kv {
+  margin-top: clamp(28px, 3.4vw, 44px);
+}
+
+/* Mobil (eieren 19.11.2026): terminalen bak «Klart» er bare for brede skjermer med mus; uten stilene
+   fra media-blokka ble den liggende som rå tekst over overskriften. Linux-knappen står. */
+.kort-terminal {
+  display: none;
+}
+
+/* Under fillisten (eieren 20.11.2026). .formats > p er den lille overskriften; denne er vanlig tekst. */
+.formats > p.formats-unik {
+  margin: 28px auto 0;
+  max-width: 640px;
+  font: 400 clamp(17px, 1.4vw, 19px)/1.5 var(--serif);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+}
+.formats-unik b {
+  font-weight: 600;
+  color: var(--signal-deep);
+}

@@ -1,0 +1,184 @@
+<!doctype html>
+<!--
+  Hei, du som leser kildekoden. Det var deg vi håpet på.
+
+  Klart lover at dokumentene aldri forlater maskinen. Et sånt løfte skal ikke
+  tas på ordet, så sjekk det:
+
+  - Programmet: /chiarissimo/per-it.html har kommandoene som viser hva det snakker med.
+  - Denne siden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
+    uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
+  - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
+    Vi vil heller høre det fra deg enn fra en kunde.
+-->
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/chiarissimo/favicon.png" />
+    <title>Prezzi e ordine · Chiarissimo</title>
+    <meta name="description" content="Quanto costa Chiarissimo per la Sua organizzazione: aziende e studi, comuni ed enti pubblici. Una licenza per tutti, ordine con fattura. Gratuito per i privati." />
+    <meta name="theme-color" content="#eef3fb" />
+    <!-- Ikke indekser før Klart lanseres. Fjernes sammen med den på /chiarissimo/. -->
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="../fonts.css" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="pris.css" />
+    <link rel="stylesheet" href="ordine.css" />
+  </head>
+  <body>
+    <main>
+      <section class="port" id="port">
+        <!-- Veien tilbake til forsiden (eieren 11.11.2026: det gikk ikke an å komme tilbake). -->
+        <a class="pris-hjem" href="/chiarissimo/"><span aria-hidden="true">←</span> <i>Chiarissimo</i></a>
+        <div class="kort middels" id="kort">
+          <!-- Privatpersoner betaler ikke; det skal stå først også her. -->
+          <p class="pris-privat"><b>Gratuito per i privati.</b> <a href="/chiarissimo/#last-ned">Scarica Chiarissimo</a></p>
+          <p class="merke">Per le organizzazioni</p>
+          <h1>Chiarissimo per la Sua organizzazione</h1>
+          <p class="ingress">Una licenza vale per tutti nell'organizzazione. Nessun conteggio delle postazioni, nessun limite di pagine.</p>
+
+          <!-- Tre slags kjøpere. Prisen kommer fra price.js, den samme filen serveren regner med (.worker/utgaver/it.js). -->
+          <div class="de-valg" role="radiogroup" aria-label="Tipo di organizzazione">
+            <label><input type="radio" name="art" value="business" checked /><span>Azienda, studio professionale o associazione</span></label>
+            <label><input type="radio" name="art" value="municipal" /><span>Comune, unione di comuni o provincia</span></label>
+            <label><input type="radio" name="art" value="state" /><span>Amministrazione statale o altro ente pubblico</span></label>
+          </div>
+
+          <div class="de-to-felt" id="campo-azienda">
+            <div>
+              <label for="persone">Persone nell'organizzazione</label>
+              <input id="persone" type="number" min="1" step="1" value="25" inputmode="numeric" />
+              <p class="smaa">Tutti i dipendenti e collaboratori. Scriva 1 se lavora da solo.</p>
+            </div>
+            <div id="campo-settore">
+              <label for="settore">Settore</label>
+              <select id="settore"></select>
+            </div>
+          </div>
+
+          <!-- Kommuner: kurven for fire år i euro (price.js, COMUNI). Taket er 139 000 €, under 140 000 € for affidamento diretto. -->
+          <form class="de-ett-felt" id="ke-skjema" novalidate hidden>
+            <label for="ke-innbyggere">Numero di abitanti</label>
+            <input id="ke-innbyggere" type="text" inputmode="numeric" autocomplete="off" placeholder="per es. 18.500" maxlength="12" />
+            <p class="smaa">Lo stesso prezzo per ogni comune della stessa dimensione, senza trattativa.</p>
+          </form>
+
+          <div class="de-ett-felt" id="campo-ente" hidden>
+            <label for="dipendenti">Dipendenti dell'ente</label>
+            <input id="dipendenti" type="number" min="1" step="1" inputmode="numeric" placeholder="per es. 120" />
+            <p class="smaa">Anche per tribunali, università, aziende sanitarie, regioni e altri enti pubblici.</p>
+          </div>
+
+          <div class="de-prisboks" aria-live="polite">
+            <p class="bekreftet">Licenza per tutta l'organizzazione</p>
+            <p class="pristall" id="riga-prezzo"><b id="importo"></b> <span>per un anno</span></p>
+            <div id="ke-boks" hidden><p class="ke-svar" id="ke-svar" hidden></p></div>
+            <p class="de-hinweis" id="nota" hidden></p>
+            <p class="smaa">Prezzo IVA esclusa. La fattura non addebita l'IVA: operazione non soggetta, inversione contabile a carico del committente (reverse charge).</p>
+          </div>
+
+          <form id="ordine" class="de-ordre" novalidate>
+            <div class="de-to-felt">
+              <div>
+                <label for="org">Nome dell'organizzazione</label>
+                <input id="org" type="text" maxlength="120" autocomplete="organization" required />
+                <p class="smaa">Compare sulla fattura e in Chiarissimo su ogni computer che usa la licenza.</p>
+              </div>
+              <div>
+                <label for="email">E-mail per la fattura</label>
+                <input id="email" type="email" maxlength="200" autocomplete="email" required />
+                <p class="smaa">Qui arrivano la fattura e poi la chiave di licenza.</p>
+              </div>
+            </div>
+            <div class="de-to-felt">
+              <div>
+                <label for="adresse">Indirizzo di fatturazione</label>
+                <textarea id="adresse" rows="4" maxlength="600" autocomplete="street-address" required></textarea>
+                <p class="smaa">Con partita IVA o codice fiscale dell'ente.</p>
+              </div>
+              <div>
+                <label for="riferimento">Il Suo riferimento</label>
+                <input id="riferimento" type="text" maxlength="80" />
+                <p class="smaa">Facoltativo, per esempio numero d'ordine, CIG o codice univoco ufficio. Compare sulla fattura.</p>
+              </div>
+            </div>
+            <!-- Vilkårene i appen (VilkårTekstIt, punkt 7) sier at punkt 7 og 8 godkjennes særskilt skriftlig i bestillingsskjemaet
+                 for næringskunder og offentlige kjøpere (artt. 1341 og 1342 c.c.). Avkrysningen sendes ikke; ordine.js krever den. -->
+            <label class="it-approva" for="approva">
+              <input id="approva" type="checkbox" />
+              <span>Ai sensi degli artt. 1341 e 1342 del codice civile approvo specificamente i punti 7 (garanzia e responsabilità, con il limite di responsabilità) e 8 (modifiche, legge applicabile e foro competente) delle <a class="lenke" href="/chiarissimo/condizioni/">condizioni d'uso</a>.</span>
+            </label>
+            <p class="de-skjult" aria-hidden="true"><label for="website">Lasciare vuoto questo campo</label><input id="website" type="text" tabindex="-1" autocomplete="off" /></p>
+            <div class="knapper">
+              <button class="btn" type="submit" id="ordina">Ordina con fattura</button>
+              <button class="btn de-ghost-lys" type="button" id="ho-chiave">Ho già una chiave di licenza</button>
+            </div>
+            <p class="smaa de-feil" id="errore" role="alert" hidden></p>
+            <p class="smaa" id="procedura">La fattura arriva subito per e-mail. Paga entro 30 giorni con bonifico in euro. La chiave di licenza arriva per e-mail appena riceviamo il pagamento, e vale un anno da quel giorno. Fino ad allora Chiarissimo funziona per 30 giorni con tutte le funzioni.</p>
+            <p class="smaa" id="ho-chiave-testo" hidden>Apra Chiarissimo e faccia clic su «Licenza» in alto a destra (durante il periodo di prova lì c'è scritto «Prova: restano … giorni»). Incolli il codice che inizia con CHIARISSIMO- e faccia clic su «Attiva».</p>
+          </form>
+          <div id="grazie" class="de-takk" hidden tabindex="-1">
+            <h2>Grazie</h2>
+            <p id="grazie-testo"></p>
+            <p class="smaa">Domande: <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a></p>
+          </div>
+
+          <!-- Bare for kommuner: prislisten, de samme punktene som COMUNI i price.js. -->
+          <section class="kommune-eur" id="kommune-eur" aria-labelledby="ke-tittel" hidden>
+            <p class="merke">Per i comuni</p>
+            <h2 id="ke-tittel">Un prezzo in base agli abitanti</h2>
+            <p class="ingress">
+              La licenza vale per tutta l'amministrazione. Quattro anni costano al massimo 139.000 € e restano quindi sempre sotto
+              i 140.000 € dell'affidamento diretto (art. 50, c. 1, lett. b, d.lgs. 36/2023). Si ordina e si paga un anno alla volta,
+              un quarto dell'importo per quattro anni.
+            </p>
+            <table class="ke-tabell">
+              <caption class="skjult-tekst">Prezzi per i comuni, quattro anni e all'anno, IVA esclusa</caption>
+              <thead><tr><th scope="col">Abitanti</th><th scope="col">4 anni</th><th scope="col">all'anno</th></tr></thead>
+              <tbody>
+                <tr><td>fino a 1.000</td><td>2.400 €</td><td>600 €</td></tr>
+                <tr><td>5.000</td><td>4.900 €</td><td>1.225 €</td></tr>
+                <tr><td>15.000</td><td>9.900 €</td><td>2.475 €</td></tr>
+                <tr><td>50.000</td><td>19.900 €</td><td>4.975 €</td></tr>
+                <tr><td>150.000</td><td>39.000 €</td><td>9.750 €</td></tr>
+                <tr><td>500.000</td><td>79.000 €</td><td>19.750 €</td></tr>
+                <tr><td>da 3.000.000</td><td>139.000 €</td><td>34.750 €</td></tr>
+              </tbody>
+            </table>
+            <p class="smaa">Fino a 5.000 abitanti i quattro anni restano sotto i 5.000 €; fino a 150.000 abitanti sotto i 40.000 €.</p>
+          </section>
+
+          <h3 class="vilkar-tittel">Prima dell'acquisto</h3>
+          <p class="de-avsnitt"><b>30 giorni con Chiarissimo completo.</b> Provi Chiarissimo per 30 giorni con i Suoi file prima di decidere. È la versione completa, e la prova non richiede registrazione.</p>
+
+          <h3 class="vilkar-tittel">Compreso nel prezzo</h3>
+          <ul class="vilkar">
+            <li>Word, Excel, PowerPoint, PDF, e-mail, file di testo, scansioni e foto</li>
+            <li>Tutto avviene sui Suoi computer. Nulla viene caricato</li>
+            <li>Per tutti i dipendenti e su quanti computer vuole: oggi sul Mac, e su Windows e Linux quando arrivano</li>
+            <li>Aggiornamenti durante l'anno di licenza</li>
+          </ul>
+          <p class="de-avsnitt">Il pagamento avviene solo con fattura. <a class="lenke" href="/chiarissimo/condizioni/">Condizioni di licenza</a></p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bunnen er alltid synlig. Selgeren etter ehandelsloven § 8. Esbjug Consult er ikke MVA-registrert (Brønnøysund 19.11.2026). -->
+    <footer class="pris-bunn" id="pris-bunn">
+      <div class="colofon">
+        <p class="wordmark"><a href="/chiarissimo/"><b>Chiarissimo</b></a> <span>v0.1.0</span></p>
+        <p class="selger">
+          Venduto da <b class="selger-navn">ESBJUG CONSULT</b> · Glenneveien 272B, 1455 Nordre Frogn, Norvegia ·
+          <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a> · N. org. 938 441 405
+        </p>
+      </div>
+      <div class="footmeta">
+        <a href="/chiarissimo/condizioni/">Condizioni di licenza</a>
+        <a href="/chiarissimo/privacy/">Privacy</a>
+      </div>
+    </footer>
+
+    <script type="module" src="ordine.js"></script>
+  </body>
+</html>

@@ -3,7 +3,7 @@
 // else is the static site. /login/ (customer portal) and /kunde/ (behind login) are in kunde.js.
 import { handleChat, pageVisit } from "./chat.js";
 import { handleKunde } from "./kunde.js";
-import { erLansert, handleAllesKlar, handleFrostCopy, handleKlart, handleNedlasting, handleTest, harTest } from "./klart.js";
+import { erLansert, handleAllesKlar, handleFrostCopy, handleKlart, handleNedlasting, handleTest, handleUtgave, harTest, UTGAVER, utgaveFraSti } from "./klart.js";
 export { ChatHub } from "./chat.js";
 export { KlartLager } from "./klart.js";
 
@@ -78,6 +78,27 @@ export default {
     if (/^\/klart\/us\/buy\/?$/.test(url.pathname)) {
       url.pathname = "/frostcopy/buy/";
       return Response.redirect(url.toString(), 302);
+    }
+    // De andre utgavene (FrostCopy UK, C'est Clair, Clarísimo, Chiarissimo, Klip en Klaar, Wszystko Jasne):
+    // statiske sider i hver sin mappe, kjøp og nedlasting gjennom handleUtgave og handleNedlasting.
+    const utgave = utgaveFraSti(url.pathname);
+    if (utgave) {
+      if (url.pathname.startsWith(`/${utgave.sti}/api/`)) return handleUtgave(request, env, url, utgave);
+      if (url.pathname.startsWith(`/${utgave.sti}/download/`)) return handleNedlasting(request, env, url);
+      // Appens «kjøp lisens» åpner aktiveringsadressen med ?hva=kjop: kjøpet skjer på prissiden.
+      if (url.pathname.replace(/\/$/, "") === `/${utgave.sti}/${utgave.aktivering}` && url.searchParams.get("hva") === "kjop") {
+        return Response.redirect(`${url.origin}/${utgave.sti}/${utgave.prisSti}/`, 302);
+      }
+    }
+    // Skrivemåter folk prøver for de samme utgavene.
+    for (const u of Object.values(UTGAVER)) {
+      const forsok = url.pathname.split("/")[1];
+      let ord = forsok; try { ord = decodeURIComponent(forsok).toLowerCase(); } catch {}
+      if (forsok && forsok !== u.sti && u.alias.includes(ord)) {
+        url.pathname = url.pathname.replace(/^\/[^/]+/, "/" + u.sti);
+        if (url.pathname === "/" + u.sti) url.pathname += "/";
+        return Response.redirect(url.toString(), 301);
+      }
     }
     // /login/ er kundeportalen, /kunde/ er lukket bak innlogging.
     if (url.pathname.startsWith("/login/") || url.pathname.startsWith("/kunde/")) {

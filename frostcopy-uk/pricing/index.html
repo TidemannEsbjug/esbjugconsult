@@ -1,0 +1,180 @@
+<!doctype html>
+<!--
+  Hello, you who read the source. You are the one we hoped for.
+
+  FrostCopy promises that the documents never leave the computer. A promise like
+  that should not be taken on trust, so check it:
+
+  - The program: /frostcopy-uk/for-it.html has the commands that show what it talks to.
+  - This page: every file is loaded from this domain, and the code is not
+    minified, so it can be read as it is.
+  - Found something? Write to tidemann@esbjugconsult.com (see /.well-known/security.txt).
+    We would rather hear it from you than from a customer.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/frostcopy-uk/favicon.png" />
+    <title>Pricing and ordering · FrostCopy UK</title>
+    <meta name="description" content="What FrostCopy costs your organisation: businesses and charities, councils, and central government and the NHS. One licence for everyone, ordered on invoice. Free for private individuals." />
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="../fonts.css" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="pris.css" />
+    <link rel="stylesheet" href="order.css" />
+  </head>
+  <body>
+    <main>
+      <section class="port" id="port">
+        <a class="pris-hjem" href="/frostcopy-uk/"><span aria-hidden="true">←</span> <i>FrostCopy</i></a>
+        <div class="kort middels">
+          <p class="pris-privat"><b>Free for private individuals.</b> <a href="/frostcopy-uk/#last-ned">Download FrostCopy</a></p>
+          <p class="merke">For organisations</p>
+          <h1>FrostCopy for your organisation</h1>
+          <p class="ingress">One licence covers everyone in the organisation. No seats to count, no page limits.</p>
+
+          <!-- Three kinds of buyer. The price comes from price.js, the same file the server works it out with (order.js). -->
+          <div class="us-valg" role="radiogroup" aria-label="Kind of organisation">
+            <label><input type="radio" name="art" value="business" checked /><span>Business, charity or practice</span></label>
+            <label><input type="radio" name="art" value="municipal" /><span>Council</span></label>
+            <label><input type="radio" name="art" value="state" /><span>Central government, NHS or other public body</span></label>
+          </div>
+
+          <div class="us-to-felt" id="field-business">
+            <div>
+              <label for="persons">People in the organisation</label>
+              <input id="persons" type="number" min="1" step="1" value="25" inputmode="numeric" />
+              <p class="smaa">Everyone on the payroll. Enter 1 if it is just you.</p>
+            </div>
+            <div id="field-sector">
+              <label for="sector">What you do</label>
+              <select id="sector"></select>
+            </div>
+          </div>
+
+          <div class="us-to-felt" id="field-municipal" hidden>
+            <div>
+              <label for="inhabitants">Population</label>
+              <input id="inhabitants" type="number" min="1" step="1" inputmode="numeric" placeholder="e.g. 18500" />
+              <p class="smaa">The same price for every council of the same size, with no negotiation. Town and parish councils too.</p>
+            </div>
+          </div>
+
+          <div class="us-to-felt" id="field-state" hidden>
+            <div>
+              <label for="employees">Staff in the body</label>
+              <input id="employees" type="number" min="1" step="1" inputmode="numeric" placeholder="e.g. 120" />
+              <p class="smaa">Government departments and agencies, NHS trusts and boards, police, fire and other public bodies.</p>
+            </div>
+          </div>
+
+          <div class="us-prisboks" aria-live="polite">
+            <p class="bekreftet">Licence for the whole organisation</p>
+            <p class="pristall" id="priceline"><b id="amount"></b> <span>for one year</span></p>
+            <p class="us-hvordan" id="note" hidden></p>
+            <p class="smaa">Net price. The invoice carries no UK VAT: the customer accounts for it under the reverse charge.</p>
+          </div>
+
+          <form id="order" class="us-ordre" novalidate>
+            <div class="us-to-felt">
+              <div>
+                <label for="org">Name of the organisation</label>
+                <input id="org" type="text" maxlength="120" autocomplete="organization" required />
+                <p class="smaa">Shown on the invoice, and in FrostCopy on every computer that uses the licence.</p>
+              </div>
+              <div>
+                <label for="email">Email for the invoice</label>
+                <input id="email" type="email" maxlength="200" autocomplete="email" required />
+                <p class="smaa">The invoice goes here, and later the licence key.</p>
+              </div>
+            </div>
+            <div class="us-to-felt">
+              <div>
+                <label for="address">Billing address</label>
+                <textarea id="address" rows="4" maxlength="600" autocomplete="street-address" required></textarea>
+              </div>
+              <div>
+                <label for="reference">Your purchase order number or reference</label>
+                <input id="reference" type="text" maxlength="80" />
+                <p class="smaa">Optional. Printed on the invoice.</p>
+              </div>
+            </div>
+            <p class="us-skjult" aria-hidden="true"><label for="website">Leave this field empty</label><input id="website" type="text" tabindex="-1" autocomplete="off" /></p>
+            <div class="knapper">
+              <button class="btn" type="submit" id="buy">Order on invoice</button>
+              <button class="btn us-ghost-lys" type="button" id="have">I have a licence key</button>
+            </div>
+            <p class="smaa us-feil" id="error" role="alert" hidden></p>
+            <p class="smaa">We email the invoice at once. You pay by bank transfer in pounds sterling within 30 days. The licence key is emailed as soon as the payment has arrived, and it lasts one year from that day. FrostCopy works in full for 30 days meanwhile.</p>
+            <p class="smaa" id="haveText" hidden>Open FrostCopy and click “Licence” at the top right (during the trial it says “Trial: … days left”). Paste the code that starts with FROSTCOPY-, or drop the licence file on the window, and click “Activate”. <a href="/frostcopy-uk/activate/">More about the licence key</a></p>
+          </form>
+          <div id="thanks" class="us-takk" hidden tabindex="-1">
+            <h2>Thank you</h2>
+            <p id="thanksText"></p>
+            <p class="smaa">Questions: <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a></p>
+          </div>
+
+          <!-- Only for councils: the price list. The points are the same as MUNICIPAL in price.js. -->
+          <section id="municipal-table" aria-labelledby="mt-title" hidden>
+            <h3 class="vilkar-tittel" id="mt-title">Councils: one price by population</h3>
+            <p class="us-avsnitt">
+              The licence covers the whole council. Four years cost at most £170,000, so the whole term stays below the
+              Procurement Act 2023 threshold for councils, even with VAT added. You order and pay one year at a time,
+              a quarter of the four-year amount.
+            </p>
+            <table class="us-pristabell">
+              <thead><tr><th scope="col">Population</th><th scope="col">4 years</th><th scope="col">Per year</th></tr></thead>
+              <tbody>
+                <tr><td>500</td><td>£1,300</td><td>£325</td></tr>
+                <tr><td>2,000</td><td>£2,200</td><td>£550</td></tr>
+                <tr><td>5,000</td><td>£4,300</td><td>£1,075</td></tr>
+                <tr><td>20,000</td><td>£12,300</td><td>£3,075</td></tr>
+                <tr><td>50,000</td><td>£34,900</td><td>£8,725</td></tr>
+                <tr><td>100,000</td><td>£59,500</td><td>£14,875</td></tr>
+                <tr><td>250,000</td><td>£114,800</td><td>£28,700</td></tr>
+                <tr><td>500,000 and over</td><td>£170,000</td><td>£42,500</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <h3 class="vilkar-tittel">Public bodies</h3>
+          <p class="us-avsnitt">
+            Central government, NHS trusts and other public bodies pay by the number of staff, never more than £8,300 a year.
+            With VAT added that stays under £10,000, within the single-quote band many bodies allow and below the line from
+            which a contract details notice has to be published.
+          </p>
+
+          <h3 class="vilkar-tittel">Before you buy</h3>
+          <p class="us-avsnitt"><b>30 days with all of FrostCopy.</b> Try FrostCopy on your own files for 30 days before you decide. It is the full version, and trying it needs no sign-up.</p>
+
+          <h3 class="vilkar-tittel">What is included</h3>
+          <ul class="vilkar">
+            <li>Word, Excel, PowerPoint, PDF, email, text files, scans and photos</li>
+            <li>Everything runs on your own computers. Nothing is uploaded</li>
+            <li>Mac, Windows and Linux, for everyone in the organisation and on as many computers as you like</li>
+            <li>Updates during the licence year</li>
+            <li>The licence is a signed code that is checked on the computer. Nothing is sent over the network</li>
+          </ul>
+          <p class="us-avsnitt">Payment is by invoice only. <a class="lenke" href="/frostcopy-uk/terms/">Terms of Use</a></p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="pris-bunn" id="pris-bunn">
+      <div class="colofon">
+        <p class="wordmark"><a href="/frostcopy-uk/"><b>FrostCopy</b></a> <span>v0.1.0</span></p>
+        <p class="selger">
+          Sold by <b class="selger-navn">ESBJUG CONSULT</b> · Glenneveien 272B, 1455 Nordre Frogn, Norway ·
+          <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a> · Org. no. 938 441 405
+        </p>
+      </div>
+      <div class="footmeta">
+        <a href="/frostcopy-uk/terms/">Terms of Use</a>
+        <a href="/frostcopy-uk/privacy/">Privacy</a>
+      </div>
+    </footer>
+
+    <script type="module" src="order.js"></script>
+  </body>
+</html>

@@ -86,6 +86,12 @@ import { ansatteITre, delAvKommunen, statlig, SAMLET_STAT } from "./kommunetre.j
 import { sokMaskin } from "./klart-maskin.js";
 import { price as usPris, STATES as US_STATER } from "../frostcopy/buy/price.js";
 import { preis as dePreis } from "../alles-klar/pris/preis.js";
+import utgaveGb from "./utgaver/gb.js";
+import utgaveFr from "./utgaver/fr.js";
+import utgaveEs from "./utgaver/es.js";
+import utgaveIt from "./utgaver/it.js";
+import utgaveNl from "./utgaver/nl.js";
+import utgavePl from "./utgaver/pl.js";
 
 const NADE_DAGER = 14; // lisensen varer så mange dager etter at perioden er betalt til
 const MASKINKODE = /^[0-9A-HJKMNP-TV-Z]{4}(-[0-9A-HJKMNP-TV-Z]{4}){3}$/;
@@ -135,29 +141,29 @@ const EXE = "application/vnd.microsoft.portable-executable";
 const DMG = "application/x-apple-diskimage";
 // «key» er navnet i R2 (fra bygget), «navn» er det kunden får på disken: bare navnet på programmet, uten
 // versjonsnummer (eieren 11.11.2026; nummeret kommer med v2). Linux beholder nummeret og arkitekturen, slik
-// .deb-pakker pleier å hete. Byggene er fra 20.11.2026 (nøkkel på USB-minne, låste filer, FrostCopy).
-// De forrige ligger urørt i R2 under 2026-11-11/ og 2026-11-12b/.
+// .deb-pakker pleier å hete. Byggene er fra 24.11.2026 (prosjektnøkler, USB-veiviseren, revisjonsloggen).
+// De forrige ligger urørt i R2 under 2026-11-11/, 2026-11-12b/ og 2026-11-20/.
 const FILER = {
   // Klart (norsk), /klart/last-ned/…
   klart: {
-    mac: { key: "2026-11-20/Klart_0.1.0_universal.dmg", navn: "Klart.dmg", type: DMG },
-    windows: { key: "2026-11-20/Klart_0.1.0_x64-setup.exe", navn: "Klart.exe", type: EXE },
-    linux: { key: "2026-11-20/Klart_0.1.0_amd64.deb", navn: "Klart_0.1.0_amd64.deb", type: DEB },
-    "linux-arm": { key: "2026-11-20/Klart_0.1.0_arm64.deb", navn: "Klart_0.1.0_arm64.deb", type: DEB },
+    mac: { key: "2026-11-24/Klart_0.1.0_universal.dmg", navn: "Klart.dmg", type: DMG },
+    windows: { key: "2026-11-24/Klart_0.1.0_x64-setup.exe", navn: "Klart.exe", type: EXE },
+    linux: { key: "2026-11-24/Klart_0.1.0_amd64.deb", navn: "Klart_0.1.0_amd64.deb", type: DEB },
+    "linux-arm": { key: "2026-11-24/Klart_0.1.0_arm64.deb", navn: "Klart_0.1.0_arm64.deb", type: DEB },
   },
   // Alles Klar (tysk), /alles-klar/last-ned/…
   "alles-klar": {
-    mac: { key: "2026-11-20/de/Alles-Klar_0.1.0_universal.dmg", navn: "Alles Klar.dmg", type: DMG },
-    windows: { key: "2026-11-20/de/Alles-Klar_0.1.0_x64-setup.exe", navn: "Alles Klar.exe", type: EXE },
-    linux: { key: "2026-11-20/de/Alles-Klar_0.1.0_amd64.deb", navn: "Alles Klar_0.1.0_amd64.deb", type: DEB },
-    "linux-arm": { key: "2026-11-20/de/Alles-Klar_0.1.0_arm64.deb", navn: "Alles Klar_0.1.0_arm64.deb", type: DEB },
+    mac: { key: "2026-11-24/de/Alles-Klar_0.1.0_universal.dmg", navn: "Alles Klar.dmg", type: DMG },
+    windows: { key: "2026-11-24/de/Alles-Klar_0.1.0_x64-setup.exe", navn: "Alles Klar.exe", type: EXE },
+    linux: { key: "2026-11-24/de/Alles-Klar_0.1.0_amd64.deb", navn: "Alles Klar_0.1.0_amd64.deb", type: DEB },
+    "linux-arm": { key: "2026-11-24/de/Alles-Klar_0.1.0_arm64.deb", navn: "Alles Klar_0.1.0_arm64.deb", type: DEB },
   },
   // FrostCopy (amerikansk), /frostcopy/download/…
   frostcopy: {
-    mac: { key: "2026-11-20/us/FrostCopy_0.1.0_universal.dmg", navn: "FrostCopy.dmg", type: DMG },
-    windows: { key: "2026-11-20/us/FrostCopy_0.1.0_x64-setup.exe", navn: "FrostCopy.exe", type: EXE },
-    linux: { key: "2026-11-20/us/FrostCopy_0.1.0_amd64.deb", navn: "FrostCopy_0.1.0_amd64.deb", type: DEB },
-    "linux-arm": { key: "2026-11-20/us/FrostCopy_0.1.0_arm64.deb", navn: "FrostCopy_0.1.0_arm64.deb", type: DEB },
+    mac: { key: "2026-11-24/us/FrostCopy_0.1.0_universal.dmg", navn: "FrostCopy.dmg", type: DMG },
+    windows: { key: "2026-11-24/us/FrostCopy_0.1.0_x64-setup.exe", navn: "FrostCopy.exe", type: EXE },
+    linux: { key: "2026-11-24/us/FrostCopy_0.1.0_amd64.deb", navn: "FrostCopy_0.1.0_amd64.deb", type: DEB },
+    "linux-arm": { key: "2026-11-24/us/FrostCopy_0.1.0_arm64.deb", navn: "FrostCopy_0.1.0_arm64.deb", type: DEB },
   },
 };
 
@@ -218,8 +224,10 @@ export async function handleTest(request, env, url) {
 
 export async function handleNedlasting(request, env, url) {
   // /klart/last-ned/mac, /alles-klar/last-ned/mac og /frostcopy/download/mac: hver utgave har sine filer.
-  const treff = url.pathname.match(/^\/(klart|GDPR|alles-klar|frostcopy)\/(?:last-ned|download)\/([^/]+)\/?$/);
-  const fil = treff && FILER[treff[1] === "GDPR" ? "klart" : treff[1]][treff[2]];
+  // De andre utgavene har filene sine i .worker/utgaver/<kode>.js (u.filer) og lenkene på /<sti>/download/….
+  const treff = url.pathname.match(/^\/([^/]+)\/(?:last-ned|download)\/([^/]+)\/?$/);
+  const filer = treff && (FILER[treff[1] === "GDPR" ? "klart" : treff[1]] || utgaveFraSti(url.pathname)?.filer);
+  const fil = filer && Object.hasOwn(filer, treff[2]) ? filer[treff[2]] : null;
   if (!fil || !["GET", "HEAD"].includes(request.method)) return new Response("Finnes ikke.", { status: 404 });
   // KLART_NEDLASTING = "pause" i wrangler.jsonc stenger nedlastingen, for eksempel
   // mens en feil rettes. Gamle lenker får da en forklaring, ikke en gammel fil.
@@ -235,8 +243,10 @@ export async function handleNedlasting(request, env, url) {
   if (!obj) return new Response("Filen er ikke lastet opp ennå.", { status: 404 });
   const hoder = new Headers();
   obj.writeHttpMetadata(hoder);
-  hoder.set("content-type", fil.type);
-  hoder.set("content-disposition", `attachment; filename="${fil.navn}"`);
+  hoder.set("content-type", fil.type || (fil.key.endsWith(".dmg") ? DMG : fil.key.endsWith(".exe") ? EXE : DEB));
+  // filename* for navn med tegn utenfor ASCII (Clarísimo); filename som reserve uten dem.
+  const ascii = fil.navn.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\x20-\x7e]/g, "_");
+  hoder.set("content-disposition", `attachment; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(fil.navn)}`);
   hoder.set("etag", obj.httpEtag);
   hoder.set("accept-ranges", "bytes");
   hoder.set("cache-control", "public, max-age=3600");
@@ -691,6 +701,186 @@ async function deBetalt(request, env, url) {
   if (!sendt) return usHtmlSide(o.faktura, hode + `<p><b>E-posten gikk ikke ut.</b> Ingenting er merket som betalt. Prøv igjen, eller send koden selv:</p><textarea rows="6" style="width:100%">${esc(kode)}</textarea>`);
   await lager(env).deMerkBetalt(nr, utloper);
   await varsleEier(env, `Alles Klar ${o.faktura} betalt: lisensnøkkelen er sendt til ${o.navn}`, `Lisensnøkkelen er sendt til ${o.epost}. Den varer til ${utloper}.\n\n${kode}`);
+  return usHtmlSide(o.faktura, hode + `<p><b>Lisensnøkkelen er sendt til ${esc(o.epost)}.</b> Den varer til ${esc(utloper)}.</p>`);
+}
+
+// ---------------------------------------------------------------------------
+// De andre utgavene (FrostCopy UK, C'est Clair, Clarísimo, Chiarissimo, Klip en Klaar, Wszystko Jasne)
+// ---------------------------------------------------------------------------
+//
+// Samme løp som Alles Klar, men koden er felles og alt utgaven har for seg selv (adresse, navn, lisensprefiks,
+// pris og tekstene kunden ser) står i .worker/utgaver/<kode>.js. Se README.md der.
+
+export const UTGAVER = { gb: utgaveGb, fr: utgaveFr, es: utgaveEs, it: utgaveIt, nl: utgaveNl, pl: utgavePl };
+const UTGAVE_PÅ_STI = Object.fromEntries(Object.values(UTGAVER).map((u) => [u.sti, u]));
+
+/** Utgaven en adresse hører til, ut fra første ledd («cest-clair»), eller null. */
+export function utgaveFraSti(pathname) {
+  return UTGAVE_PÅ_STI[pathname.split("/")[1]] || null;
+}
+
+export async function handleUtgave(request, env, url, u) {
+  const sti = url.pathname.slice(`/${u.sti}/api/`.length);
+  try {
+    if (sti === "order" && request.method === "POST") return await utBestill(request, env, u);
+    if (sti === "paid" && ["GET", "POST"].includes(request.method)) return await utBetalt(request, env, url, u);
+    return json({ error: u.t.ikkeFunnet }, 404);
+  } catch (err) {
+    console.error(u.sti, sti, err);
+    return json({ error: u.t.feilServer(EIER) }, 500);
+  }
+}
+
+async function utEpost(env, u, { til, emne, tekst, html, vedlegg }) {
+  const id = await lager(env).iUtboks(til, emne, tekst);
+  if (!env.EMAIL) return false;
+  try {
+    await env.EMAIL.send({ to: til, from: u.avsender, replyTo: EIER, subject: emne, text: tekst, ...(html ? { html } : {}), ...(vedlegg ? { attachments: vedlegg } : {}) });
+    await lager(env).sendt(id);
+    return true;
+  } catch (err) {
+    console.error(u.sti, "epost", til, err && err.code, err && err.message);
+    return false;
+  }
+}
+
+async function utSignatur(env, u, nr) {
+  return b64url(await crypto.subtle.sign("Ed25519", await signeringsnokkel(env), new TextEncoder().encode(`${u.sti}-paid|${nr}`)));
+}
+
+function utFaktura(u, o) {
+  const f = u.t.faktura;
+  const linje = u.t.fakturaLinje(o);
+  const kunde = [o.navn, ...o.adresse.split("\n")];
+  const forfall = f.fristTekst(u.dato(o.forfall), u.frist);
+  const sum = u.penger(o.pris);
+  const tekst = [
+    `${f.tittel} ${o.faktura}`.toUpperCase(),
+    ``,
+    `${f.dato}: ${u.dato(o.dato)}`,
+    `${f.forfall}: ${forfall}`,
+    ...(o.referanse ? [`${f.referanse}: ${o.referanse}`] : []),
+    ``,
+    `${f.fra}:`,
+    ...u.selger.map((l) => "  " + l),
+    ``,
+    `${f.til}:`,
+    ...kunde.map((l) => "  " + l),
+    ``,
+    `${linje}: ${sum}`,
+    ``,
+    `${f.belop}: ${sum}`,
+    f.mva,
+    ``,
+    f.betaling,
+    f.betalTekst(o.faktura),
+    ...f.bank.map(([k, v]) => `  ${k}: ${v}`),
+    `  ${f.formaal}: ${o.faktura}`,
+    ``,
+    f.nokkel,
+    ``,
+    `${f.sporsmal}: ${EIER}`,
+  ].join("\n");
+  const rad = (k, v) => `<tr><td style="padding:2px 16px 2px 0;color:#5b6b8c">${esc(k)}</td><td style="padding:2px 0">${esc(v)}</td></tr>`;
+  const html =
+    `<div style="font:15px/1.5 -apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:#00205b;max-width:640px">` +
+    `<h1 style="font-size:24px;margin:0 0 4px">${esc(f.tittel)} ${esc(o.faktura)}</h1>` +
+    `<table style="border-collapse:collapse;margin:12px 0">${rad(f.dato, u.dato(o.dato))}${rad(f.forfall, forfall)}${o.referanse ? rad(f.referanse, o.referanse) : ""}</table>` +
+    `<table style="border-collapse:collapse;width:100%;margin:12px 0"><tr>` +
+    `<td style="vertical-align:top;padding:0 24px 0 0"><b>${esc(f.fra)}</b><br>${u.selger.map(esc).join("<br>")}</td>` +
+    `<td style="vertical-align:top"><b>${esc(f.til)}</b><br>${kunde.map(esc).join("<br>")}</td></tr></table>` +
+    `<table style="border-collapse:collapse;width:100%;margin:16px 0;border-top:2px solid #00205b;border-bottom:2px solid #00205b">` +
+    `<tr><td style="padding:10px 16px 10px 0">${esc(linje)}</td><td style="padding:10px 0;text-align:right;white-space:nowrap">${esc(sum)}</td></tr>` +
+    `<tr><td style="padding:10px 16px 10px 0;border-top:1px solid #c5cfe3"><b>${esc(f.belop)}</b><br><span style="color:#5b6b8c">${esc(f.mva)}</span></td><td style="padding:10px 0;text-align:right;white-space:nowrap;vertical-align:top;border-top:1px solid #c5cfe3"><b>${esc(sum)}</b></td></tr></table>` +
+    `<h2 style="font-size:17px;margin:20px 0 4px">${esc(f.betaling)}</h2>` +
+    `<p style="margin:0 0 8px">${esc(f.betalTekst(o.faktura))}</p>` +
+    `<table style="border-collapse:collapse">${f.bank.map(([k, v]) => rad(k, v)).join("")}${rad(f.formaal, o.faktura)}</table>` +
+    `<p style="margin:16px 0 0">${esc(f.nokkel)}</p>` +
+    `<p style="margin:16px 0 0;color:#5b6b8c">${esc(f.sporsmal)}: <a href="mailto:${EIER}">${EIER}</a></p></div>`;
+  return { tekst, html };
+}
+
+async function utBestill(request, env, u) {
+  if (!env.KLART_LISENSNOKKEL) return json({ error: u.t.ikkeApen }, 503);
+  const b = await body(request);
+  // Et felt mennesker ikke ser. Roboter fyller det ut; de får et vanlig svar, og ingenting skjer.
+  if (b.website) return json({ ok: true, invoice: u.nrPrefiks + "0", price: 0, sent: true });
+  const art = ["municipal", "state"].includes(b.art) ? b.art : "business";
+  const p = u.pris({ art, persons: b.persons, sector: b.sector, inhabitants: b.inhabitants, employees: b.employees });
+  const navn = tekstFra(b.name, 120).replace(/\s+/g, " ");
+  const epost = epostFra(b.email);
+  const adresse = String(b.address || "").split(/\r?\n/).map((l) => l.replace(/\s+/g, " ").trim()).filter(Boolean).slice(0, 6).map((l) => l.slice(0, 100)).join("\n");
+  const referanse = tekstFra(b.reference, 80).replace(/\s+/g, " ");
+  if (!p) return json({ error: u.t.mangler.antall(art) }, 400);
+  if (navn.length < 2) return json({ error: u.t.mangler.navn }, 400);
+  if (!epost) return json({ error: u.t.mangler.epost }, 400);
+  if (adresse.length < 8) return json({ error: u.t.mangler.adresse }, 400);
+  const o = {
+    navn, epost, adresse, referanse, art: p.art,
+    persons: p.persons ?? null, sector: p.sector ?? null, inhabitants: p.inhabitants ?? null, employees: p.employees ?? null,
+    pris: p.price, fourYears: p.fourYears ?? null, dato: idag(), forfall: omDager(u.frist),
+  };
+  const nr = await lager(env).utNyOrdre(u.kode, o);
+  o.faktura = u.nrPrefiks + (1000 + nr);
+  await lager(env).utOppdater(nr, o);
+  const f = utFaktura(u, o);
+  const sendt = await utEpost(env, u, { til: epost, emne: u.t.emneFaktura(o.faktura, navn), tekst: f.tekst, html: f.html });
+  const lenke = `https://esbjugconsult.com/${u.sti}/api/paid?nr=${nr}&t=${await utSignatur(env, u, nr)}`;
+  await varsleEier(
+    env,
+    `${u.navn}-bestilling ${o.faktura}: ${navn}, ${u.penger(o.pris)}`,
+    [
+      `Ny bestilling på faktura (${u.navn}, ${u.land}).`,
+      ``,
+      `${navn} (${epost})`,
+      utHvaNorsk(u, o),
+      ...(referanse ? [`Kundens referanse: ${referanse}`] : []),
+      `Beløp: ${u.penger(o.pris)} for ett år, forfall ${o.forfall}`,
+      sendt ? `Fakturaen er sendt til kunden.` : `FAKTURAEN GIKK IKKE UT PÅ E-POST. Send den selv; teksten står under.`,
+      ``,
+      `Når pengene er kommet inn, åpne denne lenken og trykk på knappen. Da får kunden lisensnøkkelen på e-post:`,
+      lenke,
+      ``,
+      `----- Fakturaen -----`,
+      f.tekst,
+    ].join("\n")
+  );
+  return json({ ok: true, invoice: o.faktura, price: o.pris, due: o.forfall, sent: sendt });
+}
+
+function utHvaNorsk(u, o) {
+  if (o.art === "municipal") return `Kommune, ${o.inhabitants} innbyggere${o.fourYears ? ` (fire år: ${u.penger(o.fourYears)}; denne fakturaen er år 1 av 4)` : ""}`;
+  if (o.art === "state") return `Statlig myndighet, ${o.employees} ansatte`;
+  return `Virksomhet, ${o.persons} ${o.persons === 1 ? "person" : `personer, ${o.sector}`}`;
+}
+
+async function utBetalt(request, env, url, u) {
+  const nr = Number(url.searchParams.get("nr"));
+  const t = url.searchParams.get("t") || "";
+  if (!Number.isInteger(nr) || nr < 1 || !env.KLART_LISENSNOKKEL) return json({ error: u.t.ikkeFunnet }, 404);
+  const ventet = await utSignatur(env, u, nr);
+  if (t.length !== ventet.length || !likt(t, ventet)) return json({ error: u.t.ikkeFunnet }, 404);
+  const rad = await lager(env).utOrdre(nr);
+  if (!rad || rad.utgave !== u.kode) return json({ error: u.t.ikkeFunnet }, 404);
+  const o = rad.data;
+  const hode = `<h1 style="font-size:22px">${esc(o.faktura)}: ${esc(o.navn)}</h1><p>${esc(u.navn)}<br>${esc(o.epost)}<br>${esc(utHvaNorsk(u, o))}<br>${esc(u.penger(o.pris))}, bestilt ${esc(o.dato)}, forfall ${esc(o.forfall)}</p>`;
+  if (rad.betalt) return usHtmlSide(o.faktura, hode + `<p><b>Lisensnøkkelen ble sendt ${esc(rad.betalt.slice(0, 10))}.</b></p>`);
+  if (request.method === "GET") {
+    return usHtmlSide(o.faktura, hode + `<p>Er pengene kommet inn? Da sendes lisensnøkkelen til kunden, og den varer i 365 dager fra i dag.</p>` +
+      `<form method="post"><button style="font:inherit;padding:12px 20px;border:0;border-radius:999px;background:#00205b;color:#fff;cursor:pointer">Betalt: send lisensnøkkelen</button></form>`);
+  }
+  const utloper = omDager(365);
+  const kode = (await lagKode(env, { id: nyId(), type: "lisens", navn: o.navn, orgnr: null, epost: o.epost, maskin: null, plan: "org", utloper })).replace(/^KLART-/, u.prefiks);
+  const fil = u.t.lisensfilTekst(o.navn, kode);
+  const sendt = await utEpost(env, u, {
+    til: o.epost,
+    emne: u.t.emneLisens(o.navn),
+    tekst: u.t.lisensEpost({ faktura: o.faktura, navn: o.navn, kode, utloper: u.dato(utloper) }),
+    vedlegg: [{ content: btoa(String.fromCharCode(...new TextEncoder().encode(fil))), filename: u.lisensfil, type: "text/plain", disposition: "attachment" }],
+  });
+  if (!sendt) return usHtmlSide(o.faktura, hode + `<p><b>E-posten gikk ikke ut.</b> Ingenting er merket som betalt. Prøv igjen, eller send koden selv:</p><textarea rows="6" style="width:100%">${esc(kode)}</textarea>`);
+  await lager(env).utMerkBetalt(nr, utloper);
+  await varsleEier(env, `${u.navn} ${o.faktura} betalt: lisensnøkkelen er sendt til ${o.navn}`, `Lisensnøkkelen er sendt til ${o.epost}. Den varer til ${utloper}.\n\n${kode}`);
   return usHtmlSide(o.faktura, hode + `<p><b>Lisensnøkkelen er sendt til ${esc(o.epost)}.</b> Den varer til ${esc(utloper)}.</p>`);
 }
 
@@ -2673,6 +2863,9 @@ export class KlartLager extends DurableObject {
     // Alles Klar: bestillinger på faktura i euro. id er løpenummeret fakturanummeret lages av (AK-1001, AK-1002 …).
     this.sql.exec(`CREATE TABLE IF NOT EXISTS de_ordrer (
       id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT, laget TEXT, betalt TEXT, utloper TEXT)`);
+    // De andre utgavene (handleUtgave): alle i én tabell. Løpenummeret deles, prefikset (UK-, CC- …) er utgavens.
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS utgave_ordrer (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, utgave TEXT, data TEXT, laget TEXT, betalt TEXT, utloper TEXT)`);
     // Klart: bestillinger på faktura. id er løpenummeret bestillingsnummeret lages av (K-1001, K-1002 …).
     // «betalt» settes når eieren har merket bestillingen som ferdig, «utfall» sier hva som da skjedde.
     this.sql.exec(`CREATE TABLE IF NOT EXISTS ordrer (
@@ -2902,6 +3095,19 @@ export class KlartLager extends DurableObject {
   }
   usMerkBetalt(id, utloper) {
     this.sql.exec(`UPDATE us_ordrer SET betalt = ?, utloper = ? WHERE id = ?`, new Date().toISOString(), utloper, id);
+  }
+  utNyOrdre(utgave, data) {
+    return this.sql.exec(`INSERT INTO utgave_ordrer (utgave, data, laget) VALUES (?, ?, ?) RETURNING id`, utgave, JSON.stringify(data), new Date().toISOString()).one().id;
+  }
+  utOppdater(id, data) {
+    this.sql.exec(`UPDATE utgave_ordrer SET data = ? WHERE id = ?`, JSON.stringify(data), id);
+  }
+  utOrdre(id) {
+    const r = this.sql.exec(`SELECT utgave, data, laget, betalt, utloper FROM utgave_ordrer WHERE id = ?`, id).toArray()[0];
+    return r ? { utgave: r.utgave, data: JSON.parse(r.data), laget: r.laget, betalt: r.betalt, utloper: r.utloper } : null;
+  }
+  utMerkBetalt(id, utloper) {
+    this.sql.exec(`UPDATE utgave_ordrer SET betalt = ?, utloper = ? WHERE id = ?`, new Date().toISOString(), utloper, id);
   }
   deNyOrdre(data) {
     return this.sql.exec(`INSERT INTO de_ordrer (data, laget) VALUES (?, ?) RETURNING id`, JSON.stringify(data), new Date().toISOString()).one().id;

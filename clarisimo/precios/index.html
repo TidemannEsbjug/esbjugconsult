@@ -1,0 +1,171 @@
+<!doctype html>
+<!--
+  Hei, du som leser kildekoden. Det var deg vi håpet på.
+
+  Klart lover at dokumentene aldri forlater maskinen. Et sånt løfte skal ikke
+  tas på ordet, så sjekk det:
+
+  - Programmet: /clarisimo/para-it.html har kommandoene som viser hva det snakker med.
+  - Denne siden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
+    uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
+  - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
+    Vi vil heller høre det fra deg enn fra en kunde.
+-->
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/clarisimo/favicon.png" />
+    <title>Precio y pedido · Clarísimo</title>
+    <meta name="description" content="Lo que cuesta Clarísimo para su organización: empresas, ayuntamientos y administraciones. Una licencia para todos, pedido con factura. Gratis para particulares." />
+    <meta name="theme-color" content="#eef3fb" />
+    <!-- Ikke indekser før Clarísimo lanseres. -->
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="../fonts.css" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="pris.css" />
+    <link rel="stylesheet" href="pedido.css" />
+  </head>
+  <body>
+    <main>
+      <section class="port" id="port">
+        <a class="pris-hjem" href="/clarisimo/"><span aria-hidden="true">←</span> <i>Clarísimo</i></a>
+        <div class="kort middels" id="kort">
+          <p class="pris-privat"><b>Gratis para particulares.</b> <a href="/clarisimo/#last-ned">Descargar Clarísimo</a></p>
+          <p class="merke">Para organizaciones</p>
+          <h1>Clarísimo para su organización</h1>
+          <p class="ingress">Una licencia vale para todas las personas de la organización. Sin contar puestos y sin límite de páginas.</p>
+
+          <!-- Tre slags kjøpere. Prisen kommer fra price.js, den samme filen serveren regner med. -->
+          <div class="de-valg" role="radiogroup" aria-label="Tipo de organización">
+            <label><input type="radio" name="art" value="business" checked /><span>Empresa, despacho, consulta o asociación</span></label>
+            <label><input type="radio" name="art" value="municipal" /><span>Ayuntamiento, diputación o comarca</span></label>
+            <label><input type="radio" name="art" value="state" /><span>Administración del Estado o de una comunidad autónoma</span></label>
+          </div>
+
+          <div class="de-to-felt" id="campo-empresa">
+            <div>
+              <label for="personas">Personas en la organización</label>
+              <input id="personas" type="number" min="1" step="1" value="25" inputmode="numeric" />
+              <p class="smaa">Toda la plantilla. Escriba 1 si trabaja por su cuenta.</p>
+            </div>
+            <div id="campo-sector">
+              <label for="sector">Sector</label>
+              <select id="sector"></select>
+            </div>
+          </div>
+
+          <div class="de-ett-felt" id="campo-municipio" hidden>
+            <label for="habitantes">Número de habitantes</label>
+            <input id="habitantes" type="text" inputmode="numeric" autocomplete="off" placeholder="p. ej. 18.500" maxlength="12" />
+            <p class="smaa">El mismo precio para todos los municipios del mismo tamaño, sin negociación.</p>
+          </div>
+
+          <div class="de-ett-felt" id="campo-estado" hidden>
+            <label for="empleados">Empleados del organismo</label>
+            <input id="empleados" type="number" min="1" step="1" inputmode="numeric" placeholder="p. ej. 120" />
+            <p class="smaa">También para juzgados, universidades y otros organismos públicos.</p>
+          </div>
+
+          <div class="de-prisboks" aria-live="polite">
+            <p class="bekreftet">Licencia para toda la organización</p>
+            <p class="pristall" id="linea-precio"><b id="importe"></b> <span>por un año</span></p>
+            <p class="ke-svar" id="cuatro" hidden></p>
+            <p class="de-hinweis" id="aviso" hidden></p>
+            <p class="smaa">Precio sin IVA. La factura no lleva IVA español: lo declara el destinatario (inversión del sujeto pasivo).</p>
+          </div>
+
+          <form id="pedido" class="de-ordre" novalidate>
+            <div class="de-to-felt">
+              <div>
+                <label for="org">Nombre de la organización</label>
+                <input id="org" type="text" maxlength="120" autocomplete="organization" required />
+                <p class="smaa">Figura en la factura y en Clarísimo en cada ordenador que use la licencia.</p>
+              </div>
+              <div>
+                <label for="email">Correo electrónico para la factura</label>
+                <input id="email" type="email" maxlength="200" autocomplete="email" required />
+                <p class="smaa">Aquí llegan la factura y, después, la clave de licencia.</p>
+              </div>
+            </div>
+            <div class="de-to-felt">
+              <div>
+                <label for="direccion">Dirección de facturación</label>
+                <textarea id="direccion" rows="4" maxlength="600" autocomplete="street-address" required></textarea>
+              </div>
+              <div>
+                <label for="referencia">Su número de pedido o referencia</label>
+                <input id="referencia" type="text" maxlength="80" />
+                <p class="smaa">Opcional. Figura en la factura.</p>
+              </div>
+            </div>
+            <p class="de-skjult" aria-hidden="true"><label for="website">Deje este campo vacío</label><input id="website" type="text" tabindex="-1" autocomplete="off" /></p>
+            <div class="knapper">
+              <button class="btn" type="submit" id="pedir">Pedir con factura</button>
+              <button class="btn de-ghost-lys" type="button" id="tengo">Ya tengo una clave de licencia</button>
+            </div>
+            <p class="smaa de-feil" id="error" role="alert" hidden></p>
+            <p class="smaa" id="proceso">La factura llega al momento por correo electrónico. Usted paga en 30 días por transferencia en euros. La clave de licencia llega por correo en cuanto recibimos el pago y vale un año desde ese día. Hasta entonces, Clarísimo funciona completo durante 30 días.</p>
+            <p class="smaa" id="tengoTexto" hidden>Abra Clarísimo y haga clic en «Licencia», arriba a la derecha (durante la prueba pone «Prueba: quedan … días»). Pegue el código que empieza por CLARISIMO- y haga clic en «Activar».</p>
+          </form>
+          <div id="gracias" class="de-takk" hidden tabindex="-1">
+            <h2>Muchas gracias</h2>
+            <p id="graciasTexto"></p>
+            <p class="smaa">Preguntas: <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a></p>
+          </div>
+
+          <!-- Bare for kommuner: prislisten. Tallene er de samme som i price.js. -->
+          <section class="kommune-eur" id="municipios" aria-labelledby="mu-titulo" hidden>
+            <p class="merke">Para ayuntamientos</p>
+            <h2 id="mu-titulo">Un precio según el número de habitantes</h2>
+            <p class="ingress">
+              La licencia vale para todo el ayuntamiento. Se pide y se factura un año cada vez, una cuarta parte del importe de cuatro años,
+              y cada factura anual queda por debajo de 15.000 € sin IVA, el límite del contrato menor.
+            </p>
+            <table class="ke-tabell">
+              <caption class="skjult-tekst">Precios para ayuntamientos, cuatro años y por año, sin IVA</caption>
+              <thead><tr><th scope="col">Habitantes</th><th scope="col">4 años</th><th scope="col">por año</th></tr></thead>
+              <tbody>
+                <tr><td>500</td><td>1.500 €</td><td>375 €</td></tr>
+                <tr><td>2.000</td><td>2.600 €</td><td>650 €</td></tr>
+                <tr><td>5.000</td><td>4.900 €</td><td>1.225 €</td></tr>
+                <tr><td>20.000</td><td>14.500 €</td><td>3.625 €</td></tr>
+                <tr><td>50.000</td><td>36.000 €</td><td>9.000 €</td></tr>
+                <tr><td>desde 100.000</td><td>59.600 €</td><td>14.900 €</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <h3 class="vilkar-tittel">Antes de comprar</h3>
+          <p class="de-avsnitt"><b>30 días con Clarísimo completo.</b> Pruebe Clarísimo durante 30 días con sus propios archivos antes de decidir. Es la versión completa, y la prueba no exige registro.</p>
+
+          <h3 class="vilkar-tittel">Incluido en el precio</h3>
+          <ul class="vilkar">
+            <li>Word, Excel, PowerPoint, PDF, correo, archivos de texto, escaneos y fotos</li>
+            <li>Todo funciona en sus propios ordenadores. No se sube nada</li>
+            <li>Para Mac, para toda la plantilla y en tantos ordenadores como quiera. Las versiones para Windows y Linux llegarán pronto</li>
+            <li>Actualizaciones durante el año de licencia</li>
+          </ul>
+          <p class="de-avsnitt">El pago es solo con factura. <a class="lenke" href="/clarisimo/condiciones/">Condiciones de la licencia</a></p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Selgeren alltid synlig nederst. Esbjug Consult er ikke MVA-registrert (Brønnøysund 19.11.2026). -->
+    <footer class="pris-bunn" id="pris-bunn">
+      <div class="colofon">
+        <p class="wordmark"><a href="/clarisimo/"><b>Clarísimo</b></a> <span>v0.1.0</span></p>
+        <p class="selger">
+          Vendido por <b class="selger-navn">ESBJUG CONSULT</b> · Glenneveien 272B, 1455 Nordre Frogn, Noruega ·
+          <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a> · N.º de organización 938 441 405
+        </p>
+      </div>
+      <div class="footmeta">
+        <a href="/clarisimo/condiciones/">Condiciones de la licencia</a>
+        <a href="/clarisimo/privacidad/">Privacidad</a>
+      </div>
+    </footer>
+
+    <script type="module" src="pedido.js"></script>
+  </body>
+</html>

@@ -1,0 +1,503 @@
+<!doctype html>
+<!--
+  Hei, du som leser kildekoden. Det var deg vi håpet på.
+
+  Wszystko Jasne lover at dokumentene aldri forlater maskinen. Et sånt løfte skal ikke
+  tas på ordet, så sjekk det:
+
+  - Programmet: denne siden har kommandoene som viser hva det snakker med.
+  - Nettsiden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
+    uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
+  - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
+
+  Den polske utgaven finnes foreløpig bare for Mac, så siden viser bare Mac.
+  Navn og stier er hentet fra Klart-pl (claude/pl) 24.11.2026.
+-->
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/wszystko-jasne/favicon.png" />
+    <title>Dla działu IT · Wszystko Jasne</title>
+    <meta
+      name="description"
+      content="Kontrole, które pokazują, że Wszystko Jasne nie komunikuje się z siecią, co znajduje się w pakiecie i na dysku oraz jak dział IT może centralnie sterować programem. Z poleceniami, oczekiwanymi wynikami i tym, czego dowodzi każda kontrola."
+    />
+    <meta name="robots" content="noindex" />
+    <!-- Ingen skrifter, bilder eller skript utenfra. Skriptene kopierer kommandoene. -->
+    <script src="til-it-tidlig.js"></script>
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="sider.css" />
+  </head>
+  <body>
+    <header class="s-topp">
+      <div class="s-linje-topp">
+        <a class="s-merke" href="./">Wszystko Jasne</a>
+        <nav class="s-nav" aria-label="Strony">
+          <a href="./">Strona główna</a>
+          <a href="cennik/">Cennik</a>
+          <a href="dla-it.html" aria-current="page">Dla działu IT</a>
+          <a href="prywatnosc/">Prywatność</a>
+        </nav>
+      </div>
+      <div class="s-hode">
+        <p class="s-over">Dla działu IT</p>
+        <h1>Proszę nam nie wierzyć na słowo. Proszę to sprawdzić.</h1>
+        <p class="s-ingress">
+          Wszystko Jasne obiecuje, że dokumenty nigdy nie opuszczają komputera. Tutaj znajdą Państwo polecenia,
+          które to pokazują, wyniki, jakie powinny dać, oraz to, czego każda kontrola rzeczywiście dowodzi.
+        </p>
+      </div>
+    </header>
+
+    <div class="s-kropp">
+      <nav class="s-innhold" aria-label="Spis treści">
+        <p>Na tej stronie</p>
+        <ol>
+          <li><a href="#kort">W skrócie</a></li>
+          <li><a href="#fil">1 Czy to nasz plik?</a></li>
+          <li><a href="#signert">2 Podpisany i niezmieniony?</a></li>
+          <li><a href="#rettigheter">3 Na co program ma pozwolenie?</a></li>
+          <li><a href="#snakker">4 Czy z kimś się komunikuje?</a></li>
+          <li><a href="#laget">5 Z czego się składa?</a></li>
+          <li><a href="#steng">Samodzielna blokada</a></li>
+          <li><a href="#disk">Co leży na dysku</a></li>
+          <li><a href="#styring">Centralne sterowanie</a></li>
+          <li><a href="#nokkel">Klucz w organizacji</a></li>
+          <li><a href="#logg">Dziennik audytowy</a></li>
+          <li><a href="#kommando">Wiersz poleceń</a></li>
+          <li><a href="#krypto">Kryptografia</a></li>
+          <li><a href="#krav">Wymagania systemowe</a></li>
+          <li><a href="#si-fra">Coś Państwo znaleźli?</a></li>
+        </ol>
+      </nav>
+
+      <main class="s-tekst" id="innhold">
+        <section class="s-kort" id="kort">
+          <h2>W skrócie</h2>
+          <ul>
+            <li><b>Brak drogi na zewnątrz.</b> Program nie ma TLS, nie rozwiązuje nazw w sieci i nie nasłuchuje na żadnym porcie.</li>
+            <li><b>Wszystko jest w pakiecie.</b> Po instalacji nic nie jest pobierane. Brak automatycznych aktualizacji, statystyk użycia i raportów o błędach.</li>
+            <li><b>Można go odciąć.</b> Proszę zablokować cały ruch wychodzący Wszystko Jasne. Program działa tak samo dobrze.</li>
+            <li><b>Można nim sterować.</b> Jeden plik określa, co użytkownicy mogą wybierać sami.</li>
+          </ul>
+        </section>
+
+        <p class="s-notis">Wszystko Jasne jest na razie dostępne na Maca. Wersje na Windows i Linux pojawią się wkrótce, a kontrole dla tych systemów dodamy razem z nimi.</p>
+        <p class="s-skjult" id="melding" role="status" aria-live="polite"></p>
+
+        <!-- ============ 1 ============ -->
+        <section class="s-del" id="fil">
+          <h2><span class="s-nr">1</span>Czy to nasz plik?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>shasum -a 256 ~/Downloads/Wszystko*Jasne*.dmg</pre></div>
+          </div>
+          <p class="s-fasit"><b>Oczekiwany wynik:</b> długi ciąg cyfr i liter zgadza się z sumą kontrolną, którą opublikowaliśmy dla tego wydania.</p>
+          <dl class="s-tabell">
+            <div><dt>Wszystko Jasne.dmg</dt><dd><code>aa46a3333a1e72b3<wbr />28b7d3bd154b31dd<wbr />82eab18a8816668a<wbr />415ae8ee73208c93</code></dd></div>
+          </dl>
+          <p class="s-beviser"><b>Dowodzi:</b> że plik jest tym, który opublikowaliśmy. Niczego więcej. Suma kontrolna nie mówi nic o tym, co program robi.</p>
+        </section>
+
+        <!-- ============ 2 ============ -->
+        <section class="s-del" id="signert">
+          <h2><span class="s-nr">2</span>Czy jest podpisany przez nas i niezmieniony?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>codesign -dv --verbose=4 "/Applications/Wszystko Jasne.app" 2>&amp;1 | grep -E "Format|TeamIdentifier|flags|Notarization"</pre></div>
+            <p class="s-fasit">
+              <b>Oczekiwany wynik:</b> <code>Format=app bundle with Mach-O universal (x86_64 arm64)</code>,
+              <code>flags=0x10000(runtime)</code>, <code>Notarization Ticket=stapled</code> oraz
+              <code>TeamIdentifier=N5BKVM258S</code>.
+            </p>
+            <div class="cmd"><pre>spctl -a -vv "/Applications/Wszystko Jasne.app"</pre></div>
+            <p class="s-fasit"><b>Oczekiwany wynik:</b> <code>accepted</code> oraz <code>source=Notarized Developer ID</code>.</p>
+            <p>Pakiet zawiera jeszcze dwa pliki wykonywalne: pomocnika, który obsługuje klucz, oraz bibliotekę PDF. Proszę sprawdzić także je:</p>
+            <div class="cmd"><pre>codesign -dv "/Applications/Wszystko Jasne.app/Contents/MacOS/klart-hvelv" 2>&amp;1 | grep TeamIdentifier
+codesign -dv "/Applications/Wszystko Jasne.app/Contents/Resources/bundled/engine/pdfium/libpdfium.dylib" 2>&amp;1 | grep TeamIdentifier</pre></div>
+            <p class="s-fasit"><b>Oczekiwany wynik:</b> w obu przypadkach ten sam <code>TeamIdentifier=N5BKVM258S</code>.</p>
+          </div>
+          <p class="s-beviser">
+            <b>Dowodzi:</b> że kod pochodzi od nas i nie został później zmieniony. To kontrola przeciwko przerobionej kopii.
+            Kopia z wbudowanym połączeniem sieciowym jest innym programem i podpis ją zdradzi.
+          </p>
+        </section>
+
+        <!-- ============ 3 ============ -->
+        <section class="s-del" id="rettigheter">
+          <h2><span class="s-nr">3</span>Na co program ma pozwolenie?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>codesign -d --entitlements - --xml "/Applications/Wszystko Jasne.app" 2>/dev/null | plutil -p -</pre></div>
+            <p class="s-fasit">
+              <b>Oczekiwany wynik:</b> pięć wierszy, wszystkie <code>false</code>: <code>automation.apple-events</code>,
+              <code>cs.allow-dyld-environment-variables</code>, <code>cs.allow-jit</code>,
+              <code>cs.allow-unsigned-executable-memory</code> i <code>cs.disable-library-validation</code>.
+              Żadnych uprawnień iCloud i ani <code>network.client</code>, ani <code>network.server</code>.
+            </p>
+            <p>
+              <b>Proszę jednak zwrócić uwagę:</b> Wszystko Jasne nie działa w App Sandbox. Brak uprawnień sieciowych jest więc
+              jedynie deklaracją. Bez sandboksa macOS ich nie egzekwuje, a program z Hardened Runtime
+              może w zasadzie mimo to otworzyć połączenie. Wolimy powiedzieć to sami, niż żeby Państwo odkryli to później.
+              O odpowiedzi na to pytanie rozstrzygają punkty 4 i 5 oraz reguła, którą ustawią Państwo sami.
+            </p>
+            <p class="s-beviser"><b>Dowodzi:</b> że program nie może sterować innymi programami, ładować obcego kodu ani sięgać do iCloud. Sam w sobie nie dowodzi niczego o sieci.</p>
+          </div>
+        </section>
+
+        <!-- ============ 4 ============ -->
+        <section class="s-del" id="snakker">
+          <h2><span class="s-nr">4</span>Czy z kimś się komunikuje?</h2>
+          <p>Proszę uruchomić Wszystko Jasne, otworzyć folder i pozwolić programowi go przeanalizować. Polecenie należy wykonać, gdy program działa.</p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>pgrep -lx wszystkojasne; lsof +c 0 -nP -a -i -c wszystkojasne -c com.apple.WebKit.Networking</pre></div>
+            <p class="s-fasit"><b>Oczekiwany wynik:</b> jeden wiersz z numerem procesu i <code>wszystkojasne</code>, a potem nic. Wszystko Jasne nie ma ani jednego gniazda TCP ani UDP.</p>
+            <p>
+              Okno Wszystko Jasne jest wyświetlane przez WebKit, który jest częścią macOS. WebKit uruchamia własne procesy pomocnicze,
+              a jeden z nich nazywa się <code>com.apple.WebKit.Networking</code>. Jest w poleceniu, bo to on
+              pobierałby coś, gdyby okno próbowało. On także musi być pusty.
+            </p>
+            <p>
+              Jeśli mimo to pojawią się wiersze, prawdopodobnie otwarte jest Safari, Mail lub inny program z WebKit.
+              Dzielą one nazwę procesu pomocniczego. Proszę je zamknąć i wykonać polecenie ponownie albo spojrzeć na numery procesów:
+              pomocnicy Wszystko Jasne mają numery tuż po Wszystko Jasne.
+            </p>
+            <p>
+              Proszę zwrócić uwagę na <code>-a</code>. Bez tej opcji <code>lsof</code> łączy kryteria przez „lub” i na liście pojawia się cały
+              ruch komputera. LuLu lub Little Snitch dają ten sam wynik, jeśli wolą Państwo go tak zobaczyć.
+            </p>
+          </div>
+          <p class="s-beviser"><b>Dowodzi:</b> że program, tak jak działa u Państwa, nie ma drogi na zewnątrz. Tej kontroli sami ufamy najbardziej.</p>
+        </section>
+
+        <!-- ============ 5 ============ -->
+        <section class="s-del" id="laget">
+          <h2><span class="s-nr">5</span>Z czego się składa?</h2>
+          <p>To wszystko, co znajduje się w pakiecie na Maca:</p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>MacOS/wszystkojasne</code></dt>
+              <dd>Program, dla procesorów Intel i Apple. Powłoka jest napisana w Rust (Tauri 2), okno w TypeScript.</dd>
+            </div>
+            <div>
+              <dt><code>MacOS/klart-hvelv</code></dt>
+              <dd>Mały pomocnik, który zawija i odwija klucz za pomocą pęku kluczy i Secure Enclave.</dd>
+            </div>
+            <div>
+              <dt><code>distilbert-polish.onnx</code></dt>
+              <dd>Model zdań oparty na distilbert-base-pl-cased (Geotrend, Apache 2.0), dostrojony przez nas. Działa na procesorze, w samym programie. Nie jest osobnym procesem.</dd>
+            </div>
+            <div>
+              <dt><code>vocab.txt</code></dt>
+              <dd>Słownik modelu.</dd>
+            </div>
+            <div>
+              <dt><code>pdfium/libpdfium.dylib</code></dt>
+              <dd>PDFium, biblioteka, która odczytuje i renderuje pliki PDF.</dd>
+            </div>
+          </dl>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>find "/Applications/Wszystko Jasne.app/Contents" -type f -size +100k -exec ls -lh {} \;</pre></div>
+            <p class="s-fasit"><b>Oczekiwany wynik:</b> powyższe pliki, ikona aplikacji i teksty licencji w folderze <code>lisenser</code>. Żadnego <code>llama-server</code>, żadnych plików <code>.gguf</code>, żadnych innych modeli.</p>
+          </div>
+          <p>
+            Program nie ma TLS ani klienta HTTP, który mógłby dotrzeć do jakiegokolwiek hosta. Nie może nasłuchiwać na porcie
+            ani rozwiązywać nazw w sieci. Widać to w samym pliku:
+          </p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>otool -L "/Applications/Wszystko Jasne.app/Contents/MacOS/wszystkojasne" | grep -iE 'curl|CFNetwork|Network\.framework|ssl'
+nm -u "/Applications/Wszystko Jasne.app/Contents/MacOS/wszystkojasne" | grep -E '_(bind|listen|accept|getaddrinfo)$'</pre></div>
+            <p class="s-fasit"><b>Oczekiwany wynik:</b> żadnego wiersza z żadnego z poleceń.</p>
+            <p>
+              <b>Co Państwo znajdą i czym to jest:</b> plik jest linkowany z <code>CloudKit</code> i <code>CoreData</code>. Pochodzi to z biblioteki okna,
+              nie od nas. Wszystko Jasne nie używa żadnej z nich i nie ma uprawnień iCloud (punkt 3).
+            </p>
+          </div>
+          <p>Jeśli mają Państwo kod źródłowy, warto zajrzeć w te miejsca:</p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>src-tauri/Cargo.toml</code></dt>
+              <dd>Brak reqwest, hyper, rustls, native-tls i openssl. <code>tokio</code> jest budowane bez <code>net</code>. Niektóre z tych nazw i tak występują w <code>Cargo.lock</code>, bo jedna z bibliotek zabiera je dla platform mobilnych. Nigdy nie są kompilowane. Dlatego liczy się <code>cargo tree</code>, a nie wyszukiwanie w pliku blokady.</dd>
+            </div>
+            <div>
+              <dt><code>tauri.conf.json</code></dt>
+              <dd>CSP okna: <code>default-src 'self'</code> i <code>connect-src ipc: http://ipc.localhost</code>. Okno może komunikować się wyłącznie z programem, w którym działa. Żadnych ramek, osadzonych obiektów ani formularzy wysyłanych na zewnątrz. Dodatkowo program blokuje każdą nawigację poza siebie.</dd>
+            </div>
+            <div>
+              <dt><code>capabilities/default.json</code></dt>
+              <dd>Okno nie może otwierać adresów ani ścieżek: <code>opener:deny-open-url</code>, <code>deny-open-path</code> i <code>deny-reveal-item-in-dir</code>. Brak wtyczki HTTP i mechanizmu aktualizacji.</dd>
+            </div>
+            <div>
+              <dt><code>scripts/sjekk-nett.sh</code></dt>
+              <dd>Uruchamiany przed każdą kompilacją. Odczytuje skompilowany graf zależności, szuka adresów, <code>std::net</code> i gniazd uniksowych w kodzie Rust i przerywa kompilację, jeśli coś z tego wróci.</dd>
+            </div>
+          </dl>
+          <div class="cmd" data-hvor="W folderze z kodem źródłowym"><pre>cd src-tauri &amp;&amp; cargo tree -e normal | grep -E 'reqwest|hyper|rustls|native-tls|openssl'</pre></div>
+          <p class="s-fasit"><b>Oczekiwany wynik:</b> brak trafień.</p>
+          <p class="s-notis">
+            W jednym miejscu Wszystko Jasne otwiera adres internetowy: gdy użytkownik kliknie „Kup licencję”, program prosi system
+            o otwarcie <code>https://esbjugconsult.com/wszystko-jasne/aktywuj?hva=kjop&amp;maskin=…</code> we własnej przeglądarce użytkownika.
+            Wszystko Jasne samo się tam nie łączy. Adres prowadzi do cennika, gdzie zamawia się na fakturę. Kod komputera w adresie to skrót SHA-256 identyfikatora komputera i nie mówi nic
+            o użytkowniku ani o dokumentach.
+          </p>
+          <h3>Biblioteki, które odczytują dokumenty</h3>
+          <p>Przetwarzają one pliki, których nie utworzyli Państwo sami, więc warto je znać:</p>
+          <dl class="s-tabell">
+            <div><dt>PDF</dt><dd>PDFium, pdf.js i pdf-lib. pdf.js działa bez <code>eval</code>.</dd></div>
+            <div><dt>Word</dt><dd>JSZip i docx-preview.</dd></div>
+            <div><dt>Excel</dt><dd>SheetJS (xlsx).</dd></div>
+            <div><dt>Obrazy</dt><dd>Apple Vision na Macu.</dd></div>
+            <div><dt>Zdania</dt><dd>distilbert-base-pl-cased, uruchamiany przez tract-onnx.</dd></div>
+          </dl>
+          <p class="s-beviser"><b>Dowodzi:</b> że w programie nie ma kodu, który mógłby cokolwiek wysłać. Mając kod źródłowy, mogą go Państwo zbudować samodzielnie i porównać.</p>
+        </section>
+
+        <!-- ============ Steng selv ============ -->
+        <section class="s-del" id="steng">
+          <h2>Samodzielna blokada</h2>
+          <p>Proszę nie polegać na nas. Proszę zablokować ruch wychodzący Wszystko Jasne w zaporze lub przez MDM. Program działa tak samo dobrze. Właśnie dlatego tak go zbudowaliśmy.</p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <p>Wbudowana zapora macOS blokuje tylko ruch przychodzący. Proszę wpisać ścieżkę do reguły w filtrze sieciowym swojego rozwiązania MDM albo w LuLu lub Little Snitch:</p>
+            <div class="cmd" data-hvor="Ścieżka"><pre>/Applications/Wszystko Jasne.app/Contents/MacOS/wszystkojasne</pre></div>
+          </div>
+          <p>Gdy reguła pochodzi od Państwa, nie muszą Państwo wierzyć nam w nic z powyższego.</p>
+        </section>
+
+        <!-- ============ Disk ============ -->
+        <section class="s-del" id="disk">
+          <h2>Co leży na dysku</h2>
+          <p>
+            Wszystko Jasne przechowuje wszystkie swoje dane w jednym folderze na użytkownika:
+            <code>~/Library/Application Support/pl.wszystkojasne.app/</code>. Nazwy folderów wewnątrz są wspólne dla wszystkich wydań i dlatego po norwesku.
+          </p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>prosjekter/</code></dt>
+              <dd>To, co użytkownik ustalił dla każdego folderu, oraz tekst, który Wszystko Jasne odczytało z plików. Ten tekst zawiera dane osobowe. Wszystko jest zaszyfrowane AES-256-GCM, a foldery mają nazwy, z których nie da się odtworzyć ścieżki. Nieużywany projekt jest zapominany po 30 dniach.</dd>
+            </div>
+            <div>
+              <dt><code>pseudonym/</code></dt>
+              <dd>Klucz, wcześniejsze odłożone klucze i księga numerów (<code>nummerbok.json</code>). Księga przypisuje kodom numery i nie zawiera nazwisk.</dd>
+            </div>
+            <div>
+              <dt><code>lager/</code></dt>
+              <dd>Własne oznaczenia użytkownika, listy „Zawsze zastępuj” i „Zawsze zostawiaj” oraz teksty z narzędzia tekstowego. Zaszyfrowane.</dd>
+            </div>
+            <div>
+              <dt>Kopie zapasowe</dt>
+              <dd>Kopie oryginałów, tworzone przed analizą, jeśli użytkownik tego chce. Zawartość każdego pliku jest zaszyfrowana AES-256-GCM. Kopie nie są usuwane automatycznie.</dd>
+            </div>
+            <div>
+              <dt><code>revisjon/</code></dt>
+              <dd>Dziennik audytowy, jeśli jest włączony. Jeden plik na miesiąc, ostatnie 13 miesięcy.</dd>
+            </div>
+            <div>
+              <dt>Małe pliki</dt>
+              <dd>Między innymi kod licencji, <code>innstillinger.json</code> i położenie okna. Niezaszyfrowane i bez treści z dokumentów.</dd>
+            </div>
+          </dl>
+          <h3>Jak chronione są klucze</h3>
+          <p>
+            Klucz jest zawinięty kolejnym kluczem z pęku kluczy (usługa
+            <code>no.klart.pseudonym.pl.wszystkojasne.app</code>), a dodatkowo przez Secure Enclave, jeśli komputer ją ma.
+            Chroni to przed innymi użytkownikami i przed utraconym dyskiem. Nie chroni przed programem, który
+            działa jako ten sam użytkownik. To granica pęku kluczy i warto ją znać.
+          </p>
+          <p>
+            Klucze mogą też leżeć na nośniku USB z kluczem. Wtedy program ma do nich dostęp tylko wtedy, gdy nośnik jest podłączony.
+          </p>
+          <h3>Co Wszystko Jasne instaluje w systemie</h3>
+          <dl class="s-tabell">
+            <div><dt>Usługi w Finderze</dt><dd>Przy uruchomieniu Wszystko Jasne zapisuje cztery usługi w <code>~/Library/Services/</code>: „Oczyść za pomocą Wszystko Jasne” i „Przywróć za pomocą Wszystko Jasne” dla plików oraz „Oczyść tekst za pomocą Wszystko Jasne” i „Przywróć tekst za pomocą Wszystko Jasne” dla zaznaczonego tekstu. Dwie ostatnie przejmują zaznaczony tekst z innych programów. <code>"kommandolinje": false</code> w zasadach usuwa wszystkie cztery.</dd></div>
+            <div><dt>Adresy i typy plików</dt><dd>Wszystko Jasne przyjmuje linki <code>wszystkojasne://</code> oraz pliki <code>.wszystkojasnelicencja</code>, <code>.wszystkojasneoznaczenia</code> i <code>.wszystkojasneprojekt</code>. Link może zaproponować licencję. Użytkownik jest zawsze pytany, a pakiet klucza nadal wymaga swojego kodu.</dd></div>
+            <div><dt>Nic w tle</dt><dd>Żadnej usługi, żadnego wpisu autostartu i żadnego procesu, który działa po zamknięciu okna.</dd></div>
+            <div><dt>Co zobaczy monitoring</dt><dd>Wszystko Jasne uruchamia kilka krótkotrwałych pomocników systemowych, między innymi <code>klart-hvelv</code> (klucz), <code>ioreg</code> (kod komputera), <code>tmutil</code> (wyłączenie folderów z Time Machine), <code>open</code> (pokazanie folderu z kopiami) i <code>osascript</code> (powiadomienia).</dd></div>
+          </dl>
+          <h3>Usunięcie wszystkiego</h3>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <p>Proszę usunąć program, a następnie:</p>
+            <div class="cmd"><pre>rm -rf ~/Library/Application\ Support/pl.wszystkojasne.app ~/Library/WebKit/pl.wszystkojasne.app ~/Library/Caches/pl.wszystkojasne.app
+rm -f ~/Library/Preferences/pl.wszystkojasne.app.plist
+rm -rf ~/Library/Services/*Wszystko\ Jasne*.workflow
+security delete-generic-password -s no.klart.pseudonym.pl.wszystkojasne.app</pre></div>
+          </div>
+          <p class="s-notis varsel">
+            <b>Najpierw proszę zabezpieczyć klucz.</b> Jeśli folder danych zostanie usunięty, zanim klucz zostanie zapisany jako słowa lub plik klucza,
+            żadnej kopii z kodami nie da się już przywrócić.
+          </p>
+        </section>
+
+        <!-- ============ Styring ============ -->
+        <section class="s-del" id="styring">
+          <h2>Centralne sterowanie Wszystko Jasne</h2>
+          <p>
+            Jeden plik określa to, co użytkownik w przeciwnym razie wybiera sam. Można go rozdystrybuować przez MDM lub skrypt.
+            Zapis w tym miejscu wymaga uprawnień administratora, więc użytkownik nie może znieść tego, co Państwo zablokowali.
+          </p>
+          <dl class="s-tabell">
+            <div><dt>Mac</dt><dd><code>/Library/Application Support/WszystkoJasne/retningslinjer.json</code></dd></div>
+          </dl>
+          <p>Klucze w pliku są wspólne dla wszystkich wydań, dlatego są po norwesku.</p>
+          <div class="cmd" data-hvor="retningslinjer.json"><pre>{
+  "versjon": 1,
+  "virksomhet": "Przykładowa sp. z o.o.",
+  "alltidSkjult": ["navn", "fnr", "helse"],
+  "kodeform": "kort",
+  "ansikterAlltid": true,
+  "utenSkanning": false,
+  "glemEtterDager": 30,
+  "revisjonslogg": true,
+  "nokkelEksport": false
+}</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>versjon</code></dt><dd>Pole obowiązkowe. Istnieje tylko <code>1</code>.</dd></div>
+            <div><dt><code>virksomhet</code></dt><dd>Nazwa wyświetlana przy zablokowanych ustawieniach.</dd></div>
+            <div><dt><code>alltidSkjult</code></dt><dd>Grupy, które są zawsze ukrywane. Nie można ich wyłączyć i nic w nich nie może zostać ustawione na „Zostaw”. Grupy nazywają się <code>navn</code> (imiona i nazwiska), <code>fnr</code> (numery i dokumenty, np. PESEL), <code>kontakt</code>, <code>helse</code> (szczególne kategorie), <code>setninger</code> (zdania prywatne), <code>skilt</code> (numery rejestracyjne), <code>penger</code> (rachunki), <code>hemmelig</code> (hasła), <code>sted</code> (adres i miejscowość), <code>dato</code>, <code>jobb</code>, <code>alder</code>, <code>org</code> (pracodawca, NIP i REGON) i <code>sak</code> (sygnatury).</dd></div>
+            <div><dt><code>standardGrupper</code></dt><dd>Grupy włączone, gdy folder zostanie otwarty po raz pierwszy. Bez podania: ustawienie domyślne Wszystko Jasne.</dd></div>
+            <div><dt><code>kodeform</code></dt><dd><code>lapp</code> (tylko etykiety), <code>kort</code> (krótki kod i lista kodów), <code>full</code> (pełny kod w tekście) lub <code>svart</code> (czarne pola, PDF). Bez podania: wybiera użytkownik.</dd></div>
+            <div><dt><code>ansikterAlltid</code></dt><dd>Twarze są zawsze pikselizowane i żadnej nie można ustawić na „Zostaw”.</dd></div>
+            <div><dt><code>utenSkanning</code></dt><dd><code>false</code> wymaga, by Wszystko Jasne zawsze analizowało pliki. Domyślnie użytkownik może też oznaczyć wszystko sam.</dd></div>
+            <div><dt><code>prosjekter</code></dt><dd><code>false</code>: Wszystko Jasne nie zapamiętuje niczego o folderach między sesjami.</dd></div>
+            <div><dt><code>glemEtterDager</code></dt><dd>Jak długo przechowywany jest nieużywany projekt, od 1 do 365 dni. Domyślnie 30.</dd></div>
+            <div><dt><code>kommandolinje</code></dt><dd><code>false</code> wyłącza wiersz poleceń, folder obserwowany i usługi w Finderze.</dd></div>
+            <div><dt><code>revisjonslogg</code></dt><dd>Włącza dziennik. <code>revisjonsmappe</code> zapisuje dodatkowo kopię w udziale sieciowym.</dd></div>
+            <div><dt><code>rapportJson</code></dt><dd>Zapisuje w każdym folderze kopii raport w formacie JSON obok <code>Raport Wszystko Jasne.txt</code>.</dd></div>
+            <div><dt><code>nokkelEksport</code></dt><dd><code>false</code>: nikt nie może wyeksportować klucza jako słów ani pliku. Nowe komputery dołącza osoba odpowiedzialna za klucz.</dd></div>
+          </dl>
+          <p>
+            Obok może leżeć licencja, w pliku <code>licencja.wszystkojasne</code>. Plik zawiera kod zaczynający się od <code>WSZYSTKOJASNE-</code>. Wtedy żaden użytkownik nie musi niczego wklejać.
+            Jeśli użytkownik ma własną ważną licencję, ma ona pierwszeństwo.
+          </p>
+          <p class="s-notis varsel">
+            <b>Jeśli pliku nie da się odczytać, Wszystko Jasne się nie uruchomi.</b> Literówka, nieznane pole lub wartość spoza dopuszczalnego zakresu
+            nie mogą sprawić, że Wszystko Jasne oczyści mniej, niż Państwo ustalili. Komunikat o błędzie wskazuje, którego pola dotyczy.
+          </p>
+        </section>
+
+        <!-- ============ Nøkkelen ============ -->
+        <section class="s-del" id="nokkel">
+          <h2>Klucz w organizacji</h2>
+          <p>
+            Kody w kopiach można z powrotem zamienić na nazwiska tylko za pomocą klucza. W organizacji wszyscy powinni mieć ten sam klucz,
+            inaczej ta sama osoba dostanie u różnych współpracowników różne kody.
+          </p>
+          <dl class="s-tabell">
+            <div><dt>Osoba odpowiedzialna za klucz</dt><dd>Tworzy klucz organizacji, rozdaje go i dołącza współpracowników.</dd></div>
+            <div><dt>Członek</dt><dd>Używa klucza. Program nie pozwala członkowi go wyeksportować. To reguła w programie, nie kryptografia: komputer ma pełny klucz.</dd></div>
+            <div><dt>Pakiet klucza</dt><dd>Klucz zaszyfrowany dwunastoznakowym kodem klucza (Argon2id i AES-256-GCM). Pakiet i kod przekazuje się osobno. Kod można użyć wielokrotnie, dlatego należy traktować go jak sam klucz.</dd></div>
+            <div><dt>Dołączanie bez sieci</dt><dd>Komputer współpracownika tworzy prośbę. Osoba odpowiedzialna za klucz odpowiada dołączeniem, które może otworzyć tylko ten komputer (X25519). Szesnastoznakowy kod kontrolny jest odczytywany na głos, aby obie strony wiedziały, że komunikują się z właściwym komputerem.</dd></div>
+            <div><dt>Rezerwa</dt><dd>24 słowa (z norweskiej listy wspólnej dla wszystkich wydań) na papierze albo plik klucza zabezpieczony hasłem (Argon2id i AES-256-GCM).</dd></div>
+          </dl>
+          <p class="s-notis varsel">
+            <b>Cicha dystrybucja ma swoją cenę.</b> Można umieścić pakiet klucza (<code>klucz.wszystkojasnepakiet</code>) obok <code>retningslinjer.json</code>
+            i wpisać kod klucza do pliku (<code>nokkelkode</code>). Wtedy Wszystko Jasne przejmuje klucz bez żadnego działania użytkownika.
+            Klucz nie jest jednak wtedy bezpieczniejszy niż folder: kto może odczytać oba pliki, ma klucz organizacji.
+          </p>
+        </section>
+
+        <!-- ============ Revisjonslogg ============ -->
+        <section class="s-del" id="logg">
+          <h2>Dziennik audytowy</h2>
+          <p>
+            Dziennik zapisuje, co Wszystko Jasne zrobiło, kiedy i przez kogo. Nie zawiera niczego z dokumentów:
+            żadnych nazw plików, ścieżek ani wartości. Jest wyłączony, dopóki nie włączą go Państwo przez
+            <code>"revisjonslogg": true</code>. Pola mają nazwy norweskie, wspólne dla wszystkich wydań.
+          </p>
+          <dl class="s-tabell">
+            <div><dt><code>hendelse</code></dt><dd>Co się stało: utworzenie kopii, analiza, zapomnienie, przywrócenie lub działanie na kluczu (np. eksport).</dd></div>
+            <div><dt><code>via</code></dt><dd>Aplikacja, wiersz poleceń lub folder obserwowany.</dd></div>
+            <div><dt><code>kilde</code></dt><dd>Odcisk folderu, obliczony kluczem na komputerze. Ta sama sprawa ma na tym komputerze tę samą wartość w każdym wierszu, ale nie da się z niej odczytać ścieżki. Inny komputer da dla tego samego folderu inną wartość.</dd></div>
+            <div><dt><code>bruker</code>, <code>maskin</code>, <code>tid</code></dt><dd>Ustawiane przez sam program, nie przez okno.</dd></div>
+            <div><dt>Miejsce zapisu</dt><dd><code>revisjon/RRRR-MM.jsonl</code> w folderze danych. Z <code>revisjonsmappe</code> dodatkowo <code>&lt;komputer&gt;-&lt;użytkownik&gt;.jsonl</code> w udziale sieciowym. Wszystko Jasne nie tworzy tego folderu. Jeśli udział nie jest podłączony, zostaje to odnotowane w dzienniku lokalnym.</dd></div>
+          </dl>
+          <p class="s-notis">
+            Dziennik jest zwykłym plikiem tekstowym. Użytkownik może go zmienić. Jeśli potrzebują Państwo dziennika, którego nie da się zmienić,
+            proszę skierować <code>revisjonsmappe</code> do miejsca, w którym użytkownik może tylko dopisywać.
+          </p>
+        </section>
+
+        <!-- ============ Kommandolinje ============ -->
+        <section class="s-del" id="kommando">
+          <h2>Wiersz poleceń i folder obserwowany</h2>
+          <p>
+            Ten sam program, bez okna. Wejściem jest wiersz poleceń. Wyjściem są stdout, stderr i pliki,
+            które Państwo wskażą. Nic nie otwiera portu.
+          </p>
+          <div class="cmd"><pre>WJ="/Applications/Wszystko Jasne.app/Contents/MacOS/wszystkojasne"
+"$WJ" scan  ~/Akta/2026-114                      # sprawdzić najpierw
+"$WJ" clean ~/Akta/2026-114 --out ~/Do-AI        # utworzyć oczyszczone kopie
+"$WJ" clean ~/Akta/2026-114 --out ~/Do-AI --changed-only
+"$WJ" watch ~/Wejscie --out ~/Do-AI              # folder obserwowany
+"$WJ" restore ~/Do-AI/2026-114-jasne             # przywrócić kluczem
+"$WJ" forget ~/Akta/2026-114                     # zapomnieć wszystko o sprawie</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>--codes</code></dt><dd><code>lapp</code> (domyślnie), <code>kort</code>, <code>full</code> lub <code>svart</code>.</dd></div>
+            <div><dt><code>--groups</code></dt><dd>Co ma zostać zastąpione, np. <code>navn,fnr,helse</code>.</dd></div>
+            <div><dt><code>--dry-run</code></dt><dd>Wykonuje wszystko, także kontrolę każdej kopii, ale niczego nie zapisuje.</dd></div>
+            <div><dt><code>--no-project</code></dt><dd>Niczego nie zapamiętuje i nie używa ustaleń z okna.</dd></div>
+            <div><dt>Wynik</dt><dd>Jeden wiersz JSON na stdout, z <code>format: 1</code>. Postęp trafia na stderr.</dd></div>
+            <div><dt>Kod wyjścia</dt><dd>0: wszystko dostarczone. 1: błąd. 2: coś pozostało w kopii lub nie zostało dostarczone. 3: warunki korzystania nie zostały jeszcze zaakceptowane na tym komputerze. 4: źródło jest w użyciu. 5: zasady organizacji na to nie pozwalają. 6: klucz leży na niepodłączonym nośniku z kluczem. 64: błąd w poleceniu.</dd></div>
+          </dl>
+          <p><code>"$WJ" help</code> pokazuje wszystkie polecenia i opcje po polsku.</p>
+        </section>
+
+        <!-- ============ Krypto ============ -->
+        <section class="s-del" id="krypto">
+          <h2>Kryptografia</h2>
+          <dl class="s-tabell">
+            <div><dt>Klucz</dt><dd>32 losowe bajty z systemu operacyjnego. Podklucze przez HKDF-SHA256.</dd></div>
+            <div><dt>Kody</dt><dd>Kim jest osoba: HMAC-SHA256. Pierwotny tekst: AES-SIV (RFC 5297), deterministyczny i uwierzytelniony.</dd></div>
+            <div><dt>Klucz na dysku</dt><dd>Pęk kluczy i Secure Enclave.</dd></div>
+            <div><dt>Plik klucza</dt><dd>Argon2id (64 MiB, 3 przebiegi) i AES-256-GCM.</dd></div>
+            <div><dt>24 słowa</dt><dd>256 bitów klucza i 8 bitów sumy kontrolnej, 11 bitów na słowo, z listy 2048 norweskich słów.</dd></div>
+            <div><dt>Dołączanie</dt><dd>X25519.</dd></div>
+            <div><dt>Projekty, własne oznaczenia i teksty</dt><dd>AES-256-GCM, z kluczami z HKDF-SHA256. Nazwy plików są odciskami HMAC.</dd></div>
+            <div><dt>Kopie zapasowe i piksele pod polami w kopii</dt><dd>AES-256-GCM.</dd></div>
+            <div><dt>Kod licencji</dt><dd>Ed25519. Podpis jest sprawdzany na komputerze.</dd></div>
+          </dl>
+          <p>To wszystko znane algorytmy z otwartych bibliotek (RustCrypto i dalek). Niczego z tego nie opracowaliśmy sami.</p>
+        </section>
+
+        <!-- ============ Systemkrav ============ -->
+        <section class="s-del" id="krav">
+          <h2>Wymagania systemowe</h2>
+          <dl class="s-tabell">
+            <div><dt>Mac</dt><dd>macOS 13 lub nowszy. Procesory Intel i Apple w tym samym pakiecie.</dd></div>
+            <div><dt>Windows i Linux</dt><dd>Wersje pojawią się wkrótce.</dd></div>
+            <div><dt>Pamięć</dt><dd>Wszystko Jasne zajmuje około pół gigabajta, gdy model zdań jest załadowany. Zalecamy 8 GB w komputerze.</dd></div>
+            <div><dt>Karta graficzna</dt><dd>Niewymagana. Wszystko działa na procesorze.</dd></div>
+            <div><dt>Sieć</dt><dd>Niewymagana, ani przy instalacji, ani przy aktywacji, ani w użyciu.</dd></div>
+          </dl>
+          <p>
+            Gdy Wszystko Jasne po raz pierwszy odczytuje obrazy na Macu, macOS może potrzebować kilku minut na przygotowanie własnego
+            rozpoznawania tekstu. Dzieje się to tylko raz.
+          </p>
+          <p>Aktualizacja to nowy plik instalacyjny, który pobierają Państwo sami, kiedy chcą. Wszystko Jasne nie szuka nowych wersji.</p>
+        </section>
+
+        <!-- ============ Si fra ============ -->
+        <section class="s-del" id="si-fra">
+          <h2>Coś Państwo znaleźli?</h2>
+          <p>
+            Prosimy o wiadomość na <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a>.
+            Odpowiadamy osobiście i wolimy usłyszeć to od Państwa niż od klienta.
+            Zob. też <a href="/.well-known/security.txt">security.txt</a>.
+          </p>
+          <p class="s-dato">Ostatnia zmiana: 24 listopada 2026 r.</p>
+        </section>
+      </main>
+    </div>
+
+    <footer class="s-bunn">
+      <p class="s-bunn-merke"><i>Wszystko Jasne</i> <span>od Tidemann Esbjug</span></p>
+      <nav aria-label="Więcej o Wszystko Jasne">
+        <a href="./">Strona główna</a>
+        <a href="cennik/">Cennik</a>
+        <a href="co-wykrywa.html">Co wykrywa Wszystko Jasne</a>
+        <a href="prywatnosc/">Prywatność</a>
+        <a href="warunki/">Warunki</a>
+      </nav>
+      <p class="s-bunn-liten">Wyprodukowano w Norwegii</p>
+    </footer>
+
+    <script src="til-it.js"></script>
+  </body>
+</html>

@@ -1,0 +1,525 @@
+<!doctype html>
+<!--
+  Hei, du som leser kildekoden. Det var deg vi håpet på.
+
+  C'est Clair lover at dokumentene aldri forlater maskinen. Et sånt løfte skal ikke
+  tas på ordet, så sjekk det:
+
+  - Programmet: denne siden har kommandoene som viser hva det snakker med.
+  - Nettsiden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
+    uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
+  - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
+    Vi vil heller høre det fra deg enn fra en kunde.
+
+  Den franske utgaven, 24.11.2026. Bare Mac finnes ennå, så Windows-blokkene er tatt ut og siden viser
+  bare Mac (til-it-tidlig.js setter data-vis="mac"). Fasitene for Mac er kjørt mot det signerte og
+  notariserte bygget i Klart-utgivelse/mac-fr-prove-2026-11-24 (Klart-fr 3fdb9be2): navnene, størrelsene,
+  TeamIdentifier, entitlements, spctl og otool/nm. Filnavnene i datamappen, retningslinjene og loggen er
+  de norske, som i FrostCopy (src-tauri/src/retningslinjer.rs, integrasjon/*.schema.json).
+-->
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/cest-clair/favicon.png" />
+    <title>Pour la DSI · C’est Clair</title>
+    <meta
+      name="description"
+      content="Les contrôles qui montrent que C’est Clair ne communique pas avec le réseau, ce qui se trouve dans le paquet et sur le disque, et comment la DSI pilote C’est Clair de façon centralisée. Avec les commandes, les résultats attendus et ce que prouve chaque contrôle."
+    />
+    <meta name="robots" content="noindex" />
+    <!-- Ingen skrifter, bilder eller skript utenfra. Skriptene viser Mac-blokkene og kopierer kommandoene. -->
+    <script src="til-it-tidlig.js"></script>
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="sider.css" />
+  </head>
+  <body>
+    <header class="s-topp">
+      <div class="s-linje-topp">
+        <a class="s-merke" href="./">C’est Clair</a>
+        <nav class="s-nav" aria-label="Pages">
+          <a href="./">Accueil</a>
+          <a href="prix/">Prix</a>
+          <a href="pour-la-dsi.html" aria-current="page">Pour la DSI</a>
+          <a href="confidentialite/">Confidentialité</a>
+        </nav>
+      </div>
+      <div class="s-hode">
+        <p class="s-over">Pour le service informatique</p>
+        <h1>Ne nous croyez pas sur parole. Vérifiez.</h1>
+        <p class="s-ingress">
+          C’est Clair promet que les documents ne quittent jamais l’ordinateur. Voici les commandes qui le montrent,
+          ce qu’elles doivent afficher et ce que chaque contrôle prouve réellement.
+        </p>
+      </div>
+    </header>
+
+    <div class="s-kropp">
+      <nav class="s-innhold" aria-label="Sommaire">
+        <p>Sur cette page</p>
+        <ol>
+          <li><a href="#kort">En bref</a></li>
+          <li><a href="#fil">1 Est-ce notre fichier&nbsp;?</a></li>
+          <li><a href="#signert">2 Signé et intact&nbsp;?</a></li>
+          <li><a href="#rettigheter">3 Que peut faire le logiciel&nbsp;?</a></li>
+          <li><a href="#snakker">4 Communique-t-il avec quelqu’un&nbsp;?</a></li>
+          <li><a href="#laget">5 De quoi est-il fait&nbsp;?</a></li>
+          <li><a href="#steng">Le bloquer vous-même</a></li>
+          <li><a href="#disk">Ce qui se trouve sur le disque</a></li>
+          <li><a href="#styring">Piloter C’est Clair de façon centralisée</a></li>
+          <li><a href="#nokkel">La clé dans une organisation</a></li>
+          <li><a href="#logg">Journal d’audit</a></li>
+          <li><a href="#kommando">Ligne de commande</a></li>
+          <li><a href="#krypto">Cryptographie</a></li>
+          <li><a href="#krav">Configuration requise</a></li>
+          <li><a href="#si-fra">Vous avez trouvé quelque chose&nbsp;?</a></li>
+        </ol>
+      </nav>
+
+      <main class="s-tekst" id="innhold">
+        <section class="s-kort" id="kort">
+          <h2>En bref</h2>
+          <ul>
+            <li><b>Aucune issue vers l’extérieur.</b> Le logiciel n’a pas de TLS, ne peut pas résoudre de noms sur le réseau et n’écoute sur aucun port.</li>
+            <li><b>Tout est dans le paquet.</b> Rien n’est téléchargé après l’installation. Pas de mise à jour automatique, pas de statistiques d’utilisation, pas de rapports d’erreur.</li>
+            <li><b>Vous pouvez le bloquer.</b> Bloquez tout le trafic sortant de C’est Clair. Le logiciel fonctionne tout aussi bien.</li>
+            <li><b>Vous pouvez le piloter.</b> Un seul fichier détermine ce que les utilisateurs peuvent choisir eux-mêmes.</li>
+          </ul>
+        </section>
+
+        <p class="s-notis">
+          <b>C’est Clair est disponible pour l’instant sur Mac.</b> Les versions Windows et Linux arrivent bientôt&nbsp;;
+          cette page sera complétée pour elles à leur sortie.
+        </p>
+        <p class="s-skjult" id="melding" role="status" aria-live="polite"></p>
+
+        <!-- ============ 1 ============ -->
+        <section class="s-del" id="fil">
+          <h2><span class="s-nr">1</span>Est-ce notre fichier&nbsp;?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>shasum -a 256 ~/Downloads/C*Clair*.dmg</pre></div>
+          </div>
+          <p class="s-fasit"><b>Résultat attendu&nbsp;:</b> la longue suite de chiffres et de lettres correspond à la somme de contrôle que nous avons publiée pour la version.</p>
+          <dl class="s-tabell">
+            <div><dt>C’est Clair.dmg</dt><dd><code>dc7a5142474b9cb6<wbr />ea35130274c78e13<wbr />6f5f783ec474b4f5<wbr />f660992ceef62328</code></dd></div>
+          </dl>
+          <p class="s-beviser"><b>Prouve&nbsp;:</b> que le fichier est celui que nous avons publié. Rien de plus. Une somme de contrôle ne dit rien de ce que fait le logiciel.</p>
+        </section>
+
+        <!-- ============ 2 ============ -->
+        <section class="s-del" id="signert">
+          <h2><span class="s-nr">2</span>Est-il signé par nous et intact&nbsp;?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>codesign -dv --verbose=4 "/Applications/C'est Clair.app" 2>&amp;1 | grep -E "Format|TeamIdentifier|flags|Notarization"</pre></div>
+            <p class="s-fasit">
+              <b>Résultat attendu&nbsp;:</b> <code>Format=app bundle with Mach-O universal (x86_64 arm64)</code>,
+              <code>flags=0x10000(runtime)</code>, <code>Notarization Ticket=stapled</code> et
+              <code>TeamIdentifier=N5BKVM258S</code>.
+            </p>
+            <div class="cmd"><pre>spctl -a -vv "/Applications/C'est Clair.app"</pre></div>
+            <p class="s-fasit"><b>Résultat attendu&nbsp;:</b> <code>accepted</code> et <code>source=Notarized Developer ID</code>.</p>
+            <p>Le paquet contient deux autres fichiers exécutables&nbsp;: l’assistant qui gère la clé, et la bibliothèque PDF. Vérifiez-les aussi&nbsp;:</p>
+            <div class="cmd"><pre>codesign -dv "/Applications/C'est Clair.app/Contents/MacOS/klart-hvelv" 2>&amp;1 | grep TeamIdentifier
+codesign -dv "/Applications/C'est Clair.app/Contents/Resources/bundled/engine/pdfium/libpdfium.dylib" 2>&amp;1 | grep TeamIdentifier</pre></div>
+            <p class="s-fasit"><b>Résultat attendu&nbsp;:</b> le même <code>TeamIdentifier=N5BKVM258S</code> pour les deux.</p>
+          </div>
+          <p class="s-beviser">
+            <b>Prouve&nbsp;:</b> que le code vient de nous et n’a pas été modifié depuis. C’est le contrôle contre une copie retouchée.
+            Une copie dotée d’une connexion réseau serait un autre logiciel, et la signature la trahirait.
+          </p>
+        </section>
+
+        <!-- ============ 3 ============ -->
+        <section class="s-del" id="rettigheter">
+          <h2><span class="s-nr">3</span>Que peut faire le logiciel&nbsp;?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>codesign -d --entitlements - --xml "/Applications/C'est Clair.app" 2>/dev/null | plutil -p -</pre></div>
+            <p class="s-fasit">
+              <b>Résultat attendu&nbsp;:</b> cinq lignes, toutes à <code>false</code>&nbsp;: <code>automation.apple-events</code>,
+              <code>cs.allow-dyld-environment-variables</code>, <code>cs.allow-jit</code>,
+              <code>cs.allow-unsigned-executable-memory</code> et <code>cs.disable-library-validation</code>.
+              Aucun droit iCloud, ni <code>network.client</code> ni <code>network.server</code>.
+            </p>
+            <p>
+              <b>Mais notez ceci&nbsp;:</b> C’est Clair ne s’exécute pas dans l’App Sandbox. L’absence des droits réseau n’est donc
+              qu’une déclaration. Sans sandbox, macOS ne l’impose pas, et un logiciel avec Hardened Runtime peut en principe
+              ouvrir une connexion malgré tout. Nous préférons le dire nous-mêmes plutôt que vous le découvriez.
+              Ce qui tranche réellement la question, ce sont les points&nbsp;4 et&nbsp;5 et la règle que vous fixez vous-même.
+            </p>
+            <p class="s-beviser"><b>Prouve&nbsp;:</b> que le logiciel ne peut pas piloter d’autres logiciels, charger du code étranger ni accéder à iCloud. À lui seul, il ne prouve rien sur le réseau.</p>
+          </div>
+        </section>
+
+        <!-- ============ 4 ============ -->
+        <section class="s-del" id="snakker">
+          <h2><span class="s-nr">4</span>Communique-t-il avec quelqu’un&nbsp;?</h2>
+          <p>Lancez C’est Clair, ouvrez un dossier et laissez-le le lire. Exécutez la commande pendant que le logiciel tourne.</p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>pgrep -lx cestclair; lsof +c 0 -nP -a -i -c cestclair -c com.apple.WebKit.Networking</pre></div>
+            <p class="s-fasit"><b>Résultat attendu&nbsp;:</b> une ligne avec le numéro de processus et <code>cestclair</code>, puis rien. C’est Clair n’a aucun socket TCP ou UDP.</p>
+            <p>
+              La fenêtre de C’est Clair est affichée par WebKit, qui fait partie de macOS. WebKit lance ses propres processus
+              auxiliaires, dont l’un s’appelle <code>com.apple.WebKit.Networking</code>. Il figure dans la commande, car c’est lui
+              qui irait chercher quelque chose si la fenêtre essayait. Il doit lui aussi être vide.
+            </p>
+            <p>
+              Si des lignes apparaissent malgré tout, vous avez probablement Safari, Mail ou un autre logiciel utilisant WebKit
+              ouvert. Ils partagent le nom du processus auxiliaire. Fermez-les et relancez la commande, ou regardez les numéros de
+              processus&nbsp;: les auxiliaires de C’est Clair ont les numéros qui suivent celui de C’est Clair.
+            </p>
+            <p>
+              Attention à <code>-a</code>. Sans cette option, <code>lsof</code> combine les critères avec «&nbsp;ou&nbsp;», et vous obtenez tout
+              le trafic de l’ordinateur dans la liste. LuLu ou Little Snitch donnent le même résultat, si vous préférez le voir ainsi.
+            </p>
+          </div>
+          <p class="s-beviser"><b>Prouve&nbsp;:</b> que le logiciel, tel qu’il tourne chez vous, n’a aucune issue vers l’extérieur. C’est le contrôle auquel nous faisons nous-mêmes le plus confiance.</p>
+        </section>
+
+        <!-- ============ 5 ============ -->
+        <section class="s-del" id="laget">
+          <h2><span class="s-nr">5</span>De quoi est-il fait&nbsp;?</h2>
+          <p>Le paquet complet occupe environ 373&nbsp;Mo une fois installé sur le Mac. Voici tout ce qu’il contient&nbsp;:</p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>MacOS/cestclair</code></dt>
+              <dd>Le logiciel. 118&nbsp;Mo, pour processeurs Intel et Apple. L’enveloppe est écrite en Rust (Tauri&nbsp;2), la fenêtre en TypeScript.</dd>
+            </div>
+            <div>
+              <dt><code>MacOS/klart-hvelv</code></dt>
+              <dd>Un petit assistant (0,2&nbsp;Mo) qui emballe et déballe la clé avec le trousseau et la Secure Enclave.</dd>
+            </div>
+            <div>
+              <dt><code>setning/distilbert-french.onnx</code></dt>
+              <dd>Le modèle de phrases, fondé sur distilbert-base-fr-cased et ajusté pour C’est Clair, 236&nbsp;Mo. Il tourne sur le processeur, dans le logiciel lui-même. Ce n’est pas un processus distinct.</dd>
+            </div>
+            <div>
+              <dt><code>setning/vocab.txt</code></dt>
+              <dd>Le vocabulaire du modèle, 0,2&nbsp;Mo.</dd>
+            </div>
+            <div>
+              <dt><code>pdfium/libpdfium.dylib</code></dt>
+              <dd>PDFium, la bibliothèque qui lit et affiche les PDF. 15&nbsp;Mo.</dd>
+            </div>
+          </dl>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>find "/Applications/C'est Clair.app/Contents" -type f -size +100k -exec ls -lh {} \;</pre></div>
+            <p class="s-fasit"><b>Résultat attendu&nbsp;:</b> les cinq fichiers ci-dessus, l’assistant de clé une seconde fois sous <code>Contents/Helpers</code>, les icônes de l’application et les textes de licence dans <code>lisenser/CODE-TIERS.txt</code>. Pas de <code>llama-server</code>, pas de <code>.gguf</code>, pas d’autres modèles.</p>
+          </div>
+          <p>
+            Le logiciel n’a ni TLS ni client HTTP capable de joindre un hôte. Il ne peut écouter sur aucun port
+            ni résoudre de noms sur le réseau. Vous le voyez dans le fichier lui-même&nbsp;:
+          </p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>otool -L "/Applications/C'est Clair.app/Contents/MacOS/cestclair" | grep -iE 'curl|CFNetwork|Network\.framework|ssl'
+nm -u "/Applications/C'est Clair.app/Contents/MacOS/cestclair" | grep -E '_(bind|listen|accept|getaddrinfo)$'</pre></div>
+            <p class="s-fasit"><b>Résultat attendu&nbsp;:</b> aucune ligne pour l’une comme pour l’autre.</p>
+            <p>
+              <b>Ce que vous trouverez, et ce que c’est&nbsp;:</b> le fichier contient <code>socket</code> et <code>connect</code>. Ce sont
+              les restes d’un modèle de langue local retiré le 4&nbsp;novembre 2026, avec lequel le logiciel communiquait par un socket
+              de fichier local. Le paquet n’a aucun modèle à lancer.
+            </p>
+            <p>
+              Le fichier est aussi lié à <code>CloudKit</code> et <code>CoreData</code>. Cela vient de la bibliothèque de fenêtres,
+              pas de nous. C’est Clair n’utilise ni l’un ni l’autre et n’a aucun droit iCloud (point&nbsp;3).
+            </p>
+          </div>
+          <p>Si vous disposez du code source, voici où regarder&nbsp;:</p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>src-tauri/Cargo.toml</code></dt>
+              <dd>Ni reqwest, ni hyper, ni rustls, ni native-tls, ni openssl. <code>tokio</code> est compilé sans <code>net</code>. Certains de ces noms figurent quand même dans <code>Cargo.lock</code>, parce qu’une bibliothèque les emporte pour les plateformes mobiles. Ils ne sont jamais compilés. C’est pourquoi <code>cargo tree</code> fait foi, et non une recherche dans le fichier de verrouillage.</dd>
+            </div>
+            <div>
+              <dt><code>tauri.conf.json</code></dt>
+              <dd>CSP de la fenêtre&nbsp;: <code>default-src 'self'</code> et <code>connect-src ipc: http://ipc.localhost</code>. La fenêtre ne peut communiquer qu’avec le logiciel dans lequel elle tourne. Pas de cadres, pas d’objets incorporés, pas de formulaires vers l’extérieur. En outre, le logiciel bloque toute navigation hors de lui-même.</dd>
+            </div>
+            <div>
+              <dt><code>capabilities/default.json</code></dt>
+              <dd>Il est interdit à la fenêtre d’ouvrir des adresses et des chemins&nbsp;: <code>opener:deny-open-url</code>, <code>deny-open-path</code> et <code>deny-reveal-item-in-dir</code>. Pas de module HTTP, pas de mise à jour automatique.</dd>
+            </div>
+          </dl>
+          <div class="cmd" data-hvor="Dans le dossier du code source"><pre>cd src-tauri &amp;&amp; cargo tree -e normal | grep -E 'reqwest|hyper|rustls|native-tls|openssl'</pre></div>
+          <p class="s-fasit"><b>Résultat attendu&nbsp;:</b> aucun résultat.</p>
+          <p>
+            À un seul endroit, C’est Clair ouvre une adresse web&nbsp;: lorsque l’utilisateur clique sur «&nbsp;Acheter une licence&nbsp;», le logiciel demande au système
+            d’ouvrir <code>https://esbjugconsult.com/cest-clair/activer?hva=kjop&amp;maskin=…</code> dans le navigateur de l’utilisateur.
+            C’est Clair ne s’y connecte pas lui-même. La page mène aux prix, où l’on commande sur facture. Le code machine dans l’adresse est un SHA-256 de l’identifiant de l’ordinateur et ne dit rien
+            de l’utilisateur ni des documents.
+          </p>
+          <h3>Les bibliothèques qui lisent les documents</h3>
+          <p>Elles traitent des fichiers que vous n’avez pas créés vous-mêmes&nbsp;; vous voudrez donc les connaître&nbsp;:</p>
+          <dl class="s-tabell">
+            <div><dt>PDF</dt><dd>PDFium 158, pdf.js 4.10.38 et pdf-lib 1.17.1. pdf.js fonctionne sans <code>eval</code>.</dd></div>
+            <div><dt>Word</dt><dd>JSZip 3.10.1 et docx-preview 0.4.1.</dd></div>
+            <div><dt>Excel</dt><dd>SheetJS (xlsx) 0.18.5.</dd></div>
+            <div><dt>Images</dt><dd>Apple Vision, intégré à macOS.</dd></div>
+            <div><dt>Phrases</dt><dd>distilbert-base-fr-cased ajusté, exécuté avec tract-onnx 0.23.</dd></div>
+          </dl>
+          <p class="s-beviser"><b>Prouve&nbsp;:</b> qu’il n’y a dans le logiciel aucun code capable d’envoyer quoi que ce soit. Avec le code source, vous pouvez le compiler vous-mêmes et comparer.</p>
+        </section>
+
+        <!-- ============ Steng den selv ============ -->
+        <section class="s-del" id="steng">
+          <h2>Le bloquer vous-même</h2>
+          <p>Ne comptez pas sur nous. Bloquez le trafic sortant de C’est Clair dans le pare-feu ou par MDM. Le logiciel fonctionne tout aussi bien. C’est précisément pour cela que nous l’avons conçu ainsi.</p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <p>Le pare-feu intégré à macOS ne bloque que le trafic entrant. Indiquez le chemin dans une règle du filtre réseau de votre solution MDM, ou dans LuLu ou Little Snitch&nbsp;:</p>
+            <div class="cmd" data-hvor="Chemin"><pre>/Applications/C'est Clair.app/Contents/MacOS/cestclair</pre></div>
+          </div>
+          <p>Dès que la règle vient de vous, vous n’avez à nous croire sur rien de ce qui précède.</p>
+        </section>
+
+        <!-- ============ Disken ============ -->
+        <section class="s-del" id="disk">
+          <h2>Ce qui se trouve sur le disque</h2>
+          <p>
+            C’est Clair conserve toutes ses données dans un dossier par utilisateur&nbsp;:
+            <code>~/Library/Application Support/fr.cestclair.app/</code>. Les noms des dossiers et des fichiers à l’intérieur sont norvégiens dans cette version.
+          </p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>prosjekter/</code></dt>
+              <dd>Ce que l’utilisateur a décidé pour chaque dossier, et le texte que C’est Clair a lu dans les fichiers. Ce dernier contient des données personnelles. Tout est chiffré avec AES-256-GCM, et les dossiers portent des noms dont on ne peut pas retrouver le chemin. Un projet inutilisé est oublié au bout de 30&nbsp;jours.</dd>
+            </div>
+            <div>
+              <dt><code>pseudonym/</code></dt>
+              <dd>La clé (<code>nokkel.nokkelring</code>), les anciennes clés mises de côté et le carnet de numéros. Le carnet relie les codes à des numéros et ne contient aucun nom.</dd>
+            </div>
+            <div>
+              <dt><code>secure-enclave.nokkel</code></dt>
+              <dd>Sur les Mac dotés d’une Secure Enclave&nbsp;: une référence à une clé dans la puce. Elle est inutilisable sur un autre ordinateur.</dd>
+            </div>
+            <div>
+              <dt><code>ror/</code></dt>
+              <dd>Les marquages propres de l’utilisateur et les textes de l’outil texte. Chiffrés.</dd>
+            </div>
+            <div>
+              <dt><code>sikkerhetskopier/</code></dt>
+              <dd>Les sauvegardes des originaux, faites avant l’analyse. Le contenu de chaque fichier est chiffré avec AES-256-GCM. <b>Les noms de fichiers et de dossiers sont en clair.</b> Les sauvegardes ne sont pas supprimées automatiquement. C’est Clair les rappelle au bout de 30&nbsp;jours.</dd>
+            </div>
+            <div>
+              <dt><code>revisjon/</code></dt>
+              <dd>Le journal d’audit, s’il est activé. Un fichier par mois, sur les 13 derniers mois.</dd>
+            </div>
+            <div>
+              <dt>Trois petits fichiers</dt>
+              <dd><code>aktivering.json</code> (le code de licence), <code>innstillinger.json</code> et <code>vindu.json</code>. Non chiffrés, et sans rien venant des documents.</dd>
+            </div>
+          </dl>
+          <h3>Comment les clés sont protégées</h3>
+          <p>
+            La clé est enveloppée par une autre clé qui se trouve dans le trousseau (service
+            <code>no.klart.pseudonym.fr.cestclair.app</code>), et par la Secure Enclave lorsqu’il y en a une.
+            Cela protège contre un autre utilisateur et contre un disque égaré. Cela ne protège pas contre un logiciel qui
+            tourne sous le même utilisateur. C’est la limite du trousseau, et vous devez la connaître.
+          </p>
+          <h3>Sauvegarde et recherche</h3>
+          <p>
+            <code>prosjekter/</code>, <code>sikkerhetskopier/</code> et <code>revisjon/</code> sont exclus de Spotlight et de
+            Time Machine. <code>ror/</code> et <code>pseudonym/</code> sont inclus dans Time Machine. Ils sont
+            chiffrés, et le fichier de clé ne peut être ouvert qu’avec le trousseau de l’ordinateur d’où il vient.
+          </p>
+          <h3>Ce que C’est Clair installe dans le système</h3>
+          <dl class="s-tabell">
+            <div><dt>Services du Finder</dt><dd>Au démarrage, C’est Clair écrit quatre services dans <code>~/Library/Services/</code>&nbsp;: «&nbsp;Occulter avec C’est Clair&nbsp;», «&nbsp;Restaurer avec C’est Clair&nbsp;», «&nbsp;Occulter le texte avec C’est Clair&nbsp;» et «&nbsp;Restaurer le texte avec C’est Clair&nbsp;». Les deux derniers reçoivent le texte sélectionné dans d’autres logiciels. Avec <code>"kommandolinje": false</code> dans les règles, les quatre sont retirés.</dd></div>
+            <div><dt>Adresses et types de fichiers</dt><dd>C’est Clair accepte les liens <code>cestclair://</code> et les types de fichiers <code>.cestclairlicence</code>, <code>.cestclairmarques</code> et <code>.cestclairprojet</code>. Un lien peut proposer une licence. L’utilisateur est toujours consulté, et un paquet de clé exige toujours son code.</dd></div>
+            <div><dt>Rien en arrière-plan</dt><dd>Aucun service, aucune entrée de démarrage et aucun processus qui reste actif une fois la fenêtre fermée.</dd></div>
+            <div><dt>Ce que votre supervision verra</dt><dd>C’est Clair lance quelques auxiliaires système de courte durée&nbsp;: <code>klart-hvelv</code> (la clé), <code>ioreg</code> (le code machine), <code>id</code> et <code>scutil</code> (noms de l’utilisateur et de l’ordinateur pour la liste des modifications), <code>tmutil</code> (exclure des dossiers de Time Machine), <code>open</code> (afficher le dossier des copies) et <code>osascript</code> (notifications).</dd></div>
+          </dl>
+          <h3>Tout supprimer</h3>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <p>Supprimez le logiciel, puis ceci&nbsp;:</p>
+            <div class="cmd"><pre>rm -rf ~/Library/Application\ Support/fr.cestclair.app ~/Library/WebKit/fr.cestclair.app ~/Library/Caches/fr.cestclair.app
+rm -f ~/Library/Preferences/fr.cestclair.app.plist
+rm -rf ~/Library/Services/*C\'est\ Clair*.workflow
+security delete-generic-password -s no.klart.pseudonym.fr.cestclair.app</pre></div>
+          </div>
+          <p class="s-notis varsel">
+            <b>Mettez d’abord la clé en lieu sûr.</b> Si le dossier de données est supprimé avant que la clé ait été notée ou enregistrée comme fichier de clé,
+            plus aucune copie avec des codes ne pourra être restaurée.
+          </p>
+        </section>
+
+        <!-- ============ Sentral styring ============ -->
+        <section class="s-del" id="styring">
+          <h2>Piloter C’est Clair de façon centralisée</h2>
+          <p>
+            Un seul fichier détermine ce que l’utilisateur choisit sinon lui-même. Déployez-le par MDM ou par script.
+            L’emplacement exige des droits d’administrateur en écriture, de sorte que l’utilisateur ne peut pas lever ce que vous avez verrouillé.
+            Le nom du fichier et des champs est norvégien dans cette version.
+          </p>
+          <dl class="s-tabell">
+            <div><dt>Mac</dt><dd><code>/Library/Application Support/CestClair/retningslinjer.json</code></dd></div>
+          </dl>
+          <div class="cmd" data-hvor="retningslinjer.json"><pre>{
+  "versjon": 1,
+  "virksomhet": "Exemple SAS",
+  "alltidSkjult": ["navn", "fnr", "helse"],
+  "kodeform": "kort",
+  "ansikterAlltid": true,
+  "utenSkanning": false,
+  "glemEtterDager": 30,
+  "revisjonslogg": true,
+  "nokkelEksport": false
+}</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>versjon</code></dt><dd>Obligatoire. Seul <code>1</code> existe.</dd></div>
+            <div><dt><code>virksomhet</code></dt><dd>Le nom affiché à côté de ce qui est verrouillé.</dd></div>
+            <div><dt><code>alltidSkjult</code></dt><dd>Les groupes toujours masqués. Ils ne peuvent pas être désactivés, et rien en eux ne peut être laissé visible. Les groupes s’appellent <code>navn</code> (noms), <code>fnr</code> (numéros d’identification), <code>kontakt</code> (téléphone et e-mail), <code>helse</code> (sensible), <code>setninger</code> (phrases privées), <code>skilt</code> (immatriculations), <code>penger</code> (comptes), <code>hemmelig</code> (secrets), <code>sted</code> (adresse et lieu), <code>dato</code> (dates), <code>jobb</code> (profession et relation), <code>alder</code> (âge), <code>org</code> (employeur) et <code>sak</code> (numéros de dossier).</dd></div>
+            <div><dt><code>standardGrupper</code></dt><dd>Les groupes activés à la première ouverture d’un dossier. Sans ce champ&nbsp;: ceux de C’est Clair.</dd></div>
+            <div><dt><code>kodeform</code></dt><dd><code>lapp</code>, <code>kort</code>, <code>full</code> ou <code>svart</code> (occultation noire). Sans ce champ&nbsp;: l’utilisateur choisit.</dd></div>
+            <div><dt><code>ansikterAlltid</code></dt><dd>Les visages sont toujours pixelisés, et aucun ne peut être laissé visible.</dd></div>
+            <div><dt><code>utenSkanning</code></dt><dd><code>false</code> exige que C’est Clair lise toujours les fichiers. Par défaut, l’utilisateur peut aussi tout marquer lui-même.</dd></div>
+            <div><dt><code>prosjekter</code></dt><dd><code>false</code>&nbsp;: C’est Clair ne mémorise rien des dossiers d’une session à l’autre.</dd></div>
+            <div><dt><code>glemEtterDager</code></dt><dd>Durée de conservation d’un projet inutilisé, de 1 à 365&nbsp;jours. 30 par défaut.</dd></div>
+            <div><dt><code>kommandolinje</code></dt><dd><code>false</code> désactive la ligne de commande et le dossier surveillé.</dd></div>
+            <div><dt><code>revisjonslogg</code></dt><dd>Active le journal. <code>revisjonsmappe</code> en place en plus une copie sur un partage réseau.</dd></div>
+            <div><dt><code>rapportJson</code></dt><dd>Écrit <code>rapport.json</code> à côté du rapport texte dans chaque dossier de copies.</dd></div>
+            <div><dt><code>nokkelEksport</code></dt><dd><code>false</code>&nbsp;: personne ne peut exporter la clé sous forme de mots ou de fichier. Les nouveaux ordinateurs sont enregistrés par le responsable des clés.</dd></div>
+          </dl>
+          <p>
+            La licence peut se trouver à côté, dans <code>licence.cestclair</code>. Le fichier contient le code qui commence par <code>CESTCLAIR-</code>. Aucun utilisateur n’a alors rien à coller.
+            Si l’utilisateur a sa propre licence valide, elle prime.
+          </p>
+          <p class="s-notis varsel">
+            <b>Si le fichier ne peut pas être lu, C’est Clair ne démarre pas.</b> Une faute de frappe, un champ inconnu ou une valeur hors des limites autorisées
+            ne doit pas conduire C’est Clair à occulter moins que ce que vous avez décidé. Le message d’erreur indique le champ concerné.
+          </p>
+        </section>
+
+        <!-- ============ Nøkkelen ============ -->
+        <section class="s-del" id="nokkel">
+          <h2>La clé dans une organisation</h2>
+          <p>
+            Les codes des copies ne peuvent être retransformés en noms qu’avec la clé. Dans une organisation, tout le monde doit avoir la même&nbsp;;
+            sinon, la même personne reçoit des codes différents chez des collègues différents.
+          </p>
+          <dl class="s-tabell">
+            <div><dt>Responsable des clés</dt><dd>Crée la clé de l’organisation, la partage et enregistre les collègues.</dd></div>
+            <div><dt>Membre</dt><dd>Utilise la clé. Le logiciel ne permet pas à un membre de l’exporter. C’est une règle du logiciel, pas de la cryptographie&nbsp;: l’ordinateur dispose de la clé entière.</dd></div>
+            <div><dt>Paquet de clé</dt><dd>La clé chiffrée avec un code de clé de douze caractères (Argon2id et AES-256-GCM). Le paquet et le code sont transmis séparément. Le code peut servir plusieurs fois&nbsp;: traitez-le comme la clé elle-même.</dd></div>
+            <div><dt>Enregistrement sans réseau</dt><dd>L’ordinateur du collègue crée une demande. Le responsable des clés répond par un enregistrement que seul cet ordinateur peut ouvrir (X25519). Un code de contrôle de 16&nbsp;caractères est lu à voix haute, pour que chacun sache qu’il s’adresse au bon ordinateur.</dd></div>
+            <div><dt>Secours</dt><dd>24 mots sur papier, ou un fichier de clé protégé par une phrase secrète (Argon2id et AES-256-GCM). La clé peut aussi être conservée sur une clé USB de sécurité.</dd></div>
+          </dl>
+          <p class="s-notis varsel">
+            <b>Un déploiement silencieux a un prix.</b> Vous pouvez placer le paquet de clé à côté de <code>retningslinjer.json</code>
+            et écrire le code de clé dans le fichier (<code>nokkelkode</code>). C’est Clair adopte alors la clé sans que l’utilisateur ait rien à faire.
+            Mais la clé n’est alors pas mieux protégée que le dossier&nbsp;: quiconque peut lire les deux fichiers détient la clé de l’organisation.
+          </p>
+        </section>
+
+        <!-- ============ Revisjonslogg ============ -->
+        <section class="s-del" id="logg">
+          <h2>Journal d’audit</h2>
+          <p>
+            Le journal indique ce que C’est Clair a fait, quand et par qui. Il ne contient rien des documents&nbsp;:
+            aucun nom de fichier, aucun chemin et aucune valeur. Il est désactivé jusqu’à ce que vous l’activiez avec
+            <code>"revisjonslogg": true</code>. Les noms des champs sont norvégiens dans cette version.
+          </p>
+          <div class="cmd" data-hvor="Une ligne du journal"><pre>{"format":1,"tid":"2026-11-05T11:50:25.332Z","hendelse":"rens","via":"kommandolinjen",
+ "kilde":"DXmRKTRw4ZJMiUixyVeUYA","filer":18,"skrevet":14,"ikkeLevert":4,"steder":193,
+ "skjult":{"person":140,"fnr":19,"health":25},"kodeform":"kort","grupper":["helse","navn","fnr"],
+ "ansikter":true,"gjennomgått":false,"bruker":"cmartin","maskin":"CMARTIN-MAC","klart":"0.1.0"}</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>hendelse</code></dt><dd><code>rens</code> (occultation), <code>prøve</code> (essai à blanc), <code>skann</code> (analyse), <code>glem</code> (oubli), <code>tilbake</code> (restauration), <code>nøkkel</code> (une action sur la clé, comme une exportation), <code>logg</code>, <code>dokument</code> ou <code>bevis</code> (preuve d’audit).</dd></div>
+            <div><dt><code>via</code></dt><dd><code>appen</code> (l’application), <code>kommandolinjen</code> (la ligne de commande) ou <code>vaktmappen</code> (le dossier surveillé).</dd></div>
+            <div><dt><code>kilde</code></dt><dd>Une empreinte du dossier, calculée avec une clé de l’ordinateur. Le même dossier a la même valeur sur chaque ligne de cet ordinateur, mais on ne peut pas en tirer le chemin. Un autre ordinateur donne une autre valeur pour le même dossier.</dd></div>
+            <div><dt><code>bruker</code>, <code>maskin</code>, <code>tid</code></dt><dd>Utilisateur, ordinateur et heure, fixés par le logiciel lui-même, jamais par la fenêtre.</dd></div>
+            <div><dt>Emplacement</dt><dd><code>revisjon/AAAA-MM.jsonl</code> dans le dossier de données. Avec <code>revisjonsmappe</code>, aussi <code>&lt;ordinateur&gt;-&lt;utilisateur&gt;.jsonl</code> sur un partage réseau. C’est Clair ne crée pas ce dossier. Si le partage n’est pas connecté, le journal local l’indique.</dd></div>
+          </dl>
+          <p class="s-notis">
+            <b>Le journal est un fichier texte ordinaire.</b> L’utilisateur peut le modifier. Chaque ligne est chaînée à la précédente, et «&nbsp;Preuve d’audit…&nbsp;» vérifie que la chaîne n’est pas rompue.
+            S’il vous faut un journal que personne ne peut toucher, faites pointer <code>revisjonsmappe</code> vers un emplacement où l’utilisateur peut seulement ajouter.
+          </p>
+        </section>
+
+        <!-- ============ Kommandolinje ============ -->
+        <section class="s-del" id="kommando">
+          <h2>Ligne de commande et dossier surveillé</h2>
+          <p>
+            Le même logiciel, sans fenêtre. L’entrée est la ligne de commande. Les sorties sont stdout, stderr et les fichiers
+            que vous indiquez. Rien n’ouvre de port.
+          </p>
+          <div class="cmd"><pre>CESTCLAIR="/Applications/C'est Clair.app/Contents/MacOS/cestclair"
+
+"$CESTCLAIR" scan  ~/Dossiers/2026-114                     # analyser à l’avance
+"$CESTCLAIR" clean ~/Dossiers/2026-114 --out ~/Pour-IA     # créer les copies occultées
+"$CESTCLAIR" clean ~/Dossiers/2026-114 --out ~/Pour-IA --changed-only
+"$CESTCLAIR" watch ~/Entree --out ~/Pour-IA                # dossier surveillé
+"$CESTCLAIR" restore ~/Pour-IA/2026-114-clair              # restaurer avec la clé
+"$CESTCLAIR" forget ~/Dossiers/2026-114                    # tout oublier du dossier</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>--codes</code></dt><dd><code>lapp</code> (par défaut), <code>kort</code> (avec une liste des codes), <code>full</code> (le code complet) ou <code>svart</code> (occultation noire, avec <code>--legal-basis</code>).</dd></div>
+            <div><dt><code>--groups</code></dt><dd>Les groupes remplacés, par exemple <code>navn,fnr,helse</code>. <code>cestclair groups</code> les affiche.</dd></div>
+            <div><dt><code>--dry-run</code></dt><dd>Fait tout, y compris le contrôle de chaque copie, mais n’écrit rien.</dd></div>
+            <div><dt><code>--no-project</code></dt><dd>Ne mémorise rien et n’utilise pas ce qui a été décidé dans la fenêtre.</dd></div>
+            <div><dt><code>--accept-terms</code></dt><dd>Accepte les conditions d’utilisation, comme l’écran de l’application. Nécessaire la première fois.</dd></div>
+            <div><dt>Réponse</dt><dd>Une ligne JSON sur stdout, avec <code>format: 1</code>. La progression va sur stderr, uniquement sous forme de nombres.</dd></div>
+            <div><dt>Code de sortie</dt><dd><code>0</code>&nbsp;: tout a été livré. <code>2</code>&nbsp;: quelque chose a été retenu, parce qu’une copie n’a pas passé le contrôle ou qu’un fichier n’a pas pu être lu. <code>1</code>&nbsp;: erreur. <code>3</code>&nbsp;: les conditions n’ont pas encore été acceptées sur cet ordinateur. <code>4</code>&nbsp;: la source est en cours d’utilisation. <code>5</code>&nbsp;: les règles de l’organisation ne le permettent pas. <code>6</code>&nbsp;: la clé est sur une clé USB de sécurité qui n’est pas branchée. <code>64</code>&nbsp;: erreur dans la commande.</dd></div>
+          </dl>
+          <p><code>cestclair help</code> affiche toutes les options, en français.</p>
+        </section>
+
+        <!-- ============ Kryptografi ============ -->
+        <section class="s-del" id="krypto">
+          <h2>Cryptographie</h2>
+          <dl class="s-tabell">
+            <div><dt>La clé</dt><dd>32 octets aléatoires fournis par le système d’exploitation. Sous-clés par HKDF-SHA256.</dd></div>
+            <div><dt>Les codes</dt><dd>Qui c’est&nbsp;: HMAC-SHA256. Le texte d’origine&nbsp;: AES-SIV (RFC 5297), déterministe et authentifié.</dd></div>
+            <div><dt>La clé sur le disque</dt><dd>Le trousseau et la Secure Enclave.</dd></div>
+            <div><dt>Fichier de clé</dt><dd>Argon2id (64&nbsp;Mio, 3&nbsp;passes) et AES-256-GCM.</dd></div>
+            <div><dt>Les 24 mots</dt><dd>Une clé de 256&nbsp;bits et une somme de contrôle de 8&nbsp;bits, 11&nbsp;bits par mot, tirés d’une liste de 2&nbsp;048 mots norvégiens.</dd></div>
+            <div><dt>Enregistrement</dt><dd>X25519.</dd></div>
+            <div><dt>Projets, marquages propres et textes</dt><dd>AES-256-GCM, avec des clés issues de HKDF-SHA256. Les noms de fichiers sont des empreintes HMAC.</dd></div>
+            <div><dt>Sauvegardes, et les pixels sous les zones d’une copie</dt><dd>AES-256-GCM.</dd></div>
+            <div><dt>Le code de licence</dt><dd>Ed25519. La signature est vérifiée sur l’ordinateur.</dd></div>
+          </dl>
+          <p>Ce sont tous des algorithmes connus, issus de bibliothèques ouvertes (RustCrypto et dalek). Nous n’avons rien inventé nous-mêmes.</p>
+        </section>
+
+        <!-- ============ Systemkrav ============ -->
+        <section class="s-del" id="krav">
+          <h2>Configuration requise</h2>
+          <dl class="s-tabell">
+            <div><dt>Mac</dt><dd>macOS&nbsp;13 ou plus récent. Processeurs Intel et Apple dans le même paquet.</dd></div>
+            <div><dt>Windows et Linux</dt><dd>Les versions arrivent bientôt.</dd></div>
+            <div><dt>Mémoire</dt><dd>Nous recommandons 8&nbsp;Go dans l’ordinateur.</dd></div>
+            <div><dt>Disque</dt><dd>Environ 373&nbsp;Mo une fois installé. S’y ajoutent les sauvegardes et ce que C’est Clair mémorise des dossiers.</dd></div>
+            <div><dt>Carte graphique</dt><dd>Inutile. Tout tourne sur le processeur.</dd></div>
+            <div><dt>Réseau</dt><dd>Inutile, que ce soit pour l’installation, l’activation ou l’utilisation.</dd></div>
+          </dl>
+          <p>
+            La première fois que C’est Clair lit des images sur un Mac, macOS peut mettre quelques minutes à préparer sa propre
+            reconnaissance de texte. Cela n’arrive qu’une fois.
+          </p>
+          <p>Une mise à jour est un nouveau fichier d’installation que vous téléchargez vous-même, quand vous le souhaitez. C’est Clair ne cherche pas de nouvelles versions.</p>
+        </section>
+
+        <!-- ============ Si fra ============ -->
+        <section class="s-del" id="si-fra">
+          <h2>Vous avez trouvé quelque chose&nbsp;?</h2>
+          <p>
+            Écrivez à <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a>.
+            Nous répondons personnellement, et nous préférons l’apprendre de vous plutôt que d’un client.
+            Voir aussi <a href="/.well-known/security.txt">security.txt</a>.
+          </p>
+          <p class="s-dato">Dernière modification le 24&nbsp;novembre 2026. Les résultats attendus ont été vérifiés avec la version Mac signée et notariée du 24&nbsp;novembre 2026.</p>
+        </section>
+      </main>
+    </div>
+
+    <footer class="s-bunn">
+      <p class="s-bunn-merke"><i>C’est Clair</i> <span>par Tidemann Esbjug</span></p>
+      <nav aria-label="En savoir plus sur C’est Clair">
+        <a href="./">Accueil</a>
+        <a href="prix/">Prix</a>
+        <a href="ce-qu-il-trouve.html">Ce que C’est Clair trouve</a>
+        <a href="confidentialite/">Confidentialité</a>
+        <a href="conditions/">Conditions</a>
+      </nav>
+      <p class="s-bunn-liten">Conçu en Norvège</p>
+    </footer>
+
+    <script src="til-it.js"></script>
+  </body>
+</html>

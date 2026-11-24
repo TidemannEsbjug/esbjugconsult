@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wszystko Jasne: co wykrywa, a czego nie</title>
+    <meta
+      name="description"
+      content="Uczciwy przegląd tego, co Wszystko Jasne usuwa z dokumentów, co częściej się prześlizguje i co muszą Państwo zrobić sami."
+    />
+    <meta name="robots" content="noindex" />
+    <!--
+      Én fil. Ingen skrifter, bilder eller skript utenfra, som dla-it.html.
+      Den polske utgaven er ikke målt blindt ennå, så siden har ingen tall og ingen stolper.
+      Innholdet bygger på motoren i Klart-pl (claude/pl) 24.11.2026: gruppene, kontrollsifrene og
+      det som ligger bak merkelapper. Tallene kommer når et blindsett er målt.
+    -->
+    <link rel="icon" type="image/png" href="/wszystko-jasne/favicon.png" />
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="sider.css" />
+    <link rel="stylesheet" href="hva-klart-tar.css" />
+  </head>
+  <body>
+    <header class="s-topp">
+      <div class="s-linje-topp">
+        <a class="s-merke" href="./">Wszystko Jasne</a>
+        <nav class="s-nav" aria-label="Strony">
+          <a href="./">Strona główna</a>
+          <a href="cennik/">Cennik</a>
+          <a href="dla-it.html">Dla działu IT</a>
+          <a href="prywatnosc/">Prywatność</a>
+        </nav>
+      </div>
+      <div class="s-hode">
+        <p class="s-over">Uczciwy przegląd</p>
+        <h1>Co Wszystko Jasne wykrywa, a czego nie</h1>
+        <p class="s-ingress">
+          Wszystko Jasne zastępuje dane osobowe w kopii Państwa dokumentów, na Państwa własnym komputerze.
+          Niektóre dane program wykrywa niemal zawsze, inne częściej się prześlizgują. Poniżej opisujemy jedne i drugie.
+        </p>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <p class="stempel">Dotyczy Wszystko Jasne w wersji 0.1.0 na Maca. Polskie wydanie nie zostało jeszcze zmierzone na niezależnym zestawie testowym, dlatego na tej stronie nie podajemy liczb. Dodamy je, gdy pomiar będzie gotowy.</p>
+      <main>
+        <div class="oppsum">
+          <section class="bra">
+            <h2><i aria-hidden="true">✓</i> Dobrze wychodzi</h2>
+            <ul>
+              <li>Numery z sumą kontrolną: PESEL, NIP, REGON, numer dowodu osobistego, NRB i IBAN oraz numery kart płatniczych są sprawdzane cyfra po cyfrze.</li>
+              <li>Adresy e-mail, adresy do e-Doręczeń i numery telefonów.</li>
+              <li>Imiona i nazwiska. Nazwisko znalezione w jednym miejscu jest zastępowane w całym folderze.</li>
+              <li>Hasła i numery rejestracyjne pojazdów, także VIN.</li>
+            </ul>
+          </section>
+          <section class="daarlig">
+            <h2><i aria-hidden="true">!</i> Wychodzi słabiej</h2>
+            <ul>
+              <li>Prywatne sprawy opisane potocznym językiem, np. konflikty rodzinne lub kłopoty finansowe.</li>
+              <li>Zdrowie opisane własnymi słowami zamiast fachowymi terminami.</li>
+              <li>Obrazy i zeskanowane strony: tu program musi najpierw odczytać tekst, a to prowadzi do większej liczby błędów.</li>
+            </ul>
+          </section>
+        </div>
+
+        <section class="lesmer">
+          <h2>Więcej informacji</h2>
+          <p>Proszę kliknąć nagłówek, aby go rozwinąć.</p>
+
+          <details class="sek ok" id="virker_godt">
+            <summary><span class="merke">Niemal zawsze</span>To Wszystko Jasne wykrywa niemal zawsze</summary>
+            <p class="intro">Dane o stałej budowie, które program może sprawdzić.</p>
+            <div class="punkt">
+              <h3>PESEL, NIP, REGON i dowód osobisty</h3>
+              <p>Wszystko Jasne sprawdza cyfry kontrolne tych numerów, więc nie myli ich z dowolnym ciągiem cyfr. REGON jest rozpoznawany w wersji 9- i 14-cyfrowej. Paszport, prawo jazdy i karta pobytu są rozpoznawane, gdy stoi przed nimi odpowiednia etykieta.</p>
+              <p class="eks"><span>Przykład</span>Na wniosku o miejsce w przedszkolu u góry widnieje PESEL dziecka. W kopii w jego miejscu stoi kod.</p>
+            </div>
+            <div class="punkt">
+              <h3>Telefon, e-mail i rachunki</h3>
+              <p>Numery telefonów, adresy e-mail, adresy do e-Doręczeń, numery rachunków (NRB i IBAN, sprawdzane przez MOD 97) oraz numery kart (sprawdzane algorytmem Luhna) są zastępowane.</p>
+              <p class="eks"><span>Przykład</span>W wiadomości od rodzica z numerem komórki, adresem e-mail i numerem rachunku do zwrotu wszystkie trzy zostają w kopii zastąpione.</p>
+            </div>
+            <div class="punkt">
+              <h3>Imiona i nazwiska</h3>
+              <p>Imiona i nazwiska są z reguły zastępowane, także w odmianie. Nazwisko znalezione w jednym miejscu jest zastępowane w całym folderze.</p>
+              <p class="eks"><span>Przykład</span>„Rozmowa z Katarzyną Nowak” i dalej „Nowak potwierdziła” dają w kopii ten sam kod.</p>
+            </div>
+          </details>
+
+          <details class="sek blaa" id="virker_ofte">
+            <summary><span class="merke">Z reguły</span>To Wszystko Jasne wykrywa z reguły</summary>
+            <p class="intro">Te dane są wykrywane w większości przypadków, ale część się prześlizguje albo zależy to od Państwa wyboru.</p>
+            <div class="punkt">
+              <h3>Szczególne kategorie danych</h3>
+              <p>Diagnozy, zwolnienia lekarskie i leki w typowych fachowych sformułowaniach są zwykle wykrywane. Grupa „Szczególne kategorie” obejmuje też m.in. przynależność związkową, wyznanie, poglądy polityczne i sprawy karne.</p>
+              <p class="eks"><span>Przykład</span>„Choruje na cukrzycę typu 2” zostanie wykryte. „Często go nie ma, bo żołądek nie znosi stresu” może zostać.</p>
+            </div>
+            <div class="punkt">
+              <h3>Inne numery i dokumenty</h3>
+              <p>Numery PWZ lekarzy, numery ksiąg wieczystych, karty EKUZ, sygnatury akt sądowych i znaki spraw MOPS i GOPS są rozpoznawane. Sygnatury i znaki spraw należą do grupy „Sygnatury i znaki spraw”, która jest domyślnie wyłączona.</p>
+              <p class="eks"><span>Przykład</span>„I Ns 184/26” zostaje zastąpione tylko wtedy, gdy grupa sygnatur jest włączona.</p>
+            </div>
+            <div class="punkt">
+              <h3>Adres i miejscowość</h3>
+              <p>Adresy są domyślnie zastępowane. Program zastępuje przy tym także adresy, które mogłyby zostać, np. adres przychodni lub urzędu.</p>
+              <p class="eks"><span>Przykład</span>Adres zamieszkania w decyzji zostaje zastąpiony, ale często również adres sądu, do którego decyzja się odwołuje.</p>
+            </div>
+          </details>
+
+          <details class="sek gul" id="svakt">
+            <summary><span class="merke">Częściej obok</span>Tu Wszystko Jasne częściej się myli</summary>
+            <p class="intro">Tu więcej zostaje albo program zastępuje więcej niż trzeba.</p>
+            <div class="punkt">
+              <h3>Prywatne sprawy w potocznym języku</h3>
+              <p>Konflikty rodzinne, to, u kogo mieszka dziecko, kłopoty finansowe i skargi opisane własnymi słowami zostają częściej niż nazwiska i numery.</p>
+              <p class="eks"><span>Przykład</span>„Mama i tata kłócą się w każdy weekend” może zostać w kopii, choć nazwiska obok zostały zastąpione.</p>
+            </div>
+            <div class="punkt">
+              <h3>Trudne do rozpoznania nazwiska</h3>
+              <p>Inicjały, krótkie zagraniczne imiona, imiona będące zarazem zwykłymi słowami i nazwiska pisane małą literą w czacie mogą zostać.</p>
+              <p class="eks"><span>Przykład</span>„Rozmawiałam z KB o sprawie” może zostać, a „Katarzyna Biała” zostanie zastąpione.</p>
+            </div>
+            <div class="punkt">
+              <h3>Nazwisko jest zastępowane wszędzie</h3>
+              <p>Nazwisko jest zastępowane w całym folderze, także nazwiska własnych pracowników. Jeśli ktoś nazywa się tak samo jak firma lub miejscowość, również ta może zostać zastąpiona. Na listę „Zawsze zostawiaj” można wpisać to, co ma zostać.</p>
+              <p class="eks"><span>Przykład</span>Nazwisko pracownika pod „Z poważaniem” zostanie zastąpione, dopóki nie trafi na listę „Zawsze zostawiaj”.</p>
+            </div>
+            <div class="punkt">
+              <h3>Teksty w innych językach</h3>
+              <p>Wszystko Jasne jest przygotowane dla języka polskiego. Nazwiska, numery i adresy e-mail są wykrywane także w innych językach, ale zdrowie i zdania prywatne w innych językach są wykrywane znacznie słabiej.</p>
+            </div>
+          </details>
+
+          <details class="sek graa" id="gjor_ikke">
+            <summary><span class="merke">Poza zakresem</span>Tego Wszystko Jasne nie robi</summary>
+            <p class="intro">Te dane nie są częścią oczyszczania albo są domyślnie wyłączone.</p>
+            <div class="punkt">
+              <h3>Grupy domyślnie wyłączone</h3>
+              <p>Daty, zawód i pokrewieństwo, wiek, pracodawca (instytucja, firma, NIP i REGON firmy) oraz sygnatury i znaki spraw są domyślnie wyłączone. Pozostają w kopii, dopóki ich nie włączą Państwo w opcjach analizy.</p>
+              <p class="eks"><span>Przykład</span>„Starszy referent, lat 54” zostaje w kopii przy ustawieniach domyślnych.</p>
+            </div>
+            <div class="punkt">
+              <h3>Kwoty i kontekst</h3>
+              <p>Kwoty, numery faktur i zamówień zostają. Nawet bez nazwiska osoby znające sprawę często rozpoznają, o kogo chodzi, po stanowisku, miejscu, wieku i wydarzeniach.</p>
+              <p class="eks"><span>Przykład</span>„Dyrektorka jedynej szkoły we wsi poszła na zwolnienie po pożarze w maju” wskazuje jedną osobę, choć nie pada żadne nazwisko.</p>
+            </div>
+            <div class="punkt">
+              <h3>Pliki, których program nie odczyta</h3>
+              <p>Pliki, których Wszystko Jasne nie potrafi odczytać, nie trafiają do kopii. Są wymienione w raporcie.</p>
+            </div>
+            <div class="punkt">
+              <h3>Kopia nie jest automatycznie anonimowa</h3>
+              <p>Oczyszczona kopia nie jest z mocy prawa anonimowa. Państwa organizacja pozostaje administratorem i musi sama ocenić, czy kopię można przekazać. Kopia z kodami może zostać przywrócona kluczem, więc nadal zawiera dane osobowe.</p>
+            </div>
+          </details>
+
+          <details class="sek lilla" id="bilder">
+            <summary><span class="merke">Obrazy</span>Obrazy i zeskanowane strony</summary>
+            <p class="intro">W obrazach Wszystko Jasne musi najpierw odczytać tekst, a to prowadzi do większej liczby błędów niż w zwykłym tekście.</p>
+            <div class="punkt">
+              <h3>W obrazach zostaje więcej</h3>
+              <p>Odczyt tekstu wykonuje rozpoznawanie tekstu wbudowane w macOS. Zdjęcie wypełnionego wniosku da mniej trafień niż ten sam wniosek jako plik Word.</p>
+            </div>
+            <div class="punkt">
+              <h3>Twarze</h3>
+              <p>Twarze są domyślnie pikselizowane. Małe twarze, twarze z profilu i częściowo zasłonięte mogą zostać przeoczone. Twarz, której program nie znajdzie, zostaje bez ostrzeżenia.</p>
+            </div>
+            <div class="punkt">
+              <h3>Tylko tekst i twarze</h3>
+              <p>Wszystko Jasne rozpoznaje tylko tekst, który potrafi odczytać, i twarze. Podpisy, kody QR, kody kreskowe i tatuaże zostają. Pismo ręczne jest zastępowane tylko wtedy, gdy program potrafi je odczytać. Zdjęcia paszportów i dowodów osobistych należy zawsze sprawdzić samodzielnie.</p>
+            </div>
+          </details>
+
+          <details class="sek signal" id="du_ma_selv">
+            <summary><span class="merke">Państwa odpowiedzialność</span>To muszą Państwo zrobić sami</summary>
+            <p class="intro">Wszystko Jasne oszczędza dużo pracy, ale to należy do Państwa.</p>
+            <div class="punkt">
+              <h3>Proszę przeczytać kopię</h3>
+              <p>Proszę przejrzeć kopię przed jej przekazaniem, zwłaszcza w sprawach dotyczących konkretnych osób. Wszystko Jasne wykrywa zdecydowaną większość nazwisk i numerów, ale nie może obiecać, że usunięto wszystko, co prywatne.</p>
+            </div>
+            <div class="punkt">
+              <h3>Proszę oznaczyć to, co zostało przeoczone</h3>
+              <p>W oknie można zaznaczyć słowo i wybrać „Ukryj”. Słowo można też dodać do listy „Zawsze zastępuj”, aby było zastępowane także w kolejnych folderach.</p>
+            </div>
+            <div class="punkt">
+              <h3>Proszę oczyścić wstrzymane pliki</h3>
+              <p>Jeśli Wszystko Jasne nie ma pewności, że kopia jest czysta, nie zapisuje jej. Plik jest wymieniony w raporcie i trzeba go oczyścić w inny sposób.</p>
+            </div>
+            <div class="punkt">
+              <h3>Proszę sprzątać stare foldery z kopiami</h3>
+              <p>Po poprawce powstaje nowy folder z kopiami, a stare zostają, dopóki ich Państwo nie usuną.</p>
+              <p class="eks"><span>Przykład</span>Po poprawce mają Państwo „Akta-jasne” i „Akta-jasne 2”. Proszę usunąć pierwszy, zanim ktoś użyje niewłaściwej kopii.</p>
+            </div>
+          </details>
+        </section>
+      </main>
+
+      <div class="slutt">
+        <strong>Żadne automatyczne oczyszczanie nie wykrywa wszystkiego.</strong>
+        <p>
+          Wszystko Jasne wykrywa zdecydowaną większość nazwisk i numerów, ale nie wszystko, co prywatne.
+          Dlatego proszę przeczytać kopię przed jej przekazaniem. To Państwo są administratorem
+          w rozumieniu RODO, a Wszystko Jasne nie gwarantuje, że kopia jest anonimowa.
+        </p>
+        <p>Jeśli chcą Państwo sprawdzić, że Wszystko Jasne niczego nie wysyła na zewnątrz, instrukcja jest <a href="dla-it.html">na stronie dla działu IT</a>.</p>
+      </div>
+      <p class="slutt-linje">Jeśli znajdą Państwo coś, co Wszystko Jasne powinno było wykryć, prosimy o wiadomość. Aktualizujemy tę stronę, gdy zmienia się silnik.</p>
+    </div>
+    <footer class="s-bunn">
+      <p class="s-bunn-merke"><i>Wszystko Jasne</i> <span>od Tidemann Esbjug</span></p>
+      <nav aria-label="Więcej o Wszystko Jasne">
+        <a href="./">Strona główna</a>
+        <a href="cennik/">Cennik</a>
+        <a href="dla-it.html">Dla działu IT</a>
+        <a href="prywatnosc/">Prywatność</a>
+        <a href="warunki/">Warunki</a>
+      </nav>
+    </footer>
+  </body>
+</html>
