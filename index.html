@@ -1634,21 +1634,20 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   .firma a{color:inherit;text-underline-offset:3px}
   @media (max-width:760px){.firma{padding-bottom:calc(env(safe-area-inset-bottom) + 90px)}.firma ul{flex-direction:column;align-items:center;gap:2px}}
 </style>
+<link rel="stylesheet" href="/spiller/spiller.css">
 <style>
-/* Seksjon 2: forklaringsvideoen (eieren 25.11.2026). Flaggene over spilleren, borte mens filmen spilles. */
-.fv{order:-2;width:100%;flex:none;display:flex;justify-content:center;padding:clamp(48px,8vh,96px) clamp(16px,4vw,48px)}
-.fv-in{width:min(1120px,100%);display:flex;flex-direction:column;align-items:center;gap:18px}
-.fv-flagg{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:8px;border-radius:26px;background:rgba(255,255,255,.62);-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);box-shadow:0 0 0 1px rgba(0,32,91,.08),0 14px 30px -18px rgba(0,32,91,.35);transition:opacity .35s ease,transform .35s ease}
-.fv-flagg button{display:grid;place-items:center;width:46px;height:34px;padding:0;border:0;border-radius:999px;background:transparent;cursor:pointer;transition:background .2s ease}
-.fv-flagg button svg{width:26px;height:19px;border-radius:3px;box-shadow:0 0 0 1px rgba(0,32,91,.14);opacity:.55;transition:opacity .2s ease}
-.fv-flagg button:hover svg,.fv-flagg button[aria-pressed="true"] svg{opacity:1}
-.fv-flagg button[aria-pressed="true"]{background:#fff;box-shadow:0 2px 8px -2px rgba(0,32,91,.3)}
+/* Seksjon 2: forklaringsvideoen (eieren 25.11.2026). Flaggene over spilleren, borte mens filmen spilles. Spilleren: /spiller/. */
+.fv{order:-2;width:100%;flex:none;box-sizing:border-box;min-height:100svh;display:grid;place-items:center;padding:clamp(80px,13vh,150px) 24px}
+.fv-in{width:min(880px,100%,calc((100svh - 330px) * 16 / 9));min-width:min(560px,100%);display:flex;flex-direction:column;align-items:center;gap:26px}
+.fv .spl{width:100%;box-sizing:border-box}
+.fv-flagg{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;padding:6px;border-radius:999px;background:rgba(255,255,255,.58);-webkit-backdrop-filter:blur(18px) saturate(1.35);backdrop-filter:blur(18px) saturate(1.35);box-shadow:0 0 0 1px rgba(255,255,255,.7) inset,0 0 0 1px rgba(0,32,91,.07),0 18px 40px -26px rgba(0,32,91,.45);transition:opacity .4s ease,transform .4s ease}
+.fv-flagg button{display:grid;place-items:center;width:44px;height:32px;padding:0;border:0;border-radius:999px;background:transparent;cursor:pointer;transition:background .2s ease}
+.fv-flagg button svg{width:24px;height:17px;border-radius:3px;box-shadow:0 0 0 1px rgba(0,32,91,.12);opacity:.5;filter:saturate(.7);transition:opacity .2s ease,filter .2s ease}
+.fv-flagg button:hover svg,.fv-flagg button[aria-pressed="true"] svg{opacity:1;filter:none}
+.fv-flagg button[aria-pressed="true"]{background:#fff;box-shadow:0 0 0 1px rgba(0,32,91,.06),0 4px 10px -4px rgba(0,32,91,.35)}
 .fv-flagg button:focus-visible{outline:2px solid #00205B;outline-offset:2px}
-.fv.spiller .fv-flagg{opacity:0;transform:translateY(8px);pointer-events:none}
-.fv-spiller{position:relative;width:100%}
-.fv-spiller video{display:block;width:100%;height:auto;aspect-ratio:16/9;border-radius:14px;background:#e8eef6;box-shadow:0 0 0 1px rgba(0,32,91,.1),0 40px 80px -40px rgba(0,32,91,.5)}
-.fv-videre{position:absolute;left:50%;bottom:clamp(64px,11%,110px);transform:translateX(-50%);padding:14px 24px;border-radius:999px;background:#00205B;color:#fff;font:600 16px/1 -apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;text-decoration:none;white-space:nowrap;box-shadow:0 18px 40px -16px rgba(0,32,91,.6)}
-.fv-videre[hidden]{display:none}
+.fv.spiller .fv-flagg{opacity:0;transform:translateY(10px);pointer-events:none}
+@media (max-width:760px){.fv{min-height:0;padding:64px 14px}.fv-in{width:100%;min-width:0;gap:18px}.fv-flagg{flex-wrap:nowrap;gap:2px;padding:5px}.fv-flagg button{width:35px;height:28px}.fv-flagg button svg{width:21px;height:15px}}
 @media (prefers-reduced-motion:reduce){.fv-flagg{transition:none}}
 </style>
 </head>
@@ -1676,9 +1675,9 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   </div>
 </section>
 <!-- Seksjon 2 (eieren 25.11.2026): forklaringsvideoen for Klart på ni språk. Bare spilleren og flaggene over den. Flaggene
-     skjules når filmen spilles, og når den er ferdig vises en lenke til utgavesiden for språket. Videoene er de samme filene
-     som på utgavesidene (<mappe>/film/forklaring.mp4), og ingen hentes før de spilles (preload="none"). Workeren setter
-     data-sprak ut fra landet og språket til den som besøker (.worker/index.js, forklaringSprak), så riktig film står klar. -->
+     skjules når filmen spilles, og når den er ferdig peker spilleren videre til utgavesiden for språket. Videoene er de samme
+     filene som på utgavesidene (<mappe>/film/forklaring.mp4), og ingen hentes før de spilles (preload="none"). Workeren setter
+     data-sprak ut fra landet og språket til den som besøker (.worker/index.js, forklaringSprak). Spilleren: /spiller/. -->
 <section class="fv" data-sprak="no" aria-label="Klart forklart">
   <div class="fv-in">
     <div class="fv-flagg" role="group" aria-label="Språk">
@@ -1692,30 +1691,31 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
       <button type="button" data-s="nl" title="Nederlands" aria-label="Nederlands"><svg viewBox="0 0 22 16"><rect width="22" height="16" fill="#21468b"/><rect width="22" height="10.67" fill="#fff"/><rect width="22" height="5.33" fill="#ae1c28"/></svg></button>
       <button type="button" data-s="pl" title="Polski" aria-label="Polski"><svg viewBox="0 0 22 16"><rect width="22" height="16" fill="#dc143c"/><rect width="22" height="8" fill="#fff"/></svg></button>
     </div>
-    <div class="fv-spiller">
-      <video controls playsinline preload="none" width="1920" height="1080" poster="/klart/film/forklaring.jpg"><source src="/klart/film/forklaring.mp4" type="video/mp4"></video>
-      <a class="fv-videre" href="/klart/" hidden>Se Klart <span aria-hidden="true">→</span></a>
+    <div class="spl" data-kapitler="11.8,21.7,37.3,44.7,57.8,70.9,91.3,105.6,124.1" data-lengde="144.2" data-videre="/klart/" data-videre-tekst="Se Klart">
+      <video preload="none" playsinline width="1920" height="1080" poster="/klart/film/forklaring.jpg"><source src="/klart/film/forklaring.mp4" type="video/mp4"></video>
     </div>
   </div>
+  <script src="/spiller/spiller.js"></script>
   <script>
   (function(){
     var s=document.querySelector(".fv");if(!s)return;
-    var v=s.querySelector("video"),kilde=v.querySelector("source"),videre=s.querySelector(".fv-videre"),knapper=s.querySelectorAll(".fv-flagg button");
-    var U={no:["/klart/","Se Klart"],us:["/frostcopy/","See FrostCopy"],gb:["/frostcopy-uk/","See FrostCopy"],de:["/alles-klar/","Zu Alles Klar"],fr:["/cest-clair/","Voir C’est Clair"],es:["/clarisimo/","Ver Clarísimo"],it:["/chiarissimo/","Scopri Chiarissimo"],nl:["/klip-en-klaar/","Naar Klip en Klaar"],pl:["/wszystko-jasne/","Zobacz Wszystko Jasne"]};
-    var MAPPE={no:"/klart/",us:"/frostcopy/",gb:"/frostcopy-uk/",de:"/alles-klar/",fr:"/cest-clair/",es:"/clarisimo/",it:"/chiarissimo/",nl:"/klip-en-klaar/",pl:"/wszystko-jasne/"};
+    var spl=s.querySelector(".spl"),v=spl.querySelector("video"),kilde=v.querySelector("source"),knapper=s.querySelectorAll(".fv-flagg button");
+    var U={"no": ["/klart/", "Se Klart", "11.8,21.7,37.3,44.7,57.8,70.9,91.3,105.6,124.1", 144.2], "us": ["/frostcopy/", "See FrostCopy", "12.2,21.4,36.5,44.5,55.5,67.5,86.4,98.9,115.3", 131.6], "gb": ["/frostcopy-uk/", "See FrostCopy", "13.2,23.1,39.1,47.4,59.4,72.1,92.3,105.7,123.4", 140.5], "de": ["/alles-klar/", "Zu Alles Klar", "12.1,24.5,41.2,49.0,61.7,74.4,95.7,108.2,125.9", 144.5], "fr": ["/cest-clair/", "Voir C’est Clair", "13.0,24.0,39.6,46.9,58.8,71.5,91.4,104.6,122.1", 138.6], "es": ["/clarisimo/", "Ver Clarísimo", "14.0,23.7,40.4,47.6,59.5,72.7,94.1,109.0,126.2", 143.4], "it": ["/chiarissimo/", "Scopri Chiarissimo", "11.9,23.1,39.5,46.8,60.0,72.9,94.3,108.1,125.7", 143.8], "nl": ["/klip-en-klaar/", "Naar Klip en Klaar", "12.4,22.1,38.9,46.0,57.8,70.8,91.3,104.9,123.5", 141.9], "pl": ["/wszystko-jasne/", "Zobacz Wszystko Jasne", "12.2,22.8,40.4,48.3,61.2,73.9,96.4,111.9,130.1", 148.8]};
     function velg(k,spill){
       if(!U[k])k="no";
+      var u=U[k];
       s.setAttribute("data-sprak",k);
       for(var i=0;i<knapper.length;i++)knapper[i].setAttribute("aria-pressed",knapper[i].getAttribute("data-s")===k?"true":"false");
-      var src=MAPPE[k]+"film/forklaring.mp4";
-      if(kilde.getAttribute("src")!==src){kilde.setAttribute("src",src);v.setAttribute("poster",MAPPE[k]+"film/forklaring.jpg");v.load();}
-      videre.href=U[k][0];videre.firstChild.nodeValue=U[k][1]+" ";videre.hidden=true;s.classList.remove("ferdig");
+      spl.setAttribute("data-videre",u[0]);spl.setAttribute("data-videre-tekst",u[1]);spl.setAttribute("data-kapitler",u[2]);spl.setAttribute("data-lengde",u[3]);
+      var src=u[0]+"film/forklaring.mp4";
+      if(kilde.getAttribute("src")!==src){kilde.setAttribute("src",src);v.setAttribute("poster",u[0]+"film/forklaring.jpg");v.load();}
+      if(window.Spiller)Spiller.oppdater(spl);
       if(spill){var p=v.play();if(p&&p.catch)p.catch(function(){});}
     }
     for(var i=0;i<knapper.length;i++)knapper[i].addEventListener("click",function(){velg(this.getAttribute("data-s"),true)});
-    v.addEventListener("play",function(){s.classList.add("spiller");s.classList.remove("ferdig");videre.hidden=true});
-    v.addEventListener("pause",function(){if(!v.ended)s.classList.remove("spiller")});
-    v.addEventListener("ended",function(){s.classList.remove("spiller");s.classList.add("ferdig");videre.hidden=false});
+    v.addEventListener("play",function(){s.classList.add("spiller")});
+    v.addEventListener("pause",function(){s.classList.remove("spiller")});
+    v.addEventListener("ended",function(){s.classList.remove("spiller")});
     velg(s.getAttribute("data-sprak"),false);
   })();
   </script>
