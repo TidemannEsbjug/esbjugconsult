@@ -190,6 +190,7 @@ export default {
 // Forsidens seksjon 2 (forklaringsvideoen, eieren 25.11.2026): språket velges her på kanten, ut fra landet Cloudflare
 // ser og Accept-Language, så siden kommer med riktig film og plakat og nettleseren ikke må hente eller bytte noe selv.
 const FV_LAND = { NO: "no", SJ: "no", US: "us", GB: "gb", IE: "gb", DE: "de", AT: "de", CH: "de", LI: "de", FR: "fr", LU: "fr", MC: "fr", ES: "es", AD: "es", IT: "it", SM: "it", VA: "it", NL: "nl", PL: "pl" };
+const FV_MERKE = { no: "Klart", us: "FrostCopy", gb: "FrostCopy", de: "Alles Klar", fr: "C’est Clair", es: "Clarísimo", it: "Chiarissimo", nl: "Klip en Klaar", pl: "Wszystko Jasne" };
 const FV_MAPPE = { no: "/klart/", us: "/frostcopy/", gb: "/frostcopy-uk/", de: "/alles-klar/", fr: "/cest-clair/", es: "/clarisimo/", it: "/chiarissimo/", nl: "/klip-en-klaar/", pl: "/wszystko-jasne/" };
 function forklaringSprak(request, svar, url) {
   let s = FV_LAND[request.cf?.country || ""];
@@ -204,7 +205,7 @@ function forklaringSprak(request, svar, url) {
   const m = FV_MAPPE[s];
   return new HTMLRewriter()
     .on("section.fv", { element: (el) => el.setAttribute("data-sprak", s) })
-    .on("section.fv video", { element: (el) => el.setAttribute("poster", m + "film/forklaring.jpg") })
+    .on("section.fv .spl", { element: (el) => el.setAttribute("data-merke", FV_MERKE[s]) })
     .on("section.fv source", { element: (el) => el.setAttribute("src", m + "film/forklaring.mp4") })
     .transform(svar);
 }

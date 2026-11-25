@@ -1,27 +1,51 @@
-/* Egen videospiller for forklaringsvideoene (eieren 25.11.2026): lys frostglassramme, kontrollene i rammen under bildet,
-   fremdriften som en linje med ett segment per scene. Ingen nettleserkontroller, ingen mørk toning over filmen.
-   Brukes på forsiden (seksjon 2) og på de ni utgavesidene. Skript: spiller.js. */
+/* Videospiller for forklaringsvideoene (eieren 25.11.2026): logoen og navnet som overskrift over rammen, en tynn hvit ramme
+   rundt filmen og én stor play-knapp i midten. Overskriften og knappen forsvinner mens filmen spilles. Ingen blur, ingen
+   toning, ingen kontrollrad. Skript: spiller.js. */
+@font-face {
+  font-family: "Spl Literata";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/klart/fonts/klart/literata-400-italic-latin.woff2") format("woff2");
+}
 .spl {
   --spl-ink: #00205B;
-  --spl-ink-2: rgba(0, 32, 91, 0.62);
-  --spl-spor: rgba(0, 32, 91, 0.13);
-  position: relative;
-  padding: 10px 10px 4px;
-  border-radius: 26px;
-  background: rgba(255, 255, 255, 0.58);
-  -webkit-backdrop-filter: blur(18px) saturate(1.35);
-  backdrop-filter: blur(18px) saturate(1.35);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7) inset, 0 0 0 1px rgba(0, 32, 91, 0.07), 0 30px 70px -36px rgba(0, 32, 91, 0.45);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   color: var(--spl-ink);
-  font-family: -apple-system, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
 }
-.spl-bilde {
+
+/* Overskriften over rammen */
+.spl-hode {
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 1.4vw, 18px);
+  margin: 0 0 clamp(22px, 3vw, 34px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.spl-hode img {
+  width: clamp(44px, 4.4vw, 62px);
+  height: auto;
+  border-radius: 22%;
+  filter: drop-shadow(0 8px 18px rgba(26, 63, 176, 0.22));
+}
+.spl-hode span {
+  font: italic 600 clamp(40px, 4.6vw, 66px)/1 "Spl Literata", "Literata", "Iowan Old Style", Georgia, serif;
+  letter-spacing: -0.02em;
+  color: var(--spl-ink);
+}
+.spl.spl-spiller .spl-hode { opacity: 0; transform: translateY(-6px); pointer-events: none; }
+
+/* Rammen */
+.spl-ramme {
   position: relative;
-  border-radius: 17px;
-  overflow: hidden;
-  background: #e9f0f8;
-  box-shadow: 0 0 0 1px rgba(0, 32, 91, 0.06);
-  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(0, 32, 91, 0.07), 0 36px 80px -42px rgba(0, 32, 91, 0.45);
 }
 .spl video {
   display: block;
@@ -29,207 +53,65 @@
   height: auto;
   aspect-ratio: 16 / 9;
   object-fit: contain;
+  border-radius: 15px;
   background: #e9f0f8;
+  cursor: pointer;
 }
 
-/* Før første avspilling: én rund glassknapp og en liten merkelapp */
-.spl-start {
+/* Knappen i midten, og det som hører til den */
+.spl-dekke {
   position: absolute;
-  inset: 0;
+  inset: 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-  border: 0;
-  padding: 0;
-  background: transparent;
-  cursor: pointer;
-  color: var(--spl-ink);
-  background: rgba(236, 243, 251, 0.42);
-  -webkit-backdrop-filter: blur(5px) saturate(1.1);
-  backdrop-filter: blur(5px) saturate(1.1);
+  gap: clamp(16px, 2.2vw, 26px);
+  pointer-events: none;
   transition: opacity 0.35s ease;
 }
-.spl-start-knapp {
+.spl-dekke > * { pointer-events: auto; }
+.spl.spl-spiller .spl-dekke { opacity: 0; }
+.spl.spl-spiller .spl-dekke > * { pointer-events: none; }
+.spl-knapp {
   display: grid;
   place-items: center;
-  width: 88px;
-  height: 88px;
+  width: clamp(76px, 8.6vw, 116px);
+  height: clamp(76px, 8.6vw, 116px);
+  padding: 0;
+  border: 0;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.8);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  box-shadow: 0 0 0 1px rgba(0, 32, 91, 0.08), 0 18px 40px -18px rgba(0, 32, 91, 0.55);
+  background: var(--spl-ink);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 22px 44px -18px rgba(0, 32, 91, 0.7);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
-.spl-start-knapp svg { width: 30px; height: 30px; margin-left: 5px; fill: var(--spl-ink); }
-.spl-start:hover .spl-start-knapp { transform: scale(1.06); box-shadow: 0 0 0 1px rgba(0, 32, 91, 0.1), 0 22px 46px -18px rgba(0, 32, 91, 0.6); }
-.spl-start-tekst {
-  padding: 7px 14px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.72);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  font: 600 11px/1 "SF Mono", Menlo, monospace;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  box-shadow: 0 0 0 1px rgba(0, 32, 91, 0.07);
-}
-.spl:not(.spl-ny) .spl-start { opacity: 0; pointer-events: none; }
-
-/* Slutt: et lyst slør, lenken videre og «spill igjen» */
-.spl-slutt {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  background: rgba(236, 243, 251, 0.62);
-  -webkit-backdrop-filter: blur(10px) saturate(1.2);
-  backdrop-filter: blur(10px) saturate(1.2);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.45s ease;
-  cursor: default;
-}
-.spl.spl-ferdig .spl-slutt { opacity: 1; pointer-events: auto; }
+.spl-knapp svg { width: 38%; height: 38%; margin-left: 6%; fill: currentColor; }
+.spl-knapp:hover { transform: scale(1.05); box-shadow: 0 26px 50px -18px rgba(0, 32, 91, 0.75); }
+.spl-knapp:focus-visible, .spl-videre:focus-visible { outline: 2px solid var(--spl-ink); outline-offset: 4px; }
 .spl-videre {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 16px 26px;
-  border-radius: 999px;
-  background: var(--spl-ink);
-  color: #fff;
-  font-weight: 600;
-  font-size: 17px;
-  line-height: 1;
-  text-decoration: none;
-  box-shadow: 0 20px 40px -18px rgba(0, 32, 91, 0.7);
-  transition: transform 0.2s ease;
-}
-.spl-videre:hover { transform: translateY(-1px); }
-.spl-videre[hidden] { display: none; }
-.spl-igjen {
-  display: inline-flex;
-  align-items: center;
   gap: 8px;
-  padding: 9px 14px;
-  border: 0;
+  padding: 14px 22px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.75);
+  background: #fff;
   color: var(--spl-ink);
-  font: 600 11px/1 "SF Mono", Menlo, monospace;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  cursor: pointer;
-  box-shadow: 0 0 0 1px rgba(0, 32, 91, 0.08);
+  font: 600 16px/1 -apple-system, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+  text-decoration: none;
+  box-shadow: 0 0 0 1px rgba(0, 32, 91, 0.1), 0 14px 30px -16px rgba(0, 32, 91, 0.5);
 }
-.spl-igjen svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-
-/* Kontrollene i rammen under bildet */
-.spl-rad {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  height: 52px;
-  padding: 0 6px 0 2px;
-}
-.spl-rad button {
-  display: grid;
-  place-items: center;
-  flex: none;
-  border: 0;
-  padding: 0;
-  background: transparent;
-  color: var(--spl-ink);
-  cursor: pointer;
-}
-.spl-rad button:focus-visible, .spl-start:focus-visible .spl-start-knapp, .spl-igjen:focus-visible, .spl-videre:focus-visible, .spl-spor:focus-visible {
-  outline: 2px solid var(--spl-ink);
-  outline-offset: 3px;
-}
-.spl-pp {
-  width: 36px;
-  height: 36px;
-  border-radius: 50% !important;
-  background: var(--spl-ink) !important;
-  color: #fff !important;
-  box-shadow: 0 8px 18px -10px rgba(0, 32, 91, 0.8);
-}
-.spl-pp svg { width: 14px; height: 14px; fill: currentColor; }
-.spl-pp .spl-i-pause { display: none; }
-.spl.spl-spiller .spl-pp .spl-i-play { display: none; }
-.spl.spl-spiller .spl-pp .spl-i-pause { display: block; }
-.spl-pp .spl-i-play { margin-left: 2px; }
-.spl-ikon { width: 32px; height: 32px; border-radius: 50%; opacity: 0.7; transition: opacity 0.2s ease, background 0.2s ease; }
-.spl-ikon:hover { opacity: 1; background: rgba(0, 32, 91, 0.06) !important; }
-.spl-ikon svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
-.spl-lyd .spl-i-av { display: none; }
-.spl.spl-stum .spl-lyd .spl-i-paa { display: none; }
-.spl.spl-stum .spl-lyd .spl-i-av { display: block; }
-
-/* Fremdriften: ett segment per scene */
-.spl-spor {
-  position: relative;
-  flex: 1;
-  display: flex;
-  gap: 4px;
-  height: 22px;
-  align-items: center;
-  cursor: pointer;
-  touch-action: none;
-  border-radius: 4px;
-}
-.spl-seg {
-  position: relative;
-  height: 4px;
-  border-radius: 2px;
-  background: var(--spl-spor);
-  overflow: hidden;
-  transition: height 0.2s ease;
-}
-.spl-seg i {
-  position: absolute;
-  inset: 0;
-  transform-origin: 0 50%;
-  transform: scaleX(0);
-  background: var(--spl-ink);
-  border-radius: inherit;
-}
-.spl-spor:hover .spl-seg { height: 6px; }
-.spl-tid {
-  flex: none;
-  min-width: 82px;
-  text-align: right;
-  font: 600 11px/1 "SF Mono", Menlo, monospace;
-  letter-spacing: 0.06em;
-  color: var(--spl-ink-2);
-  font-variant-numeric: tabular-nums;
-}
-
-/* Fullskjerm: rammen fyller skjermen, lys bakgrunn */
-.spl:fullscreen { padding: 18px 18px 6px; border-radius: 0; background: #e3ecf6; display: flex; flex-direction: column; justify-content: center; }
-.spl:fullscreen .spl-bilde { flex: 1; display: flex; align-items: center; }
-.spl:fullscreen video { height: 100%; }
+.spl-videre[hidden] { display: none; }
+.spl.spl-velg .spl-knapp, .spl.spl-velg .spl-videre { display: none; }
+.spl:not(.spl-velg) .spl-inni { display: none; }
 
 @media (max-width: 560px) {
-  .spl { padding: 6px 6px 2px; border-radius: 20px; }
-  .spl-bilde { border-radius: 14px; }
-  .spl-rad { gap: 10px; height: 46px; }
-  .spl-tid { min-width: 0; }
-  .spl-tid .spl-tot { display: none; }
-  .spl-start-knapp { width: 68px; height: 68px; }
-  .spl-start-knapp svg { width: 24px; height: 24px; }
-  .spl-start { gap: 10px; }
-  .spl-start-tekst { font-size: 10px; padding: 6px 11px; }
-  .spl-videre { padding: 13px 20px; font-size: 15px; }
-  .spl-seg { height: 3px; }
-  .spl-spor { gap: 3px; }
+  .spl-ramme { padding: 5px; border-radius: 16px; }
+  .spl video { border-radius: 12px; }
+  .spl-dekke { inset: 5px; gap: 12px; }
+  .spl-videre { padding: 11px 16px; font-size: 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .spl *, .spl { transition: none !important; }
+  .spl-hode, .spl-dekke, .spl-knapp { transition: none; }
 }
