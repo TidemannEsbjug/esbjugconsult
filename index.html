@@ -1544,8 +1544,9 @@ if(v?v.m==='lett':navigator.connection&&navigator.connection.saveData)document.d
   /* Oppdateringskortene (postene) er tatt bort fra toppen (eieren 19.11.2026). Elementet står, fordi skriptet skriver til det. */
   .th .poster{display:none!important}
   /* Klart i en boks over pulsen (eieren 19.11.2026): ikonet og ordet som på /klart, i samme glass som pulsen. Lenker til /klart/. */
-  .th-klart{display:flex;align-items:center;gap:14px;padding:14px 18px;color:#fff;text-decoration:none;transition:background .2s,transform .2s}
-  .th-klart:hover{background:linear-gradient(160deg,rgba(255,255,255,.2),rgba(255,255,255,.07));transform:translateY(-1px)}
+  /* Uten glass (blur) bak: skannlinjene i scenen flimret gjennom blurringen (eieren 26.11.2026). Tett bakgrunn i samme tone. */
+  .th-klart{display:flex;align-items:center;gap:14px;padding:14px 18px;color:#fff;text-decoration:none;transition:background .2s,transform .2s;-webkit-backdrop-filter:none;backdrop-filter:none;background:linear-gradient(160deg,#233a72,#13285a);transform:translateZ(0)}
+  .th-klart:hover{background:linear-gradient(160deg,#2c4685,#1a3168);transform:translateY(-1px)}
   .th-klart:focus-visible{outline:2px solid #fff;outline-offset:3px}
   .th-klart img{flex:none;width:44px;height:44px;border-radius:11px;filter:drop-shadow(0 6px 14px rgba(0,8,30,.35))}
   .th-klart span{flex:1;font:italic 600 clamp(28px,2.4vw,38px)/1 "Klart Literata","Iowan Old Style",Georgia,serif;letter-spacing:-.02em}
