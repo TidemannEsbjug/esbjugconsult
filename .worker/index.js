@@ -182,9 +182,32 @@ export default {
     const svar = await env.ASSETS.fetch(request);
     if (svar.status === 200) try { const visit = pageVisit(request, env, url); if (visit) ctx.waitUntil(visit); } catch {}
     if (/\.(mp4|m4v|webm|mov|mp3|m4a)$/i.test(url.pathname)) return medRange(request, svar);
+    if (/^\/(en\/)?$/.test(url.pathname) && svar.status === 200) return forklaringSprak(request, svar, url);
     return svar;
   },
 };
+
+// Forsidens seksjon 2 (forklaringsvideoen, eieren 25.11.2026): språket velges her på kanten, ut fra landet Cloudflare
+// ser og Accept-Language, så siden kommer med riktig film og plakat og nettleseren ikke må hente eller bytte noe selv.
+const FV_LAND = { NO: "no", SJ: "no", US: "us", GB: "gb", IE: "gb", DE: "de", AT: "de", CH: "de", LI: "de", FR: "fr", LU: "fr", MC: "fr", ES: "es", AD: "es", IT: "it", SM: "it", VA: "it", NL: "nl", PL: "pl" };
+const FV_MAPPE = { no: "/klart/", us: "/frostcopy/", gb: "/frostcopy-uk/", de: "/alles-klar/", fr: "/cest-clair/", es: "/clarisimo/", it: "/chiarissimo/", nl: "/klip-en-klaar/", pl: "/wszystko-jasne/" };
+function forklaringSprak(request, svar, url) {
+  let s = FV_LAND[request.cf?.country || ""];
+  if (!s) for (const del of (request.headers.get("Accept-Language") || "").toLowerCase().split(",")) {
+    const t = del.trim().split(";")[0];
+    if (/^(nb|nn|no)\b/.test(t)) { s = "no"; break; }
+    if (t === "en-gb" || t === "en-ie") { s = "gb"; break; }
+    if (t.startsWith("en")) { s = "us"; break; }
+    if (FV_MAPPE[t.slice(0, 2)]) { s = t.slice(0, 2); break; }
+  }
+  s ||= url.pathname.startsWith("/en/") ? "us" : "no";
+  const m = FV_MAPPE[s];
+  return new HTMLRewriter()
+    .on("section.fv", { element: (el) => el.setAttribute("data-sprak", s) })
+    .on("section.fv video", { element: (el) => el.setAttribute("poster", m + "film/forklaring.jpg") })
+    .on("section.fv source", { element: (el) => el.setAttribute("src", m + "film/forklaring.mp4") })
+    .transform(svar);
+}
 
 // Sikkerhetshodene på alt under /klart/. Siden laster bare egne filer, uten inline-skript og inline-stil: legg nye skript og
 // stiler i egne filer. API-et brukes med fetch fra samme adresse, og appen er ikke en nettleser, så hodene stopper ikke den.
