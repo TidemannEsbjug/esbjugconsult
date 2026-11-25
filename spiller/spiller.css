@@ -33,7 +33,13 @@
 .spl-hode span {
   font: italic 600 clamp(40px, 4.6vw, 66px)/1 "Spl Literata", "Literata", "Iowan Old Style", Georgia, serif;
   letter-spacing: -0.02em;
-  color: var(--spl-ink);
+  /* samme blå toning som overskriften i heroen på /klart */
+  color: #2456e6;
+  background: linear-gradient(96deg, #2456e6 8%, #6f9bf5 92%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding: 0.06em 0.08em 0.12em 0;
 }
 .spl.spl-spiller .spl-hode { opacity: 0; transform: translateY(-6px); pointer-events: none; }
 
@@ -81,14 +87,17 @@
   padding: 0;
   border: 0;
   border-radius: 50%;
-  background: var(--spl-ink);
-  color: #fff;
+  /* samme glass som toppmenyen på /klart */
+  background: rgba(238, 243, 251, 0.72);
+  -webkit-backdrop-filter: saturate(1.3) blur(14px);
+  backdrop-filter: saturate(1.3) blur(14px);
+  color: #2456e6;
   cursor: pointer;
-  box-shadow: 0 22px 44px -18px rgba(0, 32, 91, 0.7);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.6) inset, 0 18px 40px -20px rgba(0, 32, 91, 0.45);
+  transition: transform 0.25s ease, background 0.25s ease;
 }
-.spl-knapp svg { width: 38%; height: 38%; margin-left: 6%; fill: currentColor; }
-.spl-knapp:hover { transform: scale(1.05); box-shadow: 0 26px 50px -18px rgba(0, 32, 91, 0.75); }
+.spl-knapp svg { display: block; width: 40%; height: 40%; fill: currentColor; }
+.spl-knapp:hover { transform: scale(1.05); background: rgba(238, 243, 251, 0.86); }
 .spl-knapp:focus-visible, .spl-videre:focus-visible { outline: 2px solid var(--spl-ink); outline-offset: 4px; }
 .spl-videre {
   display: inline-flex;

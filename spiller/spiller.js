@@ -12,7 +12,7 @@
   function el(tag, cls) { var e = document.createElement(tag); if (cls) e.className = cls; return e; }
   function trekant() {
     var s = document.createElementNS(NS, "svg"); s.setAttribute("viewBox", "0 0 24 24"); s.setAttribute("aria-hidden", "true");
-    var p = document.createElementNS(NS, "path"); p.setAttribute("d", "M8 5.2v13.6a1 1 0 0 0 1.52.85l11-6.8a1 1 0 0 0 0-1.7l-11-6.8A1 1 0 0 0 8 5.2z");
+    var p = document.createElementNS(NS, "path"); p.setAttribute("d", "M7.6 5.3v13.4a1 1 0 0 0 1.5.86l9.4-6.7a1 1 0 0 0 0-1.72l-9.4-6.7a1 1 0 0 0-1.5.86z");
     s.appendChild(p); return s;
   }
 
