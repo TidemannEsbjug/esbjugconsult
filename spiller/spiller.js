@@ -22,6 +22,9 @@
   var FULL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
   var IGJEN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg>';
 
+  // /klart har require-trusted-types-for 'script': den faste markeringen går gjennom en egen policy, alt fra attributter settes som tekst.
+  var pol = window.trustedTypes && window.trustedTypes.createPolicy ? window.trustedTypes.createPolicy("spiller", { createHTML: function (x) { return x; } }) : null;
+  function H(x) { return pol ? pol.createHTML(x) : x; }
   function tid(s) { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2); }
   function tekster() { var l = (document.documentElement.lang || "en").slice(0, 2).toLowerCase(); return T[l] || T.en; }
 
@@ -40,17 +43,17 @@
     bilde.className = "spl-bilde";
     v.parentNode.insertBefore(bilde, v);
     bilde.appendChild(v);
-    bilde.insertAdjacentHTML("beforeend",
+    bilde.insertAdjacentHTML("beforeend", H(
       '<button type="button" class="spl-start" aria-label="' + t[1] + '"><span class="spl-start-knapp">' + PLAY + '</span><span class="spl-start-tekst"></span></button>' +
-      '<div class="spl-slutt"><a class="spl-videre" hidden></a><button type="button" class="spl-igjen">' + IGJEN + '<span>' + t[6] + '</span></button></div>');
-    w.insertAdjacentHTML("beforeend",
+      '<div class="spl-slutt"><a class="spl-videre" hidden></a><button type="button" class="spl-igjen">' + IGJEN + '<span>' + t[6] + '</span></button></div>'));
+    w.insertAdjacentHTML("beforeend", H(
       '<div class="spl-rad">' +
         '<button type="button" class="spl-pp" aria-label="' + t[1] + '"><span class="spl-i-play">' + PLAY + '</span><span class="spl-i-pause">' + PAUSE + '</span></button>' +
         '<div class="spl-spor" role="slider" tabindex="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>' +
         '<span class="spl-tid"><span class="spl-naa">0:00</span><span class="spl-tot"></span></span>' +
         '<button type="button" class="spl-ikon spl-lyd" aria-label="' + t[3] + '"><span class="spl-i-paa">' + LYD + '</span><span class="spl-i-av">' + STUM + '</span></button>' +
         '<button type="button" class="spl-ikon spl-full" aria-label="' + t[5] + '">' + FULL + '</button>' +
-      '</div>');
+      '</div>'));
     w.classList.add("spl-ny");
 
     var start = bilde.querySelector(".spl-start"), startTekst = bilde.querySelector(".spl-start-tekst"), videre = bilde.querySelector(".spl-videre"),
@@ -61,13 +64,13 @@
     function tegnSpor() {
       var d = lengde(), k = (w.getAttribute("data-kapitler") || "").split(",").map(Number).filter(function (x) { return x > 0 && (!d || x < d - 0.5); });
       grenser = [0].concat(k, [d || 1]);
-      spor.innerHTML = "";
+      spor.textContent = "";
       segs = [];
       for (var i = 0; i < grenser.length - 1; i++) {
         var s = document.createElement("span");
         s.className = "spl-seg";
         s.style.flex = String(Math.max(0.2, grenser[i + 1] - grenser[i]));
-        s.innerHTML = "<i></i>";
+        s.appendChild(document.createElement("i"));
         spor.appendChild(s);
         segs.push(s.firstChild);
       }
@@ -130,7 +133,7 @@
       w.classList.remove("spl-spiller");
       var h = w.getAttribute("data-videre");
       videre.hidden = !h;
-      if (h) { videre.href = h; videre.innerHTML = (w.getAttribute("data-videre-tekst") || "") + ' <span aria-hidden="true">→</span>'; }
+      if (h) { videre.href = h; videre.textContent = (w.getAttribute("data-videre-tekst") || "") + " "; var pil = document.createElement("span"); pil.setAttribute("aria-hidden", "true"); pil.textContent = "→"; videre.appendChild(pil); }
       w.classList.add("spl-ferdig");
     });
     v.addEventListener("emptied", function () { w.classList.remove("spl-spiller", "spl-ferdig"); w.classList.add("spl-ny"); tegnSpor(); });
