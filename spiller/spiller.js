@@ -65,9 +65,12 @@
       if (hode) dekke.insertBefore(hode, dekke.firstChild);
     }
     var inni = w.querySelector(".spl-inni");
-    // Med språkvalg (forsiden) står bare valget der først; play-knappen kommer når et språk er valgt (Spiller.valgt).
-    if (inni) { dekke.appendChild(inni); w.classList.add("spl-velg"); }
     ramme.appendChild(dekke);
+    // Språkvalget: i modulen står det oppe i venstre hjørne hele tiden, også mens filmen spilles (byttes da direkte).
+    // Ellers står bare valget i midten først, og play-knappen kommer når et språk er valgt (Spiller.valgt).
+    var modul = w.classList.contains("spl-modul");
+    if (inni && modul) inni.classList.add("spl-hjorne");
+    else if (inni) { dekke.appendChild(inni); w.classList.add("spl-velg"); }
 
     // Nederst: tidslinjen og fullskjermknappen
     var kontroll = el("div", "spl-kontroll");
@@ -83,6 +86,7 @@
     full.appendChild(fullUt); full.appendChild(fullInn);
     kontroll.appendChild(spor); kontroll.appendChild(full);
     ramme.appendChild(kontroll);
+    if (inni && modul) ramme.appendChild(inni);
     w.classList.add("spl-klar");
 
     function les() {
@@ -197,6 +201,8 @@
     });
     v.addEventListener("emptied", function () {
       if (slutt) { slutt = false; tegn(); return; }
+      // språkbytte mens filmen er i gang: den nye filmen tar over uten å gå tilbake til startflaten
+      if (w.__bytter) { w.__bytter = false; tegn(); les(); return; }
       w.classList.remove("spl-spiller", "spl-ferdig"); ferdigMed(); tegn(); les();
     });
 
@@ -209,5 +215,7 @@
   var alle = document.querySelectorAll(".spl");
   for (var i = 0; i < alle.length; i++) lag(alle[i]);
   window.Spiller = { lag: lag, oppdater: function (w) { var s = lag(w); if (s) s.les(); },
-    valgt: function (w) { w.classList.remove("spl-velg"); } };
+    valgt: function (w) { w.classList.remove("spl-velg"); },
+    // kalles før kilden byttes mens filmen er i gang; den nye filmen spilles da videre fra start
+    bytter: function (w) { w.__bytter = true; setTimeout(function () { w.__bytter = false; }, 1500); } };
 })();

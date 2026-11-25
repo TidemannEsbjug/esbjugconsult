@@ -109,26 +109,103 @@
 }
 .spl-videre[hidden] { display: none; }
 .spl.spl-velg .spl-knapp, .spl.spl-velg .spl-videre { display: none; }
-.spl:not(.spl-velg) .spl-inni { display: none; }
+.spl:not(.spl-velg) .spl-inni:not(.spl-hjorne) { display: none; }
 
-/* Modul (forsiden): en blå flate i Klarts farger i stedet for plakaten, med logoen og navnet inni. Flaten står til filmen
-   startes og kommer tilbake når den er ferdig. */
+/* Modul (forsiden): en levende blå flate i Klarts farger i stedet for plakaten, med logoen, navnet og play-knappen i midten
+   og språkvalget oppe i venstre hjørne. Flaten driver sakte, det snør lett, snøfnugget svever og knappen pulserer, så det
+   er tydelig at modulen kan trykkes på. Flaten går bort når filmen startes og kommer tilbake når den er ferdig; språkvalget
+   og tidslinjen står mens filmen spilles. */
 .spl-flate {
   position: absolute;
   inset: 8px;
+  overflow: hidden;
   border-radius: 15px;
-  background:
-    radial-gradient(120% 90% at 18% 8%, rgba(255, 255, 255, 0.22), transparent 55%),
-    radial-gradient(90% 80% at 92% 100%, rgba(10, 40, 140, 0.35), transparent 60%),
-    linear-gradient(135deg, #2456e6 0%, #3b6ff0 45%, #6f9bf5 100%);
+  background: linear-gradient(125deg, #1d47d6 0%, #2456e6 30%, #4a7ef2 60%, #6f9bf5 80%, #3563ea 100%);
+  background-size: 220% 220%;
   pointer-events: none;
-  transition: opacity 0.5s ease;
+  animation: splDrift 16s ease-in-out infinite alternate;
+  transition: opacity 0.6s ease, transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
-.spl.spl-i-gang .spl-flate { opacity: 0; }
-.spl-modul .spl-dekke .spl-hode { margin: 0 0 clamp(6px, 1vw, 14px); pointer-events: none; }
+.spl-flate::before {
+  content: "";
+  position: absolute;
+  width: 70%;
+  aspect-ratio: 1;
+  left: -10%;
+  top: -35%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0));
+  animation: splLys 13s ease-in-out infinite alternate;
+}
+.spl-flate::after {
+  content: "";
+  position: absolute;
+  inset: -260px 0 0;
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.85), transparent),
+    radial-gradient(1.5px 1.5px at 90px 120px, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(2.5px 2.5px at 150px 60px, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(1.5px 1.5px at 60px 200px, rgba(255, 255, 255, 0.75), transparent),
+    radial-gradient(3px 3px at 190px 170px, rgba(255, 255, 255, 0.45), transparent),
+    radial-gradient(2px 2px at 120px 240px, rgba(255, 255, 255, 0.6), transparent);
+  background-size: 220px 260px;
+  opacity: 0.7;
+  animation: splSno 18s linear infinite;
+}
+@keyframes splDrift { from { background-position: 0% 30%; } to { background-position: 100% 70%; } }
+@keyframes splLys { from { transform: translate(0, 0); } to { transform: translate(95%, 45%); } }
+@keyframes splSno { from { transform: translateY(0); } to { transform: translateY(260px); } }
+.spl.spl-i-gang .spl-flate { opacity: 0; transform: scale(1.05); }
+
+.spl-modul .spl-dekke .spl-hode { margin: 0 0 clamp(4px, 0.8vw, 10px); pointer-events: none; animation: splInn 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 .spl-modul .spl-dekke .spl-hode span { font-size: clamp(44px, 5.4vw, 84px); }
-.spl-modul .spl-dekke .spl-hode img { width: clamp(48px, 5vw, 74px); filter: drop-shadow(0 10px 22px rgba(0, 20, 70, 0.3)); }
+.spl-modul .spl-dekke .spl-hode img {
+  width: clamp(48px, 5vw, 74px);
+  filter: drop-shadow(0 10px 22px rgba(0, 20, 70, 0.3));
+  animation: splSvev 5s ease-in-out infinite;
+}
+@keyframes splSvev { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-6px) rotate(14deg); } }
+@keyframes splInn { from { opacity: 0; transform: translateY(14px); } }
+
+/* Play-knappen i modulen: hvit, med en ring som pulserer utover */
+.spl-modul .spl-knapp {
+  position: relative;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 22px 44px -16px rgba(0, 20, 80, 0.55);
+  animation: splInn 0.9s 0.15s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.spl-modul .spl-knapp::before,
+.spl-modul .spl-knapp::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  animation: splRing 2.6s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+  pointer-events: none;
+}
+.spl-modul .spl-knapp::after { animation-delay: 1.3s; }
+@keyframes splRing { from { transform: scale(1); opacity: 0.9; } to { transform: scale(1.75); opacity: 0; } }
+.spl-modul.spl-i-gang .spl-knapp::before, .spl-modul.spl-i-gang .spl-knapp::after { animation: none; opacity: 0; }
+.spl-modul .spl-ramme:hover .spl-knapp { transform: scale(1.08); background: #fff; }
 .spl-modul .spl-ramme:fullscreen .spl-flate { inset: 0; border-radius: 0; }
+
+/* Språkvalget i hjørnet */
+.spl-hjorne {
+  position: absolute;
+  z-index: 3;
+  top: calc(8px + clamp(10px, 1.6vw, 20px));
+  left: calc(8px + clamp(10px, 1.6vw, 20px));
+  animation: splInn 0.9s 0.3s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  transition: opacity 0.3s ease;
+}
+.spl-modul.spl-i-gang .spl-kontroll { opacity: 1; transform: none; pointer-events: auto; }
+/* Mens filmen spilles, står bare det valgte flagget (filmene har egne merker oppe til venstre); hele valget foldes ut ved hover */
+.spl-hjorne button { transition: width 0.35s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.25s ease, background 0.2s ease; overflow: hidden; }
+.spl.spl-i-gang .spl-hjorne { background: #fff; transition: gap 0.35s ease; }
+.spl.spl-i-gang .spl-hjorne:not(:hover):not(:focus-within) { gap: 0; }
+.spl.spl-i-gang .spl-hjorne:not(:hover):not(:focus-within) button:not([aria-pressed="true"]) { width: 0; opacity: 0; }
+.spl.spl-i-gang .spl-hjorne:not(:hover):not(:focus-within) button[aria-pressed="true"] { background: transparent; }
 
 /* Tidslinjen og fullskjermknappen nederst: vises ved hover mens filmen er i gang, i samme glass som play-knappen */
 .spl-kontroll {
@@ -241,7 +318,14 @@
   .spl-kontroll { left: 13px; right: 13px; bottom: 13px; padding: 3px 3px 3px 14px; gap: 6px; }
   .spl-full { width: 30px; height: 30px; }
   .spl-full svg { width: 17px; height: 17px; }
+  .spl-modul .spl-dekke .spl-hode span { font-size: 30px; }
+  .spl-modul .spl-dekke .spl-hode img { width: 34px; }
+  .spl-modul .spl-knapp { width: 56px; height: 56px; }
+  .spl-modul .spl-dekke { gap: 8px; padding-top: 30px; }
+  .spl-hjorne { top: 11px; left: 11px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .spl-hode, .spl-dekke, .spl-knapp, .spl-kontroll, .spl-linje, .spl-punkt { transition: none; }
+  .spl-hode, .spl-dekke, .spl-knapp, .spl-kontroll, .spl-linje, .spl-punkt, .spl-flate { transition: none; }
+  .spl-flate, .spl-flate::before, .spl-flate::after, .spl-modul .spl-hode, .spl-modul .spl-hode img, .spl-modul .spl-knapp,
+  .spl-modul .spl-knapp::before, .spl-modul .spl-knapp::after, .spl-hjorne { animation: none; }
 }
