@@ -154,12 +154,15 @@
     document.addEventListener("fullscreenchange", fullByttet);
     document.addEventListener("webkitfullscreenchange", fullByttet);
 
-    // Kontrollene vises ved hover/trykk og forsvinner når musa står stille
+    // Kontrollene (og flaggene i modulen) vises når musa beveges eller ved trykk, og forsvinner etter 1,5 s uten bevegelse
     var skjul = 0;
     function vis() {
       w.classList.add("spl-vis");
       clearTimeout(skjul);
-      skjul = setTimeout(function () { if (!drar && !kontroll.matches(":hover")) w.classList.remove("spl-vis"); }, 2200);
+      skjul = setTimeout(function () {
+        if (drar || kontroll.matches(":hover") || (inni && inni.matches(":hover"))) { vis(); return; }
+        w.classList.remove("spl-vis");
+      }, 1500);
     }
     ramme.addEventListener("pointermove", vis);
     ramme.addEventListener("pointerdown", vis);

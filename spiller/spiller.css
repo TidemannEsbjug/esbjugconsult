@@ -112,7 +112,7 @@
 .spl:not(.spl-velg) .spl-inni:not(.spl-hjorne) { display: none; }
 
 /* Modul (forsiden): en levende blå flate i Klarts farger i stedet for plakaten, med logoen, navnet og play-knappen i midten
-   og språkvalget oppe i venstre hjørne. Flaten driver sakte, det snør lett, snøfnugget svever og knappen pulserer, så det
+   og språkvalget oppe i venstre hjørne. Flaten driver sakte, snøfnugget svever og knappen pulserer svakt, så det
    er tydelig at modulen kan trykkes på. Flaten går bort når filmen startes og kommer tilbake når den er ferdig; språkvalget
    og tidslinjen står mens filmen spilles. */
 .spl-flate {
@@ -137,27 +137,11 @@
   background: radial-gradient(closest-side, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0));
   animation: splLys 13s ease-in-out infinite alternate;
 }
-.spl-flate::after {
-  content: "";
-  position: absolute;
-  inset: -260px 0 0;
-  background-image:
-    radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.85), transparent),
-    radial-gradient(1.5px 1.5px at 90px 120px, rgba(255, 255, 255, 0.7), transparent),
-    radial-gradient(2.5px 2.5px at 150px 60px, rgba(255, 255, 255, 0.6), transparent),
-    radial-gradient(1.5px 1.5px at 60px 200px, rgba(255, 255, 255, 0.75), transparent),
-    radial-gradient(3px 3px at 190px 170px, rgba(255, 255, 255, 0.45), transparent),
-    radial-gradient(2px 2px at 120px 240px, rgba(255, 255, 255, 0.6), transparent);
-  background-size: 220px 260px;
-  opacity: 0.7;
-  animation: splSno 18s linear infinite;
-}
 @keyframes splDrift { from { background-position: 0% 30%; } to { background-position: 100% 70%; } }
 @keyframes splLys { from { transform: translate(0, 0); } to { transform: translate(95%, 45%); } }
-@keyframes splSno { from { transform: translateY(0); } to { transform: translateY(260px); } }
 .spl.spl-i-gang .spl-flate { opacity: 0; transform: scale(1.05); }
 
-.spl-modul .spl-dekke .spl-hode { margin: 0 0 clamp(4px, 0.8vw, 10px); pointer-events: none; animation: splInn 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.spl-modul .spl-dekke .spl-hode { margin: 0 0 clamp(14px, 2vw, 26px); pointer-events: none; animation: splInn 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 .spl-modul .spl-dekke .spl-hode span { font-size: clamp(44px, 5.4vw, 84px); }
 .spl-modul .spl-dekke .spl-hode img {
   width: clamp(48px, 5vw, 74px);
@@ -170,24 +154,24 @@
 /* Play-knappen i modulen: hvit, med en ring som pulserer utover */
 .spl-modul .spl-knapp {
   position: relative;
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 22px 44px -16px rgba(0, 20, 80, 0.55);
+  width: clamp(68px, 7vw, 96px);
+  height: clamp(68px, 7vw, 96px);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 16px 34px -18px rgba(0, 20, 80, 0.5);
   animation: splInn 0.9s 0.15s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
-.spl-modul .spl-knapp::before,
-.spl-modul .spl-knapp::after {
+.spl-modul .spl-knapp::before {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.75);
-  animation: splRing 2.6s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
+  animation: splRing 3.2s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
   pointer-events: none;
 }
-.spl-modul .spl-knapp::after { animation-delay: 1.3s; }
-@keyframes splRing { from { transform: scale(1); opacity: 0.9; } to { transform: scale(1.75); opacity: 0; } }
-.spl-modul.spl-i-gang .spl-knapp::before, .spl-modul.spl-i-gang .spl-knapp::after { animation: none; opacity: 0; }
-.spl-modul .spl-ramme:hover .spl-knapp { transform: scale(1.08); background: #fff; }
+@keyframes splRing { from { transform: scale(1); opacity: 0.8; } to { transform: scale(1.3); opacity: 0; } }
+.spl-modul.spl-i-gang .spl-knapp::before { animation: none; opacity: 0; }
+.spl-modul .spl-ramme:hover .spl-knapp { transform: scale(1.05); background: #fff; }
 .spl-modul .spl-ramme:fullscreen .spl-flate { inset: 0; border-radius: 0; }
 
 /* Språkvalget i hjørnet */
@@ -199,10 +183,13 @@
   animation: splInn 0.9s 0.3s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   transition: opacity 0.3s ease;
 }
-.spl-modul.spl-i-gang .spl-kontroll { opacity: 1; transform: none; pointer-events: auto; }
+/* Mens filmen spilles, er flagg, tidslinje og fullskjerm borte til musa beveges (spl-vis), og pekeren er skjult; på pause står de */
+.spl.spl-i-gang:not(.spl-spiller) .spl-kontroll { opacity: 1; transform: none; pointer-events: auto; }
+.spl.spl-spiller:not(.spl-vis) .spl-hjorne:not(:hover):not(:focus-within) { opacity: 0; pointer-events: none; }
+.spl.spl-spiller:not(.spl-vis) .spl-ramme, .spl.spl-spiller:not(.spl-vis) video { cursor: none; }
 /* Mens filmen spilles, står bare det valgte flagget (filmene har egne merker oppe til venstre); hele valget foldes ut ved hover */
 .spl-hjorne button { transition: width 0.35s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.25s ease, background 0.2s ease; overflow: hidden; }
-.spl.spl-i-gang .spl-hjorne { background: #fff; transition: gap 0.35s ease; }
+.spl.spl-i-gang .spl-hjorne { background: #fff; transition: gap 0.35s ease, opacity 0.3s ease; }
 .spl.spl-i-gang .spl-hjorne:not(:hover):not(:focus-within) { gap: 0; }
 .spl.spl-i-gang .spl-hjorne:not(:hover):not(:focus-within) button:not([aria-pressed="true"]) { width: 0; opacity: 0; }
 .spl.spl-i-gang .spl-hjorne:not(:hover):not(:focus-within) button[aria-pressed="true"] { background: transparent; }
@@ -307,8 +294,6 @@
 .spl-ramme:fullscreen video { width: 100%; height: 100%; aspect-ratio: auto; border-radius: 0; background: #000; }
 .spl-ramme:fullscreen .spl-dekke { inset: 0; }
 .spl-ramme:fullscreen .spl-kontroll { left: 32px; right: 32px; bottom: 28px; max-width: 1100px; margin: 0 auto; }
-.spl.spl-fullskjerm.spl-spiller:not(.spl-vis) .spl-ramme { cursor: none; }
-.spl.spl-fullskjerm.spl-spiller:not(.spl-vis) video { cursor: none; }
 
 @media (max-width: 560px) {
   .spl-ramme { padding: 5px; border-radius: 16px; }
@@ -326,6 +311,6 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .spl-hode, .spl-dekke, .spl-knapp, .spl-kontroll, .spl-linje, .spl-punkt, .spl-flate { transition: none; }
-  .spl-flate, .spl-flate::before, .spl-flate::after, .spl-modul .spl-hode, .spl-modul .spl-hode img, .spl-modul .spl-knapp,
-  .spl-modul .spl-knapp::before, .spl-modul .spl-knapp::after, .spl-hjorne { animation: none; }
+  .spl-flate, .spl-flate::before, .spl-modul .spl-hode, .spl-modul .spl-hode img, .spl-modul .spl-knapp,
+  .spl-modul .spl-knapp::before, .spl-hjorne { animation: none; }
 }
