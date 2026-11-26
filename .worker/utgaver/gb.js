@@ -25,10 +25,10 @@ export default {
   pris: price,
   selger: ["ESBJUG CONSULT", "Glenneveien 272B", "1455 Nordre Frogn", "Norway", "Org. no. 938 441 405"],
   filer: {
-    mac: { key: "2026-11-24/gb/FrostCopy-UK_0.1.0_universal.dmg", navn: "FrostCopy UK.dmg" },
-    windows: { key: "2026-11-24/gb/FrostCopy-UK_0.1.0_x64-setup.exe", navn: "FrostCopy UK.exe" },
-    linux: { key: "2026-11-24/gb/FrostCopy-UK_0.1.0_amd64.deb", navn: "FrostCopy-UK_0.1.0_amd64.deb" },
-    "linux-arm": { key: "2026-11-24/gb/FrostCopy-UK_0.1.0_arm64.deb", navn: "FrostCopy-UK_0.1.0_arm64.deb" },
+    mac: { key: "2026-11-26/gb/FrostCopy-UK_0.1.0_universal.dmg", navn: "FrostCopy UK.dmg" },
+    windows: { key: "2026-11-26/gb/FrostCopy-UK_0.1.0_x64-setup.exe", navn: "FrostCopy UK.exe" },
+    linux: { key: "2026-11-26/gb/FrostCopy-UK_0.1.0_amd64.deb", navn: "FrostCopy-UK_0.1.0_amd64.deb" },
+    "linux-arm": { key: "2026-11-26/gb/FrostCopy-UK_0.1.0_arm64.deb", navn: "FrostCopy-UK_0.1.0_arm64.deb" },
   },
   t: {
     ikkeFunnet: "Not found.",

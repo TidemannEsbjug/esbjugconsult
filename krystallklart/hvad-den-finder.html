@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="da">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Krystallklart: hvad den finder, og hvad den ikke finder</title>
+    <meta
+      name="description"
+      content="En ærlig gennemgang af, hvad Krystallklart fjerner fra dokumenter, hvad der oftere slipper igennem, og hvad du selv skal gøre."
+    />
+    <meta name="robots" content="noindex" />
+    <!--
+      Én fil. Ingen skrifter, bilder eller skript utenfra, som til-it.html.
+      Tallene er fra PROVER-2026-11-25.md: de utgitte pakkene på det åpne settet dk1 (ikke et blindsett), så siden
+      har to tall og ingen stolper. Innholdet bygger på motoren i Klart-dk (claude/dk, 15a63a43): gruppene i
+      engine/valg.ts, dk/detect.ts, dk/kontakt.ts og det som står etter dk/behold.ts.
+    -->
+    <link rel="icon" type="image/png" href="/krystallklart/favicon.png" />
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="sider.css" />
+    <link rel="stylesheet" href="hva-klart-tar.css" />
+  </head>
+  <body>
+    <header class="s-topp">
+      <div class="s-linje-topp">
+        <a class="s-merke" href="./">Krystallklart</a>
+        <nav class="s-nav" aria-label="Sider">
+          <a href="./">Forside</a>
+          <a href="priser/">Priser</a>
+          <a href="til-it.html">Til IT-afdelingen</a>
+          <a href="privatliv/">Privatliv</a>
+        </nav>
+      </div>
+      <div class="s-hode">
+        <p class="s-over">En ærlig gennemgang</p>
+        <h1>Hvad Krystallklart finder, og hvad den ikke finder</h1>
+        <p class="s-ingress">
+          Krystallklart maskerer personoplysninger i en kopi af dine dokumenter, på din egen computer.
+          Nogle oplysninger finder programmet næsten altid, andre slipper oftere igennem. Her beskriver vi begge dele.
+        </p>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <p class="stempel">Gælder Krystallklart version 0.1.0. Målt på det åbne testsæt dk1 lader de udgivne pakker 7,0 % af personoplysningerne stå med standardgrupperne og maskerer 14,5 % for meget. Med alle grupper slået til er tallene 5,6 % og 15,6 %. Testsættet er åbent, så tallene kan være lidt bedre end for helt nye dokumenter.</p>
+      <main>
+        <div class="oppsum">
+          <section class="bra">
+            <h2><i aria-hidden="true">✓</i> Det går godt</h2>
+            <ul>
+              <li>CPR-numre, også erstatnings-CPR og fiktive numre fra løn- og fagsystemer. Datoen og århundredet kontrolleres.</li>
+              <li>E-mailadresser og telefonnumre, også med +45.</li>
+              <li>Navne. Et navn, der er fundet ét sted, maskeres i hele mappen.</li>
+              <li>Kontonumre med reg.nr., IBAN, adgangskoder og nummerplader.</li>
+            </ul>
+          </section>
+          <section class="daarlig">
+            <h2><i aria-hidden="true">!</i> Det går dårligere</h2>
+            <ul>
+              <li>Private forhold beskrevet i hverdagssprog, fx familiekonflikter eller pengeproblemer.</li>
+              <li>Helbred beskrevet med egne ord i stedet for fagudtryk.</li>
+              <li>Billeder og scannede sider: Her skal programmet først læse teksten, og det giver flere fejl.</li>
+            </ul>
+          </section>
+        </div>
+
+        <section class="lesmer">
+          <h2>Læs mere</h2>
+          <p>Klik på en overskrift for at folde den ud.</p>
+
+          <details class="sek ok" id="virker_godt">
+            <summary><span class="merke">Næsten altid</span>Det finder Krystallklart næsten altid</summary>
+            <p class="intro">Oplysninger med en fast form, som programmet kan kontrollere.</p>
+            <div class="punkt">
+              <h3>CPR-numre</h3>
+              <p>Et CPR-nummer med bindestreg og en gyldig dato maskeres altid; århundredet regnes ud fra det syvende ciffer. Ti cifre i træk eller med mellemrum maskeres bag »CPR-nr.«, under en CPR-kolonne, eller når det samme nummer står med etiket et andet sted i mappen. Krystallklart afviser aldrig et nummer på modulus 11, for siden 2007 er der udstedt CPR-numre uden kontrolciffer.</p>
+              <p class="eks"><span>Eksempel</span>Øverst i en ansøgning om plads i daginstitution står barnets CPR-nummer. I kopien står der en kode i stedet.</p>
+            </div>
+            <div class="punkt">
+              <h3>Telefon, e-mail og konti</h3>
+              <p>Telefonnumre med otte cifre, også med +45 og fra Grønland og Færøerne, e-mailadresser, kontonumre med reg.nr. (4 + 10 cifre), IBAN og betalingskort maskeres.</p>
+              <p class="eks"><span>Eksempel</span>I en mail fra en forælder med mobilnummer, e-mailadresse og kontonummer til en tilbagebetaling bliver alle tre maskeret i kopien.</p>
+            </div>
+            <div class="punkt">
+              <h3>Navne</h3>
+              <p>Navne maskeres som regel, også i genitiv. Et navn, der er fundet ét sted, maskeres i hele mappen.</p>
+              <p class="eks"><span>Eksempel</span>»Samtale med Mette Jensen« og længere nede »Jensens mor oplyste« giver den samme kode i kopien.</p>
+            </div>
+          </details>
+
+          <details class="sek blaa" id="virker_ofte">
+            <summary><span class="merke">Som regel</span>Det finder Krystallklart som regel</summary>
+            <p class="intro">Disse oplysninger bliver fundet i de fleste tilfælde, men noget slipper igennem, eller det afhænger af dine valg.</p>
+            <div class="punkt">
+              <h3>Følsomme oplysninger</h3>
+              <p>Diagnoser, sygemeldinger og medicin i almindelige fagudtryk bliver som regel fundet. Gruppen »Følsomme« omfatter også fagforening, tro og strafbare forhold.</p>
+              <p class="eks"><span>Eksempel</span>»Har type 2-diabetes« bliver fundet. »Er tit væk, fordi maven ikke kan tåle stress« kan blive stående.</p>
+            </div>
+            <div class="punkt">
+              <h3>Id-numre bag en etiket</h3>
+              <p>Pas, kørekort, sundhedskort, opholdskort og andre id-numre maskeres, når en etiket står foran. Det samme gælder klient-, medarbejder-, medlems-, patient-, skade- og policenumre.</p>
+              <p class="eks"><span>Eksempel</span>»Pasnr. 652472610« bliver maskeret. De samme ni cifre alene midt i en tekst kan blive stående.</p>
+            </div>
+            <div class="punkt">
+              <h3>Adresse og by</h3>
+              <p>Adresser maskeres som standard, med etage og side (»Vestergade 12, 2. th.«). Postnummer og by maskeres sammen med en adresse eller bag en etiket, ikke når de står alene. Programmet maskerer også adresser, der godt kunne blive stående, fx adressen på et lægehus eller en forvaltning.</p>
+              <p class="eks"><span>Eksempel</span>Bopælsadressen i en afgørelse bliver maskeret, men ofte også adressen på den institution, afgørelsen henviser til.</p>
+            </div>
+          </details>
+
+          <details class="sek gul" id="svakt">
+            <summary><span class="merke">Oftere ved siden af</span>Her rammer Krystallklart oftere forkert</summary>
+            <p class="intro">Her bliver mere stående, eller programmet maskerer mere end nødvendigt.</p>
+            <div class="punkt">
+              <h3>Private forhold i hverdagssprog</h3>
+              <p>Familiekonflikter, hvem barnet bor hos, pengeproblemer og klager beskrevet med egne ord bliver oftere stående end navne og numre.</p>
+              <p class="eks"><span>Eksempel</span>»Mor og far skændes hver weekend« kan blive stående i kopien, selv om navnene ved siden af er maskeret.</p>
+            </div>
+            <div class="punkt">
+              <h3>Navne, der er svære at genkende</h3>
+              <p>Initialer, korte udenlandske navne, navne, der også er almindelige ord, og navne skrevet med lille begyndelsesbogstav i en chat kan blive stående.</p>
+              <p class="eks"><span>Eksempel</span>»Har talt med KB om sagen« kan blive stående, mens »Karen Bach« bliver maskeret.</p>
+            </div>
+            <div class="punkt">
+              <h3>Et navn maskeres overalt</h3>
+              <p>Et navn maskeres i hele mappen, også navnene på jeres egne medarbejdere. Hedder nogen det samme som en virksomhed eller en by, kan den også blive maskeret. På listen »Står altid« kan du skrive det, der skal blive stående.</p>
+              <p class="eks"><span>Eksempel</span>Sagsbehandlerens navn under »Med venlig hilsen« bliver maskeret, indtil det står på listen »Står altid«.</p>
+            </div>
+            <div class="punkt">
+              <h3>Tekster på andre sprog</h3>
+              <p>Krystallklart er lavet til dansk. Navne, numre og e-mailadresser bliver også fundet på andre sprog, men helbred og private sætninger på andre sprog bliver fundet langt dårligere.</p>
+            </div>
+          </details>
+
+          <details class="sek graa" id="gjor_ikke">
+            <summary><span class="merke">Uden for</span>Det gør Krystallklart ikke</summary>
+            <p class="intro">Disse oplysninger er ikke en del af maskeringen eller er slået fra som standard.</p>
+            <div class="punkt">
+              <h3>Grupper, der er slået fra som standard</h3>
+              <p>Datoer, stilling og relation, alder og arbejdsplads (myndighed, virksomhed og CVR-nr.) er slået fra som standard. De bliver stående i kopien, indtil du slår dem til under »Scanningsvalg«.</p>
+              <p class="eks"><span>Eksempel</span>»Overassistent, 54 år« bliver stående i kopien med standardindstillingerne.</p>
+            </div>
+            <div class="punkt">
+              <h3>Det, der skal stå</h3>
+              <p>Myndighedens eget sagsnummer og journalnumre efter KLE, EAN-numre, lovhenvisninger og paragraffer bliver stående, så modtageren af en afgørelse om aktindsigt kan henvise til sagen. Beløb, faktura- og ordrenumre bliver også stående.</p>
+              <p class="eks"><span>Eksempel</span>»Jf. offentlighedslovens § 30, nr. 1« står uændret i kopien.</p>
+            </div>
+            <div class="punkt">
+              <h3>Sammenhængen</h3>
+              <p>Selv uden navn kan folk, der kender sagen, ofte se, hvem det drejer sig om, ud fra stilling, sted, alder og begivenheder.</p>
+              <p class="eks"><span>Eksempel</span>»Lederen af landsbyens eneste skole blev sygemeldt efter branden i maj« peger på én person, selv om der ikke står noget navn.</p>
+            </div>
+            <div class="punkt">
+              <h3>Filer, programmet ikke kan læse</h3>
+              <p>Filer, som Krystallklart ikke kan læse, kommer ikke med i kopien. De står i rapporten.</p>
+            </div>
+            <div class="punkt">
+              <h3>Kopien er ikke automatisk anonym</h3>
+              <p>En maskeret kopi er ikke anonym i lovens forstand. Jeres organisation er stadig dataansvarlig og må selv vurdere, om kopien kan udleveres. En kopi med koder kan gendannes med nøglen og indeholder derfor stadig personoplysninger.</p>
+            </div>
+          </details>
+
+          <details class="sek lilla" id="bilder">
+            <summary><span class="merke">Billeder</span>Billeder og scannede sider</summary>
+            <p class="intro">I billeder skal Krystallklart først læse teksten, og det giver flere fejl end i almindelig tekst.</p>
+            <div class="punkt">
+              <h3>I billeder bliver mere stående</h3>
+              <p>På Mac læses teksten med den tekstgenkendelse, der er indbygget i macOS, på Windows og Linux med Tesseract. Et foto af en udfyldt blanket giver færre fund end den samme blanket som Word-fil.</p>
+            </div>
+            <div class="punkt">
+              <h3>Ansigter</h3>
+              <p>Ansigter pixeleres som standard. Små ansigter, ansigter i profil og delvist skjulte ansigter kan blive overset. Et ansigt, programmet ikke finder, bliver stående uden advarsel.</p>
+            </div>
+            <div class="punkt">
+              <h3>Kun tekst og ansigter</h3>
+              <p>Krystallklart genkender kun tekst, programmet kan læse, og ansigter. Underskrifter, QR-koder, stregkoder og tatoveringer bliver stående. Håndskrift maskeres kun, hvis programmet kan læse den. Billeder af pas og sundhedskort skal du altid selv kontrollere.</p>
+            </div>
+          </details>
+
+          <details class="sek signal" id="du_ma_selv">
+            <summary><span class="merke">Dit ansvar</span>Det skal du selv gøre</summary>
+            <p class="intro">Krystallklart sparer meget arbejde, men dette er din opgave.</p>
+            <div class="punkt">
+              <h3>Læs kopien</h3>
+              <p>Gennemgå kopien, før du udleverer den, især i sager om bestemte personer. Krystallklart finder langt de fleste navne og numre, men kan ikke love, at alt privat er fjernet.</p>
+            </div>
+            <div class="punkt">
+              <h3>Markér det, der blev overset</h3>
+              <p>I vinduet kan du markere et ord og vælge »Maskér«. Du kan også sætte ordet på listen »Maskeres altid«, så det også maskeres i de næste mapper.</p>
+            </div>
+            <div class="punkt">
+              <h3>Maskér de filer, der blev holdt tilbage</h3>
+              <p>Er Krystallklart ikke sikker på, at en kopi er ren, gemmer programmet den ikke. Filen står i rapporten og skal maskeres på en anden måde.</p>
+            </div>
+            <div class="punkt">
+              <h3>Ryd op i gamle kopimapper</h3>
+              <p>Efter en rettelse kommer der en ny mappe med kopier, og de gamle bliver liggende, indtil du sletter dem.</p>
+              <p class="eks"><span>Eksempel</span>Efter en rettelse har du »Sager-maskeret« og »Sager-maskeret 2«. Slet den første, før nogen bruger den forkerte kopi.</p>
+            </div>
+          </details>
+        </section>
+      </main>
+
+      <div class="slutt">
+        <strong>Ingen automatisk maskering finder alt.</strong>
+        <p>
+          Krystallklart finder langt de fleste navne og numre, men ikke alt, hvad der er privat.
+          Læs derfor kopien, før du udleverer den. Det er jer, der er dataansvarlige efter
+          databeskyttelsesforordningen, og Krystallklart garanterer ikke, at kopien er anonym.
+        </p>
+        <p>Vil du kontrollere, at Krystallklart ikke sender noget ud, står fremgangsmåden <a href="til-it.html">på siden til IT-afdelingen</a>.</p>
+      </div>
+      <p class="slutt-linje">Finder du noget, Krystallklart burde have fundet, så skriv gerne til os. Vi opdaterer siden, når motoren ændres.</p>
+    </div>
+    <footer class="s-bunn">
+      <p class="s-bunn-merke"><i>Krystallklart</i> <span>fra ESBJUG CONSULT</span></p>
+      <nav aria-label="Mere om Krystallklart">
+        <a href="./">Forside</a>
+        <a href="priser/">Priser</a>
+        <a href="til-it.html">Til IT-afdelingen</a>
+        <a href="privatliv/">Privatliv</a>
+        <a href="vilkaar/">Vilkår</a>
+      </nav>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,176 @@
+<!doctype html>
+<!--
+  Hei, du som leser kildekoden. Det var deg vi håpet på.
+
+  Klart lover at dokumentene aldri forlater maskinen. Et sånt løfte skal ikke
+  tas på ordet, så sjekk det:
+
+  - Programmet: /glockenklar/fuer-die-it har kommandoene som viser hva det snakker med.
+  - Denne siden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
+    uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
+  - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
+    Vi vil heller høre det fra deg enn fra en kunde.
+-->
+<html lang="de-AT">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/glockenklar/favicon.png" />
+    <title>Preis und Bestellung · Glockenklar</title>
+    <meta name="description" content="Was Glockenklar für Ihre Organisation kostet: für Unternehmen, Gemeinden und Dienststellen von Bund und Ländern. Eine Lizenz für alle, Bestellung auf Rechnung. Kostenlos für Privatpersonen." />
+    <meta name="theme-color" content="#eef3fb" />
+    <!-- Ikke indekser før Klart lanseres. Fjernes sammen med den på /glockenklar/. -->
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="../fonts.css" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="pris.css" />
+    <link rel="stylesheet" href="bestellung.css" />
+  </head>
+  <body>
+    <main>
+      <section class="port" id="port">
+        <!-- Veien tilbake til forsiden (eieren 11.11.2026: det gikk ikke an å komme tilbake). -->
+        <a class="pris-hjem" href="/glockenklar/"><span aria-hidden="true">←</span> <i>Glockenklar</i></a>
+        <div class="kort middels" id="kort">
+          <!-- Privatpersoner betaler ikke; det skal stå først også her. -->
+          <p class="pris-privat"><b>Kostenlos für Privatpersonen.</b> <a href="/glockenklar/#last-ned">Glockenklar herunterladen</a></p>
+          <p class="merke">Für Organisationen</p>
+          <h1>Glockenklar für Ihre Organisation</h1>
+          <p class="ingress">Eine Lizenz gilt für alle in der Organisation. Keine Zählung von Arbeitsplätzen, keine Seitengrenzen.</p>
+
+          <!-- Tre slags kjøpere. Prisen kommer fra price.js, den samme filen serveren regner med (bestellung.js). -->
+          <div class="de-valg" role="radiogroup" aria-label="Art der Organisation">
+            <label><input type="radio" name="art" value="business" checked /><span>Unternehmen, Kanzlei, Ordination oder Verein</span></label>
+            <label><input type="radio" name="art" value="municipal" /><span>Gemeinde, Stadt oder Gemeindeverband</span></label>
+            <label><input type="radio" name="art" value="state" /><span>Dienststelle des Bundes oder eines Landes</span></label>
+          </div>
+
+          <div class="de-to-felt" id="feld-unternehmen">
+            <div>
+              <label for="personen">Personen in der Organisation</label>
+              <input id="personen" type="number" min="1" step="1" value="25" inputmode="numeric" />
+              <p class="smaa">Alle Beschäftigten. Geben Sie 1 ein, wenn Sie allein arbeiten.</p>
+            </div>
+            <div id="feld-branche">
+              <label for="branche">Branche</label>
+              <select id="branche"></select>
+            </div>
+          </div>
+
+          <div class="de-ett-felt" id="feld-gemeinde" hidden>
+            <label for="einwohner">Einwohnerzahl</label>
+            <input id="einwohner" type="text" inputmode="numeric" autocomplete="off" placeholder="z. B. 18.500" maxlength="12" />
+            <p class="smaa">Derselbe Preis für jede Gemeinde gleicher Größe, ohne Verhandlung.</p>
+          </div>
+
+          <div class="de-ett-felt" id="feld-dienststelle" hidden>
+            <label for="beschaeftigte">Beschäftigte der Dienststelle</label>
+            <input id="beschaeftigte" type="number" min="1" step="1" inputmode="numeric" placeholder="z. B. 120" />
+            <p class="smaa">Auch für Gerichte, Universitäten, Sozialversicherungsträger und andere Körperschaften öffentlichen Rechts.</p>
+          </div>
+
+          <div class="de-prisboks" aria-live="polite">
+            <p class="bekreftet">Lizenz für die gesamte Organisation</p>
+            <p class="pristall" id="preiszeile"><b id="betrag"></b> <span>für ein Jahr</span></p>
+            <p class="ke-svar" id="vier" hidden></p>
+            <p class="de-hinweis" id="hinweis" hidden></p>
+            <p class="smaa">Nettopreis. Die Rechnung weist keine Umsatzsteuer aus; die Steuerschuld geht in der Regel auf den Leistungsempfänger über (Reverse Charge).</p>
+          </div>
+
+          <form id="bestellung" class="de-ordre" novalidate>
+            <div class="de-to-felt">
+              <div>
+                <label for="org">Name der Organisation</label>
+                <input id="org" type="text" maxlength="120" autocomplete="organization" required />
+                <p class="smaa">Steht auf der Rechnung und in Glockenklar auf jedem Rechner, der die Lizenz verwendet.</p>
+              </div>
+              <div>
+                <label for="email">E-Mail für die Rechnung</label>
+                <input id="email" type="email" maxlength="200" autocomplete="email" required />
+                <p class="smaa">Hierhin geht die Rechnung und später der Lizenzschlüssel.</p>
+              </div>
+            </div>
+            <div class="de-to-felt">
+              <div>
+                <label for="adresse">Rechnungsadresse</label>
+                <textarea id="adresse" rows="4" maxlength="600" autocomplete="street-address" required></textarea>
+              </div>
+              <div>
+                <label for="zeichen">Ihre Bestellnummer oder Geschäftszahl</label>
+                <input id="zeichen" type="text" maxlength="80" />
+                <p class="smaa">Freiwillig. Steht auf der Rechnung.</p>
+              </div>
+            </div>
+            <p class="de-skjult" aria-hidden="true"><label for="website">Dieses Feld bitte leer lassen</label><input id="website" type="text" tabindex="-1" autocomplete="off" /></p>
+            <div class="knapper">
+              <button class="btn" type="submit" id="bestellen">Auf Rechnung bestellen</button>
+              <button class="btn de-ghost-lys" type="button" id="habe">Ich habe schon einen Lizenzschlüssel</button>
+            </div>
+            <p class="smaa de-feil" id="fehler" role="alert" hidden></p>
+            <p class="smaa" id="ablauf">Die Rechnung kommt sofort per E-Mail. Sie zahlen innerhalb von 30 Tagen per SEPA-Überweisung in Euro. Der Lizenzschlüssel kommt per E-Mail, sobald die Zahlung eingegangen ist, und gilt ab diesem Tag ein Jahr. Bis dahin funktioniert Glockenklar 30 Tage in vollem Umfang.</p>
+            <p class="smaa" id="habeText" hidden>Öffnen Sie Glockenklar und klicken Sie oben rechts auf „Lizenz“ (während der Testphase steht dort „Test: noch … Tage“). Fügen Sie den Code ein, der mit GLOCKENKLAR- beginnt, und klicken Sie auf „Aktivieren“.</p>
+          </form>
+          <div id="danke" class="de-takk" hidden tabindex="-1">
+            <h2>Vielen Dank</h2>
+            <p id="dankeText"></p>
+            <p class="smaa">Fragen: <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a></p>
+          </div>
+
+          <!-- Bare for kommuner: prislisten. Tallene er de samme som MUNICIPAL i price.js; taket (99 000 € for fire år)
+               ligger under direktetildelingsgrensen på 100 000 € netto (BVergG 2018). -->
+          <section class="kommune-eur" id="gemeinden" aria-labelledby="ge-titel" hidden>
+            <p class="merke">Für Gemeinden</p>
+            <h2 id="ge-titel">Ein Preis nach Einwohnerzahl</h2>
+            <p class="ingress">
+              Die Lizenz gilt für die ganze Gemeindeverwaltung. Vier Jahre kosten höchstens 99.000 € netto und bleiben damit unter
+              der Grenze von 100.000 € für die Direktvergabe nach dem BVergG 2018. Bestellt und verrechnet wird jeweils ein Jahr,
+              ein Viertel des Betrags für vier Jahre.
+            </p>
+            <table class="ke-tabell">
+              <caption class="skjult-tekst">Preise für Gemeinden, vier Jahre und pro Jahr, netto</caption>
+              <thead><tr><th scope="col">Einwohner</th><th scope="col">4 Jahre</th><th scope="col">pro Jahr</th></tr></thead>
+              <tbody>
+                <tr><td>500</td><td>1.500 €</td><td>375 €</td></tr>
+                <tr><td>2.000</td><td>2.600 €</td><td>650 €</td></tr>
+                <tr><td>5.000</td><td>5.000 €</td><td>1.250 €</td></tr>
+                <tr><td>20.000</td><td>14.500 €</td><td>3.625 €</td></tr>
+                <tr><td>50.000</td><td>41.000 €</td><td>10.250 €</td></tr>
+                <tr><td>100.000</td><td>70.000 €</td><td>17.500 €</td></tr>
+                <tr><td>ab 250.000</td><td>99.000 €</td><td>24.750 €</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <h3 class="vilkar-tittel">Vor dem Kauf</h3>
+          <p class="de-avsnitt"><b>30 Tage mit dem vollen Glockenklar.</b> Testen Sie Glockenklar 30 Tage lang mit Ihren eigenen Dateien, bevor Sie sich entscheiden. Es ist die Vollversion, und der Test erfordert keine Registrierung.</p>
+
+          <h3 class="vilkar-tittel">Im Preis enthalten</h3>
+          <ul class="vilkar">
+            <li>Word, Excel, PowerPoint, PDF, E-Mail, Textdateien, Scans und Fotos</li>
+            <li>Alles läuft auf Ihren eigenen Rechnern. Nichts wird hochgeladen</li>
+            <li>Mac, Windows und Linux, für alle Beschäftigten und auf beliebig vielen Rechnern</li>
+            <li>Updates während des Lizenzjahres</li>
+          </ul>
+          <p class="de-avsnitt">Bezahlt wird ausschließlich per Rechnung. <a class="lenke" href="/glockenklar/bedingungen/">Lizenzbedingungen</a></p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bunnen er alltid synlig. Selgeren (ECG § 5). Esbjug Consult er ikke MVA-registrert (Brønnøysund 19.11.2026). -->
+    <footer class="pris-bunn" id="pris-bunn">
+      <div class="colofon">
+        <p class="wordmark"><a href="/glockenklar/"><b>Glockenklar</b></a> <span>v0.1.0</span></p>
+        <p class="selger">
+          Verkauft von <b class="selger-navn">ESBJUG CONSULT</b> · Glenneveien 272B, 1455 Nordre Frogn, Norwegen ·
+          <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a> · Org.-Nr. 938 441 405
+        </p>
+      </div>
+      <div class="footmeta">
+        <a href="/glockenklar/bedingungen/">Lizenzbedingungen</a>
+        <a href="/glockenklar/datenschutz/">Datenschutz</a>
+      </div>
+    </footer>
+
+    <script type="module" src="bestellung.js"></script>
+  </body>
+</html>

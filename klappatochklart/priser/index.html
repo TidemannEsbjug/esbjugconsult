@@ -1,0 +1,172 @@
+<!doctype html>
+<!--
+  Hei, du som leser kildekoden. Det var deg vi håpet på.
+
+  Klappat och Klart lover at dokumentene aldri forlater maskinen. Et sånt løfte skal ikke
+  tas på ordet, så sjekk det:
+
+  - Programmet: /klappatochklart/for-it.html har kommandoene som viser hva det snakker med.
+  - Denne siden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
+    uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
+  - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
+-->
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/klappatochklart/favicon.png" />
+    <title>Priser och beställning · Klappat och Klart</title>
+    <meta name="description" content="Vad Klappat och Klart kostar för din organisation: företag, kommuner, regioner och statliga myndigheter. En licens för alla, beställning mot faktura. Gratis för privatpersoner." />
+    <meta name="theme-color" content="#eef3fb" />
+    <!-- Ikke indekser før lanseringen. -->
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="../fonts.css" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="pris.css" />
+    <link rel="stylesheet" href="bestallning.css" />
+  </head>
+  <body>
+    <main>
+      <section class="port" id="port">
+        <a class="pris-hjem" href="/klappatochklart/"><span aria-hidden="true">←</span> <i>Klappat och Klart</i></a>
+        <div class="kort middels" id="kort">
+          <p class="pris-privat"><b>Gratis för privatpersoner.</b> <a href="/klappatochklart/">Ladda ned Klappat och Klart</a></p>
+          <p class="merke">För organisationer</p>
+          <h1>Klappat och Klart för din organisation</h1>
+          <p class="ingress">En licens gäller alla i organisationen. Ingen räkning av arbetsplatser och ingen gräns för antalet sidor.</p>
+
+          <!-- Tre slags kjøpere. Prisen kommer fra price.js, den samme filen serveren regner med. -->
+          <div class="de-valg" role="radiogroup" aria-label="Typ av organisation">
+            <label><input type="radio" name="art" value="business" checked /><span>Företag, byrå, mottagning eller förening</span></label>
+            <label><input type="radio" name="art" value="municipal" /><span>Kommun eller region</span></label>
+            <label><input type="radio" name="art" value="state" /><span>Statlig myndighet</span></label>
+          </div>
+
+          <div class="de-to-felt" id="falt-foretag">
+            <div>
+              <label for="personer">Personer i organisationen</label>
+              <input id="personer" type="number" min="1" step="1" value="25" inputmode="numeric" />
+              <p class="smaa">Alla som arbetar där. Skriv 1 om du arbetar ensam.</p>
+            </div>
+            <div id="falt-bransch">
+              <label for="bransch">Bransch</label>
+              <select id="bransch"></select>
+            </div>
+          </div>
+
+          <div class="de-ett-felt" id="ke-skjema" hidden>
+            <label for="ke-innbyggere">Antal invånare</label>
+            <input id="ke-innbyggere" type="text" inputmode="numeric" autocomplete="off" placeholder="t.ex. 18 500" maxlength="12" />
+            <p class="smaa">Samma pris för alla kommuner och regioner av samma storlek, utan förhandling.</p>
+          </div>
+
+          <div class="de-ett-felt" id="falt-stat" hidden>
+            <label for="anstallda">Anställda vid myndigheten</label>
+            <input id="anstallda" type="number" min="1" step="1" inputmode="numeric" placeholder="t.ex. 120" />
+            <p class="smaa">Också för domstolar, länsstyrelser, universitet och högskolor.</p>
+          </div>
+
+          <div class="de-prisboks" aria-live="polite">
+            <p class="bekreftet">Licens för hela organisationen</p>
+            <p class="pristall" id="prisrad"><b id="belopp"></b> <span>per år</span></p>
+            <div id="ke-boks" hidden><p class="ke-svar" id="ke-svar"></p></div>
+            <p class="de-hinweis" id="notis" hidden></p>
+            <p class="smaa">Pris exklusive moms. Fakturan har ingen svensk moms: omvänd betalningsskyldighet, köparen redovisar momsen.</p>
+          </div>
+
+          <form id="bestallning" class="de-ordre" novalidate>
+            <div class="de-to-felt">
+              <div>
+                <label for="org">Organisationens namn</label>
+                <input id="org" type="text" maxlength="120" autocomplete="organization" required />
+                <p class="smaa">Står på fakturan och i Klappat och Klart på varje dator som använder licensen.</p>
+              </div>
+              <div>
+                <label for="epost">E-post för fakturan</label>
+                <input id="epost" type="email" maxlength="200" autocomplete="email" required />
+                <p class="smaa">Hit skickar vi fakturan och sedan licensnyckeln.</p>
+              </div>
+            </div>
+            <div class="de-to-felt">
+              <div>
+                <label for="adress">Fakturaadress</label>
+                <textarea id="adress" rows="4" maxlength="600" autocomplete="street-address" required></textarea>
+                <p class="smaa">Skriv också organisationsnummer och momsregistreringsnummer.</p>
+              </div>
+              <div>
+                <label for="referens">Er referens eller beställningsnummer</label>
+                <input id="referens" type="text" maxlength="80" />
+                <p class="smaa">Frivilligt. Står på fakturan.</p>
+              </div>
+            </div>
+            <p class="de-skjult" aria-hidden="true"><label for="website">Lämna det här fältet tomt</label><input id="website" type="text" tabindex="-1" autocomplete="off" /></p>
+            <div class="knapper">
+              <button class="btn" type="submit" id="bestall">Beställ mot faktura</button>
+              <button class="btn de-ghost-lys" type="button" id="harkod">Jag har redan en licensnyckel</button>
+            </div>
+            <p class="smaa de-feil" id="fel" role="alert" hidden></p>
+            <p class="smaa" id="forlopp">Fakturan kommer direkt via e-post. Betalning i kronor inom 30 dagar. Licensnyckeln kommer via e-post så snart betalningen har kommit in och gäller ett år från den dagen. Fram till dess fungerar Klappat och Klart fullt ut i 30 dagar.</p>
+            <p class="smaa" id="harkodTekst" hidden>Öppna Klappat och Klart och klicka på ”Licens” uppe till höger (under provperioden står det ”Provperiod: … dagar kvar” där). Klistra in koden som börjar med KLAPPATOCHKLART- och klicka på ”Aktivera”.</p>
+          </form>
+          <div id="tack" class="de-takk" hidden tabindex="-1">
+            <h2>Tack</h2>
+            <p id="tackTekst"></p>
+            <p class="smaa">Frågor: <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a></p>
+          </div>
+
+          <!-- Bare for kommuner og regioner: prislisten. Punktene er de samme som MUNICIPAL i price.js. -->
+          <section class="kommune-eur" id="kommune-eur" aria-labelledby="ke-tittel" hidden>
+            <p class="merke">För kommuner och regioner</p>
+            <h2 id="ke-tittel">Ett pris efter antal invånare</h2>
+            <p class="ingress">
+              Licensen gäller hela förvaltningen och alla anställda. Fyra år kostar högst 590&nbsp;000&nbsp;kr exklusive moms, alltså alltid under
+              gränsen för direktupphandling på 700&nbsp;000&nbsp;kr i LOU. Ni beställer och faktureras ett år i taget, en fjärdedel av beloppet för fyra år.
+            </p>
+            <table class="ke-tabell">
+              <caption class="skjult-tekst">Priser för kommuner och regioner, för fyra år och per år, exklusive moms</caption>
+              <thead><tr><th scope="col">Invånare</th><th scope="col">4 år</th><th scope="col">per år</th></tr></thead>
+              <tbody>
+                <tr><td>upp till 2&nbsp;000</td><td>19&nbsp;900&nbsp;kr</td><td>4&nbsp;975&nbsp;kr</td></tr>
+                <tr><td>5&nbsp;000</td><td>49&nbsp;000&nbsp;kr</td><td>12&nbsp;250&nbsp;kr</td></tr>
+                <tr><td>15&nbsp;000</td><td>99&nbsp;000&nbsp;kr</td><td>24&nbsp;750&nbsp;kr</td></tr>
+                <tr><td>30&nbsp;000</td><td>199&nbsp;000&nbsp;kr</td><td>49&nbsp;750&nbsp;kr</td></tr>
+                <tr><td>60&nbsp;000</td><td>349&nbsp;000&nbsp;kr</td><td>87&nbsp;250&nbsp;kr</td></tr>
+                <tr><td>120&nbsp;000</td><td>490&nbsp;000&nbsp;kr</td><td>122&nbsp;500&nbsp;kr</td></tr>
+                <tr><td>från 250&nbsp;000</td><td>590&nbsp;000&nbsp;kr</td><td>147&nbsp;500&nbsp;kr</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <h3 class="vilkar-tittel">Innan du köper</h3>
+          <p class="de-avsnitt"><b>30 dagar med hela Klappat och Klart.</b> Prova Klappat och Klart i 30 dagar på era egna filer innan ni bestämmer er. Det är den fullständiga versionen, och provperioden kräver ingen registrering.</p>
+
+          <h3 class="vilkar-tittel">Ingår</h3>
+          <ul class="vilkar">
+            <li>Word, Excel, PowerPoint, PDF, e-post, textfiler, skannade dokument och bilder</li>
+            <li>Allt körs på era egna datorer. Ingenting skickas iväg</li>
+            <li>För alla anställda och på hur många datorer som helst: Mac, Windows och Linux</li>
+            <li>Uppdateringar under licensåret</li>
+          </ul>
+          <p class="de-avsnitt">Betalning endast mot faktura. <a class="lenke" href="/klappatochklart/villkor/">Licensvillkor</a></p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Selgeren står alltid nederst. Esbjug Consult er ikke MVA-registrert. -->
+    <footer class="pris-bunn" id="pris-bunn">
+      <div class="colofon">
+        <p class="wordmark"><a href="/klappatochklart/"><b>Klappat och Klart</b></a> <span>v0.1.0</span></p>
+        <p class="selger">
+          Säljare: <b class="selger-navn">ESBJUG CONSULT</b> · Glenneveien 272B, 1455 Nordre Frogn, Norge ·
+          <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a> · org.nr 938 441 405
+        </p>
+      </div>
+      <div class="footmeta">
+        <a href="/klappatochklart/villkor/">Licensvillkor</a>
+        <a href="/klappatochklart/integritet/">Integritet</a>
+      </div>
+    </footer>
+
+    <script type="module" src="bestallning.js"></script>
+  </body>
+</html>

@@ -1,0 +1,1578 @@
+<!doctype html>
+<!--
+  Hei, du som leser kildekoden. Det var deg vi håpet på.
+
+  Klart lover at dokumentene aldri forlater maskinen. Et sånt løfte skal ikke
+  tas på ordet, så sjekk det:
+
+  - Programmet: /krystallklart/til-it.html har kommandoene som viser hva det snakker med.
+  - Denne siden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
+    uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
+  - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
+    Vi vil heller høre det fra deg enn fra en kunde.
+-->
+<html lang="da">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/krystallklart/favicon.png" />
+    <title>Krystallklart – maskerer personoplysninger i dokumenter, lokalt på computeren</title>
+    <meta
+      name="description"
+      content="Krystallklart er et program til Mac, Windows og Linux, lavet i Norge: Lokal kunstig intelligens maskerer danske personoplysninger i en hel mappe med Word, Excel, PowerPoint, PDF og e-mail. Til aktindsigt, videregivelse, arkiv, undervisning og AI-værktøjer – uden internet og uden konto."
+    />
+    <!-- Himmelen øverst i heroen; forside.js bytter til sidens lyse farge når man har blat forbi. -->
+    <meta name="theme-color" content="#6593c3" />
+    <meta
+      property="og:title"
+      content="Krystallklart – maskerer personoplysninger i dokumenter, lokalt på computeren"
+    />
+    <meta
+      property="og:description"
+      content="Et program lavet i Norge. Lokal kunstig intelligens læser Word, Excel, PowerPoint, PDF, e-mails og tekst, finder danske personoplysninger og laver en maskeret kopi, som du selv kontrollerer. Intet forlader computeren."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="da_DK" />
+    <meta property="og:url" content="https://esbjugconsult.com/krystallklart/" />
+    <!-- Delingsbildet (Snapchat, iMessage, Facebook): krystallen på vinterbildet, 1200 × 630.
+         Uten det tok Snapchat et tilfeldig bilde fra siden, mappeikonet (eieren 11.11.2026). -->
+    <meta property="og:image" content="https://esbjugconsult.com/alles-klar/assets/klart-deling.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Krystallklart: programikonet på et vinterbillede med et skispor" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://esbjugconsult.com/alles-klar/assets/klart-deling.jpg" />
+    <link rel="apple-touch-icon" href="/krystallklart/ikon.png" />
+    <!-- Ikke indekser før nedlastingene er på plass. Fjern når Klart lanseres. -->
+    <meta name="robots" content="noindex" />
+    <!-- Fontene ligger på siden selv. Henter vi dem fra Google, får Google
+         IP-adressen til hver besøkende - ikke noe en GDPR-side skal gjøre. -->
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="forhandsvisning.css" />
+    <link rel="stylesheet" href="videre.css" />
+    <link rel="stylesheet" href="de.css" />
+  </head>
+  <body>
+    <!-- Filtype-ikoner: dokumentark bak, appflis foran. -->
+    <svg class="ikonark" width="0" height="0" aria-hidden="true">
+      <defs>
+        <g id="page">
+          <rect
+            x="16"
+            y="2"
+            width="26"
+            height="32"
+            rx="3.5"
+            fill="#fff"
+            stroke="#dcdfda"
+            stroke-width="1.3"
+          />
+          <g fill="#e4e7e2">
+            <rect x="26" y="9" width="12" height="2.4" rx="1.2" />
+            <rect x="26" y="15" width="12" height="2.4" rx="1.2" />
+          </g>
+        </g>
+
+        <symbol id="i-word" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#185abd" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">W</text>
+        </symbol>
+
+        <symbol id="i-excel" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#107c41" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">X</text>
+        </symbol>
+
+        <symbol id="i-ppt" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#c43e1c" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">P</text>
+        </symbol>
+
+        <symbol id="i-pdf" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#c8322b" />
+          <text x="17.5" y="31" text-anchor="middle" font-size="11">PDF</text>
+        </symbol>
+
+        <symbol id="i-mail" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#0f6cbd" />
+          <rect
+            x="8.5"
+            y="20"
+            width="18"
+            height="13.5"
+            rx="1.8"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2.1"
+          />
+          <path
+            d="M9.2 21.2l8.3 6.4 8.3-6.4"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2.1"
+          />
+        </symbol>
+
+        <symbol id="i-bilde" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#7a4fd6" />
+          <circle cx="23" cy="20" r="3" fill="#fff" />
+          <path d="M7.5 36l7.5-10 5.5 6.5 3.5-4 6.5 7.5z" fill="#fff" />
+        </symbol>
+
+        <symbol id="i-text" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#5b6569" />
+          <g fill="#fff">
+            <rect x="9" y="19.5" width="17" height="2.4" rx="1.2" />
+            <rect x="9" y="25.3" width="17" height="2.4" rx="1.2" />
+            <rect x="9" y="31.1" width="10" height="2.4" rx="1.2" />
+          </g>
+        </symbol>
+
+        <!-- Mac Studio for skreddersydd oppsett. Ligger her én
+             gang, så de to nedlastingsfeltene kan bruke den uten like id-er. -->
+        <linearGradient id="mac-front" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f3f5f8" />
+          <stop offset="0.55" stop-color="#e1e6ec" />
+          <stop offset="1" stop-color="#c4cbd4" />
+        </linearGradient>
+        <linearGradient id="mac-kant" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#6d7783" stop-opacity="0.28" />
+          <stop offset="0.08" stop-color="#6d7783" stop-opacity="0" />
+          <stop offset="0.92" stop-color="#6d7783" stop-opacity="0" />
+          <stop offset="1" stop-color="#6d7783" stop-opacity="0.32" />
+        </linearGradient>
+        <linearGradient id="mac-topp" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#e9edf2" />
+          <stop offset="1" stop-color="#fbfcfd" />
+        </linearGradient>
+        <radialGradient id="mac-skygge" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="#050d1f" stop-opacity="0.45" />
+          <stop offset="1" stop-color="#050d1f" stop-opacity="0" />
+        </radialGradient>
+        <symbol id="mac-studio" viewBox="60 80 440 240">
+          <ellipse cx="280" cy="292" rx="236" ry="26" fill="url(#mac-skygge)" />
+          <rect x="122" y="262" width="316" height="24" rx="9" fill="#8d96a1" />
+          <rect x="128" y="276" width="304" height="6" rx="3" fill="#6e7782" />
+          <path d="M96 150 L128 104 Q134 96 146 96 L414 96 Q426 96 432 104 L464 150 Z" fill="url(#mac-topp)" stroke="#d3d9e1" stroke-width="1.2" />
+          <path d="M96 150 H464 V252 Q464 270 446 270 H114 Q96 270 96 252 Z" fill="url(#mac-front)" />
+          <path d="M96 150 H464 V252 Q464 270 446 270 H114 Q96 270 96 252 Z" fill="url(#mac-kant)" />
+          <path d="M96 150.5 H464" stroke="#ffffff" stroke-width="1.6" />
+          <g fill="#2b3139">
+            <rect x="128" y="200" width="22" height="8" rx="4" />
+            <rect x="162" y="200" width="22" height="8" rx="4" />
+            <rect x="386" y="202" width="42" height="4" rx="2" />
+          </g>
+          <circle cx="114" cy="254" r="2.4" fill="#ffffff" />
+          <circle cx="114" cy="254" r="5" fill="#ffffff" opacity="0.25" />
+        </symbol>
+      </defs>
+    </svg>
+
+    <!-- ================= Toppbar ================= -->
+    <header class="topbar">
+      <a class="wordmark" href="#top">
+        <b>Krystallklart</b>
+        <span>v0.1.0</span>
+      </a>
+      <nav class="topnav">
+        <a href="#hva">Hvad er Krystallklart</a>
+        <a href="#kjernen">Sådan virker det</a>
+        <a href="#nokkel">Nøglen</a>
+        <a href="#trygt">Sikkerhed</a>
+        <a href="#dybde">I dybden</a>
+        <a href="#ansvar">Ansvar</a>
+        <a href="priser/">Pris</a>
+      </nav>
+      <a class="btn sm topp-last" href="#top">Hent</a>
+      <!-- Mobil og nettbrett: e-post med lenken i stedet for «Last ned» (eieren 11.11.2026). -->
+      <a class="btn sm topp-send" href="mailto:?subject=Krystallklart&amp;body=https%3A%2F%2Fesbjugconsult.com%2Fkrystallklart">Send til dig selv</a>
+    </header>
+
+    <main id="top">
+      <!-- ================= Hero ================= -->
+      <section class="hero" id="programmet">
+        <!-- Scenen: vinterbildet fra appen. Skisporet leder opp mot hytta,
+             teksten står i himmelen og knappene nede i snøen. -->
+        <div class="scene">
+          <img class="scene-bilde" src="/alles-klar/assets/hero-vinter.jpg" width="2400" height="1600" fetchpriority="high" alt="" aria-hidden="true" />
+          <!-- Øverst toner himmelen over i én farge, den samme som linjen øverst på telefonen (eieren 11.11.2026). -->
+          <div class="scene-himmel" aria-hidden="true"></div>
+          <!-- Snøen fra forsiden på esbjugconsult.com, bak «Klart» og kortet (forside.js). -->
+          <canvas class="scene-sno" aria-hidden="true"></canvas>
+          <!-- Fnuggene som faller over kortets glass, bak innholdet i kortet. -->
+          <canvas class="scene-sno-midt" aria-hidden="true"></canvas>
+          <!-- Snøen som legger seg på «Klart» og kortet, foran innholdet. -->
+          <canvas class="scene-sno-lag" aria-hidden="true"></canvas>
+          <!-- Lett snø på mobil og nettbrett, bak «Klart» og kortet (forside.js). -->
+          <canvas class="scene-sno-mobil" aria-hidden="true"></canvas>
+
+          <!-- All teksten samlet, nede i snøen. Himmelen, hytta og sporet står fritt over. -->
+          <div class="scene-tekst">
+            <h1 class="rise d-60 hero-logo">
+              <!-- Krystallen over ordet på mobil, som på nedtellingssiden (eieren 11.11.2026). -->
+              <img class="hero-ikon" src="ikon.png" width="256" height="256" alt="" aria-hidden="true" />
+              <span class="logo-ord">Krystallklart</span>
+            </h1>
+            <!-- Privatpersoner laster ned og bruker Klart gratis; de skal ikke gjennom noe felt.
+                 Virksomheter går gjennom feltet under: 30 dager, så lisens. Blokka ligger rett over
+                 feltet (transform: translateY(-100%)), så feltet blir stående ved hytta som før,
+                 og viker når de begynner å skrive virksomhetsnavnet. -->
+            <div class="privat rise d-120">
+              <p class="privat-linje">
+                <span><b>Gratis til privat brug.</b></span>
+              </p>
+              <!-- Mobil og nettbrett: Klart kjører ikke der, så i stedet for nedlasting en e-post med lenken
+                   til seg selv eller andre (eieren 11.11.2026). Vises bare på berøringsskjermer (styles.css). -->
+              <div class="mobil-send">
+                <p class="mobil-send-tittel">Krystallklart er et program til computeren.</p>
+                <p class="mobil-send-tekst">Send linket til dig selv på e-mail, og hent programmet på en Mac, en Windows-pc eller en Linux-computer.</p>
+                <a class="btn" href="mailto:?subject=Krystallklart&amp;body=https%3A%2F%2Fesbjugconsult.com%2Fkrystallklart">Send til dig selv</a>
+                <p class="mobil-send-andre">(Eller til en anden?)</p>
+              </div>
+              <p class="last-ned-tittel">Hent</p>
+              <div class="get">
+                <!-- Hver knapp får sitt systems kjennetegn når man holder over, uten logoer:
+                     Windows en ring i de fire fargene rundt knappen (en ring,
+                     ikke logoens ruter), Mac glass etter Apples egen beskrivelse, Linux en pingvin (egen tegning). -->
+                <a class="btn ghost os os-win" href="/krystallklart/download/windows" download aria-label="Hent til Windows"><span class="os-navn">Windows</span></a>
+                <a class="btn ghost os os-mac" href="/krystallklart/download/mac" download aria-label="Hent til Mac"><span class="os-glass" aria-hidden="true"></span><span class="os-navn">Mac</span></a>
+                <a class="btn ghost os os-lin" href="/krystallklart/download/linux" download aria-label="Hent til Linux"><span class="os-figur os-pingvin" aria-hidden="true"><svg viewBox="0 0 24 28" width="24" height="28" focusable="false"><g class="os-pingvin-kropp"><ellipse cx="8.4" cy="26.4" rx="3.3" ry="1.4" fill="#f5a524"/><ellipse cx="15.6" cy="26.4" rx="3.3" ry="1.4" fill="#f5a524"/><ellipse cx="3.9" cy="17" rx="1.9" ry="5.4" transform="rotate(16 3.9 17)" fill="#0f2147"/><ellipse cx="20.1" cy="17" rx="1.9" ry="5.4" transform="rotate(-16 20.1 17)" fill="#0f2147"/><ellipse cx="12" cy="15" rx="8.4" ry="11.2" fill="#0f2147"/><ellipse cx="12" cy="18.4" rx="5.5" ry="7.6" fill="#fff"/><circle cx="9.7" cy="8.6" r="2" fill="#fff"/><circle cx="14.3" cy="8.6" r="2" fill="#fff"/><circle cx="10.1" cy="8.9" r="0.95" fill="#0f2147"/><circle cx="13.9" cy="8.9" r="0.95" fill="#0f2147"/><path d="M9.9 11.4 Q12 10.5 14.1 11.4 Q12 13.9 9.9 11.4Z" fill="#f5a524"/></g></svg></span><span class="os-navn">Linux</span></a>
+              </div>
+              <p class="privat-fin">Ingen tilmelding og ingen forpligtelser.</p>
+              <p class="eller"><span>eller</span></p>
+            </div>
+            <!-- Virksomheter: ingen registeroppslag i den tyske utgaven. Knappen fører til prisen og bestillingen på faktura (pris/). -->
+            <div class="orgport de-pris rise d-180">
+              <div>
+                <div class="orgport-rad">
+                  <a class="btn" href="priser/">Prisen for jeres organisation</a>
+                </div>
+                <p class="virk-linje">
+                  <span>For organisationer: <b>30 dage gratis</b>. Ingen tilmelding. Derefter bestilling mod faktura.</span>
+                </p>
+              </div>
+            </div>
+            <!-- Nedlastingen: kortet blir et eget nedlastingskort når de har valgt system.
+                 Lyset rundt kanten følger hvor langt nedlastingen har kommet (forside.js). -->
+            <div class="nedlasting" data-nedlasting hidden aria-live="polite">
+              <div class="nedlasting-topp">
+                <span class="nedlasting-merke" data-merke aria-hidden="true"></span>
+                <div>
+                  <p class="nedlasting-tittel">Krystallklart til <span data-os></span></p>
+                  <p class="nedlasting-fil" data-fil></p>
+                </div>
+              </div>
+              <p class="nedlasting-prosent"><span data-prosent>0</span><span class="nedlasting-pst">%</span></p>
+              <p class="nedlasting-status" data-status></p>
+              <div class="nedlasting-ferdig" data-ferdig hidden>
+                <span class="nedlasting-hake" aria-hidden="true"><svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="25" pathLength="1" /><path d="M17 29l8 8 15-17" pathLength="1" /></svg></span>
+                <p class="nedlasting-ferdig-tittel">Hentet</p>
+                <p class="nedlasting-neste" data-neste></p>
+              </div>
+              <button type="button" class="nedlasting-tilbake" data-tilbake>Tilbage</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vis først, forklar etterpå: programvinduet rett under bildet, så filtypene,
+             og til slutt hva Klart er (boksen «om»). -->
+
+        <!-- Programvindu: en kopi av Klart slik appen ser ut fra november 2026 (src/ny og
+             src/editor/ui i appen), bygget i HTML og CSS, ikke film. forhandsvisning.js spiller
+             av fem kapitler, og raden under vinduet hopper mellom dem: rens en mappe (PDF,
+             e-post med bilde av en bil (Midjourney, fiktiv), regneark og PowerPoint leses;
+             ansiktene og skiltet pikseleres underveis),
+             gjennomgangen, kopiene (også svart sladd), høyreklikk i Finder, og en KI som får
+             teksten med koder og svarer, før svaret tilbakeføres i Klart. Lesingen vises rolig
+             (epilepsi og lysfølsomhet): ingen blink, ett lesehode som glir over hver side, og
+             merkene toner inn. Pekeren er alltid i bildet og glir mellom stedene. Uten JS, eller
+             med redusert bevegelse, står den stille i editoren med alt gjennomgått.
+             Stil: forhandsvisning.css. -->
+        <!-- Hva Klart er, rett over programvinduet (GDPR/index.html, eieren 19.-20.11.2026), på tysk. -->
+        <section class="hva rise" aria-label="Krystallklart er et lokalt program">
+          <div class="hva-venstre">
+            <!-- Det første man skal forstå, enkelt forklart. Den tyske utgaven har en tysk språkmodell. -->
+            <ul class="hva-sjekk">
+              <li>AI-model til danske tekster</li>
+              <li>Alt sker på din egen computer</li>
+              <li>Til helt almindelige computere</li>
+            </ul>
+          </div>
+          <!-- Logoen, og det viktigste under den. -->
+          <div class="hva-hoyre">
+            <p class="hva-logo"><img src="ikon.png" width="256" height="256" alt="" aria-hidden="true" /><span>Krystallklart</span></p>
+            <p class="hva-under">Lokalt program · Uden internet</p>
+          </div>
+        </section>
+        <figure class="kv rise avklart" data-scene="gjennom">
+          <div class="kv-ramme">
+          <div class="kv-app" aria-hidden="true">
+            <header class="kv-chrome">
+              <span class="kv-lys"><i></i><i></i><i></i></span>
+              <span class="kv-merke"><img src="ikon.png" alt="" />Krystallklart</span>
+              <span class="kv-sok"><svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.6" /><path d="M10.4 10.4L14 14" /></svg>Søg i alle filerne i mappen<kbd>⌘F</kbd></span>
+              <span class="kv-hoyre">
+                <span class="kv-lagret">✓ Autogemt</span>
+                <span class="kv-lysknapp">Scanningsvalg</span>
+                <span class="kv-lysknapp" data-kv="hjem">Startskærmen</span>
+                <span class="kv-lysknapp kv-sporsmal">?</span>
+              </span>
+            </header>
+
+            <div class="kv-flate">
+              <!-- Startskjermen: de tre verktøyene, og det som ble tilbakeført under dem -->
+              <div class="kv-scene kv-s-start">
+                <div class="kv-start-inn">
+                  <div class="kv-kortene">
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-rens.png" alt="" />
+                      <h4>Maskér</h4>
+                      <span class="kv-hvit" data-kv="velg">Vælg mappe eller dokumenter …</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-tilbakefor.png" alt="" />
+                      <h4>Gendan</h4>
+                      <span class="kv-hvit" data-kv="tbvelg">Vælg kopier …</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-tekst.png" alt="" />
+                      <h4>Tekstværktøj</h4>
+                      <span class="kv-hvit" data-kv="tekstvelg">Åbn …</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Editoren: filene, dokumentet og registeret for mappen -->
+              <div class="kv-scene kv-s-editor">
+                <aside class="kv-filer">
+                  <div class="kv-filer-topp"><b>Klientsager</b><span>10 filer</span></div>
+                  <ul data-kv="filer">
+                    <li data-steder="30"><i class="kv-fikon w">W</i><span class="kv-fnavn">01-ansaettelseskontrakt-acme.docx</span><span class="kv-fmeta">30 steder</span><i class="kv-ring"></i></li>
+                    <li data-steder="41" data-uavklart="2" data-dok="vedtak" class="valgt"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">02-afgoerelse-vaergemaal.pdf</span><span class="kv-fmeta">41 steder</span><i class="kv-ring"></i></li>
+                    <li data-steder="45" data-ekstra="1 nummerplade" data-dok="epost"><i class="kv-fikon epost">@</i><span class="kv-fnavn">03-mailtraad.eml</span><span class="kv-fmeta">45 steder</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon tekst">T</i><span class="kv-fnavn">04-personalenotat.md</span><span class="kv-fmeta">21 steder</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon w">W</i><span class="kv-fnavn">05-laegeerklaering.docx</span><span class="kv-fmeta">21 steder</span><i class="kv-ring"></i></li>
+                    <li data-steder="16"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">06-faktura-nordlys.pdf</span><span class="kv-fmeta">16 steder</span><i class="kv-ring"></i></li>
+                    <li data-steder="82" data-dok="liste"><i class="kv-fikon x">X</i><span class="kv-fnavn">08-klientliste.xlsx</span><span class="kv-fmeta">82 steder</span><i class="kv-ring"></i></li>
+                    <li data-steder="43" data-ekstra="2 ansigter" data-dok="ppt"><i class="kv-fikon p">P</i><span class="kv-fnavn">09-statusmoede.pptx</span><span class="kv-fmeta">43 steder · 2 ansigter</span><i class="kv-ring"></i></li>
+                    <li data-steder="18"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">11-scannet-bilag.pdf</span><span class="kv-fmeta">18 steder</span><i class="kv-ring"></i></li>
+                    <li data-steder="3" data-ekstra="1 ansigt"><i class="kv-fikon bilde">JPG</i><span class="kv-fnavn">16-adgangskort.jpg</span><span class="kv-fmeta">3 steder · 1 ansigt</span><i class="kv-ring"></i></li>
+                  </ul>
+                </aside>
+
+                <div class="kv-midt">
+                  <div class="kv-docket">
+                    <b data-kv="docnavn">02-afgoerelse-vaergemaal.pdf</b><span class="kv-type" data-kv="doctype">PDF</span>
+                    <span class="kv-kopimerke" data-kv="kopimerke">Kopien · kodeliste bagest</span>
+                    <span class="kv-verktoy">
+                      <span class="kv-zoom">− &nbsp;86 %&nbsp; +</span>
+                      <span class="kv-hvit" data-kv="vis">Vis kopien</span>
+                    </span>
+                  </div>
+                  <div class="kv-bord">
+                    <div class="kv-pille" data-kv="pille"><i></i>Læser <b data-kv="leser">01-ansaettelseskontrakt-acme.docx</b><span data-kv="nr">1 af 10</span></div>
+
+                    <!-- PDF: vedtak om vergemål -->
+                    <article class="kv-side vist" data-dok="vedtak">
+                      <i class="kv-lesehode"></i>
+                      <p class="kv-avsender">Familieretten</p>
+                      <h4>Afgørelse om værgemål</h4>
+                      <p class="kv-ref">Sagsnr. 26/04117 · 14.03.2026</p>
+                      <h5>Den, sagen drejer sig om</h5>
+                      <dl>
+                        <dt>Navn</dt><dd><mark class="s"><span class="o">Mette Jensen</span><span class="k">[Person 6311794]</span></mark></dd>
+                        <dt>CPR-nr.</dt><dd><mark class="s"><span class="o">140368-5713</span><span class="k">[CPR-nummer 2215087]</span></mark></dd>
+                        <dt>Adresse</dt><dd><mark class="s"><span class="o">Vestergade 12, 2. th., 8000 Aarhus C</span><span class="k">[Adresse 8950779]</span></mark></dd>
+                      </dl>
+                      <h5>Beskikket værge</h5>
+                      <dl>
+                        <dt>Navn</dt><dd><mark class="s"><span class="o">Lars Nielsen</span><span class="k">[Person 2656447]</span></mark>, <mark class="b" data-kv="arbeid"><span class="o">Advokatfirmaet Nordlys</span><span class="k">[Arbejdsplads 5521093]</span></mark></dd>
+                        <dt>E-mail</dt><dd><mark class="s"><span class="o">lars.nielsen@nordlys.test</span><span class="k">[E-mail 3278678]</span></mark></dd>
+                        <dt>Telefon</dt><dd><mark class="s"><span class="o">21 55 01 34</span><span class="k">[Telefon 6289990]</span></mark></dd>
+                      </dl>
+                      <h5>Begrundelse</h5>
+                      <p><mark class="s" data-kv="merknad"><span class="o">Mette Jensen har siden januar været indlagt med en depression og har brug for hjælp til sine økonomiske forhold.</span><span class="k">[Personoplysning 2760056]</span></mark> Værgen forvalter midlerne på kontoen <mark class="s"><span class="o">DK50 0040 0440 1162 43</span><span class="k">[IBAN 7719741]</span></mark>.</p>
+                      <p>Afgørelsen har virkning fra i dag. Den kan indbringes for retten inden for fire uger.</p>
+                    </article>
+
+                    <!-- E-post -->
+                    <article class="kv-side kv-epost" data-dok="epost">
+                      <i class="kv-lesehode"></i>
+                      <dl class="kv-hode">
+                        <dt>Fra</dt><dd><mark class="s"><span class="o">Sofie Andersen</span><span class="k">[Person 7320430]</span></mark> &lt;<mark class="s"><span class="o">sofie.andersen@nordlys.test</span><span class="k">[E-mail 5102284]</span></mark>&gt;</dd>
+                        <dt>Til</dt><dd><mark class="s"><span class="o">Mette Jensen</span><span class="k">[Person 6311794]</span></mark></dd>
+                        <dt>Emne</dt><dd><b>Efter vores samtale</b></dd>
+                        <dt>Dato</dt><dd>12. marts 2026, 09.14</dd>
+                      </dl>
+                      <p>Kære <mark class="s"><span class="o">Mette</span><span class="k">[Person 6311794]</span></mark>,</p>
+                      <p>Tak for samtalen i går. Som aftalt sender jeg en kopi af lægeerklæringen. Du kan fange mig hele ugen på <mark class="s"><span class="o">21 55 01 34</span><span class="k">[Telefon 6289990]</span></mark>.</p>
+                      <p>Firmabilen med nummerpladen <mark class="s"><span class="o">AB 12 345</span><span class="k">[Nummerplade 3071552]</span></mark> er klar fra mandag. Billedet er vedhæftet.</p>
+                      <p>Venlig hilsen<br /><mark class="s"><span class="o">Sofie Andersen</span><span class="k">[Person 7320430]</span></mark><br />Nordlys Service ApS · <mark class="s"><span class="o">Havnegade 22, 5000 Odense C</span><span class="k">[Adresse 6113936]</span></mark></p>
+                      <figure class="kv-vedlegg">
+                        <span class="kv-bilramme"><img src="/alles-klar/assets/visning/bil.jpg" alt="" /><span class="kv-skilt" data-kv="skilt"><img src="/alles-klar/assets/visning/bil-skilt.png" alt="" /><em data-kv="skiltlapp">Nummerplade · bliver maskeret</em></span></span>
+                        <figcaption>bil.jpg · 1,2 MB</figcaption>
+                      </figure>
+                    </article>
+
+                    <!-- Regneark -->
+                    <article class="kv-side kv-ark" data-dok="liste">
+                      <i class="kv-lesehode"></i>
+                      <table>
+                        <thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead>
+                        <tbody>
+                          <tr><th>1</th><td><b>Navn</b></td><td><b>CPR-nr.</b></td><td><b>Telefon</b></td><td><b>Kontonr.</b></td></tr>
+                          <tr><th>2</th><td><mark class="s"><span class="o">Jens Pedersen</span><span class="k">[Person 1180342]</span></mark></td><td><mark class="s"><span class="o">230571-6142</span><span class="k">[CPR-nummer 4402918]</span></mark></td><td><mark class="s"><span class="o">40 55 01 42</span><span class="k">[Telefon 2290174]</span></mark></td><td><mark class="s"><span class="o">5470 0001234567</span><span class="k">[Konto 6630215]</span></mark></td></tr>
+                          <tr><th>3</th><td><mark class="s"><span class="o">Karen Christensen</span><span class="k">[Person 5523107]</span></mark></td><td><mark class="s"><span class="o">091259-7034</span><span class="k">[CPR-nummer 8817330]</span></mark></td><td><mark class="s"><span class="o">52 55 01 78</span><span class="k">[Telefon 1047782]</span></mark></td><td><mark class="s"><span class="o">1551 0009876543</span><span class="k">[Konto 3359810]</span></mark></td></tr>
+                          <tr><th>4</th><td><mark class="s"><span class="o">Ahmed Hassan</span><span class="k">[Person 9918066]</span></mark></td><td><mark class="s"><span class="o">300482-5527</span><span class="k">[CPR-nummer 2265419]</span></mark></td><td><mark class="s"><span class="o">60 55 01 11</span><span class="k">[Telefon 7714203]</span></mark></td><td><mark class="s"><span class="o">9570 0012345608</span><span class="k">[Konto 9046631]</span></mark></td></tr>
+                          <tr><th>5</th><td><mark class="s"><span class="o">Maria Larsen</span><span class="k">[Person 3301459]</span></mark></td><td><mark class="s"><span class="o">170965-8261</span><span class="k">[CPR-nummer 6158820]</span></mark></td><td><mark class="s"><span class="o">26 55 01 66</span><span class="k">[Telefon 4420987]</span></mark></td><td><mark class="s"><span class="o">3409 0011223344</span><span class="k">[Konto 1872264]</span></mark></td></tr>
+                          <tr><th>6</th><td><mark class="s"><span class="o">Niels Poulsen</span><span class="k">[Person 8045126]</span></mark></td><td><mark class="s"><span class="o">040677-6390</span><span class="k">[CPR-nummer 5590743]</span></mark></td><td><mark class="s"><span class="o">51 55 01 27</span><span class="k">[Telefon 3368201]</span></mark></td><td><mark class="s"><span class="o">2191 0055667788</span><span class="k">[Konto 7701358]</span></mark></td></tr>
+                          <tr><th>7</th><td></td><td></td><td></td><td></td></tr>
+                          <tr><th>8</th><td></td><td></td><td></td><td></td></tr>
+                        </tbody>
+                      </table>
+                    </article>
+
+                    <!-- PowerPoint: lysbildet fra fellesturen, med to ansikter -->
+                    <article class="kv-side kv-ppt" data-dok="ppt">
+                      <i class="kv-lesehode"></i>
+                      <div class="kv-lysbilde">
+                        <p class="kv-lb-tittel">Personaletur i februar</p>
+                        <p class="kv-lb-under">Tak til <mark class="s"><span class="o">Hanne Lund</span><span class="k">[Person 3390415]</span></mark> og <mark class="s"><span class="o">Peter Holm</span><span class="k">[Person 8812706]</span></mark> for planlægningen!</p>
+                        <div class="kv-lb-foto">
+                          <img src="/alles-klar/assets/visning/fagtur.jpg" alt="" />
+                          <span class="kv-ansikt a1" data-kv="ansikt1"><img src="/alles-klar/assets/visning/fagtur-ansikt-1.jpg" alt="" /><em>Ansigt · bliver pixeleret</em></span>
+                          <span class="kv-ansikt a2" data-kv="ansikt2"><img src="/alles-klar/assets/visning/fagtur-ansikt-2.jpg" alt="" /><em>Ansigt · bliver pixeleret</em></span>
+                        </div>
+                        <p class="kv-lb-bunn">Statusmøde · dias 4 af 12</p>
+                      </div>
+                    </article>
+
+                    <div class="kv-gjennom" data-kv="gjennom">
+                      <i class="kv-gjennom-strek" data-kv="gstrek"></i>
+                      <p class="kv-gjennom-topp"><code data-kv="gkode">Dane osobowe 2760056</code><b>Uafklaret</b><span data-kv="gnr">1 af 2</span></p>
+                      <p class="kv-gjennom-hvorfor" data-kv="ghvorfor">Krystallklart er ikke sikker på, om det hører til »Personoplysning«. · 02-afgoerelse-vaergemaal.pdf</p>
+                      <p class="kv-gjennom-knapper">
+                        <span class="kv-btn" data-kv="skjul">Maskér <kbd>↵</kbd></span>
+                        <span class="kv-btn hvit" data-kv="lastaa">Lad stå <kbd>L</kbd></span>
+                        <span class="kv-btn hvit av">Forrige <kbd>←</kbd></span>
+                        <span class="kv-btn hvit">Næste <kbd>→</kbd></span>
+                        <span class="kv-btn hvit">Afslut <kbd>Esc</kbd></span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <aside class="kv-panel">
+                  <div class="kv-uavklart" data-kv="uavklart">
+                    <h5><svg viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" rx="2" /><path d="M6 2.5v11" /></svg>Uafklaret</h5>
+                    <div class="kv-uboks">
+                      <p data-kv="u1"><code>Dane osobowe 2760056</code><span>Mette Jensen har siden januar…</span><em>1 uafklaret</em></p>
+                      <p data-kv="u2"><code>Instytucja 5521093</code><span>Advokatfirmaet Nordlys</span><em>1 uafklaret</em></p>
+                      <span class="kv-btn bred" data-kv="gaa">Gennemgå alle 2 <kbd>G</kbd></span>
+                    </div>
+                  </div>
+                  <div class="kv-imappen">
+                    <h5>I mappen <span><b data-kv="opplysninger">67</b> oplysninger</span></h5>
+                    <ul data-kv="register">
+                      <li data-n="19" data-s="114"><span>Navne</span><em>19 · 114 steder</em></li>
+                      <li data-n="7" data-s="24"><span>CPR-numre</span><em>7 · 24 steder</em></li>
+                      <li data-n="12" data-s="43"><span>Telefon</span><em>12 · 43 steder</em></li>
+                      <li data-n="15" data-s="53"><span>E-mail</span><em>15 · 53 steder</em></li>
+                      <li data-n="7" data-s="29"><span>Adresser</span><em>7 · 29 steder</em></li>
+                      <li data-n="6" data-s="13"><span>Konti</span><em>6 · 13 steder</em></li>
+                      <li data-n="1" data-s="2"><span>Nummerplader</span><em>1 · 2 steder</em></li>
+                      <li data-n="3" data-s="12"><span>Følsomme</span><em>3 · 12 steder</em></li>
+                      <li data-n="3" data-s="3" data-kv="ansikter"><span>Ansigter</span><em>3 · 3 steder</em></li>
+                    </ul>
+                  </div>
+                  <div class="kv-bunn">
+                    <p><b data-kv="skjules">292</b> maskeres <b data-kv="faarstaa">1</b> står</p>
+                    <p class="kv-bunn-knapper">
+                      <span class="kv-btn hvit oransje" data-kv="ubtn"><i></i>Uafklaret 2</span>
+                      <span class="kv-btn stor" data-kv="lag">Lav 10 kopier</span>
+                    </p>
+                  </div>
+                </aside>
+              </div>
+
+              <!-- Tekstverktøy: et ark å skrive eller lime inn på -->
+              <div class="kv-scene kv-s-tekst">
+                <div class="kv-rt-linje">
+                  <span class="kv-rt-tilbake">‹ Startskærmen</span>
+                  <span class="kv-faner"><span class="på" data-kv="fanerens"><i>1</i>Maskér tekst</span><span data-kv="fanetb"><i>2</i>Gendan tekst</span></span>
+                  <span class="kv-faner kv-rt-visning"><span class="på" data-kv="rtorig">Original</span><span data-kv="rtrenset">Maskeret</span></span>
+                  <span class="kv-btn" data-kv="rtkopier">Kopiér</span>
+                </div>
+                <div class="kv-rt-kropp">
+                  <div class="kv-rt-ark" data-kv="rtark"><p data-kv="rttekst"></p><i class="kv-markor"></i><p class="kv-rt-svar" data-kv="rtsvar"></p></div>
+                  <aside class="kv-rt-liste">
+                    <h5 data-kv="rtlistetittel">Bliver maskeret</h5>
+                    <ul data-kv="rtliste"></ul>
+                    <p class="kv-rt-merke">Teksten læses på denne computer. Intet bliver sendt.</p>
+                  </aside>
+                </div>
+                <p class="kv-toast" data-kv="toast">Kopieret</p>
+              </div>
+
+              <!-- Skrivebordet: Finder med høyreklikk › Hurtighandlinger › Rens med Klart -->
+              <div class="kv-scene kv-s-finder kv-skrivebord">
+                <div class="kv-finder">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><span class="kv-pil">‹ ›</span><b>Dokumenter</b></div>
+                  <div class="kv-finder-kropp">
+                    <ul class="kv-sidefelt">
+                      <li class="kv-sf-h">Favoritter</li>
+                      <li>Skrivebord</li>
+                      <li class="på">Dokumenter</li>
+                      <li>Overførsler</li>
+                      <li class="kv-sf-h">Steder</li>
+                      <li>iCloud Drive</li>
+                    </ul>
+                    <div class="kv-ikoner">
+                      <span class="kv-mappe" data-kv="fmappe"><i></i>Klientsager</span>
+                      <span class="kv-mappe"><i></i>Ansøgning marts</span>
+                      <span class="kv-mappe"><i></i>Regnskab 2025</span>
+                      <span class="kv-dokikon"><i>PDF</i>kontrakt-acme.pdf</span>
+                      <span class="kv-dokikon w"><i>W</i>Referat 10.11.docx</span>
+                      <span class="kv-mappe ny" data-kv="fny"><i></i>Klientsager-maskeret</span>
+                    </div>
+                  </div>
+                  <ul class="kv-meny" data-kv="meny">
+                    <li>Åbn</li>
+                    <li>Åbn i ny fane</li>
+                    <li class="kv-skille"></li>
+                    <li>Flyt til papirkurv</li>
+                    <li class="kv-skille"></li>
+                    <li>Vis info</li>
+                    <li>Omdøb</li>
+                    <li>Komprimer »Klientsager«</li>
+                    <li>Dupliker</li>
+                    <li class="kv-skille"></li>
+                    <li>Kopiér</li>
+                    <li>Del …</li>
+                    <li class="kv-skille"></li>
+                    <li class="kv-under" data-kv="hurtig">Hurtige handlinger<span>›</span></li>
+                    <li class="kv-under">Tjenester<span>›</span></li>
+                  </ul>
+                  <ul class="kv-meny kv-undermeny" data-kv="undermeny">
+                    <li data-kv="rensmed">Maskér med Krystallklart</li>
+                    <li>Gendan med Krystallklart</li>
+                    <li class="kv-skille"></li>
+                    <li>Tilpas …</li>
+                  </ul>
+                </div>
+                <div class="kv-varsel" data-kv="varsel">
+                  <img src="ikon.png" alt="" />
+                  <p><b data-kv="vtittel">Maskerer »Klientsager« …</b><span data-kv="vtekst">Kopierne gemmes ved siden af. Du får besked, når de er færdige.</span></p>
+                  <small>nu</small>
+                </div>
+              </div>
+
+              <!-- Skrivebordet: et KI-verktøy som bare får kodene -->
+              <div class="kv-scene kv-s-ki kv-skrivebord">
+                <div class="kv-ki">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><b>AI-assistent</b></div>
+                  <div class="kv-ki-samtale">
+                    <div class="kv-ki-bruker" data-kv="kibruker">
+                      <p>Skriv et kort svar på denne besked:</p>
+                      <p class="kv-ki-sitat">Hej! Kan du ringe til <code>[Person 6311794]</code> på <code>[Telefon 6289990]</code> i dag? Hun er flyttet til <code>[Adresse 8950779]</code> , og lønnen skal nu gå ind på konto <code>[IBAN 7719741]</code> .</p>
+                    </div>
+                    <div class="kv-ki-svar" data-kv="kisvar"><p data-kv="kisvartekst"></p><span class="kv-ki-kopier" data-kv="kikopier">Kopiér svaret</span></div>
+                  </div>
+                  <div class="kv-ki-felt" data-kv="kifelt"><span>Skriv en besked …</span><i>↑</i></div>
+                </div>
+                <p class="kv-ki-merke">AI-værktøjet får kun koderne. Navn, telefon, adresse og konto bliver på computeren.</p>
+              </div>
+
+              <!-- «Før skanningen»: over startskjermen, når mappen er valgt -->
+              <div class="kv-slor kv-s-forvalg">
+                <div class="kv-modal">
+                  <h4>Klientsager</h4>
+                  <p class="kv-modal-under">10 filer · docx, eml, jpg, md, pdf, pptx, xlsx</p>
+                  <div class="kv-maate">
+                    <p class="på"><i></i><span><b>Med scanning</b>Krystallklart læser filerne og markerer det, programmet finder. Bagefter gennemgår du det hele og bestemmer.</span></p>
+                    <p><i></i><span><b>Uden scanning</b>Intet er markeret på forhånd. Du klikker på det, der skal maskeres.</span></p>
+                  </div>
+                  <p class="kv-sammen"><span><small>Scanningen finder og maskerer</small>Navne, CPR-numre, telefon og e-mail, følsomme oplysninger, nummerplader, konti, ansigter og 5 andre</span><em>Skift</em></p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Annullér</span>
+                    <span class="kv-btn stor" data-kv="skann">Scan <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- «Før kopiene lages»: formen kopiene får -->
+              <div class="kv-slor kv-s-kopivalg">
+                <div class="kv-modal kv-kopivalg">
+                  <h4>Før kopierne laves</h4>
+                  <p class="kv-modal-under">10 filer · kopierne lægges i Klientsager-maskeret</p>
+                  <div class="kv-maate kv-former" data-kv="former">
+                    <p class="på" data-form="kort"><i></i><span><b>Kort kode og kodeliste</b>Let at læse. Kan gendannes med organisationens nøgle.<code>[Person 4814887] + liste</code></span></p>
+                    <p data-form="full"><i></i><span><b>Fuld kode i teksten</b>Ingen liste. Kan gendannes, men er svær at læse.</span></p>
+                    <p data-form="lapp"><i></i><span><b>Kun etiketter</b>Let at læse, men kan ikke gendannes.</span></p>
+                    <p data-form="svart"><i></i><span><b>Sort maskering (PDF)</b>Det, der stod der, er væk for altid.<code class="kv-svartprove"></code></span></p>
+                  </div>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Annullér</span>
+                    <span class="kv-btn stor" data-kv="lagnaa">Lav 10 kopier <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Kopiene er laget -->
+              <div class="kv-slor kv-s-ferdig">
+                <div class="kv-ferdig">
+                  <p class="kv-stor">Færdig.</p>
+                  <p>10 kopier er lavet. Originalerne er uændrede. Læs kopierne, før du giver dem videre.</p>
+                  <p class="kv-sti"><span>Dokumenter/</span>Klientsager-maskeret/</p>
+                  <p class="kv-liten">Kodelisten ligger bagest i hver kopi.</p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit">Tilbage til mappen</span>
+                    <span class="kv-btn">Åbn kopierne</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+          <span class="kv-peker" aria-hidden="true"></span>
+          <!-- Kapitlene: hopper i avspillingen. Det som spilles nå, er markert. -->
+          <ol class="kv-kapitler" data-kv="kapitler" aria-label="Kapitler i visningen">
+            <li><button type="button" data-kapittel="0">Maskér en mappe</button></li>
+            <li><button type="button" data-kapittel="1">Gennemgang</button></li>
+            <li><button type="button" data-kapittel="2">Kopierne</button></li>
+            <li><button type="button" data-kapittel="3">Højreklik i Finder</button></li>
+            <li><button type="button" data-kapittel="4">Maskér og gendan tekst</button></li>
+          </ol>
+          <!-- Lesingen spilles av mye raskere enn den går på en vanlig maskin. Det skal stå. -->
+          <p class="kv-spol" aria-hidden="true">
+            <svg viewBox="0 0 20 12"><path d="M1 1l8 5-8 5zM10 1l8 5-8 5z" /></svg>
+            <span>Spolet frem. Hvor lang tid læsningen tager, afhænger af computeren. På en almindelig bærbar tager det længere.</span>
+          </p>
+          <figcaption class="skjult-tekst">
+            Sådan virker Krystallklart. Når du har valgt en mappe, læser Krystallklart filerne, også PDF, e-mails, regneark, PowerPoint og billeder, og markerer navne, CPR-numre, kontaktoplysninger, adresser, kontonumre, følsomme oplysninger, nummerplader og ansigter, der bliver pixeleret. Det, Krystallklart ikke er sikker på, gennemgår du selv og bestemmer: maskér eller lad stå. Kopierne kan få korte koder med kodeliste, fulde koder, kun etiketter eller sort maskering, og originalerne forbliver uændrede. I Finder kan du maskere en mappe med højreklik › Hurtige handlinger › Maskér med Krystallklart. En tekst med koder kan gives til et AI-værktøj, og svaret kan gendannes i Krystallklart, så navnene kommer tilbage, selv om AI-værktøjet aldrig så dem. Læsningen er spolet frem: tiden afhænger af computeren.
+          </figcaption>
+        </figure>
+
+        <!-- Filtypene under programvinduet, over boksen. -->
+        <div class="formats rise">
+          <p>Læser de filer, du alligevel arbejder med</p>
+          <ul>
+            <li>
+              <svg class="ficon"><use href="#i-word" /></svg>
+              <span class="fname">Word</span>
+              <span class="fext">.docx</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-excel" /></svg>
+              <span class="fname">Excel</span>
+              <span class="fext">.xlsx · .xls · .csv</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-ppt" /></svg>
+              <span class="fname">PowerPoint</span>
+              <span class="fext">.pptx</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-pdf" /></svg>
+              <span class="fname">PDF</span>
+              <span class="fext">.pdf</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-mail" /></svg>
+              <span class="fname">E-mail</span>
+              <span class="fext">.eml</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-bilde" /></svg>
+              <span class="fname">Billeder</span>
+              <span class="fext">.jpg · .png · .tiff</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-text" /></svg>
+              <span class="fname">Tekst</span>
+              <span class="fext">.txt · .md</span>
+            </li>
+          </ul>
+          <!-- Eierens tekst (GDPR/index.html, 20.11.2026), på tysk. -->
+          <p class="formats-unik"><b>Noget særligt:</b> Krystallklart kopierer filerne i deres eget format, så du kan arbejde videre med de maskerede dokumenter.</p>
+        </div>
+
+      </section>
+
+      <!-- =====================================================================
+           Resten av siden (videre.css og videre.js). Skrevet 11.11.2026 for
+           Klart slik programmet er nå: koder med faste numre, nøkkelen,
+           tilbakeføring, gjennomgangen, kopikontrollen og de fire kopiformene.
+
+           Rekkefølgen er lagt for en leser uten teknisk bakgrunn: først én idé
+           per skjerm, med et bilde og få ord. Så «I dybden», der hvert emne
+           kan åpnes av den som vil vite mer. Ordene er appens egne.
+           Bildene i krom er appens ikoner og velkomstbilder (assets/krom/),
+           og fire nye laget i Midjourney med mappeikonet som stilreferanse.
+           ===================================================================== -->
+      <div class="videre">
+        <!-- ============ Hva Klart gir deg (før hva det gjør; eieren 11.11.2026: selg ferien,
+             ikke flyturen) ============ -->
+        <section class="v-del v-hva" id="hva">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Del sagen. Behold navnene for jer selv.</h2>
+            <p class="v-ingress">
+              Send dokumenter til en rådgiver, svar på en anmodning om aktindsigt eller spørg et AI-værktøj, uden at navnene forlader kontoret. Det går langt hurtigere end at overstrege side for side i hånden.
+            </p>
+          </div>
+          <ul class="v-tre-ord rise">
+            <li><b>AI på rigtige sager.</b> Værktøjet ser koder i stedet for mennesker.</li>
+            <li><b>Del uden tøven.</b> Med revisoren, advokaten eller en anden myndighed, samme dag.</li>
+            <li><b>Navnene kommer tilbage, når der er brug for dem.</b> Kun organisationen har nøglen.</li>
+          </ul>
+          <p class="v-hva-er rise">Krystallklart er et program på din egen computer. Dokumenterne forlader den aldrig.</p>
+        </section>
+
+        <!-- ============ 1. Kjernen: navn blir koder ============ -->
+        <section class="v-del v-kjerne" id="kjernen">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Navne bliver til koder.</h2>
+            <p class="v-ingress">
+              Krystallklart laver en kopi af dokumenterne. I kopien står der en kode, hvor der stod et navn, et CPR-nummer eller en anden oplysning om en person.
+            </p>
+          </div>
+
+          <!-- To ark fra samme mappe. Bryteren viser originalen eller kopien; den går av seg
+               selv til noen tar i den (videre.js). Uten JS står arkene som kopi. -->
+          <figure class="v-ark-scene rise" data-v-bytt data-vis="kopi">
+            <div class="v-bryter" role="group" aria-label="Vis originalen eller kopien">
+              <button type="button" data-v-vis="original" aria-pressed="false">Original</button>
+              <button type="button" data-v-vis="kopi" aria-pressed="true">Kopi</button>
+            </div>
+            <div class="v-ark-par" aria-hidden="true">
+              <article class="v-ark v-ark-a">
+                <header class="v-ark-topp">
+                  <svg class="v-ark-ikon"><use href="#i-pdf" /></svg>
+                  <span>afgoerelse-vaergemaal.pdf</span>
+                </header>
+                <p class="v-ark-h">Afgørelse om værgemål</p>
+                <dl class="v-ark-rader">
+                  <div>
+                    <dt>Under værgemål</dt>
+                    <dd><span class="v-bytt v-samme"><span class="v-o"><i>Jens Hansen</i></span><span class="v-k"><i>[Person 4829133]</i></span></span></dd>
+                  </div>
+                  <div>
+                    <dt>PESEL</dt>
+                    <dd><span class="v-bytt"><span class="v-o"><i>230571-6142</i></span><span class="v-k"><i>[CPR-nummer 2204716]</i></span></span></dd>
+                  </div>
+                  <div>
+                    <dt>Adresse</dt>
+                    <dd><span class="v-bytt"><span class="v-o"><i>Søndergade 27</i></span><span class="v-k"><i>[Adresse 3310482]</i></span></span></dd>
+                  </div>
+                  <div>
+                    <dt>Værge</dt>
+                    <dd><span class="v-bytt"><span class="v-o"><i>Lars Nielsen</i></span><span class="v-k"><i>[Person 6071542]</i></span></span></dd>
+                  </div>
+                </dl>
+                <p class="v-ark-p">
+                  Værgen hjælper med de økonomiske forhold.
+                  <span class="v-bytt"><span class="v-o"><i>Jens er sygemeldt til 30. april.</i></span><span class="v-k"><i>[Personoplysning 2760056]</i></span></span>
+                </p>
+              </article>
+              <article class="v-ark v-ark-b">
+                <header class="v-ark-topp">
+                  <svg class="v-ark-ikon"><use href="#i-mail" /></svg>
+                  <span>svar-fra-banken.eml</span>
+                </header>
+                <p class="v-ark-h">Sv.: Fuldmagt til kontoen</p>
+                <p class="v-ark-p">
+                  Hej, vi henviser til samtalen med
+                  <span class="v-bytt v-samme"><span class="v-o"><i>Jens Hansen</i>.</span><span class="v-k"><i>[Person 4829133]</i>.</span></span>
+                </p>
+                <p class="v-ark-p">
+                  Kontoen er sat op, som værgen ønskede. Du kan kontakte os på
+                  <span class="v-bytt"><span class="v-o"><i>33 11 33 40</i>.</span><span class="v-k"><i>[Telefon 7745190]</i>.</span></span>
+                </p>
+                <p class="v-ark-p v-ark-hilsen">
+                  Med venlig hilsen<br />
+                  <span class="v-bytt"><span class="v-o"><i>Birgitte Mortensen</i></span><span class="v-k"><i>[Person 5530871]</i></span></span><br />
+                  Kunderådgiver
+                </p>
+              </article>
+            </div>
+            <figcaption class="v-samme-linje">
+              <span class="v-kode">[Person 4829133]</span>
+              <span>Den samme person får altid den samme kode, i alle dokumenter.</span>
+            </figcaption>
+          </figure>
+
+          <ul class="v-tre-ord rise">
+            <li><b>Kopien ligner originalen.</b> Layout, tabeller og logo bliver.</li>
+            <li><b>Læseren forstår sagen.</b> Bare ikke, hvem den handler om.</li>
+            <li><b>Originalerne forbliver uændrede.</b> Krystallklart gemmer nye filer ved siden af.</li>
+          </ul>
+        </section>
+
+        <!-- ============ 2. De tre tingene på startskjermen ============ -->
+        <section class="v-del v-verktoy" id="verktoy">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Tre ting, du kan gøre.</h2>
+          </div>
+          <div class="v-kort-rad">
+            <article class="v-kort rise">
+              <img src="/alles-klar/assets/krom/rens.webp" width="512" height="512" alt="" loading="lazy" decoding="async" />
+              <h3>Maskér</h3>
+              <p>Vælg en mappe eller enkelte dokumenter. Du får kopier med koder i stedet for personoplysninger.</p>
+            </article>
+            <article class="v-kort rise d-60">
+              <img src="/alles-klar/assets/krom/tilbakefor.webp" width="512" height="512" alt="" loading="lazy" decoding="async" />
+              <h3>Gendan</h3>
+              <p>Lav koderne om til navne igen, når der er brug for dem.</p>
+            </article>
+            <article class="v-kort rise d-120">
+              <img src="/alles-klar/assets/krom/tekst.webp" width="512" height="512" alt="" loading="lazy" decoding="async" />
+              <h3>Tekstværktøj</h3>
+              <p>Tekst, du skriver eller indsætter, bliver maskeret, mens du ser på.</p>
+            </article>
+          </div>
+
+          <!-- Rens, steg for steg. Streken mellom stegene er et skispor. -->
+          <ol class="v-steg rise">
+            <li><b>Vælg en mappe</b><span>Eller træk den ind i vinduet.</span></li>
+            <li><b>Krystallklart læser</b><span>Imens kan du arbejde videre.</span></li>
+            <li><b>Du gennemgår</b><span>Maskér eller lad stå.</span></li>
+            <li><b>Krystallklart kontrollerer</b><span>Hver kopi bliver læst igen.</span></li>
+            <li><b>Kopierne er klar</b><span>I en mappe for sig ved siden af.</span></li>
+          </ol>
+        </section>
+
+        <!-- ============ 3. Nøkkelen ============ -->
+        <section class="v-del v-nokkel" id="nokkel">
+          <div class="v-nokkel-inn">
+            <img class="v-nokkel-bilde rise" src="/alles-klar/assets/krom/nokkel-blaa.webp" width="800" height="386" alt="" loading="lazy" decoding="async" />
+            <div class="v-hode rise">
+              <h2 class="v-tittel">Kun nøglen gør koderne til navne igen.</h2>
+              <p class="v-ingress">
+                Nøglen bliver lavet på computeren, første gang Krystallklart åbnes, og tilhører kun jeres organisation. Uden den er en kode bare en kode.
+              </p>
+              <!-- Viktig (eieren 11.11.2026): ingen skal tro at alle med Klart kan gjøre om kodene. -->
+              <p class="v-nokkel-bare">
+                <b>Andre, der bruger Krystallklart, kan ikke læse jeres koder.</b>
+                De har deres egen nøgle, så jeres koder forbliver bare koder for dem.
+              </p>
+            </div>
+
+            <!-- Hvorfor det er nyttig at kodene kan gjøres om: runden ut og hjem igjen. -->
+            <ol class="v-runde rise">
+              <li>
+                <span class="v-runde-nr">1</span>
+                <b>Maskér</b>
+                <span class="v-linje">Under værgemål: <i class="v-kode lys">[Person 4829133]</i></span>
+              </li>
+              <li>
+                <span class="v-runde-nr">2</span>
+                <b>Del kopien</b>
+                <span class="v-runde-tekst">Med en rådgiver, en anden myndighed eller et AI-værktøj.</span>
+              </li>
+              <li>
+                <span class="v-runde-nr">3</span>
+                <b>Gendan svaret</b>
+                <span class="v-linje">Under værgemål: <i class="v-navn">Jens Hansen</i></span>
+              </li>
+            </ol>
+
+            <div class="v-nokkel-par rise">
+              <img src="/alles-klar/assets/krom/skrin-blaa.webp" width="640" height="630" alt="" loading="lazy" decoding="async" />
+              <div>
+                <article>
+                  <h3>Nøglen skal opbevares godt</h3>
+                  <p>24 ord på papir eller en nøglefil. Så kan koderne altid laves om til navne igen.</p>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ Én nøkkel for hele virksomheten ============ -->
+        <section class="v-del v-kontor" id="virksomhet">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Samme kode hos alle kolleger.</h2>
+            <p class="v-ingress">
+              Med én nøgle til hele organisationen har Jens Hansen den samme kode på alle computere. En kollega kan gendanne en kopi, som en anden har lavet.
+            </p>
+          </div>
+          <div class="v-nett rise" aria-hidden="true">
+            <img src="/alles-klar/assets/krom/nokkel.webp" width="800" height="386" alt="" loading="lazy" decoding="async" />
+            <div class="v-nett-rad">
+              <p><span>Sagsbehandling</span><i class="v-kode">[Person 4829133]</i></p>
+              <p><span>HR</span><i class="v-kode">[Person 4829133]</i></p>
+              <p><span>Arkiv</span><i class="v-kode">[Person 4829133]</i></p>
+            </div>
+          </div>
+          <ul class="v-tre-ord rise">
+            <li><b>Én person er nøgleansvarlig.</b> Vedkommende laver nøglen og giver den videre til kollegerne.</li>
+            <li><b>Nøglen sendes i to dele.</b> Nøglepakken og nøglekoden, hver for sig.</li>
+            <li><b>IT kan fastsætte fælles regler.</b> Fx hvad der altid maskeres.</li>
+          </ul>
+          <!-- Samarbeid på tvers: nøkler fra andre legges inn ved siden av ens egen. -->
+          <div class="v-andres rise">
+            <img src="/alles-klar/assets/krom/nokkel-blaa.webp" width="800" height="386" alt="" loading="lazy" decoding="async" />
+            <div>
+              <h3>Du kan også lægge andres nøgler ind</h3>
+              <p>
+                Arbejder I sammen med en anden organisation, kan den dele sin nøgle med jer. Så kan I gendanne dens kopier, og den jeres, hvis I deler jeres nøgle. Jeres egen nøgle forbliver den samme, og I bestemmer selv, hvem der får den.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ Dette ser Klart etter ============ -->
+        <!-- Oversikten over hva skanningen ser etter. Ansikter står her, som én av gruppene
+             (eieren 11.11.2026), ikke som en egen omtale under kopiformene. -->
+        <section class="v-del v-ser" id="ser-etter">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Det leder Krystallklart efter.</h2>
+            <p class="v-ingress">Ti slags oplysninger er slået til fra start. Du bestemmer selv.</p>
+          </div>
+          <ul class="v-ser-liste rise">
+            <li><b>Navne</b><span>Personnavne</span></li>
+            <li><b>CPR-numre</b><span>CPR, erstatnings-CPR, pas, kørekort og andre id-numre</span></li>
+            <li><b>Telefon og e-mail</b><span>Også numre fra Grønland og Færøerne</span></li>
+            <li><b>Adresse og by</b><span>Vej, postnummer, by</span></li>
+            <li><b>Følsomme</b><span>Helbred, fagforening, tro og strafbare forhold</span></li>
+            <li><b>Private sætninger</b><span>Hele sætninger og noter om en person</span></li>
+            <li><b>Konti</b><span>Kontonumre, kort og IBAN</span></li>
+            <li><b>Adgangskoder</b><span>Adgangskoder og nøgler</span></li>
+            <li><b>Nummerplader</b><span>Nummerplader, også på billeder</span></li>
+            <li class="v-ser-ansikt">
+              <b>Ansigter</b><span>Pixeleres i billeder og scannede sider</span>
+            </li>
+          </ul>
+          <p class="v-ser-fot rise">
+            Datoer, stilling, alder og arbejdsplads slår du til, når der er brug for det.
+            <a class="v-lenke" href="hvad-den-finder.html">Hvad Krystallklart finder, og hvad den ikke finder</a>
+          </p>
+        </section>
+
+        <!-- ============ 4. Du bestemmer ============ -->
+        <section class="v-del v-avgjor" id="du-bestemmer">
+          <div class="v-to">
+            <div class="v-hode rise">
+              <h2 class="v-tittel">Du bestemmer, hvad der bliver maskeret.</h2>
+              <p class="v-ingress">
+                Krystallklart markerer det, programmet finder. Er det i tvivl, spørger det.
+              </p>
+              <ul class="v-punkter">
+                <li>Ét klik på et ord maskerer det i hele mappen.</li>
+                <li>Krystallklart husker det, du markerer. Den næste mappe læses med de ord.</li>
+                <li>Organisationens egne oplysninger bliver stående.</li>
+                <li>Alt kan fortrydes.</li>
+              </ul>
+            </div>
+
+            <!-- Gjennomgangen slik den ser ut i appen: tre slags merker og linjen nederst
+                 som spør. Fargene og strekene er appens (heltrukket, stiplet, prikket). -->
+            <figure class="v-gjennom rise" aria-hidden="true">
+              <div class="v-gjennom-ark">
+                <p>Nærmeste leder er <span class="v-m skjul">Lars Nielsen</span>.</p>
+                <p><span class="v-m uavklart">Rask</span> anbefalede en gradvis tilbagevenden fra maj.</p>
+                <p>Besøg aftales via omstillingen på <span class="v-m staa">70 00 00 00</span>.</p>
+              </div>
+              <div class="v-spor">
+                <p class="v-spor-topp">
+                  <span class="v-kode">Person 5530871</span>
+                  <b>Uafklaret</b>
+                  <span class="v-spor-tall">1 af 5</span>
+                </p>
+                <p class="v-spor-grunn">Står først i sætningen. Er det et efternavn eller ordet »rask«?</p>
+                <p class="v-spor-knapper">
+                  <span class="v-knapp">Maskér <kbd>↵</kbd></span>
+                  <span class="v-knapp lys">Lad stå <kbd>L</kbd></span>
+                  <span class="v-knapp lys">Næste <kbd>→</kbd></span>
+                </p>
+              </div>
+              <p class="v-forklaring">
+                <span><i class="v-m skjul">Aa</i> Bliver maskeret</span>
+                <span><i class="v-m uavklart">Aa</i> Uafklaret</span>
+                <span><i class="v-m staa">Aa</i> Står</span>
+              </p>
+            </figure>
+          </div>
+        </section>
+
+        <!-- ============ 5. Trygt ============ -->
+        <!-- Hytta fra heroen, på nært hold: dokumentene blir hjemme. Bildet er laget i Midjourney
+             med vinterbildet fra heroen som stilreferanse. -->
+        <section class="v-del v-trygt" id="trygt">
+          <figure class="v-plate rise">
+            <img src="/alles-klar/assets/foto/hytte.webp" width="2200" height="1232" alt="En lille rød hytte i dyb sne under en blå himmel." loading="lazy" decoding="async" />
+            <figcaption>
+              <h2 class="v-tittel">Dokumenterne bliver på computeren.</h2>
+            </figcaption>
+          </figure>
+          <div class="v-kort-rad">
+            <article class="v-kort v-hvit rise">
+              <img src="/alles-klar/assets/krom/laas.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>Ingen vej ud</h3>
+              <p>Krystallklart kan ikke gå på internettet.</p>
+              <p><a class="v-lenke" href="til-it.html">IT-afdelingen kan selv kontrollere det</a></p>
+            </article>
+            <article class="v-kort v-hvit rise d-60">
+              <img src="/alles-klar/assets/krom/maskin.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>AI-modellen er med i programmet</h3>
+              <p>Den er lille og bygget ind. En almindelig kontorcomputer uden grafikkort er nok.</p>
+            </article>
+            <article class="v-kort v-hvit rise d-120">
+              <img src="/alles-klar/assets/krom/hvelv.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>Originalerne forbliver uændrede</h3>
+              <p>Krystallklart gemmer kun nye kopier, i en mappe for sig. Før du begynder, kan der laves en krypteret sikkerhedskopi.</p>
+            </article>
+            <article class="v-kort v-hvit rise d-180">
+              <img src="/alles-klar/assets/krom/lupe.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>Kontrol, før kopien gemmes</h3>
+              <p>Krystallklart læser hver kopi, som modtageren ville gøre. Er der noget tilbage, bliver filen ikke lavet.</p>
+            </article>
+          </div>
+        </section>
+
+        <!-- ============ 6. Slik kan kopien se ut ============ -->
+        <section class="v-del v-former" id="kopien">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Du vælger, hvordan kopien ser ud.</h2>
+            <p class="v-ingress">Fire former. Du vælger lige før, kopierne laves.</p>
+          </div>
+          <div class="v-form-rad">
+            <article class="v-form rise">
+              <p class="v-form-merke">Mest brugt</p>
+              <div class="v-prove">
+                <span>Under værgemål: <i class="v-kode">[Person 4829133]</i></span>
+                <span class="v-prove-liste">+ kodeliste bagest</span>
+              </div>
+              <h3>Kort kode og kodeliste</h3>
+              <p>Let at læse. Kan gendannes med nøglen.</p>
+            </article>
+            <article class="v-form rise d-60">
+              <div class="v-prove">
+                <span>Under værgemål: <i class="v-kode lang">[PERSON_VBTF60YD0E-Q7MZ2KXA4RWN]</i></span>
+              </div>
+              <h3>Fuld kode i teksten</h3>
+              <p>Ingen liste. Kan gendannes, men er sværere at læse.</p>
+            </article>
+            <article class="v-form rise d-120">
+              <div class="v-prove">
+                <span>Under værgemål: <i class="v-kode">[Person 4829133]</i></span>
+              </div>
+              <h3>Kun etiketter</h3>
+              <p>Let at læse. Kan ikke gendannes.</p>
+            </article>
+            <article class="v-form rise d-180">
+              <div class="v-prove">
+                <span>Under værgemål: <i class="v-sladd"><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i></i></span>
+              </div>
+              <h3>Sort maskering (PDF)</h3>
+              <p>Det, der stod der, er væk for altid.</p>
+            </article>
+          </div>
+
+        </section>
+
+        <!-- ============ 7. Brukes til ============ -->
+        <section class="v-del v-bruk" id="bruk">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Når dokumenterne skal videre.</h2>
+          </div>
+          <ul class="v-bruk-liste rise">
+            <li><b>Aktindsigt</b><span>Svar på anmodningen uden at overstrege side for side.</span></li>
+            <li><b>Videregivelse</b><span>Til revisorer, advokater, leverandører og andre myndigheder.</span></li>
+            <li><b>AI-værktøjer</b><span>Den samme person har den samme kode, så værktøjet forstår sammenhængen.</span></li>
+            <li><b>Undervisning</b><span>Rigtige sager som eksempler, uden at nogen kan genkendes.</span></li>
+            <li><b>Testdata</b><span>Realistiske dokumenter til nye systemer.</span></li>
+            <li><b>Statistik</b><span>Brug indholdet uden at vide, hvem det handler om.</span></li>
+          </ul>
+        </section>
+
+        <!-- ============ Vanlige spørsmål ============ -->
+        <section class="v-del v-spm" id="sporsmal">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Ofte stillede spørgsmål.</h2>
+          </div>
+          <dl class="v-spm-liste rise">
+            <div>
+              <dt>Er kopien anonym?</dt>
+              <dd>Nej. Den, der har nøglen, kan gøre koderne til navne igen. Skal kopien aldrig kunne gendannes, så vælg »Kun etiketter« eller »Sort maskering (PDF)«, og læs den altid, før du deler den.</dd>
+            </div>
+            <div>
+              <dt>Kan andre, der bruger Krystallklart, læse mine koder?</dt>
+              <dd>Nej. Koderne kan kun gendannes med jeres organisations nøgle. Andre har deres egen nøgle, så for dem er koderne bare koder. Skal nogen kunne gendanne jeres kopier, skal I dele nøglen med dem.</dd>
+            </div>
+            <div>
+              <dt>Hvad hvis jeg mister nøglen?</dt>
+              <dd>Så kan ingen gøre koderne til navne igen. Originalerne er uændrede. Derfor beder Krystallklart dig om at sikre nøglen: 24 ord på papir eller en nøglefil.</dd>
+            </div>
+            <div>
+              <dt>Skal Krystallklart bruge internet?</dt>
+              <dd>Nej. Krystallklart går aldrig på internettet og virker lige så godt offline.</dd>
+            </div>
+            <div>
+              <dt>Virker det på min computer?</dt>
+              <dd>Sandsynligvis, hvis det er en Mac med macOS 13 eller nyere, en pc med Windows 10 eller 11 eller en Linux-computer med .deb-pakker. Krystallklart kører på almindelige kontorcomputere uden grafikkort. <a class="v-lenke" href="#maskin">Systemkrav</a></dd>
+            </div>
+            <div>
+              <dt>Kan en kollega gendanne en kopi, jeg har lavet?</dt>
+              <dd>Ja, hvis I har den samme nøgle, eller kollegaen har lagt din nøgle ind.</dd>
+            </div>
+            <div>
+              <dt>Lærer Krystallklart af mig?</dt>
+              <dd>Ja, af det du gør. Markerer du et navn, et kælenavn eller et ord, som Krystallklart overså, husker programmet det og maskerer det i alt, hvad det læser bagefter. Listen hedder »Maskeres altid«. Den ligger krypteret på computeren, og du kan fjerne ord fra den. Intet sendes til os, og dokumenterne bruges ikke til at træne nogen model.</dd>
+            </div>
+            <div>
+              <dt>Hvad hvis Krystallklart overser noget?</dt>
+              <dd>Det kan ske. Derfor gennemgår du det, Krystallklart finder, og Krystallklart kontrollerer hver kopi, før den gemmes. <a class="v-lenke" href="hvad-den-finder.html">Hvad Krystallklart finder, og hvad den ikke finder</a></dd>
+            </div>
+            <div>
+              <dt>Hvad sker der med originalerne?</dt>
+              <dd>Ingenting. Krystallklart gemmer kun nye filer, i en mappe for sig ved siden af.</dd>
+            </div>
+            <div>
+              <dt>Hvad koster det?</dt>
+              <dd>Til privat brug er Krystallklart gratis. Virksomheder, kommuner og myndigheder prøver det gratis i 30 dage og bestiller derefter en licens til hele organisationen mod faktura. <a class="v-lenke" href="priser/">Til priserne</a></dd>
+            </div>
+          </dl>
+        </section>
+
+        <!-- ============ 8. I dybden ============ -->
+        <section class="v-del v-dybde" id="dybde">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">I dybden.</h2>
+            <p class="v-ingress">Til dig, der vil vide mere. Åbn det, der interesserer dig.</p>
+          </div>
+
+          <div class="v-fag rise">
+            <details name="v-dybde">
+              <summary><span>Hvad Krystallklart leder efter</span></summary>
+              <div class="v-fag-inn">
+                <p>Du vælger selv, hvad scanningen leder efter. De ti grupper, der er slået til fra start, står under <a class="v-lenke" href="#ser-etter">Det leder Krystallklart efter</a>.</p>
+                <p>Efter behov kan du slå til: <b>Datoer</b>, <b>Stilling og relation</b>, <b>Alder</b> og <b>Arbejdsplads</b> (myndighed, virksomhed og CVR-nr.).</p>
+                <p>
+                  Et CPR-nummer kendes på datoen og århundredet, og IBAN på kontrolcifrene. Et tilfældigt tal med ti cifre bliver ikke taget for et CPR-nummer, medmindre der står »CPR« foran eller over det.
+                </p>
+                <p>
+                  Det, der skal stå, bliver stående: myndighedens eget sagsnummer, journalnumre efter KLE, EAN-numre, lovhenvisninger og organisationens egen adresse og hovednummer.
+                </p>
+                <p><a class="v-lenke" href="hvad-den-finder.html">Hvad Krystallklart finder, og hvad den ikke finder</a></p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Hvilke filer Krystallklart læser, og hvordan kopien bliver</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Word, Excel og PowerPoint</dt>
+                    <dd>Den samme fil, med koder i stedet for oplysningerne. Layout, logo og tabeller bliver. Kommentarer, makroer, indlejrede filer og skjulte data i billeder fjernes.</dd>
+                  </div>
+                  <div>
+                    <dt>PDF, også scannede</dt>
+                    <dd>Hver side bliver et billede med koderne malet hen over oplysningerne. Nedenunder ligger et usynligt tekstlag, så du kan søge i kopien.</dd>
+                  </div>
+                  <div>
+                    <dt>Billeder</dt>
+                    <dd>Krystallklart læser teksten i billedet. Oplysningerne males over, og ansigter pixeleres.</dd>
+                  </div>
+                  <div>
+                    <dt>E-mail</dt>
+                    <dd>Læser .eml, Outlook (.msg), Apple Mail (.emlx) og .mbox. Kopien er en .eml-fil. Vedhæftede filer fjernes, og det står i kopien.</dd>
+                  </div>
+                  <div>
+                    <dt>Tekst</dt>
+                    <dd>.txt, .md, .csv, .json og .rtf.</dd>
+                  </div>
+                </dl>
+                <p>Også fil- og mappenavne maskeres. Kopierne lægges sammen med en rapport i en ny mappe ved siden af originalen, med »-maskeret« sidst i navnet.</p>
+                <p>Filer med adgangskode åbner Krystallklart, når du indtaster adgangskoden. Gamle .ppt-filer kan ikke læses. Det får du besked om.</p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Sådan læser Krystallklart dokumenterne</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Først reglerne</dt>
+                    <dd>Danske mønstre, CPR-datoer, kontrolcifre, lister over navne, kommuner og byer samt adresser. Reglerne går gennem hver fil.</dd>
+                  </div>
+                  <div>
+                    <dt>Så en lille dansk sprogmodel</dt>
+                    <dd>DistilBERT til dansk (Geotrend, Apache 2.0), finjusteret til opgaven. Den vurderer, om en sætning afslører noget privat om en person. Den skal ikke bruge grafikkort.</dd>
+                  </div>
+                  <div>
+                    <dt>Tekst i billeder</dt>
+                    <dd>Scannede sider og billeder læses på computeren med tekstgenkendelse.</dd>
+                  </div>
+                  <div>
+                    <dt>Ansigter</dt>
+                    <dd>Krystallklart finder ansigter og pixelerer dem. Du kan også lade et ansigt stå.</dd>
+                  </div>
+                </dl>
+                <p>Krystallklart har ingen chatbot og sender intet til en AI-tjeneste.</p>
+                <p>Du kan også åbne en mappe uden scanning. Så markerer du selv det, der skal maskeres.</p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Koderne og nøglen</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Faste numre</dt>
+                    <dd>Nummeret i koden regnes ud fra nøglen og oplysningen. Derfor har Jens Hansen koden <i class="v-kode">[Person 4829133]</i> i hver mappe, hos alle kolleger med den samme nøgle.</dd>
+                  </div>
+                  <div>
+                    <dt>Navnet ligger krypteret i kopien</dt>
+                    <dd>Kodelisten bagest i kopien har de fulde koder. I dem ligger den oprindelige tekst, krypteret med AES-SIV. Kun nøglen kan læse den igen. Der er ingen kodebog, der skal passes på.</dd>
+                  </div>
+                  <div>
+                    <dt>Kun jeres egen nøgle</dt>
+                    <dd>Hver installation laver sin egen nøgle. En anden, der bruger Krystallklart, kan ikke gendanne jeres koder: Uden jeres nøgle er de bare koder, også for os.</dd>
+                  </div>
+                  <div>
+                    <dt>Hvor nøglen ligger</dt>
+                    <dd>Styresystemet beskytter den: nøgleringen på Mac, DPAPI på Windows og nøgleringen (Secret Service) på Linux.</dd>
+                  </div>
+                  <div>
+                    <dt>Reserve</dt>
+                    <dd>24 ord på papir eller en nøglefil beskyttet med en adgangssætning, du selv vælger.</dd>
+                  </div>
+                  <div>
+                    <dt>I organisationen</dt>
+                    <dd>Én person er nøgleansvarlig og giver nøglen videre til kollegerne som en nøglepakke. Pakken og nøglekoden sendes hver for sig. IT kan spærre for, at nøglen eksporteres.</dd>
+                  </div>
+                  <div>
+                    <dt>Andres nøgler</dt>
+                    <dd>Under »Nøgle« kan du lægge en anden organisations nøgle ind. Den ligger ved siden af jeres egen. Kopien viser, hvilken nøgle den er lavet med, så Krystallklart vælger den rigtige, når du gendanner.</dd>
+                  </div>
+                  <div>
+                    <dt>Gendan</dt>
+                    <dd>Krystallklart laver en ny mappe. Kopien forbliver uændret. I billeder og PDF-sider ligger det, der var under felterne, krypteret i kopien og bliver sat ind igen.</dd>
+                  </div>
+                </dl>
+                <p>Koder er ikke anonymisering. Den, der har nøglen, kan gendanne dem, så en kopi med koder indeholder stadig personoplysninger (pseudonymisering, databeskyttelsesforordningens artikel 4, nr. 5).</p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Aktindsigt og sort maskering</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Sort maskering (PDF)</dt>
+                    <dd>Hver kopi bliver en PDF med sorte felter. Resten af teksten kan stadig markeres og søges i.</dd>
+                  </div>
+                  <div>
+                    <dt>Lad kun denne person stå</dt>
+                    <dd>Til en person, der beder om indsigt i sine egne oplysninger: Den person bliver stående, alle andre maskeres.</dd>
+                  </div>
+                  <div>
+                    <dt>Flere udgaver af samme mappe</dt>
+                    <dd>Én til den registrerede, én til pressen, hver med sine egne indstillinger.</dd>
+                  </div>
+                  <div>
+                    <dt>Sløring</dt>
+                    <dd>Et rektangel, en oval eller en frihåndsform over en del af et billede eller en side.</dd>
+                  </div>
+                </dl>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Mens du arbejder</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Gemmes automatisk</dt>
+                    <dd>Dine valg gemmes krypteret på computeren. Du fortsætter, hvor du slap.</dd>
+                  </div>
+                  <div>
+                    <dt>Ændringer</dt>
+                    <dd>Hver ændring står på en liste. Du kan fortryde én eller gå tilbage til udgangspunktet. Listen kan gemmes som PDF eller CSV.</dd>
+                  </div>
+                  <div>
+                    <dt>Egne markeringer</dt>
+                    <dd>Det, du selv markerer, gælder i alle mapper og tekster. Listen kan deles med kolleger.</dd>
+                  </div>
+                  <div>
+                    <dt>Søg</dt>
+                    <dd>Søg i alle filerne i mappen på én gang.</dd>
+                  </div>
+                  <div>
+                    <dt>Sikkerhedskopi</dt>
+                    <dd>En krypteret kopi af mappen, lavet før scanningen. Krystallklart minder dig om den efter 30 dage.</dd>
+                  </div>
+                  <div>
+                    <dt>Fra Finder</dt>
+                    <dd>På Mac: højreklik på en fil eller mappe, og vælg »Maskér med Krystallklart«.</dd>
+                  </div>
+                </dl>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Til IT-afdelingen</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Ingen netværkskode</dt>
+                    <dd>Programmet har ingen TLS, kan ikke slå navne op på nettet og lytter ikke på nogen port. <a class="v-lenke" href="til-it.html">Kontroller, I selv kan køre</a></dd>
+                  </div>
+                  <div>
+                    <dt>Regler i én fil</dt>
+                    <dd>I kan fastsætte, hvad der altid maskeres, låse kopiformen, kræve scanning og bestemme, om nøglen må eksporteres.</dd>
+                  </div>
+                  <div>
+                    <dt>Revisionslog</dt>
+                    <dd>Kan slås til. Den indeholder hverken filnavne eller oplysninger fra dokumenterne.</dd>
+                  </div>
+                  <div>
+                    <dt>Kommandolinje</dt>
+                    <dd><code>krystallklart clean</code> og <code>krystallklart restore</code>, med resultatet i JSON. Krystallklart kan også holde øje med en mappe.</dd>
+                  </div>
+                  <div>
+                    <dt>Licens uden internet</dt>
+                    <dd>En signeret kode, der kontrolleres på computeren. Én licens dækker hele organisationen.</dd>
+                  </div>
+                </dl>
+              </div>
+            </details>
+          </div>
+        </section>
+
+        <!-- ============ Full nerd-out ============ -->
+        <!-- Hele programmet, forklart for den som vil vite hvordan det virker. Veien en fil går
+             står alltid framme; resten åpnes. Tallene og navnene er fra appens kildekode. -->
+        <section class="v-del v-nerd" id="nerd">
+          <div class="v-hode rise">
+            <p class="v-nerd-over">For de nysgerrige</p>
+            <h2 class="v-tittel">Til teknikinteresserede.</h2>
+            <p class="v-ingress">Hele filens vej gennem Krystallklart, og hvad der sker undervejs.</p>
+          </div>
+
+          <ol class="v-ror rise">
+            <li><b>Læsning</b><span>Word, Excel, PDF, e-mails og billeder deles op i tekst og placering på siden.</span></li>
+            <li><b>Regler</b><span>Mønstre, kontrolcifre, lister over navne og ord.</span></li>
+            <li><b>Sætninger</b><span>En lille dansk sprogmodel vurderer hele sætninger.</span></li>
+            <li><b>Billeder</b><span>Tekst- og ansigtsgenkendelse, på computeren.</span></li>
+            <li><b>Register</b><span>Fundene samles for hele mappen. Samme person, samme kode.</span></li>
+            <li><b>Dig</b><span>Maskerer, lader stå og afklarer det uafklarede.</span></li>
+            <li><b>Skrivning</b><span>Hver filtype skrives på sin egen måde.</span></li>
+            <li><b>Kontrol</b><span>Kopien læses igen. Er der noget tilbage, holdes den tilbage.</span></li>
+          </ol>
+
+          <details class="v-nerd-alt rise">
+            <summary><span><i class="v-nar-lukket">Åbn maskinrummet</i><i class="v-nar-aapen">Luk maskinrummet</i></span></summary>
+            <div class="v-nerd-inn">
+              <article>
+                <h3>Hvad der er i pakken</h3>
+                <p>
+                  Krystallklart er et almindeligt program til computeren. Skallen er skrevet i Rust (Tauri), vinduet er en webvisning med en brugerflade i TypeScript. Alt, hvad der skal bruges, ligger i installationsfilen. Intet hentes bagefter.
+                </p>
+                <dl class="v-spek">
+                  <div><dt>Regelmotoren</dt><dd>TypeScript. Kører i programmet, uden server.</dd></div>
+                  <div><dt>Sætningsmodellen</dt><dd>distilbert-base-da-cased (Geotrend, Apache 2.0), finjusteret til sætninger om personer. Kører på processoren med <code>tract</code>, i ren Rust.</dd></div>
+                  <div><dt>Tekst i billeder</dt><dd>Apple Vision på Mac. På Windows den indbyggede tekstgenkendelse i Windows og Tesseract med dansk, på Linux Tesseract.</dd></div>
+                  <div><dt>Ansigter</dt><dd>Apple Vision på Mac. Små ansigtsmodeller (YuNet og UltraFace) på Windows og Linux.</dd></div>
+                  <div><dt>PDF</dt><dd>PDFium tegner siderne og læser tekstlaget.</dd></div>
+                  <div><dt>Ingen stor sprogmodel</dt><dd>Krystallklart har hverken LLM eller chatbot. Bygget stopper, hvis en af dem havner i pakken.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Fra fil til fund</h3>
+                <p>
+                  Hver fil deles op i tekststykker, der ved, hvor de står: et afsnit, en celle, et tekstfelt, en overskrift eller et sted på en PDF-side. Så går tre læsere gennem teksten.
+                </p>
+                <dl class="v-spek">
+                  <div><dt>Regler</dt><dd>Et CPR-nummer skal have en gyldig dato, og århundredet regnes ud fra det syvende ciffer; modulus 11 bruges aldrig til at afvise, for siden 2007 er der udstedt numre uden kontrolciffer. IBAN har sin egen kontrol (MOD 97), og betalingskort tjekkes med Luhn. Navne findes ud fra lister og placering, fx efter »Navn:« eller i en underskrift, også i genitiv.</dd></div>
+                  <div><dt>Følsomme ord</dt><dd>En liste med ord om helbred, fagforening, tro og strafbare forhold, med alle bøjningsformer. »sygemeldt«, »sygemelding« og »på sygedagpenge« giver det samme fund.</dd></div>
+                  <div><dt>Sætningslæseren</dt><dd>Sprogmodellen giver hver sætning om en person en vurdering af, hvor privat den er. Sammen med ordlæseren afgør det, om sætningen bliver en »Personoplysning«.</dd></div>
+                  <div><dt>Organisationens egne oplysninger</dt><dd>Adressen i brevhovedet, hovednummeret, CVR-nummeret, myndighedens sagsnummer og journalnumre efter KLE genkendes og bliver stående. E-mailadresser maskeres alligevel.</dd></div>
+                </dl>
+                <p>
+                  Til sidst samles fundene i mappens register. »Jens«, »Jens Hansen«, »Jens Hansens« og »JENS HANSEN« bliver én person, i alle filer. Det, Krystallklart ikke er sikker på, kommer med en begrundelse i køen »Uafklaret«: Navnet står først i sætningen, to personer hedder det samme, eller ordet er lagt til senere.
+                </p>
+              </article>
+
+              <article>
+                <h3>Koderne</h3>
+                <p>En kode har to dele. Den ene siger, hvem det er. Den anden er den oprindelige tekst, krypteret.</p>
+                <p class="v-kodelinje"><code>[PERSON_VBTF60YD0E-J94DW5ZFTYA2GWTWAXFKK0XYBF1KTY19BED6E5TJ832VZ00]</code></p>
+                <dl class="v-spek">
+                  <div><dt>Personkoden</dt><dd>HMAC-SHA256 af typen og værdien, forkortet til ti tegn. Den samme for alle skrivemåder af det samme navn, så et AI-værktøj kan se, at det er den samme person.</dd></div>
+                  <div><dt>Den krypterede del</dt><dd>AES-SIV (RFC 5297) af teksten, præcis som den stod. Den samme tekst giver altid den samme kode. En kode, der er ændret eller lavet med en anden nøgle, afvises. Krystallklart sætter aldrig noget forkert ind.</dd></div>
+                  <div><dt>Det korte nummer</dt><dd>Nummeret i <code>[Person 4829133]</code> regnes ud fra nøglen og værdien. Derfor er det det samme på alle computere med den samme nøgle, uden at de taler sammen.</dd></div>
+                  <div><dt>Kodelisten</dt><dd>I den almindelige kopiform står det korte nummer i teksten og de fulde koder på listen bagest. Sammen med nøglen er listen alt, hvad der skal til for at gendanne kopien.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Nøglen</h3>
+                <dl class="v-spek">
+                  <div><dt>Hvad den er</dt><dd>32 tilfældige bytes, lavet på computeren, første gang Krystallklart åbnes. Undernøgler til koder, numre og billeder udledes med HKDF-SHA256.</dd></div>
+                  <div><dt>Hvor den ligger</dt><dd>Beskyttet af styresystemet: nøgleringen og Secure Enclave på Mac, DPAPI på Windows, nøgleringen (Secret Service) på Linux. Nøglen holdes i den del af programmet, der er skrevet i Rust. Vinduet får den kun, når du vil se de 24 ord.</dd></div>
+                  <div><dt>24 ord</dt><dd>Nøglen kan skrives ned som 24 ord fra en liste med 2048 ord. Listen er norsk og den samme i alle udgaver. Ordene består kun af bogstaverne a–z, og ingen to ligner hinanden. De første fire bogstaver er nok til at kende ordet.</dd></div>
+                  <div><dt>Nøglefilen</dt><dd>Nøglen krypteret med en adgangssætning på mindst tolv tegn (Argon2id og AES-256-GCM).</dd></div>
+                  <div><dt>Nøgle-id</dt><dd>En kort betegnelse, fx <code>WJ0R-Q3R5</code>. Den viser, hvilken nøgle en kopi er lavet med, men er ikke selve nøglen.</dd></div>
+                  <div><dt>Flere nøgler</dt><dd>Når nøglen skiftes, lægges den gamle til side. Ved gendannelse prøver Krystallklart først den nuværende nøgle og så de tidligere.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Sådan bliver kopien lavet</h3>
+                <dl class="v-spek">
+                  <div><dt>Word, Excel, PowerPoint</dt><dd>Filen er en ZIP med XML. Krystallklart erstatter værdierne på stedet, også når Word har delt et navn i flere stykker. Bagefter ryddes filen: Kommentarer, makroer, indlejrede filer, eksempelbillede og skjulte data i billeder fjernes.</dd></div>
+                  <div><dt>PDF</dt><dd>Hver side tegnes som et billede i 200 dpi, ved lille skrift i 300. Koderne males hen over oplysningerne, og den maskerede tekst ligger usynligt nedenunder, så du kan søge i kopien.</dd></div>
+                  <div><dt>Billeder</dt><dd>Felterne males over, og ansigterne pixeleres.</dd></div>
+                  <div><dt>Det, der var nedenunder</dt><dd>Skal kopien kunne gendannes, lægger Krystallklart de oprindelige pixels under hvert felt krypteret ind i kopien (AES-256-GCM). Almindelige programmer springer dem over.</dd></div>
+                  <div><dt>E-mail</dt><dd>Kopien bliver en ryddet .eml-fil. Tekniske felter om beskedens vej fjernes.</dd></div>
+                  <div><dt>Filnavne</dt><dd>Står der et navn i et fil- eller mappenavn, bliver det også erstattet.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Kontrol, før kopien gemmes</h3>
+                <p>
+                  Før en kopi gemmes, læser Krystallklart den, som et andet program ville gøre: hver del af ZIP-filen, hver XML-attribut, hvert objekt i PDF-filen og teksten i hvert billede. Finder programmet noget, der skulle have været maskeret, eller en del, det ikke kan læse, bliver filen ikke lavet. Så kan du se, hvad det drejer sig om.
+                </p>
+              </article>
+
+              <article>
+                <h3>Hvad Krystallklart gemmer</h3>
+                <dl class="v-spek">
+                  <div><dt>Projektet</dt><dd>Valgene for mappen gemmes krypteret på computeren og holdes uden for Spotlight og Time Machine. Et projekt, der ikke bruges, slettes efter 30 dage.</dd></div>
+                  <div><dt>Sikkerhedskopien</dt><dd>En kopi af originalerne. Indholdet er krypteret med AES-256-GCM og kan kun læses på den computer, den blev lavet på. Filnavnene er uændrede.</dd></div>
+                  <div><dt>Egne markeringer</dt><dd>Listen over det, Krystallklart maskerer, fordi du har bedt om det, gemmes krypteret.</dd></div>
+                  <div><dt>Originalerne</dt><dd>Krystallklart skriver kun i mapper, programmet selv har oprettet. Hvert sted i koden, der sletter eller flytter en fil, skal have en skriftlig begrundelse. Ellers stopper en test bygget.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Hvad der ikke er med</h3>
+                <p>
+                  Programmet har ingen TLS, kan ikke slå navne op på nettet og lytter ikke på nogen port. Der er ingen konto, ingen brugsstatistik, ingen fejlrapporter og ingen automatiske opdateringer. Licensen er en signeret kode (Ed25519), der kontrolleres på computeren. Det eneste, Krystallklart gør i retning af internettet: Det åbner vores side i din egen browser, når du klikker på »Køb licens«.
+                </p>
+                <p><a class="v-lenke" href="til-it.html">Kontroller, IT-afdelingen selv kan køre</a></p>
+              </article>
+            </div>
+          </details>
+        </section>
+
+        <!-- ============ 9. Ansvar ============ -->
+        <section class="v-del v-ansvar" id="ansvar">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Et værktøj, ingen garanti.</h2>
+          </div>
+          <ul class="v-ansvar-liste rise">
+            <li><b>Krystallklart kan overse noget.</b> Læs kopierne, før du deler dem.</li>
+            <li><b>Koder er ikke anonymisering.</b> Den, der har nøglen, kan gendanne dem.</li>
+            <li><b>Ansvaret er dit.</b> Krystallklart er ikke juridisk rådgivning, og du bestemmer, hvad der bliver udleveret.</li>
+          </ul>
+          <p class="rise"><a class="v-lenke" href="hvad-den-finder.html">Hvad Krystallklart finder, og hvad den ikke finder</a></p>
+        </section>
+
+        <!-- ============ Går Klart på maskinen din? ============ -->
+        <!-- Krystallklart: bare systemkravene. Søket i maskinlisten (/klart/api/maskin) svarer på norsk, så det er ikke tatt med. -->
+        <section class="v-del v-maskin" id="maskin">
+          <div class="v-sjekk rise">
+            <h2 id="v-sjekk-tittel">Virker Krystallklart på denne computer?</h2>
+            <p class="v-sjekk-om">Krystallklart kører på almindelige kontorcomputere uden grafikkort.</p>
+            <p class="v-sjekk-fot">
+              Krav: en Mac med macOS 13 eller nyere (Apple- eller Intel-processor), en pc med Windows 10 eller 11 (64 bit) eller Linux med .deb-pakker (amd64 eller ARM64). Vi anbefaler 8 GB hukommelse.
+            </p>
+          </div>
+        </section>
+
+        <!-- ============ 10. Last ned ============ -->
+        <section class="v-hent" id="last-ned">
+          <img class="v-hent-bilde" src="/alles-klar/assets/klart-vinter.jpg" width="1600" height="1067" alt="" loading="lazy" decoding="async" />
+          <div class="v-hent-kort rise">
+            <!-- Samme nedlastingskort som i heroen; vises her når de velger system (forside.js). -->
+            <div class="nedlasting" data-nedlasting hidden aria-live="polite">
+              <div class="nedlasting-topp">
+                <span class="nedlasting-merke" data-merke aria-hidden="true"></span>
+                <div>
+                  <p class="nedlasting-tittel">Krystallklart til <span data-os></span></p>
+                  <p class="nedlasting-fil" data-fil></p>
+                </div>
+              </div>
+              <p class="nedlasting-prosent"><span data-prosent>0</span><span class="nedlasting-pst">%</span></p>
+              <p class="nedlasting-status" data-status></p>
+              <div class="nedlasting-ferdig" data-ferdig hidden>
+                <span class="nedlasting-hake" aria-hidden="true"><svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="25" pathLength="1" /><path d="M17 29l8 8 15-17" pathLength="1" /></svg></span>
+                <p class="nedlasting-ferdig-tittel">Hentet</p>
+                <p class="nedlasting-neste" data-neste></p>
+              </div>
+              <button type="button" class="nedlasting-tilbake" data-tilbake>Tilbage</button>
+            </div>
+            <div class="v-hent-inn">
+            <!-- Mobil og nettbrett: samme e-post som i heroen i stedet for nedlastingen (eieren 11.11.2026). -->
+            <div class="mobil-send">
+              <p class="mobil-send-tittel">Krystallklart er et program til computeren.</p>
+              <p class="mobil-send-tekst">Send linket til dig selv på e-mail, og hent programmet på en Mac, en Windows-pc eller en Linux-computer.</p>
+              <a class="btn" href="mailto:?subject=Krystallklart&amp;body=https%3A%2F%2Fesbjugconsult.com%2Fkrystallklart">Send til dig selv</a>
+              <p class="mobil-send-andre">(Eller til en anden?)</p>
+            </div>
+            <h2>Prøv Krystallklart på en enkelt mappe.</h2>
+            <p class="v-hent-privat"><b>Gratis til privat brug.</b></p>
+            <!-- Samme knapper som i heroen (kjennetegnene når man holder over). Ved et klikk
+                 vises nedlastingen vises her i kortet (forside.js). -->
+            <div class="v-hent-knapper get" data-v-hent>
+              <a class="btn ghost os os-win" href="/krystallklart/download/windows" download aria-label="Hent til Windows"><span class="os-navn">Windows</span></a>
+              <a class="btn ghost os os-mac" href="/krystallklart/download/mac" download aria-label="Hent til Mac"><span class="os-glass" aria-hidden="true"></span><span class="os-navn">Mac</span></a>
+              <a class="btn ghost os os-lin" href="/krystallklart/download/linux" download aria-label="Hent til Linux"><span class="os-figur os-pingvin" aria-hidden="true"><svg viewBox="0 0 24 28" width="24" height="28" focusable="false"><g class="os-pingvin-kropp"><ellipse cx="8.4" cy="26.4" rx="3.3" ry="1.4" fill="#f5a524"/><ellipse cx="15.6" cy="26.4" rx="3.3" ry="1.4" fill="#f5a524"/><ellipse cx="3.9" cy="17" rx="1.9" ry="5.4" transform="rotate(16 3.9 17)" fill="#0f2147"/><ellipse cx="20.1" cy="17" rx="1.9" ry="5.4" transform="rotate(-16 20.1 17)" fill="#0f2147"/><ellipse cx="12" cy="15" rx="8.4" ry="11.2" fill="#0f2147"/><ellipse cx="12" cy="18.4" rx="5.5" ry="7.6" fill="#fff"/><circle cx="9.7" cy="8.6" r="2" fill="#fff"/><circle cx="14.3" cy="8.6" r="2" fill="#fff"/><circle cx="10.1" cy="8.9" r="0.95" fill="#0f2147"/><circle cx="13.9" cy="8.9" r="0.95" fill="#0f2147"/><path d="M9.9 11.4 Q12 10.5 14.1 11.4 Q12 13.9 9.9 11.4Z" fill="#f5a524"/></g></svg></span><span class="os-navn">Linux</span></a>
+            </div>
+            <!-- Linux på ARM64 har egen pakke, som på den tyske siden. Samme nedlastingskort (forside.js). -->
+            <p class="v-hent-arm" data-v-hent><a href="/krystallklart/download/linux-arm" download>Linux på ARM64 (.deb)</a></p>
+            <p class="v-hent-virk">For organisationer: <b>30 dage gratis</b>. Ingen tilmelding. Derefter bestilling mod faktura.</p>
+            <p><a class="v-hent-pris" href="priser/">Prisen for jeres organisation</a></p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- ================= Bunn ================= -->
+    <footer class="v-bunn">
+      <p class="v-bunn-merke"><i>Krystallklart</i> <span>fra ESBJUG CONSULT</span></p>
+      <nav class="v-bunn-lenker" aria-label="Mere om Krystallklart">
+        <a href="priser/">Pris</a>
+        <a href="hvad-den-finder.html">Hvad Krystallklart finder</a>
+        <a href="til-it.html">Til IT-afdelingen</a>
+        <a href="vilkaar/">Vilkår</a>
+        <a href="privatliv/">Privatliv</a>
+      </nav>
+      <nav class="v-bunn-lenker v-bunn-land" aria-label="Andre lande">
+        <a href="/klart/" hreflang="no" lang="no">Norge · Klart</a>
+        <a href="/alles-klar/" hreflang="de" lang="de">Deutschland · Alles Klar</a>
+        <a href="/glockenklar/" hreflang="de-AT" lang="de-AT">Österreich · Glockenklar</a>
+        <a href="/frostcopy/" hreflang="en-US" lang="en-US">United States · FrostCopy</a>
+        <a href="/frostcopy-uk/" hreflang="en-GB" lang="en-GB">United Kingdom · FrostCopy UK</a>
+        <a href="/cest-clair/" hreflang="fr" lang="fr">France · C’est Clair</a>
+        <a href="/clair-klaar/" hreflang="nl-BE" lang="nl-BE">België · Belgique · Clair &amp; Klaar</a>
+        <a href="/clarisimo/" hreflang="es" lang="es">España · Clarísimo</a>
+        <a href="/chiarissimo/" hreflang="it" lang="it">Italia · Chiarissimo</a>
+        <a href="/klip-en-klaar/" hreflang="nl" lang="nl">Nederland · Klip en Klaar</a>
+        <a href="/wszystko-jasne/" hreflang="pl" lang="pl">Polska · Wszystko Jasne</a>
+        <a href="/klappatochklart/" hreflang="sv" lang="sv">Sverige · Klappat och Klart</a>
+        <a href="/krystallklart/" hreflang="da" lang="da" aria-current="page">Danmark · Krystallklart</a>
+      </nav>
+      <p class="v-bunn-liten">Lavet i Norge · Ikke juridisk rådgivning</p>
+    </footer>
+
+    <script src="forside.js"></script>
+    <script src="forhandsvisning.js"></script>
+    <script src="videre.js"></script>
+  </body>
+</html>

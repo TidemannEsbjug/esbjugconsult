@@ -1,0 +1,579 @@
+<!doctype html>
+<!--
+  Hei, du som leser kildekoden. Det var deg vi håpet på.
+
+  Klart lover at dokumentene aldri forlater maskinen. Et sånt løfte skal ikke
+  tas på ordet, så sjekk det:
+
+  - Programmet: denne siden har kommandoene som viser hva det snakker med.
+  - Nettsiden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
+    uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
+  - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
+    Vi vil heller høre det fra deg enn fra en kunde.
+
+  Den belgiske siden (Clair &amp; Klaar), 26.11.2026: bygd på den nederlandske (klip-en-klaar/voor-it.html),
+  navn, stier og modell rettet etter Klart-be (tauri.be.conf.json, aktivering.rs) og byggene 2026-11-25d.
+  Pakkeinnholdet under er ikke kjørt på nytt mot det belgiske bygget.
+-->
+<html lang="nl-BE">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/clair-klaar/favicon.png" />
+    <title>Voor IT · Clair &amp; Klaar</title>
+    <meta
+      name="description"
+      content="De controles die laten zien dat Clair &amp; Klaar niet met het netwerk praat, wat er in het pakket en op de schijf staat en hoe IT Clair &amp; Klaar centraal instelt. Met opdrachten, verwachte uitkomsten en wat elke controle bewijst."
+    />
+    <meta name="robots" content="noindex" />
+    <!-- Ingen skrifter, bilder eller skript utenfra. De to skriptene bytter mellom Mac og
+         Windows og kopierer kommandoene. Uten skript vises begge systemene, og alt kan markeres.
+         Fasitene er arvet fra den nederlandske siden (Klip-en-Klaar 24.11.2026); navnene er de belgiske
+         (brannmur-be.nsh, tauri.be.conf.json). Ikke kjørt mot Clair-Klaar-byggene. -->
+    <script src="til-it-tidlig.js"></script>
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="sider.css" />
+    <link rel="stylesheet" href="/clair-klaar/taal.css" />
+    <link rel="alternate" hreflang="nl-BE" href="https://esbjugconsult.com/clair-klaar/voor-it.html" />
+    <link rel="alternate" hreflang="fr-BE" href="https://esbjugconsult.com/clair-klaar/fr/pour-la-dsi.html" />
+  </head>
+  <body>
+    <header class="s-topp">
+      <div class="s-linje-topp">
+        <a class="s-merke" href="./">Clair &amp; Klaar</a>
+        <nav class="s-nav" aria-label="Pagina's">
+          <a href="./">Start</a>
+          <a href="prijzen/">Prijzen</a>
+          <a href="voor-it.html" aria-current="page">Voor IT</a>
+          <a href="privacy/">Privacy</a>
+        </nav>
+        <nav class="taal" aria-label="Taal / Langue"><span aria-current="true">NL</span><span class="taal-streep" aria-hidden="true">|</span><a href="/clair-klaar/fr/pour-la-dsi.html" hreflang="fr" lang="fr">FR</a></nav>
+      </div>
+      <div class="s-hode">
+        <p class="s-over">Voor de IT-afdeling</p>
+        <h1>Vertrouw ons niet. Controleer het zelf.</h1>
+        <p class="s-ingress">
+          Clair &amp; Klaar belooft dat de documenten de computer nooit verlaten. Hier staan de opdrachten die dat laten
+          zien, wat ze moeten opleveren en wat elke controle werkelijk bewijst.
+        </p>
+      </div>
+    </header>
+
+    <div class="s-kropp">
+      <nav class="s-innhold" aria-label="Inhoud">
+        <p>Op deze pagina</p>
+        <ol>
+          <li><a href="#kort">In het kort</a></li>
+          <li><a href="#fil">1 Is dit ons bestand?</a></li>
+          <li><a href="#signert">2 Ondertekend en ongewijzigd?</a></li>
+          <li><a href="#rettigheter">3 Wat mag het programma?</a></li>
+          <li><a href="#snakker">4 Praat het met iemand?</a></li>
+          <li><a href="#laget">5 Waaruit bestaat het?</a></li>
+          <li><a href="#steng">Zelf afsluiten</a></li>
+          <li><a href="#disk">Wat er op de schijf staat</a></li>
+          <li><a href="#styring">Clair &amp; Klaar centraal instellen</a></li>
+          <li><a href="#nokkel">De sleutel in een organisatie</a></li>
+          <li><a href="#logg">Auditlogboek</a></li>
+          <li><a href="#kommando">Opdrachtregel</a></li>
+          <li><a href="#krypto">Cryptografie</a></li>
+          <li><a href="#krav">Systeemeisen</a></li>
+          <li><a href="#si-fra">Iets gevonden?</a></li>
+        </ol>
+      </nav>
+
+      <main class="s-tekst" id="innhold">
+        <section class="s-kort" id="kort">
+          <h2>In het kort</h2>
+          <ul>
+            <li><b>Geen weg naar buiten.</b> Het programma heeft geen TLS, kan geen namen op het netwerk opzoeken en luistert op geen enkele poort.</li>
+            <li><b>Alles zit in het pakket.</b> Na de installatie wordt niets gedownload. Geen updater, geen gebruiksstatistieken, geen foutrapporten.</li>
+            <li><b>U kunt het afsluiten.</b> Blokkeer al het uitgaande verkeer voor Clair &amp; Klaar. Het programma werkt even goed.</li>
+            <li><b>U kunt het instellen.</b> Eén bestand bepaalt wat gebruikers zelf mogen kiezen.</li>
+          </ul>
+        </section>
+
+        <div class="s-velg">
+          <p id="velg-tittel">Welk systeem controleert u?</p>
+          <div class="s-velg-knapper" role="group" aria-labelledby="velg-tittel">
+            <button type="button" data-velg="mac" aria-pressed="false">Mac</button>
+            <button type="button" data-velg="windows" aria-pressed="false">Windows</button>
+          </div>
+        </div>
+        <p class="s-skjult" id="melding" role="status" aria-live="polite"></p>
+
+        <!-- ============ 1 ============ -->
+        <section class="s-del" id="fil">
+          <h2><span class="s-nr">1</span>Is dit ons bestand?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>shasum -a 256 ~/Downloads/Clair*Klaar*.dmg</pre></div>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-FileHash "$HOME\Downloads\Clair*Klaar*.exe"</pre></div>
+          </div>
+          <p>Op Linux: <code>sha256sum ~/Downloads/Clair-Klaar_0.1.0_*.deb</code>.</p>
+          <p class="s-fasit"><b>Verwachte uitkomst:</b> de lange reeks cijfers en letters is gelijk aan de controlesom die wij voor de versie publiceren.</p>
+          <dl class="s-tabell">
+            <!-- Kontrollsummene fra kladd/utgivelse-retting/*-be-2026-11-25d/SHA256.txt; lederen sjekker dem mot filene i R2 (2026-11-26/be/). -->
+            <div><dt>Clair-Klaar_0.1.0_universal.dmg</dt><dd><code>29aa62a384d0c170<wbr />6dafe2158ab178f6<wbr />006ac074032bdc71<wbr />76c1746410a35335</code></dd></div>
+            <div><dt>Clair-Klaar_0.1.0_x64-setup.exe</dt><dd><code>71ee10aae423d8ee<wbr />8bca51da3c50cd0e<wbr />dde4b561436b8032<wbr />8159c3ad340a9cb7</code></dd></div>
+            <div><dt>Clair-Klaar_0.1.0_amd64.deb</dt><dd><code>ae3d3c0c63d5c87c<wbr />ac14f80b0e67e16b<wbr />d0ef4a8d374f55fe<wbr />1f3546de6569c9ce</code></dd></div>
+            <div><dt>Clair-Klaar_0.1.0_arm64.deb</dt><dd><code>a3ca66e10d2177a3<wbr />4b630e3afe1cc982<wbr />fe5a4675d7813822<wbr />41a5774ac6e25b96</code></dd></div>
+          </dl>
+          <p class="s-beviser"><b>Bewijst:</b> dat het bestand het bestand is dat wij hebben gepubliceerd. Meer niet. Een controlesom zegt niets over wat het programma doet.</p>
+        </section>
+
+        <!-- ============ 2 ============ -->
+        <section class="s-del" id="signert">
+          <h2><span class="s-nr">2</span>Is het door ons ondertekend en ongewijzigd?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>codesign -dv --verbose=4 "/Applications/Clair &amp; Klaar.app" 2>&amp;1 | grep -E "Format|TeamIdentifier|flags|Notarization"</pre></div>
+            <p class="s-fasit">
+              <b>Verwachte uitkomst:</b> <code>Format=app bundle with Mach-O universal (x86_64 arm64)</code>,
+              <code>flags=0x10000(runtime)</code>, <code>Notarization Ticket=stapled</code> en
+              <code>TeamIdentifier=N5BKVM258S</code>.
+            </p>
+            <div class="cmd"><pre>spctl -a -vv "/Applications/Clair &amp; Klaar.app"</pre></div>
+            <p class="s-fasit"><b>Verwachte uitkomst:</b> <code>accepted</code> en <code>source=Notarized Developer ID</code>.</p>
+            <p>Het pakket bevat nog twee uitvoerbare onderdelen: de helper die de sleutel beheert, en de pdf-bibliotheek. Controleer die ook:</p>
+            <div class="cmd"><pre>codesign -dv "/Applications/Clair &amp; Klaar.app/Contents/MacOS/klart-hvelv" 2>&amp;1 | grep TeamIdentifier
+codesign -dv "/Applications/Clair &amp; Klaar.app/Contents/Resources/bundled/engine/pdfium/libpdfium.dylib" 2>&amp;1 | grep TeamIdentifier</pre></div>
+            <p class="s-fasit"><b>Verwachte uitkomst:</b> bij beide dezelfde <code>TeamIdentifier=N5BKVM258S</code>.</p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>De Windows-versie is ondertekend door ESBJUG CONSULT. De opdracht geeft <code>Valid</code> en toont de naam in het certificaat.</p>
+            <div class="cmd"><pre>Get-AuthenticodeSignature "$HOME\Downloads\Clair*Klaar*.exe" | Format-List Status, SignerCertificate</pre></div>
+            <p class="s-fasit"><b>Verwachte uitkomst:</b> <code>Valid</code> en onze naam in <code>SignerCertificate</code>.</p>
+          </div>
+          <p class="s-beviser">
+            <b>Bewijst:</b> dat de code van ons komt en achteraf niet is gewijzigd. Dit is de controle tegen een omgebouwde kopie.
+            Een kopie met een ingebouwde netwerkverbinding is een ander programma, en de handtekening verraadt dat.
+          </p>
+        </section>
+
+        <!-- ============ 3 ============ -->
+        <section class="s-del" id="rettigheter">
+          <h2><span class="s-nr">3</span>Wat mag het programma?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>codesign -d --entitlements - --xml "/Applications/Clair &amp; Klaar.app" 2>/dev/null | plutil -p -</pre></div>
+            <p class="s-fasit">
+              <b>Verwachte uitkomst:</b> vijf regels, alle <code>false</code>: <code>automation.apple-events</code>,
+              <code>cs.allow-dyld-environment-variables</code>, <code>cs.allow-jit</code>,
+              <code>cs.allow-unsigned-executable-memory</code> en <code>cs.disable-library-validation</code>.
+              Geen iCloud-rechten en geen <code>network.client</code> of <code>network.server</code>.
+            </p>
+            <p>
+              <b>Maar let op:</b> Clair &amp; Klaar draait niet in de App Sandbox. Dan is het ontbreken van netwerkrechten
+              alleen een opgave. macOS dwingt ze zonder sandbox niet af, en een programma met Hardened Runtime
+              kan in principe toch een verbinding openen. Dat zeggen we liever zelf dan dat u het ontdekt.
+              Wat de vraag echt beslist, zijn punt 4 en 5 en de regel die u zelf instelt.
+            </p>
+            <p class="s-beviser"><b>Bewijst:</b> dat het programma geen andere programma's kan besturen, geen vreemde code kan laden en niet bij iCloud kan. Over het netwerk bewijst het op zichzelf niets.</p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>
+              Windows kent voor gewone desktopprogramma's geen vergelijkbare rechten. Een programma dat met een .exe is
+              geïnstalleerd, vraagt niet om netwerktoegang. Het heeft die. Daarom staat hier geen opdracht.
+            </p>
+            <p class="s-beviser"><b>Bewijst:</b> op Windows niets. De afsluiting is de firewallregel verderop, en het bewijs dat het programma stil is, is punt 4.</p>
+          </div>
+        </section>
+
+        <!-- ============ 4 ============ -->
+        <section class="s-del" id="snakker">
+          <h2><span class="s-nr">4</span>Praat het met iemand?</h2>
+          <p>Start Clair &amp; Klaar, open een map en laat die lezen. Voer de opdracht uit terwijl het programma draait.</p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>pgrep -lx clairklaar; lsof +c 0 -nP -a -i -c clairklaar -c com.apple.WebKit.Networking</pre></div>
+            <p class="s-fasit"><b>Verwachte uitkomst:</b> één regel met het procesnummer en <code>clairklaar</code>, daarna niets. Clair &amp; Klaar heeft geen enkele TCP- of UDP-socket.</p>
+            <p>
+              Het venster van Clair &amp; Klaar wordt getekend door WebKit, dat bij macOS hoort. WebKit start eigen hulpprocessen,
+              en een daarvan heet <code>com.apple.WebKit.Networking</code>. Die staat in de opdracht, want hij zou het zijn
+              die iets ophaalt als het venster dat probeerde. Ook hij moet leeg zijn.
+            </p>
+            <p>
+              Verschijnen er toch regels, dan heeft u waarschijnlijk Safari, Mail of een ander programma met WebKit open.
+              Die delen de naam van het hulpproces. Sluit ze en voer de opdracht opnieuw uit, of let op de procesnummers:
+              de helpers van Clair &amp; Klaar hebben de nummers direct na Clair &amp; Klaar.
+            </p>
+            <p>
+              Let op <code>-a</code>. Zonder die optie combineert <code>lsof</code> de voorwaarden met “of”, en krijgt u al het
+              verkeer van de computer in de lijst. LuLu of Little Snitch geven hetzelfde resultaat, als u het liever zo ziet.
+            </p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-Process clairklaar, tesseract -ErrorAction SilentlyContinue |
+ForEach-Object {
+  "$($_.ProcessName) draait (proces $($_.Id))"
+  Get-NetTCPConnection -OwningProcess $_.Id -ErrorAction SilentlyContinue
+  Get-NetUDPEndpoint -OwningProcess $_.Id -ErrorAction SilentlyContinue
+}</pre></div>
+            <p class="s-fasit"><b>Verwachte uitkomst:</b> alleen de regels die melden dat <code>clairklaar</code> draait, en <code>tesseract</code> terwijl Clair &amp; Klaar een afbeelding leest. Geen tabellen met adressen en poorten.</p>
+            <p>
+              Het venster van Clair &amp; Klaar wordt getekend door WebView2, dat van Microsoft komt en bij Windows hoort. Het draait in
+              eigen processen, <code>msedgewebview2.exe</code>. De inhoud van het venster mag niets ophalen:
+              de regels uit punt 5 verhinderen dat. WebView2 zelf kan wel met Microsoft praten, bijvoorbeeld voor eigen
+              updates. Dat is verkeer van Microsoft, en er zit niets van Clair &amp; Klaar of uit de documenten in.
+              Wilt u volledige stilte, blokkeer dan beide in de firewall.
+            </p>
+            <p>Broncontrole (<code>resmon</code>), tabblad Netwerk, geeft hetzelfde resultaat, als u het liever zo ziet.</p>
+          </div>
+          <p class="s-beviser"><b>Bewijst:</b> dat het programma, zoals het bij u draait, geen weg naar buiten heeft. Deze controle vertrouwen we zelf het meest.</p>
+        </section>
+
+        <!-- ============ 5 ============ -->
+        <section class="s-del" id="laget">
+          <h2><span class="s-nr">5</span>Waaruit bestaat het?</h2>
+          <p>Het installatiebestand voor de Mac is ongeveer 370 MB. Dit is alles wat erin zit:</p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>MacOS/clairklaar</code></dt>
+              <dd>Het programma. 119 MB, voor Intel- en Apple-processors. De schil is geschreven in Rust (Tauri 2), het venster in TypeScript.</dd>
+            </div>
+            <div>
+              <dt><code>MacOS/klart-hvelv</code></dt>
+              <dd>Een kleine helper (0,2 MB) die de sleutel met de sleutelhanger en de Secure Enclave in- en uitpakt. Dezelfde helper staat ook als kleine app in <code>Contents/Helpers/</code>, zodat macOS bij een vraag om de sleutelhanger de naam Clair &amp; Klaar toont.</dd>
+            </div>
+            <div>
+              <dt><code>setning/distilbert-belgian.onnx</code></dt>
+              <dd>Het zinsmodel op basis van distilbert-base-en-fr-nl-ru-ar-cased (Geotrend, Apache-2.0), bijgetraind op Belgische zinnen in het Nederlands en het Frans, 322 MB. Draait op de processor, in het programma zelf. Het is geen eigen proces.</dd>
+            </div>
+            <div>
+              <dt><code>setning/vocab.txt</code></dt>
+              <dd>De woordenschat van het model, 0,15 MB.</dd>
+            </div>
+            <div>
+              <dt><code>pdfium/libpdfium.dylib</code></dt>
+              <dd>PDFium, de bibliotheek die pdf's leest en weergeeft. 15 MB.</dd>
+            </div>
+          </dl>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>find "/Applications/Clair &amp; Klaar.app/Contents" -type f -size +100k -exec ls -lh {} \;</pre></div>
+            <p class="s-fasit"><b>Verwachte uitkomst:</b> de bestanden hierboven, het app-pictogram en de licentieteksten in <code>licenties/</code>. Geen <code>llama-server</code>, geen <code>.gguf</code>, geen andere modellen.</p>
+          </div>
+          <p>
+            Het programma heeft geen TLS en geen HTTP-client die een server kan bereiken. Het kan op geen enkele poort luisteren
+            en geen namen op het netwerk opzoeken. Dat ziet u aan het bestand zelf:
+          </p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>otool -L "/Applications/Clair &amp; Klaar.app/Contents/MacOS/clairklaar" | grep -iE 'curl|CFNetwork|Network\.framework|ssl'
+nm -u "/Applications/Clair &amp; Klaar.app/Contents/MacOS/clairklaar" | grep -E '_(bind|listen|accept|getaddrinfo)$'</pre></div>
+            <p class="s-fasit"><b>Verwachte uitkomst:</b> geen enkele regel uit beide opdrachten.</p>
+            <p>
+              <b>Wat u wel zult vinden en wat het is:</b> het bestand is gekoppeld aan <code>CloudKit</code> en <code>CoreData</code>. Dat komt uit de vensterbibliotheek,
+              niet van ons. Clair &amp; Klaar gebruikt geen van beide en heeft geen iCloud-rechten (punt 3).
+            </p>
+          </div>
+          <p>Heeft u de broncode, dan zijn dit de plekken om na te kijken:</p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>src-tauri/Cargo.toml</code></dt>
+              <dd>Geen reqwest, hyper, rustls, native-tls of openssl. <code>tokio</code> wordt gebouwd zonder <code>net</code>. Sommige van deze namen staan toch in <code>Cargo.lock</code>, omdat een bibliotheek ze voor mobiele platforms meebrengt. Ze worden nooit meegecompileerd. Daarom telt <code>cargo tree</code>, niet een zoekopdracht in het lock-bestand.</dd>
+            </div>
+            <div>
+              <dt><code>tauri.conf.json</code></dt>
+              <dd>CSP voor het venster: <code>default-src 'self'</code> en <code>connect-src ipc: http://ipc.localhost</code>. Het venster mag alleen praten met het programma waarin het draait. Geen frames, geen ingesloten objecten, geen formulieren naar buiten. Daarnaast blokkeert het programma elke navigatie weg van zichzelf.</dd>
+            </div>
+            <div>
+              <dt><code>capabilities/opener-nektet.json</code></dt>
+              <dd>Het venster mag geen adressen en paden openen: <code>opener:deny-open-url</code>, <code>deny-open-path</code> en <code>deny-reveal-item-in-dir</code>. Geen HTTP-plug-in, geen updater.</dd>
+            </div>
+            <div>
+              <dt><code>scripts/sjekk-nett.sh</code></dt>
+              <dd>Draait voor elke build. Leest de gecompileerde afhankelijkheidsgraaf, zoekt naar adressen, naar <code>std::net</code> en naar Unix-sockets in de Rust-code, en breekt de build af als daarvan iets terugkomt.</dd>
+            </div>
+          </dl>
+          <div class="cmd" data-hvor="In de broncodemap"><pre>cd src-tauri &amp;&amp; cargo tree -e normal | grep -E 'reqwest|hyper|rustls|native-tls|openssl'</pre></div>
+          <p class="s-fasit"><b>Verwachte uitkomst:</b> geen treffers.</p>
+          <p>
+            Op één plek opent Clair &amp; Klaar een webadres: klikt de gebruiker op “Koop een licentie”, dan vraagt het programma het systeem om
+            <code>https://esbjugconsult.com/clair-klaar/activeren?hva=kjop&amp;maskin=…</code> in de eigen browser van de gebruiker te openen.
+            Clair &amp; Klaar maakt zelf geen verbinding. Op die pagina bestelt u op factuur of haalt u uw activeringscode op. De apparaatcode in het adres is een SHA-256-hash van de computer-ID en zegt niets
+            over de gebruiker of de documenten.
+          </p>
+          <h3>De bibliotheken die de documenten lezen</h3>
+          <p>Deze verwerken bestanden die u niet zelf heeft gemaakt, dus het is goed ze te kennen:</p>
+          <dl class="s-tabell">
+            <div><dt>PDF</dt><dd>PDFium, pdf.js 4.10.38 en pdf-lib 1.17.1. pdf.js draait zonder <code>eval</code>.</dd></div>
+            <div><dt>Word</dt><dd>JSZip 3.10.1 en docx-preview 0.4.1.</dd></div>
+            <div><dt>Excel</dt><dd>SheetJS (xlsx) 0.18.5.</dd></div>
+            <div><dt>Afbeeldingen</dt><dd>Apple Vision op de Mac. De ingebouwde tekstherkenning van Windows en Tesseract op Windows, Tesseract op Linux (Nederlands, Frans en Duits).</dd></div>
+            <div><dt>Zinnen</dt><dd>distilbert-base-en-fr-nl-ru-ar-cased, bijgetraind, uitgevoerd met tract-onnx 0.23.</dd></div>
+          </dl>
+          <p class="s-beviser"><b>Bewijst:</b> dat er in het programma geen code is die iets kan versturen. Met de broncode kunt u het zelf bouwen en vergelijken.</p>
+        </section>
+
+        <!-- ============ Steng den selv ============ -->
+        <section class="s-del" id="steng">
+          <h2>Zelf afsluiten</h2>
+          <p>Vertrouw niet op ons. Blokkeer het uitgaande verkeer voor Clair &amp; Klaar in de firewall of via MDM. Het programma werkt even goed. Daarvoor hebben we het zo gebouwd.</p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <p>De ingebouwde firewall van macOS blokkeert alleen inkomend verkeer. Zet het pad in een regel in het netwerkfilter van uw MDM-oplossing, of in LuLu of Little Snitch:</p>
+            <div class="cmd" data-hvor="Pad"><pre>/Applications/Clair &amp; Klaar.app/Contents/MacOS/clairklaar</pre></div>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Het installatieprogramma (.exe) probeert de regel zelf te maken. Zo ziet u of hij er is:</p>
+            <div class="cmd"><pre>Get-NetFirewallRule -DisplayName "Clair &amp; Klaar*" | Get-NetFirewallApplicationFilter</pre></div>
+            <p class="s-fasit"><b>Verwachte uitkomst:</b> een regel met de naam “Clair &amp; Klaar - uitgaand blokkeren” en het pad naar <code>clairklaar.exe</code>.</p>
+            <p>Ontbreekt hij, maak hem dan zo, in PowerShell als beheerder:</p>
+            <div class="cmd"><pre>New-NetFirewallRule -DisplayName "Clair &amp; Klaar - uitgaand blokkeren" `
+  -Direction Outbound -Action Block -Profile Any `
+  -Program (Get-Process clairklaar).Path</pre></div>
+            <p>
+              Voer de opdracht uit terwijl Clair &amp; Klaar open is, dan vindt hij het pad zelf. Neem ook <code>tesseract.exe</code> op,
+              die in de map <code>bundled</code> onder Clair &amp; Klaar staat. Dat is een eigen uitvoerbaar bestand.
+              Via Intune: maak dezelfde regels in een firewallbeleid onder Eindpuntbeveiliging.
+            </p>
+          </div>
+          <p>Zodra de regel van u is, hoeft u niets van het bovenstaande van ons aan te nemen.</p>
+        </section>
+
+        <!-- ============ Disken ============ -->
+        <section class="s-del" id="disk">
+          <h2>Wat er op de schijf staat</h2>
+          <p>
+            Clair &amp; Klaar bewaart al zijn gegevens in één map per gebruiker. Op de Mac is dat
+            <code>~/Library/Application Support/be.clairklaar.app/</code>, op Windows
+            <code>%APPDATA%\be.clairklaar.app\</code>. De mapnamen daarin zijn intern en niet vertaald.
+          </p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>prosjekter/</code></dt>
+              <dd>Wat de gebruiker voor elke map heeft besloten, en de tekst die Clair &amp; Klaar uit de bestanden heeft gelezen. Die laatste bevat persoonsgegevens. Alles is versleuteld met AES-256-GCM, en de mappen hebben namen waaruit het pad niet terug te halen is. Een project dat niet wordt gebruikt, wordt na 30 dagen vergeten.</dd>
+            </div>
+            <div>
+              <dt><code>pseudonym/</code></dt>
+              <dd>De sleutel, eerdere sleutels die opzij zijn gezet, en het nummerboek. Het nummerboek koppelt codes aan nummers en bevat geen namen.</dd>
+            </div>
+            <div>
+              <dt><code>secure-enclave.nokkel</code></dt>
+              <dd>Op Macs met Secure Enclave: een verwijzing naar een sleutel in de chip. Op een andere computer is hij onbruikbaar.</dd>
+            </div>
+            <div>
+              <dt><code>lager/</code></dt>
+              <dd>De lijsten “Altijd lakken” en “Altijd laten staan”, de eigen markeringen van de gebruiker en de teksten uit de teksttool. Versleuteld.</dd>
+            </div>
+            <div>
+              <dt><code>sikkerhetskopier/</code></dt>
+              <dd>Kopieën van de originelen, gemaakt voor de controle, als de gebruiker dat wil (standaard aan). De inhoud van elk bestand is versleuteld met AES-256-GCM. De kopieën worden niet automatisch verwijderd. Clair &amp; Klaar herinnert er na 30 dagen aan.</dd>
+            </div>
+            <div>
+              <dt><code>revisjon/</code></dt>
+              <dd>Het auditlogboek, als het aanstaat. Eén bestand per maand, de laatste 13 maanden.</dd>
+            </div>
+            <div>
+              <dt>Kleine bestanden</dt>
+              <dd>Onder meer <code>aktivering.json</code> (de licentiecode) en <code>innstillinger.json</code>. Niet versleuteld en zonder inhoud uit de documenten.</dd>
+            </div>
+          </dl>
+          <h3>Hoe de sleutels zijn beschermd</h3>
+          <p>
+            Op de Mac is de sleutel omhuld met een tweede sleutel uit de sleutelhanger, en daarnaast met de Secure Enclave als die er is.
+            Op Windows wordt DPAPI voor de gebruiker gebruikt (<code>nokkel.dpapi</code>).
+            U kunt de sleutel ook alleen op een usb-stick bewaren (de sleutelstick), vergrendeld met een wachtzin.
+            Dat beschermt tegen andere gebruikers en tegen een verloren schijf. Het beschermt niet tegen een programma dat
+            onder dezelfde gebruiker draait. Dat is de grens van zowel de sleutelhanger als DPAPI, en die moet u kennen.
+          </p>
+          <h3>Wat Clair &amp; Klaar in het systeem instelt</h3>
+          <dl class="s-tabell">
+            <div><dt>Voorzieningen in de Finder</dt><dd>Clair &amp; Klaar schrijft bij het starten vier voorzieningen naar <code>~/Library/Services/</code>: “Lak met Clair &amp; Klaar”, “Herstel met Clair &amp; Klaar”, “Lak tekst met Clair &amp; Klaar” en “Herstel tekst met Clair &amp; Klaar”. De laatste twee nemen geselecteerde tekst uit andere programma's over. Met <code>"kommandolinje": false</code> in het beleid worden alle vier verwijderd.</dd></div>
+            <div><dt>Adressen en bestandstypen</dt><dd>Clair &amp; Klaar neemt <code>clairklaar://</code>-links aan en de bestandstypen <code>.clairklaarlicentie</code>, <code>.clairklaarmarkeringen</code> en <code>.clairklaarproject</code>. Een link kan een licentie voorstellen. De gebruiker wordt altijd gevraagd, en een sleutelpakket heeft nog steeds zijn code nodig.</dd></div>
+            <div><dt>Niets op de achtergrond</dt><dd>Geen dienst, geen opstartitem en geen proces dat doorloopt nadat het venster is gesloten.</dd></div>
+          </dl>
+          <h3>Alles verwijderen</h3>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <p>Verwijder het programma en daarna dit:</p>
+            <div class="cmd"><pre>rm -rf ~/Library/Application\ Support/be.clairklaar.app ~/Library/WebKit/be.clairklaar.app ~/Library/Caches/be.clairklaar.app
+rm -f ~/Library/Preferences/be.clairklaar.app.plist
+rm -rf ~/Library/Services/*Clair\ \&amp;\ Klaar*.workflow
+security delete-generic-password -s no.klart.pseudonym.be.clairklaar.app</pre></div>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Verwijder het programma en daarna <code>%APPDATA%\be.clairklaar.app\</code>, <code>%LOCALAPPDATA%\be.clairklaar.app\</code> en <code>%ProgramData%\ClairKlaar\</code>.</p>
+          </div>
+          <p class="s-notis varsel">
+            <b>Zet eerst de sleutel veilig.</b> Wordt de gegevensmap verwijderd zonder dat de sleutel is genoteerd, als sleutelbestand is bewaard of op een sleutelstick staat,
+            dan kan geen enkele kopie met codes meer worden hersteld.
+          </p>
+        </section>
+
+        <!-- ============ Sentral styring ============ -->
+        <section class="s-del" id="styring">
+          <h2>Clair &amp; Klaar centraal instellen</h2>
+          <p>
+            Eén bestand bepaalt wat de gebruiker anders zelf kiest. Verdeel het via MDM, Intune, groepsbeleid of een script.
+            Voor schrijven op beide plekken zijn beheerdersrechten nodig, zodat de gebruiker niet kan opheffen wat u heeft vastgezet.
+            De veldnamen zijn Noors, net als in de andere uitgaven.
+          </p>
+          <dl class="s-tabell">
+            <div><dt>Mac</dt><dd><code>/Library/Application Support/ClairKlaar/retningslinjer.json</code></dd></div>
+            <div><dt>Windows</dt><dd><code>%ProgramData%\ClairKlaar\retningslinjer.json</code></dd></div>
+          </dl>
+          <div class="cmd" data-hvor="retningslinjer.json"><pre>{
+  "versjon": 1,
+  "virksomhet": "Gemeente Voorbeeldegem",
+  "alltidSkjult": ["navn", "fnr", "helse"],
+  "kodeform": "svart",
+  "ansikterAlltid": true,
+  "utenSkanning": false,
+  "glemEtterDager": 30,
+  "revisjonslogg": true,
+  "nokkelEksport": false
+}</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>versjon</code></dt><dd>Verplicht. Er is alleen <code>1</code>.</dd></div>
+            <div><dt><code>virksomhet</code></dt><dd>De naam die bij vastgezette instellingen wordt getoond.</dd></div>
+            <div><dt><code>alltidSkjult</code></dt><dd>De groepen die altijd worden gelakt. Ze kunnen niet worden uitgezet, en niets daarin kan op “laten staan” worden gezet. De groepen heten <code>navn</code>, <code>fnr</code>, <code>kontakt</code>, <code>helse</code>, <code>setninger</code>, <code>skilt</code>, <code>penger</code>, <code>hemmelig</code>, <code>sted</code>, <code>dato</code>, <code>jobb</code>, <code>alder</code>, <code>org</code> en <code>sak</code>; <code>clairklaar groups</code> toont wat elke groep omvat.</dd></div>
+            <div><dt><code>standardGrupper</code></dt><dd>De groepen die aanstaan als een map voor het eerst wordt geopend. Zonder: de standaard van Clair &amp; Klaar.</dd></div>
+            <div><dt><code>kodeform</code></dt><dd><code>lapp</code> (labels), <code>kort</code> (codes met een codelijst), <code>full</code> (de volledige code) of <code>svart</code> (zwart lakken). Zonder: de gebruiker kiest.</dd></div>
+            <div><dt><code>ansikterAlltid</code></dt><dd>Gezichten worden altijd gepixeleerd, en geen enkel gezicht kan op “laten staan” worden gezet.</dd></div>
+            <div><dt><code>utenSkanning</code></dt><dd><code>false</code> eist dat Clair &amp; Klaar de bestanden altijd doorzoekt. Standaard kan de gebruiker ook alles zelf markeren.</dd></div>
+            <div><dt><code>prosjekter</code></dt><dd><code>false</code>: Clair &amp; Klaar onthoudt tussen sessies niets over de mappen.</dd></div>
+            <div><dt><code>glemEtterDager</code></dt><dd>Hoe lang een ongebruikt project wordt bewaard, 1 tot 365 dagen. Standaard 30.</dd></div>
+            <div><dt><code>kommandolinje</code></dt><dd><code>false</code> zet de opdrachtregel, de gevolgde map en de Finder-voorzieningen uit.</dd></div>
+            <div><dt><code>revisjonslogg</code></dt><dd>Zet het auditlogboek aan. <code>revisjonsmappe</code> zet daarnaast een kopie op een netwerkshare.</dd></div>
+            <div><dt><code>rapportJson</code></dt><dd>Schrijft in elke kopiemap ook een rapport als JSON.</dd></div>
+            <div><dt><code>nokkelEksport</code></dt><dd><code>false</code>: niemand kan de sleutel als woorden of bestand exporteren. Nieuwe computers worden door de sleutelbeheerder aangemeld.</dd></div>
+            <div><dt><code>nokkeldisk</code></dt><dd><code>tillatt</code>, <code>pakrevd</code> of <code>forbudt</code>: of de sleutel op een sleutelstick mag, moet of niet mag. <code>nokkeldiskNiva</code> en <code>nokkeldiskOppbevaring</code> bepalen hoe de stick is vergrendeld en waar de sleutel en de opgeslagen gegevens mogen staan.</dd></div>
+          </dl>
+          <p>
+            De licentie kan ernaast staan, in <code>licentie.clairklaar</code>. Het bestand bevat de code die met <code>CLAIRKLAAR-</code> begint. Dan hoeft geen gebruiker iets te plakken.
+            Heeft de gebruiker een eigen geldige licentie, dan gaat die voor.
+          </p>
+          <p class="s-notis varsel">
+            <b>Kan het bestand niet worden gelezen, dan start Clair &amp; Klaar niet.</b> Een tikfout, een onbekend veld of een waarde buiten het toegestane bereik
+            mag er niet toe leiden dat Clair &amp; Klaar minder lakt dan u heeft vastgelegd. De foutmelding noemt het veld.
+          </p>
+        </section>
+
+        <!-- ============ Nøkkelen ============ -->
+        <section class="s-del" id="nokkel">
+          <h2>De sleutel in een organisatie</h2>
+          <p>
+            De codes in de kopieën worden alleen met de sleutel weer namen. In een organisatie hoort iedereen dezelfde te hebben,
+            anders krijgt dezelfde persoon bij verschillende collega's verschillende codes.
+          </p>
+          <dl class="s-tabell">
+            <div><dt>Sleutelbeheerder</dt><dd>Maakt de sleutel van de organisatie, deelt hem en meldt collega's aan.</dd></div>
+            <div><dt>Lid</dt><dd>Gebruikt de sleutel. Het programma laat een lid hem niet exporteren. Dat is een regel in het programma, geen cryptografie: de computer heeft de volledige sleutel.</dd></div>
+            <div><dt>Sleutelpakket</dt><dd>De sleutel, versleuteld met een sleutelcode van twaalf tekens (Argon2id en AES-256-GCM). Pakket en code gaan langs verschillende wegen. De code kan vaker worden gebruikt; behandel hem dus als de sleutel zelf.</dd></div>
+            <div><dt>Aanmelden zonder netwerk</dt><dd>De computer van de collega maakt een aanvraag. De sleutelbeheerder antwoordt met een aanmelding die alleen die computer kan openen (X25519). Een controlecode van 16 tekens wordt voorgelezen, zodat beiden weten dat ze met de juiste computer te maken hebben.</dd></div>
+            <div><dt>Sleutelstick</dt><dd>De sleutel kan op een usb-stick staan, met of zonder wachtzin. Maak een tweede stick en bewaar die op een andere plek.</dd></div>
+            <div><dt>Reserve</dt><dd>24 woorden op papier, of een sleutelbestand dat met een wachtzin is beveiligd (Argon2id en AES-256-GCM).</dd></div>
+          </dl>
+          <p class="s-notis varsel">
+            <b>Stil uitrollen heeft een prijs.</b> U kunt het sleutelpakket naast <code>retningslinjer.json</code> zetten
+            en de sleutelcode in het bestand schrijven (<code>nokkelkode</code>). Dan neemt Clair &amp; Klaar de sleutel over zonder dat de gebruiker iets hoeft te doen.
+            Maar dan is de sleutel niet veiliger dan de map: wie beide bestanden kan lezen, heeft de sleutel van de organisatie.
+          </p>
+        </section>
+
+        <!-- ============ Revisjonslogg ============ -->
+        <section class="s-del" id="logg">
+          <h2>Auditlogboek</h2>
+          <p>
+            Het logboek legt vast wat Clair &amp; Klaar heeft gedaan, wanneer en door wie, met een vingerafdruk van elk origineel en elke kopie.
+            Er staat niets uit de documenten in: geen bestandsnamen, geen paden en geen waarden. Het staat uit tot de gebruiker het aanzet onder
+            Instellingen › Auditlogboek, of tot u het aanzet met <code>"revisjonslogg": true</code>.
+          </p>
+          <dl class="s-tabell">
+            <div><dt>Regels</dt><dd>Elke gebeurtenis (kopieën gemaakt, doorzocht, vergeten, hersteld, iets met de sleutel) is één JSON-regel. De veldnamen zijn Noors, zoals in de andere uitgaven.</dd></div>
+            <div><dt>Gebruiker, computer, tijd</dt><dd>Worden door het programma zelf ingevuld, niet door het venster.</dd></div>
+            <div><dt>Plaats</dt><dd><code>revisjon/JJJJ-MM.jsonl</code> in de gegevensmap. Met <code>revisjonsmappe</code> daarnaast <code>&lt;computer&gt;-&lt;gebruiker&gt;.jsonl</code> op een netwerkshare. Clair &amp; Klaar maakt die map niet aan.</dd></div>
+            <div><dt>Auditbewijs</dt><dd><code>clairklaar audit-export --out &lt;map&gt;</code> (of “Auditbewijs…” in de app) controleert het logboek en zet het bewijs in een nieuwe map, voor een toezichthouder of uw FG.</dd></div>
+          </dl>
+          <p class="s-notis">
+            <b>Het logboek bestaat uit gewone tekstbestanden.</b> De gebruiker kan ze wijzigen; het auditbewijs laat zien of dat is gebeurd. Heeft u een onveranderlijk logboek nodig,
+            laat <code>revisjonsmappe</code> dan wijzen naar een plek waar de gebruiker alleen mag toevoegen.
+          </p>
+        </section>
+
+        <!-- ============ Kommandolinje ============ -->
+        <section class="s-del" id="kommando">
+          <h2>Opdrachtregel en gevolgde map</h2>
+          <p>
+            Hetzelfde programma, zonder venster. Wat erin gaat, is de opdrachtregel. Wat eruit komt, is stdout, stderr en de bestanden
+            die u opgeeft. Niets opent een poort.
+          </p>
+          <div class="cmd"><pre>CLAIRKLAAR="/Applications/Clair &amp; Klaar.app/Contents/MacOS/clairklaar"
+# Windows: "C:\Program Files\Clair &amp; Klaar\clairklaar.exe"   Linux: /usr/bin/clairklaar
+
+"$CLAIRKLAAR" scan  ~/Dossiers/2026-114                    # vooraf doorzoeken
+"$CLAIRKLAAR" clean ~/Dossiers/2026-114 --out ~/Naar-AI    # gelakte kopieën maken
+"$CLAIRKLAAR" clean ~/Dossiers/2026-114 --out ~/Naar-AI --changed-only
+"$CLAIRKLAAR" watch ~/Inbox --out ~/Naar-AI                # gevolgde map
+"$CLAIRKLAAR" restore ~/Naar-AI/2026-114-klaar             # herstellen met de sleutel
+"$CLAIRKLAAR" forget ~/Dossiers/2026-114                   # alles over de zaak vergeten</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>--codes</code></dt><dd><code>lapp</code>, <code>kort</code>, <code>full</code> of <code>svart</code>.</dd></div>
+            <div><dt><code>--legal-basis</code></dt><dd>Met zwarte vlakken: de lakgrond op elk vlak, bijvoorbeeld <code>"6§2,1°"</code> of <code>"II.34, 2°"</code>. Zonder lakgrond blijft het vlak gewoon zwart; de Belgische uitgave heeft geen standaardgrond.</dd></div>
+            <div><dt><code>--groups</code></dt><dd>Wat wordt gelakt, bijvoorbeeld <code>navn,fnr,helse</code>.</dd></div>
+            <div><dt><code>--dry-run</code></dt><dd>Doet alles, ook de controle van elke kopie, maar schrijft niets.</dd></div>
+            <div><dt><code>--no-project</code></dt><dd>Onthoudt niets en gebruikt geen besluiten uit het venster.</dd></div>
+            <div><dt>Uitvoer</dt><dd>Eén JSON-regel op stdout, met <code>format: 1</code>. De voortgang gaat naar stderr.</dd></div>
+            <div><dt>Afsluitcode</dt><dd><code>0</code>: alles geleverd. <code>1</code>: fout. <code>2</code>: er staat nog iets in een kopie, of iets is niet geleverd. <code>3</code>: de voorwaarden zijn op deze computer nog niet aanvaard. <code>4</code>: de bron is in gebruik. <code>5</code>: het beleid staat het niet toe. <code>6</code>: de sleutel staat op een sleutelstick die niet is aangesloten. <code>64</code>: fout in de opdracht.</dd></div>
+          </dl>
+        </section>
+
+        <!-- ============ Kryptografi ============ -->
+        <section class="s-del" id="krypto">
+          <h2>Cryptografie</h2>
+          <dl class="s-tabell">
+            <div><dt>De sleutel</dt><dd>32 willekeurige bytes van het besturingssysteem. Deelsleutels met HKDF-SHA256.</dd></div>
+            <div><dt>De codes</dt><dd>Wie het is: HMAC-SHA256. De oorspronkelijke tekst: AES-SIV (RFC 5297), deterministisch en geauthenticeerd.</dd></div>
+            <div><dt>De sleutel op de schijf</dt><dd>Mac: sleutelhanger en Secure Enclave. Windows: DPAPI.</dd></div>
+            <div><dt>Sleutelbestand</dt><dd>Argon2id en AES-256-GCM.</dd></div>
+            <div><dt>Aanmelden</dt><dd>X25519.</dd></div>
+            <div><dt>Projecten, eigen markeringen en teksten</dt><dd>AES-256-GCM, met sleutels uit HKDF-SHA256. De bestandsnamen zijn HMAC-vingerafdrukken.</dd></div>
+            <div><dt>Back-ups</dt><dd>AES-256-GCM.</dd></div>
+            <div><dt>De licentiecode</dt><dd>Ed25519. De handtekening wordt op de computer gecontroleerd.</dd></div>
+          </dl>
+          <p>Allemaal bekende algoritmen uit open bibliotheken (RustCrypto en dalek). Niets daarvan hebben we zelf bedacht.</p>
+        </section>
+
+        <!-- ============ Systemkrav ============ -->
+        <section class="s-del" id="krav">
+          <h2>Systeemeisen</h2>
+          <dl class="s-tabell">
+            <div><dt>Mac</dt><dd>macOS 13 of nieuwer. Intel- en Apple-processors in hetzelfde pakket.</dd></div>
+            <div><dt>Windows</dt><dd>Windows 10 of 11, 64 bit met Intel of AMD. Installatie voor alle gebruikers, met het .exe-installatieprogramma.</dd></div>
+            <div><dt>Linux</dt><dd>Debian, Ubuntu en verwante distributies, 64 bit (amd64 of arm64). Het .deb-pakket heet <code>clairklaar</code> en installeert <code>/usr/bin/clairklaar</code>.</dd></div>
+            <div><dt>Geheugen</dt><dd>Wij raden 8 GB in de computer aan.</dd></div>
+            <div><dt>Schijf</dt><dd>Enkele honderden MB, vooral het zinsmodel (322 MB). Daarbij komen de back-ups en wat Clair &amp; Klaar over de mappen onthoudt.</dd></div>
+            <div><dt>Grafische kaart</dt><dd>Niet nodig. Alles draait op de processor.</dd></div>
+            <div><dt>Netwerk</dt><dd>Niet nodig, niet bij installeren, activeren of gebruiken.</dd></div>
+          </dl>
+          <p>
+            Als Clair &amp; Klaar op een Mac voor het eerst afbeeldingen leest, kan macOS een paar minuten nodig hebben om de eigen
+            tekstherkenning voor te bereiden. Dat gebeurt maar één keer.
+          </p>
+          <p>Een update is een nieuw installatiebestand dat u zelf downloadt, wanneer u wilt. Clair &amp; Klaar zoekt niet naar nieuwe versies.</p>
+        </section>
+
+        <!-- ============ Si fra ============ -->
+        <section class="s-del" id="si-fra">
+          <h2>Iets gevonden?</h2>
+          <p>
+            Schrijf naar <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a>.
+            We antwoorden persoonlijk en horen het liever van u dan van een klant.
+            Zie ook <a href="/.well-known/security.txt">security.txt</a>.
+          </p>
+          <p class="s-dato">Laatst gewijzigd op 24 november 2026. De verwachte uitkomsten voor de Mac zijn gecontroleerd met de build van 24 november 2026.</p>
+        </section>
+      </main>
+    </div>
+
+    <footer class="s-bunn">
+      <p class="s-bunn-merke"><i>Clair &amp; Klaar</i> <span>van Tidemann Esbjug</span></p>
+      <nav aria-label="Meer over Clair &amp; Klaar">
+        <a href="./">Start</a>
+        <a href="prijzen/">Prijzen</a>
+        <a href="wat-het-lakt.html">Wat Clair &amp; Klaar lakt</a>
+        <a href="privacy/">Privacy</a>
+        <a href="voorwaarden/">Voorwaarden</a>
+      </nav>
+      <p class="s-bunn-liten">Gemaakt in Noorwegen</p>
+    </footer>
+
+    <script src="til-it.js"></script>
+  </body>
+</html>

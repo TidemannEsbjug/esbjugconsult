@@ -1,0 +1,179 @@
+<!doctype html>
+<!--
+  Hei, du som leser kildekoden. Det var deg vi håpet på.
+
+  Clair &amp; Klaar lover at dokumentene aldri forlater maskinen. Et sånt løfte skal ikke
+  tas på ordet, så sjekk det:
+
+  - Programmet: /clair-klaar/voor-it har kommandoene som viser hva det snakker med.
+  - Denne siden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
+    uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
+  - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
+    Vi vil heller høre det fra deg enn fra en kunde.
+-->
+<html lang="nl-BE">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/clair-klaar/favicon.png" />
+    <title>Prijs en bestellen · Clair &amp; Klaar</title>
+    <meta name="description" content="Wat Clair &amp; Klaar kost voor uw organisatie: voor bedrijven, gemeenten, OCMW's en overheidsdiensten in België. Eén licentie voor iedereen, bestellen op factuur. Gratis voor privégebruik." />
+    <meta name="theme-color" content="#eef3fb" />
+    <!-- Ikke indekser før Clair &amp; Klaar lanseres. Fjernes sammen med den på /clair-klaar/. -->
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="../fonts.css" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="pris.css" />
+    <link rel="stylesheet" href="bestelling.css" />
+    <link rel="stylesheet" href="/clair-klaar/taal.css" />
+    <link rel="alternate" hreflang="nl-BE" href="https://esbjugconsult.com/clair-klaar/prijzen/" />
+    <link rel="alternate" hreflang="fr-BE" href="https://esbjugconsult.com/clair-klaar/fr/prix/" />
+  </head>
+  <body>
+    <nav class="taal taal-fast" aria-label="Taal / Langue"><span aria-current="true">NL</span><span class="taal-streep" aria-hidden="true">|</span><a href="/clair-klaar/fr/prix/" hreflang="fr" lang="fr">FR</a></nav>
+    <main>
+      <section class="port" id="port">
+        <!-- Veien tilbake til forsiden. -->
+        <a class="pris-hjem" href="/clair-klaar/"><span aria-hidden="true">←</span> <i>Clair &amp; Klaar</i></a>
+        <div class="kort middels" id="kort">
+          <!-- Privatpersoner betaler ikke; det skal stå først også her. -->
+          <p class="pris-privat"><b>Gratis voor privégebruik.</b> <a href="/clair-klaar/#last-ned">Download Clair &amp; Klaar</a></p>
+          <p class="merke">Voor organisaties</p>
+          <h1>Clair &amp; Klaar voor uw organisatie</h1>
+          <p class="ingress">Eén licentie geldt voor iedereen in de organisatie. U telt geen werkplekken, en er is geen grens aan het aantal pagina's.</p>
+
+          <!-- Tre slags kjøpere. Prisen kommer fra price.js, den samme filen serveren regner med (bestelling.js). -->
+          <div class="de-valg" role="radiogroup" aria-label="Soort organisatie">
+            <label><input type="radio" name="art" value="business" checked /><span>Bedrijf, kantoor, praktijk of vzw</span></label>
+            <label><input type="radio" name="art" value="municipal" /><span>Gemeente (met haar OCMW)</span></label>
+            <label><input type="radio" name="art" value="state" /><span>Federale, gewestelijke of gemeenschapsoverheid, provincie, politiezone of ander overheidsorgaan</span></label>
+          </div>
+
+          <div class="de-to-felt" id="field-business">
+            <div>
+              <label for="persons">Mensen in de organisatie</label>
+              <input id="persons" type="number" min="1" step="1" value="25" inputmode="numeric" />
+              <p class="smaa">Alle medewerkers. Vul 1 in als u alleen werkt.</p>
+            </div>
+            <div id="field-sector">
+              <label for="sector">Sector</label>
+              <select id="sector"></select>
+            </div>
+          </div>
+
+          <!-- Gemeenter: kurven for fire år i euro (price.js, MUNICIPAL). Taket på 29 500 € for fire år ligger under
+               grensen for opdracht van beperkte waarde (30 000 € ekskl. mva), se kommentaren øverst i price.js. -->
+          <div class="de-ett-felt" id="field-municipal" hidden>
+            <label for="inhabitants">Aantal inwoners</label>
+            <input id="inhabitants" type="text" inputmode="numeric" autocomplete="off" placeholder="bijv. 21.500" maxlength="12" />
+            <p class="smaa">Dezelfde prijs voor elke gemeente van dezelfde grootte, zonder onderhandeling.</p>
+          </div>
+
+          <div class="de-ett-felt" id="field-state" hidden>
+            <label for="employees">Medewerkers van de organisatie</label>
+            <input id="employees" type="number" min="1" step="1" inputmode="numeric" placeholder="bijv. 120" />
+            <p class="smaa">Ook voor FOD's, Vlaamse en Waalse agentschappen, provincies, politiezones, rechtbanken en intercommunales.</p>
+          </div>
+
+          <div class="de-prisboks" aria-live="polite">
+            <p class="bekreftet">Licentie voor de hele organisatie</p>
+            <p class="pristall" id="priceline"><b id="amount"></b> <span>per jaar</span></p>
+            <p class="de-hinweis" id="note" hidden></p>
+            <p class="smaa">Prijs exclusief btw. Op de factuur staat geen btw: verlegging van heffing, de btw is door u als medecontractant verschuldigd.</p>
+          </div>
+
+          <form id="order" class="de-ordre" novalidate>
+            <div class="de-to-felt">
+              <div>
+                <label for="org">Naam van de organisatie</label>
+                <input id="org" type="text" maxlength="120" autocomplete="organization" required />
+                <p class="smaa">Staat op de factuur en in Clair &amp; Klaar op elke computer die de licentie gebruikt.</p>
+              </div>
+              <div>
+                <label for="email">E-mailadres voor de factuur</label>
+                <input id="email" type="email" maxlength="200" autocomplete="email" required />
+                <p class="smaa">Hierheen gaan de factuur en later de licentiecode.</p>
+              </div>
+            </div>
+            <div class="de-to-felt">
+              <div>
+                <label for="address">Factuuradres</label>
+                <textarea id="address" rows="4" maxlength="600" autocomplete="street-address" required></textarea>
+              </div>
+              <div>
+                <label for="reference">Uw bestelbonnummer of kenmerk</label>
+                <input id="reference" type="text" maxlength="80" />
+                <p class="smaa">Niet verplicht. Staat op de factuur. Zet uw ondernemings- of btw-nummer bij het factuuradres.</p>
+              </div>
+            </div>
+            <p class="de-skjult" aria-hidden="true"><label for="website">Laat dit veld leeg</label><input id="website" type="text" tabindex="-1" autocomplete="off" /></p>
+            <div class="knapper">
+              <button class="btn" type="submit" id="buy">Bestel op factuur</button>
+              <button class="btn de-ghost-lys" type="button" id="have">Ik heb al een licentiecode</button>
+            </div>
+            <p class="smaa de-feil" id="error" role="alert" hidden></p>
+            <p class="smaa" id="flow">De factuur komt meteen per e-mail. U betaalt binnen 30 dagen per overschrijving in euro. De licentiecode komt per e-mail zodra de betaling binnen is, en geldt vanaf die dag een jaar. Tot dan werkt Clair &amp; Klaar 30 dagen volledig.</p>
+            <p class="smaa" id="haveText" hidden>Open Clair &amp; Klaar en klik rechtsboven op “Licentie” (tijdens de proefperiode staat daar “Proefperiode: nog … dagen”). Plak de code die begint met CLAIRKLAAR- en klik op “Activeer”.</p>
+          </form>
+          <div id="thanks" class="de-takk" hidden tabindex="-1">
+            <h2>Hartelijk dank</h2>
+            <p id="thanksText"></p>
+            <p class="smaa">Vragen: <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a></p>
+          </div>
+
+          <!-- Bare for gemeenter: prislisten. Punktene er de samme som MUNICIPAL i price.js. -->
+          <section class="kommune-eur" id="municipal-table" aria-labelledby="ke-tittel" hidden>
+            <p class="merke">Voor gemeenten</p>
+            <h2 id="ke-tittel">Eén prijs naar aantal inwoners</h2>
+            <p class="ingress">
+              De licentie geldt voor de hele gemeente, met haar OCMW. Vier jaar kosten hoogstens € 29.500 en blijven daarmee onder
+              de grens van € 30.000 exclusief btw voor een opdracht van beperkte waarde (wet van 17 juni 2016 inzake
+              overheidsopdrachten), die met een aanvaarde factuur kan worden gegund. U bestelt en betaalt telkens een jaar, een kwart van het
+              bedrag voor vier jaar.
+            </p>
+            <table class="ke-tabell">
+              <caption class="skjult-tekst">Prijzen voor gemeenten, vier jaar en per jaar, exclusief btw</caption>
+              <thead><tr><th scope="col">Inwoners</th><th scope="col">4 jaar</th><th scope="col">per jaar</th></tr></thead>
+              <tbody>
+                <tr><td>tot 2.000</td><td>€ 2.900</td><td>€ 725</td></tr>
+                <tr><td>20.000</td><td>€ 4.900</td><td>€ 1.225</td></tr>
+                <tr><td>50.000</td><td>€ 12.900</td><td>€ 3.225</td></tr>
+                <tr><td>100.000</td><td>€ 24.900</td><td>€ 6.225</td></tr>
+                <tr><td>vanaf 200.000</td><td>€ 29.500</td><td>€ 7.375</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <h3 class="vilkar-tittel">Voordat u koopt</h3>
+          <p class="de-avsnitt"><b>30 dagen het volledige Clair &amp; Klaar.</b> Probeer Clair &amp; Klaar 30 dagen met uw eigen bestanden voordat u beslist. Het is de volledige versie, en voor de proefperiode hoeft u zich nergens te registreren.</p>
+
+          <h3 class="vilkar-tittel">Inbegrepen in de prijs</h3>
+          <ul class="vilkar">
+            <li>Word, Excel, PowerPoint, pdf, e-mail, tekstbestanden, scans en foto's</li>
+            <li>Alles draait op uw eigen computers. Er wordt niets geüpload</li>
+            <li>Voor alle medewerkers en op zoveel computers als u wilt, op Mac, Windows en Linux</li>
+            <li>Updates tijdens het licentiejaar</li>
+          </ul>
+          <p class="de-avsnitt">Betalen kan alleen op factuur. <a class="lenke" href="/clair-klaar/voorwaarden/">Licentievoorwaarden</a></p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bunnen er alltid synlig. Selgeren etter ehandelsloven § 8. Esbjug Consult er ikke MVA-registrert (Brønnøysund 19.11.2026). -->
+    <footer class="pris-bunn" id="pris-bunn">
+      <div class="colofon">
+        <p class="wordmark"><a href="/clair-klaar/"><b>Clair &amp; Klaar</b></a> <span>v0.1.0</span></p>
+        <p class="selger">
+          Verkocht door <b class="selger-navn">ESBJUG CONSULT</b> · Glenneveien 272B, 1455 Nordre Frogn, Noorwegen ·
+          <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a> · Org.nr. 938 441 405
+        </p>
+      </div>
+      <div class="footmeta">
+        <a href="/clair-klaar/voorwaarden/">Licentievoorwaarden</a>
+        <a href="/clair-klaar/privacy/">Privacy</a>
+      </div>
+    </footer>
+
+    <script type="module" src="bestelling.js"></script>
+  </body>
+</html>

@@ -1,0 +1,568 @@
+<!doctype html>
+<!--
+  Hei, du som leser kildekoden. Det var deg vi håpet på.
+
+  Krystallklart lover at dokumentene aldri forlater maskinen. Et sånt løfte skal ikke
+  tas på ordet, så sjekk det:
+
+  - Programmet: denne siden har kommandoene som viser hva det snakker med.
+  - Nettsiden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
+    uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
+  - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
+
+  Mac, Windows og Linux som på den polske siden (26.11.2026). Navn og stier er avledet fra dk_navn! i
+  Klart-dk (claude/dk 15a63a43, se Klart-dk-grunnlag/kart/NAVN-STEDER.md). Sjekksummene setter lederen inn
+  (merket SJEKKSUM under), fra pakkene som legges i R2 under 2026-11-26/dk/.
+-->
+<html lang="da">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/krystallklart/favicon.png" />
+    <title>Til IT-afdelingen · Krystallklart</title>
+    <meta
+      name="description"
+      content="Kontroller, der viser, at Krystallklart ikke taler med netværket, hvad der ligger i pakken og på disken, og hvordan IT-afdelingen kan styre programmet centralt. Med kommandoer, forventede resultater og hvad hver kontrol beviser."
+    />
+    <meta name="robots" content="noindex" />
+    <!-- Ingen skrifter, bilder eller skript utenfra. Skriptene kopierer kommandoene. -->
+    <script src="til-it-tidlig.js"></script>
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="sider.css" />
+  </head>
+  <body>
+    <header class="s-topp">
+      <div class="s-linje-topp">
+        <a class="s-merke" href="./">Krystallklart</a>
+        <nav class="s-nav" aria-label="Sider">
+          <a href="./">Forside</a>
+          <a href="priser/">Priser</a>
+          <a href="til-it.html" aria-current="page">Til IT-afdelingen</a>
+          <a href="privatliv/">Privatliv</a>
+        </nav>
+      </div>
+      <div class="s-hode">
+        <p class="s-over">Til IT-afdelingen</p>
+        <h1>Tag ikke vores ord for det. Kontrollér det.</h1>
+        <p class="s-ingress">
+          Krystallklart lover, at dokumenterne aldrig forlader computeren. Her finder I kommandoerne,
+          der viser det, de resultater, de skal give, og hvad hver kontrol faktisk beviser.
+        </p>
+      </div>
+    </header>
+
+    <div class="s-kropp">
+      <nav class="s-innhold" aria-label="Indhold">
+        <p>På denne side</p>
+        <ol>
+          <li><a href="#kort">Kort fortalt</a></li>
+          <li><a href="#fil">1 Er det vores fil?</a></li>
+          <li><a href="#signert">2 Signeret og uændret?</a></li>
+          <li><a href="#rettigheter">3 Hvad må programmet?</a></li>
+          <li><a href="#snakker">4 Taler det med nogen?</a></li>
+          <li><a href="#laget">5 Hvad består det af?</a></li>
+          <li><a href="#steng">Spær selv</a></li>
+          <li><a href="#disk">Hvad ligger på disken</a></li>
+          <li><a href="#styring">Central styring</a></li>
+          <li><a href="#nokkel">Nøglen i organisationen</a></li>
+          <li><a href="#logg">Revisionslog</a></li>
+          <li><a href="#kommando">Kommandolinje</a></li>
+          <li><a href="#krypto">Kryptografi</a></li>
+          <li><a href="#krav">Systemkrav</a></li>
+          <li><a href="#si-fra">Har I fundet noget?</a></li>
+        </ol>
+      </nav>
+
+      <main class="s-tekst" id="innhold">
+        <section class="s-kort" id="kort">
+          <h2>Kort fortalt</h2>
+          <ul>
+            <li><b>Ingen vej ud.</b> Programmet har ingen TLS, slår ikke navne op på nettet og lytter ikke på nogen port.</li>
+            <li><b>Alt ligger i pakken.</b> Efter installationen hentes intet. Ingen automatiske opdateringer, ingen brugsstatistik og ingen fejlrapporter.</li>
+            <li><b>Det kan spærres inde.</b> Spær al udgående trafik fra Krystallklart. Programmet virker lige så godt.</li>
+            <li><b>Det kan styres.</b> Én fil bestemmer, hvad brugerne selv må vælge.</li>
+          </ul>
+        </section>
+
+        <div class="s-velg">
+          <p id="velg-tittel">Hvilket system kontrollerer I?</p>
+          <div class="s-velg-knapper" role="group" aria-labelledby="velg-tittel">
+            <button type="button" data-velg="mac" aria-pressed="false">Mac</button>
+            <button type="button" data-velg="windows" aria-pressed="false">Windows</button>
+          </div>
+        </div>
+        <p class="s-skjult" id="melding" role="status" aria-live="polite"></p>
+
+        <!-- ============ 1 ============ -->
+        <section class="s-del" id="fil">
+          <h2><span class="s-nr">1</span>Er det vores fil?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>shasum -a 256 ~/Downloads/Krystallklart*.dmg</pre></div>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-FileHash "$HOME\Downloads\Krystallklart*.exe"</pre></div>
+          </div>
+          <p>På Linux: <code>sha256sum ~/Overførsler/Krystallklart_0.1.0_*.deb</code></p>
+          <p class="s-fasit"><b>Forventet resultat:</b> den lange række af tal og bogstaver svarer til den kontrolsum, vi har offentliggjort for denne udgave.</p>
+          <!-- SJEKKSUM: lederen setter inn SHA-256 for de fire pakkene (16 tegn + <wbr /> ganger fire, som på /wszystko-jasne/dla-it.html). -->
+          <dl class="s-tabell">
+            <div><dt>Krystallklart.dmg</dt><dd><code>e3fa3cd7725e24d8<wbr />2cc3c7dd86f7eea0<wbr />906fda883c83326b<wbr />948311f7e6b26a4d</code></dd></div>
+            <div><dt>Krystallklart.exe</dt><dd><code>f894482f3a2347fa<wbr />e16ee489fab090a2<wbr />fd1cbc0498899794<wbr />09ddfe1f11eeb75e</code></dd></div>
+            <div><dt>Krystallklart_0.1.0_amd64.deb</dt><dd><code>00af16ba5a68fb16<wbr />16b7467e1052ef8a<wbr />1c3f4fe1bb3d46d3<wbr />7225f7599a8dff99</code></dd></div>
+            <div><dt>Krystallklart_0.1.0_arm64.deb</dt><dd><code>5dd5a283c635f775<wbr />b61bc4ecd17d7092<wbr />557d44bc816ca85b<wbr />97e569029b3116ef</code></dd></div>
+          </dl>
+          <p class="s-beviser"><b>Beviser:</b> at filen er den, vi har offentliggjort. Intet andet. Kontrolsummen siger intet om, hvad programmet gør.</p>
+        </section>
+
+        <!-- ============ 2 ============ -->
+        <section class="s-del" id="signert">
+          <h2><span class="s-nr">2</span>Er det signeret af os og uændret?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>codesign -dv --verbose=4 "/Applications/Krystallklart.app" 2>&amp;1 | grep -E "Format|TeamIdentifier|flags|Notarization"</pre></div>
+            <p class="s-fasit">
+              <b>Forventet resultat:</b> <code>Format=app bundle with Mach-O universal (x86_64 arm64)</code>,
+              <code>flags=0x10000(runtime)</code>, <code>Notarization Ticket=stapled</code> og
+              <code>TeamIdentifier=N5BKVM258S</code>.
+            </p>
+            <div class="cmd"><pre>spctl -a -vv "/Applications/Krystallklart.app"</pre></div>
+            <p class="s-fasit"><b>Forventet resultat:</b> <code>accepted</code> og <code>source=Notarized Developer ID</code>.</p>
+            <p>Pakken indeholder to programfiler mere: en hjælper, der håndterer nøglen, og et PDF-bibliotek. Kontrollér også dem:</p>
+            <div class="cmd"><pre>codesign -dv "/Applications/Krystallklart.app/Contents/MacOS/klart-hvelv" 2>&amp;1 | grep TeamIdentifier
+codesign -dv "/Applications/Krystallklart.app/Contents/Resources/bundled/engine/pdfium/libpdfium.dylib" 2>&amp;1 | grep TeamIdentifier</pre></div>
+            <p class="s-fasit"><b>Forventet resultat:</b> den samme <code>TeamIdentifier=N5BKVM258S</code> begge steder.</p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Windows-udgaven er signeret af ESBJUG CONSULT. Kommandoen skriver <code>Valid</code> og viser navnet i certifikatet.</p>
+            <div class="cmd"><pre>Get-AuthenticodeSignature "$HOME\Downloads\Krystallklart*.exe" | Format-List Status, SignerCertificate</pre></div>
+            <p class="s-fasit"><b>Forventet resultat:</b> <code>Valid</code> og vores navn i <code>SignerCertificate</code>.</p>
+          </div>
+          <p class="s-beviser">
+            <b>Beviser:</b> at koden kommer fra os og ikke er ændret siden. Det er kontrollen mod en ombygget kopi.
+            En kopi med indbygget netværksforbindelse er et andet program, og signaturen afslører den.
+          </p>
+        </section>
+
+        <!-- ============ 3 ============ -->
+        <section class="s-del" id="rettigheter">
+          <h2><span class="s-nr">3</span>Hvad må programmet?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>codesign -d --entitlements - --xml "/Applications/Krystallklart.app" 2>/dev/null | plutil -p -</pre></div>
+            <p class="s-fasit">
+              <b>Forventet resultat:</b> fem linjer, alle <code>false</code>: <code>automation.apple-events</code>,
+              <code>cs.allow-dyld-environment-variables</code>, <code>cs.allow-jit</code>,
+              <code>cs.allow-unsigned-executable-memory</code> og <code>cs.disable-library-validation</code>.
+              Ingen iCloud-rettigheder og hverken <code>network.client</code> eller <code>network.server</code>.
+            </p>
+            <p>
+              <b>Men læg mærke til:</b> Krystallklart kører ikke i App Sandbox. At der ingen netværksrettigheder er, er derfor
+              kun en erklæring. Uden sandkasse håndhæver macOS dem ikke, og et program med Hardened Runtime
+              kan i princippet alligevel åbne en forbindelse. Det siger vi hellere selv, end at I opdager det senere.
+              Svaret på spørgsmålet giver punkt 4 og 5 og den regel, I selv sætter op.
+            </p>
+            <p class="s-beviser"><b>Beviser:</b> at programmet ikke kan styre andre programmer, indlæse fremmed kode eller nå iCloud. Det beviser i sig selv intet om netværket.</p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>
+              Windows har ingen tilsvarende rettigheder for almindelige skrivebordsprogrammer. Et program installeret fra en .exe-fil
+              beder ikke om netværksadgang. Det har den bare. Derfor er der ingen kommando her.
+            </p>
+            <p class="s-beviser"><b>Beviser:</b> på Windows intet. Spærringen er firewallreglen nedenfor, og beviset for, at programmet tier, er punkt 4.</p>
+          </div>
+        </section>
+
+        <!-- ============ 4 ============ -->
+        <section class="s-del" id="snakker">
+          <h2><span class="s-nr">4</span>Taler det med nogen?</h2>
+          <p>Start Krystallklart, åbn en mappe, og lad programmet scanne den. Kør kommandoen, mens programmet arbejder.</p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>pgrep -lx krystallklart; lsof +c 0 -nP -a -i -c krystallklart -c com.apple.WebKit.Networking</pre></div>
+            <p class="s-fasit"><b>Forventet resultat:</b> én linje med procesnummeret og <code>krystallklart</code>, og derefter intet. Krystallklart har ikke en eneste TCP- eller UDP-socket.</p>
+            <p>
+              Vinduet i Krystallklart vises af WebKit, som er en del af macOS. WebKit starter sine egne hjælpeprocesser,
+              og en af dem hedder <code>com.apple.WebKit.Networking</code>. Den er med i kommandoen, fordi det er den,
+              der ville hente noget, hvis vinduet prøvede. Også den skal være tom.
+            </p>
+            <p>
+              Kommer der alligevel linjer, er Safari, Mail eller et andet program med WebKit sandsynligvis åbent.
+              De deler navnet på hjælpeprocessen. Luk dem, og kør kommandoen igen, eller se på procesnumrene:
+              Krystallklarts hjælpere har numre lige efter Krystallklart.
+            </p>
+            <p>
+              Læg mærke til <code>-a</code>. Uden den kombinerer <code>lsof</code> betingelserne med »eller«, og hele computerens
+              trafik kommer med på listen. LuLu eller Little Snitch giver det samme resultat, hvis I hellere vil se det sådan.
+            </p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-Process krystallklart, tesseract -ErrorAction SilentlyContinue |
+ForEach-Object {
+  "$($_.ProcessName) kører (proces $($_.Id))"
+  Get-NetTCPConnection -OwningProcess $_.Id -ErrorAction SilentlyContinue
+  Get-NetUDPEndpoint -OwningProcess $_.Id -ErrorAction SilentlyContinue
+}</pre></div>
+            <p class="s-fasit"><b>Forventet resultat:</b> kun linjer om, at <code>krystallklart</code> kører, og <code>tesseract</code>, når Krystallklart læser et billede. Ingen tabeller med adresser og porte.</p>
+            <p>
+              Vinduet i Krystallklart vises af WebView2, som kommer fra Microsoft og er en del af Windows. Det kører i
+              sine egne processer, <code>msedgewebview2.exe</code>. Indholdet i vinduet kan ikke hente noget:
+              Det forhindrer reglerne i punkt 5. WebView2 selv kan dog tale med Microsoft, fx om sine
+              egne opdateringer. Det er Microsofts trafik og indeholder intet fra Krystallklart eller dokumenterne.
+              Vil I have helt ro, så spær begge i firewallen.
+            </p>
+            <p>Ressourceovervågning (<code>resmon</code>), fanen Netværk, giver det samme resultat, hvis I hellere vil se det sådan.</p>
+          </div>
+          <p class="s-beviser"><b>Beviser:</b> at programmet, som det kører hos jer, ikke har nogen vej ud. Det er den kontrol, vi selv stoler mest på.</p>
+        </section>
+
+        <!-- ============ 5 ============ -->
+        <section class="s-del" id="laget">
+          <h2><span class="s-nr">5</span>Hvad består det af?</h2>
+          <p>Dette er alt, hvad der ligger i Mac-pakken:</p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>MacOS/krystallklart</code></dt>
+              <dd>Programmet, til Intel- og Apple-processorer. Skallen er skrevet i Rust (Tauri 2), vinduet i TypeScript.</dd>
+            </div>
+            <div>
+              <dt><code>MacOS/klart-hvelv</code></dt>
+              <dd>En lille hjælper, der pakker nøglen ind og ud med nøgleringen og Secure Enclave.</dd>
+            </div>
+            <div>
+              <dt><code>distilbert-danish.onnx</code></dt>
+              <dd>Bygget på distilbert-base-da-cased (Geotrend, Apache 2.0) og finjusteret af os. Kører på processoren, i selve programmet. Det er ikke en separat proces.</dd>
+            </div>
+            <div>
+              <dt><code>vocab.txt</code></dt>
+              <dd>Modellens ordforråd.</dd>
+            </div>
+            <div>
+              <dt><code>pdfium/libpdfium.dylib</code></dt>
+              <dd>PDFium, biblioteket, der læser og tegner PDF-filer.</dd>
+            </div>
+          </dl>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>find "/Applications/Krystallklart.app/Contents" -type f -size +100k -exec ls -lh {} \;</pre></div>
+            <p class="s-fasit"><b>Forventet resultat:</b> filerne ovenfor, programikonet og licensteksterne i mappen <code>licenser</code>. Ingen <code>llama-server</code>, ingen <code>.gguf</code>-filer og ingen andre modeller.</p>
+          </div>
+          <p>
+            Programmet har hverken TLS eller en HTTP-klient, der kan nå en vært. Det kan ikke lytte på en port
+            eller slå navne op på nettet. Det kan ses i selve filen:
+          </p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>otool -L "/Applications/Krystallklart.app/Contents/MacOS/krystallklart" | grep -iE 'curl|CFNetwork|Network\.framework|ssl'
+nm -u "/Applications/Krystallklart.app/Contents/MacOS/krystallklart" | grep -E '_(bind|listen|accept|getaddrinfo)$'</pre></div>
+            <p class="s-fasit"><b>Forventet resultat:</b> ingen linjer fra nogen af kommandoerne.</p>
+            <p>
+              <b>Det, I finder, og hvad det er:</b> Filen er linket mod <code>CloudKit</code> og <code>CoreData</code>. Det kommer fra vinduesbiblioteket,
+              ikke fra os. Krystallklart bruger ingen af dem og har ingen iCloud-rettigheder (punkt 3).
+            </p>
+          </div>
+          <p>Har I kildekoden, er disse steder værd at se på:</p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>src-tauri/Cargo.toml</code></dt>
+              <dd>Ingen reqwest, hyper, rustls, native-tls eller openssl. <code>tokio</code> bygges uden <code>net</code>. Nogle af navnene står alligevel i <code>Cargo.lock</code>, fordi et af bibliotekerne tager dem med til mobile platforme. De bliver aldrig kompileret. Derfor er det <code>cargo tree</code>, der tæller, ikke en søgning i låsefilen.</dd>
+            </div>
+            <div>
+              <dt><code>tauri.conf.json</code></dt>
+              <dd>Vinduets CSP: <code>default-src 'self'</code> og <code>connect-src ipc: http://ipc.localhost</code>. Vinduet kan kun tale med det program, det kører i. Ingen rammer, indlejrede objekter eller formularer, der sendes ud. Desuden spærrer programmet al navigation ud af sig selv.</dd>
+            </div>
+            <div>
+              <dt><code>capabilities/default.json</code></dt>
+              <dd>Vinduet kan ikke åbne adresser eller stier: <code>opener:deny-open-url</code>, <code>deny-open-path</code> og <code>deny-reveal-item-in-dir</code>. Intet HTTP-tilføjelsesprogram og ingen opdateringsmekanisme.</dd>
+            </div>
+            <div>
+              <dt><code>scripts/sjekk-nett.sh</code></dt>
+              <dd>Køres før hvert byg. Læser den kompilerede afhængighedsgraf, leder efter adresser, <code>std::net</code> og Unix-sockets i Rust-koden og stopper bygget, hvis noget af det kommer tilbage.</dd>
+            </div>
+          </dl>
+          <div class="cmd" data-hvor="I mappen med kildekoden"><pre>cd src-tauri &amp;&amp; cargo tree -e normal | grep -E 'reqwest|hyper|rustls|native-tls|openssl'</pre></div>
+          <p class="s-fasit"><b>Forventet resultat:</b> ingen fund.</p>
+          <p class="s-notis">
+            Ét sted åbner Krystallklart en internetadresse: Når brugeren klikker på »Køb licens«, beder programmet systemet
+            om at åbne <code>https://esbjugconsult.com/krystallklart/aktiver?hva=kjop&amp;maskin=…</code> i brugerens egen browser.
+            Krystallklart forbinder sig ikke selv dertil. Adressen fører til prissiden, hvor der bestilles mod faktura. Maskinkoden i adressen er en SHA-256-hash af computerens id og siger intet
+            om brugeren eller dokumenterne.
+          </p>
+          <h3>Bibliotekerne, der læser dokumenterne</h3>
+          <p>De behandler filer, som I ikke selv har lavet, så de er værd at kende:</p>
+          <dl class="s-tabell">
+            <div><dt>PDF</dt><dd>PDFium, pdf.js og pdf-lib. pdf.js kører uden <code>eval</code>.</dd></div>
+            <div><dt>Word</dt><dd>JSZip og docx-preview.</dd></div>
+            <div><dt>Excel</dt><dd>SheetJS (xlsx).</dd></div>
+            <div><dt>Billeder</dt><dd>Apple Vision på Mac. Den indbyggede tekstgenkendelse i Windows og Tesseract på Windows, Tesseract på Linux.</dd></div>
+            <div><dt>Sætninger</dt><dd>distilbert-base-da-cased, kørt med tract-onnx.</dd></div>
+          </dl>
+          <p class="s-beviser"><b>Beviser:</b> at programmet ikke indeholder kode, der kan sende noget. Har I kildekoden, kan I selv bygge den og sammenligne.</p>
+        </section>
+
+        <!-- ============ Steng selv ============ -->
+        <section class="s-del" id="steng">
+          <h2>Spær selv</h2>
+          <p>Stol ikke på os. Spær den udgående trafik fra Krystallklart i firewallen eller via MDM. Programmet virker lige så godt. Det er netop derfor, vi har bygget det sådan.</p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <p>Den indbyggede firewall i macOS spærrer kun indgående trafik. Skriv stien i reglen i netværksfilteret i jeres MDM-løsning eller i LuLu eller Little Snitch:</p>
+            <div class="cmd" data-hvor="Sti"><pre>/Applications/Krystallklart.app/Contents/MacOS/krystallklart</pre></div>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Installationsprogrammet (.exe) prøver selv at oprette en regel. Sådan kan I se, om den findes:</p>
+            <div class="cmd"><pre>Get-NetFirewallRule -DisplayName "Krystallklart*" | Get-NetFirewallApplicationFilter</pre></div>
+            <p class="s-fasit"><b>Forventet resultat:</b> en regel med navnet »Krystallklart - bloker udgaaende« og stien til <code>krystallklart.exe</code>.</p>
+            <p>Mangler den, kan I oprette den sådan i PowerShell som administrator:</p>
+            <div class="cmd"><pre>New-NetFirewallRule -DisplayName "Krystallklart - bloker udgaaende" `
+  -Direction Outbound -Action Block -Profile Any `
+  -Program (Get-Process krystallklart).Path</pre></div>
+            <p>
+              Kør kommandoen, mens Krystallklart er åbent, så finder den selv stien. Tilføj også <code>tesseract.exe</code>,
+              som ligger i mappen <code>bundled</code> under Krystallklart. Det er en separat programfil.
+              Via Intune: De samme regler kan oprettes i firewallpolitikkerne under Slutpunktssikkerhed.
+            </p>
+          </div>
+          <p>Når reglen er jeres egen, behøver I ikke tro på noget af det ovenstående.</p>
+        </section>
+
+        <!-- ============ Disk ============ -->
+        <section class="s-del" id="disk">
+          <h2>Hvad ligger på disken</h2>
+          <p>
+            Krystallklart gemmer alle sine data i én mappe pr. bruger:
+            <code>~/Library/Application Support/dk.krystallklart.app/</code> (på Windows <code>%APPDATA%\dk.krystallklart.app\</code>). Navnene på mapperne indeni er fælles for alle udgaver og derfor på norsk.
+          </p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>prosjekter/</code></dt>
+              <dd>Det, brugeren har valgt for hver mappe, og den tekst, Krystallklart har læst i filerne. Den tekst indeholder personoplysninger. Det hele er krypteret med AES-256-GCM, og mapperne har navne, som stien ikke kan genskabes ud fra. Et projekt, der ikke bruges, glemmes efter 30 dage.</dd>
+            </div>
+            <div>
+              <dt><code>pseudonym/</code></dt>
+              <dd>Nøglen, tidligere nøgler, der er lagt til side, og nummerbogen (<code>nummerbok.json</code>). Nummerbogen giver koderne numre og indeholder ingen navne.</dd>
+            </div>
+            <div>
+              <dt><code>lager/</code></dt>
+              <dd>Brugerens egne markeringer, listerne »Maskeres altid« og »Står altid« og teksterne fra tekstværktøjet. Krypteret.</dd>
+            </div>
+            <div>
+              <dt>Sikkerhedskopier</dt>
+              <dd>Kopier af originalerne, lavet før scanningen, hvis brugeren vil det. Indholdet af hver fil er krypteret med AES-256-GCM. Kopierne slettes ikke automatisk.</dd>
+            </div>
+            <div>
+              <dt><code>revisjon/</code></dt>
+              <dd>Revisionsloggen, hvis den er slået til. Én fil pr. måned, de seneste 13 måneder.</dd>
+            </div>
+            <div>
+              <dt>Små filer</dt>
+              <dd>Blandt andet licenskoden, <code>innstillinger.json</code> og vinduets placering. Ukrypteret og uden indhold fra dokumenterne.</dd>
+            </div>
+          </dl>
+          <h3>Sådan er nøglerne beskyttet</h3>
+          <p>
+            På Mac er nøglen pakket ind i endnu en nøgle fra nøgleringen (tjenesten
+            <code>no.klart.pseudonym.dk.krystallklart.app</code>) og desuden af Secure Enclave, hvis computeren har den. På Windows bruges DPAPI for brugeren.
+            Det beskytter mod andre brugere og mod en mistet disk. Det beskytter ikke mod et program, der
+            kører som den samme bruger. Det er grænsen for både nøgleringen og DPAPI, og den er god at kende.
+          </p>
+          <p>
+            Nøglerne kan også ligge på en nøgledisk (USB). Så har programmet kun adgang til dem, når disken sidder i.
+          </p>
+          <h3>Hvad Krystallklart installerer i systemet</h3>
+          <dl class="s-tabell">
+            <div><dt>Tjenester i Finder</dt><dd>På Mac skriver Krystallklart ved start fire tjenester i <code>~/Library/Services/</code>: »Maskér med Krystallklart« og »Gendan med Krystallklart« for filer samt »Maskér tekst med Krystallklart« og »Gendan tekst med Krystallklart« for markeret tekst. De to sidste tager markeret tekst fra andre programmer. <code>"kommandolinje": false</code> i retningslinjerne fjerner alle fire.</dd></div>
+            <div><dt>Adresser og filtyper</dt><dd>Krystallklart tager imod links med <code>krystallklart://</code> og filerne <code>.krystallklartlicens</code>, <code>.krystallklartmarkeringer</code> og <code>.krystallklartprojekt</code>. Et link kan foreslå en licens. Brugeren bliver altid spurgt, og en nøglepakke kræver stadig sin kode.</dd></div>
+            <div><dt>Intet i baggrunden</dt><dd>Ingen tjeneste, intet autostart-punkt og ingen proces, der kører, efter vinduet er lukket.</dd></div>
+            <div><dt>Hvad overvågningen ser</dt><dd>Krystallklart starter nogle kortlivede systemhjælpere, bl.a. <code>klart-hvelv</code> (nøglen), <code>ioreg</code> (maskinkoden), <code>tmutil</code> (holder mapper uden for Time Machine), <code>open</code> (viser mappen med kopierne) og <code>osascript</code> (beskeder).</dd></div>
+          </dl>
+          <h3>Fjern det hele</h3>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <p>Slet programmet, og kør derefter:</p>
+            <div class="cmd"><pre>rm -rf ~/Library/Application\ Support/dk.krystallklart.app ~/Library/WebKit/dk.krystallklart.app ~/Library/Caches/dk.krystallklart.app
+rm -f ~/Library/Preferences/dk.krystallklart.app.plist
+rm -rf ~/Library/Services/*Krystallklart*.workflow
+security delete-generic-password -s no.klart.pseudonym.dk.krystallklart.app</pre></div>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Afinstallér programmet, og slet derefter <code>%APPDATA%\dk.krystallklart.app\</code>, <code>%LOCALAPPDATA%\dk.krystallklart.app\</code> og <code>%ProgramData%\Krystallklart\</code>.</p>
+          </div>
+          <p class="s-notis varsel">
+            <b>Sikr nøglen først.</b> Slettes datamappen, før nøglen er skrevet ned som ord eller gemt som nøglefil,
+            kan ingen kopi med koder gendannes mere.
+          </p>
+        </section>
+
+        <!-- ============ Styring ============ -->
+        <section class="s-del" id="styring">
+          <h2>Central styring af Krystallklart</h2>
+          <p>
+            Én fil bestemmer det, brugeren ellers selv vælger. Den kan rulles ud via MDM, Intune, gruppepolitik eller et script.
+            Det kræver administratorrettigheder at skrive begge steder, så brugeren kan ikke ophæve det, I har låst.
+          </p>
+          <dl class="s-tabell">
+            <div><dt>Mac</dt><dd><code>/Library/Application Support/Krystallklart/retningslinjer.json</code></dd></div>
+            <div><dt>Windows</dt><dd><code>%ProgramData%\Krystallklart\retningslinjer.json</code></dd></div>
+          </dl>
+          <p>Nøglerne i filen er fælles for alle udgaver og derfor på norsk.</p>
+          <div class="cmd" data-hvor="retningslinjer.json"><pre>{
+  "versjon": 1,
+  "virksomhet": "Eksempel Kommune",
+  "alltidSkjult": ["navn", "fnr", "helse"],
+  "kodeform": "kort",
+  "ansikterAlltid": true,
+  "utenSkanning": false,
+  "glemEtterDager": 30,
+  "revisjonslogg": true,
+  "nokkelEksport": false
+}</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>versjon</code></dt><dd>Påkrævet. Kun <code>1</code> findes.</dd></div>
+            <div><dt><code>virksomhet</code></dt><dd>Navnet, der vises ved låste indstillinger.</dd></div>
+            <div><dt><code>alltidSkjult</code></dt><dd>Grupper, der altid maskeres. De kan ikke slås fra, og intet i dem kan sættes til »Lad stå«. Grupperne hedder <code>navn</code> (navne), <code>fnr</code> (CPR-numre og andre id-numre), <code>kontakt</code>, <code>helse</code> (følsomme oplysninger), <code>setninger</code> (private sætninger), <code>skilt</code> (nummerplader), <code>penger</code> (konti), <code>hemmelig</code> (adgangskoder), <code>sted</code> (adresse og by), <code>dato</code>, <code>jobb</code> (stilling og relation), <code>alder</code>, <code>org</code> (arbejdsplads og CVR-nr.) og <code>sak</code> (sagsnumre).</dd></div>
+            <div><dt><code>standardGrupper</code></dt><dd>De grupper, der er slået til, første gang en mappe åbnes. Udeladt: Krystallklarts standard.</dd></div>
+            <div><dt><code>kodeform</code></dt><dd><code>lapp</code> (kun etiketter), <code>kort</code> (kort kode og kodeliste), <code>full</code> (fuld kode i teksten) eller <code>svart</code> (sort maskering, PDF). Udeladt: Brugeren vælger.</dd></div>
+            <div><dt><code>ansikterAlltid</code></dt><dd>Ansigter pixeleres altid, og intet ansigt kan sættes til »Lad stå«.</dd></div>
+            <div><dt><code>utenSkanning</code></dt><dd><code>false</code> kræver, at Krystallklart altid scanner filerne. Som standard kan brugeren også markere alt selv.</dd></div>
+            <div><dt><code>prosjekter</code></dt><dd><code>false</code>: Krystallklart husker intet om mapperne fra gang til gang.</dd></div>
+            <div><dt><code>glemEtterDager</code></dt><dd>Hvor længe et projekt, der ikke bruges, gemmes, fra 1 til 365 dage. Standard 30.</dd></div>
+            <div><dt><code>kommandolinje</code></dt><dd><code>false</code> slår kommandolinjen, den overvågede mappe og tjenesterne i Finder fra.</dd></div>
+            <div><dt><code>revisjonslogg</code></dt><dd>Slår loggen til. <code>revisjonsmappe</code> skriver desuden en kopi på et netværksdrev.</dd></div>
+            <div><dt><code>rapportJson</code></dt><dd>Skriver en rapport i JSON i hver kopimappe ved siden af <code>Rapport fra Krystallklart.txt</code>.</dd></div>
+            <div><dt><code>nokkelEksport</code></dt><dd><code>false</code>: Ingen kan eksportere nøglen som ord eller fil. Den nøgleansvarlige kobler nye computere på.</dd></div>
+          </dl>
+          <p>
+            Ved siden af kan der ligge en licens, i filen <code>licens.krystallklart</code>. Filen indeholder koden, der begynder med <code>KRYSTALLKLART-</code>. Så skal ingen bruger indsætte noget.
+            Har en bruger sin egen gyldige licens, går den forud.
+          </p>
+          <p class="s-notis varsel">
+            <b>Kan filen ikke læses, starter Krystallklart ikke.</b> En slåfejl, et ukendt felt eller en værdi uden for det tilladte
+            må ikke få Krystallklart til at maskere mindre, end I har bestemt. Fejlmeddelelsen siger, hvilket felt det gælder.
+          </p>
+        </section>
+
+        <!-- ============ Nøkkelen ============ -->
+        <section class="s-del" id="nokkel">
+          <h2>Nøglen i organisationen</h2>
+          <p>
+            Koderne i kopierne kan kun laves om til navne igen med nøglen. I en organisation skal alle have den samme nøgle,
+            ellers får den samme person forskellige koder hos forskellige kolleger.
+          </p>
+          <dl class="s-tabell">
+            <div><dt>Nøgleansvarlig</dt><dd>Laver organisationens nøgle, deler den ud og kobler kolleger på.</dd></div>
+            <div><dt>Medlem</dt><dd>Bruger nøglen. Programmet lader ikke et medlem eksportere den. Det er en regel i programmet, ikke kryptografi: Computeren har hele nøglen.</dd></div>
+            <div><dt>Nøglepakke</dt><dd>Nøglen krypteret med en nøglekode på tolv tegn (Argon2id og AES-256-GCM). Pakken og koden gives videre hver for sig. Koden kan bruges flere gange og skal derfor behandles som selve nøglen.</dd></div>
+            <div><dt>Påkobling uden netværk</dt><dd>Kollegaens computer laver en anmodning. Den nøgleansvarlige svarer med en påkobling, som kun den computer kan åbne (X25519). En kontrolkode på seksten tegn læses højt, så begge parter ved, at de taler med den rigtige computer.</dd></div>
+            <div><dt>Reserve</dt><dd>24 ord (fra den norske liste, der er fælles for alle udgaver) på papir eller en nøglefil beskyttet med en adgangssætning (Argon2id og AES-256-GCM).</dd></div>
+          </dl>
+          <p class="s-notis varsel">
+            <b>Stille udrulning har en pris.</b> I kan lægge en nøglepakke (<code>.krystallklartpakke</code>) ved siden af <code>retningslinjer.json</code>
+            og skrive nøglekoden i filen (<code>nokkelkode</code>). Så overtager Krystallklart nøglen, uden at brugeren gør noget.
+            Men så er nøglen ikke bedre beskyttet end mappen: Den, der kan læse begge filer, har organisationens nøgle.
+          </p>
+        </section>
+
+        <!-- ============ Revisjonslogg ============ -->
+        <section class="s-del" id="logg">
+          <h2>Revisionslog</h2>
+          <p>
+            Loggen skriver, hvad Krystallklart har gjort, hvornår og af hvem. Den indeholder intet fra dokumenterne:
+            ingen filnavne, stier eller værdier. Den er slået fra, indtil I slår den til med
+            <code>"revisjonslogg": true</code>. Felterne har norske navne, der er fælles for alle udgaver.
+          </p>
+          <dl class="s-tabell">
+            <div><dt><code>hendelse</code></dt><dd>Hvad der skete: kopier lavet, scanning, glemt, gendannet eller en handling med nøglen (fx eksport).</dd></div>
+            <div><dt><code>via</code></dt><dd>Appen, kommandolinjen eller den overvågede mappe.</dd></div>
+            <div><dt><code>kilde</code></dt><dd>Et fingeraftryk af mappen, regnet ud med en nøgle på computeren. Den samme sag har den samme værdi i hver linje på denne computer, men stien kan ikke læses ud af den. En anden computer giver en anden værdi for den samme mappe.</dd></div>
+            <div><dt><code>bruker</code>, <code>maskin</code>, <code>tid</code></dt><dd>Sættes af selve programmet, ikke af vinduet.</dd></div>
+            <div><dt>Hvor den skrives</dt><dd><code>revisjon/ÅÅÅÅ-MM.jsonl</code> i datamappen. Med <code>revisjonsmappe</code> desuden <code>&lt;computer&gt;-&lt;bruger&gt;.jsonl</code> på netværksdrevet. Krystallklart opretter ikke den mappe. Er drevet ikke tilsluttet, noteres det i den lokale log.</dd></div>
+          </dl>
+          <p class="s-notis">
+            Loggen er en almindelig tekstfil. Brugeren kan ændre den. Har I brug for en log, der ikke kan ændres,
+            så lad <code>revisjonsmappe</code> pege på et sted, hvor brugeren kun kan tilføje.
+          </p>
+        </section>
+
+        <!-- ============ Kommandolinje ============ -->
+        <section class="s-del" id="kommando">
+          <h2>Kommandolinje og overvåget mappe</h2>
+          <p>
+            Det samme program, uden vindue. Input er kommandolinjen. Output er stdout, stderr og de filer,
+            I peger på. Intet åbner en port.
+          </p>
+          <div class="cmd"><pre>KK="/Applications/Krystallklart.app/Contents/MacOS/krystallklart"
+# Windows: "C:\Program Files\Krystallklart\krystallklart.exe"   Linux: /usr/bin/krystallklart
+
+"$KK" scan  ~/Sager/2026-114                      # se først
+"$KK" clean ~/Sager/2026-114 --out ~/Til-AI       # lav maskerede kopier
+"$KK" clean ~/Sager/2026-114 --out ~/Til-AI --changed-only
+"$KK" watch ~/Indbakke --out ~/Til-AI             # overvåget mappe
+"$KK" restore ~/Til-AI/2026-114-maskeret          # gendan med nøglen
+"$KK" forget ~/Sager/2026-114                     # glem alt om sagen</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>--codes</code></dt><dd><code>lapp</code> (standard), <code>kort</code>, <code>full</code> eller <code>svart</code>.</dd></div>
+            <div><dt><code>--groups</code></dt><dd>Hvad der skal erstattes, fx <code>navn,fnr,helse</code>.</dd></div>
+            <div><dt><code>--dry-run</code></dt><dd>Gør det hele, også kontrollen af hver kopi, men gemmer intet.</dd></div>
+            <div><dt><code>--no-project</code></dt><dd>Husker intet og bruger ikke valgene fra vinduet.</dd></div>
+            <div><dt>Resultat</dt><dd>Én linje JSON på stdout, med <code>format: 1</code>. Fremdriften går til stderr.</dd></div>
+            <div><dt>Afslutningskode</dt><dd>0: alt leveret. 1: fejl. 2: noget står tilbage i en kopi eller blev ikke leveret. 3: vilkårene er endnu ikke accepteret på denne computer. 4: kilden er i brug. 5: organisationens retningslinjer tillader det ikke. 6: nøglen ligger på en nøgledisk, der ikke sidder i. 64: fejl i kommandoen.</dd></div>
+          </dl>
+          <p><code>"$KK" help</code> viser alle kommandoer og valg.</p>
+        </section>
+
+        <!-- ============ Krypto ============ -->
+        <section class="s-del" id="krypto">
+          <h2>Kryptografi</h2>
+          <dl class="s-tabell">
+            <div><dt>Nøgle</dt><dd>32 tilfældige bytes fra styresystemet. Undernøgler med HKDF-SHA256.</dd></div>
+            <div><dt>Koder</dt><dd>Hvem personen er: HMAC-SHA256. Den oprindelige tekst: AES-SIV (RFC 5297), deterministisk og autentificeret.</dd></div>
+            <div><dt>Nøglen på disken</dt><dd>Mac: nøgleringen og Secure Enclave. Windows: DPAPI. Linux: nøgleringen (Secret Service).</dd></div>
+            <div><dt>Nøglefil</dt><dd>Argon2id (64 MiB, 3 gennemløb) og AES-256-GCM.</dd></div>
+            <div><dt>24 ord</dt><dd>256 bit nøgle og 8 bit kontrolsum, 11 bit pr. ord, fra en liste med 2048 norske ord.</dd></div>
+            <div><dt>Påkobling</dt><dd>X25519.</dd></div>
+            <div><dt>Projekter, egne markeringer og tekster</dt><dd>AES-256-GCM, med nøgler fra HKDF-SHA256. Filnavnene er HMAC-fingeraftryk.</dd></div>
+            <div><dt>Sikkerhedskopier og pixels under felterne i kopien</dt><dd>AES-256-GCM.</dd></div>
+            <div><dt>Licenskode</dt><dd>Ed25519. Signaturen kontrolleres på computeren.</dd></div>
+          </dl>
+          <p>Det er alt sammen kendte algoritmer fra åbne biblioteker (RustCrypto og dalek). Vi har ikke selv udviklet noget af det.</p>
+        </section>
+
+        <!-- ============ Systemkrav ============ -->
+        <section class="s-del" id="krav">
+          <h2>Systemkrav</h2>
+          <dl class="s-tabell">
+            <div><dt>Mac</dt><dd>macOS 13 eller nyere. Intel- og Apple-processorer i den samme pakke.</dd></div>
+            <div><dt>Windows</dt><dd>Windows 10 eller 11, 64 bit med Intel- eller AMD-processor. Installeres for alle brugere med en .exe-fil.</dd></div>
+            <div><dt>Linux</dt><dd>.deb-pakke (Debian, Ubuntu og lignende) til amd64 eller ARM64. Pakken hedder <code>krystallklart</code> og kræver <code>tesseract-ocr</code> og <code>xdg-utils</code>.</dd></div>
+            <div><dt>Hukommelse</dt><dd>Krystallklart bruger omkring en halv gigabyte, når sætningsmodellen er indlæst. Vi anbefaler 8 GB i computeren.</dd></div>
+            <div><dt>Grafikkort</dt><dd>Ikke nødvendigt. Alt kører på processoren.</dd></div>
+            <div><dt>Netværk</dt><dd>Ikke nødvendigt, hverken ved installation, aktivering eller brug.</dd></div>
+          </dl>
+          <p>
+            Første gang Krystallklart læser billeder på en Mac, kan macOS bruge et par minutter på at gøre sin egen
+            tekstgenkendelse klar. Det sker kun én gang.
+          </p>
+          <p>En opdatering er en ny installationsfil, som I selv henter, når I vil. Krystallklart leder ikke efter nye versioner.</p>
+        </section>
+
+        <!-- ============ Si fra ============ -->
+        <section class="s-del" id="si-fra">
+          <h2>Har I fundet noget?</h2>
+          <p>
+            Skriv til <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a>.
+            Vi svarer selv og hører det hellere fra jer end fra en kunde.
+            Se også <a href="/.well-known/security.txt">security.txt</a>.
+          </p>
+          <p class="s-dato">Senest ændret: 26. november 2026</p>
+        </section>
+      </main>
+    </div>
+
+    <footer class="s-bunn">
+      <p class="s-bunn-merke"><i>Krystallklart</i> <span>fra ESBJUG CONSULT</span></p>
+      <nav aria-label="Mere om Krystallklart">
+        <a href="./">Forside</a>
+        <a href="priser/">Priser</a>
+        <a href="hvad-den-finder.html">Hvad Krystallklart finder</a>
+        <a href="privatliv/">Privatliv</a>
+        <a href="vilkaar/">Vilkår</a>
+      </nav>
+      <p class="s-bunn-liten">Lavet i Norge</p>
+    </footer>
+
+    <script src="til-it.js"></script>
+  </body>
+</html>

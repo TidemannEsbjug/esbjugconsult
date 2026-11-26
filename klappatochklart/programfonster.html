@@ -1,0 +1,369 @@
+<!doctype html>
+<!-- Programvinduet fra /klart alene (eieren 12.11.2026), til heroen på forsiden (esbjugconsult.com/), der det står i en iframe.
+     Kopiert fra GDPR/index.html (figure.kv); endres vinduet der, kjør pv.py igjen eller kopier det over hit.
+     Samme stiler og skript som på /klart, pluss programvindu.css og programvindu.js (høyden til forsiden). -->
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Klappat och Klart – programfönstret</title>
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="forhandsvisning.css" />
+    <link rel="stylesheet" href="programvindu.css" />
+  </head>
+  <body class="programvindu">
+        <figure class="kv avklart" data-scene="gjennom">
+          <div class="kv-ramme">
+          <div class="kv-app" aria-hidden="true">
+            <header class="kv-chrome">
+              <span class="kv-lys"><i></i><i></i><i></i></span>
+              <span class="kv-merke"><img src="ikon.png" alt="" />Klappat och Klart</span>
+              <span class="kv-sok"><svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.6" /><path d="M10.4 10.4L14 14" /></svg>Sök i alla filer i mappen<kbd>⌘F</kbd></span>
+              <span class="kv-hoyre">
+                <span class="kv-lagret">✓ Autosparat</span>
+                <span class="kv-lysknapp">Val för genomsökning</span>
+                <span class="kv-lysknapp" data-kv="hjem">Startsidan</span>
+                <span class="kv-lysknapp kv-sporsmal">?</span>
+              </span>
+            </header>
+
+            <div class="kv-flate">
+              <!-- Startskjermen: de tre verktøyene, og det som ble tilbakeført under dem -->
+              <div class="kv-scene kv-s-start">
+                <div class="kv-start-inn">
+                  <div class="kv-kortene">
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-rens.png" alt="" />
+                      <h4>Maskera</h4>
+                      <span class="kv-hvit" data-kv="velg">Välj mapp eller dokument …</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-tilbakefor.png" alt="" />
+                      <h4>Återställ</h4>
+                      <span class="kv-hvit" data-kv="tbvelg">Välj kopior …</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-tekst.png" alt="" />
+                      <h4>Textverktyg</h4>
+                      <span class="kv-hvit" data-kv="tekstvelg">Öppna …</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Editoren: filene, dokumentet og registeret for mappen -->
+              <div class="kv-scene kv-s-editor">
+                <aside class="kv-filer">
+                  <div class="kv-filer-topp"><b>Klientakter</b><span>10 filer</span></div>
+                  <ul data-kv="filer">
+                    <li data-steder="30"><i class="kv-fikon w">W</i><span class="kv-fnavn">01-anstallningsavtal-acme.docx</span><span class="kv-fmeta">30 ställen</span><i class="kv-ring"></i></li>
+                    <li data-steder="41" data-uavklart="2" data-dok="vedtak" class="valgt"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">02-beslut-god-man.pdf</span><span class="kv-fmeta">41 ställen</span><i class="kv-ring"></i></li>
+                    <li data-steder="45" data-ekstra="1 registreringsnummer" data-dok="epost"><i class="kv-fikon epost">@</i><span class="kv-fnavn">03-e-posttrad.eml</span><span class="kv-fmeta">45 ställen</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon tekst">T</i><span class="kv-fnavn">04-personalanteckning.md</span><span class="kv-fmeta">21 ställen</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon w">W</i><span class="kv-fnavn">05-lakarintyg.docx</span><span class="kv-fmeta">21 ställen</span><i class="kv-ring"></i></li>
+                    <li data-steder="16"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">06-faktura-norrsken.pdf</span><span class="kv-fmeta">16 ställen</span><i class="kv-ring"></i></li>
+                    <li data-steder="82" data-dok="liste"><i class="kv-fikon x">X</i><span class="kv-fnavn">08-klientlista.xlsx</span><span class="kv-fmeta">82 ställen</span><i class="kv-ring"></i></li>
+                    <li data-steder="43" data-ekstra="2 ansikten" data-dok="ppt"><i class="kv-fikon p">P</i><span class="kv-fnavn">09-statusmote.pptx</span><span class="kv-fmeta">43 ställen · 2 ansikten</span><i class="kv-ring"></i></li>
+                    <li data-steder="18"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">11-skannad-bilaga.pdf</span><span class="kv-fmeta">18 ställen</span><i class="kv-ring"></i></li>
+                    <li data-steder="3" data-ekstra="1 ansikte"><i class="kv-fikon bilde">JPG</i><span class="kv-fnavn">16-id-kort.jpg</span><span class="kv-fmeta">3 ställen · 1 ansikte</span><i class="kv-ring"></i></li>
+                  </ul>
+                </aside>
+
+                <div class="kv-midt">
+                  <div class="kv-docket">
+                    <b data-kv="docnavn">02-beslut-god-man.pdf</b><span class="kv-type" data-kv="doctype">PDF</span>
+                    <span class="kv-kopimerke" data-kv="kopimerke">Kopian · kodlista sist</span>
+                    <span class="kv-verktoy">
+                      <span class="kv-zoom">− &nbsp;86 %&nbsp; +</span>
+                      <span class="kv-hvit" data-kv="vis">Visa kopian</span>
+                    </span>
+                  </div>
+                  <div class="kv-bord">
+                    <div class="kv-pille" data-kv="pille"><i></i>Läser <b data-kv="leser">01-anstallningsavtal-acme.docx</b><span data-kv="nr">1 av 10</span></div>
+
+                    <!-- PDF: vedtak om vergemål -->
+                    <article class="kv-side vist" data-dok="vedtak">
+                      <i class="kv-lesehode"></i>
+                      <p class="kv-avsender">Lunds tingsrätt</p>
+                      <h4>Beslut om godmanskap</h4>
+                      <p class="kv-ref">Ärende <mark class="s"><span class="o">Ä 1842-26</span><span class="k">[Mål- och ärendenummer 4906498]</span></mark> · 2026-03-14</p>
+                      <h5>Huvudman</h5>
+                      <dl>
+                        <dt>Namn</dt><dd><mark class="s"><span class="o">Karin Lindqvist</span><span class="k">[Namn 6311794]</span></mark></dd>
+                        <dt>Personnummer</dt><dd><mark class="s"><span class="o">860917-9812</span><span class="k">[Personnummer 2215087]</span></mark></dd>
+                        <dt>Adress</dt><dd><mark class="s"><span class="o">Lindvägen 27, 222 41 Lund</span><span class="k">[Adress 8950779]</span></mark></dd>
+                      </dl>
+                      <h5>Förordnad god man</h5>
+                      <dl>
+                        <dt>Namn</dt><dd><mark class="s"><span class="o">Lars Bergström</span><span class="k">[Namn 2656447]</span></mark>, <mark class="b" data-kv="arbeid"><span class="o">Advokatfirman Norrsken KB</span><span class="k">[Organisation 5521093]</span></mark></dd>
+                        <dt>E-post</dt><dd><mark class="s"><span class="o">lars.bergstrom@norrsken.test</span><span class="k">[E-post 3278678]</span></mark></dd>
+                        <dt>Telefon</dt><dd><mark class="s"><span class="o">046-555 01 34</span><span class="k">[Telefon 6289990]</span></mark></dd>
+                      </dl>
+                      <h5>Skäl</h5>
+                      <p><mark class="s" data-kv="merknad"><span class="o">Huvudmannen har sedan januari vårdats på sjukhus för depression och behöver hjälp med sin ekonomi.</span><span class="k">[Personuppgift (mening) 2760056]</span></mark> Den gode mannen förvaltar medlen på konto <mark class="s"><span class="o">SE45 5000 0000 0583 9825 7466</span><span class="k">[IBAN 7719741]</span></mark>.</p>
+                      <p>Beslutet gäller omedelbart. Det kan överklagas inom tre veckor.</p>
+                    </article>
+
+                    <!-- E-post -->
+                    <article class="kv-side kv-epost" data-dok="epost">
+                      <i class="kv-lesehode"></i>
+                      <dl class="kv-hode">
+                        <dt>Från</dt><dd><mark class="s"><span class="o">Sofia Holm</span><span class="k">[Namn 7320430]</span></mark> &lt;<mark class="s"><span class="o">sofia.holm@norrsken.test</span><span class="k">[E-post 5102284]</span></mark>&gt;</dd>
+                        <dt>Till</dt><dd><mark class="s"><span class="o">Karin Lindqvist</span><span class="k">[Namn 6311794]</span></mark></dd>
+                        <dt>Ämne</dt><dd><b>Efter vårt samtal</b></dd>
+                        <dt>Datum</dt><dd>12 mars 2026 09:14</dd>
+                      </dl>
+                      <p>Hej <mark class="s"><span class="o">Karin</span><span class="k">[Namn 6311794]</span></mark>!</p>
+                      <p>Tack för samtalet i går. Som vi kom överens om skickar jag en kopia av läkarintyget. Du når mig hela veckan på <mark class="s"><span class="o">046-555 01 34</span><span class="k">[Telefon 6289990]</span></mark>.</p>
+                      <p>Tjänstebilen med registreringsnummer <mark class="s"><span class="o">ABC 123</span><span class="k">[Registreringsnummer 3071552]</span></mark> är klar att hämta från måndag. Jag bifogar en bild.</p>
+                      <p>Vänliga hälsningar<br /><mark class="s"><span class="o">Sofia Holm</span><span class="k">[Namn 7320430]</span></mark><br />Norrsken Service AB · <mark class="s"><span class="o">Hamngatan 22, 211 22 Malmö</span><span class="k">[Adress 6113936]</span></mark></p>
+                      <figure class="kv-vedlegg">
+                        <span class="kv-bilramme"><img src="/alles-klar/assets/visning/bil.jpg" alt="" /><span class="kv-skilt" data-kv="skilt"><img src="/alles-klar/assets/visning/bil-skilt.png" alt="" /><em data-kv="skiltlapp">Registreringsnummer · maskeras</em></span></span>
+                        <figcaption>bil.jpg · 1,2 MB</figcaption>
+                      </figure>
+                    </article>
+
+                    <!-- Regneark -->
+                    <article class="kv-side kv-ark" data-dok="liste">
+                      <i class="kv-lesehode"></i>
+                      <table>
+                        <thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead>
+                        <tbody>
+                          <tr><th>1</th><td><b>Namn</b></td><td><b>Personnummer</b></td><td><b>Telefon</b></td><td><b>Kontonummer</b></td></tr>
+                          <tr><th>2</th><td><mark class="s"><span class="o">Erik Johansson</span><span class="k">[Namn 1180342]</span></mark></td><td><mark class="s"><span class="o">470308-2816</span><span class="k">[Personnummer 4402918]</span></mark></td><td><mark class="s"><span class="o">070-555 01 42</span><span class="k">[Telefon 2290174]</span></mark></td><td><mark class="s"><span class="o">5402-0532013</span><span class="k">[Kontonummer / kort 6630215]</span></mark></td></tr>
+                          <tr><th>3</th><td><mark class="s"><span class="o">Birgitta Karlsson</span><span class="k">[Namn 5523107]</span></mark></td><td><mark class="s"><span class="o">651129-7048</span><span class="k">[Personnummer 8817330]</span></mark></td><td><mark class="s"><span class="o">073-555 01 78</span><span class="k">[Telefon 1047782]</span></mark></td><td><mark class="s"><span class="o">8327-9, 102 030 405</span><span class="k">[Kontonummer / kort 3359810]</span></mark></td></tr>
+                          <tr><th>4</th><td><mark class="s"><span class="o">Ahmed Hassan</span><span class="k">[Namn 9918066]</span></mark></td><td><mark class="s"><span class="o">570928-5017</span><span class="k">[Personnummer 2265419]</span></mark></td><td><mark class="s"><span class="o">076-555 01 11</span><span class="k">[Telefon 7714203]</span></mark></td><td><mark class="s"><span class="o">6000-648489890</span><span class="k">[Kontonummer / kort 9046631]</span></mark></td></tr>
+                          <tr><th>5</th><td><mark class="s"><span class="o">Maria Nilsson</span><span class="k">[Namn 3301459]</span></mark></td><td><mark class="s"><span class="o">750731-1411</span><span class="k">[Personnummer 6158820]</span></mark></td><td><mark class="s"><span class="o">072-555 01 66</span><span class="k">[Telefon 4420987]</span></mark></td><td><mark class="s"><span class="o">3300-2270815420</span><span class="k">[Kontonummer / kort 1872264]</span></mark></td></tr>
+                          <tr><th>6</th><td><mark class="s"><span class="o">Johan Andersson</span><span class="k">[Namn 8045126]</span></mark></td><td><mark class="s"><span class="o">811224-9633</span><span class="k">[Personnummer 5590743]</span></mark></td><td><mark class="s"><span class="o">070-555 01 27</span><span class="k">[Telefon 3368201]</span></mark></td><td><mark class="s"><span class="o">9150-0417730</span><span class="k">[Kontonummer / kort 7701358]</span></mark></td></tr>
+                          <tr><th>7</th><td></td><td></td><td></td><td></td></tr>
+                          <tr><th>8</th><td></td><td></td><td></td><td></td></tr>
+                        </tbody>
+                      </table>
+                    </article>
+
+                    <!-- PowerPoint: lysbildet fra fellesturen, med to ansikter -->
+                    <article class="kv-side kv-ppt" data-dok="ppt">
+                      <i class="kv-lesehode"></i>
+                      <div class="kv-lysbilde">
+                        <p class="kv-lb-tittel">Personalresan i februari</p>
+                        <p class="kv-lb-under">Tack till <mark class="s"><span class="o">Hanna Lind</span><span class="k">[Namn 3390415]</span></mark> och <mark class="s"><span class="o">Per Ståhl</span><span class="k">[Namn 8812706]</span></mark> som ordnade allt!</p>
+                        <div class="kv-lb-foto">
+                          <img src="/alles-klar/assets/visning/fagtur.jpg" alt="" />
+                          <span class="kv-ansikt a1" data-kv="ansikt1"><img src="/alles-klar/assets/visning/fagtur-ansikt-1.jpg" alt="" /><em>Ansikte · pixlas</em></span>
+                          <span class="kv-ansikt a2" data-kv="ansikt2"><img src="/alles-klar/assets/visning/fagtur-ansikt-2.jpg" alt="" /><em>Ansikte · pixlas</em></span>
+                        </div>
+                        <p class="kv-lb-bunn">Statusmöte · bild 4 av 12</p>
+                      </div>
+                    </article>
+
+                    <div class="kv-gjennom" data-kv="gjennom">
+                      <i class="kv-gjennom-strek" data-kv="gstrek"></i>
+                      <p class="kv-gjennom-topp"><code data-kv="gkode">Personuppgift (mening) 2760056</code><b>Ej avgjord</b><span data-kv="gnr">1 av 2</span></p>
+                      <p class="kv-gjennom-hvorfor" data-kv="ghvorfor">Klappat och Klart är osäker på om det här är en personuppgift (mening). · 02-beslut-god-man.pdf</p>
+                      <p class="kv-gjennom-knapper">
+                        <span class="kv-btn" data-kv="skjul">Maskera <kbd>↵</kbd></span>
+                        <span class="kv-btn hvit" data-kv="lastaa">Låt stå <kbd>B</kbd></span>
+                        <span class="kv-btn hvit av">Tillbaka <kbd>←</kbd></span>
+                        <span class="kv-btn hvit">Nästa <kbd>→</kbd></span>
+                        <span class="kv-btn hvit">Avsluta <kbd>Esc</kbd></span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <aside class="kv-panel">
+                  <div class="kv-uavklart" data-kv="uavklart">
+                    <h5><svg viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" rx="2" /><path d="M6 2.5v11" /></svg>Ej avgjord</h5>
+                    <div class="kv-uboks">
+                      <p data-kv="u1"><code>Personuppgift (mening) 2760056</code><span>Huvudmannen har sedan januari vårdats …</span><em>1 ej avgjord</em></p>
+                      <p data-kv="u2"><code>Organisation 5521093</code><span>Advokatfirman Norrsken KB</span><em>1 ej avgjord</em></p>
+                      <span class="kv-btn bred" data-kv="gaa">Gå igenom alla 2 <kbd>G</kbd></span>
+                    </div>
+                  </div>
+                  <div class="kv-imappen">
+                    <h5>I mappen <span><b data-kv="opplysninger">67</b> uppgifter</span></h5>
+                    <ul data-kv="register">
+                      <li data-n="19" data-s="114"><span>Namn</span><em>19 · 114 ställen</em></li>
+                      <li data-n="7" data-s="24"><span>Personnummer</span><em>7 · 24 ställen</em></li>
+                      <li data-n="12" data-s="43"><span>Telefon</span><em>12 · 43 ställen</em></li>
+                      <li data-n="15" data-s="53"><span>E-post</span><em>15 · 53 ställen</em></li>
+                      <li data-n="7" data-s="29"><span>Adresser</span><em>7 · 29 ställen</em></li>
+                      <li data-n="6" data-s="13"><span>Konton</span><em>6 · 13 ställen</em></li>
+                      <li data-n="1" data-s="2"><span>Registreringsnummer</span><em>1 · 2 ställen</em></li>
+                      <li data-n="3" data-s="12"><span>Känsliga personuppgifter</span><em>3 · 12 ställen</em></li>
+                      <li data-n="3" data-s="3" data-kv="ansikter"><span>Ansikten</span><em>3 · 3 ställen</em></li>
+                    </ul>
+                  </div>
+                  <div class="kv-bunn">
+                    <p><b data-kv="skjules">292</b> maskeras <b data-kv="faarstaa">1</b> står kvar</p>
+                    <p class="kv-bunn-knapper">
+                      <span class="kv-btn hvit oransje" data-kv="ubtn"><i></i>Ej avgjord 2</span>
+                      <span class="kv-btn stor" data-kv="lag">Skapa 10 kopior</span>
+                    </p>
+                  </div>
+                </aside>
+              </div>
+
+              <!-- Tekstverktøy: et ark å skrive eller lime inn på -->
+              <div class="kv-scene kv-s-tekst">
+                <div class="kv-rt-linje">
+                  <span class="kv-rt-tilbake">‹ Startsidan</span>
+                  <span class="kv-faner"><span class="på" data-kv="fanerens"><i>1</i>Maskera text</span><span data-kv="fanetb"><i>2</i>Återställ text</span></span>
+                  <span class="kv-faner kv-rt-visning"><span class="på" data-kv="rtorig">Original</span><span data-kv="rtrenset">Maskerad</span></span>
+                  <span class="kv-btn" data-kv="rtkopier">Kopiera</span>
+                </div>
+                <div class="kv-rt-kropp">
+                  <div class="kv-rt-ark" data-kv="rtark"><p data-kv="rttekst"></p><i class="kv-markor"></i><p class="kv-rt-svar" data-kv="rtsvar"></p></div>
+                  <aside class="kv-rt-liste">
+                    <h5 data-kv="rtlistetittel">Maskeras</h5>
+                    <ul data-kv="rtliste"></ul>
+                    <p class="kv-rt-merke">Texten läses på den här datorn. Ingenting skickas.</p>
+                  </aside>
+                </div>
+                <p class="kv-toast" data-kv="toast">Kopierat</p>
+              </div>
+
+              <!-- Skrivebordet: Finder med høyreklikk › Hurtighandlinger › Rens med Klart -->
+              <div class="kv-scene kv-s-finder kv-skrivebord">
+                <div class="kv-finder">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><span class="kv-pil">‹ ›</span><b>Dokument</b></div>
+                  <div class="kv-finder-kropp">
+                    <ul class="kv-sidefelt">
+                      <li class="kv-sf-h">Favoriter</li>
+                      <li>Skrivbord</li>
+                      <li class="på">Dokument</li>
+                      <li>Hämtade filer</li>
+                      <li class="kv-sf-h">Platser</li>
+                      <li>iCloud Drive</li>
+                    </ul>
+                    <div class="kv-ikoner">
+                      <span class="kv-mappe" data-kv="fmappe"><i></i>Klientakter</span>
+                      <span class="kv-mappe"><i></i>Begäran i mars</span>
+                      <span class="kv-mappe"><i></i>Bokföring 2025</span>
+                      <span class="kv-dokikon"><i>PDF</i>avtal-acme.pdf</span>
+                      <span class="kv-dokikon w"><i>W</i>Protokoll 10.11.docx</span>
+                      <span class="kv-mappe ny" data-kv="fny"><i></i>Klientakter-maskerad</span>
+                    </div>
+                  </div>
+                  <ul class="kv-meny" data-kv="meny">
+                    <li>Öppna</li>
+                    <li>Öppna i ny flik</li>
+                    <li class="kv-skille"></li>
+                    <li>Flytta till papperskorgen</li>
+                    <li class="kv-skille"></li>
+                    <li>Visa info</li>
+                    <li>Byt namn</li>
+                    <li>Komprimera ”Klientakter”</li>
+                    <li>Duplicera</li>
+                    <li class="kv-skille"></li>
+                    <li>Kopiera</li>
+                    <li>Dela …</li>
+                    <li class="kv-skille"></li>
+                    <li class="kv-under" data-kv="hurtig">Snabbåtgärder<span>›</span></li>
+                    <li class="kv-under">Tjänster<span>›</span></li>
+                  </ul>
+                  <ul class="kv-meny kv-undermeny" data-kv="undermeny">
+                    <li data-kv="rensmed">Maskera med Klappat och Klart</li>
+                    <li>Återställ med Klappat och Klart</li>
+                    <li class="kv-skille"></li>
+                    <li>Anpassa …</li>
+                  </ul>
+                </div>
+                <div class="kv-varsel" data-kv="varsel">
+                  <img src="ikon.png" alt="" />
+                  <p><b data-kv="vtittel">Maskerar ”Klientakter” …</b><span data-kv="vtekst">Kopiorna läggs bredvid. Du får ett meddelande när de är klara.</span></p>
+                  <small>nu</small>
+                </div>
+              </div>
+
+              <!-- Skrivebordet: et KI-verktøy som bare får kodene -->
+              <div class="kv-scene kv-s-ki kv-skrivebord">
+                <div class="kv-ki">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><b>AI-assistent</b></div>
+                  <div class="kv-ki-samtale">
+                    <div class="kv-ki-bruker" data-kv="kibruker">
+                      <p>Skriv ett kort svar på det här meddelandet:</p>
+                      <p class="kv-ki-sitat">Hej! Kan du ringa <code>[Namn 6311794]</code> i dag på <code>[Telefon 6289990]</code>? Hon har flyttat till <code>[Adress 8950779]</code>, och lönen ska nu sättas in på <code>[IBAN 7719741]</code>.</p>
+                    </div>
+                    <div class="kv-ki-svar" data-kv="kisvar"><p data-kv="kisvartekst"></p><span class="kv-ki-kopier" data-kv="kikopier">Kopiera svaret</span></div>
+                  </div>
+                  <div class="kv-ki-felt" data-kv="kifelt"><span>Skriv ett meddelande …</span><i>↑</i></div>
+                </div>
+                <p class="kv-ki-merke">AI:n får bara koderna. Namn, telefon, adress och konto stannar på datorn.</p>
+              </div>
+
+              <!-- «Før skanningen»: over startskjermen, når mappen er valgt -->
+              <div class="kv-slor kv-s-forvalg">
+                <div class="kv-modal">
+                  <h4>Klientakter</h4>
+                  <p class="kv-modal-under">10 filer · docx, eml, jpg, md, pdf, pptx, xlsx</p>
+                  <div class="kv-maate">
+                    <p class="på"><i></i><span><b>Med genomsökning</b>Klappat och Klart läser filerna och markerar det som hittas. Du går igenom och bestämmer.</span></p>
+                    <p><i></i><span><b>Utan genomsökning</b>Ingenting markeras i förväg. Du klickar på det som ska maskeras.</span></p>
+                  </div>
+                  <p class="kv-sammen"><span><small>Genomsökningen letar efter och maskerar</small>Namn, personnummer, telefon och e-post, känsliga personuppgifter, registreringsnummer, konton, ansikten och 5 till</span><em>Ändra</em></p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Avbryt</span>
+                    <span class="kv-btn stor" data-kv="skann">Sök igenom <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- «Før kopiene lages»: formen kopiene får -->
+              <div class="kv-slor kv-s-kopivalg">
+                <div class="kv-modal kv-kopivalg">
+                  <h4>Innan kopiorna skapas</h4>
+                  <p class="kv-modal-under">10 filer · kopiorna hamnar i Klientakter-maskerad</p>
+                  <div class="kv-maate kv-former" data-kv="former">
+                    <p class="på" data-form="kort"><i></i><span><b>Kort kod och kodlista</b>Lätt att läsa. Kan återställas med organisationens nyckel.<code>[Namn 4814887] + lista</code></span></p>
+                    <p data-form="full"><i></i><span><b>Fullständig kod i texten</b>Ingen lista. Kan återställas, men är svår att läsa.</span></p>
+                    <p data-form="lapp"><i></i><span><b>Bara etiketter</b>Lätt att läsa, men kan inte återställas till originalet.</span></p>
+                    <p data-form="svart"><i></i><span><b>Svart maskering (PDF)</b>Det som stod där är borta för gott.<code class="kv-svartprove"></code></span></p>
+                  </div>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Avbryt</span>
+                    <span class="kv-btn stor" data-kv="lagnaa">Skapa 10 kopior <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Kopiene er laget -->
+              <div class="kv-slor kv-s-ferdig">
+                <div class="kv-ferdig">
+                  <p class="kv-stor">Klappat och klart.</p>
+                  <p>10 kopior har skapats. Originalen rörs inte. Läs kopiorna innan du lämnar ut dem.</p>
+                  <p class="kv-sti"><span>Dokument/</span>Klientakter-maskerad/</p>
+                  <p class="kv-liten">Kodlistan ligger sist i varje kopia.</p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit">Tillbaka till mappen</span>
+                    <span class="kv-btn">Öppna kopiorna</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+          <span class="kv-peker" aria-hidden="true"></span>
+          <!-- Kapitlene: hopper i avspillingen. Det som spilles nå, er markert. -->
+          <ol class="kv-kapitler" data-kv="kapitler" aria-label="Kapitel i förhandsvisningen">
+            <li><button type="button" data-kapittel="0">Maskera en mapp</button></li>
+            <li><button type="button" data-kapittel="1">Genomgången</button></li>
+            <li><button type="button" data-kapittel="2">Kopiorna</button></li>
+            <li><button type="button" data-kapittel="3">Högerklick i Finder</button></li>
+            <li><button type="button" data-kapittel="4">Maskera och återställ text</button></li>
+          </ol>
+          <!-- Lesingen spilles av mye raskere enn den går på en vanlig maskin. Det skal stå. -->
+          <p class="kv-spol" aria-hidden="true">
+            <svg viewBox="0 0 20 12"><path d="M1 1l8 5-8 5zM10 1l8 5-8 5z" /></svg>
+            <span>Snabbspolat. Hur lång tid läsningen tar beror på datorn. På en vanlig bärbar dator tar det längre.</span>
+          </p>
+          <figcaption class="skjult-tekst">
+            Så fungerar Klappat och Klart. När du har valt en mapp läser Klappat och Klart filerna, också PDF, e-post, kalkylblad, PowerPoint och bilder, och markerar namn, personnummer, kontaktuppgifter, adresser, kontonummer, känsliga personuppgifter, registreringsnummer och ansikten, som pixlas. Det som Klappat och Klart är osäker på går du själv igenom och bestämmer: maskera eller låt stå. Kopiorna kan få korta koder med en kodlista, fullständiga koder, bara etiketter eller svart maskering, och originalen rörs inte. I Finder kan du maskera en mapp med högerklick › Snabbåtgärder › Maskera med Klappat och Klart. Text med koder kan du ge till ett AI-verktyg och sedan återställa svaret i Klappat och Klart, så att namnen kommer tillbaka utan att AI:n har sett dem. Läsningen är snabbspolad: hur lång tid den tar beror på datorn.
+          </figcaption>
+        </figure>
+    <script src="forhandsvisning.js"></script>
+    <script src="programvindu.js"></script>
+  </body>
+</html>

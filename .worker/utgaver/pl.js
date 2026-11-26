@@ -28,10 +28,10 @@ export default {
   selger: ["ESBJUG CONSULT", "Glenneveien 272B", "1455 Nordre Frogn", "Norwegia", "Nr org. 938 441 405"],
   // Only the Mac build exists so far; the pages say Windows and Linux are coming.
   filer: {
-    mac: { key: "2026-11-24/pl/Wszystko-Jasne_0.1.0_universal.dmg", navn: "Wszystko Jasne.dmg" },
-    windows: { key: "2026-11-24/pl/Wszystko-Jasne_0.1.0_x64-setup.exe", navn: "Wszystko Jasne.exe" },
-    linux: { key: "2026-11-24/pl/Wszystko-Jasne_0.1.0_amd64.deb", navn: "Wszystko-Jasne_0.1.0_amd64.deb" },
-    "linux-arm": { key: "2026-11-24/pl/Wszystko-Jasne_0.1.0_arm64.deb", navn: "Wszystko-Jasne_0.1.0_arm64.deb" },
+    mac: { key: "2026-11-26/pl/Wszystko-Jasne_0.1.0_universal.dmg", navn: "Wszystko Jasne.dmg" },
+    windows: { key: "2026-11-26/pl/Wszystko-Jasne_0.1.0_x64-setup.exe", navn: "Wszystko Jasne.exe" },
+    linux: { key: "2026-11-26/pl/Wszystko-Jasne_0.1.0_amd64.deb", navn: "Wszystko-Jasne_0.1.0_amd64.deb" },
+    "linux-arm": { key: "2026-11-26/pl/Wszystko-Jasne_0.1.0_arm64.deb", navn: "Wszystko-Jasne_0.1.0_arm64.deb" },
   },
   t: {
     ikkeFunnet: "Nie znaleziono.",

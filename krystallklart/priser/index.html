@@ -1,0 +1,173 @@
+<!doctype html>
+<!--
+  Hei, du som leser kildekoden. Det var deg vi håpet på.
+
+  Krystallklart lover at dokumentene aldri forlater maskinen. Et sånt løfte skal ikke
+  tas på ordet, så sjekk det:
+
+  - Programmet: /krystallklart/til-it.html har kommandoene som viser hva det snakker med.
+  - Denne siden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
+    uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
+  - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
+-->
+<html lang="da">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/krystallklart/favicon.png" />
+    <title>Priser og bestilling · Krystallklart</title>
+    <meta name="description" content="Hvad Krystallklart koster for jeres organisation: virksomheder, kommuner, regioner og statslige myndigheder. Én licens til alle, bestilling mod faktura. Gratis til privat brug." />
+    <meta name="theme-color" content="#eef3fb" />
+    <!-- Ikke indekser før lanseringen. -->
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="../fonts.css" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="pris.css" />
+    <link rel="stylesheet" href="bestilling.css" />
+  </head>
+  <body>
+    <main>
+      <section class="port" id="port">
+        <a class="pris-hjem" href="/krystallklart/"><span aria-hidden="true">←</span> <i>Krystallklart</i></a>
+        <div class="kort middels" id="kort">
+          <p class="pris-privat"><b>Gratis til privat brug.</b> <a href="/krystallklart/">Hent Krystallklart</a></p>
+          <p class="merke">Til organisationer</p>
+          <h1>Krystallklart til jeres organisation</h1>
+          <p class="ingress">Én licens dækker alle i organisationen. Ingen optælling af brugere og ingen grænse for antal sider.</p>
+
+          <!-- Tre slags kjøpere. Prisen kommer fra price.js, den samme filen serveren regner med. -->
+          <div class="de-valg" role="radiogroup" aria-label="Type organisation">
+            <label><input type="radio" name="art" value="business" checked /><span>Virksomhed, advokatkontor, klinik eller forening</span></label>
+            <label><input type="radio" name="art" value="municipal" /><span>Kommune eller region</span></label>
+            <label><input type="radio" name="art" value="state" /><span>Statslig myndighed</span></label>
+          </div>
+
+          <div class="de-to-felt" id="felt-virksomhed">
+            <div>
+              <label for="personer">Personer i organisationen</label>
+              <input id="personer" type="number" min="1" step="1" value="25" inputmode="numeric" />
+              <p class="smaa">Alle medarbejdere. Skriv 1, hvis du arbejder alene.</p>
+            </div>
+            <div id="felt-branche">
+              <label for="branche">Branche</label>
+              <select id="branche"></select>
+            </div>
+          </div>
+
+          <div class="de-ett-felt" id="ke-skjema" hidden>
+            <label for="ke-innbyggere">Antal indbyggere</label>
+            <input id="ke-innbyggere" type="text" inputmode="numeric" autocomplete="off" placeholder="fx 42.500" maxlength="12" />
+            <p class="smaa">Samme pris for alle kommuner af samme størrelse, uden forhandling.</p>
+          </div>
+
+          <div class="de-ett-felt" id="felt-stat" hidden>
+            <label for="ansatte">Ansatte i myndigheden</label>
+            <input id="ansatte" type="number" min="1" step="1" inputmode="numeric" placeholder="fx 120" />
+            <p class="smaa">Også for styrelser, domstole, tilsyn og offentlige uddannelsesinstitutioner.</p>
+          </div>
+
+          <div class="de-prisboks" aria-live="polite">
+            <p class="bekreftet">Licens til hele organisationen</p>
+            <p class="pristall" id="prislinje"><b id="belob"></b> <span>pr. år</span></p>
+            <div id="ke-boks" hidden><p class="ke-svar" id="ke-svar"></p></div>
+            <p class="de-hinweis" id="note" hidden></p>
+            <p class="smaa">Pris ekskl. moms. Fakturaen er uden dansk moms; køber afregner momsen (omvendt betalingspligt).</p>
+          </div>
+
+          <form id="bestilling" class="de-ordre" novalidate>
+            <div class="de-to-felt">
+              <div>
+                <label for="org">Organisationens navn</label>
+                <input id="org" type="text" maxlength="120" autocomplete="organization" required />
+                <p class="smaa">Står på fakturaen og i Krystallklart på hver computer, der bruger licensen.</p>
+              </div>
+              <div>
+                <label for="email">E-mail til fakturaen</label>
+                <input id="email" type="email" maxlength="200" autocomplete="email" required />
+                <p class="smaa">Hertil sender vi fakturaen og senere licenskoden.</p>
+              </div>
+            </div>
+            <div class="de-to-felt">
+              <div>
+                <label for="adresse">Faktureringsadresse</label>
+                <textarea id="adresse" rows="4" maxlength="600" autocomplete="street-address" required></textarea>
+                <p class="smaa">Skriv også CVR-nummer og, for offentlige kunder, EAN-nummer.</p>
+              </div>
+              <div>
+                <label for="reference">Ordrenummer eller reference</label>
+                <input id="reference" type="text" maxlength="80" />
+                <p class="smaa">Valgfrit. Kommer til at stå på fakturaen.</p>
+              </div>
+            </div>
+            <p class="de-skjult" aria-hidden="true"><label for="website">Lad dette felt stå tomt</label><input id="website" type="text" tabindex="-1" autocomplete="off" /></p>
+            <div class="knapper">
+              <button class="btn" type="submit" id="bestil">Bestil mod faktura</button>
+              <button class="btn de-ghost-lys" type="button" id="harkode">Jeg har allerede en licenskode</button>
+            </div>
+            <p class="smaa de-feil" id="fejl" role="alert" hidden></p>
+            <p class="smaa" id="forlob">Fakturaen kommer med det samme på e-mail. Betaling via bankoverførsel i danske kroner inden 30 dage. Licenskoden kommer på e-mail, så snart betalingen er modtaget, og gælder et år fra den dag. Indtil da kan I bruge hele Krystallklart i 30 dage.</p>
+            <p class="smaa" id="harkodeTekst" hidden>Åbn Krystallklart, og klik på »Licens« øverst til højre (i prøveperioden står der »Prøve: … dage tilbage«). Indsæt koden, der begynder med KRYSTALLKLART-, og klik på »Aktivér«.</p>
+          </form>
+          <div id="tak" class="de-takk" hidden tabindex="-1">
+            <h2>Tak</h2>
+            <p id="takTekst"></p>
+            <p class="smaa">Spørgsmål: <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a></p>
+          </div>
+
+          <!-- Bare for kommuner og regioner: prislisten. Punktene er de samme som MUNICIPAL i price.js. -->
+          <section class="kommune-eur" id="kommune-eur" aria-labelledby="ke-tittel" hidden>
+            <p class="merke">Til kommuner og regioner</p>
+            <h2 id="ke-tittel">Én pris efter antal indbyggere</h2>
+            <p class="ingress">
+              Licensen dækker hele forvaltningen og alle dens medarbejdere. Fire år koster højst 490.000&nbsp;kr. ekskl. moms og ligger dermed altid
+              under grænsen på 500.000&nbsp;kr. i udbudslovens §&nbsp;11. Kommuner med op til 50.000 indbyggere betaler under 100.000&nbsp;kr. for alle fire år.
+              Der bestilles og faktureres ét år ad gangen, altså en fjerdedel af beløbet for de fire år.
+            </p>
+            <table class="ke-tabell">
+              <caption class="skjult-tekst">Priser for kommuner og regioner, for fire år og pr. år, ekskl. moms</caption>
+              <thead><tr><th scope="col">Indbyggere</th><th scope="col">4 år</th><th scope="col">pr. år</th></tr></thead>
+              <tbody>
+                <tr><td>op til 2.000</td><td>12.900&nbsp;kr.</td><td>3.225&nbsp;kr.</td></tr>
+                <tr><td>10.000</td><td>34.900&nbsp;kr.</td><td>8.725&nbsp;kr.</td></tr>
+                <tr><td>20.000</td><td>50.900&nbsp;kr.</td><td>12.725&nbsp;kr.</td></tr>
+                <tr><td>50.000</td><td>99.000&nbsp;kr.</td><td>24.750&nbsp;kr.</td></tr>
+                <tr><td>100.000</td><td>189.000&nbsp;kr.</td><td>47.250&nbsp;kr.</td></tr>
+                <tr><td>200.000</td><td>339.500&nbsp;kr.</td><td>84.875&nbsp;kr.</td></tr>
+                <tr><td>fra 300.000</td><td>490.000&nbsp;kr.</td><td>122.500&nbsp;kr.</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <h3 class="vilkar-tittel">Før I køber</h3>
+          <p class="de-avsnitt"><b>30 dage med hele Krystallklart.</b> Prøv Krystallklart i 30 dage på jeres egne filer, før I beslutter jer. Det er den fulde version, og prøveperioden kræver ingen tilmelding.</p>
+
+          <h3 class="vilkar-tittel">Inkluderet</h3>
+          <ul class="vilkar">
+            <li>Word, Excel, PowerPoint, PDF, e-mail, tekstfiler, scannede dokumenter og billeder</li>
+            <li>Alt kører på jeres egne computere. Intet bliver sendt nogen steder hen</li>
+            <li>Til alle medarbejdere og på så mange computere, I vil: Mac, Windows og Linux</li>
+            <li>Opdateringer i licensåret</li>
+          </ul>
+          <p class="de-avsnitt">Betaling kun mod faktura. <a class="lenke" href="/krystallklart/vilkaar/">Licensvilkår</a></p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Selgeren står alltid nederst. Esbjug Consult er ikke MVA-registrert. -->
+    <footer class="pris-bunn" id="pris-bunn">
+      <div class="colofon">
+        <p class="wordmark"><a href="/krystallklart/"><b>Krystallklart</b></a> <span>v0.1.0</span></p>
+        <p class="selger">
+          Sælger: <b class="selger-navn">ESBJUG CONSULT</b> · Glenneveien 272B, 1455 Nordre Frogn, Norge ·
+          <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a> · org.nr. 938 441 405
+        </p>
+      </div>
+      <div class="footmeta">
+        <a href="/krystallklart/vilkaar/">Licensvilkår</a>
+        <a href="/krystallklart/privatliv/">Privatlivspolitik</a>
+      </div>
+    </footer>
+
+    <script type="module" src="bestilling.js"></script>
+  </body>
+</html>

@@ -1,0 +1,1591 @@
+<!doctype html>
+<!--
+  Hei, du som leser kildekoden. Det var deg vi håpet på.
+
+  Klart lover at dokumentene aldri forlater maskinen. Et sånt løfte skal ikke
+  tas på ordet, så sjekk det:
+
+  - Programmet: /klappatochklart/for-it.html har kommandoene som viser hva det snakker med.
+  - Denne siden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
+    uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
+  - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
+    Vi vil heller høre det fra deg enn fra en kunde.
+-->
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/klappatochklart/favicon.png" />
+    <title>Klappat och Klart – maskerar personuppgifter i dokument, lokalt på datorn</title>
+    <meta
+      name="description"
+      content="Klappat och Klart är ett program för Mac, Windows och Linux, utvecklat i Norge: lokal AI maskerar svenska personuppgifter i en hel mapp med Word, Excel, PowerPoint, PDF och e-post. För utlämnande av allmänna handlingar, när dokument ska skickas vidare, arkiv, utbildning och AI-verktyg – utan internet och utan konto."
+    />
+    <!-- Himmelen øverst i heroen; forside.js bytter til sidens lyse farge når man har blat forbi. -->
+    <meta name="theme-color" content="#6593c3" />
+    <meta
+      property="og:title"
+      content="Klappat och Klart – maskerar personuppgifter i dokument, lokalt på datorn"
+    />
+    <meta
+      property="og:description"
+      content="Ett program utvecklat i Norge. Lokal AI läser Word, Excel, PowerPoint, PDF, e-post och text, hittar svenska personuppgifter och skapar en maskerad kopia som du själv kontrollerar. Inget lämnar datorn."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="sv_SE" />
+    <meta property="og:url" content="https://esbjugconsult.com/klappatochklart/" />
+    <!-- Delingsbildet (Snapchat, iMessage, Facebook): krystallen på vinterbildet, 1200 × 630.
+         Uten det tok Snapchat et tilfeldig bilde fra siden, mappeikonet (eieren 11.11.2026). -->
+    <meta property="og:image" content="https://esbjugconsult.com/alles-klar/assets/klart-deling.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Klappat och Klart: programikonen på en vinterbild med skidspår"
+ />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://esbjugconsult.com/alles-klar/assets/klart-deling.jpg" />
+    <link rel="apple-touch-icon" href="/klappatochklart/ikon.png" />
+    <!-- Ikke indekser før nedlastingene er på plass. Fjern når Klart lanseres. -->
+    <meta name="robots" content="noindex" />
+    <!-- Fontene ligger på siden selv. Henter vi dem fra Google, får Google
+         IP-adressen til hver besøkende - ikke noe en GDPR-side skal gjøre. -->
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="forhandsvisning.css" />
+    <link rel="stylesheet" href="videre.css" />
+    <link rel="stylesheet" href="de.css" />
+  </head>
+  <body>
+    <!-- Filtype-ikoner: dokumentark bak, appflis foran. -->
+    <svg class="ikonark" width="0" height="0" aria-hidden="true">
+      <defs>
+        <g id="page">
+          <rect
+            x="16"
+            y="2"
+            width="26"
+            height="32"
+            rx="3.5"
+            fill="#fff"
+            stroke="#dcdfda"
+            stroke-width="1.3"
+          />
+          <g fill="#e4e7e2">
+            <rect x="26" y="9" width="12" height="2.4" rx="1.2" />
+            <rect x="26" y="15" width="12" height="2.4" rx="1.2" />
+          </g>
+        </g>
+
+        <symbol id="i-word" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#185abd" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">W</text>
+        </symbol>
+
+        <symbol id="i-excel" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#107c41" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">X</text>
+        </symbol>
+
+        <symbol id="i-ppt" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#c43e1c" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">P</text>
+        </symbol>
+
+        <symbol id="i-pdf" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#c8322b" />
+          <text x="17.5" y="31" text-anchor="middle" font-size="11">PDF</text>
+        </symbol>
+
+        <symbol id="i-mail" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#0f6cbd" />
+          <rect
+            x="8.5"
+            y="20"
+            width="18"
+            height="13.5"
+            rx="1.8"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2.1"
+          />
+          <path
+            d="M9.2 21.2l8.3 6.4 8.3-6.4"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2.1"
+          />
+        </symbol>
+
+        <symbol id="i-bilde" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#7a4fd6" />
+          <circle cx="23" cy="20" r="3" fill="#fff" />
+          <path d="M7.5 36l7.5-10 5.5 6.5 3.5-4 6.5 7.5z" fill="#fff" />
+        </symbol>
+
+        <symbol id="i-text" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#5b6569" />
+          <g fill="#fff">
+            <rect x="9" y="19.5" width="17" height="2.4" rx="1.2" />
+            <rect x="9" y="25.3" width="17" height="2.4" rx="1.2" />
+            <rect x="9" y="31.1" width="10" height="2.4" rx="1.2" />
+          </g>
+        </symbol>
+
+        <!-- Mac Studio for skreddersydd oppsett. Ligger her én
+             gang, så de to nedlastingsfeltene kan bruke den uten like id-er. -->
+        <linearGradient id="mac-front" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f3f5f8" />
+          <stop offset="0.55" stop-color="#e1e6ec" />
+          <stop offset="1" stop-color="#c4cbd4" />
+        </linearGradient>
+        <linearGradient id="mac-kant" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#6d7783" stop-opacity="0.28" />
+          <stop offset="0.08" stop-color="#6d7783" stop-opacity="0" />
+          <stop offset="0.92" stop-color="#6d7783" stop-opacity="0" />
+          <stop offset="1" stop-color="#6d7783" stop-opacity="0.32" />
+        </linearGradient>
+        <linearGradient id="mac-topp" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#e9edf2" />
+          <stop offset="1" stop-color="#fbfcfd" />
+        </linearGradient>
+        <radialGradient id="mac-skygge" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="#050d1f" stop-opacity="0.45" />
+          <stop offset="1" stop-color="#050d1f" stop-opacity="0" />
+        </radialGradient>
+        <symbol id="mac-studio" viewBox="60 80 440 240">
+          <ellipse cx="280" cy="292" rx="236" ry="26" fill="url(#mac-skygge)" />
+          <rect x="122" y="262" width="316" height="24" rx="9" fill="#8d96a1" />
+          <rect x="128" y="276" width="304" height="6" rx="3" fill="#6e7782" />
+          <path d="M96 150 L128 104 Q134 96 146 96 L414 96 Q426 96 432 104 L464 150 Z" fill="url(#mac-topp)" stroke="#d3d9e1" stroke-width="1.2" />
+          <path d="M96 150 H464 V252 Q464 270 446 270 H114 Q96 270 96 252 Z" fill="url(#mac-front)" />
+          <path d="M96 150 H464 V252 Q464 270 446 270 H114 Q96 270 96 252 Z" fill="url(#mac-kant)" />
+          <path d="M96 150.5 H464" stroke="#ffffff" stroke-width="1.6" />
+          <g fill="#2b3139">
+            <rect x="128" y="200" width="22" height="8" rx="4" />
+            <rect x="162" y="200" width="22" height="8" rx="4" />
+            <rect x="386" y="202" width="42" height="4" rx="2" />
+          </g>
+          <circle cx="114" cy="254" r="2.4" fill="#ffffff" />
+          <circle cx="114" cy="254" r="5" fill="#ffffff" opacity="0.25" />
+        </symbol>
+      </defs>
+    </svg>
+
+    <!-- ================= Toppbar ================= -->
+    <header class="topbar">
+      <a class="wordmark" href="#top">
+        <b>Klappat och Klart</b>
+        <span>v0.1.0</span>
+
+      </a>
+      <nav class="topnav">
+        <a href="#hva">Vad är Klappat och Klart</a>
+        <a href="#kjernen">Så fungerar det</a>
+        <a href="#nokkel">Nyckeln</a>
+        <a href="#trygt">Säkerhet</a>
+        <a href="#dybde">I detalj</a>
+        <a href="#ansvar">Ansvar</a>
+        <a href="priser/">Pris</a>
+      </nav>
+      <a class="btn sm topp-last" href="#top">Ladda ned</a>
+      <!-- Mobil og nettbrett: e-post med lenken i stedet for «Last ned» (eieren 11.11.2026). -->
+      <a class="btn sm topp-send" href="mailto:?subject=Klappat%20och%20Klart&amp;body=https%3A%2F%2Fesbjugconsult.com%2Fklappatochklart">Skicka till dig själv</a>
+    </header>
+
+    <main id="top">
+      <!-- ================= Hero ================= -->
+      <section class="hero" id="programmet">
+        <!-- Scenen: vinterbildet fra appen. Skisporet leder opp mot hytta,
+             teksten står i himmelen og knappene nede i snøen. -->
+        <div class="scene">
+          <img class="scene-bilde" src="/alles-klar/assets/hero-vinter.jpg" width="2400" height="1600" fetchpriority="high" alt="" aria-hidden="true" />
+          <!-- Øverst toner himmelen over i én farge, den samme som linjen øverst på telefonen (eieren 11.11.2026). -->
+          <div class="scene-himmel" aria-hidden="true"></div>
+          <!-- Snøen fra forsiden på esbjugconsult.com, bak «Klart» og kortet (forside.js). -->
+          <canvas class="scene-sno" aria-hidden="true"></canvas>
+          <!-- Fnuggene som faller over kortets glass, bak innholdet i kortet. -->
+          <canvas class="scene-sno-midt" aria-hidden="true"></canvas>
+          <!-- Snøen som legger seg på «Klart» og kortet, foran innholdet. -->
+          <canvas class="scene-sno-lag" aria-hidden="true"></canvas>
+          <!-- Lett snø på mobil og nettbrett, bak «Klart» og kortet (forside.js). -->
+          <canvas class="scene-sno-mobil" aria-hidden="true"></canvas>
+
+          <!-- All teksten samlet, nede i snøen. Himmelen, hytta og sporet står fritt over. -->
+          <div class="scene-tekst">
+            <h1 class="rise d-60 hero-logo">
+              <!-- Krystallen over ordet på mobil, som på nedtellingssiden (eieren 11.11.2026). -->
+              <img class="hero-ikon" src="ikon.png" width="256" height="256" alt="" aria-hidden="true" />
+              <span class="logo-ord">Klappat och Klart</span>
+            </h1>
+            <!-- Privatpersoner laster ned og bruker Klart gratis; de skal ikke gjennom noe felt.
+                 Virksomheter går gjennom feltet under: 30 dager, så lisens. Blokka ligger rett over
+                 feltet (transform: translateY(-100%)), så feltet blir stående ved hytta som før,
+                 og viker når de begynner å skrive virksomhetsnavnet. -->
+            <div class="privat rise d-120">
+              <p class="privat-linje">
+                <span><b>Gratis för privat bruk.</b></span>
+              </p>
+              <!-- Mobil og nettbrett: Klart kjører ikke der, så i stedet for nedlasting en e-post med lenken
+                   til seg selv eller andre (eieren 11.11.2026). Vises bare på berøringsskjermer (styles.css). -->
+              <div class="mobil-send">
+                <p class="mobil-send-tittel">Klappat och Klart är ett program för datorn.</p>
+                <p class="mobil-send-tekst">Skicka länken till dig själv via e-post och ladda ned programmet på en Mac, i Windows eller i Linux.</p>
+                <a class="btn" href="mailto:?subject=Klappat%20och%20Klart&amp;body=https%3A%2F%2Fesbjugconsult.com%2Fklappatochklart">Skicka till dig själv</a>
+                <p class="mobil-send-andre">(Eller till någon annan?)</p>
+              </div>
+              <p class="last-ned-tittel">Ladda ned</p>
+              <div class="get">
+                <!-- Hver knapp får sitt systems kjennetegn når man holder over, uten logoer:
+                     Windows en ring i de fire fargene rundt knappen (en ring,
+                     ikke logoens ruter), Mac glass etter Apples egen beskrivelse, Linux en pingvin (egen tegning). -->
+                <a class="btn ghost os os-win" href="/klappatochklart/download/windows" download aria-label="Ladda ned för Windows"><span class="os-navn">Windows</span></a>
+                <a class="btn ghost os os-mac" href="/klappatochklart/download/mac" download aria-label="Ladda ned för Mac"><span class="os-glass" aria-hidden="true"></span><span class="os-navn">Mac</span></a>
+                <a class="btn ghost os os-lin" href="/klappatochklart/download/linux" download aria-label="Ladda ned för Linux"><span class="os-figur os-pingvin" aria-hidden="true"><svg viewBox="0 0 24 28" width="24" height="28" focusable="false"><g class="os-pingvin-kropp"><ellipse cx="8.4" cy="26.4" rx="3.3" ry="1.4" fill="#f5a524"/><ellipse cx="15.6" cy="26.4" rx="3.3" ry="1.4" fill="#f5a524"/><ellipse cx="3.9" cy="17" rx="1.9" ry="5.4" transform="rotate(16 3.9 17)" fill="#0f2147"/><ellipse cx="20.1" cy="17" rx="1.9" ry="5.4" transform="rotate(-16 20.1 17)" fill="#0f2147"/><ellipse cx="12" cy="15" rx="8.4" ry="11.2" fill="#0f2147"/><ellipse cx="12" cy="18.4" rx="5.5" ry="7.6" fill="#fff"/><circle cx="9.7" cy="8.6" r="2" fill="#fff"/><circle cx="14.3" cy="8.6" r="2" fill="#fff"/><circle cx="10.1" cy="8.9" r="0.95" fill="#0f2147"/><circle cx="13.9" cy="8.9" r="0.95" fill="#0f2147"/><path d="M9.9 11.4 Q12 10.5 14.1 11.4 Q12 13.9 9.9 11.4Z" fill="#f5a524"/></g></svg></span><span class="os-navn">Linux</span></a>
+              </div>
+              <p class="privat-fin">Ingen registrering och inga åtaganden.</p>
+              <p class="eller"><span>eller</span></p>
+            </div>
+            <!-- Virksomheter: ingen registeroppslag i den tyske utgaven. Knappen fører til prisen og bestillingen på faktura (pris/). -->
+            <div class="orgport de-pris rise d-180">
+              <div>
+                <div class="orgport-rad">
+                  <a class="btn" href="priser/">Pris för din organisation</a>
+                </div>
+                <p class="virk-linje">
+                  <span>För organisationer: <b>30 dagar gratis</b>. Ingen registrering. Sedan beställning mot faktura.</span>
+                </p>
+              </div>
+            </div>
+            <!-- Nedlastingen: kortet blir et eget nedlastingskort når de har valgt system.
+                 Lyset rundt kanten følger hvor langt nedlastingen har kommet (forside.js). -->
+            <div class="nedlasting" data-nedlasting hidden aria-live="polite">
+              <div class="nedlasting-topp">
+                <span class="nedlasting-merke" data-merke aria-hidden="true"></span>
+                <div>
+                  <p class="nedlasting-tittel">Klappat och Klart för <span data-os></span></p>
+                  <p class="nedlasting-fil" data-fil></p>
+                </div>
+              </div>
+              <p class="nedlasting-prosent"><span data-prosent>0</span><span class="nedlasting-pst">%</span></p>
+              <p class="nedlasting-status" data-status></p>
+              <div class="nedlasting-ferdig" data-ferdig hidden>
+                <span class="nedlasting-hake" aria-hidden="true"><svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="25" pathLength="1" /><path d="M17 29l8 8 15-17" pathLength="1" /></svg></span>
+                <p class="nedlasting-ferdig-tittel">Nedladdat</p>
+                <p class="nedlasting-neste" data-neste></p>
+              </div>
+              <button type="button" class="nedlasting-tilbake" data-tilbake>Tillbaka</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vis først, forklar etterpå: programvinduet rett under bildet, så filtypene,
+             og til slutt hva Klart er (boksen «om»). -->
+
+        <!-- Programvindu: en kopi av Klart slik appen ser ut fra november 2026 (src/ny og
+             src/editor/ui i appen), bygget i HTML og CSS, ikke film. forhandsvisning.js spiller
+             av fem kapitler, og raden under vinduet hopper mellom dem: rens en mappe (PDF,
+             e-post med bilde av en bil (Midjourney, fiktiv), regneark og PowerPoint leses;
+             ansiktene og skiltet pikseleres underveis),
+             gjennomgangen, kopiene (også svart sladd), høyreklikk i Finder, og en KI som får
+             teksten med koder og svarer, før svaret tilbakeføres i Klart. Lesingen vises rolig
+             (epilepsi og lysfølsomhet): ingen blink, ett lesehode som glir over hver side, og
+             merkene toner inn. Pekeren er alltid i bildet og glir mellom stedene. Uten JS, eller
+             med redusert bevegelse, står den stille i editoren med alt gjennomgått.
+             Stil: forhandsvisning.css. -->
+        <!-- Hva Klart er, rett over programvinduet (GDPR/index.html, eieren 19.-20.11.2026), på tysk. -->
+        <section class="hva rise" aria-label="Klappat och Klart är ett lokalt program">
+          <div class="hva-venstre">
+            <!-- Det første man skal forstå, enkelt forklart. Den tyske utgaven har en tysk språkmodell. -->
+            <ul class="hva-sjekk">
+              <li>AI-modell för svenska texter</li>
+              <li>Allt sker på din egen dator</li>
+              <li>För vanliga datorer</li>
+            </ul>
+          </div>
+          <!-- Logoen, og det viktigste under den. -->
+          <div class="hva-hoyre">
+            <p class="hva-logo"><img src="ikon.png" width="256" height="256" alt="" aria-hidden="true" /><span>Klappat och Klart</span></p>
+            <p class="hva-under">Lokalt program · Utan internet</p>
+          </div>
+        </section>
+        <figure class="kv rise avklart" data-scene="gjennom">
+          <div class="kv-ramme">
+          <div class="kv-app" aria-hidden="true">
+            <header class="kv-chrome">
+              <span class="kv-lys"><i></i><i></i><i></i></span>
+              <span class="kv-merke"><img src="ikon.png" alt="" />Klappat och Klart</span>
+              <span class="kv-sok"><svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.6" /><path d="M10.4 10.4L14 14" /></svg>Sök i alla filer i mappen<kbd>⌘F</kbd></span>
+              <span class="kv-hoyre">
+                <span class="kv-lagret">✓ Autosparat</span>
+                <span class="kv-lysknapp">Val för genomsökning</span>
+                <span class="kv-lysknapp" data-kv="hjem">Startsidan</span>
+                <span class="kv-lysknapp kv-sporsmal">?</span>
+              </span>
+            </header>
+
+            <div class="kv-flate">
+              <!-- Startskjermen: de tre verktøyene, og det som ble tilbakeført under dem -->
+              <div class="kv-scene kv-s-start">
+                <div class="kv-start-inn">
+                  <div class="kv-kortene">
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-rens.png" alt="" />
+                      <h4>Maskera</h4>
+                      <span class="kv-hvit" data-kv="velg">Välj mapp eller dokument …</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-tilbakefor.png" alt="" />
+                      <h4>Återställ</h4>
+                      <span class="kv-hvit" data-kv="tbvelg">Välj kopior …</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-tekst.png" alt="" />
+                      <h4>Textverktyg</h4>
+                      <span class="kv-hvit" data-kv="tekstvelg">Öppna …</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Editoren: filene, dokumentet og registeret for mappen -->
+              <div class="kv-scene kv-s-editor">
+                <aside class="kv-filer">
+                  <div class="kv-filer-topp"><b>Klientakter</b><span>10 filer</span></div>
+                  <ul data-kv="filer">
+                    <li data-steder="30"><i class="kv-fikon w">W</i><span class="kv-fnavn">01-anstallningsavtal-acme.docx</span><span class="kv-fmeta">30 ställen</span><i class="kv-ring"></i></li>
+                    <li data-steder="41" data-uavklart="2" data-dok="vedtak" class="valgt"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">02-beslut-god-man.pdf</span><span class="kv-fmeta">41 ställen</span><i class="kv-ring"></i></li>
+                    <li data-steder="45" data-ekstra="1 registreringsnummer" data-dok="epost"><i class="kv-fikon epost">@</i><span class="kv-fnavn">03-e-posttrad.eml</span><span class="kv-fmeta">45 ställen</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon tekst">T</i><span class="kv-fnavn">04-personalanteckning.md</span><span class="kv-fmeta">21 ställen</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon w">W</i><span class="kv-fnavn">05-lakarintyg.docx</span><span class="kv-fmeta">21 ställen</span><i class="kv-ring"></i></li>
+                    <li data-steder="16"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">06-faktura-norrsken.pdf</span><span class="kv-fmeta">16 ställen</span><i class="kv-ring"></i></li>
+                    <li data-steder="82" data-dok="liste"><i class="kv-fikon x">X</i><span class="kv-fnavn">08-klientlista.xlsx</span><span class="kv-fmeta">82 ställen</span><i class="kv-ring"></i></li>
+                    <li data-steder="43" data-ekstra="2 ansikten" data-dok="ppt"><i class="kv-fikon p">P</i><span class="kv-fnavn">09-statusmote.pptx</span><span class="kv-fmeta">43 ställen · 2 ansikten</span><i class="kv-ring"></i></li>
+                    <li data-steder="18"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">11-skannad-bilaga.pdf</span><span class="kv-fmeta">18 ställen</span><i class="kv-ring"></i></li>
+                    <li data-steder="3" data-ekstra="1 ansikte"><i class="kv-fikon bilde">JPG</i><span class="kv-fnavn">16-id-kort.jpg</span><span class="kv-fmeta">3 ställen · 1 ansikte</span><i class="kv-ring"></i></li>
+                  </ul>
+                </aside>
+
+                <div class="kv-midt">
+                  <div class="kv-docket">
+                    <b data-kv="docnavn">02-beslut-god-man.pdf</b><span class="kv-type" data-kv="doctype">PDF</span>
+                    <span class="kv-kopimerke" data-kv="kopimerke">Kopian · kodlista sist</span>
+                    <span class="kv-verktoy">
+                      <span class="kv-zoom">− &nbsp;86 %&nbsp; +</span>
+                      <span class="kv-hvit" data-kv="vis">Visa kopian</span>
+                    </span>
+                  </div>
+                  <div class="kv-bord">
+                    <div class="kv-pille" data-kv="pille"><i></i>Läser <b data-kv="leser">01-anstallningsavtal-acme.docx</b><span data-kv="nr">1 av 10</span></div>
+
+                    <!-- PDF: vedtak om vergemål -->
+                    <article class="kv-side vist" data-dok="vedtak">
+                      <i class="kv-lesehode"></i>
+                      <p class="kv-avsender">Lunds tingsrätt</p>
+                      <h4>Beslut om anordnande av godmanskap</h4>
+                      <p class="kv-ref">Mål nr <mark class="s"><span class="o">Ä 1842-26</span><span class="k">[Mål- och ärendenummer 4906498]</span></mark> · 14.03.2026</p>
+                      <h5>Huvudman</h5>
+                      <dl>
+                        <dt>Namn</dt><dd><mark class="s"><span class="o">Karin Lindqvist</span><span class="k">[Namn 6311794]</span></mark></dd>
+                        <dt>Personnummer</dt><dd><mark class="s"><span class="o">860917-9812</span><span class="k">[Personnummer 2215087]</span></mark></dd>
+                        <dt>Adres</dt><dd><mark class="s"><span class="o">Lindvägen 27, 222 41 Lund</span><span class="k">[Adress 8950779]</span></mark></dd>
+                      </dl>
+                      <h5>Förordnad god man</h5>
+                      <dl>
+                        <dt>Namn</dt><dd><mark class="s"><span class="o">Lars Bergström</span><span class="k">[Namn 2656447]</span></mark>, <mark class="b" data-kv="arbeid"><span class="o">Advokatfirman Norrsken KB</span><span class="k">[Organisation 5521093]</span></mark></dd>
+                        <dt>E-post</dt><dd><mark class="s"><span class="o">lars.bergstrom@norrsken.test</span><span class="k">[E-post 3278678]</span></mark></dd>
+                        <dt>Telefon</dt><dd><mark class="s"><span class="o">031-555 01 34</span><span class="k">[Telefon 6289990]</span></mark></dd>
+                      </dl>
+                      <h5>Skäl</h5>
+                      <p><mark class="s" data-kv="merknad"><span class="o">Huvudmannen är sedan januari inlagd på sjukhus för depression och behöver hjälp med sin ekonomi.</span><span class="k">[Personuppgift (mening) 2760056]</span></mark> Den gode mannen förvaltar medlen på konto <mark class="s"><span class="o">SE45 5000 0000 0583 9825 7466</span><span class="k">[IBAN 7719741]</span></mark>.</p>
+                      <p>Beslutet gäller omedelbart. Det kan överklagas inom tre veckor.</p>
+                    </article>
+
+                    <!-- E-post -->
+                    <article class="kv-side kv-epost" data-dok="epost">
+                      <i class="kv-lesehode"></i>
+                      <dl class="kv-hode">
+                        <dt>Från</dt><dd><mark class="s"><span class="o">Sofia Holm</span><span class="k">[Namn 7320430]</span></mark> &lt;<mark class="s"><span class="o">sofia.holm@norrsken.test</span><span class="k">[E-post 5102284]</span></mark>&gt;</dd>
+                        <dt>Till</dt><dd><mark class="s"><span class="o">Karin Lindqvist</span><span class="k">[Namn 6311794]</span></mark></dd>
+                        <dt>Ämne</dt><dd><b>Efter vårt samtal</b></dd>
+                        <dt>Datum</dt><dd>12 mars 2026 09:14</dd>
+                      </dl>
+                      <p>Hej <mark class="s"><span class="o">Karin</span><span class="k">[Namn 6311794]</span></mark>,</p>
+                      <p>Tack för samtalet i går. Som vi kom överens om skickar jag en kopia av läkarintyget. Hela veckan når du mig på <mark class="s"><span class="o">031-555 01 34</span><span class="k">[Telefon 6289990]</span></mark>.</p>
+                      <p>Tjänstebilen med registreringsnummer <mark class="s"><span class="o">ABC 123</span><span class="k">[Registreringsnummer 3071552]</span></mark> är klar från måndag. Bilden är bifogad.</p>
+                      <p>Vänliga hälsningar<br /><mark class="s"><span class="o">Sofia Holm</span><span class="k">[Namn 7320430]</span></mark><br />Norrsken Service AB · <mark class="s"><span class="o">Hamngatan 22, 211 22 Malmö</span><span class="k">[Adress 6113936]</span></mark></p>
+                      <figure class="kv-vedlegg">
+                        <span class="kv-bilramme"><img src="/alles-klar/assets/visning/bil.jpg" alt="" /><span class="kv-skilt" data-kv="skilt"><img src="/alles-klar/assets/visning/bil-skilt.png" alt="" /><em data-kv="skiltlapp">Registreringsnummer · maskeras</em></span></span>
+                        <figcaption>bil.jpg · 1,2 MB</figcaption>
+                      </figure>
+                    </article>
+
+                    <!-- Regneark -->
+                    <article class="kv-side kv-ark" data-dok="liste">
+                      <i class="kv-lesehode"></i>
+                      <table>
+                        <thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead>
+                        <tbody>
+                          <tr><th>1</th><td><b>Namn</b></td><td><b>Personnummer</b></td><td><b>Telefon</b></td><td><b>Kontonummer</b></td></tr>
+                          <tr><th>2</th><td><mark class="s"><span class="o">Erik Johansson</span><span class="k">[Namn 1180342]</span></mark></td><td><mark class="s"><span class="o">470312-2816</span><span class="k">[Personnummer 4402918]</span></mark></td><td><mark class="s"><span class="o">070-555 01 42</span><span class="k">[Telefon 2290174]</span></mark></td><td><mark class="s"><span class="o">5000 053 201 3</span><span class="k">[Kontonummer / kort 6630215]</span></mark></td></tr>
+                          <tr><th>3</th><td><mark class="s"><span class="o">Birgitta Karlsson</span><span class="k">[Namn 5523107]</span></mark></td><td><mark class="s"><span class="o">650929-9704</span><span class="k">[Personnummer 8817330]</span></mark></td><td><mark class="s"><span class="o">073-555 01 78</span><span class="k">[Telefon 1047782]</span></mark></td><td><mark class="s"><span class="o">8327 102 030 405</span><span class="k">[Kontonummer / kort 3359810]</span></mark></td></tr>
+                          <tr><th>4</th><td><mark class="s"><span class="o">Ahmed Hassan</span><span class="k">[Namn 9918066]</span></mark></td><td><mark class="s"><span class="o">570504-9285</span><span class="k">[Personnummer 2265419]</span></mark></td><td><mark class="s"><span class="o">076-555 01 11</span><span class="k">[Telefon 7714203]</span></mark></td><td><mark class="s"><span class="o">6000 648 489 8</span><span class="k">[Kontonummer / kort 9046631]</span></mark></td></tr>
+                          <tr><th>5</th><td><mark class="s"><span class="o">Maria Nilsson</span><span class="k">[Namn 3301459]</span></mark></td><td><mark class="s"><span class="o">250718-1314</span><span class="k">[Personnummer 6158820]</span></mark></td><td><mark class="s"><span class="o">070-555 01 66</span><span class="k">[Telefon 4420987]</span></mark></td><td><mark class="s"><span class="o">9022 708 154 2</span><span class="k">[Kontonummer / kort 1872264]</span></mark></td></tr>
+                          <tr><th>6</th><td><mark class="s"><span class="o">Johan Andersson</span><span class="k">[Namn 8045126]</span></mark></td><td><mark class="s"><span class="o">810724-9563</span><span class="k">[Personnummer 5590743]</span></mark></td><td><mark class="s"><span class="o">072-555 01 27</span><span class="k">[Telefon 3368201]</span></mark></td><td><mark class="s"><span class="o">3300 417 730 1</span><span class="k">[Kontonummer / kort 7701358]</span></mark></td></tr>
+                          <tr><th>7</th><td></td><td></td><td></td><td></td></tr>
+                          <tr><th>8</th><td></td><td></td><td></td><td></td></tr>
+                        </tbody>
+                      </table>
+                    </article>
+
+                    <!-- PowerPoint: lysbildet fra fellesturen, med to ansikter -->
+                    <article class="kv-side kv-ppt" data-dok="ppt">
+                      <i class="kv-lesehode"></i>
+                      <div class="kv-lysbilde">
+                        <p class="kv-lb-tittel">Personalresan i februari</p>
+                        <p class="kv-lb-under">Tack till <mark class="s"><span class="o">Hanna Lind</span><span class="k">[Namn 3390415]</span></mark> och <mark class="s"><span class="o">Per Ståhl</span><span class="k">[Namn 8812706]</span></mark> som ordnade allt!</p>
+                        <div class="kv-lb-foto">
+                          <img src="/alles-klar/assets/visning/fagtur.jpg" alt="" />
+                          <span class="kv-ansikt a1" data-kv="ansikt1"><img src="/alles-klar/assets/visning/fagtur-ansikt-1.jpg" alt="" /><em>Ansikte · pixlas</em></span>
+                          <span class="kv-ansikt a2" data-kv="ansikt2"><img src="/alles-klar/assets/visning/fagtur-ansikt-2.jpg" alt="" /><em>Ansikte · pixlas</em></span>
+                        </div>
+                        <p class="kv-lb-bunn">Statusmöte · bild 4 av 12</p>
+                      </div>
+                    </article>
+
+                    <div class="kv-gjennom" data-kv="gjennom">
+                      <i class="kv-gjennom-strek" data-kv="gstrek"></i>
+                      <p class="kv-gjennom-topp"><code data-kv="gkode">Personuppgift (mening) 2760056</code><b>Ej avgjord</b><span data-kv="gnr">1 av 2</span></p>
+                      <p class="kv-gjennom-hvorfor" data-kv="ghvorfor">Klappat och Klart är osäker på om det här är en personuppgift (mening). · 02-beslut-god-man.pdf</p>
+                      <p class="kv-gjennom-knapper">
+                        <span class="kv-btn" data-kv="skjul">Maskera <kbd>↵</kbd></span>
+                        <span class="kv-btn hvit" data-kv="lastaa">Låt stå <kbd>B</kbd></span>
+                        <span class="kv-btn hvit av">Föregående <kbd>←</kbd></span>
+                        <span class="kv-btn hvit">Nästa <kbd>→</kbd></span>
+                        <span class="kv-btn hvit">Avsluta <kbd>Esc</kbd></span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <aside class="kv-panel">
+                  <div class="kv-uavklart" data-kv="uavklart">
+                    <h5><svg viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" rx="2" /><path d="M6 2.5v11" /></svg>Ej avgjord</h5>
+                    <div class="kv-uboks">
+                      <p data-kv="u1"><code>Personuppgift (mening) 2760056</code><span>Huvudmannen är sedan januari …</span><em>1 ej avgjord</em></p>
+                      <p data-kv="u2"><code>Organisation 5521093</code><span>Advokatfirman Norrsken KB</span><em>1 ej avgjord</em></p>
+                      <span class="kv-btn bred" data-kv="gaa">Gå igenom alla 2 <kbd>G</kbd></span>
+                    </div>
+                  </div>
+                  <div class="kv-imappen">
+                    <h5>I mappen <span><b data-kv="opplysninger">67</b> uppgifter</span></h5>
+                    <ul data-kv="register">
+                      <li data-n="19" data-s="114"><span>Namn</span><em>19 · 114 ställen</em></li>
+                      <li data-n="7" data-s="24"><span>Personnummer</span><em>7 · 24 ställen</em></li>
+                      <li data-n="12" data-s="43"><span>Telefon</span><em>12 · 43 ställen</em></li>
+                      <li data-n="15" data-s="53"><span>E-post</span><em>15 · 53 ställen</em></li>
+                      <li data-n="7" data-s="29"><span>Adress</span><em>7 · 29 ställen</em></li>
+                      <li data-n="6" data-s="13"><span>Konto</span><em>6 · 13 ställen</em></li>
+                      <li data-n="1" data-s="2"><span>Registreringsnummer</span><em>1 · 2 ställen</em></li>
+                      <li data-n="3" data-s="12"><span>Känsliga personuppgifter</span><em>3 · 12 ställen</em></li>
+                      <li data-n="3" data-s="3" data-kv="ansikter"><span>Ansikten</span><em>3 · 3 ställen</em>
+</li>
+                    </ul>
+                  </div>
+                  <div class="kv-bunn">
+                    <p><b data-kv="skjules">292</b> maskeras <b data-kv="faarstaa">1</b> står kvar</p>
+                    <p class="kv-bunn-knapper">
+                      <span class="kv-btn hvit oransje" data-kv="ubtn"><i></i>Ej avgjord 2</span>
+                      <span class="kv-btn stor" data-kv="lag">Skapa 10 kopior</span>
+                    </p>
+                  </div>
+                </aside>
+              </div>
+
+              <!-- Tekstverktøy: et ark å skrive eller lime inn på -->
+              <div class="kv-scene kv-s-tekst">
+                <div class="kv-rt-linje">
+                  <span class="kv-rt-tilbake">‹ Startsidan</span>
+                  <span class="kv-faner"><span class="på" data-kv="fanerens"><i>1</i>Maskera text</span><span data-kv="fanetb"><i>2</i>Återställ text</span></span>
+                  <span class="kv-faner kv-rt-visning"><span class="på" data-kv="rtorig">Original</span><span data-kv="rtrenset">Maskerad</span></span>
+                  <span class="kv-btn" data-kv="rtkopier">Kopiera</span>
+                </div>
+                <div class="kv-rt-kropp">
+                  <div class="kv-rt-ark" data-kv="rtark"><p data-kv="rttekst"></p><i class="kv-markor"></i><p class="kv-rt-svar" data-kv="rtsvar"></p></div>
+                  <aside class="kv-rt-liste">
+                    <h5 data-kv="rtlistetittel">Maskeras</h5>
+                    <ul data-kv="rtliste"></ul>
+                    <p class="kv-rt-merke">Texten läses på den här datorn. Inget skickas.</p>
+                  </aside>
+                </div>
+                <p class="kv-toast" data-kv="toast">Kopierat</p>
+              </div>
+
+              <!-- Skrivebordet: Finder med høyreklikk › Hurtighandlinger › Rens med Klart -->
+              <div class="kv-scene kv-s-finder kv-skrivebord">
+                <div class="kv-finder">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><span class="kv-pil">‹ ›</span><b>Dokument</b></div>
+                  <div class="kv-finder-kropp">
+                    <ul class="kv-sidefelt">
+                      <li class="kv-sf-h">Favoriter</li>
+                      <li>Skrivbord</li>
+                      <li class="på">Dokument</li>
+                      <li>Hämtade filer</li>
+                      <li class="kv-sf-h">Platser</li>
+                      <li>iCloud Drive</li>
+                    </ul>
+                    <div class="kv-ikoner">
+                      <span class="kv-mappe" data-kv="fmappe"><i></i>Klientakter</span>
+                      <span class="kv-mappe"><i></i>Begäran i mars</span>
+                      <span class="kv-mappe"><i></i>Bokföring 2025</span>
+                      <span class="kv-dokikon"><i>PDF</i>avtal-acme.pdf</span>
+                      <span class="kv-dokikon w"><i>W</i>Protokoll 10.11.docx</span>
+                      <span class="kv-mappe ny" data-kv="fny"><i></i>Klientakter-maskerad</span>
+                    </div>
+                  </div>
+                  <ul class="kv-meny" data-kv="meny">
+                    <li>Öppna</li>
+                    <li>Öppna i ny flik</li>
+                    <li class="kv-skille"></li>
+                    <li>Flytta till papperskorgen</li>
+                    <li class="kv-skille"></li>
+                    <li>Visa info</li>
+                    <li>Byt namn</li>
+                    <li>Komprimera ”Klientakter”</li>
+                    <li>Duplicera</li>
+                    <li class="kv-skille"></li>
+                    <li>Kopiera</li>
+                    <li>Dela …</li>
+                    <li class="kv-skille"></li>
+                    <li class="kv-under" data-kv="hurtig">Snabbåtgärder<span>›</span></li>
+                    <li class="kv-under">Tjänster<span>›</span></li>
+                  </ul>
+                  <ul class="kv-meny kv-undermeny" data-kv="undermeny">
+                    <li data-kv="rensmed">Maskera med Klappat och Klart</li>
+                    <li>Återställ med Klappat och Klart</li>
+                    <li class="kv-skille"></li>
+                    <li>Anpassa …</li>
+                  </ul>
+                </div>
+                <div class="kv-varsel" data-kv="varsel">
+                  <img src="ikon.png" alt="" />
+                  <p><b data-kv="vtittel">Maskerar ”Klientakter” …</b><span data-kv="vtekst">Kopiorna sparas bredvid. Du får ett meddelande när de är färdiga.</span></p>
+                  <small>nu</small>
+                </div>
+              </div>
+
+              <!-- Skrivebordet: et KI-verktøy som bare får kodene -->
+              <div class="kv-scene kv-s-ki kv-skrivebord">
+                <div class="kv-ki">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><b>AI-assistent</b></div>
+                  <div class="kv-ki-samtale">
+                    <div class="kv-ki-bruker" data-kv="kibruker">
+                      <p>Skriv ett kort svar på det här meddelandet:</p>
+                      <p class="kv-ki-sitat">Hej! Kan du ringa <code>[Namn 6311794]</code> på <code>[Telefon 6289990]</code> i dag? Hon har flyttat till <code>[Adress 8950779]</code> , och lönen ska nu sättas in på konto <code>[IBAN 7719741]</code> .</p>
+                    </div>
+                    <div class="kv-ki-svar" data-kv="kisvar"><p data-kv="kisvartekst"></p><span class="kv-ki-kopier" data-kv="kikopier">Kopiera svaret</span></div>
+                  </div>
+                  <div class="kv-ki-felt" data-kv="kifelt"><span>Skriv ett meddelande …</span><i>↑</i></div>
+                </div>
+                <p class="kv-ki-merke">AI:n får bara koderna. Namn, telefon, adress och konto stannar på datorn.</p>
+              </div>
+
+              <!-- «Før skanningen»: over startskjermen, når mappen er valgt -->
+              <div class="kv-slor kv-s-forvalg">
+                <div class="kv-modal">
+                  <h4>Klientakter</h4>
+                  <p class="kv-modal-under">10 filer · docx, eml, jpg, md, pdf, pptx, xlsx</p>
+                  <div class="kv-maate">
+                    <p class="på"><i></i><span><b>Med genomsökning</b>Klappat och Klart läser filerna och markerar det som hittas. Sedan går du igenom allt och bestämmer.</span></p>
+                    <p><i></i><span><b>Utan genomsökning</b>Inget är markerat i förväg. Du klickar på det som ska maskeras.</span></p>
+                  </div>
+                  <p class="kv-sammen"><span><small>Genomsökningen letar efter och maskerar</small>Namn, personnummer, telefon och e-post, känsliga personuppgifter, registreringsnummer, konto, ansikten och 5 till</span><em>Ändra</em></p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Avbryt</span>
+                    <span class="kv-btn stor" data-kv="skann">Sök igenom <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- «Før kopiene lages»: formen kopiene får -->
+              <div class="kv-slor kv-s-kopivalg">
+                <div class="kv-modal kv-kopivalg">
+                  <h4>Innan kopiorna skapas</h4>
+                  <p class="kv-modal-under">10 filer · kopiorna hamnar i Klientakter-maskerad</p>
+                  <div class="kv-maate kv-former" data-kv="former">
+                    <p class="på" data-form="kort"><i></i><span><b>Kort kod och kodlista</b>Lätt att läsa. Kan återställas med organisationens nyckel.<code>[Namn 4814887] + lista</code></span></p>
+                    <p data-form="full"><i></i><span><b>Fullständig kod i texten</b>Ingen lista. Kan återställas, men är svår att läsa.</span></p>
+                    <p data-form="lapp"><i></i><span><b>Bara etiketter</b>Lätt att läsa, men kan inte återställas till originalet.</span></p>
+                    <p data-form="svart"><i></i><span><b>Svart maskering (PDF)</b>Det som stod där är borta för gott.<code class="kv-svartprove"></code></span></p>
+                  </div>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Avbryt</span>
+                    <span class="kv-btn stor" data-kv="lagnaa">Skapa 10 kopior <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Kopiene er laget -->
+              <div class="kv-slor kv-s-ferdig">
+                <div class="kv-ferdig">
+                  <p class="kv-stor">Färdigt.</p>
+                  <p>10 kopior har skapats. Originalen är orörda. Läs igenom kopiorna innan du delar dem.</p>
+                  <p class="kv-sti"><span>Dokument/</span>Klientakter-maskerad/</p>
+                  <p class="kv-liten">Kodlistan ligger sist i varje kopia.</p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit">Tillbaka till mappen</span>
+                    <span class="kv-btn">Öppna kopiorna</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+          <span class="kv-peker" aria-hidden="true"></span>
+          <!-- Kapitlene: hopper i avspillingen. Det som spilles nå, er markert. -->
+          <ol class="kv-kapitler" data-kv="kapitler" aria-label="Förhandsvisningens kapitel">
+            <li><button type="button" data-kapittel="0">Maskera en mapp</button></li>
+            <li><button type="button" data-kapittel="1">Genomgång</button></li>
+            <li><button type="button" data-kapittel="2">Kopiorna</button></li>
+            <li><button type="button" data-kapittel="3">Högerklick i Finder</button></li>
+            <li><button type="button" data-kapittel="4">Maskera och återställ text</button></li>
+          </ol>
+          <!-- Lesingen spilles av mye raskere enn den går på en vanlig maskin. Det skal stå. -->
+          <p class="kv-spol" aria-hidden="true">
+            <svg viewBox="0 0 20 12"><path d="M1 1l8 5-8 5zM10 1l8 5-8 5z" /></svg>
+            <span>Snabbspolat. Hur lång tid läsningen tar beror på datorn. På en vanlig bärbar dator tar det längre.</span>
+          </p>
+          <figcaption class="skjult-tekst">
+            Så fungerar Klappat och Klart. När du har valt en mapp läser Klappat och Klart filerna, också PDF, e-post, kalkylblad, PowerPoint och bilder, och markerar namn, personnummer, kontaktuppgifter, adresser, kontonummer, känsliga personuppgifter, registreringsnummer och ansikten, som pixlas. Det som Klappat och Klart är osäker på går du själv igenom och bestämmer: maskera eller låta stå. Kopiorna kan få korta koder med kodlista, fullständiga koder, bara etiketter eller svart maskering, och originalen ändras inte. I Finder kan du maskera en mapp med högerklick › Snabbåtgärder › Maskera med Klappat och Klart. Text med koder kan du ge till ett AI-verktyg och sedan återställa svaret i Klappat och Klart, så att namnen kommer tillbaka fast AI:n aldrig såg dem. Läsningen är snabbspolad: hur lång tid den tar beror på datorn.
+          </figcaption>
+        </figure>
+
+        <!-- Filtypene under programvinduet, over boksen. -->
+        <div class="formats rise">
+          <p>Läser filerna du redan arbetar med</p>
+
+          <ul>
+            <li>
+              <svg class="ficon"><use href="#i-word" /></svg>
+              <span class="fname">Word</span>
+              <span class="fext">.docx</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-excel" /></svg>
+              <span class="fname">Excel</span>
+              <span class="fext">.xlsx · .xls · .csv</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-ppt" /></svg>
+              <span class="fname">PowerPoint</span>
+              <span class="fext">.pptx</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-pdf" /></svg>
+              <span class="fname">PDF</span>
+              <span class="fext">.pdf</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-mail" /></svg>
+              <span class="fname">E-post</span>
+              <span class="fext">.eml</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-bilde" /></svg>
+              <span class="fname">Bilder</span>
+              <span class="fext">.jpg · .png · .tiff</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-text" /></svg>
+              <span class="fname">Text</span>
+              <span class="fext">.txt · .md</span>
+            </li>
+          </ul>
+          <!-- Eierens tekst (GDPR/index.html, 20.11.2026), på tysk. -->
+          <p class="formats-unik"><b>Unikt:</b> Klappat och Klart kopierar filerna i deras eget format, så att du kan fortsätta arbeta med de maskerade dokumenten.</p>
+        </div>
+
+      </section>
+
+      <!-- =====================================================================
+           Resten av siden (videre.css og videre.js). Skrevet 11.11.2026 for
+           Klart slik programmet er nå: koder med faste numre, nøkkelen,
+           tilbakeføring, gjennomgangen, kopikontrollen og de fire kopiformene.
+
+           Rekkefølgen er lagt for en leser uten teknisk bakgrunn: først én idé
+           per skjerm, med et bilde og få ord. Så «I dybden», der hvert emne
+           kan åpnes av den som vil vite mer. Ordene er appens egne.
+           Bildene i krom er appens ikoner og velkomstbilder (assets/krom/),
+           og fire nye laget i Midjourney med mappeikonet som stilreferanse.
+           ===================================================================== -->
+      <div class="videre">
+        <!-- ============ Hva Klart gir deg (før hva det gjør; eieren 11.11.2026: selg ferien,
+             ikke flyturen) ============ -->
+        <section class="v-del v-hva" id="hva">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Dela ärendet. Behåll namnen.</h2>
+            <p class="v-ingress">
+              Du kan skicka dokument till en rådgivare, lämna ut allmänna handlingar eller fråga ett AI-verktyg, och namnen lämnar aldrig kontoret. Det går mycket snabbare än att maska för hand sida för sida.
+            </p>
+          </div>
+          <ul class="v-tre-ord rise">
+            <li><b>AI för riktiga ärenden.</b> Verktyget ser koder i stället för människor.</li>
+            <li><b>Dela utan att tveka.</b> Med revisorn, advokaten eller en annan myndighet, samma dag.</li>
+            <li><b>Namnen kommer tillbaka när du behöver dem.</b> Bara organisationen har nyckeln.</li>
+          </ul>
+          <p class="v-hva-er rise">Klappat och Klart är ett program på din egen dator. Dokumenten lämnar den aldrig.</p>
+        </section>
+
+        <!-- ============ 1. Kjernen: navn blir koder ============ -->
+        <section class="v-del v-kjerne" id="kjernen">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Namn blir koder.</h2>
+            <p class="v-ingress">
+              Klappat och Klart gör en kopia av dokumenten. I kopian står en kod där det stod ett namn, ett personnummer eller en annan uppgift om en person.
+            </p>
+          </div>
+
+          <!-- To ark fra samme mappe. Bryteren viser originalen eller kopien; den går av seg
+               selv til noen tar i den (videre.js). Uten JS står arkene som kopi. -->
+          <figure class="v-ark-scene rise" data-v-bytt data-vis="kopi">
+            <div class="v-bryter" role="group" aria-label="Visa originalet eller kopian">
+              <button type="button" data-v-vis="original" aria-pressed="false">Original</button>
+              <button type="button" data-v-vis="kopi" aria-pressed="true">Kopia</button>
+            </div>
+            <div class="v-ark-par" aria-hidden="true">
+              <article class="v-ark v-ark-a">
+                <header class="v-ark-topp">
+                  <svg class="v-ark-ikon"><use href="#i-pdf" /></svg>
+                  <span>beslut-god-man.pdf</span>
+                </header>
+                <p class="v-ark-h">Beslut om anordnande av godmanskap</p>
+                <dl class="v-ark-rader">
+                  <div>
+                    <dt>Huvudman</dt>
+                    <dd><span class="v-bytt v-samme"><span class="v-o"><i>Jan Lindberg</i></span><span class="v-k"><i>[Namn 4829133]</i></span></span></dd>
+                  </div>
+                  <div>
+                    <dt>Personnummer</dt>
+                    <dd><span class="v-bytt"><span class="v-o"><i>790711-4101</i></span><span class="v-k"><i>[Personnummer 2204716]</i></span></span></dd>
+                  </div>
+                  <div>
+                    <dt>Adress</dt>
+                    <dd><span class="v-bytt"><span class="v-o"><i>Storgatan 27</i></span><span class="v-k"><i>[Adress 3310482]</i></span></span></dd>
+                  </div>
+                  <div>
+                    <dt>God man</dt>
+                    <dd><span class="v-bytt"><span class="v-o"><i>Lars Bergström</i></span><span class="v-k"><i>[Namn 6071542]</i></span></span></dd>
+                  </div>
+                </dl>
+                <p class="v-ark-p">
+                  Den gode mannen hjälper till med ekonomin.
+                  <span class="v-bytt"><span class="v-o"><i>Jan är sjukskriven till den 30 april.</i></span><span class="v-k"><i>[Personuppgift (mening) 2760056]</i></span></span>
+                </p>
+              </article>
+              <article class="v-ark v-ark-b">
+                <header class="v-ark-topp">
+                  <svg class="v-ark-ikon"><use href="#i-mail" /></svg>
+                  <span>svar-fran-banken.eml</span>
+                </header>
+                <p class="v-ark-h">Sv: Fullmakt för kontot</p>
+                <p class="v-ark-p">
+                  Hej! Vi återkommer efter samtalet med
+                  <span class="v-bytt v-samme"><span class="v-o"><i>Jan Lindberg</i>.</span><span class="v-k"><i>[Namn 4829133]</i>.</span></span>
+                </p>
+                <p class="v-ark-p">
+                  Kontot är nu inställt som den gode mannen önskade. Du når oss på
+                  <span class="v-bytt"><span class="v-o"><i>08-555 113 34</i>.</span><span class="v-k"><i>[Telefon 7745190]</i>.</span></span>
+                </p>
+                <p class="v-ark-p v-ark-hilsen">
+                  Vänliga hälsningar<br />
+                  <span class="v-bytt"><span class="v-o"><i>Eva Bergman</i></span><span class="v-k"><i>[Namn 5530871]</i></span></span><br />
+                  Kundrådgivare
+                </p>
+              </article>
+            </div>
+            <figcaption class="v-samme-linje">
+              <span class="v-kode">[Namn 4829133]</span>
+              <span>Samma person får alltid samma kod, i alla dokument.</span>
+            </figcaption>
+          </figure>
+
+          <ul class="v-tre-ord rise">
+            <li><b>Kopian ser ut som originalet.</b> Layout, tabeller och logotyp finns kvar.</li>
+            <li><b>Läsaren förstår ärendet.</b> Men vet inte vem det gäller.</li>
+            <li><b>Originalen ändras inte.</b> Klappat och Klart sparar nya filer bredvid.</li>
+          </ul>
+        </section>
+
+        <!-- ============ 2. De tre tingene på startskjermen ============ -->
+        <section class="v-del v-verktoy" id="verktoy">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Tre saker du kan göra.</h2>
+          </div>
+          <div class="v-kort-rad">
+            <article class="v-kort rise">
+              <img src="/alles-klar/assets/krom/rens.webp" width="512" height="512" alt="" loading="lazy" decoding="async" />
+              <h3>Maskera</h3>
+              <p>Välj en mapp eller enskilda dokument. Du får kopior med koder i stället för personuppgifter.</p>
+            </article>
+            <article class="v-kort rise d-60">
+              <img src="/alles-klar/assets/krom/tilbakefor.webp" width="512" height="512" alt="" loading="lazy" decoding="async" />
+              <h3>Återställ</h3>
+              <p>Gör om koderna till namn igen när du behöver dem.</p>
+            </article>
+            <article class="v-kort rise d-120">
+              <img src="/alles-klar/assets/krom/tekst.webp" width="512" height="512" alt="" loading="lazy" decoding="async" />
+              <h3>Textverktyg</h3>
+              <p>Text som du skriver eller klistrar in maskeras medan du ser på.</p>
+            </article>
+          </div>
+
+          <!-- Rens, steg for steg. Streken mellom stegene er et skispor. -->
+          <ol class="v-steg rise">
+            <li><b>Välj en mapp</b><span>Eller dra den till fönstret.</span></li>
+            <li><b>Klappat och Klart läser</b><span>Under tiden kan du arbeta vidare.</span></li>
+            <li><b>Du går igenom</b><span>Maskera eller låta stå.</span></li>
+            <li><b>Klappat och Klart kontrollerar</b><span>Varje kopia läses en gång till.</span></li>
+            <li><b>Kopiorna är färdiga</b><span>I en egen mapp bredvid.</span></li>
+          </ol>
+        </section>
+
+        <!-- ============ 3. Nøkkelen ============ -->
+        <section class="v-del v-nokkel" id="nokkel">
+          <div class="v-nokkel-inn">
+            <img class="v-nokkel-bilde rise" src="/alles-klar/assets/krom/nokkel-blaa.webp" width="800" height="386" alt="" loading="lazy" decoding="async" />
+            <div class="v-hode rise">
+              <h2 class="v-tittel">Bara nyckeln gör om koderna till namn igen.</h2>
+              <p class="v-ingress">
+                Nyckeln skapas på datorn första gången du startar Klappat och Klart, och den tillhör bara organisationen. Utan den är en kod bara en kod.
+              </p>
+              <!-- Viktig (eieren 11.11.2026): ingen skal tro at alle med Klart kan gjøre om kodene. -->
+              <p class="v-nokkel-bare">
+                <b>Andra som använder Klappat och Klart kan inte läsa dina koder.</b>
+                De har en egen nyckel, så för dem förblir dina koder bara koder.
+
+              </p>
+            </div>
+
+            <!-- Hvorfor det er nyttig at kodene kan gjøres om: runden ut og hjem igjen. -->
+            <ol class="v-runde rise">
+              <li>
+                <span class="v-runde-nr">1</span>
+                <b>Maskera</b>
+                <span class="v-linje">Huvudman: <i class="v-kode lys">[Namn 4829133]</i></span>
+              </li>
+              <li>
+                <span class="v-runde-nr">2</span>
+                <b>Dela kopian</b>
+                <span class="v-runde-tekst">Med en rådgivare, en annan myndighet eller ett AI-verktyg.</span>
+              </li>
+              <li>
+                <span class="v-runde-nr">3</span>
+                <b>Återställ svaret</b>
+                <span class="v-linje">Huvudman: <i class="v-navn">Jan Lindberg</i></span>
+              </li>
+            </ol>
+
+            <div class="v-nokkel-par rise">
+              <img src="/alles-klar/assets/krom/skrin-blaa.webp" width="640" height="630" alt="" loading="lazy" decoding="async" />
+              <div>
+                <article>
+                  <h3>Förvara nyckeln väl</h3>
+                  <p>24 ord på papper eller en nyckelfil. Då kan koderna alltid göras om till namn igen.</p>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ Én nøkkel for hele virksomheten ============ -->
+        <section class="v-del v-kontor" id="virksomhet">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Samma kod hos alla kollegor.</h2>
+            <p class="v-ingress">
+              Med en nyckel för hela organisationen har Jan Lindberg samma kod på alla datorer. En kollega kan återställa en kopia som någon annan har gjort.
+            </p>
+          </div>
+          <div class="v-nett rise" aria-hidden="true">
+            <img src="/alles-klar/assets/krom/nokkel.webp" width="800" height="386" alt="" loading="lazy" decoding="async" />
+            <div class="v-nett-rad">
+              <p><span>Handläggning</span><i class="v-kode">[Namn 4829133]</i></p>
+              <p><span>Personal</span><i class="v-kode">[Namn 4829133]</i></p>
+              <p><span>Arkiv</span><i class="v-kode">[Namn 4829133]</i></p>
+            </div>
+          </div>
+          <ul class="v-tre-ord rise">
+            <li><b>En person är nyckelansvarig.</b> Hen skapar nyckeln och ger den till kollegorna.</li>
+            <li><b>Nyckeln skickas i två delar.</b> Nyckelpaketet och nyckelkoden, var för sig.</li>
+            <li><b>It-avdelningen kan bestämma gemensamma regler.</b> Till exempel vad som alltid maskeras.</li>
+          </ul>
+          <!-- Samarbeid på tvers: nøkler fra andre legges inn ved siden av ens egen. -->
+          <div class="v-andres rise">
+            <img src="/alles-klar/assets/krom/nokkel-blaa.webp" width="800" height="386" alt="" loading="lazy" decoding="async" />
+            <div>
+              <h3>Du kan också lägga till andras nycklar</h3>
+              <p>
+                Om ni samarbetar med en annan organisation kan den dela sin nyckel med er. Då kan ni återställa deras kopior, och de kan återställa era om ni delar er nyckel. Er egen nyckel ändras inte, och det är ni som bestämmer vem som får den.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ Dette ser Klart etter ============ -->
+        <!-- Oversikten over hva skanningen ser etter. Ansikter står her, som én av gruppene
+             (eieren 11.11.2026), ikke som en egen omtale under kopiformene. -->
+        <section class="v-del v-ser" id="ser-etter">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Det här letar Klappat och Klart efter.</h2>
+            <p class="v-ingress">Tio sorters uppgifter är påslagna från början. Du väljer själv.</p>
+          </div>
+          <ul class="v-ser-liste rise">
+            <li><b>Namn</b><span>Personnamn</span></li>
+            <li><b>Personnummer</b><span>Personnummer, samordningsnummer, pass, id-kort, reservnummer och LMA-nummer</span></li>
+            <li><b>Telefon och e-post</b><span>Telefonnummer och e-postadresser</span></li>
+            <li><b>Adress och ort</b><span>Gata, postnummer, ort och fastighetsbeteckning</span></li>
+            <li><b>Känsliga personuppgifter</b><span>Hälsa, fackförening, religion och lagöverträdelser</span></li>
+            <li><b>Privata meningar</b><span>Hela meningar och anteckningar om en person</span></li>
+            <li><b>Konto</b><span>Kontonummer, kort och IBAN</span></li>
+            <li><b>Lösenord</b><span>Lösenord och nycklar</span></li>
+            <li><b>Registreringsnummer</b><span>Fordonsskyltar, också på bilder</span></li>
+            <li class="v-ser-ansikt">
+              <b>Ansikten</b><span>Pixlas i bilder och skannade sidor</span>
+            </li>
+          </ul>
+          <p class="v-ser-fot rise">
+            Datum, arbetsgivare och mål- och ärendenummer slår du på vid behov.
+            <a class="v-lenke" href="vad-den-hittar.html">Vad Klappat och Klart hittar, och vad det inte hittar</a>
+          </p>
+        </section>
+
+        <!-- ============ 4. Du bestemmer ============ -->
+        <section class="v-del v-avgjor" id="du-bestemmer">
+          <div class="v-to">
+            <div class="v-hode rise">
+              <h2 class="v-tittel">Du bestämmer vad som maskeras.</h2>
+              <p class="v-ingress">
+                Klappat och Klart markerar det som hittas. När programmet är osäkert frågar det.
+              </p>
+              <ul class="v-punkter">
+                <li>Ett klick på ett ord maskerar det i hela mappen.</li>
+                <li>Klappat och Klart kommer ihåg det du markerar. Nästa mapp läses med de orden.</li>
+                <li>Organisationens egna uppgifter står kvar.</li>
+                <li>Allt går att ångra.</li>
+              </ul>
+            </div>
+
+            <!-- Gjennomgangen slik den ser ut i appen: tre slags merker og linjen nederst
+                 som spør. Fargene og strekene er appens (heltrukket, stiplet, prikket). -->
+            <figure class="v-gjennom rise" aria-hidden="true">
+              <div class="v-gjennom-ark">
+                <p>Närmaste chef är <span class="v-m skjul">Lars Bergström</span>.</p>
+                <p><span class="v-m uavklart">Lund</span> rekommenderade en gradvis återgång i arbete från maj.</p>
+                <p>Besök bokas via växeln på <span class="v-m staa">08-555 000 00</span>.</p>
+              </div>
+              <div class="v-spor">
+                <p class="v-spor-topp">
+                  <span class="v-kode">Namn 5530871</span>
+                  <b>Ej avgjord</b>
+                  <span class="v-spor-tall">1 av 5</span>
+                </p>
+                <p class="v-spor-grunn">Står först i meningen. Är det ett efternamn eller staden Lund?</p>
+                <p class="v-spor-knapper">
+                  <span class="v-knapp">Maskera <kbd>↵</kbd></span>
+                  <span class="v-knapp lys">Låt stå <kbd>B</kbd></span>
+                  <span class="v-knapp lys">Nästa <kbd>→</kbd></span>
+                </p>
+              </div>
+              <p class="v-forklaring">
+                <span><i class="v-m skjul">Aa</i> Maskeras</span>
+                <span><i class="v-m uavklart">Aa</i> Ej avgjord</span>
+                <span><i class="v-m staa">Aa</i> Står kvar</span>
+              </p>
+            </figure>
+          </div>
+        </section>
+
+        <!-- ============ 5. Trygt ============ -->
+        <!-- Hytta fra heroen, på nært hold: dokumentene blir hjemme. Bildet er laget i Midjourney
+             med vinterbildet fra heroen som stilreferanse. -->
+        <section class="v-del v-trygt" id="trygt">
+          <figure class="v-plate rise">
+            <img src="/alles-klar/assets/foto/hytte.webp" width="2200" height="1232" alt="En liten röd stuga i djup snö under en blå himmel." loading="lazy" decoding="async" />
+            <figcaption>
+              <h2 class="v-tittel">Dokumenten stannar på datorn.</h2>
+            </figcaption>
+          </figure>
+          <div class="v-kort-rad">
+            <article class="v-kort v-hvit rise">
+              <img src="/alles-klar/assets/krom/laas.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>Ingen väg ut</h3>
+              <p>Klappat och Klart kan inte ansluta till internet.</p>
+              <p><a class="v-lenke" href="for-it.html">It-avdelningen kan kontrollera det själv</a></p>
+            </article>
+            <article class="v-kort v-hvit rise d-60">
+              <img src="/alles-klar/assets/krom/maskin.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>AI:n finns på plats</h3>
+              <p>Den är inbyggd i programmet och liten. Det räcker med en vanlig kontorsdator, utan grafikkort.</p>
+            </article>
+            <article class="v-kort v-hvit rise d-120">
+              <img src="/alles-klar/assets/krom/hvelv.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>Originalen ändras inte</h3>
+              <p>Klappat och Klart sparar bara nya kopior, i en egen mapp. Innan du börjar kan du göra en krypterad säkerhetskopia.</p>
+            </article>
+            <article class="v-kort v-hvit rise d-180">
+              <img src="/alles-klar/assets/krom/lupe.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>Kontroll innan kopian skapas</h3>
+              <p>Klappat och Klart läser varje kopia som mottagaren skulle göra. Finns något kvar skapas inte filen.</p>
+            </article>
+          </div>
+        </section>
+
+        <!-- ============ 6. Slik kan kopien se ut ============ -->
+        <section class="v-del v-former" id="kopien">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Du väljer hur kopian ser ut.</h2>
+            <p class="v-ingress">Fyra varianter. Du väljer precis innan kopiorna skapas.</p>
+
+          </div>
+          <div class="v-form-rad">
+            <article class="v-form rise">
+              <p class="v-form-merke">Vanligast</p>
+              <div class="v-prove">
+                <span>Huvudman: <i class="v-kode">[Namn 4829133]</i></span>
+                <span class="v-prove-liste">+ kodlista sist</span>
+              </div>
+              <h3>Kort kod och kodlista</h3>
+              <p>Lätt att läsa. Kan återställas med nyckeln.</p>
+            </article>
+            <article class="v-form rise d-60">
+              <div class="v-prove">
+                <span>Huvudman: <i class="v-kode lang">[PERSON_VBTF60YD0E-Q7MZ2KXA4RWN]</i></span>
+              </div>
+              <h3>Fullständig kod i texten</h3>
+              <p>Ingen lista. Kan återställas, men är svårare att läsa.</p>
+            </article>
+            <article class="v-form rise d-120">
+              <div class="v-prove">
+                <span>Huvudman: <i class="v-kode">[Namn 4829133]</i></span>
+              </div>
+              <h3>Bara etiketter</h3>
+              <p>Lätt att läsa. Kan inte återställas.</p>
+            </article>
+            <article class="v-form rise d-180">
+              <div class="v-prove">
+                <span>Huvudman: <i class="v-sladd"><i>26 kap. 1 § OSL</i></i></span>
+              </div>
+              <h3>Svart maskering (PDF)</h3>
+              <p>Det som stod där är borta för gott. Sekretessgrunden kan stå på fältet.</p>
+            </article>
+          </div>
+
+        </section>
+
+        <!-- ============ 7. Brukes til ============ -->
+        <section class="v-del v-bruk" id="bruk">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">När dokumenten ska vidare.</h2>
+          </div>
+          <ul class="v-bruk-liste rise">
+            <li><b>Allmänna handlingar</b><span>Lämna ut handlingar utan att maska sida för sida.</span></li>
+            <li><b>Dela vidare</b><span>Med revisorer, advokater, leverantörer och andra myndigheter.</span></li>
+            <li><b>AI-verktyg</b><span>Samma person har samma kod, så verktyget förstår sammanhanget.</span></li>
+            <li><b>Utbildning</b><span>Riktiga ärenden som exempel, utan att någon kan kännas igen.</span></li>
+            <li><b>Testdata</b><span>Realistiska dokument för nya system.</span></li>
+            <li><b>Statistik</b><span>Använd innehållet utan att veta vem det gäller.</span></li>
+          </ul>
+        </section>
+
+        <!-- ============ Vanlige spørsmål ============ -->
+        <section class="v-del v-spm" id="sporsmal">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Vanliga frågor.</h2>
+          </div>
+          <dl class="v-spm-liste rise">
+            <div>
+              <dt>Är kopian anonym?</dt>
+              <dd>Nej. Den som har nyckeln kan göra om koderna till namn igen, så kopian är pseudonymiserad. Om kopian aldrig ska kunna återställas väljer du ”Bara etiketter” eller ”Svart maskering (PDF)”, och läser alltid igenom den innan du delar den.</dd>
+            </div>
+            <div>
+              <dt>Kan andra som använder Klappat och Klart läsa mina koder?</dt>
+              <dd>Nej. Koderna kan bara göras om med organisationens nyckel. Andra har en egen nyckel, så för dem är koderna bara koder. Om någon ska kunna återställa kopiorna måste du dela nyckeln med den personen.</dd>
+            </div>
+            <div>
+              <dt>Vad händer om jag tappar bort nyckeln?</dt>
+              <dd>Då kan ingen göra om koderna till namn igen. Originalen ändras inte. Därför ber Klappat och Klart dig att säkra nyckeln: 24 ord på papper eller en nyckelfil.</dd>
+            </div>
+            <div>
+              <dt>Behöver Klappat och Klart internet?</dt>
+              <dd>Nej. Klappat och Klart ansluter aldrig till internet och fungerar lika bra offline.</dd>
+            </div>
+            <div>
+              <dt>Fungerar det på min dator?</dt>
+              <dd>Troligen, om det är en Mac med macOS 13 eller senare, en pc med Windows 10 eller 11, eller en dator med Linux och .deb-paket. Klappat och Klart fungerar på vanliga kontorsdatorer, utan grafikkort. <a class="v-lenke" href="#maskin">Systemkrav</a></dd>
+            </div>
+            <div>
+              <dt>Kan en kollega återställa en kopia som jag har gjort?</dt>
+              <dd>Ja, om ni har samma nyckel eller om kollegan har lagt till din nyckel.</dd>
+            </div>
+            <div>
+              <dt>Lär sig Klappat och Klart av mig?</dt>
+              <dd>Ja, av det du gör. När du markerar ett namn, ett smeknamn eller ett ord som Klappat och Klart missade kommer programmet ihåg det och maskerar det i allt som läses senare. Listan heter ”Maskeras alltid”. Den är krypterad på datorn och du kan ta bort poster ur den. Inget skickas till oss, och dokumenten används inte för att träna någon modell.</dd>
+            </div>
+            <div>
+              <dt>Och om Klappat och Klart missar något?</dt>
+              <dd>Det kan hända. Därför går du igenom det som Klappat och Klart hittar, och Klappat och Klart kontrollerar varje kopia innan den skapas. Kopian ska alltid läsas av en människa innan den delas. <a class="v-lenke" href="vad-den-hittar.html">Vad Klappat och Klart hittar, och vad det inte hittar</a></dd>
+            </div>
+            <div>
+              <dt>Vad händer med originalen?</dt>
+              <dd>Ingenting. Klappat och Klart sparar bara nya filer, i en egen mapp bredvid.</dd>
+            </div>
+            <div>
+              <dt>Vad kostar det?</dt>
+              <dd>För privat bruk är Klappat och Klart gratis. Företag, kommuner och myndigheter provar det gratis i 30 dagar och beställer sedan en licens för hela organisationen mot faktura. <a class="v-lenke" href="priser/">Till priserna</a></dd>
+            </div>
+          </dl>
+        </section>
+
+        <!-- ============ 8. I dybden ============ -->
+        <section class="v-del v-dybde" id="dybde">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">I detalj.</h2>
+            <p class="v-ingress">För dig som vill veta mer. Öppna det som intresserar dig.</p>
+          </div>
+
+          <div class="v-fag rise">
+            <details name="v-dybde">
+              <summary><span>Vad Klappat och Klart letar efter</span></summary>
+              <div class="v-fag-inn">
+                <p>Du väljer själv vad genomsökningen letar efter. De tio grupperna som är påslagna från början står under <a class="v-lenke" href="#ser-etter">Det här letar Klappat och Klart efter</a>.</p>
+                <p>Vid behov kan du slå på: <b>Datum</b>, <b>Yrke och släktskap</b>, <b>Ålder</b>, <b>Arbetsgivare</b> (organisation och organisationsnummer) och <b>Mål- och ärendenummer</b>.</p>
+                <p>
+                  Personnummer, samordningsnummer, organisationsnummer, bankgiro, plusgiro och IBAN kontrolleras mot kontrollsiffran. Ett slumpmässigt tiosiffrigt tal räknas inte som ett personnummer.
+                </p>
+                <p>
+                  Organisationens egna uppgifter står kvar: adress, växelnummer, organisationsnummer och företagets konto.
+                </p>
+                <p><a class="v-lenke" href="vad-den-hittar.html">Vad Klappat och Klart hittar, och vad det inte hittar</a></p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Vilka filer Klappat och Klart läser, och hur kopian ser ut</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Word, Excel och PowerPoint</dt>
+                    <dd>Samma fil, med koder i stället för uppgifterna. Layout, logotyp och tabeller finns kvar. Kommentarer, makron, inbäddade filer och dolda uppgifter i bilder tas bort.</dd>
+                  </div>
+                  <div>
+                    <dt>PDF, också skannade</dt>
+                    <dd>Varje sida blir en bild där koderna är målade över uppgifterna. Under ligger ett osynligt textlager, så det går att söka i kopian.</dd>
+                  </div>
+                  <div>
+                    <dt>Bilder</dt>
+                    <dd>Klappat och Klart läser texten i bilden. Uppgifterna målas över och ansiktena pixlas.</dd>
+                  </div>
+                  <div>
+                    <dt>E-post</dt>
+                    <dd>Läser .eml, Outlook (.msg), Apple Mail (.emlx) och .mbox. Kopian blir en .eml-fil. Bilagor tas bort, och det står i kopian.</dd>
+                  </div>
+                  <div>
+                    <dt>Text</dt>
+                    <dd>.txt, .md, .csv, .json och .rtf.</dd>
+                  </div>
+                </dl>
+                <p>Också fil- och mappnamn maskeras. Kopiorna hamnar tillsammans med en rapport i en ny mapp bredvid originalet, med ”-maskerad” sist i namnet.</p>
+                <p>Lösenordsskyddade filer öppnar Klappat och Klart när du har angett lösenordet. Gamla .ppt-filer går inte att läsa. Klappat och Klart säger till om det.</p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Hur Klappat och Klart läser dokumenten</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Först reglerna</dt>
+                    <dd>Svenska mönster, kontrollsiffror, listor över förnamn, efternamn och orter samt adresser. Reglerna går igenom varje fil.</dd>
+                  </div>
+                  <div>
+                    <dt>Sedan en liten svensk språkmodell</dt>
+                    <dd>KB-BERT från Kungliga biblioteket (KBLab, licens CC0 1.0), finjusterad för uppgiften. Den bedömer om en mening avslöjar något privat om en person. Den behöver inget grafikkort.</dd>
+                  </div>
+                  <div>
+                    <dt>Text i bilder</dt>
+                    <dd>Skannade sidor och bilder läses på datorn med textigenkänning (OCR).</dd>
+                  </div>
+                  <div>
+                    <dt>Ansikten</dt>
+                    <dd>Klappat och Klart hittar ansikten och pixlar dem. Du kan också låta ett ansikte stå.</dd>
+                  </div>
+                </dl>
+                <p>Klappat och Klart har ingen chattbot och skickar inget till någon AI-tjänst.</p>
+                <p>Du kan också öppna en mapp utan genomsökning. Då markerar du själv det som ska maskeras.</p>
+
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Koderna och nyckeln</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Fasta nummer</dt>
+                    <dd>Numret i koden räknas fram ur nyckeln och uppgiften. Därför har Jan Lindberg koden <i class="v-kode">[Namn 4829133]</i> i varje mapp, hos alla kollegor med samma nyckel.</dd>
+                  </div>
+                  <div>
+                    <dt>Namnet är krypterat i kopian</dt>
+                    <dd>Kodlistan sist i kopian innehåller de fullständiga koderna. I dem finns den ursprungliga texten, krypterad med AES-SIV. Bara nyckeln kan läsa den igen. Det finns ingen kodbok att hålla reda på.</dd>
+                  </div>
+                  <div>
+                    <dt>Bara er egen nyckel</dt>
+                    <dd>Varje installation skapar en egen nyckel. Någon annan som använder Klappat och Klart kan inte göra om koderna: utan organisationens nyckel är de bara koder, också för oss.</dd>
+                  </div>
+                  <div>
+                    <dt>Var nyckeln finns</dt>
+                    <dd>Operativsystemet skyddar den: nyckelringen på Mac, DPAPI i Windows och nyckelringen (Secret Service) i Linux.</dd>
+                  </div>
+                  <div>
+                    <dt>Reserv</dt>
+                    <dd>24 ord på papper eller en nyckelfil skyddad med en lösenfras som du väljer.</dd>
+                  </div>
+                  <div>
+                    <dt>I organisationen</dt>
+                    <dd>En person är nyckelansvarig och ger nyckeln till kollegorna som ett nyckelpaket. Paketet och nyckelkoden skickas var för sig. It-avdelningen kan spärra export av nyckeln.</dd>
+                  </div>
+                  <div>
+                    <dt>Andras nycklar</dt>
+                    <dd>Under ”Nyckel” kan du lägga till en annan organisations nyckel. Den ligger bredvid er egen. Kopian visar vilken nyckel den gjordes med, så Klappat och Klart väljer rätt nyckel när du återställer.</dd>
+                  </div>
+                  <div>
+                    <dt>Återställ</dt>
+                    <dd>Klappat och Klart skapar en ny mapp med ”-aterstalld” sist i namnet. Kopian ändras inte. I bilder och PDF-sidor är det som stod under fälten krypterat i kopian och sätts in igen.</dd>
+                  </div>
+                </dl>
+                <p>Koder är inte anonymisering. Den som har nyckeln kan göra om dem, så en kopia med koder innehåller fortfarande personuppgifter (pseudonymisering, artikel 4.5 i dataskyddsförordningen).</p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Allmänna handlingar och maskering</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Svart maskering (PDF)</dt>
+                    <dd>Varje kopia blir en PDF med svarta fält. Den övriga texten går fortfarande att markera och söka i.</dd>
+                  </div>
+                  <div>
+                    <dt>Sekretessgrund på fältet</dt>
+                    <dd>Varje fält kan bära den sekretessgrund maskeringen vilar på, till exempel ”26 kap. 1 § OSL” eller ”21 kap. 1 § OSL”. De fullständiga lagrummen hamnar i en egen fil, som underlag för beslutet om utlämnande. Sekretessprövningen gör du själv.</dd>
+                  </div>
+                  <div>
+                    <dt>Låt bara den här personen stå</dt>
+                    <dd>För den som begär ut sina egna uppgifter: den personen står kvar, alla andra maskeras.</dd>
+                  </div>
+                  <div>
+                    <dt>Flera versioner av samma mapp</dt>
+                    <dd>En för den registrerade, en för pressen, var och en med egna inställningar.</dd>
+                  </div>
+                  <div>
+                    <dt>Oskärpa</dt>
+                    <dd>En rektangel, en oval eller en frihandsform över en del av en bild eller sida.</dd>
+                  </div>
+                </dl>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Medan du arbetar</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Sparas automatiskt</dt>
+                    <dd>Besluten sparas krypterade på datorn. Du fortsätter där du slutade.</dd>
+                  </div>
+                  <div>
+                    <dt>Ändringar</dt>
+                    <dd>Varje ändring står i en lista. Du kan ångra en enskild ändring eller gå tillbaka till början. Listan kan sparas som PDF eller CSV.</dd>
+                  </div>
+                  <div>
+                    <dt>Egna markeringar</dt>
+                    <dd>Det du själv markerar gäller i alla mappar och texter. Du kan dela listan med kollegorna.</dd>
+                  </div>
+                  <div>
+                    <dt>Sök</dt>
+                    <dd>Sök i alla filer i mappen på en gång.</dd>
+                  </div>
+                  <div>
+                    <dt>Säkerhetskopia</dt>
+                    <dd>En krypterad kopia av mappen, gjord före genomsökningen. Klappat och Klart påminner om den efter 30 dagar.</dd>
+                  </div>
+                  <div>
+                    <dt>Från Finder</dt>
+                    <dd>På Mac: högerklicka på en fil eller mapp och välj ”Maskera med Klappat och Klart”.</dd>
+                  </div>
+                </dl>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>För it-avdelningen</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Ingen nätverkskod</dt>
+                    <dd>Programmet har ingen TLS, kan inte slå upp namn på nätet och lyssnar inte på någon port. <a class="v-lenke" href="for-it.html">Kontroller du kan göra själv</a></dd>
+                  </div>
+                  <div>
+                    <dt>Riktlinjer i en fil</dt>
+                    <dd>Du kan bestämma vad som alltid maskeras, låsa kopiornas form, kräva genomsökning och bestämma om nyckeln får exporteras.</dd>
+                  </div>
+                  <div>
+                    <dt>Granskningslogg</dt>
+                    <dd>Kan slås på. Den innehåller inga filnamn och inga uppgifter ur dokumenten.</dd>
+                  </div>
+                  <div>
+                    <dt>Kommandorad</dt>
+                    <dd><code>klappatochklart clean</code> och <code>klappatochklart restore</code>, med resultat i JSON. Klappat och Klart kan också bevaka en mapp.</dd>
+                  </div>
+                  <div>
+                    <dt>Licens utan internet</dt>
+                    <dd>En signerad kod som kontrolleras på datorn. En licens gäller hela organisationen.</dd>
+                  </div>
+                </dl>
+              </div>
+            </details>
+          </div>
+        </section>
+
+        <!-- ============ Full nerd-out ============ -->
+        <!-- Hele programmet, forklart for den som vil vite hvordan det virker. Veien en fil går
+             står alltid framme; resten åpnes. Tallene og navnene er fra appens kildekode. -->
+        <section class="v-del v-nerd" id="nerd">
+          <div class="v-hode rise">
+            <p class="v-nerd-over">För den nyfikna</p>
+            <h2 class="v-tittel">För teknikintresserade.</h2>
+            <p class="v-ingress">Hela vägen en fil tar genom Klappat och Klart, och vad som händer i varje steg.</p>
+          </div>
+
+          <ol class="v-ror rise">
+            <li><b>Läsning</b><span>Word, Excel, PDF, e-post och bilder delas upp i text och plats på sidan.</span></li>
+            <li><b>Regler</b><span>Mönster, kontrollsiffror, listor över namn och ord.</span></li>
+            <li><b>Meningar</b><span>En liten svensk språkmodell bedömer hela meningar.</span></li>
+            <li><b>Bilder</b><span>Text- och ansiktsigenkänning, på datorn.</span></li>
+            <li><b>Register</b><span>Träffarna samlas för hela mappen. Samma person, samma kod.</span></li>
+            <li><b>Du</b><span>Maskerar, låter stå och avgör det som inte är avgjort.</span></li>
+            <li><b>Skrivning</b><span>Varje filtyp skrivs på sitt eget sätt.</span></li>
+            <li><b>Kontroll</b><span>Kopian läses en gång till. Finns något kvar stoppas den.</span></li>
+          </ol>
+
+          <details class="v-nerd-alt rise">
+            <summary><span><i class="v-nar-lukket">Öppna maskinrummet</i><i class="v-nar-aapen">Stäng maskinrummet</i></span></summary>
+            <div class="v-nerd-inn">
+              <article>
+                <h3>Vad som finns i paketet</h3>
+                <p>
+                  Klappat och Klart är ett vanligt datorprogram. Skalet är skrivet i Rust (Tauri), och fönstret är en webbvy med gränssnittet i TypeScript. Allt som behövs finns i installationsfilen. Inget laddas ned i efterhand.
+                </p>
+                <dl class="v-spek">
+                  <div><dt>Regelmotor</dt><dd>TypeScript. Körs i programmet, utan server.</dd></div>
+                  <div><dt>Meningsmodell</dt><dd>bert-base-swedish-cased (KB-BERT, Kungliga biblioteket, licens CC0 1.0), finjusterad för meningar om personer. Körs på processorn med <code>tract</code>, i ren Rust.</dd></div>
+                  <div><dt>Text i bilder</dt><dd>Apple Vision på Mac. I Windows den inbyggda textigenkänningen i Windows och Tesseract med svenska, i Linux Tesseract.</dd></div>
+                  <div><dt>Ansikten</dt><dd>Apple Vision på Mac. Små ansiktsmodeller (YuNet och UltraFace) i Windows och Linux.</dd></div>
+                  <div><dt>PDF</dt><dd>PDFium ritar sidorna och läser textlagret.</dd></div>
+                  <div><dt>Ingen stor språkmodell</dt><dd>Klappat och Klart har ingen LLM och ingen chattbot. Bygget avbryts om någon av dem hamnar i paketet.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Från fil till träff</h3>
+                <p>
+                  Varje fil delas upp i textbitar som vet var de står: ett stycke, en cell, en textruta, ett sidhuvud eller en plats på en PDF-sida. Sedan går tre läsare igenom texten.
+                </p>
+                <dl class="v-spek">
+                  <div><dt>Regler</dt><dd>Personnummer, samordningsnummer, organisationsnummer, bankgiro och plusgiro måste ha rätt kontrollsiffra (Luhn). IBAN har en egen kontroll (MOD 97), och betalkort kontrolleras med Luhn. Namn hittas med hjälp av namnlistor och var de står, till exempel efter ”Namn:” eller ”Sökande:”, eller i en underskrift.</dd></div>
+                  <div><dt>Känsliga ord</dt><dd>En lista med ord om hälsa, fackförening, religion och lagöverträdelser, i alla böjningsformer. ”sjukskriven”, ”sjukskrivningen” och ”sjukskrivning på heltid” ger samma träff.</dd></div>
+                  <div><dt>Meningsläsaren</dt><dd>Språkmodellen ger varje mening om en person ett värde för hur privat den är. Tillsammans med den ordbaserade läsaren avgör det om meningen blir en ”Personuppgift (mening)”.</dd></div>
+                  <div><dt>Organisationens egna uppgifter</dt><dd>Adressen i brevhuvudet, växelnumret, organisationsnumret och företagets konto känns igen och står kvar. E-postadresser maskeras ändå.</dd></div>
+                </dl>
+                <p>
+                  Till sist hamnar träffarna i mappens register. ”Jan”, ”Jan Lindberg”, ”Jan Lindbergs” och ”JAN LINDBERG” blir en och samma person, i alla filer. Det som Klappat och Klart är osäker på hamnar med en förklaring i kön ”Ej avgjord”: ett efternamn står först i meningen, två personer heter likadant eller ordet lades till senare.
+
+                </p>
+              </article>
+
+              <article>
+                <h3>Koderna</h3>
+                <p>En kod har två delar. Den ena säger vem det är. Den andra är den ursprungliga texten, krypterad.</p>
+                <p class="v-kodelinje"><code>[PERSON_VBTF60YD0E-J94DW5ZFTYA2GWTWAXFKK0XYBF1KTY19BED6E5TJ832VZ00]</code></p>
+                <dl class="v-spek">
+                  <div><dt>Personkoden</dt><dd>HMAC-SHA256 av typ och värde, förkortad till tio tecken. Den är densamma för alla sätt att skriva samma namn, så ett AI-verktyg förstår att det är samma person.</dd></div>
+                  <div><dt>Den krypterade delen</dt><dd>AES-SIV (RFC 5297) av texten precis som den stod. Samma text ger alltid samma kod. En kod som har ändrats eller gjorts med en annan nyckel avvisas. Klappat och Klart sätter aldrig in något felaktigt.</dd></div>
+                  <div><dt>Det korta numret</dt><dd>Numret i <code>[Namn 4829133]</code> räknas fram ur nyckeln och värdet. Därför är det detsamma på alla datorer med samma nyckel, utan att de pratar med varandra.</dd></div>
+                  <div><dt>Kodlistan</dt><dd>I den vanliga kopieformen står det korta numret i texten och de fullständiga koderna i en lista sist. Tillsammans med nyckeln är listan allt som behövs för att återställa kopian.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Nyckeln</h3>
+                <dl class="v-spek">
+                  <div><dt>Vad den är</dt><dd>32 slumpmässiga byte, skapade på datorn första gången Klappat och Klart startas. Undernycklar för koder, nummer och bilder tas fram med HKDF-SHA256.</dd></div>
+                  <div><dt>Var den finns</dt><dd>Skyddad av operativsystemet: nyckelringen och Secure Enclave på Mac, DPAPI i Windows och nyckelringen (Secret Service) i Linux. Nyckeln hålls i den del av programmet som är skriven i Rust. Fönstret får den bara när du vill se de 24 orden.</dd></div>
+                  <div><dt>24 ord</dt><dd>Nyckeln kan skrivas ned som 24 ord ur en lista med 2 048 ord. Listan är norsk och densamma i alla utgåvor. Orden består bara av bokstäverna a–z, och inga två liknar varandra. De fyra första bokstäverna räcker för att känna igen ett ord.</dd></div>
+                  <div><dt>Nyckelfil</dt><dd>Nyckeln krypterad med en lösenfras på minst tolv tecken (Argon2id och AES-256-GCM).</dd></div>
+                  <div><dt>Nyckelns id</dt><dd>En kort beteckning, till exempel <code>K7QM-R3T5</code>. Den visar vilken nyckel en kopia gjordes med, men är inte själva nyckeln.</dd></div>
+                  <div><dt>Flera nycklar</dt><dd>När du byter nyckel läggs den gamla undan. Vid återställning provar Klappat och Klart först den nuvarande nyckeln och sedan de tidigare.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Så blir kopian till</h3>
+                <dl class="v-spek">
+                  <div><dt>Word, Excel, PowerPoint</dt><dd>Filen är en ZIP med XML. Klappat och Klart byter ut värdena på plats, också när Word har delat upp ett namn i flera bitar. Sedan rensas filen: kommentarer, makron, inbäddade filer, miniatyrbild och dolda uppgifter i bilder tas bort.</dd></div>
+                  <div><dt>PDF</dt><dd>Varje sida ritas som en bild i 200 dpi, med liten text i 300. Koderna målas över uppgifterna, och den maskerade texten ligger osynlig under, så det går att söka i kopian.</dd></div>
+                  <div><dt>Bilder</dt><dd>Fälten målas över och ansiktena pixlas.</dd></div>
+                  <div><dt>Det som låg under</dt><dd>Om kopian ska kunna återställas lägger Klappat och Klart de ursprungliga pixlarna under varje fält i kopian, krypterade (AES-256-GCM). Vanliga program hoppar över dem.</dd></div>
+                  <div><dt>E-post</dt><dd>Kopian blir en städad .eml-fil. Tekniska rubriker om meddelandets väg tas bort.</dd></div>
+                  <div><dt>Filnamn</dt><dd>Står ett namn i ett fil- eller mappnamn byts det också ut.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Kontroll innan kopian skapas</h3>
+                <p>
+                  Innan kopian sparas läser Klappat och Klart den som ett annat program skulle göra: varje del av ZIP-filen, varje XML-attribut, varje objekt i PDF:en och texten i varje bild. Hittar programmet något som borde vara maskerat, eller en del som det inte kan läsa, skapas inte filen. Då ser du vad det gäller.
+                </p>
+              </article>
+
+              <article>
+                <h3>Vad Klappat och Klart sparar</h3>
+                <dl class="v-spek">
+                  <div><dt>Projekt</dt><dd>Besluten om en mapp sparas krypterade på datorn och undantas från Spotlight och Time Machine. Ett projekt som inte används raderas efter 30 dagar.</dd></div>
+                  <div><dt>Säkerhetskopia</dt><dd>En kopia av originalen. Innehållet är krypterat med AES-256-GCM och kan bara läsas på datorn där den gjordes. Filnamnen är oförändrade.</dd></div>
+                  <div><dt>Egna markeringar</dt><dd>Listan över det som Klappat och Klart maskerar för att du har bett om det sparas krypterad.</dd></div>
+                  <div><dt>Originalen</dt><dd>Klappat och Klart skriver bara i mappar som programmet självt har skapat. Varje ställe i koden som raderar eller flyttar en fil kräver en skriftlig motivering. Annars stoppar ett test bygget.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Det som inte finns</h3>
+                <p>
+                  Programmet har ingen TLS, kan inte slå upp namn på nätet och lyssnar inte på någon port. Det finns inget konto, ingen användningsstatistik, inga felrapporter och inga automatiska uppdateringar. Licensen är en signerad kod (Ed25519) som kontrolleras på datorn. Det enda Klappat och Klart gör mot internet: det öppnar vår webbplats i din egen webbläsare när du klickar på ”Köp licens”.
+                </p>
+                <p><a class="v-lenke" href="for-it.html">Kontroller som it-avdelningen kan göra själv</a></p>
+              </article>
+            </div>
+          </details>
+        </section>
+
+        <!-- ============ 9. Ansvar ============ -->
+        <section class="v-del v-ansvar" id="ansvar">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Ett verktyg. Ingen garanti.</h2>
+          </div>
+          <ul class="v-ansvar-liste rise">
+            <li><b>Klappat och Klart kan missa något.</b> Läs kopiorna innan du delar dem.</li>
+            <li><b>Koder är inte anonymisering.</b> Den som har nyckeln kan göra om dem.</li>
+            <li><b>Ansvaret ligger hos dig.</b> Klappat och Klart är ingen juridisk rådgivning. Du föreslås maskeringar och gör själv sekretessprövningen och bestämmer vad som lämnas ut.</li>
+          </ul>
+          <p class="rise"><a class="v-lenke" href="vad-den-hittar.html">Vad Klappat och Klart hittar, och vad det inte hittar</a></p>
+        </section>
+
+        <!-- ============ Går Klart på maskinen din? ============ -->
+        <!-- Klappat och Klart: bare systemkravene. Søket i maskinlisten (/klart/api/maskin) svarer på norsk, så det er ikke tatt med. -->
+        <section class="v-del v-maskin" id="maskin">
+          <div class="v-sjekk rise">
+            <h2 id="v-sjekk-tittel">Fungerar Klappat och Klart på den här datorn?</h2>
+            <p class="v-sjekk-om">Klappat och Klart fungerar på vanliga kontorsdatorer, utan grafikkort.</p>
+            <p class="v-sjekk-fot">
+              Krav: Mac med macOS 13 eller senare (Apple- eller Intel-processor), pc med Windows 10 eller 11 (64 bitar) eller Linux med .deb-paket (amd64 eller ARM64). Vi rekommenderar 8 GB minne.
+            </p>
+          </div>
+        </section>
+
+        <!-- ============ 10. Last ned ============ -->
+        <section class="v-hent" id="last-ned">
+          <img class="v-hent-bilde" src="/alles-klar/assets/klart-vinter.jpg" width="1600" height="1067" alt="" loading="lazy" decoding="async" />
+          <div class="v-hent-kort rise">
+            <!-- Samme nedlastingskort som i heroen; vises her når de velger system (forside.js). -->
+            <div class="nedlasting" data-nedlasting hidden aria-live="polite">
+              <div class="nedlasting-topp">
+                <span class="nedlasting-merke" data-merke aria-hidden="true"></span>
+                <div>
+                  <p class="nedlasting-tittel">Klappat och Klart för <span data-os></span></p>
+                  <p class="nedlasting-fil" data-fil></p>
+                </div>
+              </div>
+              <p class="nedlasting-prosent"><span data-prosent>0</span><span class="nedlasting-pst">%</span></p>
+              <p class="nedlasting-status" data-status></p>
+              <div class="nedlasting-ferdig" data-ferdig hidden>
+                <span class="nedlasting-hake" aria-hidden="true"><svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="25" pathLength="1" /><path d="M17 29l8 8 15-17" pathLength="1" /></svg></span>
+                <p class="nedlasting-ferdig-tittel">Nedladdat</p>
+                <p class="nedlasting-neste" data-neste></p>
+              </div>
+              <button type="button" class="nedlasting-tilbake" data-tilbake>Tillbaka</button>
+            </div>
+            <div class="v-hent-inn">
+            <!-- Mobil og nettbrett: samme e-post som i heroen i stedet for nedlastingen (eieren 11.11.2026). -->
+            <div class="mobil-send">
+              <p class="mobil-send-tittel">Klappat och Klart är ett program för datorn.</p>
+              <p class="mobil-send-tekst">Skicka länken till dig själv via e-post och ladda ned programmet på en Mac, i Windows eller i Linux.</p>
+              <a class="btn" href="mailto:?subject=Klappat%20och%20Klart&amp;body=https%3A%2F%2Fesbjugconsult.com%2Fklappatochklart">Skicka till dig själv</a>
+              <p class="mobil-send-andre">(Eller till någon annan?)</p>
+            </div>
+            <h2>Prova Klappat och Klart på en mapp.</h2>
+            <p class="v-hent-privat"><b>Gratis för privat bruk.</b></p>
+            <!-- Samme knapper som i heroen (kjennetegnene når man holder over). Ved et klikk
+                 vises nedlastingen vises her i kortet (forside.js). -->
+            <div class="v-hent-knapper get" data-v-hent>
+              <a class="btn ghost os os-win" href="/klappatochklart/download/windows" download aria-label="Ladda ned för Windows"><span class="os-navn">Windows</span></a>
+              <a class="btn ghost os os-mac" href="/klappatochklart/download/mac" download aria-label="Ladda ned för Mac"><span class="os-glass" aria-hidden="true"></span><span class="os-navn">Mac</span></a>
+              <a class="btn ghost os os-lin" href="/klappatochklart/download/linux" download aria-label="Ladda ned för Linux"><span class="os-figur os-pingvin" aria-hidden="true"><svg viewBox="0 0 24 28" width="24" height="28" focusable="false"><g class="os-pingvin-kropp"><ellipse cx="8.4" cy="26.4" rx="3.3" ry="1.4" fill="#f5a524"/><ellipse cx="15.6" cy="26.4" rx="3.3" ry="1.4" fill="#f5a524"/><ellipse cx="3.9" cy="17" rx="1.9" ry="5.4" transform="rotate(16 3.9 17)" fill="#0f2147"/><ellipse cx="20.1" cy="17" rx="1.9" ry="5.4" transform="rotate(-16 20.1 17)" fill="#0f2147"/><ellipse cx="12" cy="15" rx="8.4" ry="11.2" fill="#0f2147"/><ellipse cx="12" cy="18.4" rx="5.5" ry="7.6" fill="#fff"/><circle cx="9.7" cy="8.6" r="2" fill="#fff"/><circle cx="14.3" cy="8.6" r="2" fill="#fff"/><circle cx="10.1" cy="8.9" r="0.95" fill="#0f2147"/><circle cx="13.9" cy="8.9" r="0.95" fill="#0f2147"/><path d="M9.9 11.4 Q12 10.5 14.1 11.4 Q12 13.9 9.9 11.4Z" fill="#f5a524"/></g></svg></span><span class="os-navn">Linux</span></a>
+            </div>
+            <!-- Linux på ARM64 har egen pakke, som på den tyske siden. Samme nedlastingskort (forside.js). -->
+            <p class="v-hent-arm" data-v-hent><a href="/klappatochklart/download/linux-arm" download>Linux på ARM64 (.deb)</a></p>
+            <p class="v-hent-virk">För organisationer: <b>30 dagar gratis</b>. Ingen registrering. Sedan beställning mot faktura.</p>
+            <p><a class="v-hent-pris" href="priser/">Pris för din organisation</a></p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- ================= Bunn ================= -->
+    <footer class="v-bunn">
+      <p class="v-bunn-merke"><i>Klappat och Klart</i> <span>från Tidemann Esbjug</span></p>
+      <nav class="v-bunn-lenker" aria-label="Mer om Klappat och Klart">
+        <a href="priser/">Pris</a>
+        <a href="vad-den-hittar.html">Vad Klappat och Klart hittar</a>
+        <a href="for-it.html">För it-avdelningen</a>
+        <a href="villkor/">Villkor</a>
+        <a href="integritet/">Integritet</a>
+      </nav>
+      <nav class="v-bunn-lenker v-bunn-land" aria-label="Andra länder">
+        <a href="/klart/" hreflang="no" lang="no">Norge · Klart</a>
+        <a href="/alles-klar/" hreflang="de" lang="de">Deutschland · Alles Klar</a>
+        <a href="/glockenklar/" hreflang="de-AT" lang="de-AT">Österreich · Glockenklar</a>
+        <a href="/frostcopy/" hreflang="en-US" lang="en-US">United States · FrostCopy</a>
+        <a href="/frostcopy-uk/" hreflang="en-GB" lang="en-GB">United Kingdom · FrostCopy UK</a>
+        <a href="/cest-clair/" hreflang="fr" lang="fr">France · C’est Clair</a>
+        <a href="/clair-klaar/" hreflang="nl-BE" lang="nl-BE">België · Belgique · Clair &amp; Klaar</a>
+        <a href="/clarisimo/" hreflang="es" lang="es">España · Clarísimo</a>
+        <a href="/chiarissimo/" hreflang="it" lang="it">Italia · Chiarissimo</a>
+        <a href="/klip-en-klaar/" hreflang="nl" lang="nl">Nederland · Klip en Klaar</a>
+        <a href="/wszystko-jasne/" hreflang="pl" lang="pl">Polska · Wszystko Jasne</a>
+        <a href="/klappatochklart/" hreflang="sv" lang="sv" aria-current="page">Sverige · Klappat och Klart</a>
+        <a href="/krystallklart/" hreflang="da" lang="da">Danmark · Krystallklart</a>
+
+      </nav>
+      <p class="v-bunn-liten">Utvecklat i Norge · Ingen juridisk rådgivning</p>
+    </footer>
+
+    <script src="forside.js"></script>
+    <script src="forhandsvisning.js"></script>
+    <script src="videre.js"></script>
+  </body>
+</html>

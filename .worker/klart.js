@@ -92,6 +92,10 @@ import utgaveEs from "./utgaver/es.js";
 import utgaveIt from "./utgaver/it.js";
 import utgaveNl from "./utgaver/nl.js";
 import utgavePl from "./utgaver/pl.js";
+import utgaveSe from "./utgaver/se.js";
+import utgaveDk from "./utgaver/dk.js";
+import utgaveAt from "./utgaver/at.js";
+import utgaveBe from "./utgaver/be.js";
 
 const NADE_DAGER = 14; // lisensen varer så mange dager etter at perioden er betalt til
 const MASKINKODE = /^[0-9A-HJKMNP-TV-Z]{4}(-[0-9A-HJKMNP-TV-Z]{4}){3}$/;
@@ -146,24 +150,24 @@ const DMG = "application/x-apple-diskimage";
 const FILER = {
   // Klart (norsk), /klart/last-ned/…
   klart: {
-    mac: { key: "2026-11-24/Klart_0.1.0_universal.dmg", navn: "Klart.dmg", type: DMG },
-    windows: { key: "2026-11-24/Klart_0.1.0_x64-setup.exe", navn: "Klart.exe", type: EXE },
-    linux: { key: "2026-11-24/Klart_0.1.0_amd64.deb", navn: "Klart_0.1.0_amd64.deb", type: DEB },
-    "linux-arm": { key: "2026-11-24/Klart_0.1.0_arm64.deb", navn: "Klart_0.1.0_arm64.deb", type: DEB },
+    mac: { key: "2026-11-26/Klart_0.1.0_universal.dmg", navn: "Klart.dmg", type: DMG },
+    windows: { key: "2026-11-26/Klart_0.1.0_x64-setup.exe", navn: "Klart.exe", type: EXE },
+    linux: { key: "2026-11-26/Klart_0.1.0_amd64.deb", navn: "Klart_0.1.0_amd64.deb", type: DEB },
+    "linux-arm": { key: "2026-11-26/Klart_0.1.0_arm64.deb", navn: "Klart_0.1.0_arm64.deb", type: DEB },
   },
   // Alles Klar (tysk), /alles-klar/last-ned/…
   "alles-klar": {
-    mac: { key: "2026-11-24/de/Alles-Klar_0.1.0_universal.dmg", navn: "Alles Klar.dmg", type: DMG },
-    windows: { key: "2026-11-24/de/Alles-Klar_0.1.0_x64-setup.exe", navn: "Alles Klar.exe", type: EXE },
-    linux: { key: "2026-11-24/de/Alles-Klar_0.1.0_amd64.deb", navn: "Alles Klar_0.1.0_amd64.deb", type: DEB },
-    "linux-arm": { key: "2026-11-24/de/Alles-Klar_0.1.0_arm64.deb", navn: "Alles Klar_0.1.0_arm64.deb", type: DEB },
+    mac: { key: "2026-11-26/de/Alles-Klar_0.1.0_universal.dmg", navn: "Alles Klar.dmg", type: DMG },
+    windows: { key: "2026-11-26/de/Alles-Klar_0.1.0_x64-setup.exe", navn: "Alles Klar.exe", type: EXE },
+    linux: { key: "2026-11-26/de/Alles-Klar_0.1.0_amd64.deb", navn: "Alles Klar_0.1.0_amd64.deb", type: DEB },
+    "linux-arm": { key: "2026-11-26/de/Alles-Klar_0.1.0_arm64.deb", navn: "Alles Klar_0.1.0_arm64.deb", type: DEB },
   },
   // FrostCopy (amerikansk), /frostcopy/download/…
   frostcopy: {
-    mac: { key: "2026-11-24/us/FrostCopy_0.1.0_universal.dmg", navn: "FrostCopy.dmg", type: DMG },
-    windows: { key: "2026-11-24/us/FrostCopy_0.1.0_x64-setup.exe", navn: "FrostCopy.exe", type: EXE },
-    linux: { key: "2026-11-24/us/FrostCopy_0.1.0_amd64.deb", navn: "FrostCopy_0.1.0_amd64.deb", type: DEB },
-    "linux-arm": { key: "2026-11-24/us/FrostCopy_0.1.0_arm64.deb", navn: "FrostCopy_0.1.0_arm64.deb", type: DEB },
+    mac: { key: "2026-11-26/us/FrostCopy_0.1.0_universal.dmg", navn: "FrostCopy.dmg", type: DMG },
+    windows: { key: "2026-11-26/us/FrostCopy_0.1.0_x64-setup.exe", navn: "FrostCopy.exe", type: EXE },
+    linux: { key: "2026-11-26/us/FrostCopy_0.1.0_amd64.deb", navn: "FrostCopy_0.1.0_amd64.deb", type: DEB },
+    "linux-arm": { key: "2026-11-26/us/FrostCopy_0.1.0_arm64.deb", navn: "FrostCopy_0.1.0_arm64.deb", type: DEB },
   },
 };
 
@@ -713,7 +717,14 @@ async function deBetalt(request, env, url) {
 // Samme løp som Alles Klar, men koden er felles og alt utgaven har for seg selv (adresse, navn, lisensprefiks,
 // pris og tekstene kunden ser) står i .worker/utgaver/<kode>.js. Se README.md der.
 
-export const UTGAVER = { gb: utgaveGb, fr: utgaveFr, es: utgaveEs, it: utgaveIt, nl: utgaveNl, pl: utgavePl };
+export const UTGAVER = { gb: utgaveGb, fr: utgaveFr, es: utgaveEs, it: utgaveIt, nl: utgaveNl, pl: utgavePl, se: utgaveSe, dk: utgaveDk, at: utgaveAt, be: utgaveBe };
+
+/** Utgaver med to språk (Belgia: nederlandsk, og fransk under `u.fr`): bestillingen sier `lang`, og fakturaen og
+ * lisens-e-posten skrives på det språket. Uten `u.fr` eller med et annet språk er utgaven som før. */
+function utSpråk(u, lang) {
+  if (lang !== "fr" || !u.fr) return u;
+  return { ...u, ...u.fr, t: { ...u.t, ...(u.fr.t || {}) }, fr: undefined, lang: "fr" };
+}
 const UTGAVE_PÅ_STI = Object.fromEntries(Object.values(UTGAVER).map((u) => [u.sti, u]));
 
 /** Utgaven en adresse hører til, ut fra første ledd («cest-clair»), eller null. */
@@ -805,10 +816,11 @@ function utFaktura(u, o) {
 async function utBestill(request, env, u) {
   if (!env.KLART_LISENSNOKKEL) return json({ error: u.t.ikkeApen }, 503);
   const b = await body(request);
+  u = utSpråk(u, b.lang);
   // Et felt mennesker ikke ser. Roboter fyller det ut; de får et vanlig svar, og ingenting skjer.
   if (b.website) return json({ ok: true, invoice: u.nrPrefiks + "0", price: 0, sent: true });
   const art = ["municipal", "state"].includes(b.art) ? b.art : "business";
-  const p = u.pris({ art, persons: b.persons, sector: b.sector, inhabitants: b.inhabitants, employees: b.employees });
+  const p = u.pris({ art, persons: b.persons, sector: b.sector, inhabitants: b.inhabitants, employees: b.employees, ...(u.lang ? { lang: u.lang } : {}) });
   const navn = tekstFra(b.name, 120).replace(/\s+/g, " ");
   const epost = epostFra(b.email);
   const adresse = String(b.address || "").split(/\r?\n/).map((l) => l.replace(/\s+/g, " ").trim()).filter(Boolean).slice(0, 6).map((l) => l.slice(0, 100)).join("\n");
@@ -821,6 +833,7 @@ async function utBestill(request, env, u) {
     navn, epost, adresse, referanse, art: p.art,
     persons: p.persons ?? null, sector: p.sector ?? null, inhabitants: p.inhabitants ?? null, employees: p.employees ?? null,
     pris: p.price, fourYears: p.fourYears ?? null, dato: idag(), forfall: omDager(u.frist),
+    ...(u.lang ? { lang: u.lang } : {}),
   };
   const nr = await lager(env).utNyOrdre(u.kode, o);
   o.faktura = u.nrPrefiks + (1000 + nr);
@@ -866,6 +879,7 @@ async function utBetalt(request, env, url, u) {
   const rad = await lager(env).utOrdre(nr);
   if (!rad || rad.utgave !== u.kode) return json({ error: u.t.ikkeFunnet }, 404);
   const o = rad.data;
+  u = utSpråk(u, o.lang);
   const hode = `<h1 style="font-size:22px">${esc(o.faktura)}: ${esc(o.navn)}</h1><p>${esc(u.navn)}<br>${esc(o.epost)}<br>${esc(utHvaNorsk(u, o))}<br>${esc(u.penger(o.pris))}, bestilt ${esc(o.dato)}, forfall ${esc(o.forfall)}</p>`;
   if (rad.betalt) return usHtmlSide(o.faktura, hode + `<p><b>Lisensnøkkelen ble sendt ${esc(rad.betalt.slice(0, 10))}.</b></p>`);
   if (request.method === "GET") {
