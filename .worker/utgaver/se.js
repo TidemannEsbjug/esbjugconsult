@@ -28,10 +28,10 @@ export default {
   selger: ["ESBJUG CONSULT", "Glenneveien 272B", "1455 Nordre Frogn", "Norge", "Org.nr 938 441 405"],
   // Mac, Windows and Linux (x64 and ARM64) builds exist; the lead fixes sizes and checksums.
   filer: {
-    mac: { key: "2026-11-26/se/Klappat-och-Klart_0.1.0_universal.dmg", navn: "Klappat och Klart.dmg" },
-    windows: { key: "2026-11-26/se/Klappat-och-Klart_0.1.0_x64-setup.exe", navn: "Klappat och Klart.exe" },
-    linux: { key: "2026-11-26/se/Klappat-och-Klart_0.1.0_amd64.deb", navn: "Klappat-och-Klart_0.1.0_amd64.deb" },
-    "linux-arm": { key: "2026-11-26/se/Klappat-och-Klart_0.1.0_arm64.deb", navn: "Klappat-och-Klart_0.1.0_arm64.deb" },
+    mac: { key: "2026-11-26d/se/Klappat-och-Klart_0.1.0_universal.dmg", navn: "Klappat och Klart.dmg" },
+    windows: { key: "2026-11-26d/se/Klappat-och-Klart_0.1.0_x64-setup.exe", navn: "Klappat och Klart.exe" },
+    linux: { key: "2026-11-26d/se/Klappat-och-Klart_0.1.0_amd64.deb", navn: "Klappat-och-Klart_0.1.0_amd64.deb" },
+    "linux-arm": { key: "2026-11-26d/se/Klappat-och-Klart_0.1.0_arm64.deb", navn: "Klappat-och-Klart_0.1.0_arm64.deb" },
   },
   t: {
     ikkeFunnet: "Hittades inte.",
