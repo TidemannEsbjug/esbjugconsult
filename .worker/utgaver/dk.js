@@ -28,7 +28,7 @@ export default {
   // Mac, Windows, Linux and Linux ARM builds exist (26.11.2026). The lead fixes sizes and checksums.
   filer: {
     mac: { key: "2026-11-26/dk/Krystallklart_0.1.0_universal.dmg", navn: "Krystallklart.dmg" },
-    windows: { key: "2026-11-26/dk/Krystallklart_0.1.0_x64-setup.exe", navn: "Krystallklart.exe" },
+    windows: { key: "2026-11-27/dk/Krystallklart_0.1.0_x64-setup.exe", navn: "Krystallklart.exe" },
     linux: { key: "2026-11-26/dk/Krystallklart_0.1.0_amd64.deb", navn: "Krystallklart_0.1.0_amd64.deb" },
     "linux-arm": { key: "2026-11-26/dk/Krystallklart_0.1.0_arm64.deb", navn: "Krystallklart_0.1.0_arm64.deb" },
   },
