@@ -189,24 +189,28 @@ export default {
 
 // Forsidens seksjon 2 (forklaringsvideoen, eieren 25.11.2026): språket velges her på kanten, ut fra landet Cloudflare
 // ser og Accept-Language, så siden kommer med riktig film og plakat og nettleseren ikke må hente eller bytte noe selv.
-const FV_LAND = {"NO": "no", "SJ": "no", "US": "us", "GB": "gb", "IE": "gb", "DE": "de", "AT": "at", "CH": "de", "LI": "de", "FR": "fr", "LU": "fr", "MC": "fr", "ES": "es", "AD": "es", "IT": "it", "SM": "it", "VA": "it", "NL": "nl", "PL": "pl", "SE": "se", "AX": "se", "DK": "dk", "FO": "dk", "GL": "dk", "BE": "be"};
-const FV_MERKE = {"no": "Klart", "us": "FrostCopy", "gb": "FrostCopy", "de": "Alles Klar", "at": "Glockenklar", "fr": "C’est Clair", "es": "Clarísimo", "it": "Chiarissimo", "nl": "Klip en Klaar", "pl": "Wszystko Jasne", "se": "Klappat och Klart", "dk": "Krystallklart", "benl": "Clair & Klaar", "befr": "Clair & Klaar", "bede": "Clair & Klaar"};
-const FV_MAPPE = {"no": "/klart/film/forklaring.mp4", "us": "/frostcopy/film/forklaring.mp4", "gb": "/frostcopy-uk/film/forklaring.mp4", "de": "/alles-klar/film/forklaring.mp4", "at": "/glockenklar/film/forklaring.mp4", "fr": "/cest-clair/film/forklaring.mp4", "es": "/clarisimo/film/forklaring.mp4", "it": "/chiarissimo/film/forklaring.mp4", "nl": "/klip-en-klaar/film/forklaring.mp4", "pl": "/wszystko-jasne/film/forklaring.mp4", "se": "/klappatochklart/film/forklaring.mp4", "dk": "/krystallklart/film/forklaring.mp4", "benl": "/clair-klaar/film/forklaring.mp4", "befr": "/clair-klaar/fr/film/forklaring.mp4", "bede": "/clair-klaar/film/forklaring-de.mp4"};
+const FV_LAND = {"NO": "no", "SJ": "no", "US": "us", "GB": "gb", "IE": "ie", "DE": "de", "AT": "at", "CH": "ch", "LI": "de", "FR": "fr", "LU": "fr", "MC": "fr", "ES": "es", "AD": "es", "IT": "it", "SM": "it", "VA": "it", "NL": "nl", "PL": "pl", "SE": "se", "AX": "fisv", "DK": "dk", "FO": "dk", "GL": "dk", "BE": "be", "PT": "pt", "FI": "fi"};
+const FV_MERKE = {"no": "Klart", "us": "FrostCopy", "gb": "FrostCopy", "de": "Alles Klar", "at": "Glockenklar", "fr": "C’est Clair", "es": "Clarísimo", "it": "Chiarissimo", "nl": "Klip en Klaar", "pl": "Wszystko Jasne", "se": "Klappat och Klart", "dk": "Krystallklart", "benl": "Clair & Klaar", "befr": "Clair & Klaar", "bede": "Clair & Klaar", "ie": "FrostCopy", "chde": "Glatscher", "chfr": "Glatscher", "chit": "Glatscher", "pt": "Claríssimo", "fi": "Päivänselvä", "fisv": "Päivänselvä"};
+const FV_MAPPE = {"no": "/klart/film/forklaring.mp4", "us": "/frostcopy/film/forklaring.mp4", "gb": "/frostcopy-uk/film/forklaring.mp4", "de": "/alles-klar/film/forklaring.mp4", "at": "/glockenklar/film/forklaring.mp4", "fr": "/cest-clair/film/forklaring.mp4", "es": "/clarisimo/film/forklaring.mp4", "it": "/chiarissimo/film/forklaring.mp4", "nl": "/klip-en-klaar/film/forklaring.mp4", "pl": "/wszystko-jasne/film/forklaring.mp4", "se": "/klappatochklart/film/forklaring.mp4", "dk": "/krystallklart/film/forklaring.mp4", "benl": "/clair-klaar/film/forklaring.mp4", "befr": "/clair-klaar/fr/film/forklaring.mp4", "bede": "/clair-klaar/film/forklaring-de.mp4", "ie": "/frostcopy-ie/film/forklaring.mp4", "chde": "/glatscher/film/forklaring.mp4", "chfr": "/glatscher/film/forklaring-fr.mp4", "chit": "/glatscher/film/forklaring-it.mp4", "pt": "/clarissimo/film/forklaring.mp4", "fi": "/paivanselva/film/forklaring.mp4", "fisv": "/paivanselva/film/forklaring-sv.mp4"};
 function forklaringSprak(request, svar, url) {
   let s = FV_LAND[request.cf?.country || ""];
   if (!s) for (const del of (request.headers.get("Accept-Language") || "").toLowerCase().split(",")) {
     const t = del.trim().split(";")[0];
     if (/^(nb|nn|no)\b/.test(t)) { s = "no"; break; }
-    if (t === "en-gb" || t === "en-ie") { s = "gb"; break; }
+    if (t === "en-ie") { s = "ie"; break; }
+    if (t === "en-gb") { s = "gb"; break; }
     if (t.startsWith("en")) { s = "us"; break; }
+    if (t === "sv-fi" || t === "sv-ax") { s = "fisv"; break; }
     if (t.startsWith("sv")) { s = "se"; break; }
     if (t.startsWith("da")) { s = "dk"; break; }
     if (t === "de-at") { s = "at"; break; }
+    if (t === "de-ch" || t === "fr-ch" || t === "it-ch") { s = "ch" + t.slice(0, 2); break; }
     if (t === "nl-be" || t === "fr-be" || t === "de-be") { s = "be" + t.slice(0, 2); break; }
     if (FV_MAPPE[t.slice(0, 2)]) { s = t.slice(0, 2); break; }
   }
   s ||= url.pathname.startsWith("/en/") ? "us" : "no";
-  if (s === "be") { const t = (request.headers.get("Accept-Language") || "").toLowerCase().slice(0, 2); s = t === "fr" ? "befr" : t === "de" ? "bede" : "benl"; }
+  const FV_G = {"be": {"fr": "befr", "de": "bede", "_": "benl"}, "ch": {"fr": "chfr", "it": "chit", "_": "chde"}, "fi": {"sv": "fisv", "_": "fi"}};   // flagg med flere språk
+  if (FV_G[s]) { const t = (request.headers.get("Accept-Language") || "").toLowerCase().slice(0, 2); s = FV_G[s][t] || FV_G[s]._; }
   const m = FV_MAPPE[s];
   return new HTMLRewriter()
     .on("section.fv", { element: (el) => el.setAttribute("data-sprak", s) })
