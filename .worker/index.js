@@ -7,6 +7,9 @@ import { erLansert, handleAllesKlar, handleFrostCopy, handleKlart, handleNedlast
 export { ChatHub } from "./chat.js";
 export { KlartLager } from "./klart.js";
 
+// Prissidene som er skjult (se fetch). Gruppe 1 er utgavens forside.
+const SKJULT_PRIS = /^\/(alles-klar|glockenklar|cest-clair|chiarissimo|clair-klaar\/fr|clair-klaar|clarisimo|klip-en-klaar|wszystko-jasne|klappatochklart|krystallklart|frostcopy-uk|frostcopy)\/(?:pris|preis|prix|prezzi|prijzen|precios|cennik|priser|pricing|buy)(?:\/|$)/;
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -38,6 +41,14 @@ export default {
     if (/^\/(podcast|blogg)(\/|$)/.test(url.pathname)) {
       if (url.pathname.startsWith("/podcast/lyd/") || /\.[a-z0-9]+$/i.test(url.pathname)) return new Response("Not found", { status: 404 });
       url.pathname = "/"; url.search = ""; return Response.redirect(url.toString(), 302);
+    }
+    // Prisene er skjult fra 27.11.2026 i alle utgavene utenom den norske (/klart/pris/ er åpen): eieren skal gå gjennom
+    // prisreglene først. Filene og prismodulene (price.js) ligger der fortsatt; sidene sendes til utgavens forside (302,
+    // så de kan komme tilbake) og filene svarer 404, også for gamle versjoner. For å åpne igjen: fjern SKJULT_PRIS.
+    const skjult = url.pathname.match(SKJULT_PRIS);
+    if (skjult) {
+      if (/\.[a-z0-9]+$/i.test(url.pathname)) return new Response("Not found", { status: 404 });
+      return Response.redirect(`${url.origin}/${skjult[1]}/`, 302);
     }
     // Siden slik den så ut ved en tidligere versjon (lagret i R2 fra GitHub, se versjonerOppdater i chat.js).
     const ver = url.pathname.match(/^\/versjon\/([0-9a-f]{40})\/?$/);
@@ -301,6 +312,7 @@ async function versjonSide(env, url, sha) {
 async function versjonFil(env, sha, sti) {
   if (sti.includes("..")) return new Response("Ugyldig", { status: 400 });
   if (/^(podcast|blogg)(\/|$)/.test(sti)) return new Response("Not found", { status: 404 });   // avpublisert, se fetch over
+  if (SKJULT_PRIS.test("/" + sti)) return new Response("Not found", { status: 404 });   // skjulte priser, se fetch
   const ext =(sti.split(".").pop() || "").toLowerCase();
   const typer = { jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", webp: "image/webp", gif: "image/gif", svg: "image/svg+xml", avif: "image/avif", ico: "image/x-icon", css: "text/css", js: "text/javascript", mjs: "text/javascript", mp4: "video/mp4", webm: "video/webm", mp3: "audio/mpeg", m4a: "audio/mp4", woff2: "font/woff2", woff: "font/woff", json: "application/json" };
   const type = typer[ext] || "application/octet-stream", nøkkel = `versjoner/filer/${sha}/${sti}`;
