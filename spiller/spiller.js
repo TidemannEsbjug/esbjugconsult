@@ -16,7 +16,9 @@
     es: ["Reproducir", "Pausa", "Pantalla completa", "Salir de pantalla completa", "Progreso"],
     it: ["Riproduci", "Pausa", "Schermo intero", "Esci da schermo intero", "Avanzamento"],
     nl: ["Afspelen", "Pauze", "Volledig scherm", "Volledig scherm sluiten", "Tijdlijn"],
-    pl: ["Odtwórz", "Pauza", "Pełny ekran", "Zamknij pełny ekran", "Postęp"]
+    pl: ["Odtwórz", "Pauza", "Pełny ekran", "Zamknij pełny ekran", "Postęp"],
+    sv: ["Spela upp", "Paus", "Helskärm", "Avsluta helskärm", "Tidslinje"],
+    da: ["Afspil", "Pause", "Fuld skærm", "Luk fuld skærm", "Tidslinje"]
   };
   T.nb = T.nn = T.no;
   var NS = "http://www.w3.org/2000/svg";
