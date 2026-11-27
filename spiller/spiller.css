@@ -49,6 +49,8 @@
   background: #fff;
   box-shadow: 0 0 0 1px rgba(0, 32, 91, 0.07), 0 36px 80px -42px rgba(0, 32, 91, 0.45);
 }
+/* Språkbytte: den nye filmen lastes usynlig oppå den som spilles (spiller.js, hot) */
+.spl video.spl-ny { position: absolute; top: 8px; left: 8px; width: calc(100% - 16px); opacity: 0; pointer-events: none; }
 .spl video {
   display: block;
   width: 100%;
@@ -298,6 +300,7 @@
 @media (max-width: 560px) {
   .spl-ramme { padding: 5px; border-radius: 16px; }
   .spl video { border-radius: 12px; }
+  .spl video.spl-ny { top: 5px; left: 5px; width: calc(100% - 10px); }
   .spl-dekke { inset: 5px; gap: 12px; }
   .spl-videre { padding: 11px 16px; font-size: 14px; }
   .spl-kontroll { left: 13px; right: 13px; bottom: 13px; padding: 3px 3px 3px 14px; gap: 6px; }

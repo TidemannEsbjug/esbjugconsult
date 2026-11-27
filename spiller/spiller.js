@@ -183,18 +183,20 @@
     }
     function ferdigMed() { w.classList.remove("spl-i-gang", "spl-vis"); }
 
+    var LYTT = [];
+    function paa(type, fn) { LYTT.push([type, fn]); v.addEventListener(type, fn); }
     var slutt = false;
     knapp.addEventListener("click", spill);
-    v.addEventListener("click", function () { if (!v.paused) v.pause(); else spill(); });
-    v.addEventListener("play", function () {
+    paa("click", function () { if (!v.paused) v.pause(); else spill(); });
+    paa("play", function () {
       w.classList.remove("spl-ferdig"); w.classList.add("spl-spiller"); igang();
       videre.hidden = true; knapp.setAttribute("aria-label", t[1]);
       cancelAnimationFrame(ramm); ramm = requestAnimationFrame(lop);
     });
-    v.addEventListener("pause", function () { w.classList.remove("spl-spiller"); knapp.setAttribute("aria-label", t[0]); tegn(); });
-    v.addEventListener("timeupdate", function () { if (v.paused) tegn(); });
-    v.addEventListener("loadedmetadata", tegn);
-    v.addEventListener("ended", function () {
+    paa("pause", function () { w.classList.remove("spl-spiller"); knapp.setAttribute("aria-label", t[0]); tegn(); });
+    paa("timeupdate", function () { if (v.paused) tegn(); });
+    paa("loadedmetadata", tegn);
+    paa("ended", function () {
       w.classList.remove("spl-spiller");
       w.classList.add("spl-ferdig");
       ferdigMed();
@@ -204,16 +206,71 @@
       v.load();
       les();
     });
-    v.addEventListener("emptied", function () {
+    paa("emptied", function () {
       if (slutt) { slutt = false; tegn(); return; }
       // språkbytte mens filmen er i gang: den nye filmen tar over uten å gå tilbake til startflaten
       if (w.__bytter) { w.__bytter = false; tegn(); les(); return; }
       w.classList.remove("spl-spiller", "spl-ferdig"); ferdigMed(); tegn(); les();
     });
 
+    // Språkbytte midt i filmen (eieren 27.11.2026): den nye filmen lastes i en video nr. 2 under den som spilles, spoles til
+    // samme sted (tid() regnes ut av siden) og tar over når den er klar, uten opphold. forbered() begynner å laste på hover.
+    var ny = null;
+    function kast() { if (!ny) return; var b = ny; ny = null; b.removeAttribute("src"); b.load(); if (b.parentNode) b.parentNode.removeChild(b); }
+    function lagNy(src) {
+      if (ny && ny.__src === src) return ny;
+      kast();
+      var b = document.createElement("video");
+      b.className = "spl-ny"; b.setAttribute("playsinline", ""); b.setAttribute("disablepictureinpicture", ""); b.setAttribute("aria-hidden", "true");
+      b.preload = "auto"; b.__src = src;
+      // lastes den ikke, spilles den gamle videre
+      b.addEventListener("error", function () { if (b === ny) kast(); });
+      b.src = src;
+      v.parentNode.insertBefore(b, v.nextSibling);
+      ny = b; return b;
+    }
+    function sikt(b, t) {
+      function gaa() { var d = b.duration; b.currentTime = Math.max(0, d && isFinite(d) ? Math.min(t, d - 0.3) : t); }
+      b.__t = t;
+      if (b.readyState >= 1) gaa(); else b.addEventListener("loadedmetadata", gaa, { once: true });
+    }
+    function overta(b, spiller) {
+      if (b !== ny) return;
+      ny = null;
+      var a = v;
+      LYTT.forEach(function (l) { a.removeEventListener(l[0], l[1]); });
+      b.className = ""; b.removeAttribute("aria-hidden"); b.muted = a.muted; b.volume = a.volume;
+      a.pause(); if (a.parentNode) a.parentNode.removeChild(a);
+      v = b; w.__spl.video = b;
+      LYTT.forEach(function (l) { b.addEventListener(l[0], l[1]); });
+      while (a.firstChild) a.removeChild(a.firstChild); a.removeAttribute("src"); a.load();
+      if (spiller) { w.classList.add("spl-spiller"); cancelAnimationFrame(ramm); ramm = requestAnimationFrame(lop); }
+      tegn(); les();
+    }
+    function iSamme(src, t2, ferdig) {
+      w.__bytter = true; setTimeout(function () { w.__bytter = false; }, 1500);
+      while (v.firstChild) v.removeChild(v.firstChild);
+      v.src = src; v.load();
+      v.addEventListener("loadedmetadata", function () { v.currentTime = t2; spill(); if (ferdig) ferdig(); }, { once: true });
+    }
+    function hot(src, tid, ferdig) {
+      var b = lagNy(src), spiller = !v.paused;
+      function klar() {
+        if (b !== ny) return;
+        if (b.readyState < 3) { b.addEventListener("canplay", klar, { once: true }); return; }
+        function ta() { overta(b, spiller); if (ferdig) ferdig(); }
+        if (!spiller) { ta(); return; }
+        var p = b.play();
+        // nekter nettleseren lyd på den nye videoen (iPhone), byttes kilden på den som spilles i stedet, med et lite opphold
+        if (p && p.then) p.then(ta, function () { if (b !== ny) return; var t2 = b.currentTime; kast(); iSamme(src, t2, ferdig); }); else ta();
+      }
+      b.addEventListener("seeked", klar, { once: true });
+      sikt(b, tid());
+    }
+
     les();
     tegn();
-    w.__spl = { les: les, video: v };
+    w.__spl = { les: les, video: v, hot: hot, forbered: function (src, tid) { sikt(lagNy(src), tid()); }, kast: kast, i: function () { return v; } };
     return w.__spl;
   }
 
@@ -222,5 +279,10 @@
   window.Spiller = { lag: lag, oppdater: function (w) { var s = lag(w); if (s) s.les(); },
     valgt: function (w) { w.classList.remove("spl-velg"); },
     // kalles før kilden byttes mens filmen er i gang; den nye filmen spilles da videre fra start
-    bytter: function (w) { w.__bytter = true; setTimeout(function () { w.__bytter = false; }, 1500); } };
+    bytter: function (w) { w.__bytter = true; setTimeout(function () { w.__bytter = false; }, 1500); },
+    // språkbytte midt i filmen: tid() gir stedet i den nye filmen; ferdig() kalles når den har tatt over
+    hot: function (w, src, tid, ferdig) { var s = lag(w); if (s) s.hot(src, tid, ferdig); },
+    forbered: function (w, src, tid) { var s = lag(w); if (s) s.forbered(src, tid); },
+    kast: function (w) { var s = lag(w); if (s) s.kast(); },
+    video: function (w) { var s = lag(w); return s ? s.i() : null; } };
 })();
