@@ -27,7 +27,7 @@ export default {
   // Alle vier Pakete gibt es; Größen und Prüfsummen setzt der Leiter.
   filer: {
     mac: { key: "2026-11-26/at/Glockenklar_0.1.0_universal.dmg", navn: "Glockenklar.dmg" },
-    windows: { key: "2026-11-27/at/Glockenklar_0.1.0_x64-setup.exe", navn: "Glockenklar.exe" },
+    windows: { key: "2026-11-27c/at/Glockenklar_0.1.0_x64-setup.exe", navn: "Glockenklar.exe" },
     linux: { key: "2026-11-26/at/Glockenklar_0.1.0_amd64.deb", navn: "Glockenklar_0.1.0_amd64.deb" },
     "linux-arm": { key: "2026-11-26/at/Glockenklar_0.1.0_arm64.deb", navn: "Glockenklar_0.1.0_arm64.deb" },
   },

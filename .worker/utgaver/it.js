@@ -26,7 +26,7 @@ export default {
   // Bare Mac-bygget finnes ennå (24.11.2026). Windows og Linux nevnes på sidene som på vei, uten lenker.
   filer: {
     mac: { key: "2026-11-26/it/Chiarissimo_0.1.0_universal.dmg", navn: "Chiarissimo.dmg" },
-    windows: { key: "2026-11-27/it/Chiarissimo_0.1.0_x64-setup.exe", navn: "Chiarissimo.exe" },
+    windows: { key: "2026-11-27c/it/Chiarissimo_0.1.0_x64-setup.exe", navn: "Chiarissimo.exe" },
     linux: { key: "2026-11-26/it/Chiarissimo_0.1.0_amd64.deb", navn: "Chiarissimo_0.1.0_amd64.deb" },
     "linux-arm": { key: "2026-11-26/it/Chiarissimo_0.1.0_arm64.deb", navn: "Chiarissimo_0.1.0_arm64.deb" },
   },

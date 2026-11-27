@@ -151,21 +151,21 @@ const FILER = {
   // Klart (norsk), /klart/last-ned/…
   klart: {
     mac: { key: "2026-11-26/Klart_0.1.0_universal.dmg", navn: "Klart.dmg", type: DMG },
-    windows: { key: "2026-11-27/Klart_0.1.0_x64-setup.exe", navn: "Klart.exe", type: EXE },
+    windows: { key: "2026-11-27c/Klart_0.1.0_x64-setup.exe", navn: "Klart.exe", type: EXE },
     linux: { key: "2026-11-26/Klart_0.1.0_amd64.deb", navn: "Klart_0.1.0_amd64.deb", type: DEB },
     "linux-arm": { key: "2026-11-26/Klart_0.1.0_arm64.deb", navn: "Klart_0.1.0_arm64.deb", type: DEB },
   },
   // Alles Klar (tysk), /alles-klar/last-ned/…
   "alles-klar": {
     mac: { key: "2026-11-26/de/Alles-Klar_0.1.0_universal.dmg", navn: "Alles Klar.dmg", type: DMG },
-    windows: { key: "2026-11-27/de/Alles-Klar_0.1.0_x64-setup.exe", navn: "Alles Klar.exe", type: EXE },
+    windows: { key: "2026-11-27c/de/Alles-Klar_0.1.0_x64-setup.exe", navn: "Alles Klar.exe", type: EXE },
     linux: { key: "2026-11-26/de/Alles-Klar_0.1.0_amd64.deb", navn: "Alles Klar_0.1.0_amd64.deb", type: DEB },
     "linux-arm": { key: "2026-11-26/de/Alles-Klar_0.1.0_arm64.deb", navn: "Alles Klar_0.1.0_arm64.deb", type: DEB },
   },
   // FrostCopy (amerikansk), /frostcopy/download/…
   frostcopy: {
     mac: { key: "2026-11-26/us/FrostCopy_0.1.0_universal.dmg", navn: "FrostCopy.dmg", type: DMG },
-    windows: { key: "2026-11-27/us/FrostCopy_0.1.0_x64-setup.exe", navn: "FrostCopy.exe", type: EXE },
+    windows: { key: "2026-11-27c/us/FrostCopy_0.1.0_x64-setup.exe", navn: "FrostCopy.exe", type: EXE },
     linux: { key: "2026-11-26/us/FrostCopy_0.1.0_amd64.deb", navn: "FrostCopy_0.1.0_amd64.deb", type: DEB },
     "linux-arm": { key: "2026-11-26/us/FrostCopy_0.1.0_arm64.deb", navn: "FrostCopy_0.1.0_arm64.deb", type: DEB },
   },

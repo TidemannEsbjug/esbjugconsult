@@ -45,7 +45,7 @@ export default {
   // All four builds exist. The lead fixes sizes and checksums.
   filer: {
     mac: { key: "2026-11-26/be/Clair-Klaar_0.1.0_universal.dmg", navn: "Clair & Klaar.dmg" },
-    windows: { key: "2026-11-27/be/Clair-Klaar_0.1.0_x64-setup.exe", navn: "Clair & Klaar.exe" },
+    windows: { key: "2026-11-27c/be/Clair-Klaar_0.1.0_x64-setup.exe", navn: "Clair & Klaar.exe" },
     linux: { key: "2026-11-26/be/Clair-Klaar_0.1.0_amd64.deb", navn: "Clair-Klaar_0.1.0_amd64.deb" },
     "linux-arm": { key: "2026-11-26/be/Clair-Klaar_0.1.0_arm64.deb", navn: "Clair-Klaar_0.1.0_arm64.deb" },
   },

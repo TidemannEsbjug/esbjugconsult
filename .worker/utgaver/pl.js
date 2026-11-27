@@ -29,7 +29,7 @@ export default {
   // Only the Mac build exists so far; the pages say Windows and Linux are coming.
   filer: {
     mac: { key: "2026-11-26/pl/Wszystko-Jasne_0.1.0_universal.dmg", navn: "Wszystko Jasne.dmg" },
-    windows: { key: "2026-11-27/pl/Wszystko-Jasne_0.1.0_x64-setup.exe", navn: "Wszystko Jasne.exe" },
+    windows: { key: "2026-11-27c/pl/Wszystko-Jasne_0.1.0_x64-setup.exe", navn: "Wszystko Jasne.exe" },
     linux: { key: "2026-11-26/pl/Wszystko-Jasne_0.1.0_amd64.deb", navn: "Wszystko-Jasne_0.1.0_amd64.deb" },
     "linux-arm": { key: "2026-11-26/pl/Wszystko-Jasne_0.1.0_arm64.deb", navn: "Wszystko-Jasne_0.1.0_arm64.deb" },
   },

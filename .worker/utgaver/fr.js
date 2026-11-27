@@ -27,7 +27,7 @@ export default {
   // Seule la version Mac existe pour l'instant.
   filer: {
     mac: { key: "2026-11-26/fr/Cest-Clair_0.1.0_universal.dmg", navn: "C'est Clair.dmg" },
-    windows: { key: "2026-11-27/fr/Cest-Clair_0.1.0_x64-setup.exe", navn: "C'est Clair.exe" },
+    windows: { key: "2026-11-27c/fr/Cest-Clair_0.1.0_x64-setup.exe", navn: "C'est Clair.exe" },
     linux: { key: "2026-11-26/fr/Cest-Clair_0.1.0_amd64.deb", navn: "Cest-Clair_0.1.0_amd64.deb" },
     "linux-arm": { key: "2026-11-26/fr/Cest-Clair_0.1.0_arm64.deb", navn: "Cest-Clair_0.1.0_arm64.deb" },
   },
