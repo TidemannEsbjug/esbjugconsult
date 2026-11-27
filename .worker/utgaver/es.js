@@ -10,7 +10,7 @@ export default {
   kode: "es",
   land: "Spania",
   sti: "clarisimo",
-  alias: ["clarísimo", "clarissimo", "clarisimo-es"],
+  alias: ["clarísimo", "clarisimo-es"], // «clarissimo» er Portugal (Claríssimo) fra 27.11.2026
   // La ruta que abre la aplicación con «Comprar una licencia» / «Introducir la clave» (aktivering.rs, lisens_apne_side).
   aktivering: "activar",
   prisSti: "precios",
