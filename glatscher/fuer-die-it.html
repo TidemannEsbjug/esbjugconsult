@@ -1,0 +1,578 @@
+<!doctype html>
+<!--
+  Hei, du som leser kildekoden. Det var deg vi håpet på.
+
+  Klart lover at dokumentene aldri forlater maskinen. Et sånt løfte skal ikke
+  tas på ordet, så sjekk det:
+
+  - Programmet: denne siden har kommandoene som viser hva det snakker med.
+  - Nettsiden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
+    uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
+  - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
+    Vi vil heller høre det fra deg enn fra en kunde.
+
+  Skrevet på nytt 11.11.2026 for Klart slik programmet er nå. Den lokale
+  språkmodellen (llama-server) ble tatt ut 4.11.; pakken har nå bare appen,
+  en hjelper for nøkkelen, PDFium og setningsmodellen. Mac-fasitene er kjørt
+  mot bygget fra 10.11.2026 (signert og notarisert).
+-->
+<html lang="de-CH">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/glatscher/favicon.png" />
+    <title>Für die IT · Glatscher</title>
+    <meta
+      name="description"
+      content="Die Prüfungen, die zeigen, dass Glatscher nicht mit dem Netz kommuniziert, was im Paket und auf der Festplatte liegt und wie die IT Glatscher zentral steuert. Mit Befehlen, erwarteten Ergebnissen und dem, was jede Prüfung belegt."
+    />
+    <meta name="robots" content="noindex" />
+    <!-- Ingen skrifter, bilder eller skript utenfra. De to skriptene bytter mellom Mac og
+         Windows og kopierer kommandoene. Uten skript vises begge systemene, og alt kan markeres. -->
+    <script src="til-it-tidlig.js"></script>
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="sider.css" />
+    <link rel="stylesheet" href="taal.css" />
+    <link rel="alternate" hreflang="de-CH" href="https://esbjugconsult.com/glatscher/fuer-die-it.html" />
+    <link rel="alternate" hreflang="fr-CH" href="https://esbjugconsult.com/glatscher/fr/pour-l-informatique.html" />
+    <link rel="alternate" hreflang="it-CH" href="https://esbjugconsult.com/glatscher/it/per-l-informatica.html" />
+  </head>
+  <body>
+    <header class="s-topp">
+      <div class="s-linje-topp">
+        <a class="s-merke" href="./">Glatscher</a>
+        <nav class="s-nav" aria-label="Seiten">
+          <a href="./">Startseite</a>
+          <a href="fuer-die-it.html" aria-current="page">Für die IT</a>
+          <a href="datenschutz/">Datenschutz</a>
+        </nav>
+        <nav class="taal" aria-label="Sprache / Langue / Lingua"><span aria-current="true">DE</span><span class="taal-streep" aria-hidden="true">|</span><a href="/glatscher/fr/pour-l-informatique.html" hreflang="fr" lang="fr">FR</a><span class="taal-streep" aria-hidden="true">|</span><a href="/glatscher/it/per-l-informatica.html" hreflang="it" lang="it">IT</a></nav>
+      </div>
+      <div class="s-hode">
+        <p class="s-over">Für die IT-Abteilung</p>
+        <h1>Vertrauen Sie uns nicht. Prüfen Sie es nach.</h1>
+        <p class="s-ingress">
+          Glatscher verspricht, dass die Dokumente den Rechner nie verlassen. Hier finden Sie die Befehle,
+          die das zeigen, was sie ausgeben sollen und was jede Prüfung tatsächlich belegt.
+        </p>
+      </div>
+    </header>
+
+    <div class="s-kropp">
+      <nav class="s-innhold" aria-label="Inhalt">
+        <p>Auf dieser Seite</p>
+        <ol>
+          <li><a href="#kort">Kurz gesagt</a></li>
+          <li><a href="#fil">1 Ist das unsere Datei?</a></li>
+          <li><a href="#signert">2 Signiert und unverändert?</a></li>
+          <li><a href="#rettigheter">3 Was darf das Programm?</a></li>
+          <li><a href="#snakker">4 Kommuniziert es mit jemandem?</a></li>
+          <li><a href="#laget">5 Woraus besteht es?</a></li>
+          <li><a href="#steng">Selbst abschotten</a></li>
+          <li><a href="#disk">Was auf der Festplatte liegt</a></li>
+          <li><a href="#styring">Glatscher zentral steuern</a></li>
+          <li><a href="#nokkel">Der Schlüssel in einer Organisation</a></li>
+          <li><a href="#logg">Revisionsprotokoll</a></li>
+          <li><a href="#kommando">Kommandozeile</a></li>
+          <li><a href="#krypto">Kryptografie</a></li>
+          <li><a href="#krav">Systemanforderungen</a></li>
+          <li><a href="#si-fra">Etwas gefunden?</a></li>
+        </ol>
+      </nav>
+
+      <main class="s-tekst" id="innhold">
+        <section class="s-kort" id="kort">
+          <h2>Kurz gesagt</h2>
+          <ul>
+            <li><b>Kein Weg nach draussen.</b> Das Programm hat kein TLS, kann keine Namen im Netz auflösen und lauscht an keinem Port.</li>
+            <li><b>Alles steckt im Paket.</b> Nach der Installation wird nichts heruntergeladen. Kein Updater, keine Nutzungsstatistik, keine Fehlerberichte.</li>
+            <li><b>Sie können es abschotten.</b> Blockieren Sie sämtlichen ausgehenden Verkehr für Glatscher. Das Programm funktioniert genauso gut.</li>
+            <li><b>Sie können es steuern.</b> Eine einzige Datei legt fest, was die Benutzer selbst wählen dürfen.</li>
+          </ul>
+        </section>
+
+        <div class="s-velg">
+          <p id="velg-tittel">Welches System prüfen Sie?</p>
+          <div class="s-velg-knapper" role="group" aria-labelledby="velg-tittel">
+            <button type="button" data-velg="mac" aria-pressed="false">Mac</button>
+            <button type="button" data-velg="windows" aria-pressed="false">Windows</button>
+          </div>
+        </div>
+        <p class="s-skjult" id="melding" role="status" aria-live="polite"></p>
+
+        <!-- ============ 1 ============ -->
+        <section class="s-del" id="fil">
+          <h2><span class="s-nr">1</span>Ist das unsere Datei?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>shasum -a 256 ~/Downloads/Glatscher*.dmg</pre></div>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-FileHash "$HOME\Downloads\Glatscher*.exe"</pre></div>
+          </div>
+          <p class="s-fasit"><b>Erwartetes Ergebnis:</b> Die lange Folge aus Ziffern und Buchstaben stimmt mit der Prüfsumme überein, die wir für das Release veröffentlichen.</p>
+          <p>Glatscher für Windows, Mac und Linux erscheint in Kürze. Die Prüfsummen veröffentlichen wir zusammen mit den Installationspaketen.</p>
+          <p class="s-beviser"><b>Belegt:</b> dass die Datei die ist, die wir veröffentlicht haben. Mehr nicht. Eine Prüfsumme sagt nichts darüber aus, was das Programm tut.</p>
+        </section>
+
+        <!-- ============ 2 ============ -->
+        <section class="s-del" id="signert">
+          <h2><span class="s-nr">2</span>Ist es von uns signiert und unverändert?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>codesign -dv --verbose=4 "/Applications/Glatscher.app" 2>&amp;1 | grep -E "Format|TeamIdentifier|flags|Notarization"</pre></div>
+            <p class="s-fasit">
+              <b>Erwartetes Ergebnis:</b> <code>Format=app bundle with Mach-O universal (x86_64 arm64)</code>,
+              <code>flags=0x10000(runtime)</code>, <code>Notarization Ticket=stapled</code> und
+              <code>TeamIdentifier=N5BKVM258S</code>.
+            </p>
+            <div class="cmd"><pre>spctl -a -vv "/Applications/Glatscher.app"</pre></div>
+            <p class="s-fasit"><b>Erwartetes Ergebnis:</b> <code>accepted</code> und <code>source=Notarized Developer ID</code>.</p>
+            <p>Das Paket enthält zwei weitere ausführbare Dateien: den Helfer, der den Schlüssel verwaltet, und die PDF-Bibliothek. Prüfen Sie auch diese:</p>
+            <div class="cmd"><pre>codesign -dv "/Applications/Glatscher.app/Contents/MacOS/glatscher-tresor" 2>&amp;1 | grep TeamIdentifier
+codesign -dv "/Applications/Glatscher.app/Contents/Resources/bundled/engine/pdfium/libpdfium.dylib" 2>&amp;1 | grep TeamIdentifier</pre></div>
+            <p class="s-fasit"><b>Erwartetes Ergebnis:</b> bei beiden derselbe <code>TeamIdentifier=N5BKVM258S</code>.</p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Die Windows-Version ist von ESBJUG CONSULT signiert. Der Befehl gibt <code>Valid</code> aus und zeigt den Namen im Zertifikat.</p>
+            <div class="cmd"><pre>Get-AuthenticodeSignature "$HOME\Downloads\Glatscher*.exe" | Format-List Status, SignerCertificate</pre></div>
+            <p class="s-fasit"><b>Erwartetes Ergebnis:</b> <code>Valid</code> und unser Name in <code>SignerCertificate</code>.</p>
+          </div>
+          <p class="s-beviser">
+            <b>Belegt:</b> dass der Code von uns stammt und nachträglich nicht verändert wurde. Das ist die Prüfung gegen eine umgebaute Kopie.
+            Eine Kopie mit eingebauter Netzwerkverbindung ist ein anderes Programm, und die Signatur entlarvt sie.
+          </p>
+        </section>
+
+        <!-- ============ 3 ============ -->
+        <section class="s-del" id="rettigheter">
+          <h2><span class="s-nr">3</span>Was darf das Programm?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>codesign -d --entitlements - --xml "/Applications/Glatscher.app" 2>/dev/null | plutil -p -</pre></div>
+            <p class="s-fasit">
+              <b>Erwartetes Ergebnis:</b> fünf Zeilen, alle <code>false</code>: <code>automation.apple-events</code>,
+              <code>cs.allow-dyld-environment-variables</code>, <code>cs.allow-jit</code>,
+              <code>cs.allow-unsigned-executable-memory</code> und <code>cs.disable-library-validation</code>.
+              Keine iCloud-Entitlements und weder <code>network.client</code> noch <code>network.server</code>.
+            </p>
+            <p>
+              <b>Aber beachten Sie Folgendes:</b> Glatscher läuft nicht in der App Sandbox. Damit ist das Fehlen der Netzwerk-Entitlements
+              lediglich eine Angabe. macOS setzt sie ohne Sandbox nicht durch, und ein Programm mit Hardened Runtime
+              kann grundsätzlich trotzdem eine Verbindung öffnen. Wir sagen es lieber selbst, als dass Sie es herausfinden.
+              Was die Frage tatsächlich entscheidet, sind die Punkte 4 und 5 sowie die Regel, die Sie selbst setzen.
+            </p>
+            <p class="s-beviser"><b>Belegt:</b> dass das Programm keine anderen Programme steuern, keinen fremden Code laden und nicht auf iCloud zugreifen kann. Über das Netzwerk belegt es für sich allein nichts.</p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>
+              Windows kennt für gewöhnliche Desktop-Programme keine entsprechenden Berechtigungen. Ein Programm,
+              das mit einer .exe installiert wurde, fragt nicht nach Netzwerkzugriff. Es hat ihn. Deshalb steht hier kein Befehl.
+            </p>
+            <p class="s-beviser"><b>Belegt:</b> unter Windows nichts. Die Sperre ist die Firewall-Regel weiter unten, und der Beleg dafür, dass das Programm still ist, ist Punkt 4.</p>
+          </div>
+        </section>
+
+        <!-- ============ 4 ============ -->
+        <section class="s-del" id="snakker">
+          <h2><span class="s-nr">4</span>Kommuniziert es mit jemandem?</h2>
+          <p>Starten Sie Glatscher, öffnen Sie einen Ordner und lassen Sie ihn einlesen. Führen Sie den Befehl aus, während das Programm läuft.</p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>pgrep -lx glatscher; lsof +c 0 -nP -a -i -c glatscher -c com.apple.WebKit.Networking</pre></div>
+            <p class="s-fasit"><b>Erwartetes Ergebnis:</b> eine Zeile mit der Prozessnummer und <code>glatscher</code>, danach nichts. Glatscher hat keinen einzigen TCP- oder UDP-Socket.</p>
+            <p>
+              Das Fenster von Glatscher wird von WebKit dargestellt, das zu macOS gehört. WebKit startet eigene Hilfsprozesse,
+              und einer davon heisst <code>com.apple.WebKit.Networking</code>. Er ist im Befehl enthalten, denn er wäre es,
+              der etwas abrufen würde, falls das Fenster es versuchte. Auch er muss leer sein.
+            </p>
+            <p>
+              Erscheinen trotzdem Zeilen, haben Sie vermutlich Safari, Mail oder ein anderes Programm mit WebKit geöffnet.
+              Diese teilen sich den Namen des Hilfsprozesses. Schliessen Sie sie und führen Sie den Befehl erneut aus, oder achten Sie auf die Prozessnummern:
+              Die Helfer von Glatscher haben die Nummern direkt nach Glatscher.
+            </p>
+            <p>
+              Achten Sie auf <code>-a</code>. Ohne diese Option verknüpft <code>lsof</code> die Kriterien mit „oder“, und Sie erhalten den gesamten
+              Verkehr des Rechners in der Liste. LuLu oder Little Snitch liefern dasselbe Ergebnis, falls Sie es lieber so sehen möchten.
+            </p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-Process glatscher, tesseract -ErrorAction SilentlyContinue |
+ForEach-Object {
+  "$($_.ProcessName) läuft (Prozess $($_.Id))"
+  Get-NetTCPConnection -OwningProcess $_.Id -ErrorAction SilentlyContinue
+  Get-NetUDPEndpoint -OwningProcess $_.Id -ErrorAction SilentlyContinue
+}</pre></div>
+            <p class="s-fasit"><b>Erwartetes Ergebnis:</b> nur die Zeilen, die melden, dass <code>glatscher</code> läuft, und <code>tesseract</code>, während Glatscher ein Bild liest. Keine Tabellen mit Adressen und Ports.</p>
+            <p>
+              Das Fenster von Glatscher wird von WebView2 dargestellt, das von Microsoft stammt und zu Windows gehört. Es läuft in
+              eigenen Prozessen, <code>msedgewebview2.exe</code>. Der Inhalt des Fensters darf nichts abrufen:
+              Die Regeln aus Punkt 5 unterbinden das. WebView2 selbst kann jedoch mit Microsoft kommunizieren, etwa wegen eigener
+              Updates. Das ist Verkehr von Microsoft, und er enthält nichts von Glatscher oder aus den Dokumenten.
+              Wenn Sie völlige Ruhe wollen, sperren Sie beides in der Firewall.
+            </p>
+            <p>Die Ressourcenüberwachung (<code>resmon</code>), Registerkarte Netzwerk, liefert dasselbe Ergebnis, falls Sie es lieber so sehen möchten.</p>
+          </div>
+          <p class="s-beviser"><b>Belegt:</b> dass das Programm, so wie es bei Ihnen läuft, keinen Weg nach draussen hat. Dieser Prüfung vertrauen wir selbst am meisten.</p>
+        </section>
+
+        <!-- ============ 5 ============ -->
+        <section class="s-del" id="laget">
+          <h2><span class="s-nr">5</span>Woraus besteht es?</h2>
+          <p>Das ist alles, was im Paket für den Mac liegt:</p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>MacOS/glatscher</code></dt>
+              <dd>Das Programm, für Intel- und Apple-Prozessoren. Die Hülle ist in Rust geschrieben (Tauri 2), das Fenster in TypeScript.</dd>
+            </div>
+            <div>
+              <dt><code>MacOS/glatscher-tresor</code></dt>
+              <dd>Ein kleiner Helfer, der den Schlüssel mit dem Schlüsselbund und der Secure Enclave ein- und auspackt.</dd>
+            </div>
+            <div>
+              <dt><code>satz/distilbert-german.onnx</code></dt>
+              <dd>Das Satzmodell auf der Grundlage von distilbert-base-german-cased. Läuft auf dem Prozessor, im Programm selbst. Es ist kein eigener Prozess.</dd>
+            </div>
+            <div>
+              <dt><code>satz/vocab.txt</code></dt>
+              <dd>Das Vokabular des Modells.</dd>
+            </div>
+            <div>
+              <dt><code>pdfium/libpdfium.dylib</code></dt>
+              <dd>PDFium, die Bibliothek, die PDFs liest und rendert.</dd>
+            </div>
+          </dl>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>find "/Applications/Glatscher.app/Contents" -type f -size +100k -exec ls -lh {} \;</pre></div>
+            <p class="s-fasit"><b>Erwartetes Ergebnis:</b> die fünf Dateien oben, das App-Symbol und die Lizenztexte in <code>lizenzen/DRITTANBIETER-CODE.txt</code>. Kein <code>llama-server</code>, keine <code>.gguf</code>, keine anderen Modelle.</p>
+          </div>
+          <p>
+            Das Programm hat kein TLS und keinen HTTP-Client, der einen Host erreichen könnte. Es kann an keinem Port lauschen
+            und keine Namen im Netz auflösen. Das sehen Sie an der Datei selbst:
+          </p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>otool -L "/Applications/Glatscher.app/Contents/MacOS/glatscher" | grep -iE 'curl|CFNetwork|Network\.framework|ssl'
+nm -u "/Applications/Glatscher.app/Contents/MacOS/glatscher" | grep -E '_(bind|listen|accept|getaddrinfo)$'</pre></div>
+            <p class="s-fasit"><b>Erwartetes Ergebnis:</b> keine Zeile von beiden Befehlen.</p>
+            <p>
+              <b>Was Sie finden werden und was es ist:</b> Die Datei ist gegen <code>CloudKit</code> und <code>CoreData</code> gelinkt. Das stammt aus der Fensterbibliothek,
+              nicht von uns. Glatscher nutzt keines davon und hat keine iCloud-Entitlements (Punkt 3).
+            </p>
+          </div>
+          <p>Wenn Sie den Quellcode haben, sind das die Stellen, an denen Sie nachsehen sollten:</p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>src-tauri/Cargo.toml</code></dt>
+              <dd>Kein reqwest, hyper, rustls, native-tls oder openssl. <code>tokio</code> wird ohne <code>net</code> gebaut. Einige dieser Namen stehen trotzdem in <code>Cargo.lock</code>, weil eine Bibliothek sie für Mobilplattformen mitführt. Sie werden nie einkompiliert. Deshalb zählt <code>cargo tree</code>, nicht eine Suche in der Lock-Datei.</dd>
+            </div>
+            <div>
+              <dt><code>tauri.conf.json</code></dt>
+              <dd>CSP für das Fenster: <code>default-src 'self'</code> und <code>connect-src ipc: http://ipc.localhost</code>. Das Fenster darf nur mit dem Programm kommunizieren, in dem es läuft. Keine Frames, keine eingebetteten Objekte, keine Formulare nach aussen. Zusätzlich unterbindet das Programm jede Navigation weg von sich selbst.</dd>
+            </div>
+            <div>
+              <dt><code>capabilities/default.json</code></dt>
+              <dd>Dem Fenster ist das Öffnen von Adressen und Pfaden verboten: <code>opener:deny-open-url</code>, <code>deny-open-path</code> und <code>deny-reveal-item-in-dir</code>. Kein HTTP-Plugin, kein Updater.</dd>
+            </div>
+            <div>
+              <dt><code>scripts/pruefe-netz.sh</code></dt>
+              <dd>Läuft vor jedem Build. Liest den kompilierten Abhängigkeitsgraphen, sucht nach Adressen, nach <code>std::net</code> und nach Unix-Sockets im Rust-Code und bricht den Build ab, falls davon etwas wieder auftaucht.</dd>
+            </div>
+          </dl>
+          <div class="cmd" data-hvor="Im Quellcodeverzeichnis"><pre>cd src-tauri &amp;&amp; cargo tree -e normal | grep -E 'reqwest|hyper|rustls|native-tls|openssl'</pre></div>
+          <p class="s-fasit"><b>Erwartetes Ergebnis:</b> keine Treffer.</p>
+          <p>
+            An einer Stelle öffnet Glatscher eine Webadresse: Klickt der Benutzer auf „Lizenz kaufen“, bittet das Programm das System,
+            <code>https://esbjugconsult.com/glatscher/aktiver?hva=kjop&amp;maskin=…</code> im eigenen Browser des Benutzers zu öffnen.
+            Glatscher verbindet sich nicht selbst dorthin. Dort steht, wie die Organisation eine Lizenz auf Rechnung erhält. Der Rechnercode in der Adresse ist ein SHA-256-Hash der Rechner-ID und sagt nichts
+            über den Benutzer oder die Dokumente aus.
+          </p>
+          <h3>Die Bibliotheken, die die Dokumente lesen</h3>
+          <p>Diese verarbeiten Dateien, die Sie nicht selbst erstellt haben, daher sollten Sie sie kennen:</p>
+          <dl class="s-tabell">
+            <div><dt>PDF</dt><dd>PDFium 158, pdf.js 4.10.38 und pdf-lib 1.17.1. pdf.js läuft ohne <code>eval</code>.</dd></div>
+            <div><dt>Word</dt><dd>JSZip 3.10.1 und docx-preview 0.4.1.</dd></div>
+            <div><dt>Excel</dt><dd>SheetJS (xlsx) 0.18.5.</dd></div>
+            <div><dt>Bilder</dt><dd>Apple Vision auf dem Mac. Die eingebaute Windows-Texterkennung und Tesseract unter Windows, Tesseract unter Linux, jeweils mit Deutsch, Französisch und Italienisch.</dd></div>
+            <div><dt>Sätze</dt><dd>distilbert-base-german-cased, ausgeführt mit tract-onnx 0.23.</dd></div>
+          </dl>
+          <p class="s-beviser"><b>Belegt:</b> dass es im Programm keinen Code gibt, der etwas senden kann. Mit offengelegtem Quellcode können Sie ihn selbst bauen und vergleichen.</p>
+        </section>
+
+        <!-- ============ Steng den selv ============ -->
+        <section class="s-del" id="steng">
+          <h2>Selbst abschotten</h2>
+          <p>Verlassen Sie sich nicht auf uns. Sperren Sie den ausgehenden Verkehr für Glatscher in der Firewall oder per MDM. Das Programm funktioniert genauso gut. Genau darum haben wir es so gebaut.</p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <p>Die in macOS eingebaute Firewall blockiert nur eingehenden Verkehr. Tragen Sie den Pfad in eine Regel im Netzwerkfilter Ihrer MDM-Lösung ein, oder in LuLu bzw. Little Snitch:</p>
+            <div class="cmd" data-hvor="Pfad"><pre>/Applications/Glatscher.app/Contents/MacOS/glatscher</pre></div>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Das Installationsprogramm (.exe) versucht, die Regel selbst anzulegen. Das .msi-Paket tut das nicht. So sehen Sie, ob sie vorhanden ist:</p>
+            <div class="cmd"><pre>Get-NetFirewallRule -DisplayName "Glatscher*" | Get-NetFirewallApplicationFilter</pre></div>
+            <p class="s-fasit"><b>Erwartetes Ergebnis:</b> eine Regel namens „Glatscher - ausgehend blockieren“ mit dem Pfad zu <code>glatscher.exe</code>.</p>
+            <p>Fehlt sie, legen Sie sie so an, in PowerShell als Administrator:</p>
+            <div class="cmd"><pre>New-NetFirewallRule -DisplayName "Glatscher - ausgehend blockieren" `
+  -Direction Outbound -Action Block -Profile Any `
+  -Program (Get-Process glatscher).Path</pre></div>
+            <p>
+              Führen Sie den Befehl aus, während Glatscher geöffnet ist, dann ermittelt er den Pfad selbst. Nehmen Sie auch <code>tesseract.exe</code> auf,
+              die im Ordner <code>bundled</code> unterhalb von Glatscher liegt. Sie ist eine eigene ausführbare Datei.
+              Über Intune: Legen Sie dieselben Regeln in einer Firewall-Richtlinie unter Endpunktsicherheit an.
+            </p>
+          </div>
+          <p>Sobald die Regel von Ihnen stammt, müssen Sie uns nichts von alledem oben glauben.</p>
+        </section>
+
+        <!-- ============ Disken ============ -->
+        <section class="s-del" id="disk">
+          <h2>Was auf der Festplatte liegt</h2>
+          <p>
+            Glatscher speichert alle seine Daten in einem Ordner pro Benutzer. Auf dem Mac ist das
+            <code>~/Library/Application Support/ch.glatscher.app/</code>, unter Windows
+            <code>%APPDATA%\ch.glatscher.app\</code>.
+          </p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>projekte/</code></dt>
+              <dd>Was der Benutzer für jeden Ordner festgelegt hat, und der Text, den Glatscher aus den Dateien gelesen hat. Letzterer ist personenbezogen. Alles ist mit AES-256-GCM verschlüsselt, und die Ordner tragen Namen, aus denen sich der Pfad nicht zurückgewinnen lässt. Ein nicht genutztes Projekt wird nach 30 Tagen vergessen.</dd>
+            </div>
+            <div>
+              <dt><code>pseudonym/</code></dt>
+              <dd>Der Schlüssel (<code>schluessel.schluesselbund</code> auf dem Mac, <code>schluessel.dpapi</code> unter Windows), frühere, beiseitegelegte Schlüssel und das Nummernbuch. Das Nummernbuch ordnet Codes Nummern zu und enthält keine Namen.</dd>
+            </div>
+            <div>
+              <dt><code>secure-enclave.schluessel</code></dt>
+              <dd>Auf Macs mit Secure Enclave: ein Verweis auf einen Schlüssel im Chip. Auf einem anderen Rechner ist er unbrauchbar.</dd>
+            </div>
+            <div>
+              <dt><code>lager/</code></dt>
+              <dd>Die eigenen Markierungen des Benutzers und die Texte aus dem Textwerkzeug. Verschlüsselt.</dd>
+            </div>
+            <div>
+              <dt><code>sicherungskopien/</code></dt>
+              <dd>Kopien der Originale, vor dem Scan angelegt, wenn der Benutzer das wünscht. Der Inhalt jeder Datei ist mit AES-256-GCM verschlüsselt. <b>Datei- und Ordnernamen stehen im Klartext.</b> Die Kopien werden nicht automatisch gelöscht. Glatscher erinnert nach 30 Tagen an sie.</dd>
+            </div>
+            <div>
+              <dt><code>revisionsprotokoll/</code></dt>
+              <dd>Das Revisionsprotokoll, sofern eingeschaltet. Eine Datei pro Monat, die letzten 13 Monate.</dd>
+            </div>
+            <div>
+              <dt>Drei kleine Dateien</dt>
+              <dd><code>aktivierung.json</code> (der Lizenzcode), <code>einstellungen.json</code> und <code>fenster.json</code>. Nicht verschlüsselt und ohne Inhalte aus den Dokumenten.</dd>
+            </div>
+          </dl>
+          <h3>Wie die Schlüssel geschützt sind</h3>
+          <p>
+            Auf dem Mac ist der Schlüssel mit einem weiteren Schlüssel aus dem Schlüsselbund (Dienst
+            <code>ch.glatscher.app.pseudonym</code>) umhüllt, und zusätzlich mit der Secure Enclave, sofern vorhanden. Unter Windows wird DPAPI für den Benutzer verwendet.
+            Das schützt vor anderen Benutzern und vor einer abhandengekommenen Festplatte. Es schützt nicht vor einem Programm, das
+            unter demselben Benutzer läuft. Das ist die Grenze sowohl des Schlüsselbunds als auch von DPAPI, und Sie sollten sie kennen.
+          </p>
+          <h3>Backup und Suche</h3>
+          <p>
+            <code>projekte/</code>, <code>sicherungskopien/</code> und <code>revisionsprotokoll/</code> sind von Spotlight und
+            Time Machine (und der Windows-Suche) ausgenommen. <code>lager/</code> und <code>pseudonym/</code> sind in Time Machine enthalten. Sie sind
+            verschlüsselt, und die Schlüsseldatei lässt sich nur mit dem Schlüsselbund des Rechners öffnen, von dem sie stammt.
+          </p>
+          <h3>Was Glatscher im System einrichtet</h3>
+          <dl class="s-tabell">
+            <div><dt>Dienste im Finder</dt><dd>Auf dem Mac schreibt Glatscher beim Start vier Dienste nach <code>~/Library/Services/</code>: zum Bereinigen und zum Zurückführen von Dateien sowie zum Bereinigen und zum Zurückführen von markiertem Text. Die beiden letzten übernehmen markierten Text aus anderen Programmen. Mit <code>"kommandozeile": false</code> in den Richtlinien werden alle vier entfernt.</dd></div>
+            <div><dt>Adressen und Dateitypen</dt><dd>Glatscher nimmt <code>glatscher://</code>-Links sowie die Dateitypen <code>.glatscherlizenz</code> und <code>.glatschermarkierungen</code> entgegen. Ein Link kann eine Lizenz vorschlagen. Der Benutzer wird immer gefragt, und ein Schlüsselpaket benötigt weiterhin seinen Code.</dd></div>
+            <div><dt>Nichts im Hintergrund</dt><dd>Kein Dienst, kein Autostart-Eintrag und kein Prozess, der nach dem Schliessen des Fensters weiterläuft.</dd></div>
+            <div><dt>Was die Überwachung sehen wird</dt><dd>Glatscher startet einige kurzlebige Systemhelfer: <code>glatscher-tresor</code> (Schlüssel), <code>ioreg</code> (Rechnercode), <code>id</code> und <code>scutil</code> (Benutzer- und Rechnername für die Änderungsliste), <code>tmutil</code> (Ordner von Time Machine ausnehmen), <code>open</code> (Kopieordner anzeigen) und <code>osascript</code> (Benachrichtigungen).</dd></div>
+          </dl>
+          <h3>Alles entfernen</h3>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <p>Löschen Sie das Programm und anschliessend Folgendes:</p>
+            <div class="cmd"><pre>rm -rf ~/Library/Application\ Support/ch.glatscher.app ~/Library/WebKit/ch.glatscher.app ~/Library/Caches/ch.glatscher.app
+rm -f ~/Library/Preferences/ch.glatscher.app.plist
+rm -rf ~/Library/Services/*Glatscher*.workflow
+security delete-generic-password -s ch.glatscher.app.pseudonym</pre></div>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Deinstallieren Sie das Programm und löschen Sie anschliessend <code>%APPDATA%\ch.glatscher.app\</code>, <code>%LOCALAPPDATA%\ch.glatscher.app\</code> und <code>%ProgramData%\Glatscher\</code>.</p>
+          </div>
+          <p class="s-notis varsel">
+            <b>Sichern Sie zuerst den Schlüssel.</b> Wird der Datenordner gelöscht, ohne dass der Schlüssel notiert oder als Schlüsseldatei gespeichert wurde,
+            lässt sich keine Kopie mit Codes mehr zurückführen.
+          </p>
+        </section>
+
+        <!-- ============ Sentral styring ============ -->
+        <section class="s-del" id="styring">
+          <h2>Glatscher zentral steuern</h2>
+          <p>
+            Eine einzige Datei legt fest, was der Benutzer sonst selbst wählt. Verteilen Sie sie per MDM, Intune, Gruppenrichtlinie oder Skript.
+            Beide Speicherorte erfordern Administratorrechte zum Schreiben, sodass der Benutzer nicht aufheben kann, was Sie gesperrt haben.
+          </p>
+          <dl class="s-tabell">
+            <div><dt>Mac</dt><dd><code>/Library/Application Support/Glatscher/richtlinien.json</code></dd></div>
+            <div><dt>Windows</dt><dd><code>%ProgramData%\Glatscher\richtlinien.json</code></dd></div>
+          </dl>
+          <div class="cmd" data-hvor="richtlinien.json"><pre>{
+  "version": 1,
+  "organisation": "Muster GmbH",
+  "immerAusgeblendet": ["namen", "ausweisnummern", "sensibel"],
+  "codeform": "kurz",
+  "gesichterImmer": true,
+  "ohneScan": false,
+  "vergessenNachTagen": 30,
+  "revisionsprotokoll": true,
+  "schluesselExport": false
+}</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>version</code></dt><dd>Pflichtfeld. Es gibt nur <code>1</code>.</dd></div>
+            <div><dt><code>organisation</code></dt><dd>Der Name, der bei gesperrten Einstellungen angezeigt wird: „Festgelegt von Muster GmbH“.</dd></div>
+            <div><dt><code>immerAusgeblendet</code></dt><dd>Die Gruppen, die immer verborgen werden. Sie lassen sich nicht ausschalten, und nichts darin kann auf „stehen lassen“ gesetzt werden. Die Gruppen heissen <code>namen</code>, <code>ausweisnummern</code>, <code>kontakt</code>, <code>sensibel</code>, <code>private Sätze</code>, <code>kennzeichen</code>, <code>konto</code>, <code>geheimnisse</code>, <code>adresse</code>, <code>datum</code>, <code>beruf</code>, <code>alter</code>, <code>arbeitsplatz</code> und <code>aktenzeichen</code>.</dd></div>
+            <div><dt><code>standardGruppen</code></dt><dd>Die Gruppen, die eingeschaltet sind, wenn ein Ordner zum ersten Mal geöffnet wird. Ohne Angabe: die Voreinstellung von Glatscher.</dd></div>
+            <div><dt><code>codeform</code></dt><dd><code>platzhalter</code>, <code>kurz</code>, <code>voll</code> oder <code>schwarz</code>. Ohne Angabe: Der Benutzer wählt.</dd></div>
+            <div><dt><code>gesichterImmer</code></dt><dd>Gesichter werden immer verpixelt, und keines kann auf „stehen lassen“ gesetzt werden.</dd></div>
+            <div><dt><code>ohneScan</code></dt><dd><code>false</code> verlangt, dass Glatscher die Dateien immer einliest. Standardmässig kann der Benutzer auch alles selbst markieren.</dd></div>
+            <div><dt><code>projekte</code></dt><dd><code>false</code>: Glatscher merkt sich zwischen den Sitzungen nichts über die Ordner.</dd></div>
+            <div><dt><code>vergessenNachTagen</code></dt><dd>Wie lange ein ungenutztes Projekt aufbewahrt wird, 1 bis 365 Tage. Standard ist 30.</dd></div>
+            <div><dt><code>kommandozeile</code></dt><dd><code>false</code> schaltet die Kommandozeile und den überwachten Ordner ab.</dd></div>
+            <div><dt><code>revisionsprotokoll</code></dt><dd>Schaltet das Protokoll ein. <code>revisionsordner</code> legt zusätzlich eine Kopie auf einer Netzwerkfreigabe ab.</dd></div>
+            <div><dt><code>berichtJson</code></dt><dd>Schreibt in jedem Kopieordner <code>Bericht.json</code> neben <code>Bericht.txt</code>.</dd></div>
+            <div><dt><code>schluesselExport</code></dt><dd><code>false</code>: Niemand kann den Schlüssel als Wörter oder Datei exportieren. Neue Rechner werden von der schlüsselverantwortlichen Person aufgenommen.</dd></div>
+          </dl>
+          <p>
+            Die Lizenz kann daneben liegen, in <code>lizenz.glatscher</code>. Die Datei enthält den Code, der mit <code>GLATSCHER-</code> beginnt. Dann muss kein Benutzer etwas einfügen.
+            Hat der Benutzer eine eigene gültige Lizenz, hat diese Vorrang.
+          </p>
+          <p class="s-notis varsel">
+            <b>Kann die Datei nicht gelesen werden, startet Glatscher nicht.</b> Ein Tippfehler, ein unbekanntes Feld oder ein Wert ausserhalb des zulässigen Bereichs
+            soll nicht dazu führen, dass Glatscher weniger bereinigt, als Sie festgelegt haben. Die Fehlermeldung nennt das betroffene Feld.
+          </p>
+        </section>
+
+        <!-- ============ Nøkkelen ============ -->
+        <section class="s-del" id="nokkel">
+          <h2>Der Schlüssel in einer Organisation</h2>
+          <p>
+            Die Codes in den Kopien lassen sich nur mit dem Schlüssel wieder in Namen umwandeln. In einer Organisation sollten alle denselben haben,
+            sonst erhält dieselbe Person bei verschiedenen Kolleginnen und Kollegen unterschiedliche Codes.
+          </p>
+          <dl class="s-tabell">
+            <div><dt>Schlüsselverantwortliche Person</dt><dd>Erstellt den Schlüssel der Organisation, verteilt ihn und nimmt Kolleginnen und Kollegen auf.</dd></div>
+            <div><dt>Mitglied</dt><dd>Nutzt den Schlüssel. Das Programm erlaubt einem Mitglied nicht, ihn zu exportieren. Das ist eine Regel im Programm, keine Kryptografie: Der Rechner verfügt über den vollständigen Schlüssel.</dd></div>
+            <div><dt>Schlüsselpaket</dt><dd>Der Schlüssel, verschlüsselt mit einem zwölfstelligen Schlüsselcode (Argon2id und AES-256-GCM). Paket und Code werden getrennt übermittelt. Der Code kann mehrfach verwendet werden, behandeln Sie ihn daher wie den Schlüssel selbst.</dd></div>
+            <div><dt>Aufnahme ohne Netz</dt><dd>Der Rechner der Kollegin erstellt eine Anfrage. Die schlüsselverantwortliche Person antwortet mit einer Aufnahme, die nur dieser Rechner öffnen kann (X25519). Ein Kontrollcode aus 16 Zeichen wird vorgelesen, damit beide wissen, dass sie mit dem richtigen Rechner kommunizieren.</dd></div>
+            <div><dt>Reserve</dt><dd>24 norwegische Wörter auf Papier oder eine mit einer Passphrase gesicherte Schlüsseldatei (Argon2id und AES-256-GCM).</dd></div>
+          </dl>
+          <p class="s-notis varsel">
+            <b>Eine stille Verteilung hat ihren Preis.</b> Sie können das Schlüsselpaket (<code>schluessel.glatscherpaket</code>) neben <code>richtlinien.json</code> ablegen
+            und den Schlüsselcode in die Datei schreiben (<code>schluesselcode</code>). Dann übernimmt Glatscher den Schlüssel, ohne dass der Benutzer etwas tun muss.
+            Allerdings ist der Schlüssel dann nicht sicherer als der Ordner: Wer beide Dateien lesen kann, besitzt den Schlüssel der Organisation.
+          </p>
+        </section>
+
+        <!-- ============ Revisjonslogg ============ -->
+        <section class="s-del" id="logg">
+          <h2>Revisionsprotokoll</h2>
+          <p>
+            Das Protokoll hält fest, was Glatscher getan hat, wann und durch wen. Es enthält nichts aus den Dokumenten:
+            keine Dateinamen, keine Pfade und keine Werte. Es ist ausgeschaltet, bis Sie es mit
+            <code>"revisionsprotokoll": true</code> einschalten.
+          </p>
+          <div class="cmd" data-hvor="Eine Zeile im Protokoll"><pre>{"format":1,"zeit":"2026-11-05T11:50:25.332Z","ereignis":"bereinigen","via":"kommandozeile",
+ "quelle":"DXmRKTRw4ZJMiUixyVeUYA","dateien":18,"geschrieben":14,"zurückgehalten":4,"stellen":193,
+ "ausgeblendet":{"person":140,"steuerId":19,"sensibel":25},"codeform":"kurz","gruppen":["sensibel","namen","ausweisnummern"],
+ "gesichter":true,"durchgesehen":false,"benutzer":"mmueller","rechner":"MMUELLER-MAC","version":"0.1.0"}</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>ereignis</code></dt><dd><code>bereinigen</code>, <code>probelauf</code>, <code>scan</code>, <code>vergessen</code>, <code>zurückführen</code>, <code>niederschrift</code> oder <code>schlüssel</code> (etwas wurde mit dem Schlüssel getan, etwa ein Export).</dd></div>
+            <div><dt><code>via</code></dt><dd><code>app</code>, <code>kommandozeile</code> oder <code>überwachter Ordner</code>.</dd></div>
+            <div><dt><code>quelle</code></dt><dd>Ein Fingerabdruck des Ordners, berechnet mit einem Schlüssel auf dem Rechner. Derselbe Fall hat auf diesem Rechner in jeder Zeile denselben Wert, der Pfad lässt sich daraus aber nicht ablesen. Ein anderer Rechner ergibt für denselben Ordner einen anderen Wert.</dd></div>
+            <div><dt><code>benutzer</code>, <code>rechner</code>, <code>zeit</code></dt><dd>Werden vom Programm selbst gesetzt, nicht vom Fenster.</dd></div>
+            <div><dt>Speicherort</dt><dd><code>revisionsprotokoll/JJJJ-MM.jsonl</code> im Datenordner. Mit <code>revisionsordner</code> zusätzlich <code>&lt;Rechner&gt;-&lt;Benutzer&gt;.jsonl</code> auf einer Netzwerkfreigabe. Glatscher legt diesen Ordner nicht an. Ist die Freigabe nicht verbunden, wird das im lokalen Protokoll vermerkt.</dd></div>
+          </dl>
+          <p class="s-notis">
+            <b>Das Protokoll ist eine gewöhnliche Textdatei.</b> Der Benutzer kann sie ändern. Brauchen Sie ein unveränderliches Protokoll,
+            richten Sie <code>revisionsordner</code> auf einen Speicherort, an dem der Benutzer nur anfügen darf.
+          </p>
+        </section>
+
+        <!-- ============ Kommandolinje ============ -->
+        <section class="s-del" id="kommando">
+          <h2>Kommandozeile und überwachter Ordner</h2>
+          <p>
+            Dasselbe Programm, ohne Fenster. Der Eingangskanal ist die Kommandozeile. Ausgangskanäle sind stdout, stderr und die Dateien,
+            die Sie angeben. Nichts öffnet einen Port.
+          </p>
+          <div class="cmd"><pre>GLATSCHER="/Applications/Glatscher.app/Contents/MacOS/glatscher"
+# Windows: "C:\Program Files\Glatscher\glatscher.exe"   Linux: /usr/bin/glatscher
+
+"$GLATSCHER" scan  ~/Akten/2026-114                 # vorab prüfen
+"$GLATSCHER" clean ~/Akten/2026-114 --out ~/An-KI   # bereinigte Kopien erstellen
+"$GLATSCHER" clean ~/Akten/2026-114 --out ~/An-KI --changed-only
+"$GLATSCHER" watch ~/Eingang --out ~/An-KI          # überwachter Ordner
+"$GLATSCHER" restore ~/An-KI/2026-114-klar          # mit dem Schlüssel zurückführen
+"$GLATSCHER" forget ~/Akten/2026-114                # alles zum Fall vergessen</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>--codes</code></dt><dd><code>platzhalter</code>, <code>kurz</code>, <code>voll</code> oder <code>schwarz</code>.</dd></div>
+            <div><dt><code>--groups</code></dt><dd>Was ersetzt werden soll, etwa <code>namen,ausweisnummern,sensibel</code>.</dd></div>
+            <div><dt><code>--dry-run</code></dt><dd>Führt alles aus, einschliesslich der Prüfung jeder Kopie, schreibt aber nichts.</dd></div>
+            <div><dt><code>--no-project</code></dt><dd>Merkt sich nichts und verwendet keine im Fenster getroffenen Festlegungen.</dd></div>
+            <div><dt>Ausgabe</dt><dd>Eine JSON-Zeile auf stdout, mit <code>format: 1</code> und deutschen Feldnamen. Der Fortschritt geht an stderr, nur als Zahlen.</dd></div>
+            <div><dt>Exit-Code</dt><dd><code>0</code>: alles geliefert. <code>2</code>: etwas wurde zurückgehalten, weil eine Kopie die Prüfung nicht bestanden hat oder eine Datei nicht gelesen werden konnte. <code>1</code>: Fehler. <code>3</code>: Die Bedingungen sind auf diesem Rechner noch nicht angenommen. <code>4</code>: Der Ordner ist gerade in Benutzung. <code>5</code>: Die Richtlinien erlauben es nicht.</dd></div>
+          </dl>
+        </section>
+
+        <!-- ============ Kryptografi ============ -->
+        <section class="s-del" id="krypto">
+          <h2>Kryptografie</h2>
+          <dl class="s-tabell">
+            <div><dt>Der Schlüssel</dt><dd>32 zufällige Bytes vom Betriebssystem. Unterschlüssel per HKDF-SHA256.</dd></div>
+            <div><dt>Die Codes</dt><dd>Wer es ist: HMAC-SHA256. Der ursprüngliche Text: AES-SIV (RFC 5297), deterministisch und authentifiziert.</dd></div>
+            <div><dt>Der Schlüssel auf der Festplatte</dt><dd>Mac: Schlüsselbund und Secure Enclave. Windows: DPAPI.</dd></div>
+            <div><dt>Schlüsseldatei</dt><dd>Argon2id (64 MiB, 3 Durchläufe) und AES-256-GCM.</dd></div>
+            <div><dt>Die 24 Wörter</dt><dd>256 Bit Schlüssel und 8 Bit Prüfsumme, 11 Bit pro Wort, aus einer Liste von 2048 norwegischen Wörtern.</dd></div>
+            <div><dt>Aufnahme</dt><dd>X25519.</dd></div>
+            <div><dt>Projekte, eigene Markierungen und Texte</dt><dd>AES-256-GCM, mit Schlüsseln aus HKDF-SHA256. Die Dateinamen sind HMAC-Fingerabdrücke.</dd></div>
+            <div><dt>Sicherungskopien und die Bildpunkte unter den Feldern einer Kopie</dt><dd>AES-256-GCM.</dd></div>
+            <div><dt>Der Lizenzcode</dt><dd>Ed25519. Die Signatur wird auf dem Rechner geprüft.</dd></div>
+          </dl>
+          <p>Alles sind bekannte Algorithmen aus offenen Bibliotheken (RustCrypto und dalek). Nichts davon haben wir selbst entwickelt.</p>
+        </section>
+
+        <!-- ============ Systemkrav ============ -->
+        <section class="s-del" id="krav">
+          <h2>Systemanforderungen</h2>
+          <dl class="s-tabell">
+            <div><dt>Mac</dt><dd>macOS 13 oder neuer. Intel- und Apple-Prozessoren im selben Paket.</dd></div>
+            <div><dt>Windows</dt><dd>Windows 10 oder 11, 64 Bit mit Intel oder AMD. Installation für alle Benutzer, per .exe oder .msi.</dd></div>
+            <div><dt>Arbeitsspeicher</dt><dd>Glatscher belegt rund ein halbes Gigabyte, wenn das Satzmodell geladen ist. Wir empfehlen 8 GB im Rechner.</dd></div>
+            <div><dt>Festplatte</dt><dd>Einige hundert MB für das Programm. Hinzu kommen Sicherungskopien und das, was Glatscher sich über die Ordner merkt.</dd></div>
+            <div><dt>Grafikkarte</dt><dd>Nicht erforderlich. Alles läuft auf dem Prozessor.</dd></div>
+            <div><dt>Netzwerk</dt><dd>Nicht erforderlich, weder bei Installation noch Aktivierung oder Nutzung.</dd></div>
+          </dl>
+          <p>
+            Wenn Glatscher auf einem Mac zum ersten Mal Bilder liest, kann macOS einige Minuten brauchen, um die eigene
+            Texterkennung vorzubereiten. Das geschieht nur einmal.
+          </p>
+          <p>Schwarze Schwärzung als PDF, die Finder-Dienste und Lizenzlinks gibt es vorerst nur auf dem Mac.</p>
+          <p>Ein Update ist eine neue Installationsdatei, die Sie selbst herunterladen, wann Sie wollen. Glatscher sucht nicht nach neuen Versionen.</p>
+        </section>
+
+        <!-- ============ Si fra ============ -->
+        <section class="s-del" id="si-fra">
+          <h2>Etwas gefunden?</h2>
+          <p>
+            Schreiben Sie an <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a>.
+            Wir antworten persönlich und hören es lieber von Ihnen als von einem Kunden.
+            Siehe auch <a href="/.well-known/security.txt">security.txt</a>.
+          </p>
+          <p class="s-dato">Zuletzt geändert am 28. November 2026. Glatscher ist noch nicht gebaut; die erwarteten Ergebnisse stammen aus der gemeinsamen Codebasis und werden mit den ersten Paketen geprüft.</p>
+        </section>
+      </main>
+    </div>
+
+    <footer class="s-bunn">
+      <p class="s-bunn-merke"><i>Glatscher</i> <span>von Tidemann Esbjug</span></p>
+      <nav aria-label="Mehr über Glatscher">
+        <a href="./">Startseite</a>
+        <a href="was-es-erkennt.html">Was Glatscher erkennt</a>
+        <a href="datenschutz/">Datenschutz</a>
+        <a href="bedingungen/">Bedingungen</a>
+      </nav>
+      <p class="s-bunn-liten">Hergestellt in Norwegen</p>
+    </footer>
+
+    <script src="til-it.js"></script>
+  </body>
+</html>

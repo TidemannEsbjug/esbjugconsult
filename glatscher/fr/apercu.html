@@ -1,0 +1,382 @@
+<!doctype html>
+<!-- Programvinduet fra /klart alene (eieren 12.11.2026), til heroen på forsiden (esbjugconsult.com/), der det står i en iframe.
+     Kopiert fra GDPR/index.html (figure.kv); endres vinduet der, kjør pv.py igjen eller kopier det over hit.
+     Samme stiler og skript som på /klart, pluss programvindu.css og programvindu.js (høyden til forsiden). -->
+<html lang="fr-CH">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Glatscher – la fenêtre du programme</title>
+    <link rel="alternate" hreflang="de-CH" href="https://esbjugconsult.com/glatscher/programmfenster.html" />
+    <link rel="alternate" hreflang="fr-CH" href="https://esbjugconsult.com/glatscher/fr/apercu.html" />
+    <link rel="alternate" hreflang="it-CH" href="https://esbjugconsult.com/glatscher/it/finestra.html" />
+    <link rel="stylesheet" href="/glatscher/fonts.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="forhandsvisning.css" />
+    <link rel="stylesheet" href="programvindu.css" />
+    <link rel="stylesheet" href="/glatscher/taal.css" />
+  </head>
+  <body class="programvindu">
+    <nav class="taal taal-fast" aria-label="Langue / Sprache / Lingua"><a href="/glatscher/programmfenster.html" hreflang="de" lang="de">DE</a><span class="taal-streep" aria-hidden="true">|</span><span aria-current="true">FR</span><span class="taal-streep" aria-hidden="true">|</span><a href="/glatscher/it/finestra.html" hreflang="it" lang="it">IT</a></nav>
+        <figure class="kv avklart" data-scene="gjennom">
+          <div class="kv-ramme">
+          <div class="kv-app" aria-hidden="true">
+            <header class="kv-chrome">
+              <span class="kv-lys"><i></i><i></i><i></i></span>
+              <span class="kv-merke"><img src="/glatscher/glatscher-ikon.png" alt="" />Glatscher</span>
+              <span class="kv-sok"><svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.6" /><path d="M10.4 10.4L14 14" /></svg>Rechercher dans tous les fichiers du dossier<kbd>⌘F</kbd></span>
+              <span class="kv-hoyre">
+                <span class="kv-lagret">✓ Enregistré automatiquement</span>
+                <span class="kv-lysknapp">Options d’analyse</span>
+                <span class="kv-lysknapp" data-kv="hjem">Écran d’accueil</span>
+                <span class="kv-lysknapp kv-sporsmal">?</span>
+              </span>
+            </header>
+
+            <div class="kv-flate">
+              <!-- Startskjermen: de tre verktøyene, og det som ble tilbakeført under dem -->
+              <div class="kv-scene kv-s-start">
+                <div class="kv-start-inn">
+                  <div class="kv-kortene">
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-rens.png" alt="" />
+                      <h4>Occulter</h4>
+                      <span class="kv-hvit" data-kv="velg">Choisir un dossier ou des documents…</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-tilbakefor.png" alt="" />
+                      <h4>Restaurer</h4>
+                      <span class="kv-hvit" data-kv="tbvelg">Choisir des copies…</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-tekst.png" alt="" />
+                      <h4>Outil texte</h4>
+                      <span class="kv-hvit" data-kv="tekstvelg">Ouvrir…</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Editoren: filene, dokumentet og registeret for mappen -->
+              <div class="kv-scene kv-s-editor">
+                <aside class="kv-filer">
+                  <div class="kv-filer-topp"><b>Dossiers clients</b><span>10 fichiers</span></div>
+                  <ul data-kv="filer">
+                    <li data-steder="30"><i class="kv-fikon w">W</i><span class="kv-fnavn">01-contrat-travail-acme.docx</span><span class="kv-fmeta">30 occurrences</span><i class="kv-ring"></i></li>
+                    <li data-steder="41" data-uavklart="2" data-dok="vedtak" class="valgt"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">02-decision-curatelle.pdf</span><span class="kv-fmeta">41 occurrences</span><i class="kv-ring"></i></li>
+                    <li data-steder="45" data-ekstra="1 immatriculation" data-dok="epost"><i class="kv-fikon epost">@</i><span class="kv-fnavn">03-echange-e-mails.eml</span><span class="kv-fmeta">45 occurrences</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon tekst">T</i><span class="kv-fnavn">04-note-rh.md</span><span class="kv-fmeta">21 occurrences</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon w">W</i><span class="kv-fnavn">05-certificat-medical.docx</span><span class="kv-fmeta">21 occurrences</span><i class="kv-ring"></i></li>
+                    <li data-steder="16"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">06-facture-boreal.pdf</span><span class="kv-fmeta">16 occurrences</span><i class="kv-ring"></i></li>
+                    <li data-steder="82" data-dok="liste"><i class="kv-fikon x">X</i><span class="kv-fnavn">08-liste-clients.xlsx</span><span class="kv-fmeta">82 occurrences</span><i class="kv-ring"></i></li>
+                    <li data-steder="43" data-ekstra="2 visages" data-dok="ppt"><i class="kv-fikon p">P</i><span class="kv-fnavn">09-point-avancement.pptx</span><span class="kv-fmeta">43 occurrences · 2 visages</span><i class="kv-ring"></i></li>
+                    <li data-steder="18"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">11-annexe-numerisee.pdf</span><span class="kv-fmeta">18 occurrences</span><i class="kv-ring"></i></li>
+                    <li data-steder="3" data-ekstra="1 visage"><i class="kv-fikon bilde">JPG</i><span class="kv-fnavn">16-badge-acces.jpg</span><span class="kv-fmeta">3 occurrences · 1 visage</span><i class="kv-ring"></i></li>
+                  </ul>
+                </aside>
+
+                <div class="kv-midt">
+                  <div class="kv-docket">
+                    <b data-kv="docnavn">02-decision-curatelle.pdf</b><span class="kv-type" data-kv="doctype">PDF</span>
+                    <span class="kv-kopimerke" data-kv="kopimerke">La copie · liste des codes à la fin</span>
+                    <span class="kv-verktoy">
+                      <span class="kv-zoom">− &nbsp;86 %&nbsp; +</span>
+                      <span class="kv-hvit" data-kv="vis">Afficher la copie</span>
+                    </span>
+                  </div>
+                  <div class="kv-bord">
+                    <div class="kv-pille" data-kv="pille"><i></i>Lecture <b data-kv="leser">01-contrat-travail-acme.docx</b><span data-kv="nr">1 sur 10</span></div>
+
+                    <!-- PDF: vedtak om vergemål -->
+                    <article class="kv-side vist" data-dok="vedtak">
+                      <i class="kv-lesehode"></i>
+                      <p class="kv-avsender">Justice de paix</p>
+                      <h4>Décision de curatelle</h4>
+                      <p class="kv-ref">Réf. client <mark class="s"><span class="o">2026-0113</span><span class="k">[Numéro de dossier 4906498]</span></mark> · 14.03.2026</p>
+                      <h5>Personne protégée</h5>
+                      <dl>
+                        <dt>Nom</dt><dd><mark class="s"><span class="o">Karine Moreau</span><span class="k">[Nom 6311794]</span></mark></dd>
+                        <dt>N° AVS</dt><dd><mark class="s"><span class="o">756.4821.0937.17</span><span class="k">[Numéro AVS 2215087]</span></mark></dd>
+                        <dt>Adresse</dt><dd><mark class="s"><span class="o">Avenue de Morges 58, 1004 Lausanne</span><span class="k">[Adresse 8950779]</span></mark></dd>
+                      </dl>
+                      <h5>Curateur désigné</h5>
+                      <dl>
+                        <dt>Nom</dt><dd><mark class="s"><span class="o">Lucas Girard</span><span class="k">[Nom 2656447]</span></mark>, <mark class="b" data-kv="arbeid"><span class="o">Cabinet Boréal Sàrl</span><span class="k">[Organisation 5521093]</span></mark></dd>
+                        <dt>E-mail</dt><dd><mark class="s"><span class="o">lucas.girard@boreal.test</span><span class="k">[E-mail 3278678]</span></mark></dd>
+                        <dt>Téléphone</dt><dd><mark class="s"><span class="o">079 412 34 56</span><span class="k">[Téléphone 6289990]</span></mark></dd>
+                      </dl>
+                      <h5>Motifs</h5>
+                      <p><mark class="s" data-kv="merknad"><span class="o">La personne protégée est hospitalisée depuis janvier pour une dépression et a besoin d’aide pour gérer ses finances.</span><span class="k">[Information personnelle 2760056]</span></mark> La mesure porte sur la gestion des fonds du compte <mark class="s"><span class="o">CH72 0023 5123 4567 8901 2</span><span class="k">[IBAN 7719741]</span></mark>.</p>
+                      <p>La décision prend effet dès sa notification. Elle peut faire l’objet d’un recours dans un délai de trente jours.</p>
+                    </article>
+
+                    <!-- E-post -->
+                    <article class="kv-side kv-epost" data-dok="epost">
+                      <i class="kv-lesehode"></i>
+                      <dl class="kv-hode">
+                        <dt>De</dt><dd><mark class="s"><span class="o">Sabine Lefèvre</span><span class="k">[Nom 7320430]</span></mark> &lt;<mark class="s"><span class="o">sabine.lefevre@boreal.test</span><span class="k">[E-mail 5102284]</span></mark>&gt;</dd>
+                        <dt>À</dt><dd><mark class="s"><span class="o">Karine Moreau</span><span class="k">[Nom 6311794]</span></mark></dd>
+                        <dt>Objet</dt><dd><b>Suite à notre échange</b></dd>
+                        <dt>Date</dt><dd>12 mars 2026, 09:14</dd>
+                      </dl>
+                      <p>Bonjour <mark class="s"><span class="o">Karine</span><span class="k">[Nom 6311794]</span></mark>,</p>
+                      <p>merci pour notre échange d’hier. Comme convenu, je vous envoie une copie du certificat médical. Vous pouvez me joindre toute la semaine au <mark class="s"><span class="o">079 412 34 56</span><span class="k">[Téléphone 6289990]</span></mark>.</p>
+                      <p>La voiture de service sera disponible à partir de lundi. La photo est en pièce jointe.</p>
+                      <p>Bien cordialement<br /><mark class="s"><span class="o">Sabine Lefèvre</span><span class="k">[Nom 7320430]</span></mark><br />Boréal Services Sàrl · <mark class="s"><span class="o">Rue du Lac 5, 1003 Lausanne</span><span class="k">[Adresse 6113936]</span></mark></p>
+                      <figure class="kv-vedlegg">
+                        <span class="kv-bilramme"><img src="/alles-klar/assets/visning/bil.jpg" alt="" /><span class="kv-skilt" data-kv="skilt"><img src="/alles-klar/assets/visning/bil-skilt.png" alt="" /><em data-kv="skiltlapp">Immatriculation · sera masquée</em></span></span>
+                        <figcaption>voiture.jpg · 1,2 Mo</figcaption>
+                      </figure>
+                    </article>
+
+                    <!-- Regneark -->
+                    <article class="kv-side kv-ark" data-dok="liste">
+                      <i class="kv-lesehode"></i>
+                      <table>
+                        <thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead>
+                        <tbody>
+                          <tr><th>1</th><td><b>Nom</b></td><td><b>N° AVS</b></td><td><b>Téléphone</b></td><td><b>Compte bancaire</b></td></tr>
+                          <tr><th>2</th><td><mark class="s"><span class="o">Julien Bernard</span><span class="k">[Nom 1180342]</span></mark></td><td><mark class="s"><span class="o">756.3105.7284.68</span><span class="k">[Numéro AVS 4402918]</span></mark></td><td><mark class="s"><span class="o">079 412 55 42</span><span class="k">[Téléphone 2290174]</span></mark></td><td><mark class="s"><span class="o">CH72 0023 5123 4567 8901 2</span><span class="k">[Compte bancaire 6630215]</span></mark></td></tr>
+                          <tr><th>3</th><td><mark class="s"><span class="o">Inès Lambert</span><span class="k">[Nom 5523107]</span></mark></td><td><mark class="s"><span class="o">756.9204.1835.73</span><span class="k">[Numéro AVS 8817330]</span></mark></td><td><mark class="s"><span class="o">078 645 55 78</span><span class="k">[Téléphone 1047782]</span></mark></td><td><mark class="s"><span class="o">CH75 0076 7000 1234 5678 9</span><span class="k">[Compte bancaire 3359810]</span></mark></td></tr>
+                          <tr><th>4</th><td><mark class="s"><span class="o">Ahmed Haddad</span><span class="k">[Nom 9918066]</span></mark></td><td><mark class="s"><span class="o">756.1473.0592.83</span><span class="k">[Numéro AVS 2265419]</span></mark></td><td><mark class="s"><span class="o">076 381 55 11</span><span class="k">[Téléphone 7714203]</span></mark></td><td><mark class="s"><span class="o">CH32 0900 0000 1567 8901 2</span><span class="k">[Compte bancaire 9046631]</span></mark></td></tr>
+                          <tr><th>5</th><td><mark class="s"><span class="o">Marie Dubois</span><span class="k">[Nom 3301459]</span></mark></td><td><mark class="s"><span class="o">756.6038.2917.40</span><span class="k">[Numéro AVS 6158820]</span></mark></td><td><mark class="s"><span class="o">079 776 55 66</span><span class="k">[Téléphone 4420987]</span></mark></td><td><mark class="s"><span class="o">CH23 0070 0110 0045 6123 4</span><span class="k">[Compte bancaire 1872264]</span></mark></td></tr>
+                          <tr><th>6</th><td><mark class="s"><span class="o">Jean Roux</span><span class="k">[Nom 8045126]</span></mark></td><td><mark class="s"><span class="o">756.2859.1643.00</span><span class="k">[Numéro AVS 5590743]</span></mark></td><td><mark class="s"><span class="o">077 251 55 27</span><span class="k">[Téléphone 3368201]</span></mark></td><td><mark class="s"><span class="o">CH93 0076 2011 6238 5295 7</span><span class="k">[Compte bancaire 7701358]</span></mark></td></tr>
+                          <tr><th>7</th><td></td><td></td><td></td><td></td></tr>
+                          <tr><th>8</th><td></td><td></td><td></td><td></td></tr>
+                        </tbody>
+                      </table>
+                    </article>
+
+                    <!-- PowerPoint: lysbildet fra fellesturen, med to ansikter -->
+                    <article class="kv-side kv-ppt" data-dok="ppt">
+                      <i class="kv-lesehode"></i>
+                      <div class="kv-lysbilde">
+                        <p class="kv-lb-tittel">Sortie d’équipe en février</p>
+                        <p class="kv-lb-under">Merci à <mark class="s"><span class="o">Chloé Martin</span><span class="k">[Nom 3390415]</span></mark> et <mark class="s"><span class="o">Pierre Durand</span><span class="k">[Nom 8812706]</span></mark> pour l’organisation !</p>
+                        <div class="kv-lb-foto">
+                          <img src="/alles-klar/assets/visning/fagtur.jpg" alt="" />
+                          <span class="kv-ansikt a1" data-kv="ansikt1"><img src="/alles-klar/assets/visning/fagtur-ansikt-1.jpg" alt="" /><em>Visage · sera pixelisé</em></span>
+                          <span class="kv-ansikt a2" data-kv="ansikt2"><img src="/alles-klar/assets/visning/fagtur-ansikt-2.jpg" alt="" /><em>Visage · sera pixelisé</em></span>
+                        </div>
+                        <p class="kv-lb-bunn">Point d’avancement · Diapositive 4 sur 12</p>
+                      </div>
+                    </article>
+
+                    <div class="kv-gjennom" data-kv="gjennom">
+                      <i class="kv-gjennom-strek" data-kv="gstrek"></i>
+                      <p class="kv-gjennom-topp"><code data-kv="gkode">Information personnelle 2760056</code><b>Non tranché</b><span data-kv="gnr">1 sur 2</span></p>
+                      <p class="kv-gjennom-hvorfor" data-kv="ghvorfor">Glatscher n’est pas sûr que cela relève de « Information personnelle ». · 02-decision-curatelle.pdf</p>
+                      <p class="kv-gjennom-knapper">
+                        <span class="kv-btn" data-kv="skjul">Masquer <kbd>↵</kbd></span>
+                        <span class="kv-btn hvit" data-kv="lastaa">Garder <kbd>B</kbd></span>
+                        <span class="kv-btn hvit av">Précédent <kbd>←</kbd></span>
+                        <span class="kv-btn hvit">Suivant <kbd>→</kbd></span>
+                        <span class="kv-btn hvit">Arrêter <kbd>Esc</kbd></span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <aside class="kv-panel">
+                  <div class="kv-uavklart" data-kv="uavklart">
+                    <h5><svg viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" rx="2" /><path d="M6 2.5v11" /></svg>Non tranché</h5>
+                    <div class="kv-uboks">
+                      <p data-kv="u1"><code>Information personnelle 2760056</code><span>La personne protégée est hospitalisée…</span><em>1 non tranché</em></p>
+                      <p data-kv="u2"><code>Organisation 5521093</code><span>Cabinet Boréal Sàrl</span><em>1 non tranché</em></p>
+                      <span class="kv-btn bred" data-kv="gaa">Vérifier les 2 <kbd>G</kbd></span>
+                    </div>
+                  </div>
+                  <div class="kv-imappen">
+                    <h5>Dans le dossier <span><b data-kv="opplysninger">67</b> éléments</span></h5>
+                    <ul data-kv="register">
+                      <li data-n="19" data-s="114"><span>Personnes</span><em>19 · 114 occurrences</em></li>
+                      <li data-n="7" data-s="24"><span>Numéro AVS</span><em>7 · 24 occurrences</em></li>
+                      <li data-n="12" data-s="43"><span>Téléphone</span><em>12 · 43 occurrences</em></li>
+                      <li data-n="15" data-s="53"><span>E-mail</span><em>15 · 53 occurrences</em></li>
+                      <li data-n="7" data-s="29"><span>Adresses</span><em>7 · 29 occurrences</em></li>
+                      <li data-n="6" data-s="13"><span>Comptes bancaires</span><em>6 · 13 occurrences</em></li>
+                      <li data-n="1" data-s="2"><span>Plaque d’immatriculation</span><em>1 · 2 occurrences</em></li>
+                      <li data-n="3" data-s="12"><span>Sensible</span><em>3 · 12 occurrences</em></li>
+                      <li data-n="3" data-s="3" data-kv="ansikter"><span>Visages</span><em>3 · 3 occurrences</em></li>
+                    </ul>
+                  </div>
+                  <div class="kv-bunn">
+                    <p><b data-kv="skjules">292</b> masqué(s) <b data-kv="faarstaa">1</b> gardé(s)</p>
+                    <p class="kv-bunn-knapper">
+                      <span class="kv-btn hvit oransje" data-kv="ubtn"><i></i>Non tranché 2</span>
+                      <span class="kv-btn stor" data-kv="lag">Créer 10 copies</span>
+                    </p>
+                  </div>
+                </aside>
+              </div>
+
+              <!-- Tekstverktøy: et ark å skrive eller lime inn på -->
+              <div class="kv-scene kv-s-tekst">
+                <div class="kv-rt-linje">
+                  <span class="kv-rt-tilbake">‹ Écran d’accueil</span>
+                  <span class="kv-faner"><span class="på" data-kv="fanerens"><i>1</i>Occulter le texte</span><span data-kv="fanetb"><i>2</i>Restaurer le texte</span></span>
+                  <span class="kv-faner kv-rt-visning"><span class="på" data-kv="rtorig">Original</span><span data-kv="rtrenset">Occulté</span></span>
+                  <span class="kv-btn" data-kv="rtkopier">Copier</span>
+                </div>
+                <div class="kv-rt-kropp">
+                  <div class="kv-rt-ark" data-kv="rtark"><p data-kv="rttekst"></p><i class="kv-markor"></i><p class="kv-rt-svar" data-kv="rtsvar"></p></div>
+                  <aside class="kv-rt-liste">
+                    <h5 data-kv="rtlistetittel">Masqué</h5>
+                    <ul data-kv="rtliste"></ul>
+                    <p class="kv-rt-merke">Lu sur cet ordinateur. Rien n’est envoyé.</p>
+                  </aside>
+                </div>
+                <p class="kv-toast" data-kv="toast">Copié</p>
+              </div>
+
+              <!-- Skrivebordet: Finder med høyreklikk › Hurtighandlinger › Rens med Klart -->
+              <div class="kv-scene kv-s-finder kv-skrivebord">
+                <div class="kv-finder">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><span class="kv-pil">‹ ›</span><b>Documents</b></div>
+                  <div class="kv-finder-kropp">
+                    <ul class="kv-sidefelt">
+                      <li class="kv-sf-h">Favoris</li>
+                      <li>Bureau</li>
+                      <li class="på">Documents</li>
+                      <li>Téléchargements</li>
+                      <li class="kv-sf-h">Emplacements</li>
+                      <li>iCloud Drive</li>
+                    </ul>
+                    <div class="kv-ikoner">
+                      <span class="kv-mappe" data-kv="fmappe"><i></i>Dossiers clients</span>
+                      <span class="kv-mappe"><i></i>Demande d’accès mars</span>
+                      <span class="kv-mappe"><i></i>Comptabilité 2025</span>
+                      <span class="kv-dokikon"><i>PDF</i>contrat-acme.pdf</span>
+                      <span class="kv-dokikon w"><i>W</i>CR 10.11.docx</span>
+                      <span class="kv-mappe ny" data-kv="fny"><i></i>Dossiers clients-klar</span>
+                    </div>
+                  </div>
+                  <ul class="kv-meny" data-kv="meny">
+                    <li>Ouvrir</li>
+                    <li>Ouvrir dans un nouvel onglet</li>
+                    <li class="kv-skille"></li>
+                    <li>Placer dans la corbeille</li>
+                    <li class="kv-skille"></li>
+                    <li>Lire les informations</li>
+                    <li>Renommer</li>
+                    <li>Compresser « Dossiers clients »</li>
+                    <li>Dupliquer</li>
+                    <li class="kv-skille"></li>
+                    <li>Copier</li>
+                    <li>Partager…</li>
+                    <li class="kv-skille"></li>
+                    <li class="kv-under" data-kv="hurtig">Actions rapides<span>›</span></li>
+                    <li class="kv-under">Services<span>›</span></li>
+                  </ul>
+                  <ul class="kv-meny kv-undermeny" data-kv="undermeny">
+                    <li data-kv="rensmed">Occulter avec Glatscher</li>
+                    <li>Restaurer avec Glatscher</li>
+                    <li class="kv-skille"></li>
+                    <li>Personnaliser…</li>
+                  </ul>
+                </div>
+                <div class="kv-varsel" data-kv="varsel">
+                  <img src="/glatscher/glatscher-ikon.png" alt="" />
+                  <p><b data-kv="vtittel">Occultation de « Dossiers clients »…</b><span data-kv="vtekst">Les copies sont placées à côté. Vous recevrez une notification lorsqu’elles seront prêtes.</span></p>
+                  <small>maintenant</small>
+                </div>
+              </div>
+
+              <!-- Skrivebordet: et KI-verktøy som bare får kodene -->
+              <div class="kv-scene kv-s-ki kv-skrivebord">
+                <div class="kv-ki">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><b>Assistant IA</b></div>
+                  <div class="kv-ki-samtale">
+                    <div class="kv-ki-bruker" data-kv="kibruker">
+                      <p>Rédige une réponse courte à ce message :</p>
+                      <p class="kv-ki-sitat">Bonjour ! Pouvez-vous appeler <code>[Nom 6311794]</code> aujourd’hui au <code>[Téléphone 6289990]</code> ? Elle a déménagé au <code>[Adresse 8950779]</code>, et son salaire doit désormais être versé sur le compte <code>[IBAN 7719741]</code>.</p>
+                    </div>
+                    <div class="kv-ki-svar" data-kv="kisvar"><p data-kv="kisvartekst"></p><span class="kv-ki-kopier" data-kv="kikopier">Copier la réponse</span></div>
+                  </div>
+                  <div class="kv-ki-felt" data-kv="kifelt"><span>Écrire un message…</span><i>↑</i></div>
+                </div>
+                <p class="kv-ki-merke">L’IA ne reçoit que les codes. Le nom, le téléphone, l’adresse et le compte restent sur l’ordinateur.</p>
+              </div>
+
+              <!-- «Før skanningen»: over startskjermen, når mappen er valgt -->
+              <div class="kv-slor kv-s-forvalg">
+                <div class="kv-modal">
+                  <h4>Dossiers clients</h4>
+                  <p class="kv-modal-under">10 fichiers · docx, eml, jpg, md, pdf, pptx, xlsx</p>
+                  <div class="kv-maate">
+                    <p class="på"><i></i><span><b>Avec analyse</b>Glatscher lit les fichiers et marque ce qu’il trouve. Vous les parcourez et décidez.</span></p>
+                    <p><i></i><span><b>Sans analyse</b>Rien n’est marqué à l’avance. Vous cliquez sur ce qui doit être masqué.</span></p>
+                  </div>
+                  <p class="kv-sammen"><span><small>L’analyse recherche et masque</small>Noms, AVS et pièces d’identité, téléphone et e-mail, sensible, plaque d’immatriculation, compte, visages et 5 autres</span><em>Modifier</em></p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Annuler</span>
+                    <span class="kv-btn stor" data-kv="skann">Analyser <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- «Før kopiene lages»: formen kopiene får -->
+              <div class="kv-slor kv-s-kopivalg">
+                <div class="kv-modal kv-kopivalg">
+                  <h4>Avant la création des copies</h4>
+                  <p class="kv-modal-under">10 fichiers · les copies vont dans Dossiers clients-klar</p>
+                  <div class="kv-maate kv-former" data-kv="former">
+                    <p class="på" data-form="kort"><i></i><span><b>Code court et liste des codes</b>Facile à lire. Restaurable avec la clé de votre organisation.<code>[Nom 4814887] + liste</code></span></p>
+                    <p data-form="full"><i></i><span><b>Code complet dans le texte</b>Pas de liste. Restaurable, mais difficile à lire.</span></p>
+                    <p data-form="lapp"><i></i><span><b>Intitulés seulement</b>Facile à lire, mais impossible à restaurer.</span></p>
+                    <p data-form="svart"><i></i><span><b>Masquage noir (PDF)</b>Ce qui s’y trouvait disparaît définitivement.<code class="kv-svartprove"></code></span></p>
+                  </div>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Annuler</span>
+                    <span class="kv-btn stor" data-kv="lagnaa">Créer 10 copies <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Kopiene er laget -->
+              <div class="kv-slor kv-s-ferdig">
+                <div class="kv-ferdig">
+                  <p class="kv-stor">Terminé.</p>
+                  <p>10 copies ont été créées. Les originaux sont intacts. Relisez les copies avant de les partager.</p>
+                  <p class="kv-sti"><span>Documents/</span>Dossiers clients-klar/</p>
+                  <p class="kv-liten">La liste des codes se trouve à la fin de chaque copie.</p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit">Retour au dossier</span>
+                    <span class="kv-btn">Ouvrir les copies</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+          <span class="kv-peker" aria-hidden="true"></span>
+          <!-- Kapitlene: hopper i avspillingen. Det som spilles nå, er markert. -->
+          <ol class="kv-kapitler" data-kv="kapitler" aria-label="Chapitres de l’aperçu">
+            <li><button type="button" data-kapittel="0">Occulter un dossier</button></li>
+            <li><button type="button" data-kapittel="1">Vérifier</button></li>
+            <li><button type="button" data-kapittel="2">Les copies</button></li>
+            <li><button type="button" data-kapittel="3">Clic droit dans le Finder</button></li>
+            <li><button type="button" data-kapittel="4">Occulter et restaurer du texte</button></li>
+          </ol>
+          <!-- Lesingen spilles av mye raskere enn den går på en vanlig maskin. Det skal stå. -->
+          <p class="kv-spol" aria-hidden="true">
+            <svg viewBox="0 0 20 12"><path d="M1 1l8 5-8 5zM10 1l8 5-8 5z" /></svg>
+            <span>Accéléré. La durée de la lecture varie d’un ordinateur à l’autre. Sur un portable ordinaire, elle est plus lente.</span>
+          </p>
+          <figcaption class="skjult-tekst">
+            Voici comment fonctionne Glatscher. Choisissez un dossier : Glatscher lit les fichiers, y compris les PDF,
+            les e-mails, les tableurs, les présentations PowerPoint et les images, et marque les noms, les numéros
+            AVS, les coordonnées, les adresses, les numéros de compte, les données sensibles, les immatriculations et les
+            visages, qui sont pixelisés. Là où Glatscher hésite, vous vérifiez vous-même et décidez : masquer ou garder.
+            Les copies peuvent recevoir des codes courts avec une liste des codes, des codes complets, de simples intitulés
+            ou un masquage noir, et les originaux restent intacts. Dans le Finder, un dossier s’occulte par clic droit ›
+            Actions rapides › Occulter avec Glatscher. Un texte avec des codes peut être confié à un outil d’IA, et la
+            réponse est restaurée dans Glatscher : les noms reviennent sans que l’IA les ait vus. La lecture est accélérée :
+            sa durée varie d’un ordinateur à l’autre.
+          </figcaption>
+        </figure>
+    <script src="forhandsvisning.js"></script>
+    <script src="programvindu.js"></script>
+  </body>
+</html>

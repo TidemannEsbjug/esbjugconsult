@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="fi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Päivänselvä: mitä se löytää ja mitä ei</title>
+    <meta
+      name="description"
+      content="Rehellinen katsaus siihen, mitä Päivänselvä peittää asiakirjoista, mikä jää useammin näkyviin ja mitä sinun on tehtävä itse."
+    />
+    <meta name="robots" content="noindex" />
+    <!--
+      Én fil. Ingen skrifter, bilder eller skript utenfra, som it-osastolle.html.
+      Innholdet bygger på motoren i Klart-fi (claude/fi b312a0f8): src/engine/fi (saannot.ts, taivutus.ts, virkamiehet.ts,
+      kieli.ts) over de svenske reglene (src/engine/se), VALG_GRUPPER_SE (src/engine/valg.ts) og
+      Klart-fi-grunnlag/research/191 og 192. Ingen prosenter: det åpne settet fi1 er laget av samme økt som motoren
+      (ikke blindt), og blindsettet er ikke målt med den gjeldende motoren og leseren. Derfor ingen tall og ingen stolper.
+    -->
+    <link rel="icon" type="image/png" href="/paivanselva/favicon.png" />
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="sider.css" />
+    <link rel="stylesheet" href="hva-klart-tar.css" />
+    <link rel="stylesheet" href="/paivanselva/taal.css" />
+    <link rel="alternate" hreflang="fi-FI" href="https://esbjugconsult.com/paivanselva/mita-se-loytaa.html" />
+    <link rel="alternate" hreflang="sv-FI" href="https://esbjugconsult.com/paivanselva/sv/vad-den-hittar.html" />
+  </head>
+  <body>
+    <header class="s-topp">
+      <div class="s-linje-topp">
+        <a class="s-merke" href="./">Päivänselvä</a>
+        <nav class="s-nav" aria-label="Sivut">
+          <a href="./">Etusivu</a>
+          <a href="it-osastolle.html">IT-osastolle</a>
+          <a href="tietosuoja/">Tietosuoja</a>
+        </nav>
+        <nav class="taal" aria-label="Kieli / Språk"><span aria-current="true">FI</span><span class="taal-streep" aria-hidden="true">|</span><a href="/paivanselva/sv/vad-den-hittar.html" hreflang="sv" lang="sv">SV</a></nav>
+      </div>
+      <div class="s-hode">
+        <p class="s-over">Rehellinen katsaus</p>
+        <h1>Mitä Päivänselvä löytää ja mitä ei</h1>
+        <p class="s-ingress">
+          Päivänselvä peittää henkilötiedot asiakirjojesi kopiosta omalla tietokoneellasi.
+          Jotkin tiedot ohjelma löytää lähes aina, toiset jäävät useammin näkyviin. Kerromme tässä molemmista.
+        </p>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <p class="stempel">Koskee Päivänselvän versiota 0.1.0. Suomenkielistä versiota ei ole vielä mitattu riippumattomalla testiaineistolla, joten emme julkaise tässä prosenttilukuja.</p>
+      <main>
+        <div class="oppsum">
+          <section class="bra">
+            <h2><i aria-hidden="true">✓</i> Toimii hyvin</h2>
+            <ul>
+              <li>Henkilötunnukset: päivämäärä ja tarkistusmerkki tarkistetaan, myös uusilla välimerkeillä (Y, X, W, V, U ja B–F).</li>
+              <li>IBAN-tilinumerot, sähköpostiosoitteet ja puhelinnumerot.</li>
+              <li>Nimet, myös taivutettuina. Yhdestä kohdasta löytynyt nimi peitetään koko kansiosta.</li>
+              <li>Katuosoitteet portaineen ja asuntoineen.</li>
+            </ul>
+          </section>
+          <section class="daarlig">
+            <h2><i aria-hidden="true">!</i> Toimii heikommin</h2>
+            <ul>
+              <li>Yksityiset asiat arkikielellä, esimerkiksi työttömyys, maksuhäiriöt tai perheriidat, varsinkin suomenkielisissä asiakirjoissa.</li>
+              <li>Terveys omin sanoin ja laboratorioarvot pitkässä tekstissä.</li>
+              <li>Kuvat ja skannatut sivut: ohjelman on ensin luettava teksti, ja se tuottaa enemmän virheitä.</li>
+            </ul>
+          </section>
+        </div>
+
+        <section class="lesmer">
+          <h2>Lisätietoja</h2>
+          <p>Avaa otsikko napsauttamalla.</p>
+
+          <details class="sek ok" id="virker_godt">
+            <summary><span class="merke">Lähes aina</span>Nämä Päivänselvä löytää lähes aina</summary>
+            <p class="intro">Tiedot, joilla on kiinteä muoto, jonka ohjelma voi tarkistaa.</p>
+            <div class="punkt">
+              <h3>Henkilötunnus</h3>
+              <p>Päivänselvä tarkistaa syntymäajan ja tarkistusmerkin, joten tunnus ei sekoitu mihin tahansa merkkijonoon. Se tuntee kaikki välimerkit: plusmerkin, yhdysmerkin ja kirjaimet Y, X, W, V ja U 1900-luvulla syntyneille sekä A–F 2000-luvulla syntyneille. Väliaikaiset tunnukset (yksilönumero 900–999) peitetään myös. Henkilötunnukset ovat valmiiksi valittuina peitettäviksi.</p>
+              <p class="eks"><span>Esimerkki</span>Varhaiskasvatushakemuksen alussa on lapsen henkilötunnus 010125B234E. Kopiossa sen paikalla on tunniste.</p>
+            </div>
+            <div class="punkt">
+              <h3>Puhelin, sähköposti ja tilit</h3>
+              <p>Suomalaiset puhelinnumerot (040 123 4567, 0401234567, 050-1234567, +358 40 123 4567, 09 3101 1234), sähköpostiosoitteet, IBAN-tilinumerot (tarkistetaan MOD 97 -laskennalla) ja korttinumerot (tarkistetaan Luhn-laskennalla) peitetään. Organisaation vaihteen numero saa jäädä näkyviin.</p>
+              <p class="eks"><span>Esimerkki</span>Huoltajan sähköpostissa, jossa on matkapuhelinnumero, sähköpostiosoite ja tilinumero palautusta varten, kaikki kolme peitetään kopiossa.</p>
+            </div>
+            <div class="punkt">
+              <h3>Nimet</h3>
+              <p>Nimet peitetään yleensä, myös taivutettuina (”Virtaselle”, ”Korhosen”, ”Mäen”, ”Matille”). Kun nimi löytyy yhdestä kohdasta, sen kaikki muodot peitetään koko kansiosta samalla koodilla.</p>
+              <p class="eks"><span>Esimerkki</span>”Keskustelu Matti Virtasen kanssa” ja alempana ”Virtaselle lähetettiin päätös” saavat kopiossa saman koodin.</p>
+            </div>
+          </details>
+
+          <details class="sek blaa" id="virker_ofte">
+            <summary><span class="merke">Yleensä</span>Nämä Päivänselvä löytää yleensä</summary>
+            <p class="intro">Nämä tiedot löytyvät useimmiten, mutta osa jää näkyviin tai riippuu valinnoistasi.</p>
+            <div class="punkt">
+              <h3>Arkaluonteiset tiedot</h3>
+              <p>Diagnoosit, sairauslomat, hoidot ja päihdekuntoutus tavanomaisin ammattisanoin löytyvät useimmiten, samoin ICD-10-koodit. Ryhmään ”Arkaluonteiset tiedot” kuuluvat myös esimerkiksi ammattiliiton jäsenyys, uskonto ja rikoksia koskevat tiedot. Terveyssanat peitetään vain tiedostoissa, joissa on mainittu henkilö.</p>
+              <p class="eks"><span>Esimerkki</span>”Hänellä on tyypin 2 diabetes” löytyy. ”On usein poissa, koska vatsa ei kestä stressiä” voi jäädä näkyviin.</p>
+            </div>
+            <div class="punkt">
+              <h3>Osoitteet</h3>
+              <p>Katuosoitteet (-katu, -tie, -kuja, -polku ja ruotsinkieliset -gatan, -vägen, -viken), porras, asunto (”as.”) ja postinumero peitetään oletuksena. Ohjelma peittää joskus myös sellaista, mikä olisi voinut jäädä näkyviin, esimerkiksi terveysaseman tai viranomaisen osoitteen.</p>
+              <p class="eks"><span>Esimerkki</span>”Koivukuja 3 B 12, 33100 Tampere” ja ”Mäntypolku 24 as. 27” peitetään.</p>
+            </div>
+            <div class="punkt">
+              <h3>Viranhaltijat</h3>
+              <p>Tehtävänimikkeen yhteydessä olevat nimet, kuten ”sosiaalityöntekijä”, ”asianajaja”, ”viranhaltija”, ”LL” tai ruotsiksi ”socialarbetare”, jäävät näkyviin, kuten viranomaisten käytäntö on. Asiakkaiden, potilaiden ja muiden yksityishenkilöiden nimet peitetään.</p>
+              <p class="eks"><span>Esimerkki</span>Allekirjoituksen ”sosiaalityöntekijä Laura Nieminen” jää näkyviin, päätöksen saajan nimi peitetään.</p>
+            </div>
+          </details>
+
+          <details class="sek gul" id="svakt">
+            <summary><span class="merke">Useammin väärin</span>Tässä Päivänselvä erehtyy useammin</summary>
+            <p class="intro">Tässä enemmän jää näkyviin, tai ohjelma peittää enemmän kuin tarvitsee.</p>
+            <div class="punkt">
+              <h3>Yksityiset asiat arkikielellä</h3>
+              <p>Työttömyys, maksuhäiriömerkinnät, kuolinpäivä, työnantaja ja perheriidat omin sanoin kerrottuina jäävät useammin näkyviin kuin nimet ja numerot. Ruotsinkielisissä asiakirjoissa pieni kielimalli lukee lisäksi kokonaiset lauseet. Suomenkielisissä asiakirjoissa lauseita luetaan toistaiseksi vain säännöillä.</p>
+              <p class="eks"><span>Esimerkki</span>”Hän jäi työttömäksi keväällä, ja hänellä on maksuhäiriömerkintä” voi jäädä kopioon, vaikka vieressä olevat nimet on peitetty.</p>
+            </div>
+            <div class="punkt">
+              <h3>Vaikeasti tunnistettavat nimet</h3>
+              <p>Nimikirjaimet, lyhyet ulkomaiset etunimet, nimet, jotka ovat myös tavallisia sanoja, ja pienellä kirjaimella kirjoitetut nimet chatissa voivat jäädä näkyviin. Etunimi taivutettuna (esimerkiksi ”Annalle”) voi jäädä näkyviin, jos tiedostossa ei ole koko nimeä.</p>
+              <p class="eks"><span>Esimerkki</span>”Puhuin MV:n kanssa asiasta” voi jäädä näkyviin, kun taas ”Matti Virtanen” peitetään.</p>
+            </div>
+            <div class="punkt">
+              <h3>Nimi peitetään kaikkialta</h3>
+              <p>Nimi peitetään koko kansiosta, myös omien työntekijöidesi nimet, jos tehtävänimike puuttuu. Jos joku on samanniminen kuin yritys tai paikkakunta, sekin voidaan peittää. Näkyviin jätettävät voit lisätä luetteloon ”Jätetään aina”.</p>
+              <p class="eks"><span>Esimerkki</span>Henkilön nimi ”Salo” voi peittää myös Salon kaupungin. Lisää kaupunki luetteloon ”Jätetään aina”, niin se jää näkyviin.</p>
+            </div>
+            <div class="punkt">
+              <h3>Muut kielet</h3>
+              <p>Päivänselvä on tehty suomelle ja ruotsille. Nimet, numerot ja sähköpostiosoitteet löytyvät myös muilla kielillä, mutta terveys ja yksityiset lauseet löytyvät niissä selvästi huonommin.</p>
+            </div>
+          </details>
+
+          <details class="sek graa" id="gjor_ikke">
+            <summary><span class="merke">Ei mukana</span>Tätä Päivänselvä ei tee</summary>
+            <p class="intro">Nämä tiedot eivät kuulu peittämiseen tai ovat oletuksena pois päältä.</p>
+            <div class="punkt">
+              <h3>Mikä jää tarkoituksella näkyviin</h3>
+              <p>Diaarinumerot (Dnro), tuomioistuinten asianumerot, säädösviittaukset (”621/1999, 24 §”), yritysten ja viranomaisten Y-tunnukset sekä organisaation oma osoite ja vaihde jäävät näkyviin.</p>
+              <p class="eks"><span>Esimerkki</span>Päätöksessä ”Dnro PIRHA/9934/05.01.04/2026” ja ”Y-tunnus 2077366-8” jäävät näkyviin.</p>
+            </div>
+            <div class="punkt">
+              <h3>Oletuksena pois päältä olevat ryhmät</h3>
+              <p>Päivämäärät, ammatti ja sukulaisuus, ikä, työnantaja (organisaatio ja Y-tunnus) ja asianumerot ovat oletuksena pois päältä. Ne jäävät kopioon, kunnes otat ne käyttöön kohdassa ”Läpikäynnin valinnat”. Päivämääristä peitetään vain syntymä- ja kuolinpäivät.</p>
+              <p class="eks"><span>Esimerkki</span>”Käsittelijä, 54 vuotta” jää kopioon oletusvalinnoilla.</p>
+            </div>
+            <div class="punkt">
+              <h3>Summat ja asiayhteys</h3>
+              <p>Summat, laskun- ja tilausnumerot jäävät näkyviin. Asian tuntevat tunnistavat usein ilman nimeäkin, ketä asia koskee, tehtävän, paikan, iän ja tapahtumien perusteella.</p>
+              <p class="eks"><span>Esimerkki</span>”Kylän ainoan koulun rehtori jäi sairauslomalle toukokuun tulipalon jälkeen” osoittaa yhden henkilön, vaikka nimeä ei mainita.</p>
+            </div>
+            <div class="punkt">
+              <h3>Tiedostot, joita ohjelma ei voi lukea</h3>
+              <p>Tiedostot, joita Päivänselvä ei voi lukea, eivät tule kopioon mukaan. Ne mainitaan raportissa.</p>
+            </div>
+            <div class="punkt">
+              <h3>Kopio ei ole automaattisesti anonyymi</h3>
+              <p>Peitetty kopio ei ole lain tarkoittamalla tavalla anonyymi. Organisaatiosi on edelleen rekisterinpitäjä ja arvioi itse, voiko kopion luovuttaa. Viranomaiset tekevät tavalliseen tapaan julkisuuslain mukaisen arvion. Koodeja sisältävä kopio voidaan palauttaa avaimella, joten siinä on edelleen henkilötietoja (se on pseudonymisoitu).</p>
+            </div>
+          </details>
+
+          <details class="sek lilla" id="bilder">
+            <summary><span class="merke">Kuvat</span>Kuvat ja skannatut sivut</summary>
+            <p class="intro">Kuvissa Päivänselvän on ensin luettava teksti, ja se tuottaa enemmän virheitä kuin tavallinen teksti.</p>
+            <div class="punkt">
+              <h3>Kuvissa jää enemmän näkyviin</h3>
+              <p>Macissa tekstin tunnistaa macOS:n oma tekstintunnistus, Windowsissa ja Linuxissa Tesseract suomella ja ruotsilla. Valokuva täytetystä lomakkeesta antaa vähemmän osumia kuin sama lomake Word-tiedostona.</p>
+            </div>
+            <div class="punkt">
+              <h3>Kasvot</h3>
+              <p>Kasvot pikselöidään oletuksena. Pienet kasvot, sivuprofiilit ja osittain peittyneet kasvot voivat jäädä huomaamatta. Kasvot, joita ohjelma ei löydä, jäävät näkyviin ilman varoitusta.</p>
+            </div>
+            <div class="punkt">
+              <h3>Vain teksti ja kasvot</h3>
+              <p>Päivänselvä tunnistaa vain tekstin, jonka se pystyy lukemaan, ja kasvot. Nimikirjoitukset, QR-koodit, viivakoodit ja tatuoinnit jäävät näkyviin. Käsiala peitetään vain, kun ohjelma pystyy lukemaan sen. Tarkista passien ja henkilökorttien kuvat aina itse.</p>
+            </div>
+          </details>
+
+          <details class="sek signal" id="du_ma_selv">
+            <summary><span class="merke">Sinun vastuusi</span>Tämä sinun on tehtävä itse</summary>
+            <p class="intro">Päivänselvä säästää paljon työtä, mutta tämä on sinun tehtäväsi.</p>
+            <div class="punkt">
+              <h3>Lue kopio</h3>
+              <p>Käy kopio läpi ennen kuin luovutat sen, erityisesti yksittäisiä henkilöitä koskevissa asioissa. Päivänselvä löytää valtaosan nimistä ja numeroista, mutta ei voi luvata, että kaikki yksityinen on poissa.</p>
+            </div>
+            <div class="punkt">
+              <h3>Merkitse se, mikä jäi huomaamatta</h3>
+              <p>Ikkunassa voit merkitä sanan ja valita ”Peitä”. Voit myös lisätä sanan luetteloon ”Peitetään aina”, jolloin se peitetään myös tulevista kansioista.</p>
+            </div>
+            <div class="punkt">
+              <h3>Peitä tiedostot, jotka jätettiin pois</h3>
+              <p>Jos Päivänselvä ei ole varma, että kopiossa ei ole henkilötietoja, kopiota ei tallenneta. Tiedosto mainitaan raportissa, ja se on peitettävä muulla tavalla.</p>
+            </div>
+            <div class="punkt">
+              <h3>Valitse salassapitoperuste</h3>
+              <p>Asiakirjapyynnössä päätät itse, mikä julkisuuslain 24 §:n kohta tai muu peruste koskee peitettyä kohtaa. Päivänselvä merkitsee valitun perusteen peittoon ja tiedostoon ”Peittämisen salassapitoperusteet.txt” päätöksesi tueksi.</p>
+            </div>
+            <div class="punkt">
+              <h3>Siivoa vanhat kopiokansiot</h3>
+              <p>Korjauksen jälkeen syntyy uusi kopiokansio, ja vanhat jäävät paikalleen, kunnes poistat ne.</p>
+              <p class="eks"><span>Esimerkki</span>Korjauksen jälkeen sinulla on ”Asiakirjat-peitetty” ja ”Asiakirjat-peitetty 2”. Poista ensimmäinen ennen kuin joku käyttää väärää kopiota.</p>
+            </div>
+          </details>
+        </section>
+      </main>
+
+      <div class="slutt">
+        <strong>Mikään automaattinen peittäminen ei löydä kaikkea.</strong>
+        <p>
+          Päivänselvä löytää valtaosan nimistä ja numeroista, mutta ei kaikkea yksityistä.
+          Lue siksi kopio ennen kuin luovutat sen. Rekisterinpitäjä on organisaatiosi EU:n tietosuoja-asetuksen
+          ja tietosuojalain (1050/2018) mukaan, eikä Päivänselvä takaa, että kopio on anonyymi.
+        </p>
+        <p>Jos haluat tarkistaa, ettei Päivänselvä lähetä mitään ulos, ohjeet ovat <a href="it-osastolle.html">IT-osaston sivulla</a>.</p>
+      </div>
+      <p class="slutt-linje">Jos löydät jotain, mikä Päivänselvän olisi pitänyt löytää, kerro siitä meille. Päivitämme sivua, kun moottori muuttuu.</p>
+    </div>
+    <footer class="s-bunn">
+      <p class="s-bunn-merke"><i>Päivänselvä</i> <span>Tidemann Esbjugilta</span></p>
+      <nav aria-label="Lisää Päivänselvästä">
+        <a href="./">Etusivu</a>
+        <a href="it-osastolle.html">IT-osastolle</a>
+        <a href="tietosuoja/">Tietosuoja</a>
+        <a href="ehdot/">Ehdot</a>
+      </nav>
+    </footer>
+  </body>
+</html>

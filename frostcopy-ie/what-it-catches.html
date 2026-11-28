@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en-IE">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FrostCopy Ireland: what it catches, and what it does not</title>
+    <meta
+      name="description"
+      content="An honest overview of what FrostCopy removes from Irish documents, what slips through more often, and what you have to do yourself."
+    />
+    <meta name="robots" content="noindex" />
+    <link rel="icon" type="image/png" href="/frostcopy-ie/ikon.png" />
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="sider.css" />
+    <link rel="stylesheet" href="hva-klart-tar.css" />
+  </head>
+  <body>
+    <header class="s-topp">
+      <div class="s-linje-topp">
+        <a class="s-merke" href="/frostcopy-ie/">FrostCopy</a>
+        <nav class="s-nav" aria-label="Pages">
+          <a href="/frostcopy-ie/">Home</a>
+          <a href="/frostcopy-ie/for-it.html">For IT</a>
+          <a href="/frostcopy-ie/privacy/">Privacy</a>
+        </nav>
+      </div>
+      <div class="s-hode">
+        <p class="s-over">Honest overview</p>
+        <h1>What FrostCopy catches, and what it does not</h1>
+        <p class="s-ingress">
+          FrostCopy replaces personal information in a copy of your documents, on your own computer.
+          Some things it catches almost every time, others slip through more often. This page
+          says which, with what FrostCopy is best at first.
+        </p>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <p class="stempel">Applies to FrostCopy for Ireland as the program was on 27 November 2026. This edition is new. It has not yet been measured on test folders written without FrostCopy being adapted to them, so this page gives no percentages yet. We add them when that test has been run.</p>
+
+      <main>
+        <section id="tekst">
+          <h2>What it is built for</h2>
+          <p class="hint">FrostCopy for Ireland reads documents as they are written in Ireland: PPS numbers, Eircodes, Irish phone numbers and IBANs, addresses with townlands and “Co.”, Irish names in their English and Irish forms, and labels in Irish such as Ainm, Seoladh, Dáta breithe and Uimhir PSP. It was tuned on made-up Irish office folders: a GP practice, a county council answering FOI and data protection requests, family and employment law solicitors, and an accountancy practice.</p>
+        </section>
+
+        <section id="bilder">
+          <h2>Images and scanned pages</h2>
+          <p class="hint">We have no numbers for images in the Irish edition yet. In images FrostCopy first has to read the text, and that gives more mistakes than in ordinary text. Faces are pixelated, and we have not measured how well that works. Always look over images and scanned pages yourself.</p>
+        </section>
+
+        <div class="oppsum">
+          <section class="bra">
+            <h2><i aria-hidden="true">✓</i> Does well</h2>
+            <ul><li>PPS numbers: tested against their check letter, with or without spaces, in lower case, with W, and masked (“*****41EA”).</li><li>Names: the same person gets the same code in the whole folder, also in Irish forms such as Ó, Mac, Nic, Uí and “A Mháire”.</li><li>Knows Irish forms: Eircodes with their routing keys, Irish phone numbers, IBANs, VAT numbers, number plates such as 241-D-12345, and driving licence, IHI, medical card and IRP card numbers with their labels.</li><li>Also cleans what you do not see: comments, tracked changes and document properties.</li><li>Everything happens on your own computer, and the originals are not touched.</li></ul>
+          </section>
+          <section class="daarlig">
+            <h2><i aria-hidden="true">!</i> Does poorly</h2>
+            <ul><li>Case and reference numbers: each office writes them its own way, and Case numbers is off from the start.</li><li>Private things written in everyday words, such as family, money and conflicts, stay more often than names and numbers.</li><li>Replaces too much: office addresses and the names of other services and bodies are often replaced as well.</li><li>Images and scanned pages: more mistakes than in text. Signatures and QR codes stay, and handwriting is only replaced if FrostCopy manages to read it.</li><li>Does not remove what can point to a person indirectly, such as job title, place, age and an event.</li><li>Is made for English. In documents in Irish, names, numbers, labels and dates are caught, while health and private sentences are caught less well.</li></ul>
+          </section>
+        </div>
+
+        <section class="lesmer">
+          <h2>Read more</h2>
+          <p class="hint">Press a heading to open it.</p>
+
+          <details class="sek ok" id="virker_godt"><summary><span class="merke">Almost always</span>What FrostCopy catches almost always</summary><p class="intro">This is what FrostCopy is best at in ordinary text.</p><div class="punkt"><h3>PPS numbers and other Irish ID numbers</h3><p>PPS numbers are tested against their check letter, so a random number of the same form is not taken for one. The new form with a second letter, the old form with W and masked numbers are recognised too. Labels and column headers such as “PPSN”, “PPS No.”, “RSI No.”, “Tax Ref.” and “Uimhir PSP” are recognised, and so are “IHI”, “Medical Card No.”, “Driver Number”, “Passport No.” and “IRP”.</p><p class="eks"><span>Example</span>A column headed “PPSN” in a spreadsheet of clients is replaced from top to bottom.</p></div><div class="punkt"><h3>Same person, same code</h3><p>The information is replaced with codes such as [Person 4829133], so the copy can still be read. The same person gets the same code in the whole folder, and with the same key the code is the same the next time too.</p><p class="eks"><span>Example</span>“Siobhán” and “Siobhán Murphy” both become [Person 4829133] in the same folder. If there are two people called Siobhán in the folder, look over which one “Siobhán” alone was given.</p></div><div class="punkt"><h3>Places you do not see</h3><p>FrostCopy also cleans what you do not see when you open the file: who wrote a comment, tracked changes, document properties and the preview image. Macros and embedded objects are taken out. This has not been measured separately.</p><p class="eks"><span>Example</span>A Word file where the social worker wrote a comment gets the name replaced in the comment too, and in the text.</p></div><div class="punkt"><h3>The originals and your own computer</h3><p>The originals are not touched. FrostCopy makes a new folder with cleaned copies next to them, and the documents are not sent anywhere. The copy always ends up next to the original, so if the folder is in OneDrive or Dropbox, the copy ends up there too.</p><p class="eks"><span>Example</span>You choose the folder “Cases”. FrostCopy makes “Cases-clean” next to it, and “Cases” is as before.</p></div></details>
+
+          <details class="sek blaa" id="virker_ofte"><summary><span class="merke">Usually</span>What FrostCopy usually catches</summary><p class="intro">This is caught in most cases, and some of it slips through.</p><div class="punkt"><h3>Names</h3><p>Names are usually replaced. A name that is found in one place is replaced everywhere in the folder. Irish names are recognised in their Irish forms too, such as “Ó Briain”, “Nic Giolla Bhríde”, “Bean Uí Bhaoill” and “a Sheáin”. Titles such as Dr and Cllr are recognised in front of a name.</p><p class="eks"><span>Example</span>“Meeting with Oisín Byrne and his mother” becomes “Meeting with [Person 1180342] and his mother”.</p></div><div class="punkt"><h3>Contact details and addresses</h3><p>Irish mobile and landline numbers, email addresses, Eircodes and street addresses are on from the start. Addresses with a townland, “Co.” and a county are recognised, and so are Irish place names.</p><p class="eks"><span>Example</span>A home address with an Eircode in a letter is replaced. “The flat above the chip shop” can stay.</p></div><div class="punkt"><h3>Health and sensitive information</h3><p>Diagnoses, sick leave, medication and the words used for them in Irish documents (GP, A&amp;E, sick cert, medical card, Fair Deal) are caught most often. So are words for social welfare, child protection, immigration status and debt, such as “Jobseeker’s Allowance”, “Disability Allowance”, “Tusla”, “care order”, “International Protection”, “Stamp 4” and “MABS”.</p><p class="eks"><span>Example</span>“She has been on sick leave with stress since March” is caught. “He is out a lot because his stomach cannot take it” can stay.</p></div></details>
+
+          <details class="sek gul" id="svakt"><summary><span class="merke">More misses</span>Where FrostCopy misses more often</summary><p class="intro">Here more is left, or FrostCopy replaces more than it needs to.</p><div class="punkt"><h3>Case and reference numbers</h3><p>Case numbers are off from the start. When you turn them on, references with a label are caught, such as PULSE, HAP, RTB, WRC and court record numbers. Each office writes its references its own way, so a reference with no label can stay.</p><p class="eks"><span>Example</span>“Our ref: FOI-2026-0418” is replaced. The same number alone in a file name can stay.</p></div><div class="punkt"><h3>Private things written in everyday words</h3><p>Family conflicts, who a child lives with, money trouble and complaints described in a person’s own words stay more often than names and numbers.</p><p class="eks"><span>Example</span>“Mum and Dad row every weekend, and the money ran out in March” can stay even though the names are replaced.</p></div><div class="punkt"><h3>Names that are hard to recognise</h3><p>Initials without full stops, short or rare first names, names in lower case in a chat, and names that are also ordinary words (Hope, Dawn, May, Smith) can be left, or FrostCopy asks you about them.</p><p class="eks"><span>Example</span>“Spoke with SM about the case” and “ring dawn tomorrow” can stay, while “Siobhán Murphy” is replaced.</p></div><div class="punkt"><h3>It replaces things that could have stayed</h3><p>FrostCopy would rather replace too much than too little. Most often it is office addresses, the names of other services and bodies, and ordinary text taken to be private. Mark one as “Keep” once, and FrostCopy keeps it from then on.</p><p class="eks"><span>Example</span>The address of the council’s own office in a letter footer is replaced. Set it to “Always keep”, and it stays in every folder after that.</p></div><div class="punkt"><h3>A name is replaced everywhere</h3><p>A name is replaced in the whole folder. If someone has the same name as a company or a place, the company or the place can be replaced too.</p><p class="eks"><span>Example</span>If a client is named Clare, “Clare County Council” can be replaced too.</p></div><div class="punkt"><h3>Other languages than English</h3><p>FrostCopy is made for English as it is written in Ireland. In documents in Irish, the labels, names in their Irish forms, dates and numbers are caught, and the text in scanned pages is read with Irish as well as English on Windows and Linux. The sentence reader only knows English, so health and private sentences in Irish, Polish and other languages are caught much less well.</p><p class="eks"><span>Example</span>A note in Irish about a tenant’s illness can keep the health information, while the name and the phone number are replaced.</p></div></details>
+
+          <details class="sek graa" id="gjor_ikke"><summary><span class="merke">Not included</span>What FrostCopy does not do</summary><p class="intro">This is not part of the cleaning.</p><div class="punkt"><h3>Job title, age and the context</h3><p>Even with the names gone, someone who knows the case can often work out who it is about from the job title, the place, the age and what happened. FrostCopy does not judge that.</p><p class="eks"><span>Example</span>“The principal of the only national school in the village went off sick after the fire in May” points to one person with no name in it.</p></div><div class="punkt"><h3>Attachments that are not text</h3><p>In email, attachments such as PDF, Word files and images are taken out of the copy and must be cleaned as separate files. The copy says so.</p><p class="eks"><span>Example</span>An email with a scanned form attached becomes an email with a note that the attachment was removed.</p></div><div class="punkt"><h3>Some files change form</h3><p>A cleaned PDF looks like the original, and each page is an image with the cleaned text underneath. Outlook and Apple Mail messages become .eml, and macros are taken out.</p><p class="eks"><span>Example</span>A PDF with a filled-in form can still be searched, and the fields cannot be filled in again.</p></div><div class="punkt"><h3>It does not decide whether a copy meets a rule</h3><p>FrostCopy removes or replaces what it finds. It does not decide whether a copy meets any legal standard, such as anonymisation under the GDPR, a court’s rules on redaction, the in camera rule in family law or an exemption under the Freedom of Information Act 2014. As long as the original, a code list or a key exists, a copy can be linked back to the people in it.</p><p class="eks"><span>Example</span>A cleaned extract for a researcher must still be assessed by your data protection officer, even though the names are replaced.</p></div></details>
+
+          <details class="sek lilla" id="bilder-mer"><summary><span class="merke">Images</span>Images and scanned pages</summary><p class="intro">In images FrostCopy first has to read the text, and that gives more mistakes than in ordinary text. We have no numbers for the Irish edition yet.</p><div class="punkt"><h3>Faces</h3><p>Faces are pixelated by default. Small faces, faces from the side and partly hidden faces can be missed. A face FrostCopy does not find stays, with no warning. FrostCopy does not recognise who anyone is.</p><p class="eks"><span>Example</span>Tiny profile pictures in a staff list can stay without being pixelated. So look over images with people in them.</p></div><div class="punkt"><h3>Only text and faces</h3><p>FrostCopy only sees text it manages to read, and faces. Signatures, QR codes, barcodes and tattoos stay. Handwriting and number plates are only replaced if FrostCopy manages to read them.</p><p class="eks"><span>Example</span>A scanned tenancy agreement gets the printed names replaced, and the handwritten signature stays.</p></div><div class="punkt"><h3>Mac, Windows and Linux</h3><p>Windows and Linux read images and find faces with other tools than Mac, so the result there can be different. On Windows the text recognition is for English, and Tesseract reads English and Irish. On Linux Tesseract reads English and Irish.</p><p class="eks"><span>Example</span>A photo of a filled-in form taken with a phone gives fewer hits than the same form as a Word file.</p></div></details>
+
+          <details class="sek signal" id="du_ma_selv"><summary><span class="merke">Your responsibility</span>What you have to do yourself</summary><p class="intro">FrostCopy does much of the work, and this part is yours.</p><div class="punkt"><h3>Read the copy through</h3><p>Read the copy through before you share it, especially cases about individuals. FrostCopy catches most names and numbers, and it cannot promise that everything private is gone.</p><p class="eks"><span>Example</span>Before you send a subject access reply, you page through the copy and look for sentences about other family members that still say too much.</p></div><div class="punkt"><h3>Think about what you turn off</h3><p>What you turn off, FrostCopy mostly leaves in. Dates, employer, occupation, age and case numbers are off from the start.</p><p class="eks"><span>Example</span>If you turn off “Sensitive” to keep the clinical text, every diagnosis stays.</p></div><div class="punkt"><h3>Mark what FrostCopy did not find</h3><p>If FrostCopy misses a name or a number, click it and hide it. It is then hidden in the whole folder, and FrostCopy remembers it for the next folder.</p><p class="eks"><span>Example</span>You see that “Mira” was missed in one letter. You click the name, and it is hidden everywhere in the folder.</p></div><div class="punkt"><h3>Clean files that are held back</h3><p>If the final check finds something that should have been hidden, or a part it cannot read, the copy is not saved. The file is listed in the report, and you have to clean it another way.</p><p class="eks"><span>Example</span>A Word document with an image inside that FrostCopy cannot read gets no cleaned copy.</p></div><div class="punkt"><h3>Delete the backup</h3><p>By default FrostCopy makes an encrypted backup of the originals on the computer. It contains the originals with all the personal information, and it stays until you delete it under “Backups”. FrostCopy reminds you of backups older than 30 days.</p><p class="eks"><span>Example</span>If you have cleaned a folder of patient notes, an encrypted copy of the notes stays in FrostCopy’s own folder until you remove it.</p></div></details>
+
+          <details class="sek" id="teknisk">
+            <summary><span class="merke">For IT</span>The technical details</summary>
+            <p class="intro">For those who want to know how the engine works.</p>
+            <div class="teknisk-innhold"><details><summary>The engine in brief</summary><ul><li>The engine has three parts: Irish rules with check letters, check digits and name lists, a small sentence reader for private sentences, and text recognition for images and scanned pages.</li><li>Rules: PPS numbers, Revenue numbers and Irish VAT numbers are tested against their check letter (modulus 23). Eircodes must start with one of the 139 routing keys. IHI, medical card, IRP card, NDLS driving licence and passport numbers, CRO, RCN and practice numbers, PULSE, HAP, MABS, RTB, WRC and court record numbers, number plates, phone numbers and addresses with townlands have their own rules. Card numbers (Luhn) and IBAN have their own checks.</li><li>The sentence reader is a word-based reader plus a model based on distilbert-base-cased, fine-tuned for FrostCopy, that runs on the processor in Rust.</li><li>No large language model and no chatbot in the program.</li><li>Images: Apple Vision on Mac. Windows’ own text recognition and Tesseract with English and Irish on Windows, and Tesseract with English and Irish on Linux. Faces: Apple Vision on Mac, small face models (YuNet and UltraFace) elsewhere.</li></ul></details><details><summary>Network, copies and storage</summary><ul><li>The program has no HTTP library and no network client. Buying a licence only opens our website in your own browser.</li><li>The copy folder is always placed next to the original with “-clean” after the name, and a new one is made (“-clean 2”) if it exists, so nothing is overwritten.</li><li>A final check reads the whole copy before it is saved. If anything that was found is still in it, or a part cannot be read, the copy is not saved, and the report names the file. This check can also miss things.</li><li>The commands that show what the program talks to are on <a href="/frostcopy-ie/for-it.html">the page for IT</a>.</li></ul></details></div>
+          </details>
+        </section>
+      </main>
+
+      <div class="slutt">
+        <strong>No automatic cleaning catches everything.</strong>
+        <p>
+          FrostCopy catches most names and numbers, and less of what is private in other ways.
+          So read the copy through before you share it. You are responsible for what you share,
+          and FrostCopy does not decide whether a copy meets any legal standard.
+        </p>
+        <p>If you want to check that FrostCopy sends nothing out, the commands are <a href="/frostcopy-ie/for-it.html">on the page for the IT department</a>.</p>
+      </div>
+
+      <p class="slutt-linje">If you find something FrostCopy should have caught, we would like to hear about it. We update this page when the engine changes.</p>
+    </div>
+    <script src="hva-klart-tar.js"></script>
+    <footer class="s-bunn">
+      <p class="s-bunn-merke"><i>FrostCopy</i> <span>by Tidemann Esbjug</span></p>
+      <nav aria-label="More about FrostCopy">
+        <a href="/frostcopy-ie/">Home</a>
+        <a href="/frostcopy-ie/for-it.html">For IT</a>
+        <a href="/frostcopy-ie/privacy/">Privacy</a>
+        <a href="/frostcopy-ie/terms/">Terms</a>
+      </nav>
+    </footer>
+  </body>
+</html>

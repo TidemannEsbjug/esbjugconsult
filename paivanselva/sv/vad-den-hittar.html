@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="sv-FI">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Päivänselvä: vad den hittar och inte hittar</title>
+    <meta
+      name="description"
+      content="En ärlig genomgång av vad Päivänselvä maskerar i dokument, vad som oftare slinker igenom och vad du måste göra själv."
+    />
+    <meta name="robots" content="noindex" />
+    <!--
+      Én fil. Ingen skrifter, bilder eller skript utenfra, som for-it.html.
+      Samme innhold som /paivanselva/mita-se-loytaa.html, på finlandssvensk. Motoren i Klart-fi (claude/fi b312a0f8):
+      src/engine/fi over de svenske reglene, VALG_GRUPPER_SE og Klart-fi-grunnlag/research/191 og 192.
+      Ingen prosenter: det åpne settet fi1 er ikke blindt, og blindsettet er ikke målt med gjeldende motor og leser.
+    -->
+    <link rel="icon" type="image/png" href="/paivanselva/favicon.png" />
+    <link rel="stylesheet" href="../fonts.css" />
+    <link rel="stylesheet" href="../sider.css" />
+    <link rel="stylesheet" href="../hva-klart-tar.css" />
+    <link rel="stylesheet" href="/paivanselva/taal.css" />
+    <link rel="alternate" hreflang="fi-FI" href="https://esbjugconsult.com/paivanselva/mita-se-loytaa.html" />
+    <link rel="alternate" hreflang="sv-FI" href="https://esbjugconsult.com/paivanselva/sv/vad-den-hittar.html" />
+  </head>
+  <body>
+    <header class="s-topp">
+      <div class="s-linje-topp">
+        <a class="s-merke" href="./">Päivänselvä</a>
+        <nav class="s-nav" aria-label="Sidor">
+          <a href="./">Startsida</a>
+          <a href="for-it.html">För it-avdelningen</a>
+          <a href="dataskydd/">Dataskydd</a>
+        </nav>
+        <nav class="taal" aria-label="Kieli / Språk"><a href="/paivanselva/mita-se-loytaa.html" hreflang="fi" lang="fi">FI</a><span class="taal-streep" aria-hidden="true">|</span><span aria-current="true">SV</span></nav>
+      </div>
+      <div class="s-hode">
+        <p class="s-over">En ärlig genomgång</p>
+        <h1>Vad Päivänselvä hittar och inte hittar</h1>
+        <p class="s-ingress">
+          Päivänselvä maskerar personuppgifter i en kopia av dina dokument, på din egen dator.
+          Vissa uppgifter hittar programmet nästan alltid, andra slinker oftare igenom. Här beskriver vi båda.
+        </p>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <p class="stempel">Gäller Päivänselvä version 0.1.0. Den finländska utgåvan har ännu inte mätts på en oberoende testsamling, så vi publicerar inga procentsiffror här.</p>
+      <main>
+        <div class="oppsum">
+          <section class="bra">
+            <h2><i aria-hidden="true">✓</i> Fungerar bra</h2>
+            <ul>
+              <li>Personbeteckningar: datum och kontrolltecken kontrolleras, också med de nya skiljetecknen (Y, X, W, V, U och B–F).</li>
+              <li>IBAN-kontonummer, e-postadresser och telefonnummer.</li>
+              <li>Namn, också i böjda former. Ett namn som hittas på ett ställe maskeras i hela mappen.</li>
+              <li>Gatuadresser med trappa och bostad.</li>
+            </ul>
+          </section>
+          <section class="daarlig">
+            <h2><i aria-hidden="true">!</i> Fungerar sämre</h2>
+            <ul>
+              <li>Privata förhållanden med vardagliga ord, till exempel arbetslöshet, betalningsanmärkningar eller familjekonflikter, särskilt i finskspråkiga dokument.</li>
+              <li>Hälsa som beskrivs med egna ord och laboratorievärden i löpande text.</li>
+              <li>Bilder och skannade sidor: där måste programmet först läsa texten, och det ger fler fel.</li>
+            </ul>
+          </section>
+        </div>
+
+        <section class="lesmer">
+          <h2>Mer information</h2>
+          <p>Klicka på en rubrik för att fälla ut den.</p>
+
+          <details class="sek ok" id="virker_godt">
+            <summary><span class="merke">Nästan alltid</span>Det här hittar Päivänselvä nästan alltid</summary>
+            <p class="intro">Uppgifter med fast form som programmet kan kontrollera.</p>
+            <div class="punkt">
+              <h3>Personbeteckning</h3>
+              <p>Päivänselvä kontrollerar födelsedatumet och kontrolltecknet, så att beteckningen inte förväxlas med vilken teckenföljd som helst. Programmet känner till alla skiljetecken: plustecken, bindestreck och bokstäverna Y, X, W, V och U för den som är född på 1900-talet, och A–F för den som är född på 2000-talet. Tillfälliga beteckningar (individnummer 900–999) maskeras också. Personbeteckningar är förvalda att maskeras.</p>
+              <p class="eks"><span>Exempel</span>Överst på en ansökan om småbarnspedagogik står barnets personbeteckning 010125B234E. I kopian står en etikett på dess plats.</p>
+            </div>
+            <div class="punkt">
+              <h3>Telefon, e-post och konton</h3>
+              <p>Finländska telefonnummer (040 123 4567, 0401234567, 050-1234567, +358 40 123 4567, 09 3101 1234), e-postadresser, IBAN-kontonummer (kontrolleras med MOD 97) och kortnummer (kontrolleras med Luhn) maskeras. En organisations växelnummer får stå kvar.</p>
+              <p class="eks"><span>Exempel</span>I ett mejl från en vårdnadshavare med mobilnummer, e-postadress och kontonummer för återbetalning maskeras alla tre i kopian.</p>
+            </div>
+            <div class="punkt">
+              <h3>Namn</h3>
+              <p>Namn maskeras i regel, också i finska böjningsformer (”Virtaselle”, ”Korhosen”, ”Mäen”, ”Matille”) och i svensk genitiv. När ett namn hittas på ett ställe maskeras alla dess former i hela mappen, med samma kod.</p>
+              <p class="eks"><span>Exempel</span>”Samtal med Matti Virtanen” och längre ner ”Virtaselle skickades beslutet” får samma kod i kopian.</p>
+            </div>
+          </details>
+
+          <details class="sek blaa" id="virker_ofte">
+            <summary><span class="merke">I regel</span>Det här hittar Päivänselvä i regel</summary>
+            <p class="intro">De här uppgifterna hittas i de flesta fall, men en del slinker igenom eller beror på vad du väljer.</p>
+            <div class="punkt">
+              <h3>Känsliga personuppgifter</h3>
+              <p>Diagnoser, sjukskrivningar, vård och missbruksvård i vanliga fackliga formuleringar hittas oftast, på finska och svenska, liksom ICD-10-koder. Gruppen ”Känsliga personuppgifter” omfattar också bland annat fackföreningsmedlemskap, religion och uppgifter om brott. Hälsoord maskeras bara i filer där en person nämns.</p>
+              <p class="eks"><span>Exempel</span>”Har diabetes typ 2” hittas. ”Är ofta borta eftersom magen inte tål stress” kan stå kvar.</p>
+            </div>
+            <div class="punkt">
+              <h3>Adresser</h3>
+              <p>Gatuadresser (-gatan, -vägen, -viken och de finska -katu, -tie, -kuja, -polku), trappa, bostad (”bst.” och ”as.”) och postnummer maskeras som standard. Programmet maskerar då ibland också sådant som hade kunnat stå kvar, till exempel en hälsostations eller en myndighets adress.</p>
+              <p class="eks"><span>Exempel</span>”Bastuviken 21 A 6, 10600 Ekenäs” och ”Koivukuja 3 B 12, 33100 Tampere” maskeras.</p>
+            </div>
+            <div class="punkt">
+              <h3>Tjänstemän</h3>
+              <p>Namn bredvid en titel, som ”socialarbetare”, ”advokat”, ”tjänsteinnehavare” eller på finska ”sosiaalityöntekijä”, står kvar, som myndigheterna brukar göra. Namn på klienter, patienter och andra privatpersoner maskeras.</p>
+              <p class="eks"><span>Exempel</span>Underskriften ”socialarbetare Anna Lindholm” står kvar, namnet på den som får beslutet maskeras.</p>
+            </div>
+          </details>
+
+          <details class="sek gul" id="svakt">
+            <summary><span class="merke">Oftare fel</span>Här gör Päivänselvä oftare fel</summary>
+            <p class="intro">Här står mer kvar, eller så maskerar programmet mer än det behöver.</p>
+            <div class="punkt">
+              <h3>Privata förhållanden med vardagliga ord</h3>
+              <p>Arbetslöshet, betalningsanmärkningar, dödsdag, arbetsgivare och familjekonflikter som beskrivs med egna ord står oftare kvar än namn och nummer. I svenskspråkiga dokument läser dessutom en liten språkmodell hela meningar. I finskspråkiga dokument läses meningar än så länge bara med reglerna.</p>
+              <p class="eks"><span>Exempel</span>”Han blev arbetslös i våras och har en betalningsanmärkning” kan stå kvar i kopian, fast namnen bredvid har maskerats.</p>
+            </div>
+            <div class="punkt">
+              <h3>Namn som är svåra att känna igen</h3>
+              <p>Initialer, korta utländska förnamn, namn som också är vanliga ord och namn med liten bokstav i en chatt kan stå kvar. Ett förnamn i böjd form (till exempel ”Annalle”) kan stå kvar om hela namnet inte finns i filen.</p>
+              <p class="eks"><span>Exempel</span>”Pratade med MV om ärendet” kan stå kvar, medan ”Matti Virtanen” maskeras.</p>
+            </div>
+            <div class="punkt">
+              <h3>Ett namn maskeras överallt</h3>
+              <p>Ett namn maskeras i hela mappen, också namnen på dina egna anställda när titeln saknas. Heter någon likadant som ett företag eller en ort kan även det maskeras. Det som ska stå kvar kan du lägga i listan ”Står alltid kvar”.</p>
+              <p class="eks"><span>Exempel</span>Personnamnet ”Salo” kan också maskera staden Salo. Lägg staden i listan ”Står alltid kvar”, så står den kvar.</p>
+            </div>
+            <div class="punkt">
+              <h3>Texter på andra språk</h3>
+              <p>Päivänselvä är byggt för finska och svenska. Namn, nummer och e-postadresser hittas också på andra språk, men hälsa och privata meningar hittas betydligt sämre där.</p>
+            </div>
+          </details>
+
+          <details class="sek graa" id="gjor_ikke">
+            <summary><span class="merke">Utanför</span>Det här gör Päivänselvä inte</summary>
+            <p class="intro">De här uppgifterna ingår inte i maskeringen, eller är avstängda som standard.</p>
+            <div class="punkt">
+              <h3>Det som avsiktligt står kvar</h3>
+              <p>Diarienummer (Dnr), domstolarnas ärendenummer, hänvisningar till författningar (”621/1999, 24 §”), företags och myndigheters FO-nummer samt organisationens egen adress och växel står kvar.</p>
+              <p class="eks"><span>Exempel</span>I ett beslut står ”Dnr PIRHA/9934/05.01.04/2026” och ”FO-nummer 2077366-8” kvar.</p>
+            </div>
+            <div class="punkt">
+              <h3>Grupper som är avstängda som standard</h3>
+              <p>Datum, yrke och släktskap, ålder, arbetsgivare (organisation och FO-nummer) och ärendenummer är avstängda som standard. De står kvar i kopian tills du slår på dem under ”Val för genomsökning”. Av datumen maskeras bara födelse- och dödsdatum.</p>
+              <p class="eks"><span>Exempel</span>”Handläggare, 54 år” står kvar i kopian med standardvalen.</p>
+            </div>
+            <div class="punkt">
+              <h3>Belopp och sammanhang</h3>
+              <p>Belopp, fakturanummer och ordernummer står kvar. Även utan namn känner de som kan ärendet ofta igen vem det gäller, på befattning, plats, ålder och händelser.</p>
+              <p class="eks"><span>Exempel</span>”Rektorn på byns enda skola blev sjukskriven efter branden i maj” pekar ut en person, fast inget namn nämns.</p>
+            </div>
+            <div class="punkt">
+              <h3>Filer som programmet inte kan läsa</h3>
+              <p>Filer som Päivänselvä inte kan läsa kommer inte med i kopian. De står i rapporten.</p>
+            </div>
+            <div class="punkt">
+              <h3>Kopian är inte automatiskt anonym</h3>
+              <p>En maskerad kopia är inte anonym i lagens mening. Din organisation är fortfarande personuppgiftsansvarig och måste själv bedöma om kopian kan lämnas ut. Myndigheter gör som vanligt sin prövning enligt offentlighetslagen. En kopia med koder kan återställas med nyckeln och innehåller alltså fortfarande personuppgifter (den är pseudonymiserad).</p>
+            </div>
+          </details>
+
+          <details class="sek lilla" id="bilder">
+            <summary><span class="merke">Bilder</span>Bilder och skannade sidor</summary>
+            <p class="intro">I bilder måste Päivänselvä först läsa texten, och det ger fler fel än i vanlig text.</p>
+            <div class="punkt">
+              <h3>I bilder står mer kvar</h3>
+              <p>Textigenkänningen görs på Mac av den som är inbyggd i macOS, på Windows och Linux av Tesseract med finska och svenska. Ett foto av en ifylld blankett ger färre träffar än samma blankett som Word-fil.</p>
+            </div>
+            <div class="punkt">
+              <h3>Ansikten</h3>
+              <p>Ansikten pixlas som standard. Små ansikten, ansikten i profil och delvis dolda ansikten kan missas. Ett ansikte som programmet inte hittar står kvar utan varning.</p>
+            </div>
+            <div class="punkt">
+              <h3>Bara text och ansikten</h3>
+              <p>Päivänselvä känner bara igen text som det kan läsa, och ansikten. Namnteckningar, QR-koder, streckkoder och tatueringar står kvar. Handskrift maskeras bara när programmet kan läsa den. Kontrollera alltid foton av pass och id-kort själv.</p>
+            </div>
+          </details>
+
+          <details class="sek signal" id="du_ma_selv">
+            <summary><span class="merke">Ditt ansvar</span>Det här måste du göra själv</summary>
+            <p class="intro">Päivänselvä sparar mycket arbete, men det här är ditt.</p>
+            <div class="punkt">
+              <h3>Läs kopian</h3>
+              <p>Gå igenom kopian innan du lämnar ut den, särskilt i ärenden som gäller enskilda personer. Päivänselvä hittar de allra flesta namn och nummer, men kan inte lova att allt privat är borta.</p>
+            </div>
+            <div class="punkt">
+              <h3>Markera det som missades</h3>
+              <p>I fönstret kan du markera ett ord och välja ”Maskera”. Du kan också lägga ordet i listan ”Maskeras alltid”, så att det maskeras även i kommande mappar.</p>
+            </div>
+            <div class="punkt">
+              <h3>Maskera filer som hölls tillbaka</h3>
+              <p>Om Päivänselvä inte är säkert på att en kopia är fri från personuppgifter sparas den inte. Filen står i rapporten och måste maskeras på annat sätt.</p>
+            </div>
+            <div class="punkt">
+              <h3>Välj sekretessgrund</h3>
+              <p>Vid en begäran om handlingar avgör du själv vilken punkt i 24 § offentlighetslagen eller vilken annan grund som gäller för det maskerade stället. Päivänselvä skriver den valda grunden på fältet och i en egen fil, som underlag för ditt beslut.</p>
+            </div>
+            <div class="punkt">
+              <h3>Städa bort gamla kopiemappar</h3>
+              <p>Efter en rättelse skapas en ny kopiemapp, och de gamla ligger kvar tills du tar bort dem.</p>
+              <p class="eks"><span>Exempel</span>Efter en rättelse har du ”Arenden-maskerad” och ”Arenden-maskerad 2”. Ta bort den första innan någon använder fel kopia.</p>
+            </div>
+          </details>
+        </section>
+      </main>
+
+      <div class="slutt">
+        <strong>Ingen automatisk maskering hittar allt.</strong>
+        <p>
+          Päivänselvä hittar de allra flesta namn och nummer, men inte allt som är privat.
+          Läs därför kopian innan du lämnar ut den. Det är din organisation som är personuppgiftsansvarig
+          enligt dataskyddsförordningen (GDPR) och dataskyddslagen (1050/2018), och Päivänselvä garanterar inte att kopian är anonym.
+        </p>
+        <p>Vill du kontrollera att Päivänselvä inte skickar något ut, finns anvisningarna <a href="for-it.html">på sidan för it-avdelningen</a>.</p>
+      </div>
+      <p class="slutt-linje">Hittar du något som Päivänselvä borde ha hittat, hör gärna av dig. Vi uppdaterar sidan när motorn ändras.</p>
+    </div>
+    <footer class="s-bunn">
+      <p class="s-bunn-merke"><i>Päivänselvä</i> <span>från Tidemann Esbjug</span></p>
+      <nav aria-label="Mer om Päivänselvä">
+        <a href="./">Startsida</a>
+        <a href="for-it.html">För it-avdelningen</a>
+        <a href="dataskydd/">Dataskydd</a>
+        <a href="villkor/">Villkor</a>
+      </nav>
+    </footer>
+  </body>
+</html>

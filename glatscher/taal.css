@@ -1,0 +1,62 @@
+/* Clair & Klaar only: the language switch (NL | FR) in the header of every page, Dutch pages in clair-klaar/ and
+   French pages in clair-klaar/fr/. It links to the same page in the other language. Shared by both languages. */
+.taal {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  margin-left: 18px;
+  font-family: var(--sans, "Archivo", "Helvetica Neue", Arial, sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  color: inherit;
+}
+
+.taal a {
+  color: inherit;
+  opacity: 0.62;
+  text-decoration: none;
+  transition: opacity 160ms ease;
+}
+
+.taal a:hover,
+.taal a:focus-visible {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.taal [aria-current] {
+  opacity: 1;
+}
+
+.taal .taal-streep {
+  opacity: 0.4;
+  font-weight: 400;
+}
+
+/* In the dark header of the inner pages (sider.css .s-linje-topp). */
+.s-linje-topp .taal {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Pages without a header bar (prices, terms, activation, program window): top right corner. */
+.taal-fast {
+  position: absolute;
+  top: 14px;
+  right: max(16px, var(--gut, 16px));
+  z-index: 30;
+  margin: 0;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--ink, #15202e);
+  box-shadow: 0 1px 2px rgba(21, 32, 46, 0.06);
+}
+
+@media (max-width: 560px) {
+  .taal {
+    margin-left: 10px;
+  }
+}

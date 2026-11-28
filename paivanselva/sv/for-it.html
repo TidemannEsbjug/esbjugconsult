@@ -1,0 +1,564 @@
+<!doctype html>
+<!--
+  Hei, du som leser kildekoden. Det var deg vi håpet på.
+
+  Päivänselvä lover at dokumentene aldri forlater maskinen. Et sånt løfte skal ikke
+  tas på ordet, så sjekk det:
+
+  - Programmet: denne siden har kommandoene som viser hva det snakker med.
+  - Nettsiden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
+    uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
+  - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
+
+  Finlandssvensk utgave av /paivanselva/it-osastolle.html (28.11.2026), med den svenske siden som mal. Navn, stier og
+  brannmurregelen er hentet fra Klart-fi (claude/fi b312a0f8): fi_nimi!, tauri.fi.conf.json, brannmur-fi.nsh,
+  retningslinjer.rs, nokkelpakke.rs, aktivering.rs. Ingen pakker er bygd ennå: sjekksummene publiseres med pakkene.
+-->
+<html lang="sv-FI">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/paivanselva/favicon.png" />
+    <title>För it-avdelningen · Päivänselvä</title>
+    <meta
+      name="description"
+      content="Kontroller som visar att Päivänselvä inte kommunicerar över nätverket, vad som finns i paketet och på disken och hur it-avdelningen styr programmet centralt. Med kommandon, förväntade resultat och vad varje kontroll bevisar."
+    />
+    <meta name="robots" content="noindex" />
+    <!-- Ingen skrifter, bilder eller skript utenfra. Skriptene kopierer kommandoene. -->
+    <script src="../til-it-tidlig.js"></script>
+    <link rel="stylesheet" href="../fonts.css" />
+    <link rel="stylesheet" href="../sider.css" />
+    <link rel="stylesheet" href="/paivanselva/taal.css" />
+    <link rel="alternate" hreflang="fi-FI" href="https://esbjugconsult.com/paivanselva/it-osastolle.html" />
+    <link rel="alternate" hreflang="sv-FI" href="https://esbjugconsult.com/paivanselva/sv/for-it.html" />
+  </head>
+  <body>
+    <header class="s-topp">
+      <div class="s-linje-topp">
+        <a class="s-merke" href="./">Päivänselvä</a>
+        <nav class="s-nav" aria-label="Sidor">
+          <a href="./">Startsida</a>
+          <a href="for-it.html" aria-current="page">För it-avdelningen</a>
+          <a href="dataskydd/">Dataskydd</a>
+        </nav>
+        <nav class="taal" aria-label="Kieli / Språk"><a href="/paivanselva/it-osastolle.html" hreflang="fi" lang="fi">FI</a><span class="taal-streep" aria-hidden="true">|</span><span aria-current="true">SV</span></nav>
+      </div>
+      <div class="s-hode">
+        <p class="s-over">För it-avdelningen</p>
+        <h1>Lita inte på oss. Kontrollera själv.</h1>
+        <p class="s-ingress">
+          Päivänselvä lovar att dokumenten aldrig lämnar datorn. Här finns kommandona som visar det,
+          resultaten de ska ge och vad varje kontroll faktiskt bevisar.
+        </p>
+      </div>
+    </header>
+
+    <div class="s-kropp">
+      <nav class="s-innhold" aria-label="Innehåll">
+        <p>På den här sidan</p>
+        <ol>
+          <li><a href="#kort">I korthet</a></li>
+          <li><a href="#fil">1 Är det vår fil?</a></li>
+          <li><a href="#signert">2 Signerad och oförändrad?</a></li>
+          <li><a href="#rettigheter">3 Vad får programmet göra?</a></li>
+          <li><a href="#snakker">4 Pratar det med någon?</a></li>
+          <li><a href="#laget">5 Vad består det av?</a></li>
+          <li><a href="#steng">Spärra själv</a></li>
+          <li><a href="#disk">Vad som ligger på disken</a></li>
+          <li><a href="#styring">Central styrning</a></li>
+          <li><a href="#nokkel">Nyckeln i organisationen</a></li>
+          <li><a href="#logg">Granskningslogg</a></li>
+          <li><a href="#kommando">Kommandorad</a></li>
+          <li><a href="#krypto">Kryptografi</a></li>
+          <li><a href="#krav">Systemkrav</a></li>
+          <li><a href="#si-fra">Hittade du något?</a></li>
+        </ol>
+      </nav>
+
+      <main class="s-tekst" id="innhold">
+        <section class="s-kort" id="kort">
+          <h2>I korthet</h2>
+          <ul>
+            <li><b>Ingen väg ut.</b> Programmet har ingen TLS, slår inte upp namn i nätverket och lyssnar inte på någon port.</li>
+            <li><b>Allt finns i paketet.</b> Ingenting hämtas efter installationen. Inga automatiska uppdateringar, ingen användningsstatistik och inga felrapporter.</li>
+            <li><b>Det går att stänga av.</b> Spärra all utgående trafik från Päivänselvä. Programmet fungerar lika bra.</li>
+            <li><b>Det går att styra.</b> En fil bestämmer vad användarna får välja själva.</li>
+          </ul>
+        </section>
+
+        <div class="s-velg">
+          <p id="velg-tittel">Vilket system kontrollerar du?</p>
+          <div class="s-velg-knapper" role="group" aria-labelledby="velg-tittel">
+            <button type="button" data-velg="mac" aria-pressed="false">Mac</button>
+            <button type="button" data-velg="windows" aria-pressed="false">Windows</button>
+          </div>
+        </div>
+        <p class="s-skjult" id="melding" role="status" aria-live="polite"></p>
+
+        <!-- ============ 1 ============ -->
+        <section class="s-del" id="fil">
+          <h2><span class="s-nr">1</span>Är det vår fil?</h2>
+          <p>Programmet för Windows, Mac och Linux kommer snart. När du har laddat ned det räknar du ut filens kontrollsumma:</p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>shasum -a 256 ~/Downloads/P*selv*.dmg</pre></div>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-FileHash "$HOME\Downloads\P*selv*.exe"</pre></div>
+          </div>
+          <p>På Linux: <code>sha256sum ~/Hämtningar/*.deb</code></p>
+          <p class="s-fasit"><b>Förväntat resultat:</b> den långa raden siffror och bokstäver stämmer med kontrollsumman vi har publicerat för den här versionen. Kontrollsummorna publiceras på den här sidan tillsammans med paketen.</p>
+          <p class="s-beviser"><b>Bevisar:</b> att filen är den vi publicerade. Inget mer. Kontrollsumman säger ingenting om vad programmet gör.</p>
+        </section>
+
+        <!-- ============ 2 ============ -->
+        <section class="s-del" id="signert">
+          <h2><span class="s-nr">2</span>Signerad av oss och oförändrad?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>codesign -dv --verbose=4 "/Applications/Päivänselvä.app" 2>&amp;1 | grep -E "Format|TeamIdentifier|flags|Notarization"</pre></div>
+            <p class="s-fasit">
+              <b>Förväntat resultat:</b> <code>Format=app bundle with Mach-O universal (x86_64 arm64)</code>,
+              <code>flags=0x10000(runtime)</code>, <code>Notarization Ticket=stapled</code> och
+              <code>TeamIdentifier=N5BKVM258S</code>.
+            </p>
+            <div class="cmd"><pre>spctl -a -vv "/Applications/Päivänselvä.app"</pre></div>
+            <p class="s-fasit"><b>Förväntat resultat:</b> <code>accepted</code> och <code>source=Notarized Developer ID</code>.</p>
+            <p>Paketet innehåller två körbara filer till: en hjälpare som hanterar nyckeln och ett PDF-bibliotek. Kontrollera dem också:</p>
+            <div class="cmd"><pre>codesign -dv "/Applications/Päivänselvä.app/Contents/MacOS/klart-hvelv" 2>&amp;1 | grep TeamIdentifier
+codesign -dv "/Applications/Päivänselvä.app/Contents/Resources/bundled/engine/pdfium/libpdfium.dylib" 2>&amp;1 | grep TeamIdentifier</pre></div>
+            <p class="s-fasit"><b>Förväntat resultat:</b> samma <code>TeamIdentifier=N5BKVM258S</code> för båda.</p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Windowsversionen är signerad av ESBJUG CONSULT. Kommandot skriver ut <code>Valid</code> och visar namnet i certifikatet.</p>
+            <div class="cmd"><pre>Get-AuthenticodeSignature "$HOME\Downloads\P*selv*.exe" | Format-List Status, SignerCertificate</pre></div>
+            <p class="s-fasit"><b>Förväntat resultat:</b> <code>Valid</code> och vårt namn i <code>SignerCertificate</code>.</p>
+          </div>
+          <p class="s-beviser">
+            <b>Bevisar:</b> att koden kommer från oss och inte har ändrats efteråt. Det är kontrollen mot en manipulerad kopia.
+            En kopia med inbyggd nätverksanslutning är ett annat program, och signaturen avslöjar den.
+          </p>
+        </section>
+
+        <!-- ============ 3 ============ -->
+        <section class="s-del" id="rettigheter">
+          <h2><span class="s-nr">3</span>Vad får programmet göra?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>codesign -d --entitlements - --xml "/Applications/Päivänselvä.app" 2>/dev/null | plutil -p -</pre></div>
+            <p class="s-fasit">
+              <b>Förväntat resultat:</b> fem rader, alla <code>false</code>: <code>automation.apple-events</code>,
+              <code>cs.allow-dyld-environment-variables</code>, <code>cs.allow-jit</code>,
+              <code>cs.allow-unsigned-executable-memory</code> och <code>cs.disable-library-validation</code>.
+              Inga iCloud-behörigheter och varken <code>network.client</code> eller <code>network.server</code>.
+            </p>
+            <p>
+              <b>Observera ändå:</b> Päivänselvä körs inte i App Sandbox. Att nätverksbehörigheterna saknas är därför
+              bara en deklaration. Utan sandlåda upprätthåller macOS dem inte, och ett program med Hardened Runtime
+              kan i princip ändå öppna en anslutning. Vi säger det hellre själva än att du upptäcker det senare.
+              Det är punkt 4 och 5, och regeln du sätter upp själv, som avgör frågan.
+            </p>
+            <p class="s-beviser"><b>Bevisar:</b> att programmet inte kan styra andra program, ladda främmande kod eller nå iCloud. I sig bevisar det ingenting om nätverket.</p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>
+              Windows har inga motsvarande behörigheter för vanliga skrivbordsprogram. Ett program som installeras med en .exe-fil
+              ber inte om nätverksåtkomst. Det har den helt enkelt. Därför finns det inget kommando här.
+            </p>
+            <p class="s-beviser"><b>Bevisar:</b> ingenting på Windows. Spärren är brandväggsregeln nedan, och beviset för att programmet är tyst är punkt 4.</p>
+          </div>
+        </section>
+
+        <!-- ============ 4 ============ -->
+        <section class="s-del" id="snakker">
+          <h2><span class="s-nr">4</span>Pratar det med någon?</h2>
+          <p>Starta Päivänselvä, öppna en mapp och låt programmet söka igenom den. Kör kommandot medan programmet arbetar.</p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>pgrep -lx paivanselva; lsof +c 0 -nP -a -i -c paivanselva -c com.apple.WebKit.Networking</pre></div>
+            <p class="s-fasit"><b>Förväntat resultat:</b> en rad med processnumret och <code>paivanselva</code>, sedan ingenting. Päivänselvä har inte en enda TCP- eller UDP-socket.</p>
+            <p>
+              Fönstret i Päivänselvä visas av WebKit, som är en del av macOS. WebKit startar egna hjälpprocesser,
+              och en av dem heter <code>com.apple.WebKit.Networking</code>. Den finns med i kommandot eftersom det är den
+              som skulle hämta något om fönstret försökte. Den ska också vara tom.
+            </p>
+            <p>
+              Om det ändå dyker upp rader är Safari, Mail eller ett annat program med WebKit förmodligen öppet.
+              De delar namnet på hjälpprocessen. Stäng dem och kör kommandot igen, eller titta på processnumren:
+              hjälparna till Päivänselvä har nummer strax efter programmet.
+            </p>
+            <p>
+              Lägg märke till <code>-a</code>. Utan den kombinerar <code>lsof</code> villkoren med ”eller”, och hela datorns
+              trafik hamnar i listan. LuLu eller Little Snitch ger samma resultat om du hellre vill se det där.
+            </p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-Process paivanselva, tesseract -ErrorAction SilentlyContinue |
+ForEach-Object {
+  "$($_.ProcessName) körs (process $($_.Id))"
+  Get-NetTCPConnection -OwningProcess $_.Id -ErrorAction SilentlyContinue
+  Get-NetUDPEndpoint -OwningProcess $_.Id -ErrorAction SilentlyContinue
+}</pre></div>
+            <p class="s-fasit"><b>Förväntat resultat:</b> bara raderna som säger att <code>paivanselva</code> körs, och <code>tesseract</code> när Päivänselvä läser en bild. Inga tabeller med adresser och portar.</p>
+            <p>
+              Fönstret i Päivänselvä visas av WebView2, som kommer från Microsoft och är en del av Windows. Det körs i
+              egna processer, <code>msedgewebview2.exe</code>. Innehållet i fönstret kan inte hämta något:
+              reglerna i punkt 5 hindrar det. WebView2 själv kan däremot kommunicera med Microsoft, till exempel om
+              sina egna uppdateringar. Det är Microsofts trafik och innehåller ingenting från Päivänselvä eller från dokumenten.
+              Vill du ha helt tyst, spärra båda i brandväggen.
+            </p>
+            <p>Resursövervakaren (<code>resmon</code>), fliken Nätverk, ger samma resultat om du hellre vill se det där.</p>
+          </div>
+          <p class="s-beviser"><b>Bevisar:</b> att programmet, så som det körs hos dig, inte har någon väg ut. Det är den kontroll vi själva litar mest på.</p>
+        </section>
+
+        <!-- ============ 5 ============ -->
+        <section class="s-del" id="laget">
+          <h2><span class="s-nr">5</span>Vad består det av?</h2>
+          <p>Det här är allt som finns i paketet för Mac:</p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>MacOS/paivanselva</code></dt>
+              <dd>Programmet, för processorer från Intel och Apple. Skalet är skrivet i Rust (Tauri 2), fönstret i TypeScript.</dd>
+            </div>
+            <div>
+              <dt><code>MacOS/klart-hvelv</code></dt>
+              <dd>En liten hjälpare som låser och låser upp nyckeln med nyckelringen och Secure Enclave.</dd>
+            </div>
+            <div>
+              <dt><code>bert-swedish.onnx</code></dt>
+              <dd>Meningsmodellen, byggd på KB-BERT (KBLab/bert-base-swedish-cased, Kungliga biblioteket, CC0 1.0) och finjusterad av oss. Den körs på processorn, i själva programmet. Den är ingen egen process.</dd>
+            </div>
+            <div>
+              <dt><code>vocab.txt</code></dt>
+              <dd>Modellens ordlista.</dd>
+            </div>
+            <div>
+              <dt><code>pdfium/libpdfium.dylib</code></dt>
+              <dd>PDFium, biblioteket som läser och ritar upp PDF-filer.</dd>
+            </div>
+          </dl>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>find "/Applications/Päivänselvä.app/Contents" -type f -size +100k -exec ls -lh {} \;</pre></div>
+            <p class="s-fasit"><b>Förväntat resultat:</b> filerna ovan, appikonen och licenstexterna i mappen <code>lisenssit</code>. Ingen <code>llama-server</code>, inga <code>.gguf</code>-filer och inga andra modeller.</p>
+          </div>
+          <p>
+            Programmet har ingen TLS och ingen HTTP-klient som skulle kunna nå någon värd. Det kan inte lyssna på en port
+            eller slå upp namn i nätverket. Det syns i själva filen:
+          </p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>otool -L "/Applications/Päivänselvä.app/Contents/MacOS/paivanselva" | grep -iE 'curl|CFNetwork|Network\.framework|ssl'
+nm -u "/Applications/Päivänselvä.app/Contents/MacOS/paivanselva" | grep -E '_(bind|listen|accept|getaddrinfo)$'</pre></div>
+            <p class="s-fasit"><b>Förväntat resultat:</b> inte en enda rad från något av kommandona.</p>
+            <p>
+              <b>Det här hittar du, och vad det är:</b> filen är länkad mot <code>CloudKit</code> och <code>CoreData</code>. Det kommer från fönsterbiblioteket,
+              inte från oss. Päivänselvä använder ingen av dem och har inga iCloud-behörigheter (punkt 3).
+            </p>
+          </div>
+          <p>Om du har källkoden är de här ställena värda att titta på:</p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>src-tauri/Cargo.toml</code></dt>
+              <dd>Ingen reqwest, hyper, rustls, native-tls eller openssl. <code>tokio</code> byggs utan <code>net</code>. Några av namnen finns ändå i <code>Cargo.lock</code>, eftersom ett av biblioteken tar med dem för mobila plattformar. De kompileras aldrig. Därför är det <code>cargo tree</code> som gäller, inte en sökning i låsfilen.</dd>
+            </div>
+            <div>
+              <dt><code>tauri.conf.json</code></dt>
+              <dd>Fönstrets CSP: <code>default-src 'self'</code> och <code>connect-src ipc: http://ipc.localhost</code>. Fönstret kan bara kommunicera med programmet det körs i. Inga ramar, inbäddade objekt eller formulär som skickas ut. Dessutom spärrar programmet all navigering bort från sig självt.</dd>
+            </div>
+            <div>
+              <dt><code>capabilities/default.json</code></dt>
+              <dd>Fönstret kan inte öppna adresser eller sökvägar: <code>opener:deny-open-url</code>, <code>deny-open-path</code> och <code>deny-reveal-item-in-dir</code>. Inget HTTP-tillägg och ingen uppdateringsfunktion.</dd>
+            </div>
+            <div>
+              <dt><code>scripts/sjekk-nett.sh</code></dt>
+              <dd>Körs före varje bygge. Läser den kompilerade beroendegrafen, letar efter adresser, <code>std::net</code> och Unix-socketar i Rust-koden och avbryter bygget om något av det dyker upp igen.</dd>
+            </div>
+          </dl>
+          <div class="cmd" data-hvor="I mappen med källkoden"><pre>cd src-tauri &amp;&amp; cargo tree -e normal | grep -E 'reqwest|hyper|rustls|native-tls|openssl'</pre></div>
+          <p class="s-fasit"><b>Förväntat resultat:</b> inga träffar.</p>
+          <p class="s-notis">
+            På ett enda ställe öppnar Päivänselvä en webbadress: när användaren klickar på ”Köp licens” ber programmet systemet
+            att öppna <code>https://esbjugconsult.com/paivanselva/aktivera?hva=kjop&amp;maskin=…</code> i användarens egen webbläsare.
+            Päivänselvä ansluter inte dit själv. Adressen leder till licenssidan, där det står hur man beställer mot faktura. Datorkoden i adressen är en SHA-256-hash av datorns id och säger ingenting
+            om användaren eller dokumenten.
+          </p>
+          <h3>Biblioteken som läser dokumenten</h3>
+          <p>De hanterar filer som du inte har skapat själv, så de är bra att känna till:</p>
+          <dl class="s-tabell">
+            <div><dt>PDF</dt><dd>PDFium, pdf.js och pdf-lib. pdf.js körs utan <code>eval</code>.</dd></div>
+            <div><dt>Word</dt><dd>JSZip och docx-preview.</dd></div>
+            <div><dt>Excel</dt><dd>SheetJS (xlsx).</dd></div>
+            <div><dt>Bilder</dt><dd>Apple Vision på Mac. Windows inbyggda textigenkänning och Tesseract på Windows, Tesseract på Linux (finska och svenska).</dd></div>
+            <div><dt>Meningar</dt><dd>KB-BERT (bert-base-swedish-cased) för svenskspråkiga dokument, körd med tract-onnx.</dd></div>
+          </dl>
+          <p class="s-beviser"><b>Bevisar:</b> att programmet inte innehåller någon kod som skulle kunna skicka något. Med källkoden kan du bygga det själv och jämföra.</p>
+        </section>
+
+        <!-- ============ Steng selv ============ -->
+        <section class="s-del" id="steng">
+          <h2>Spärra själv</h2>
+          <p>Förlita dig inte på oss. Spärra utgående trafik från Päivänselvä i brandväggen eller via MDM. Programmet fungerar lika bra. Det är just därför vi har byggt det så.</p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <p>Den inbyggda brandväggen i macOS spärrar bara inkommande trafik. Ange sökvägen i en regel i nätverksfiltret i din MDM-lösning, eller i LuLu eller Little Snitch:</p>
+            <div class="cmd" data-hvor="Sökväg"><pre>/Applications/Päivänselvä.app/Contents/MacOS/paivanselva</pre></div>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Installationsprogrammet (.exe) försöker skapa regeln själv. Så här kontrollerar du att den finns:</p>
+            <div class="cmd"><pre>Get-NetFirewallRule -DisplayName "Paivanselva*" | Get-NetFirewallApplicationFilter</pre></div>
+            <p class="s-fasit"><b>Förväntat resultat:</b> en regel som heter ”Paivanselva - esta lahteva” med sökvägen till <code>paivanselva.exe</code>.</p>
+            <p>Om den saknas skapar du den så här, i PowerShell som administratör:</p>
+            <div class="cmd"><pre>New-NetFirewallRule -DisplayName "Paivanselva - esta lahteva" `
+  -Direction Outbound -Action Block -Profile Any `
+  -Program (Get-Process paivanselva).Path</pre></div>
+            <p>
+              Kör kommandot medan Päivänselvä är öppet, så hittar det sökvägen själv. Lägg också till <code>tesseract.exe</code>,
+              som ligger i mappen <code>bundled</code> under Päivänselvä. Det är en egen körbar fil.
+              Via Intune: samma regler kan skapas i brandväggsprinciperna under Slutpunktssäkerhet.
+            </p>
+          </div>
+          <p>När regeln kommer från dig behöver du inte tro på något av det vi skriver ovan.</p>
+        </section>
+
+        <!-- ============ Disk ============ -->
+        <section class="s-del" id="disk">
+          <h2>Vad som ligger på disken</h2>
+          <p>
+            Päivänselvä sparar alla sina data i en mapp per användare:
+            <code>~/Library/Application Support/fi.paivanselva.app/</code> (på Windows <code>%APPDATA%\fi.paivanselva.app\</code>). Mappnamnen inuti är gemensamma för alla utgåvor och därför på norska.
+          </p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>prosjekter/</code></dt>
+              <dd>Det användaren har bestämt för varje mapp, och texten som Päivänselvä har läst ur filerna. Den texten innehåller personuppgifter. Allt är krypterat med AES-256-GCM, och mapparna har namn som sökvägen inte kan räknas fram ur. Ett projekt som inte används glöms efter 30 dagar.</dd>
+            </div>
+            <div>
+              <dt><code>pseudonym/</code></dt>
+              <dd>Nyckeln, tidigare undanlagda nycklar och nummerregistret (<code>nummerbok.json</code>). Registret kopplar nummer till koderna och innehåller inga namn.</dd>
+            </div>
+            <div>
+              <dt><code>lager/</code></dt>
+              <dd>Användarens egna markeringar, listorna ”Maskeras alltid” och ”Står alltid kvar” och texterna från textverktyget. Krypterat.</dd>
+            </div>
+            <div>
+              <dt>Säkerhetskopior</dt>
+              <dd>Kopior av originalen, som skapas före genomsökningen om användaren vill det. Innehållet i varje fil är krypterat med AES-256-GCM. Kopiorna raderas inte automatiskt.</dd>
+            </div>
+            <div>
+              <dt><code>revisjon/</code></dt>
+              <dd>Granskningsloggen, om den är påslagen. En fil per månad, de senaste 13 månaderna.</dd>
+            </div>
+            <div>
+              <dt>Små filer</dt>
+              <dd>Bland annat licenskoden, <code>innstillinger.json</code> och fönstrets position. Okrypterade och utan innehåll från dokumenten.</dd>
+            </div>
+          </dl>
+          <h3>Så skyddas nycklarna</h3>
+          <p>
+            På Mac är nyckeln låst med ytterligare en nyckel från nyckelringen (tjänsten
+            <code>no.klart.pseudonym.fi.paivanselva.app</code>), och dessutom med Secure Enclave om datorn har en. På Windows används DPAPI för användaren.
+            Det skyddar mot andra användare och mot en förlorad disk. Det skyddar inte mot ett program som
+            körs som samma användare. Det är gränsen för både nyckelringen och DPAPI, och den är bra att känna till.
+          </p>
+          <p>
+            Nycklarna kan också ligga på ett nyckelminne (USB). Då når programmet dem bara när minnet sitter i.
+          </p>
+          <h3>Vad Päivänselvä installerar i systemet</h3>
+          <dl class="s-tabell">
+            <div><dt>Tjänster i Finder</dt><dd>På Mac skriver Päivänselvä vid start fyra tjänster till <code>~/Library/Services/</code>: ”Peitä Päivänselvällä” och ”Palauta Päivänselvällä” för filer, och ”Peitä teksti Päivänselvällä” och ”Palauta teksti Päivänselvällä” för markerad text. Namnen är på finska också när programmet används på svenska. De två sista tar emot markerad text från andra program. <code>"kommandolinje": false</code> i riktlinjerna tar bort alla fyra.</dd></div>
+            <div><dt>Adresser och filtyper</dt><dd>Päivänselvä tar emot länkar som börjar med <code>paivanselva://</code> och filer av typen <code>.paivanselvalisenssi</code>, <code>.paivanselvamerkinnat</code> och <code>.paivanselvaprojekti</code>. En länk kan föreslå en licens. Användaren tillfrågas alltid, och ett nyckelpaket kräver fortfarande sin kod.</dd></div>
+            <div><dt>Inget i bakgrunden</dt><dd>Ingen tjänst, ingen autostart och ingen process som körs efter att fönstret har stängts.</dd></div>
+            <div><dt>Det här ser övervakningen</dt><dd>Päivänselvä startar några kortlivade systemhjälpare, bland annat <code>klart-hvelv</code> (nyckeln), <code>ioreg</code> (datorkoden), <code>tmutil</code> (undantar mappar från Time Machine), <code>open</code> (visar mappen med kopiorna) och <code>osascript</code> (aviseringar).</dd></div>
+          </dl>
+          <h3>Ta bort allt</h3>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <p>Ta bort programmet och sedan:</p>
+            <div class="cmd"><pre>rm -rf ~/Library/Application\ Support/fi.paivanselva.app ~/Library/WebKit/fi.paivanselva.app ~/Library/Caches/fi.paivanselva.app
+rm -f ~/Library/Preferences/fi.paivanselva.app.plist
+rm -rf ~/Library/Services/*P*ivänselv*.workflow
+security delete-generic-password -s no.klart.pseudonym.fi.paivanselva.app</pre></div>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Avinstallera programmet och ta sedan bort <code>%APPDATA%\fi.paivanselva.app\</code>, <code>%LOCALAPPDATA%\fi.paivanselva.app\</code> och <code>%ProgramData%\Paivanselva\</code>.</p>
+          </div>
+          <p class="s-notis varsel">
+            <b>Säkra nyckeln först.</b> Om datamappen raderas innan nyckeln har sparats som ord eller som nyckelfil
+            går ingen kopia med koder att återställa längre.
+          </p>
+        </section>
+
+        <!-- ============ Styring ============ -->
+        <section class="s-del" id="styring">
+          <h2>Styr Päivänselvä centralt</h2>
+          <p>
+            En fil bestämmer det som användaren annars väljer själv. Den kan delas ut med MDM, Intune, grupprinciper eller ett skript.
+            Att skriva på båda ställena kräver administratörsbehörighet, så användaren kan inte häva det du har låst.
+          </p>
+          <dl class="s-tabell">
+            <div><dt>Mac</dt><dd><code>/Library/Application Support/Paivanselva/retningslinjer.json</code></dd></div>
+            <div><dt>Windows</dt><dd><code>%ProgramData%\Paivanselva\retningslinjer.json</code></dd></div>
+          </dl>
+          <p>Nycklarna i filen är gemensamma för alla utgåvor och därför på norska.</p>
+          <div class="cmd" data-hvor="retningslinjer.json"><pre>{
+  "versjon": 1,
+  "virksomhet": "Exempelkommunen",
+  "alltidSkjult": ["navn", "fnr", "helse"],
+  "kodeform": "kort",
+  "ansikterAlltid": true,
+  "utenSkanning": false,
+  "glemEtterDager": 30,
+  "revisjonslogg": true,
+  "nokkelEksport": false
+}</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>versjon</code></dt><dd>Obligatoriskt. Bara <code>1</code> finns.</dd></div>
+            <div><dt><code>virksomhet</code></dt><dd>Namnet som visas vid de låsta inställningarna.</dd></div>
+            <div><dt><code>alltidSkjult</code></dt><dd>Grupper som alltid maskeras. De går inte att stänga av, och ingenting i dem kan sättas till ”Låt stå”. Grupperna heter <code>navn</code> (namn), <code>fnr</code> (personbeteckning och identifikationsnummer), <code>kontakt</code> (telefon och e-post), <code>helse</code> (känsliga personuppgifter), <code>setninger</code> (privata meningar), <code>skilt</code> (registreringsnummer), <code>penger</code> (konto), <code>hemmelig</code> (lösenord), <code>sted</code> (adress och ort), <code>dato</code> (datum), <code>jobb</code> (yrke och släktskap), <code>alder</code> (ålder), <code>org</code> (arbetsgivare och organisationsnummer) och <code>sak</code> (mål- och ärendenummer).</dd></div>
+            <div><dt><code>standardGrupper</code></dt><dd>Grupperna som är påslagna när en mapp öppnas första gången. Utan värde: standardvalet i Päivänselvä.</dd></div>
+            <div><dt><code>kodeform</code></dt><dd><code>lapp</code> (bara etiketter), <code>kort</code> (kort kod och kodlista), <code>full</code> (fullständig kod i texten) eller <code>svart</code> (svart maskering, PDF). Utan värde: användaren väljer.</dd></div>
+            <div><dt><code>ansikterAlltid</code></dt><dd>Ansikten pixlas alltid, och inget ansikte kan sättas till ”Låt stå”.</dd></div>
+            <div><dt><code>utenSkanning</code></dt><dd><code>false</code> kräver att Päivänselvä alltid söker igenom filerna. Som standard kan användaren också markera allt själv.</dd></div>
+            <div><dt><code>prosjekter</code></dt><dd><code>false</code>: Päivänselvä kommer inte ihåg något om mapparna mellan sessionerna.</dd></div>
+            <div><dt><code>glemEtterDager</code></dt><dd>Hur länge ett projekt som inte används sparas, från 1 till 365 dagar. Standard är 30.</dd></div>
+            <div><dt><code>kommandolinje</code></dt><dd><code>false</code> stänger av kommandoraden, den bevakade mappen och tjänsterna i Finder.</dd></div>
+            <div><dt><code>revisjonslogg</code></dt><dd>Slår på granskningsloggen. <code>revisjonsmappe</code> skriver dessutom en kopia till en nätverksresurs.</dd></div>
+            <div><dt><code>rapportJson</code></dt><dd>Skriver en rapport i JSON i varje kopiemapp, bredvid <code>rapport.txt</code>.</dd></div>
+            <div><dt><code>nokkelEksport</code></dt><dd><code>false</code>: ingen kan exportera nyckeln som ord eller som fil. Nya datorer ansluts av den nyckelansvarige.</dd></div>
+          </dl>
+          <p>
+            Bredvid kan en licens ligga, i filen <code>licens.paivanselva</code>. Filen innehåller en kod som börjar med <code>PAIVANSELVA-</code>. Då behöver ingen användare klistra in något.
+            Har användaren en egen giltig licens går den före.
+          </p>
+          <p class="s-notis varsel">
+            <b>Om filen inte går att läsa startar Päivänselvä inte.</b> Ett stavfel, ett okänt fält eller ett värde utanför det tillåtna
+            får inte leda till att Päivänselvä maskerar mindre än du har bestämt. Felmeddelandet talar om vilket fält det gäller.
+          </p>
+        </section>
+
+        <!-- ============ Nøkkelen ============ -->
+        <section class="s-del" id="nokkel">
+          <h2>Nyckeln i organisationen</h2>
+          <p>
+            Koderna i kopiorna kan bara bli namn igen med nyckeln. I en organisation bör alla ha samma nyckel,
+            annars får samma person olika koder hos olika kollegor.
+          </p>
+          <dl class="s-tabell">
+            <div><dt>Nyckelansvarig</dt><dd>Skapar organisationens nyckel, delar ut den och ansluter kollegor.</dd></div>
+            <div><dt>Medlem</dt><dd>Använder nyckeln. Programmet låter inte en medlem exportera den. Det är en regel i programmet, inte kryptografi: datorn har hela nyckeln.</dd></div>
+            <div><dt>Nyckelpaket</dt><dd>Nyckeln krypterad med en nyckelkod på tolv tecken (Argon2id och AES-256-GCM). Paketet och koden lämnas över var för sig. Koden kan användas flera gånger och ska därför behandlas som själva nyckeln.</dd></div>
+            <div><dt>Anslutning utan nätverk</dt><dd>Kollegans dator skapar en förfrågan. Den nyckelansvarige svarar med en anslutning som bara den datorn kan öppna (X25519). En kontrollkod på sexton tecken läses upp, så att båda vet att de har med rätt dator att göra.</dd></div>
+            <div><dt>Reserv</dt><dd>24 ord (från en norsk ordlista som är gemensam för alla utgåvor) på papper, eller en nyckelfil skyddad med lösenord (Argon2id och AES-256-GCM).</dd></div>
+          </dl>
+          <p class="s-notis varsel">
+            <b>Tyst utdelning har ett pris.</b> Du kan lägga ett nyckelpaket (<code>avain.paivanselvapaketti</code>) bredvid <code>retningslinjer.json</code>
+            och skriva nyckelkoden i filen (<code>nokkelkode</code>). Då tar Päivänselvä över nyckeln utan att användaren gör något.
+            Nyckeln är då inte säkrare än mappen: den som kan läsa båda filerna har organisationens nyckel.
+          </p>
+        </section>
+
+        <!-- ============ Revisjonslogg ============ -->
+        <section class="s-del" id="logg">
+          <h2>Granskningslogg</h2>
+          <p>
+            Loggen skriver vad Päivänselvä har gjort, när och av vem. Den innehåller ingenting från dokumenten:
+            inga filnamn, sökvägar eller värden. Den är avstängd tills du slår på den med
+            <code>"revisjonslogg": true</code>. Fälten har norska namn, gemensamma för alla utgåvor.
+          </p>
+          <dl class="s-tabell">
+            <div><dt><code>hendelse</code></dt><dd>Vad som hände: kopior skapade, genomsökning, glömt, återställt eller en åtgärd med nyckeln (till exempel export).</dd></div>
+            <div><dt><code>via</code></dt><dd>Appen, kommandoraden eller den bevakade mappen.</dd></div>
+            <div><dt><code>kilde</code></dt><dd>Mappens fingeravtryck, beräknat med en nyckel på datorn. Samma ärende har samma värde på varje rad på den här datorn, men sökvägen går inte att läsa ut. En annan dator ger ett annat värde för samma mapp.</dd></div>
+            <div><dt><code>bruker</code>, <code>maskin</code>, <code>tid</code></dt><dd>Sätts av programmet självt, inte av fönstret.</dd></div>
+            <div><dt>Var den sparas</dt><dd><code>revisjon/ÅÅÅÅ-MM.jsonl</code> i datamappen. Med <code>revisjonsmappe</code> dessutom <code>&lt;dator&gt;-&lt;användare&gt;.jsonl</code> på nätverksresursen. Päivänselvä skapar inte den mappen. Om resursen inte är ansluten antecknas det i den lokala loggen.</dd></div>
+          </dl>
+          <p class="s-notis">
+            Loggen är en vanlig textfil. Användaren kan ändra den. Behöver du en logg som inte går att ändra,
+            peka <code>revisjonsmappe</code> till ett ställe där användaren bara kan lägga till.
+          </p>
+        </section>
+
+        <!-- ============ Kommandolinje ============ -->
+        <section class="s-del" id="kommando">
+          <h2>Kommandorad och bevakad mapp</h2>
+          <p>
+            Samma program, utan fönster. In kommer kommandoraden. Ut går stdout, stderr och filerna
+            du pekar ut. Ingenting öppnar en port.
+          </p>
+          <div class="cmd"><pre>PS="/Applications/Päivänselvä.app/Contents/MacOS/paivanselva"
+# Windows: "C:\Program Files\Päivänselvä\paivanselva.exe"   Linux: /usr/bin/paivanselva
+
+"$PS" scan  ~/Arenden/2026-114                     # kontrollera först
+"$PS" clean ~/Arenden/2026-114 --out ~/Till-AI     # skapa maskerade kopior
+"$PS" clean ~/Arenden/2026-114 --out ~/Till-AI --changed-only
+"$PS" watch ~/Inkorg --out ~/Till-AI               # bevakad mapp
+"$PS" restore ~/Till-AI/2026-114-maskerad          # återställ med nyckeln
+"$PS" forget ~/Arenden/2026-114                    # glöm allt om ärendet</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>--codes</code></dt><dd><code>lapp</code> (standard), <code>kort</code>, <code>full</code> eller <code>svart</code>.</dd></div>
+            <div><dt><code>--groups</code></dt><dd>Vad som ska maskeras, till exempel <code>navn,fnr,helse</code>.</dd></div>
+            <div><dt><code>--dry-run</code></dt><dd>Gör allt, också kontrollen av varje kopia, men sparar ingenting.</dd></div>
+            <div><dt><code>--no-project</code></dt><dd>Kommer inte ihåg något och använder inte det som bestämts i fönstret.</dd></div>
+            <div><dt>Utdata</dt><dd>En rad JSON på stdout, med <code>format: 1</code>. Förloppet går till stderr.</dd></div>
+            <div><dt>Slutkod</dt><dd>0: allt levererat. 1: fel. 2: något står kvar i en kopia eller levererades inte. 3: användarvillkoren har inte godkänts på den här datorn än. 4: källan används. 5: organisationens riktlinjer tillåter det inte. 6: nyckeln ligger på ett nyckelminne som inte sitter i. 64: fel i kommandot.</dd></div>
+          </dl>
+          <p><code>"$PS" help</code> visar alla kommandon och alternativ.</p>
+        </section>
+
+        <!-- ============ Krypto ============ -->
+        <section class="s-del" id="krypto">
+          <h2>Kryptografi</h2>
+          <dl class="s-tabell">
+            <div><dt>Nyckel</dt><dd>32 slumpmässiga byte från operativsystemet. Undernycklar med HKDF-SHA256.</dd></div>
+            <div><dt>Koder</dt><dd>Vem personen är: HMAC-SHA256. Den ursprungliga texten: AES-SIV (RFC 5297), deterministisk och autentiserad.</dd></div>
+            <div><dt>Nyckeln på disken</dt><dd>Mac: nyckelringen och Secure Enclave. Windows: DPAPI. Linux: nyckelringen (Secret Service).</dd></div>
+            <div><dt>Nyckelfil</dt><dd>Argon2id (64 MiB, 3 omgångar) och AES-256-GCM.</dd></div>
+            <div><dt>24 ord</dt><dd>256 bitar nyckel och 8 bitar kontrollsumma, 11 bitar per ord, från en lista med 2 048 norska ord.</dd></div>
+            <div><dt>Anslutning</dt><dd>X25519.</dd></div>
+            <div><dt>Projekt, egna markeringar och texter</dt><dd>AES-256-GCM, med nycklar från HKDF-SHA256. Filnamnen är HMAC-fingeravtryck.</dd></div>
+            <div><dt>Säkerhetskopior och pixlarna under maskeringarna i kopian</dt><dd>AES-256-GCM.</dd></div>
+            <div><dt>Licenskod</dt><dd>Ed25519. Signaturen kontrolleras på datorn.</dd></div>
+          </dl>
+          <p>Allt är kända algoritmer från öppna bibliotek (RustCrypto och dalek). Inget av det har vi hittat på själva.</p>
+        </section>
+
+        <!-- ============ Systemkrav ============ -->
+        <section class="s-del" id="krav">
+          <h2>Systemkrav</h2>
+          <dl class="s-tabell">
+            <div><dt>Mac</dt><dd>macOS 13 eller senare. Processorer från Intel och Apple i samma paket.</dd></div>
+            <div><dt>Windows</dt><dd>Windows 10 eller 11, 64 bitar med processor från Intel eller AMD. Installeras för alla användare, med en .exe-fil.</dd></div>
+            <div><dt>Linux</dt><dd>Ett .deb-paket (Debian, Ubuntu och närliggande) för amd64 eller ARM64. Paketet heter <code>paivanselva</code> och kräver <code>tesseract-ocr</code> och <code>xdg-utils</code>.</dd></div>
+            <div><dt>Minne</dt><dd>Päivänselvä använder ungefär en halv gigabyte när meningsmodellen är laddad. Vi rekommenderar 8 GB i datorn.</dd></div>
+            <div><dt>Grafikkort</dt><dd>Behövs inte. Allt körs på processorn.</dd></div>
+            <div><dt>Nätverk</dt><dd>Behövs inte, varken vid installation, aktivering eller användning.</dd></div>
+          </dl>
+          <p>
+            Första gången Päivänselvä läser bilder på en Mac kan macOS behöva några minuter för att förbereda sin egen
+            textigenkänning. Det händer bara en gång.
+          </p>
+          <p>En uppdatering är en ny installationsfil som du hämtar själv, när du vill. Päivänselvä letar inte efter nya versioner.</p>
+        </section>
+
+        <!-- ============ Si fra ============ -->
+        <section class="s-del" id="si-fra">
+          <h2>Hittade du något?</h2>
+          <p>
+            Skriv till <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a>.
+            Vi svarar personligen och hör det hellre från dig än från en kund.
+            Se även <a href="/.well-known/security.txt">security.txt</a>.
+          </p>
+          <p class="s-dato">Senast ändrad: 26 november 2026.</p>
+        </section>
+      </main>
+    </div>
+
+    <footer class="s-bunn">
+      <p class="s-bunn-merke"><i>Päivänselvä</i> <span>från Tidemann Esbjug</span></p>
+      <nav aria-label="Mer om Päivänselvä">
+        <a href="./">Startsida</a>
+        <a href="vad-den-hittar.html">Vad Päivänselvä hittar</a>
+        <a href="dataskydd/">Dataskydd</a>
+        <a href="villkor/">Villkor</a>
+      </nav>
+      <p class="s-bunn-liten">Tillverkad i Norge</p>
+    </footer>
+
+    <script src="til-it.js"></script>
+  </body>
+</html>

@@ -1,0 +1,574 @@
+<!doctype html>
+<!--
+  Olá, a si que lê o código-fonte. Era precisamente alguém como você que esperávamos.
+
+  O Claríssimo promete que os documentos nunca saem do computador. Uma promessa destas não
+  deve ser aceite sem mais, por isso verifique-a:
+
+  - O programa: esta página tem os comandos que mostram com quem ele comunica.
+  - O site: veja os cabeçalhos de resposta. A CSP só admite ficheiros deste domínio,
+    sem scripts em linha. O código não está minificado, por isso pode ser lido tal como está.
+  - Encontrou alguma coisa? Escreva para tidemann@esbjugconsult.com (veja /.well-known/security.txt).
+    Preferimos sabê-lo por si do que por um cliente.
+
+  Fakta fra Klart-pt: src-tauri/tauri.pt.conf.json (navn, id, filtyper), scripts/bygg-mac.sh (pakkeinnhold, «Licenças»,
+  hjelperen Clarissimo.app), src-tauri/windows/brannmur-pt.nsh (brannmurregelen), src-tauri/src/finder.rs (tjenestene),
+  src-tauri/src/aktivering.rs (/clarissimo/ativar). Sjekksummer og Linux-pakkenavn står ikke her før pakkene finnes.
+-->
+<html lang="pt-PT">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/clarissimo/favicon.png" />
+    <title>Para a informática · Claríssimo</title>
+    <meta
+      name="description"
+      content="As verificações que mostram que o Claríssimo não comunica com a rede, o que está no pacote e no disco, e como a informática gere o Claríssimo de forma centralizada. Com os comandos, os resultados esperados e o que cada verificação demonstra."
+    />
+    <meta name="robots" content="noindex" />
+    <!-- Ingen eksterne skrifter, bilder eller skript. De to skriptene bytter mellom Mac og
+         Windows og kopierer kommandoene. Uten skript vises begge systemene, og alt kan markeres. -->
+    <script src="til-it-tidlig.js"></script>
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="sider.css" />
+  </head>
+  <body>
+    <header class="s-topp">
+      <div class="s-linje-topp">
+        <a class="s-merke" href="./">Claríssimo</a>
+        <nav class="s-nav" aria-label="Páginas">
+          <a href="./">Início</a>
+          <a href="para-informatica.html" aria-current="page">Para a informática</a>
+          <a href="privacidade/">Privacidade</a>
+        </nav>
+      </div>
+      <div class="s-hode">
+        <p class="s-over">Para o departamento de informática</p>
+        <h1>Verifique por si.</h1>
+        <p class="s-ingress">
+          O Claríssimo promete que os documentos nunca saem do computador. Aqui tem os comandos
+          que o demonstram, o que devem devolver e o que cada verificação demonstra realmente.
+        </p>
+      </div>
+    </header>
+
+    <div class="s-kropp">
+      <nav class="s-innhold" aria-label="Conteúdo">
+        <p>Nesta página</p>
+        <ol>
+          <li><a href="#kort">Em resumo</a></li>
+          <li><a href="#fil">1 É o nosso ficheiro?</a></li>
+          <li><a href="#signert">2 Assinado e intacto?</a></li>
+          <li><a href="#rettigheter">3 O que pode o programa fazer?</a></li>
+          <li><a href="#snakker">4 Comunica com alguém?</a></li>
+          <li><a href="#laget">5 De que é feito?</a></li>
+          <li><a href="#steng">Bloqueie-o por si</a></li>
+          <li><a href="#disk">O que fica no disco</a></li>
+          <li><a href="#styring">Gestão centralizada do Claríssimo</a></li>
+          <li><a href="#nokkel">A chave numa organização</a></li>
+          <li><a href="#logg">Registo de auditoria</a></li>
+          <li><a href="#kommando">Linha de comandos</a></li>
+          <li><a href="#krypto">Criptografia</a></li>
+          <li><a href="#krav">Requisitos do sistema</a></li>
+          <li><a href="#si-fra">Encontrou alguma coisa?</a></li>
+        </ol>
+      </nav>
+
+      <main class="s-tekst" id="innhold">
+        <section class="s-kort" id="kort">
+          <h2>Em resumo</h2>
+          <ul>
+            <li><b>Nenhuma saída para o exterior.</b> O programa não tem TLS, não consegue resolver nomes na rede e não escuta em nenhuma porta.</li>
+            <li><b>Vai tudo no pacote.</b> Depois da instalação não se transfere nada. Nem atualizador, nem estatísticas de utilização, nem relatórios de erros.</li>
+            <li><b>Pode bloqueá-lo.</b> Bloqueie todo o tráfego de saída do Claríssimo. O programa funciona igualmente bem.</li>
+            <li><b>Pode geri-lo.</b> Um único ficheiro determina o que os utilizadores podem escolher por si.</li>
+          </ul>
+        </section>
+
+        <div class="s-velg">
+          <p id="velg-tittel">Que sistema está a verificar?</p>
+          <div class="s-velg-knapper" role="group" aria-labelledby="velg-tittel">
+            <button type="button" data-velg="mac" aria-pressed="false">Mac</button>
+            <button type="button" data-velg="windows" aria-pressed="false">Windows</button>
+          </div>
+        </div>
+        <p class="s-skjult" id="melding" role="status" aria-live="polite"></p>
+
+        <!-- ============ 1 ============ -->
+        <section class="s-del" id="fil">
+          <h2><span class="s-nr">1</span>É o nosso ficheiro?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>shasum -a 256 ~/Downloads/Clar*.dmg</pre></div>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-FileHash "$HOME\Downloads\Clar*.exe"</pre></div>
+          </div>
+          <p class="s-fasit"><b>Resultado esperado:</b> a longa série de algarismos e letras coincide com a soma de verificação que publicamos para a versão.</p>
+          <p>O programa para Windows, Mac e Linux chega em breve. As somas de verificação são publicadas aqui juntamente com os pacotes.</p>
+          <p class="s-beviser"><b>Demonstra:</b> que o ficheiro é o que publicámos. Nada mais. Uma soma de verificação não diz nada sobre o que o programa faz.</p>
+        </section>
+
+        <!-- ============ 2 ============ -->
+        <section class="s-del" id="signert">
+          <h2><span class="s-nr">2</span>Está assinado por nós e sem alterações?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>codesign -dv --verbose=4 "/Applications/Claríssimo.app" 2>&amp;1 | grep -E "Format|TeamIdentifier|flags|Notarization"</pre></div>
+            <p class="s-fasit">
+              <b>Resultado esperado:</b> <code>Format=app bundle with Mach-O universal (x86_64 arm64)</code>,
+              <code>flags=0x10000(runtime)</code>, <code>Notarization Ticket=stapled</code> e
+              <code>TeamIdentifier=N5BKVM258S</code>.
+            </p>
+            <div class="cmd"><pre>spctl -a -vv "/Applications/Claríssimo.app"</pre></div>
+            <p class="s-fasit"><b>Resultado esperado:</b> <code>accepted</code> e <code>source=Notarized Developer ID</code>.</p>
+            <p>O pacote contém outros dois ficheiros executáveis: o auxiliar que gere a chave e a biblioteca de PDF. O auxiliar aparece mais uma vez dentro de Contents/Helpers/Clarissimo.app. Verifique-os também:</p>
+            <div class="cmd"><pre>codesign -dv "/Applications/Claríssimo.app/Contents/MacOS/klart-hvelv" 2>&amp;1 | grep TeamIdentifier
+codesign -dv "/Applications/Claríssimo.app/Contents/Resources/bundled/engine/pdfium/libpdfium.dylib" 2>&amp;1 | grep TeamIdentifier</pre></div>
+            <p class="s-fasit"><b>Resultado esperado:</b> o mesmo <code>TeamIdentifier=N5BKVM258S</code> em ambos.</p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>A versão para Windows é assinada pela ESBJUG CONSULT. O comando devolve <code>Valid</code> e mostra o nome do certificado.</p>
+            <div class="cmd"><pre>Get-AuthenticodeSignature "$HOME\Downloads\Clar*.exe" | Format-List Status, SignerCertificate</pre></div>
+            <p class="s-fasit"><b>Resultado esperado:</b> <code>Valid</code> e o nosso nome em <code>SignerCertificate</code>.</p>
+          </div>
+          <p class="s-beviser">
+            <b>Demonstra:</b> que o código é nosso e que não foi alterado depois. É a verificação contra uma cópia reconstruída.
+            Uma cópia com uma ligação de rede acrescentada é outro programa, e a assinatura denuncia-a.
+          </p>
+        </section>
+
+        <!-- ============ 3 ============ -->
+        <section class="s-del" id="rettigheter">
+          <h2><span class="s-nr">3</span>O que pode o programa fazer?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>codesign -d --entitlements - --xml "/Applications/Claríssimo.app" 2>/dev/null | plutil -p -</pre></div>
+            <p class="s-fasit">
+              <b>Resultado esperado:</b> cinco linhas, todas <code>false</code>: <code>automation.apple-events</code>,
+              <code>cs.allow-dyld-environment-variables</code>, <code>cs.allow-jit</code>,
+              <code>cs.allow-unsigned-executable-memory</code> e <code>cs.disable-library-validation</code>.
+              Nenhum entitlement de iCloud, e também nenhum <code>network.client</code> ou <code>network.server</code>.
+            </p>
+            <p>
+              <b>Tenha, porém, em conta o seguinte:</b> o Claríssimo não corre na App Sandbox. Por isso, a ausência de entitlements de rede
+              é apenas uma indicação. O macOS não os impõe sem a sandbox, e um programa com Hardened Runtime
+              pode, em princípio, abrir uma ligação na mesma. Preferimos dizê-lo nós a que o descubra por si.
+              O que decide realmente a questão são os pontos 4 e 5 e a regra que definir por si.
+            </p>
+            <p class="s-beviser"><b>Demonstra:</b> que o programa não pode controlar outros programas, não pode carregar código alheio e não pode aceder ao iCloud. Sobre a rede, por si só, não demonstra nada.</p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>
+              O Windows não tem permissões equivalentes para os programas de ambiente de trabalho comuns. Um programa
+              instalado com um .exe não pede acesso à rede. Tem-no. Por isso aqui não há nenhum comando.
+            </p>
+            <p class="s-beviser"><b>Demonstra:</b> no Windows, nada. O bloqueio é a regra de firewall mais abaixo, e a prova de que o programa não comunica é o ponto 4.</p>
+          </div>
+        </section>
+
+        <!-- ============ 4 ============ -->
+        <section class="s-del" id="snakker">
+          <h2><span class="s-nr">4</span>Comunica com alguém?</h2>
+          <p>Inicie o Claríssimo, abra uma pasta e deixe-o lê-la. Execute o comando enquanto o programa está a trabalhar.</p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>pgrep -lx clarissimo; lsof +c 0 -nP -a -i -c clarissimo -c com.apple.WebKit.Networking</pre></div>
+            <p class="s-fasit"><b>Resultado esperado:</b> uma linha com o número do processo e <code>clarissimo</code>, e nada mais. O Claríssimo não tem um único socket TCP ou UDP.</p>
+            <p>
+              A janela do Claríssimo é desenhada pelo WebKit, que faz parte do macOS. O WebKit inicia os seus próprios processos auxiliares,
+              e um deles chama-se <code>com.apple.WebKit.Networking</code>. Está incluído no comando porque seria ele
+              a transferir algo se a janela o tentasse. Também deve estar vazio.
+            </p>
+            <p>
+              Se mesmo assim aparecerem linhas, provavelmente tem o Safari, o Mail ou outro programa com WebKit aberto.
+              Partilham o nome do processo auxiliar. Feche-os e execute o comando de novo, ou repare nos números dos processos:
+              os auxiliares do Claríssimo têm os números imediatamente a seguir ao do Claríssimo.
+            </p>
+            <p>
+              Repare em <code>-a</code>. Sem esta opção, o <code>lsof</code> combina os critérios com «ou», e obtém na lista todo o
+              tráfego do computador. O LuLu ou o Little Snitch dão o mesmo resultado, se preferir vê-lo assim.
+            </p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-Process clarissimo, tesseract -ErrorAction SilentlyContinue |
+ForEach-Object {
+  "$($_.ProcessName) está em execução (processo $($_.Id))"
+  Get-NetTCPConnection -OwningProcess $_.Id -ErrorAction SilentlyContinue
+  Get-NetUDPEndpoint -OwningProcess $_.Id -ErrorAction SilentlyContinue
+}</pre></div>
+            <p class="s-fasit"><b>Resultado esperado:</b> apenas as linhas que indicam que o <code>clarissimo</code> está em execução, e o <code>tesseract</code> enquanto o Claríssimo lê uma imagem. Nenhuma tabela com endereços e portas.</p>
+            <p>
+              No Windows, a janela do Claríssimo é desenhada pelo WebView2, que é da Microsoft e faz parte do Windows. Corre em
+              processos próprios, <code>msedgewebview2.exe</code>. O conteúdo da janela não consegue transferir nada:
+              as regras do ponto 5 impedem-no. O WebView2 pode, no entanto, comunicar com a Microsoft, por exemplo para as suas próprias
+              atualizações. Esse é tráfego da Microsoft e não contém nada do Claríssimo nem dos documentos.
+              Se quiser silêncio total, bloqueie ambos na firewall.
+            </p>
+            <p>O Monitor de Recursos (<code>resmon</code>), separador Rede, dá o mesmo resultado, se preferir vê-lo assim.</p>
+          </div>
+          <p class="s-beviser"><b>Demonstra:</b> que o programa, tal como corre nos seus computadores, não tem saída para o exterior. É a verificação em que nós próprios mais confiamos.</p>
+        </section>
+
+        <!-- ============ 5 ============ -->
+        <section class="s-del" id="laget">
+          <h2><span class="s-nr">5</span>De que é feito?</h2>
+          <p>Isto é tudo o que o pacote para Mac contém:</p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>MacOS/clarissimo</code></dt>
+              <dd>O programa, para processadores Intel e Apple. A estrutura está escrita em Rust (Tauri 2) e a janela em TypeScript.</dd>
+            </div>
+            <div>
+              <dt><code>MacOS/klart-hvelv</code></dt>
+              <dd>Um pequeno auxiliar (0,2 MB) que envolve e desenvolve a chave com o Porta-chaves e o Secure Enclave.</dd>
+            </div>
+            <div>
+              <dt><code>setning/*.onnx</code></dt>
+              <dd>O modelo de frases, baseado em DistilBERT (Geotrend) e ajustado por nós. Corre no processador, dentro do próprio programa. Não é um processo à parte.</dd>
+            </div>
+            <div>
+              <dt><code>setning/vocab.txt</code></dt>
+              <dd>O vocabulário do modelo, 0,2 MB.</dd>
+            </div>
+            <div>
+              <dt><code>pdfium/libpdfium.dylib</code></dt>
+              <dd>O PDFium, a biblioteca que lê e mostra os PDF. 15 MB.</dd>
+            </div>
+          </dl>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>find "/Applications/Claríssimo.app/Contents" -type f -size +100k -exec ls -lh {} \;</pre></div>
+            <p class="s-fasit"><b>Resultado esperado:</b> os cinco ficheiros acima, o auxiliar da chave outra vez em Contents/Helpers, o ícone da aplicação e os textos das licenças em <code>Licenças/CODE-TIERS.txt</code>. Nenhum <code>llama-server</code>, nenhum <code>.gguf</code>, nenhum outro modelo.</p>
+          </div>
+          <p>
+            O programa não tem TLS nem um cliente HTTP capaz de chegar a um servidor. Não consegue escutar em nenhuma porta
+            nem resolver nomes na rede. Pode vê-lo no próprio ficheiro:
+          </p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>otool -L "/Applications/Claríssimo.app/Contents/MacOS/clarissimo" | grep -iE 'curl|CFNetwork|Network\.framework|ssl'
+nm -u "/Applications/Claríssimo.app/Contents/MacOS/clarissimo" | grep -E '_(bind|listen|accept|getaddrinfo)$'</pre></div>
+            <p class="s-fasit"><b>Resultado esperado:</b> nenhuma linha em nenhum dos dois comandos.</p>
+            <p>
+              <b>O que vai encontrar, e o que é:</b> o ficheiro está ligado ao <code>CloudKit</code> e ao <code>CoreData</code>. Isso vem da biblioteca da janela,
+              não de nós. O Claríssimo não usa nenhum dos dois e não tem entitlements de iCloud (ponto 3).
+            </p>
+          </div>
+          <p>Se tiver o código-fonte, estes são os sítios onde procurar:</p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>src-tauri/Cargo.toml</code></dt>
+              <dd>Nem reqwest, nem hyper, nem rustls, nem native-tls, nem openssl. O <code>tokio</code> é compilado sem <code>net</code>. Alguns destes nomes aparecem mesmo assim no <code>Cargo.lock</code>, porque uma biblioteca os inclui para plataformas móveis. Nunca são compilados. Por isso o que conta é o <code>cargo tree</code>; uma pesquisa no ficheiro de bloqueio não serve.</dd>
+            </div>
+            <div>
+              <dt><code>tauri.conf.json</code></dt>
+              <dd>CSP da janela: <code>default-src 'self'</code> e <code>connect-src ipc: http://ipc.localhost</code>. A janela só pode comunicar com o programa em que corre. Sem molduras, sem objetos incorporados, sem formulários para fora. Além disso, o programa impede qualquer navegação para fora de si próprio.</dd>
+            </div>
+            <div>
+              <dt><code>capabilities/opener-nektet.json</code></dt>
+              <dd>A janela está proibida de abrir endereços e caminhos: <code>opener:deny-open-url</code>, <code>deny-open-path</code> e <code>deny-reveal-item-in-dir</code>. Sem plugin HTTP, sem atualizador.</dd>
+            </div>
+            <div>
+              <dt><code>scripts/sjekk-nett.sh</code></dt>
+              <dd>Corre antes de cada compilação. Lê o grafo de dependências compilado, procura endereços e <code>std::net</code> no código Rust e interrompe a compilação se algo disso voltar a aparecer.</dd>
+            </div>
+          </dl>
+          <div class="cmd" data-hvor="Na pasta do código-fonte"><pre>cd src-tauri &amp;&amp; cargo tree -e normal | grep -E 'reqwest|hyper|rustls|native-tls|openssl'</pre></div>
+          <p class="s-fasit"><b>Resultado esperado:</b> nenhuma correspondência.</p>
+          <p>
+            Num único sítio o Claríssimo abre um endereço web: quando o utilizador clica em «Comprar uma licença», o programa pede ao sistema que abra
+            <code>https://esbjugconsult.com/clarissimo/ativar?hva=kjop&amp;maskin=…</code> no navegador do próprio utilizador.
+            O Claríssimo não se liga lá por si. O código de computador no endereço é um hash SHA-256 do identificador do computador e não diz nada
+            sobre o utilizador nem sobre os documentos.
+          </p>
+          <h3>As bibliotecas que leem os documentos</h3>
+          <p>Processam ficheiros que não foi o utilizador a criar, por isso convém conhecê-las:</p>
+          <dl class="s-tabell">
+            <div><dt>PDF</dt><dd>PDFium 158, pdf.js 4.10.38 e pdf-lib 1.17.1. O pdf.js corre sem <code>eval</code>.</dd></div>
+            <div><dt>Word</dt><dd>JSZip 3.10.1 e docx-preview 0.4.1.</dd></div>
+            <div><dt>Excel</dt><dd>SheetJS (xlsx) 0.18.5.</dd></div>
+            <div><dt>Imagens</dt><dd>Apple Vision no Mac. O reconhecimento de texto do próprio Windows e o Tesseract no Windows, e o Tesseract no Linux.</dd></div>
+            <div><dt>Frases</dt><dd>DistilBERT (Geotrend) ajustado por nós, executado com tract-onnx 0.23.</dd></div>
+          </dl>
+          <p class="s-beviser"><b>Demonstra:</b> que no programa não há código capaz de enviar nada. Com o código-fonte pode compilá-lo por si e comparar.</p>
+        </section>
+
+        <!-- ============ Bloqueie-o por si ============ -->
+        <section class="s-del" id="steng">
+          <h2>Bloqueie-o por si</h2>
+          <p>Bloqueie o tráfego de saída do Claríssimo na firewall ou por MDM. O programa funciona igualmente bem. Foi precisamente por isso que o construímos assim.</p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <p>A firewall integrada do macOS só bloqueia o tráfego de entrada. Introduza o caminho numa regra do filtro de rede da sua solução MDM, ou no LuLu ou no Little Snitch:</p>
+            <div class="cmd" data-hvor="Caminho"><pre>/Applications/Claríssimo.app/Contents/MacOS/clarissimo</pre></div>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>O instalador (.exe) tenta criar a regra ele próprio. Assim pode ver se ela existe:</p>
+            <div class="cmd"><pre>Get-NetFirewallRule -DisplayName "Clarissimo*" | Get-NetFirewallApplicationFilter</pre></div>
+            <p class="s-fasit"><b>Resultado esperado:</b> uma regra chamada «Clarissimo - bloquear saidas» com o caminho para <code>clarissimo.exe</code>.</p>
+            <p>Se faltar, crie-a assim, no PowerShell como administrador:</p>
+            <div class="cmd"><pre>New-NetFirewallRule -DisplayName "Clarissimo - bloquear saidas" `
+  -Direction Outbound -Action Block -Profile Any `
+  -Program (Get-Process clarissimo).Path</pre></div>
+            <p>
+              Execute o comando com o Claríssimo aberto; assim encontra o caminho por si. Inclua também o <code>tesseract.exe</code>,
+              que está na pasta <code>bundled</code> dentro da do Claríssimo. É um ficheiro executável à parte.
+              Com o Intune: crie as mesmas regras numa política de firewall em Segurança de pontos finais.
+            </p>
+          </div>
+          <p>Quando a regra é sua, não tem de acreditar em nada do que está acima.</p>
+        </section>
+
+        <!-- ============ O disco ============ -->
+        <section class="s-del" id="disk">
+          <h2>O que fica no disco</h2>
+          <p>
+            O Claríssimo guarda todos os seus dados numa pasta por utilizador. No Mac é
+            <code>~/Library/Application Support/pt.clarissimo.app/</code>; no Windows,
+            <code>%APPDATA%\pt.clarissimo.app\</code>. Os nomes das pastas e dos ficheiros estão em norueguês.
+          </p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>prosjekter/</code></dt>
+              <dd>O que o utilizador decidiu para cada pasta e o texto que o Claríssimo leu dos ficheiros. Este último são dados pessoais. Está tudo cifrado com AES-256-GCM, e as pastas têm nomes a partir dos quais não se pode deduzir o caminho. Um projeto que não é usado é esquecido ao fim de 30 dias.</dd>
+            </div>
+            <div>
+              <dt><code>pseudonym/</code></dt>
+              <dd>A chave (<code>nokkel.nokkelring</code> no Mac, <code>nokkel.dpapi</code> no Windows), as chaves anteriores postas de parte e o livro de numeração. O livro de numeração associa códigos a números e não contém nomes.</dd>
+            </div>
+            <div>
+              <dt><code>secure-enclave.nokkel</code></dt>
+              <dd>Nos Mac com Secure Enclave: uma referência a uma chave no chip. Noutro computador não serve para nada.</dd>
+            </div>
+            <div>
+              <dt><code>ror/</code></dt>
+              <dd>As marcas do próprio utilizador e os textos de «Ocultar texto». Cifrado.</dd>
+            </div>
+            <div>
+              <dt><code>sikkerhetskopier/</code></dt>
+              <dd>Cópias dos originais, feitas antes da análise quando o utilizador o pede. O conteúdo de cada ficheiro está cifrado com AES-256-GCM. <b>Os nomes dos ficheiros e das pastas estão em texto simples.</b> As cópias não são eliminadas automaticamente. O Claríssimo lembra-as ao fim de 30 dias.</dd>
+            </div>
+            <div>
+              <dt><code>revisjon/</code></dt>
+              <dd>O registo de auditoria, se estiver ativado. Um ficheiro por mês, os últimos 13 meses.</dd>
+            </div>
+            <div>
+              <dt>Três ficheiros pequenos</dt>
+              <dd><code>aktivering.json</code> (o código de licença), <code>innstillinger.json</code> e <code>vindu.json</code>. Sem cifra e sem nada dos documentos.</dd>
+            </div>
+          </dl>
+          <h3>Como as chaves são protegidas</h3>
+          <p>
+            No Mac, a chave está envolvida noutra chave guardada no Porta-chaves (serviço
+            <code>no.klart.pseudonym.pt.clarissimo.app</code>) e, além disso, no Secure Enclave, se existir. No Windows é usada a DPAPI do utilizador.
+            Isso protege contra outros utilizadores e contra um disco extraviado. Não protege contra um programa que
+            corra com o mesmo utilizador. Esse é o limite tanto do Porta-chaves como da DPAPI, e convém que o conheça.
+          </p>
+          <h3>Cópias de segurança e pesquisa</h3>
+          <p>
+            <code>prosjekter/</code>, <code>sikkerhetskopier/</code> e <code>revisjon/</code> ficam excluídas do Spotlight e do
+            Time Machine (e da pesquisa do Windows). <code>ror/</code> e <code>pseudonym/</code> são incluídas no Time Machine. Estão
+            cifradas, e o ficheiro da chave só pode ser aberto com o Porta-chaves do computador de onde vem.
+          </p>
+          <h3>O que o Claríssimo instala no sistema</h3>
+          <dl class="s-tabell">
+            <div><dt>Serviços no Finder</dt><dd>No Mac, o Claríssimo escreve ao arrancar quatro serviços em <code>~/Library/Services/</code>: «Ocultar com o Claríssimo», «Restaurar com o Claríssimo», «Ocultar texto com o Claríssimo» e «Restaurar texto com o Claríssimo». Os dois últimos recebem texto selecionado noutros programas. Com <code>"kommandolinje": false</code> nas regras, os quatro são eliminados.</dd></div>
+            <div><dt>Endereços e tipos de ficheiro</dt><dd>O Claríssimo aceita ligações <code>clarissimo://</code> e os tipos de ficheiro <code>.clarissimolicenca</code>, <code>.clarissimomarcas</code> e <code>.clarissimoprojeto</code>. Uma ligação pode propor uma licença. O utilizador é sempre consultado, e um pacote de chave continua a precisar do seu código.</dd></div>
+            <div><dt>Nada em segundo plano</dt><dd>Nenhum serviço, nenhuma entrada de arranque automático e nenhum processo que continue a correr depois de fechar a janela.</dd></div>
+            <div><dt>O que a monitorização vai ver</dt><dd>O Claríssimo inicia alguns auxiliares do sistema de curta duração: <code>klart-hvelv</code> (a chave), <code>ioreg</code> (o código de computador), <code>id</code> e <code>scutil</code> (nome de utilizador e de computador para o registo de alterações), <code>tmutil</code> (excluir pastas do Time Machine), <code>open</code> (mostrar a pasta das cópias) e <code>osascript</code> (avisos).</dd></div>
+          </dl>
+          <h3>Eliminar tudo</h3>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <p>Elimine o programa e, depois, o seguinte:</p>
+            <div class="cmd"><pre>rm -rf ~/Library/Application\ Support/pt.clarissimo.app ~/Library/WebKit/pt.clarissimo.app ~/Library/Caches/pt.clarissimo.app
+rm -f ~/Library/Preferences/pt.clarissimo.app.plist
+rm -rf ~/Library/Services/*Clar*ssimo.workflow
+security delete-generic-password -s no.klart.pseudonym.pt.clarissimo.app</pre></div>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Desinstale o programa e elimine depois <code>%APPDATA%\pt.clarissimo.app\</code>, <code>%LOCALAPPDATA%\pt.clarissimo.app\</code> e <code>%ProgramData%\Clarissimo\</code>.</p>
+          </div>
+          <p class="s-notis varsel">
+            <b>Guarde primeiro a chave.</b> Se a pasta de dados for eliminada sem ter anotado a chave ou a ter guardado como ficheiro de chave,
+            nenhuma cópia com códigos poderá voltar a ser restaurada.
+          </p>
+        </section>
+
+        <!-- ============ Gestão centralizada ============ -->
+        <section class="s-del" id="styring">
+          <h2>Gestão centralizada do Claríssimo</h2>
+          <p>
+            Um único ficheiro determina o que o utilizador escolheria por si. Distribua-o por MDM, Intune, política de grupo ou um script.
+            Ambas as localizações exigem direitos de administrador para escrever, de modo que o utilizador não pode desfazer o que bloqueou.
+            Nesta versão, o nome do ficheiro e os dos campos estão em norueguês.
+          </p>
+          <dl class="s-tabell">
+            <div><dt>Mac</dt><dd><code>/Library/Application Support/Clarissimo/retningslinjer.json</code></dd></div>
+            <div><dt>Windows</dt><dd><code>%ProgramData%\Clarissimo\retningslinjer.json</code></dd></div>
+          </dl>
+          <div class="cmd" data-hvor="retningslinjer.json"><pre>{
+  "versjon": 1,
+  "virksomhet": "Exemplo, Lda.",
+  "alltidSkjult": ["navn", "fnr", "helse"],
+  "kodeform": "kort",
+  "ansikterAlltid": true,
+  "utenSkanning": false,
+  "glemEtterDager": 30,
+  "revisjonslogg": true,
+  "nokkelEksport": false
+}</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>versjon</code></dt><dd>Obrigatório. Só existe <code>1</code>.</dd></div>
+            <div><dt><code>virksomhet</code></dt><dd>O nome que aparece junto às definições bloqueadas, por exemplo «Exemplo, Lda.».</dd></div>
+            <div><dt><code>alltidSkjult</code></dt><dd>Os grupos que são sempre ocultados. Não podem ser desativados, e nada deles pode ser posto em «Deixar». Os grupos chamam-se <code>navn</code> (nomes), <code>fnr</code> (números de identificação), <code>kontakt</code> (telefone e e-mail), <code>helse</code> (dados sensíveis), <code>setninger</code> (frases privadas), <code>skilt</code> (matrículas), <code>penger</code> (contas), <code>hemmelig</code> (segredos), <code>sted</code> (endereço e local), <code>dato</code> (datas), <code>jobb</code> (profissão e relação), <code>alder</code> (idade), <code>org</code> (local de trabalho) e <code>sak</code> (números de processo).</dd></div>
+            <div><dt><code>standardGrupper</code></dt><dd>Os grupos que estão ativados quando uma pasta é aberta pela primeira vez. Se não for indicado: os predefinidos do Claríssimo.</dd></div>
+            <div><dt><code>kodeform</code></dt><dd><code>lapp</code>, <code>kort</code>, <code>full</code> ou <code>svart</code>. Se não for indicado: escolhe o utilizador.</dd></div>
+            <div><dt><code>ansikterAlltid</code></dt><dd>Os rostos são sempre pixelizados, e nenhum pode ser posto em «Deixar».</dd></div>
+            <div><dt><code>utenSkanning</code></dt><dd><code>false</code> exige que o Claríssimo leia sempre os ficheiros. Por predefinição, o utilizador também pode marcar tudo ele próprio.</dd></div>
+            <div><dt><code>prosjekter</code></dt><dd><code>false</code>: o Claríssimo não se lembra de nada das pastas entre sessões.</dd></div>
+            <div><dt><code>glemEtterDager</code></dt><dd>Durante quanto tempo um projeto sem uso é conservado, de 1 a 365 dias. Por predefinição, 30.</dd></div>
+            <div><dt><code>kommandolinje</code></dt><dd><code>false</code> desativa a linha de comandos e a pasta vigiada.</dd></div>
+            <div><dt><code>revisjonslogg</code></dt><dd>Ativa o registo. <code>revisjonsmappe</code> deixa ainda uma cópia numa unidade partilhada.</dd></div>
+            <div><dt><code>rapportJson</code></dt><dd>Escreve em cada pasta de cópias <code>rapport.json</code> junto ao relatório em texto.</dd></div>
+            <div><dt><code>nokkelEksport</code></dt><dd><code>false</code>: ninguém pode exportar a chave como palavras ou como ficheiro. Os computadores novos são registados pelo responsável pelas chaves.</dd></div>
+          </dl>
+          <p>
+            A licença pode ficar ao lado, em <code>licenca.clarissimo</code>. O ficheiro contém o código que começa por <code>CLARISSIMO-</code>. Assim nenhum utilizador tem de colar nada.
+            Se o utilizador tiver uma licença própria válida, essa tem prioridade.
+          </p>
+          <p class="s-notis varsel">
+            <b>Se o ficheiro não puder ser lido, o Claríssimo não arranca.</b> Uma gralha, um campo desconhecido ou um valor fora do intervalo permitido
+            não deve fazer com que o Claríssimo oculte menos do que definiu. A mensagem de erro indica o campo em causa.
+          </p>
+        </section>
+
+        <!-- ============ A chave ============ -->
+        <section class="s-del" id="nokkel">
+          <h2>A chave numa organização</h2>
+          <p>
+            Os códigos das cópias só podem voltar a ser convertidos em nomes com a chave. Numa organização, todos deveriam ter a mesma;
+            caso contrário, a mesma pessoa recebe códigos diferentes consoante o colega que faz a cópia.
+          </p>
+          <dl class="s-tabell">
+            <div><dt>Responsável pelas chaves</dt><dd>Cria a chave da organização, distribui-a e regista os colegas.</dd></div>
+            <div><dt>Membro</dt><dd>Usa a chave. O programa não deixa um membro exportá-la. É uma regra do programa, não criptografia: o computador tem a chave completa.</dd></div>
+            <div><dt>Pacote de chave</dt><dd>A chave, cifrada com um código de chave de doze caracteres (Argon2id e AES-256-GCM). O pacote e o código são enviados em separado. O código pode ser usado várias vezes, por isso trate-o como a própria chave.</dd></div>
+            <div><dt>Registo sem rede</dt><dd>O computador do colega cria um pedido. O responsável pelas chaves responde com um registo que só esse computador pode abrir (X25519). Lê-se em voz alta um código de verificação de 16 caracteres, para que ambos saibam que estão a comunicar com o computador certo.</dd></div>
+            <div><dt>Recuperação</dt><dd>24 palavras norueguesas em papel, ou um ficheiro de chave protegido com uma frase-passe (Argon2id e AES-256-GCM).</dd></div>
+          </dl>
+          <p class="s-notis varsel">
+            <b>Uma distribuição silenciosa tem o seu preço.</b> Pode deixar o pacote de chave (<code>chave.clarissimopacote</code>) junto a <code>retningslinjer.json</code>
+            e escrever o código de chave no ficheiro (<code>nokkelkode</code>). Assim o Claríssimo adota a chave sem que o utilizador tenha de fazer nada.
+            Mas então a chave não está mais segura do que a pasta: quem conseguir ler ambos os ficheiros tem a chave da organização.
+          </p>
+        </section>
+
+        <!-- ============ Registo de auditoria ============ -->
+        <section class="s-del" id="logg">
+          <h2>Registo de auditoria</h2>
+          <p>
+            O registo anota o que o Claríssimo fez, quando e quem. Não contém nada dos documentos:
+            nem nomes de ficheiros, nem caminhos, nem valores. Está desativado até o ativar com
+            <code>"revisjonslogg": true</code>. Os nomes dos campos estão em norueguês.
+          </p>
+          <div class="cmd" data-hvor="Uma linha do registo"><pre>{"format":1,"tid":"2026-11-05T11:50:25.332Z","hendelse":"rens","via":"kommandolinjen",
+ "kilde":"DXmRKTRw4ZJMiUixyVeUYA","filer":18,"skrevet":14,"ikkeLevert":4,"steder":193,
+ "skjult":{"person":140,"fnr":19,"health":25},"kodeform":"kort","grupper":["helse","navn","fnr"],
+ "ansikter":true,"gjennomgått":false,"bruker":"asilva","maskin":"ASILVA-MAC","klart":"0.1.0"}</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>hendelse</code></dt><dd><code>rens</code> (ocultar), <code>prøve</code> (teste), <code>skann</code> (análise), <code>glem</code> (esquecer), <code>tilbake</code> (restaurar), <code>logg</code> (foi exportado o registo de alterações) ou <code>nøkkel</code> (foi feito algo com a chave, por exemplo exportá-la).</dd></div>
+            <div><dt><code>via</code></dt><dd><code>appen</code> (a aplicação), <code>kommandolinjen</code> (a linha de comandos) ou <code>vaktmappen</code> (a pasta vigiada).</dd></div>
+            <div><dt><code>kilde</code></dt><dd>Uma impressão digital da pasta, calculada com uma chave do computador. O mesmo processo tem nesse computador o mesmo valor em todas as linhas, mas a partir dele não se pode deduzir o caminho. Outro computador dá um valor diferente para a mesma pasta.</dd></div>
+            <div><dt><code>bruker</code>, <code>maskin</code>, <code>tid</code></dt><dd>Definidos pelo próprio programa, nunca pela janela.</dd></div>
+            <div><dt>Localização</dt><dd><code>revisjon/AAAA-MM.jsonl</code> na pasta de dados. Com <code>revisjonsmappe</code>, também <code>&lt;computador&gt;-&lt;utilizador&gt;.jsonl</code> numa unidade partilhada. O Claríssimo não cria essa pasta. Se a unidade não estiver ligada, isso é anotado no registo local.</dd></div>
+          </dl>
+          <p class="s-notis">
+            <b>O registo é um ficheiro de texto comum.</b> O utilizador pode alterá-lo. Se precisar de um registo inalterável,
+            aponte <code>revisjonsmappe</code> para uma localização onde o utilizador só possa acrescentar.
+          </p>
+        </section>
+
+        <!-- ============ Linha de comandos ============ -->
+        <section class="s-del" id="kommando">
+          <h2>Linha de comandos e pasta vigiada</h2>
+          <p>
+            O mesmo programa, sem janela. O canal de entrada é a linha de comandos. Os canais de saída são o stdout, o stderr e os ficheiros
+            que indicar. Nada abre uma porta.
+          </p>
+          <div class="cmd"><pre>CLARISSIMO="/Applications/Claríssimo.app/Contents/MacOS/clarissimo"
+# Windows: "C:\Program Files\Claríssimo\clarissimo.exe"   Linux: /usr/bin/clarissimo
+
+"$CLARISSIMO" scan  ~/Processos/2026-114                     # analisar antecipadamente
+"$CLARISSIMO" clean ~/Processos/2026-114 --out ~/Para-IA     # criar cópias limpas
+"$CLARISSIMO" clean ~/Processos/2026-114 --out ~/Para-IA --changed-only
+"$CLARISSIMO" watch ~/Entrada --out ~/Para-IA                # pasta vigiada
+"$CLARISSIMO" restore ~/Para-IA/2026-114-limpo               # restaurar com a chave
+"$CLARISSIMO" forget ~/Processos/2026-114                    # esquecer tudo sobre o processo</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>--codes</code></dt><dd><code>lapp</code>, <code>kort</code>, <code>full</code> ou <code>svart</code>.</dd></div>
+            <div><dt><code>--groups</code></dt><dd>O que é substituído, por exemplo <code>navn,fnr,helse</code>. <code>clarissimo groups</code> mostra todos.</dd></div>
+            <div><dt><code>--dry-run</code></dt><dd>Faz tudo, incluindo o controlo de cada cópia, mas não escreve nada.</dd></div>
+            <div><dt><code>--no-project</code></dt><dd>Não se lembra de nada e não usa o que foi decidido na janela.</dd></div>
+            <div><dt>Resposta</dt><dd>Uma linha JSON no stdout, com <code>format: 1</code> e nomes de campos em norueguês (<code>svar.schema.json</code>). O progresso vai para o stderr, apenas como números.</dd></div>
+            <div><dt>Código de saída</dt><dd><code>0</code>: tudo entregue. <code>2</code>: algo foi retido, porque uma cópia não passou no controlo ou um ficheiro não pôde ser lido. <code>1</code>: erro. <code>3</code>: as condições de utilização ainda não foram aceites neste computador. <code>4</code>: a origem está em uso. <code>5</code>: as regras da sua organização não o permitem. <code>6</code>: a chave está numa pen USB de segurança que não está ligada. <code>64</code>: erro no comando.</dd></div>
+          </dl>
+        </section>
+
+        <!-- ============ Criptografia ============ -->
+        <section class="s-del" id="krypto">
+          <h2>Criptografia</h2>
+          <dl class="s-tabell">
+            <div><dt>A chave</dt><dd>32 bytes aleatórios do sistema operativo. Subchaves com HKDF-SHA256.</dd></div>
+            <div><dt>Os códigos</dt><dd>Quem é: HMAC-SHA256. O texto original: AES-SIV (RFC 5297), determinista e autenticado.</dd></div>
+            <div><dt>A chave no disco</dt><dd>Mac: Porta-chaves e Secure Enclave. Windows: DPAPI.</dd></div>
+            <div><dt>Ficheiro de chave</dt><dd>Argon2id (64 MiB, 3 passagens) e AES-256-GCM.</dd></div>
+            <div><dt>As 24 palavras</dt><dd>256 bits de chave e 8 bits de soma de controlo, 11 bits por palavra, de uma lista de 2048 palavras norueguesas.</dd></div>
+            <div><dt>Registo</dt><dd>X25519.</dd></div>
+            <div><dt>Projetos, marcas próprias e textos</dt><dd>AES-256-GCM, com chaves derivadas com HKDF-SHA256. Os nomes dos ficheiros são impressões digitais HMAC.</dd></div>
+            <div><dt>Cópias de segurança e os píxeis sob as zonas de uma cópia</dt><dd>AES-256-GCM.</dd></div>
+            <div><dt>O código de licença</dt><dd>Ed25519. A assinatura é verificada no computador.</dd></div>
+          </dl>
+          <p>São todos algoritmos conhecidos de bibliotecas abertas (RustCrypto e dalek). Não inventámos nada disto.</p>
+        </section>
+
+        <!-- ============ Requisitos do sistema ============ -->
+        <section class="s-del" id="krav">
+          <h2>Requisitos do sistema</h2>
+          <dl class="s-tabell">
+            <div><dt>Mac</dt><dd>macOS 13 ou posterior. Processadores Intel e Apple no mesmo pacote.</dd></div>
+            <div><dt>Windows</dt><dd>Windows 10 ou 11, de 64 bits com Intel ou AMD. Instalação para todos os utilizadores com o ficheiro .exe.</dd></div>
+            <div><dt>Linux</dt><dd>Um pacote .deb. Depende de tesseract-ocr e xdg-utils, que o gestor de pacotes instala.</dd></div>
+            <div><dt>Memória</dt><dd>O Claríssimo usa mais memória enquanto o modelo de frases está carregado. Recomendamos 8 GB no computador.</dd></div>
+            <div><dt>Disco</dt><dd>Espaço para o programa instalado, mais as cópias de segurança e o que o Claríssimo memoriza das pastas.</dd></div>
+            <div><dt>Placa gráfica</dt><dd>Não é necessária. Tudo corre no processador.</dd></div>
+            <div><dt>Rede</dt><dd>Não é necessária, nem para a instalação, nem para a ativação, nem para a utilização.</dd></div>
+          </dl>
+          <p>
+            Da primeira vez que o Claríssimo lê imagens num Mac, o macOS pode demorar alguns minutos a preparar o seu próprio
+            reconhecimento de texto. Acontece uma única vez.
+          </p>
+          <p>Por agora, o riscado a preto em PDF, os serviços do Finder e as ligações de licença só existem no Mac.</p>
+          <p>Uma atualização é um novo ficheiro de instalação que transfere quando quiser. O Claríssimo não procura versões novas.</p>
+        </section>
+
+        <!-- ============ Encontrou alguma coisa? ============ -->
+        <section class="s-del" id="si-fra">
+          <h2>Encontrou alguma coisa?</h2>
+          <p>
+            Escreva para <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a>.
+            Responde-lhe uma pessoa, e preferimos sabê-lo por si do que por um cliente.
+            Veja também <a href="/.well-known/security.txt">security.txt</a>.
+          </p>
+          <p class="s-dato">Última alteração: 28 de novembro de 2026.</p>
+        </section>
+      </main>
+    </div>
+
+    <footer class="s-bunn">
+      <p class="s-bunn-merke"><i>Claríssimo</i> <span>da Tidemann Esbjug</span></p>
+      <nav aria-label="Mais sobre o Claríssimo">
+        <a href="./">Início</a>
+        <a href="o-que-deteta.html">O que o Claríssimo deteta</a>
+        <a href="privacidade/">Privacidade</a>
+        <a href="condicoes/">Condições</a>
+      </nav>
+      <p class="s-bunn-liten">Desenvolvido na Noruega</p>
+    </footer>
+
+    <script src="til-it.js"></script>
+  </body>
+</html>

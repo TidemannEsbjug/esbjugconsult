@@ -1,0 +1,1136 @@
+<!doctype html>
+<!--
+  Hei, du som leser kildekoden. Det var deg vi håpet på.
+
+  Päivänselvä lover at dokumentene aldri forlater maskinen. Et sånt løfte skal ikke
+  tas på ordet, så sjekk det:
+
+  - Programmet: /paivanselva/it-osastolle.html har kommandoene som viser hva det snakker med.
+  - Denne siden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
+    uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
+  - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
+    Vi vil heller høre det fra deg enn fra en kunde.
+
+  Den finske utgaven (27.11.2026), oversatt fra den svenske utgaven og tilpasset Finland. Fakta fra Klart-fi (claude/fi
+  b312a0f8) og Klart-fi-grunnlag: src/engine/fi, src/ui/vilkar-fi.tsx, tauri.fi.conf.json, NIMI-PAIKAT.md.
+  Ingen nedlastinger ennå: knappene er byttet mot én setning. Ingen priser (eieren 27.11.2026).
+-->
+<html lang="fi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/paivanselva/favicon.png" />
+    <title>Päivänselvä – peittää henkilötiedot asiakirjoista omalla tietokoneellasi</title>
+    <meta
+      name="description"
+      content="Päivänselvä on ohjelma Macille, Windowsille ja Linuxille, kehitetty Norjassa. Se löytää ja peittää suomalaiset henkilötiedot kokonaisesta kansiosta Word-, Excel-, PowerPoint-, PDF- ja sähköpostitiedostoja. Asiakirjapyyntöihin, asiakirjojen lähettämiseen eteenpäin, arkistoihin, koulutukseen ja tekoälytyökaluihin – ilman internetiä ja ilman tiliä."
+    />
+    <!-- Himmelen øverst i heroen; forside.js bytter til sidens lyse farge når man har blat forbi. -->
+    <meta name="theme-color" content="#6593c3" />
+    <meta
+      property="og:title"
+      content="Päivänselvä – peittää henkilötiedot asiakirjoista omalla tietokoneellasi"
+    />
+    <meta
+      property="og:description"
+      content="Norjassa kehitetty ohjelma. Se lukee Word-, Excel-, PowerPoint-, PDF-, sähköposti- ja tekstitiedostot, löytää suomalaiset henkilötiedot ja tekee peitetyn kopion, jonka tarkistat itse. Mikään ei poistu tietokoneelta."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="fi_FI" />
+    <meta property="og:locale:alternate" content="sv_FI" />
+    <meta property="og:url" content="https://esbjugconsult.com/paivanselva/" />
+    <!-- Delingsbildet (Snapchat, iMessage, Facebook): krystallen på vinterbildet, 1200 × 630. -->
+    <meta property="og:image" content="https://esbjugconsult.com/alles-klar/assets/klart-deling.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Päivänselvä: ohjelman kuvake talvikuvassa, jossa on hiihtolatu" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://esbjugconsult.com/alles-klar/assets/klart-deling.jpg" />
+    <link rel="apple-touch-icon" href="/paivanselva/ikon.png" />
+    <!-- Ikke indekser før nedlastingene er på plass. Fjern når Klart lanseres. -->
+    <meta name="robots" content="noindex" />
+    <!-- Fontene ligger på siden selv. Henter vi dem fra Google, får Google
+         IP-adressen til hver besøkende - ikke noe en GDPR-side skal gjøre. -->
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="videre.css" />
+    <link rel="stylesheet" href="de.css" />
+    <link rel="stylesheet" href="taal.css" />
+    <link rel="alternate" hreflang="fi-FI" href="https://esbjugconsult.com/paivanselva/" />
+    <link rel="alternate" hreflang="sv-FI" href="https://esbjugconsult.com/paivanselva/sv/" />
+    <link rel="stylesheet" href="/spiller/spiller.css" />
+    <link rel="stylesheet" href="film/film.css" />
+  </head>
+  <body>
+    <!-- Kielivalinta: ohjelma kysyy ensimmäisellä käynnistyskerralla suomea tai ruotsia; sivusto myös (taal.css). -->
+    <nav class="taal taal-fast" aria-label="Kieli / Språk"><span aria-current="true">FI</span><span class="taal-streep" aria-hidden="true">|</span><a href="/paivanselva/sv/" hreflang="sv" lang="sv">SV</a></nav>
+    <!-- Filtype-ikoner: dokumentark bak, appflis foran. -->
+    <svg class="ikonark" width="0" height="0" aria-hidden="true">
+      <defs>
+        <g id="page">
+          <rect
+            x="16"
+            y="2"
+            width="26"
+            height="32"
+            rx="3.5"
+            fill="#fff"
+            stroke="#dcdfda"
+            stroke-width="1.3"
+          />
+          <g fill="#e4e7e2">
+            <rect x="26" y="9" width="12" height="2.4" rx="1.2" />
+            <rect x="26" y="15" width="12" height="2.4" rx="1.2" />
+          </g>
+        </g>
+
+        <symbol id="i-word" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#185abd" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">W</text>
+        </symbol>
+
+        <symbol id="i-excel" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#107c41" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">X</text>
+        </symbol>
+
+        <symbol id="i-ppt" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#c43e1c" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">P</text>
+        </symbol>
+
+        <symbol id="i-pdf" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#c8322b" />
+          <text x="17.5" y="31" text-anchor="middle" font-size="11">PDF</text>
+        </symbol>
+
+        <symbol id="i-mail" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#0f6cbd" />
+          <rect
+            x="8.5"
+            y="20"
+            width="18"
+            height="13.5"
+            rx="1.8"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2.1"
+          />
+          <path
+            d="M9.2 21.2l8.3 6.4 8.3-6.4"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2.1"
+          />
+        </symbol>
+
+        <symbol id="i-bilde" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#7a4fd6" />
+          <circle cx="23" cy="20" r="3" fill="#fff" />
+          <path d="M7.5 36l7.5-10 5.5 6.5 3.5-4 6.5 7.5z" fill="#fff" />
+        </symbol>
+
+        <symbol id="i-text" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#5b6569" />
+          <g fill="#fff">
+            <rect x="9" y="19.5" width="17" height="2.4" rx="1.2" />
+            <rect x="9" y="25.3" width="17" height="2.4" rx="1.2" />
+            <rect x="9" y="31.1" width="10" height="2.4" rx="1.2" />
+          </g>
+        </symbol>
+
+        <!-- Mac Studio for skreddersydd oppsett. Ligger her én
+             gang, så de to nedlastingsfeltene kan bruke den uten like id-er. -->
+        <linearGradient id="mac-front" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f3f5f8" />
+          <stop offset="0.55" stop-color="#e1e6ec" />
+          <stop offset="1" stop-color="#c4cbd4" />
+        </linearGradient>
+        <linearGradient id="mac-kant" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#6d7783" stop-opacity="0.28" />
+          <stop offset="0.08" stop-color="#6d7783" stop-opacity="0" />
+          <stop offset="0.92" stop-color="#6d7783" stop-opacity="0" />
+          <stop offset="1" stop-color="#6d7783" stop-opacity="0.32" />
+        </linearGradient>
+        <linearGradient id="mac-topp" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#e9edf2" />
+          <stop offset="1" stop-color="#fbfcfd" />
+        </linearGradient>
+        <radialGradient id="mac-skygge" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="#050d1f" stop-opacity="0.45" />
+          <stop offset="1" stop-color="#050d1f" stop-opacity="0" />
+        </radialGradient>
+        <symbol id="mac-studio" viewBox="60 80 440 240">
+          <ellipse cx="280" cy="292" rx="236" ry="26" fill="url(#mac-skygge)" />
+          <rect x="122" y="262" width="316" height="24" rx="9" fill="#8d96a1" />
+          <rect x="128" y="276" width="304" height="6" rx="3" fill="#6e7782" />
+          <path d="M96 150 L128 104 Q134 96 146 96 L414 96 Q426 96 432 104 L464 150 Z" fill="url(#mac-topp)" stroke="#d3d9e1" stroke-width="1.2" />
+          <path d="M96 150 H464 V252 Q464 270 446 270 H114 Q96 270 96 252 Z" fill="url(#mac-front)" />
+          <path d="M96 150 H464 V252 Q464 270 446 270 H114 Q96 270 96 252 Z" fill="url(#mac-kant)" />
+          <path d="M96 150.5 H464" stroke="#ffffff" stroke-width="1.6" />
+          <g fill="#2b3139">
+            <rect x="128" y="200" width="22" height="8" rx="4" />
+            <rect x="162" y="200" width="22" height="8" rx="4" />
+            <rect x="386" y="202" width="42" height="4" rx="2" />
+          </g>
+          <circle cx="114" cy="254" r="2.4" fill="#ffffff" />
+          <circle cx="114" cy="254" r="5" fill="#ffffff" opacity="0.25" />
+        </symbol>
+      </defs>
+    </svg>
+
+    <!-- ================= Toppbar ================= -->
+    <header class="topbar">
+      <a class="wordmark" href="#top">
+        <b>Päivänselvä</b>
+        <span>v0.1.0</span>
+
+      </a>
+      <nav class="topnav">
+        <a href="#hva">Mikä Päivänselvä on</a>
+        <a href="#kjernen">Näin se toimii</a>
+        <a href="#nokkel">Avain</a>
+        <a href="#trygt">Turvallisuus</a>
+        <a href="#dybde">Tarkemmin</a>
+        <a href="#ansvar">Vastuu</a>
+      </nav>
+      <!-- Ingen nedlasting ennå: knappen fører til forklaringen i stedet. -->
+      <a class="btn sm topp-last" href="#kjernen">Näin se toimii</a>
+      <!-- Mobil og nettbrett: e-post med lenken i stedet for «Last ned» (eieren 11.11.2026). -->
+      <a class="btn sm topp-send" href="mailto:?subject=P%C3%A4iv%C3%A4nselv%C3%A4&amp;body=https%3A%2F%2Fesbjugconsult.com%2Fpaivanselva">Lähetä itsellesi</a>
+      <nav class="taal" aria-label="Kieli / Språk"><span aria-current="true">FI</span><span class="taal-streep" aria-hidden="true">|</span><a href="/paivanselva/sv/" hreflang="sv" lang="sv">SV</a></nav>
+    </header>
+
+    <main id="top">
+      <!-- ================= Hero ================= -->
+      <section class="hero" id="programmet">
+        <!-- Scenen: vinterbildet fra appen. Skisporet leder opp mot hytta,
+             teksten står i himmelen og knappene nede i snøen. -->
+        <div class="scene">
+          <img class="scene-bilde" src="/alles-klar/assets/hero-vinter.jpg" width="2400" height="1600" fetchpriority="high" alt="" aria-hidden="true" />
+          <div class="scene-himmel" aria-hidden="true"></div>
+          <canvas class="scene-sno" aria-hidden="true"></canvas>
+          <canvas class="scene-sno-midt" aria-hidden="true"></canvas>
+          <canvas class="scene-sno-lag" aria-hidden="true"></canvas>
+          <canvas class="scene-sno-mobil" aria-hidden="true"></canvas>
+
+          <div class="scene-tekst">
+            <h1 class="rise d-60 hero-logo">
+              <img class="hero-ikon" src="ikon.png" width="256" height="256" alt="" aria-hidden="true" />
+              <span class="logo-ord">Päivänselvä</span>
+            </h1>
+            <!-- Ingen nedlasting ennå (27.11.2026): knappene er byttet mot én setning. -->
+            <div class="privat rise d-120">
+              <p class="privat-linje">
+                <span><b>Ilmainen yksityiskäyttöön.</b></span>
+              </p>
+              <div class="mobil-send">
+                <p class="mobil-send-tittel">Päivänselvä on tietokoneohjelma.</p>
+                <p class="mobil-send-tekst">Lähetä linkki itsellesi sähköpostilla ja palaa asiaan tietokoneella, kun ohjelma on saatavilla Macille, Windowsille ja Linuxille.</p>
+                <a class="btn" href="mailto:?subject=P%C3%A4iv%C3%A4nselv%C3%A4&amp;body=https%3A%2F%2Fesbjugconsult.com%2Fpaivanselva">Lähetä itsellesi</a>
+                <p class="mobil-send-andre">(Tai jollekulle muulle?)</p>
+              </div>
+              <p class="privat-fin">Ohjelma Windowsille, Macille ja Linuxille on tulossa pian.</p>
+              <p class="eller"><span>tai</span></p>
+            </div>
+            <div class="orgport de-pris rise d-180">
+              <div>
+                <p class="virk-linje">
+                  <span>Organisaatioille: <b>30 päivää maksutta</b>. Ei rekisteröitymistä. Sen jälkeen tilaus laskulla.</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Forklaringsvideoen der programvinduet sto (eieren 25.11.2026). Laget i GDPR Clean/video-forklaring, nettutgave fra bygg/nett-ut.py. -->
+        <figure class="film rise">
+          <div class="spl" data-kapitler="14.9,26.3,45.7,52.9,67.0,83.3,106.7,123.6,141.5" data-lengde="161.4">
+            <video preload="metadata" playsinline width="1920" height="1080" poster="film/forklaring.jpg"><source src="film/forklaring.mp4" type="video/mp4" /></video>
+          </div>
+        </figure>
+
+        <div class="formats rise">
+          <p>Lukee tiedostot, joiden kanssa jo työskentelet</p>
+
+          <ul>
+            <li>
+              <svg class="ficon"><use href="#i-word" /></svg>
+              <span class="fname">Word</span>
+              <span class="fext">.docx</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-excel" /></svg>
+              <span class="fname">Excel</span>
+              <span class="fext">.xlsx · .xls · .csv</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-ppt" /></svg>
+              <span class="fname">PowerPoint</span>
+              <span class="fext">.pptx</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-pdf" /></svg>
+              <span class="fname">PDF</span>
+              <span class="fext">.pdf</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-mail" /></svg>
+              <span class="fname">Sähköposti</span>
+              <span class="fext">.eml</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-bilde" /></svg>
+              <span class="fname">Kuvat</span>
+              <span class="fext">.jpg · .png · .tiff</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-text" /></svg>
+              <span class="fname">Teksti</span>
+              <span class="fext">.txt · .md</span>
+            </li>
+          </ul>
+          <p class="formats-unik"><b>Ainutlaatuista:</b> Päivänselvä kopioi tiedostot niiden omassa muodossa, joten voit jatkaa työskentelyä peitettyjen asiakirjojen kanssa.</p>
+        </div>
+
+      </section>
+
+      <div class="videre">
+        <!-- ============ Hva Klart gir deg ============ -->
+        <section class="v-del v-hva" id="hva">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Jaa asia. Pidä nimet.</h2>
+            <p class="v-ingress">
+              Voit lähettää asiakirjoja neuvonantajalle, luovuttaa viranomaisen asiakirjoja tai kysyä tekoälytyökalulta, eivätkä nimet koskaan lähde toimistosta. Se käy paljon nopeammin kuin peittäminen käsin sivu sivulta.
+            </p>
+          </div>
+          <ul class="v-tre-ord rise">
+            <li><b>Tekoälyä oikeisiin asioihin.</b> Työkalu näkee koodeja ihmisten sijaan.</li>
+            <li><b>Jaa epäröimättä.</b> Tilintarkastajalle, asianajajalle tai toiselle viranomaiselle samana päivänä.</li>
+            <li><b>Nimet palaavat, kun tarvitset niitä.</b> Avain on vain organisaatiollasi.</li>
+          </ul>
+          <p class="v-hva-er rise">Päivänselvä on ohjelma omalla tietokoneellasi. Asiakirjat eivät koskaan lähde sieltä.</p>
+        </section>
+
+        <!-- ============ 1. Kjernen: navn blir koder ============ -->
+        <section class="v-del v-kjerne" id="kjernen">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Nimistä tulee koodeja.</h2>
+            <p class="v-ingress">
+              Päivänselvä tekee asiakirjoista kopion. Kopiossa on koodi siinä, missä oli nimi, henkilötunnus tai muu tieto henkilöstä.
+            </p>
+          </div>
+
+          <figure class="v-ark-scene rise" data-v-bytt data-vis="kopi">
+            <div class="v-bryter" role="group" aria-label="Näytä alkuperäinen tai kopio">
+              <button type="button" data-v-vis="original" aria-pressed="false">Alkuperäinen</button>
+              <button type="button" data-v-vis="kopi" aria-pressed="true">Kopio</button>
+            </div>
+            <div class="v-ark-par" aria-hidden="true">
+              <article class="v-ark v-ark-a">
+                <header class="v-ark-topp">
+                  <svg class="v-ark-ikon"><use href="#i-pdf" /></svg>
+                  <span>paatos-edunvalvonta.pdf</span>
+                </header>
+                <p class="v-ark-h">Päätös edunvalvojan määräämisestä</p>
+                <dl class="v-ark-rader">
+                  <div>
+                    <dt>Päämies</dt>
+                    <dd><span class="v-bytt v-samme"><span class="v-o"><i>Matti Virtanen</i></span><span class="v-k"><i>[Nimi 4829133]</i></span></span></dd>
+                  </div>
+                  <div>
+                    <dt>Henkilötunnus</dt>
+                    <dd><span class="v-bytt"><span class="v-o"><i>110779-946M</i></span><span class="v-k"><i>[Henkilötunnus 2204716]</i></span></span></dd>
+                  </div>
+                  <div>
+                    <dt>Osoite</dt>
+                    <dd><span class="v-bytt"><span class="v-o"><i>Koivukuja 3 B 12</i></span><span class="v-k"><i>[Osoite 3310482]</i></span></span></dd>
+                  </div>
+                  <div>
+                    <dt>Edunvalvoja</dt>
+                    <dd><span class="v-bytt"><span class="v-o"><i>Juha Korhonen</i></span><span class="v-k"><i>[Nimi 6071542]</i></span></span></dd>
+                  </div>
+                </dl>
+                <p class="v-ark-p">
+                  Edunvalvoja hoitaa päämiehen raha-asioita.
+                  <span class="v-bytt"><span class="v-o"><i>Matti on sairauslomalla 30. huhtikuuta asti.</i></span><span class="v-k"><i>[Henkilötieto (lause) 2760056]</i></span></span>
+                </p>
+              </article>
+              <article class="v-ark v-ark-b">
+                <header class="v-ark-topp">
+                  <svg class="v-ark-ikon"><use href="#i-mail" /></svg>
+                  <span>vastaus-pankista.eml</span>
+                </header>
+                <p class="v-ark-h">Vs: Tilin valtuutus</p>
+                <p class="v-ark-p">
+                  Hei! Palaamme asiaan, kun olemme keskustelleet asiakkaamme kanssa:
+                  <span class="v-bytt v-samme"><span class="v-o"><i>Matti Virtanen</i>.</span><span class="v-k"><i>[Nimi 4829133]</i>.</span></span>
+                </p>
+                <p class="v-ark-p">
+                  Tili on nyt asetettu edunvalvojan toiveen mukaisesti. Tavoitat meidät numerosta
+                  <span class="v-bytt"><span class="v-o"><i>040 512 3344</i>.</span><span class="v-k"><i>[Puhelin 7745190]</i>.</span></span>
+                </p>
+                <p class="v-ark-p v-ark-hilsen">
+                  Ystävällisin terveisin<br />
+                  <span class="v-bytt"><span class="v-o"><i>Anna Mäkinen</i></span><span class="v-k"><i>[Nimi 5530871]</i></span></span><br />
+                  Asiakasneuvoja
+                </p>
+              </article>
+            </div>
+            <figcaption class="v-samme-linje">
+              <span class="v-kode">[Nimi 4829133]</span>
+              <span>Sama henkilö saa aina saman koodin kaikissa asiakirjoissa.</span>
+            </figcaption>
+          </figure>
+
+          <ul class="v-tre-ord rise">
+            <li><b>Kopio näyttää alkuperäiseltä.</b> Asettelu, taulukot ja logo säilyvät.</li>
+            <li><b>Lukija ymmärtää asian.</b> Mutta ei tiedä, ketä se koskee.</li>
+            <li><b>Alkuperäiset eivät muutu.</b> Päivänselvä tallentaa uudet tiedostot viereen.</li>
+          </ul>
+        </section>
+
+        <!-- ============ 2. De tre tingene på startskjermen ============ -->
+        <section class="v-del v-verktoy" id="verktoy">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Kolme asiaa, jotka voit tehdä.</h2>
+          </div>
+          <div class="v-kort-rad">
+            <article class="v-kort rise">
+              <img src="/alles-klar/assets/krom/rens.webp" width="512" height="512" alt="" loading="lazy" decoding="async" />
+              <h3>Peitä</h3>
+              <p>Valitse kansio tai yksittäisiä asiakirjoja. Saat kopiot, joissa on koodit henkilötietojen sijaan.</p>
+            </article>
+            <article class="v-kort rise d-60">
+              <img src="/alles-klar/assets/krom/tilbakefor.webp" width="512" height="512" alt="" loading="lazy" decoding="async" />
+              <h3>Palauta</h3>
+              <p>Muuta koodit taas nimiksi, kun tarvitset niitä.</p>
+            </article>
+            <article class="v-kort rise d-120">
+              <img src="/alles-klar/assets/krom/tekst.webp" width="512" height="512" alt="" loading="lazy" decoding="async" />
+              <h3>Tekstityökalu</h3>
+              <p>Teksti, jonka kirjoitat tai liität, peitetään samalla kun katsot.</p>
+            </article>
+          </div>
+
+          <ol class="v-steg rise">
+            <li><b>Valitse kansio</b><span>Tai vedä se ikkunaan.</span></li>
+            <li><b>Päivänselvä lukee</b><span>Voit jatkaa töitä sillä aikaa.</span></li>
+            <li><b>Käyt läpi</b><span>Peitä tai jätä.</span></li>
+            <li><b>Päivänselvä tarkistaa</b><span>Jokainen kopio luetaan vielä kerran.</span></li>
+            <li><b>Kopiot ovat valmiit</b><span>Omassa kansiossaan vieressä.</span></li>
+          </ol>
+        </section>
+
+        <!-- ============ 3. Nøkkelen ============ -->
+        <section class="v-del v-nokkel" id="nokkel">
+          <div class="v-nokkel-inn">
+            <img class="v-nokkel-bilde rise" src="/alles-klar/assets/krom/nokkel-blaa.webp" width="800" height="386" alt="" loading="lazy" decoding="async" />
+            <div class="v-hode rise">
+              <h2 class="v-tittel">Vain avain muuttaa koodit taas nimiksi.</h2>
+              <p class="v-ingress">
+                Avain luodaan tietokoneella, kun käynnistät Päivänselvän ensimmäisen kerran, ja se kuuluu vain organisaatiollesi. Ilman sitä koodi on vain koodi.
+              </p>
+              <p class="v-nokkel-bare">
+                <b>Muut Päivänselvän käyttäjät eivät voi lukea koodejasi.</b>
+                Heillä on oma avaimensa, joten heille koodisi pysyvät pelkkinä koodeina.
+
+              </p>
+            </div>
+
+            <ol class="v-runde rise">
+              <li>
+                <span class="v-runde-nr">1</span>
+                <b>Peitä</b>
+                <span class="v-linje">Päämies: <i class="v-kode lys">[Nimi 4829133]</i></span>
+              </li>
+              <li>
+                <span class="v-runde-nr">2</span>
+                <b>Jaa kopio</b>
+                <span class="v-runde-tekst">Neuvonantajalle, toiselle viranomaiselle tai tekoälytyökalulle.</span>
+              </li>
+              <li>
+                <span class="v-runde-nr">3</span>
+                <b>Palauta vastaus</b>
+                <span class="v-linje">Päämies: <i class="v-navn">Matti Virtanen</i></span>
+              </li>
+            </ol>
+
+            <div class="v-nokkel-par rise">
+              <img src="/alles-klar/assets/krom/skrin-blaa.webp" width="640" height="630" alt="" loading="lazy" decoding="async" />
+              <div>
+                <article>
+                  <h3>Säilytä avain hyvin</h3>
+                  <p>24 sanaa paperilla tai avaintiedosto. Silloin koodit voidaan aina muuttaa takaisin nimiksi.</p>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ Én nøkkel for hele virksomheten ============ -->
+        <section class="v-del v-kontor" id="virksomhet">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Sama koodi kaikilla kollegoilla.</h2>
+            <p class="v-ingress">
+              Kun koko organisaatiolla on yksi avain, Matti Virtasella on sama koodi kaikilla tietokoneilla. Kollega voi palauttaa kopion, jonka joku muu on tehnyt.
+            </p>
+          </div>
+          <div class="v-nett rise" aria-hidden="true">
+            <img src="/alles-klar/assets/krom/nokkel.webp" width="800" height="386" alt="" loading="lazy" decoding="async" />
+            <div class="v-nett-rad">
+              <p><span>Asiakastyö</span><i class="v-kode">[Nimi 4829133]</i></p>
+              <p><span>Henkilöstö</span><i class="v-kode">[Nimi 4829133]</i></p>
+              <p><span>Arkisto</span><i class="v-kode">[Nimi 4829133]</i></p>
+            </div>
+          </div>
+          <ul class="v-tre-ord rise">
+            <li><b>Yksi henkilö vastaa avaimesta.</b> Hän luo avaimen ja antaa sen kollegoille.</li>
+            <li><b>Avain lähetetään kahdessa osassa.</b> Avainpaketti ja avainkoodi, kumpikin erikseen.</li>
+            <li><b>IT-osasto voi päättää yhteisistä säännöistä.</b> Esimerkiksi siitä, mitä peitetään aina.</li>
+          </ul>
+          <div class="v-andres rise">
+            <img src="/alles-klar/assets/krom/nokkel-blaa.webp" width="800" height="386" alt="" loading="lazy" decoding="async" />
+            <div>
+              <h3>Voit lisätä myös muiden avaimia</h3>
+              <p>
+                Jos teette yhteistyötä toisen organisaation kanssa, se voi jakaa avaimensa teille. Silloin voitte palauttaa sen kopiot, ja se voi palauttaa teidän kopionne, jos jaatte oman avaimenne. Oma avaimenne ei muutu, ja te päätätte, kuka sen saa.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ Dette ser Klart etter ============ -->
+        <!-- Gruppene er appens (VALG_GRUPPER_SE, som den finske bruker); hintene er skrevet for det den finske motoren
+             faktisk tar (src/engine/fi/saannot.ts + de svenske reglene): bøyde navn, henkilötunnus med kontrolltegn, finske
+             telefonnumre og gater, IBAN (MOD 97), e-post, helseord på finsk og svensk. -->
+        <section class="v-del v-ser" id="ser-etter">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Näitä Päivänselvä etsii.</h2>
+            <p class="v-ingress">Kymmenen tietoryhmää on käytössä alusta alkaen. Valitset itse.</p>
+          </div>
+          <ul class="v-ser-liste rise">
+            <li><b>Nimet</b><span>Henkilöiden nimet, myös taivutetut muodot</span></li>
+            <li><b>Henkilötunnus</b><span>Myös vuodesta 2023 käytetyillä uusilla välimerkeillä</span></li>
+            <li><b>Puhelin ja sähköposti</b><span>Puhelinnumerot ja sähköpostiosoitteet</span></li>
+            <li><b>Osoite ja paikka</b><span>Katuosoite, porras, asunto ja postinumero</span></li>
+            <li><b>Arkaluonteiset tiedot</b><span>Terveys, ammattiliitto, uskonto ja rikokset</span></li>
+            <li><b>Yksityiset lauseet</b><span>Kokonaiset lauseet ja merkinnät henkilöstä</span></li>
+            <li><b>Tilit</b><span>Tilinumerot, kortit ja IBAN</span></li>
+            <li><b>Salasanat</b><span>Salasanat ja avaimet</span></li>
+            <li><b>Rekisterinumerot</b><span>Ajoneuvojen rekisterikilvet</span></li>
+            <li class="v-ser-ansikt">
+              <b>Kasvot</b><span>Pikselöidään kuvissa ja skannatuilla sivuilla</span>
+            </li>
+          </ul>
+          <p class="v-ser-fot rise">
+            Päivämäärät, työnantajan ja asianumerot otat käyttöön tarvittaessa.
+            <a class="v-lenke" href="mita-se-loytaa.html">Mitä Päivänselvä löytää ja mitä ei</a>
+          </p>
+        </section>
+
+        <!-- ============ 4. Du bestemmer ============ -->
+        <section class="v-del v-avgjor" id="du-bestemmer">
+          <div class="v-to">
+            <div class="v-hode rise">
+              <h2 class="v-tittel">Sinä päätät, mitä peitetään.</h2>
+              <p class="v-ingress">
+                Päivänselvä merkitsee löytämänsä. Kun ohjelma on epävarma, se kysyy.
+              </p>
+              <ul class="v-punkter">
+                <li>Yksi napsautus sanaan peittää sen koko kansiosta.</li>
+                <li>Päivänselvä muistaa merkintäsi. Seuraava kansio luetaan niiden sanojen kanssa.</li>
+                <li>Organisaation omat tiedot jäävät näkyviin.</li>
+                <li>Kaiken voi perua.</li>
+              </ul>
+            </div>
+
+            <figure class="v-gjennom rise" aria-hidden="true">
+              <div class="v-gjennom-ark">
+                <p>Lähiesihenkilö on <span class="v-m skjul">Juha Korhonen</span>.</p>
+                <p><span class="v-m uavklart">Salo</span> suositteli asteittaista paluuta töihin toukokuusta alkaen.</p>
+                <p>Käynnit varataan vaihteen kautta numerosta <span class="v-m staa">09 123 4500</span>.</p>
+              </div>
+              <div class="v-spor">
+                <p class="v-spor-topp">
+                  <span class="v-kode">Nimi 5530871</span>
+                  <b>Ratkaisematta</b>
+                  <span class="v-spor-tall">1 / 5</span>
+                </p>
+                <p class="v-spor-grunn">Lauseen alussa. Onko se sukunimi vai Salon kaupunki?</p>
+                <p class="v-spor-knapper">
+                  <span class="v-knapp">Peitä <kbd>↵</kbd></span>
+                  <span class="v-knapp lys">Jätä <kbd>B</kbd></span>
+                  <span class="v-knapp lys">Seuraava <kbd>→</kbd></span>
+                </p>
+              </div>
+              <p class="v-forklaring">
+                <span><i class="v-m skjul">Aa</i> Peitetään</span>
+                <span><i class="v-m uavklart">Aa</i> Ratkaisematta</span>
+                <span><i class="v-m staa">Aa</i> Jää näkyviin</span>
+              </p>
+            </figure>
+          </div>
+        </section>
+
+        <!-- ============ 5. Trygt ============ -->
+        <section class="v-del v-trygt" id="trygt">
+          <figure class="v-plate rise">
+            <img src="/alles-klar/assets/foto/hytte.webp" width="2200" height="1232" alt="Pieni punainen mökki syvässä lumessa sinisen taivaan alla." loading="lazy" decoding="async" />
+            <figcaption>
+              <h2 class="v-tittel">Asiakirjat pysyvät tietokoneella.</h2>
+            </figcaption>
+          </figure>
+          <div class="v-kort-rad">
+            <article class="v-kort v-hvit rise">
+              <img src="/alles-klar/assets/krom/laas.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>Ei tietä ulos</h3>
+              <p>Päivänselvä ei voi muodostaa yhteyttä internetiin.</p>
+              <p><a class="v-lenke" href="it-osastolle.html">IT-osasto voi tarkistaa sen itse</a></p>
+            </article>
+            <article class="v-kort v-hvit rise d-60">
+              <img src="/alles-klar/assets/krom/maskin.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>Kaikki on paikan päällä</h3>
+              <p>Säännöt, nimiluettelot ja pieni kielimalli ovat ohjelman sisällä. Tavallinen toimistotietokone riittää, näytönohjainta ei tarvita.</p>
+            </article>
+            <article class="v-kort v-hvit rise d-120">
+              <img src="/alles-klar/assets/krom/hvelv.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>Alkuperäiset eivät muutu</h3>
+              <p>Päivänselvä tallentaa vain uusia kopioita omaan kansioonsa. Ennen aloittamista voit tehdä salatun varmuuskopion.</p>
+            </article>
+            <article class="v-kort v-hvit rise d-180">
+              <img src="/alles-klar/assets/krom/lupe.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>Tarkistus ennen kopion tekemistä</h3>
+              <p>Päivänselvä lukee jokaisen kopion niin kuin vastaanottaja sen lukisi. Jos jotain on jäljellä, tiedostoa ei tehdä.</p>
+            </article>
+          </div>
+        </section>
+
+        <!-- ============ 6. Slik kan kopien se ut ============ -->
+        <section class="v-del v-former" id="kopien">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Sinä valitset, miltä kopio näyttää.</h2>
+            <p class="v-ingress">Neljä vaihtoehtoa. Valitset juuri ennen kuin kopiot tehdään.</p>
+
+          </div>
+          <div class="v-form-rad">
+            <article class="v-form rise">
+              <p class="v-form-merke">Yleisin</p>
+              <div class="v-prove">
+                <span>Päämies: <i class="v-kode">[Nimi 4829133]</i></span>
+                <span class="v-prove-liste">+ koodiluettelo lopussa</span>
+              </div>
+              <h3>Lyhyt koodi ja koodiluettelo</h3>
+              <p>Helppo lukea. Voidaan palauttaa avaimella.</p>
+            </article>
+            <article class="v-form rise d-60">
+              <div class="v-prove">
+                <span>Päämies: <i class="v-kode lang">[PERSON_VBTF60YD0E-Q7MZ2KXA4RWN]</i></span>
+              </div>
+              <h3>Täysi koodi tekstissä</h3>
+              <p>Ei luetteloa. Voidaan palauttaa, mutta vaikeampi lukea.</p>
+            </article>
+            <article class="v-form rise d-120">
+              <div class="v-prove">
+                <span>Päämies: <i class="v-kode">[Nimi 4829133]</i></span>
+              </div>
+              <h3>Vain tunnisteet</h3>
+              <p>Helppo lukea. Ei voida palauttaa.</p>
+            </article>
+            <article class="v-form rise d-180">
+              <div class="v-prove">
+                <span>Päämies: <i class="v-sladd"><i>JulkL 24 § 1 mom. 25 k.</i></i></span>
+              </div>
+              <h3>Musta peitto (PDF)</h3>
+              <p>Se, mitä kohdassa luki, on poissa lopullisesti. Salassapitoperuste voi näkyä peitossa.</p>
+            </article>
+          </div>
+
+        </section>
+
+        <!-- ============ 7. Brukes til ============ -->
+        <section class="v-del v-bruk" id="bruk">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Kun asiakirjojen on lähdettävä eteenpäin.</h2>
+          </div>
+          <ul class="v-bruk-liste rise">
+            <li><b>Asiakirjapyynnöt</b><span>Luovuta viranomaisen asiakirjojen julkiset osat peittämättä sivu sivulta.</span></li>
+            <li><b>Jakaminen</b><span>Tilintarkastajille, asianajajille, toimittajille ja muille viranomaisille.</span></li>
+            <li><b>Tekoälytyökalut</b><span>Samalla henkilöllä on sama koodi, joten työkalu ymmärtää yhteyden.</span></li>
+            <li><b>Koulutus</b><span>Oikeita tapauksia esimerkkeinä, ilman että ketään voi tunnistaa.</span></li>
+            <li><b>Testiaineisto</b><span>Todenmukaisia asiakirjoja uusiin järjestelmiin.</span></li>
+            <li><b>Tilastot</b><span>Käytä sisältöä tietämättä, ketä se koskee.</span></li>
+          </ul>
+        </section>
+
+        <!-- ============ Vanlige spørsmål ============ -->
+        <section class="v-del v-spm" id="sporsmal">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Usein kysyttyä.</h2>
+          </div>
+          <dl class="v-spm-liste rise">
+            <div>
+              <dt>Onko kopio anonyymi?</dt>
+              <dd>Ei. Avaimen haltija voi muuttaa koodit takaisin nimiksi, joten kopio on pseudonymisoitu. Jos kopiota ei koskaan saa voida palauttaa, valitse ”Vain tunnisteet” tai ”Musta peitto (PDF)”, ja lue kopio aina läpi ennen kuin jaat sen.</dd>
+            </div>
+            <div>
+              <dt>Voivatko muut Päivänselvän käyttäjät lukea koodejani?</dt>
+              <dd>Eivät. Koodit voidaan muuttaa vain organisaatiosi avaimella. Muilla on oma avaimensa, joten heille koodit ovat pelkkiä koodeja. Jos jonkun pitää voida palauttaa kopiot, sinun on jaettava avain hänelle.</dd>
+            </div>
+            <div>
+              <dt>Entä jos kadotan avaimen?</dt>
+              <dd>Silloin kukaan ei voi muuttaa koodeja takaisin nimiksi. Alkuperäiset eivät muutu. Siksi Päivänselvä pyytää sinua varmistamaan avaimen: 24 sanaa paperilla tai avaintiedosto.</dd>
+            </div>
+            <div>
+              <dt>Tarvitseeko Päivänselvä internetiä?</dt>
+              <dd>Ei. Päivänselvä ei koskaan muodosta yhteyttä internetiin ja toimii yhtä hyvin ilman verkkoa.</dd>
+            </div>
+            <div>
+              <dt>Toimiiko se tietokoneellani?</dt>
+              <dd>Todennäköisesti, jos se on Mac, jossa on macOS 13 tai uudempi, PC, jossa on Windows 10 tai 11, tai Linux-tietokone, joka käyttää .deb-paketteja. Päivänselvä toimii tavallisilla toimistotietokoneilla ilman näytönohjainta. <a class="v-lenke" href="#maskin">Järjestelmävaatimukset</a></dd>
+            </div>
+            <div>
+              <dt>Voiko kollega palauttaa kopion, jonka minä olen tehnyt?</dt>
+              <dd>Voi, jos teillä on sama avain tai jos kollega on lisännyt sinun avaimesi.</dd>
+            </div>
+            <div>
+              <dt>Ymmärtääkö Päivänselvä ruotsia?</dt>
+              <dd>Kyllä. Ohjelman voi käyttää suomeksi tai ruotsiksi, ja se lukee sekä suomen- että ruotsinkielisiä asiakirjoja. Ruotsinkielisissä asiakirjoissa lauseet lukee lisäksi pieni ruotsalainen kielimalli.</dd>
+            </div>
+            <div>
+              <dt>Oppiiko Päivänselvä minulta?</dt>
+              <dd>Kyllä, siitä mitä teet. Kun merkitset nimen, lempinimen tai sanan, jonka Päivänselvä ohitti, ohjelma muistaa sen ja peittää sen kaikesta myöhemmin luettavasta. Luettelo on nimeltään ”Peitetään aina”. Se on salattu tietokoneella, ja voit poistaa siitä merkintöjä. Mitään ei lähetetä meille, eikä asiakirjoja käytetä minkään mallin kouluttamiseen.</dd>
+            </div>
+            <div>
+              <dt>Entä jos Päivänselvä ohittaa jotain?</dt>
+              <dd>Niin voi käydä. Siksi käyt läpi sen, mitä Päivänselvä löytää, ja Päivänselvä tarkistaa jokaisen kopion ennen kuin se tehdään. Ihmisen on aina luettava kopio ennen kuin se jaetaan. <a class="v-lenke" href="mita-se-loytaa.html">Mitä Päivänselvä löytää ja mitä ei</a></dd>
+            </div>
+            <div>
+              <dt>Mitä alkuperäisille tapahtuu?</dt>
+              <dd>Ei mitään. Päivänselvä tallentaa vain uusia tiedostoja omaan kansioonsa viereen.</dd>
+            </div>
+            <div>
+              <dt>Mitä se maksaa?</dt>
+              <dd>Yksityiskäytössä Päivänselvä on ilmainen. Yritykset, kunnat, hyvinvointialueet ja viranomaiset kokeilevat sitä maksutta 30 päivää ja tilaavat sen jälkeen lisenssin koko organisaatiolle laskulla.</dd>
+            </div>
+          </dl>
+        </section>
+
+        <!-- ============ 8. I dybden ============ -->
+        <section class="v-del v-dybde" id="dybde">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Tarkemmin.</h2>
+            <p class="v-ingress">Sinulle, joka haluat tietää enemmän. Avaa se, mikä kiinnostaa.</p>
+          </div>
+
+          <div class="v-fag rise">
+            <details name="v-dybde">
+              <summary><span>Mitä Päivänselvä etsii</span></summary>
+              <div class="v-fag-inn">
+                <p>Valitset itse, mitä läpikäynti etsii. Kymmenen alusta alkaen käytössä olevaa ryhmää on lueteltu kohdassa <a class="v-lenke" href="#ser-etter">Näitä Päivänselvä etsii</a>.</p>
+                <p>Tarvittaessa voit ottaa käyttöön: <b>Päivämäärät</b>, <b>Ammatti ja sukulaisuus</b>, <b>Ikä</b>, <b>Työnantaja</b> (organisaatio ja Y-tunnus) ja <b>Asianumerot</b>.</p>
+                <p>
+                  Henkilötunnuksesta tarkistetaan päivämäärä ja tarkistusmerkki, myös vuonna 2023 käyttöön otetuilla välimerkeillä (Y, X, W, V, U ja B–F). IBAN tarkistetaan MOD 97 -laskennalla. Satunnainen merkkijono ei kelpaa henkilötunnukseksi.
+                </p>
+                <p>
+                  Nimet tunnistetaan myös taivutettuina (”Virtaselle”, ”Korhosen”, ”Mäen”). Organisaation omat tiedot jäävät näkyviin: osoite, vaihteen numero ja Y-tunnus. Viranhaltijoiden nimet tehtävänimikkeen yhteydessä jäävät myös näkyviin.
+                </p>
+                <p><a class="v-lenke" href="mita-se-loytaa.html">Mitä Päivänselvä löytää ja mitä ei</a></p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Mitä tiedostoja Päivänselvä lukee ja miltä kopio näyttää</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Word, Excel ja PowerPoint</dt>
+                    <dd>Sama tiedosto, jossa tietojen tilalla on koodit. Asettelu, logo ja taulukot säilyvät. Kommentit, makrot, upotetut tiedostot ja kuvien piilotiedot poistetaan.</dd>
+                  </div>
+                  <div>
+                    <dt>PDF, myös skannattu</dt>
+                    <dd>Jokaisesta sivusta tulee kuva, jossa koodit on maalattu tietojen päälle. Alla on näkymätön tekstikerros, joten kopiosta voi hakea.</dd>
+                  </div>
+                  <div>
+                    <dt>Kuvat</dt>
+                    <dd>Päivänselvä lukee kuvan tekstin. Tiedot maalataan peittoon ja kasvot pikselöidään.</dd>
+                  </div>
+                  <div>
+                    <dt>Sähköposti</dt>
+                    <dd>Lukee .eml-, Outlook- (.msg), Apple Mail- (.emlx) ja .mbox-tiedostot. Kopiosta tulee .eml-tiedosto. Liitteet poistetaan, ja se kerrotaan kopiossa.</dd>
+                  </div>
+                  <div>
+                    <dt>Teksti</dt>
+                    <dd>.txt, .md, .csv, .json ja .rtf.</dd>
+                  </div>
+                </dl>
+                <p>Myös tiedosto- ja kansionimet peitetään. Kopiot tallentuvat raportin kanssa uuteen kansioon alkuperäisen viereen, ja nimen loppuun tulee ”-peitetty”.</p>
+                <p>Salasanalla suojatut tiedostot Päivänselvä avaa, kun olet antanut salasanan. Vanhoja .ppt-tiedostoja ei voi lukea. Päivänselvä kertoo siitä.</p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Miten Päivänselvä lukee asiakirjat</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Ensin säännöt</dt>
+                    <dd>Suomalaiset muodot ja tarkistusmerkit, Digi- ja väestötietoviraston etu- ja sukunimiluettelot kaikissa sijamuodoissa, Tilastokeskuksen kunnat sekä katuosoitteet. Säännöt käyvät läpi jokaisen tiedoston.</dd>
+                  </div>
+                  <div>
+                    <dt>Asiakirjan kieli</dt>
+                    <dd>Päivänselvä tunnistaa, onko asiakirja suomeksi vai ruotsiksi. Ruotsinkielisissä asiakirjoissa pieni ruotsalainen kielimalli, KB-BERT Ruotsin kuninkaallisesta kirjastosta (KBLab, lisenssi CC0 1.0), arvioi lisäksi, paljastaako lause jotain yksityistä henkilöstä. Suomenkieliset asiakirjat luetaan säännöillä.</dd>
+                  </div>
+                  <div>
+                    <dt>Teksti kuvissa</dt>
+                    <dd>Skannatut sivut ja kuvat luetaan tietokoneella tekstintunnistuksella (OCR), suomeksi ja ruotsiksi.</dd>
+                  </div>
+                  <div>
+                    <dt>Kasvot</dt>
+                    <dd>Päivänselvä löytää kasvot ja pikselöi ne. Voit myös jättää kasvot näkyviin.</dd>
+                  </div>
+                </dl>
+                <p>Päivänselvässä ei ole chattibottia, eikä se lähetä mitään millekään tekoälypalvelulle.</p>
+                <p>Voit myös avata kansion ilman läpikäyntiä. Silloin merkitset itse peitettävät kohdat.</p>
+
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Koodit ja avain</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Pysyvät numerot</dt>
+                    <dd>Koodin numero lasketaan avaimesta ja tiedosta. Siksi Matti Virtasella on koodi <i class="v-kode">[Nimi 4829133]</i> jokaisessa kansiossa, kaikilla kollegoilla, joilla on sama avain.</dd>
+                  </div>
+                  <div>
+                    <dt>Nimi on kopiossa salattuna</dt>
+                    <dd>Kopion lopussa olevassa koodiluettelossa ovat täydet koodit. Niissä on alkuperäinen teksti salattuna AES-SIV-menetelmällä. Vain avain voi lukea sen uudelleen. Erillistä koodikirjaa ei tarvitse pitää.</dd>
+                  </div>
+                  <div>
+                    <dt>Vain oma avaimenne</dt>
+                    <dd>Jokainen asennus luo oman avaimensa. Muut Päivänselvän käyttäjät eivät voi muuttaa koodeja: ilman organisaation avainta ne ovat pelkkiä koodeja, myös meille.</dd>
+                  </div>
+                  <div>
+                    <dt>Missä avain on</dt>
+                    <dd>Käyttöjärjestelmä suojaa sen: avainnippu Macissa, DPAPI Windowsissa ja avainnippu (Secret Service) Linuxissa.</dd>
+                  </div>
+                  <div>
+                    <dt>Varmuus</dt>
+                    <dd>24 sanaa paperilla tai avaintiedosto, jonka suojaa valitsemasi tunnuslause.</dd>
+                  </div>
+                  <div>
+                    <dt>Organisaatiossa</dt>
+                    <dd>Yksi henkilö vastaa avaimesta ja antaa sen kollegoille avainpakettina. Paketti ja avainkoodi lähetetään erikseen. IT-osasto voi estää avaimen viennin.</dd>
+                  </div>
+                  <div>
+                    <dt>Muiden avaimet</dt>
+                    <dd>Kohdassa ”Avain” voit lisätä toisen organisaation avaimen. Se on oman avaimenne rinnalla. Kopio kertoo, millä avaimella se tehtiin, joten Päivänselvä valitsee oikean avaimen, kun palautat.</dd>
+                  </div>
+                  <div>
+                    <dt>Palauta</dt>
+                    <dd>Päivänselvä luo uuden kansion, jonka nimen loppuun tulee ”-palautettu”. Kopio ei muutu. Kuvissa ja PDF-sivuilla peittojen alla ollut sisältö on kopiossa salattuna, ja se palautetaan paikalleen.</dd>
+                  </div>
+                </dl>
+                <p>Koodit eivät ole anonymisointia. Avaimen haltija voi muuttaa ne takaisin, joten koodeja sisältävässä kopiossa on edelleen henkilötietoja (pseudonymisointi, tietosuoja-asetuksen 4 artiklan 5 kohta).</p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Viranomaisen asiakirjat ja peittäminen</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Musta peitto (PDF)</dt>
+                    <dd>Jokaisesta kopiosta tulee PDF, jossa on mustat peitot. Muun tekstin voi edelleen valita ja siitä voi hakea.</dd>
+                  </div>
+                  <div>
+                    <dt>Salassapitoperuste peitossa</dt>
+                    <dd>Jokaisessa peitossa voi näkyä salassapitoperuste, johon peittäminen perustuu, esimerkiksi ”JulkL 24 § 1 mom. 25 k.” tai ”JulkL 24 § 1 mom. 32 k.”. Täydet säännökset kirjoitetaan omaan tiedostoonsa, ”Peittämisen salassapitoperusteet.txt”, luovutuspäätöksen tueksi. Salassapidon arvioit itse.</dd>
+                  </div>
+                  <div>
+                    <dt>Jätä vain tämä henkilö</dt>
+                    <dd>Sille, joka pyytää omia tietojaan: tämä henkilö jää näkyviin, kaikki muut peitetään.</dd>
+                  </div>
+                  <div>
+                    <dt>Useita versioita samasta kansiosta</dt>
+                    <dd>Yksi rekisteröidylle, toinen medialle, kumpikin omilla asetuksillaan.</dd>
+                  </div>
+                  <div>
+                    <dt>Sumennus</dt>
+                    <dd>Suorakulmio, soikio tai vapaa muoto kuvan tai sivun osan päälle.</dd>
+                  </div>
+                </dl>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Työskennellessäsi</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Tallentuu automaattisesti</dt>
+                    <dd>Päätökset tallennetaan salattuina tietokoneelle. Jatkat siitä, mihin jäit.</dd>
+                  </div>
+                  <div>
+                    <dt>Muutokset</dt>
+                    <dd>Jokainen muutos on luettelossa. Voit perua yksittäisen muutoksen tai palata alkuun. Luettelon voi tallentaa PDF- tai CSV-tiedostona.</dd>
+                  </div>
+                  <div>
+                    <dt>Omat merkinnät</dt>
+                    <dd>Itse tekemäsi merkinnät ovat voimassa kaikissa kansioissa ja teksteissä. Voit jakaa luettelon kollegoille.</dd>
+                  </div>
+                  <div>
+                    <dt>Haku</dt>
+                    <dd>Hae kansion kaikista tiedostoista kerralla.</dd>
+                  </div>
+                  <div>
+                    <dt>Varmuuskopio</dt>
+                    <dd>Salattu kopio kansiosta ennen läpikäyntiä. Päivänselvä muistuttaa siitä 30 päivän kuluttua.</dd>
+                  </div>
+                  <div>
+                    <dt>Finderista</dt>
+                    <dd>Macissa: napsauta tiedostoa tai kansiota hiiren oikealla painikkeella ja valitse ”Peitä Päivänselvällä”.</dd>
+                  </div>
+                </dl>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>IT-osastolle</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Ei verkkokoodia</dt>
+                    <dd>Ohjelmassa ei ole TLS:ää, se ei voi hakea nimiä verkosta eikä kuuntele mitään porttia. <a class="v-lenke" href="it-osastolle.html">Tarkistukset, jotka voit tehdä itse</a></dd>
+                  </div>
+                  <div>
+                    <dt>Käytännöt tiedostossa</dt>
+                    <dd>Voit päättää, mitä peitetään aina, lukita kopioiden muodon, vaatia läpikäynnin ja päättää, saako avaimen viedä.</dd>
+                  </div>
+                  <div>
+                    <dt>Tarkastusloki</dt>
+                    <dd>Voidaan ottaa käyttöön. Siinä ei ole tiedostonimiä eikä tietoja asiakirjoista.</dd>
+                  </div>
+                  <div>
+                    <dt>Komentorivi</dt>
+                    <dd><code>paivanselva clean</code> ja <code>paivanselva restore</code>, tulokset JSON-muodossa. Päivänselvä voi myös valvoa kansiota.</dd>
+                  </div>
+                  <div>
+                    <dt>Lisenssi ilman internetiä</dt>
+                    <dd>Allekirjoitettu koodi, joka tarkistetaan tietokoneella. Yksi lisenssi kattaa koko organisaation.</dd>
+                  </div>
+                </dl>
+              </div>
+            </details>
+          </div>
+        </section>
+
+        <!-- ============ Full nerd-out ============ -->
+        <section class="v-del v-nerd" id="nerd">
+          <div class="v-hode rise">
+            <p class="v-nerd-over">Uteliaille</p>
+            <h2 class="v-tittel">Tekniikasta kiinnostuneille.</h2>
+            <p class="v-ingress">Koko matka, jonka tiedosto kulkee Päivänselvän läpi, ja mitä kussakin vaiheessa tapahtuu.</p>
+          </div>
+
+          <ol class="v-ror rise">
+            <li><b>Lukeminen</b><span>Word, Excel, PDF, sähköposti ja kuvat jaetaan tekstiksi ja paikaksi sivulla.</span></li>
+            <li><b>Säännöt</b><span>Muodot, tarkistusmerkit, nimi- ja sanaluettelot.</span></li>
+            <li><b>Kieli</b><span>Suomi vai ruotsi? Ruotsinkieliset lauseet arvioi pieni kielimalli.</span></li>
+            <li><b>Kuvat</b><span>Teksti- ja kasvojentunnistus tietokoneella.</span></li>
+            <li><b>Rekisteri</b><span>Osumat kootaan koko kansiolle. Sama henkilö, sama koodi.</span></li>
+            <li><b>Sinä</b><span>Peität, jätät näkyviin ja ratkaiset ratkaisemattomat.</span></li>
+            <li><b>Kirjoitus</b><span>Jokainen tiedostotyyppi kirjoitetaan omalla tavallaan.</span></li>
+            <li><b>Tarkistus</b><span>Kopio luetaan vielä kerran. Jos jotain on jäljellä, se pysäytetään.</span></li>
+          </ol>
+
+          <details class="v-nerd-alt rise">
+            <summary><span><i class="v-nar-lukket">Avaa konehuone</i><i class="v-nar-aapen">Sulje konehuone</i></span></summary>
+            <div class="v-nerd-inn">
+              <article>
+                <h3>Mitä paketissa on</h3>
+                <p>
+                  Päivänselvä on tavallinen tietokoneohjelma. Kuori on kirjoitettu Rustilla (Tauri), ja ikkuna on verkkonäkymä, jonka käyttöliittymä on kirjoitettu TypeScriptillä. Kaikki tarvittava on asennustiedostossa. Mitään ei ladata jälkikäteen.
+                </p>
+                <dl class="v-spek">
+                  <div><dt>Sääntömoottori</dt><dd>TypeScript. Toimii ohjelmassa ilman palvelinta.</dd></div>
+                  <div><dt>Lausemalli</dt><dd>bert-base-swedish-cased (KB-BERT, Ruotsin kuninkaallinen kirjasto, lisenssi CC0 1.0), hienosäädetty henkilöitä koskeviin lauseisiin, ruotsinkielisille asiakirjoille. Toimii suorittimella <code>tract</code>-kirjastolla, puhtaalla Rustilla.</dd></div>
+                  <div><dt>Teksti kuvissa</dt><dd>Apple Vision Macissa. Windowsissa Windowsin oma tekstintunnistus ja Tesseract suomella ja ruotsilla, Linuxissa Tesseract.</dd></div>
+                  <div><dt>Kasvot</dt><dd>Apple Vision Macissa. Pienet kasvomallit (YuNet ja UltraFace) Windowsissa ja Linuxissa.</dd></div>
+                  <div><dt>PDF</dt><dd>PDFium piirtää sivut ja lukee tekstikerroksen.</dd></div>
+                  <div><dt>Ei suurta kielimallia</dt><dd>Päivänselvässä ei ole LLM:ää eikä chattibottia. Koonti keskeytyy, jos jompikumpi päätyy pakettiin.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Tiedostosta osumaan</h3>
+                <p>
+                  Jokainen tiedosto jaetaan tekstinpaloiksi, jotka tietävät paikkansa: kappale, solu, tekstiruutu, ylätunniste tai paikka PDF-sivulla. Sitten teksti käydään läpi.
+                </p>
+                <dl class="v-spek">
+                  <div><dt>Säännöt</dt><dd>Henkilötunnuksen tarkistusmerkin on täsmättävä (päivämäärä ja yksilönumero jaettuna 31:llä), ja kaikki välimerkit (+, -, Y, X, W, V, U, A–F) tunnetaan. IBAN tarkistetaan MOD 97 -laskennalla ja maksukortit Luhn-laskennalla. Nimet löydetään nimiluetteloiden ja paikkansa avulla, esimerkiksi ”Nimi:”-kentän jälkeen tai allekirjoituksessa.</dd></div>
+                  <div><dt>Taivutetut nimet</dt><dd>Kun nimi on löytynyt kerran, sen osat tunnistetaan kaikissa sijamuodoissa (”Virtaselle”, ”Virtasen”, ”Matille”), ja ne saavat saman henkilön koodin. Sijapääte puretaan takaperin, myös astevaihtelu (-nen → -se-, kk → k).</dd></div>
+                  <div><dt>Arkaluonteiset sanat</dt><dd>Luettelo terveyttä, päihteitä ja hoitoa koskevista sanoista suomeksi ja ruotsiksi, kaikissa taivutusmuodoissa, sekä ICD-10-koodit. ”Masennus”, ”masennuksen” ja ”sairauslomalla” antavat osuman.</dd></div>
+                  <div><dt>Viranhaltijat ja organisaatio</dt><dd>Tehtävänimikkeet, kuten ”sosiaalityöntekijä”, ”asianajaja” tai ”socialarbetare”, ja kirjelomakkeen osoite, vaihteen numero ja Y-tunnus tunnistetaan, ja ne jäävät näkyviin. Sähköpostiosoitteet peitetään silti.</dd></div>
+                </dl>
+                <p>
+                  Lopuksi osumat kootaan kansion rekisteriin. ”Matti”, ”Matti Virtanen”, ”Matti Virtasen” ja ”MATTI VIRTANEN” ovat yksi ja sama henkilö kaikissa tiedostoissa. Se, mistä Päivänselvä on epävarma, päätyy selityksen kanssa jonoon ”Ratkaisematta”: sukunimi on lauseen alussa, kaksi henkilöä on samanniminen tai sana lisättiin myöhemmin.
+
+                </p>
+              </article>
+
+              <article>
+                <h3>Koodit</h3>
+                <p>Koodissa on kaksi osaa. Toinen kertoo, kuka on kyseessä. Toinen on alkuperäinen teksti salattuna.</p>
+                <p class="v-kodelinje"><code>[PERSON_VBTF60YD0E-J94DW5ZFTYA2GWTWAXFKK0XYBF1KTY19BED6E5TJ832VZ00]</code></p>
+                <dl class="v-spek">
+                  <div><dt>Henkilökoodi</dt><dd>HMAC-SHA256 tyypistä ja arvosta, lyhennettynä kymmeneen merkkiin. Se on sama kaikille saman nimen kirjoitustavoille, joten tekoälytyökalu ymmärtää, että kyse on samasta henkilöstä.</dd></div>
+                  <div><dt>Salattu osa</dt><dd>AES-SIV (RFC 5297) tekstistä täsmälleen sellaisena kuin se oli. Sama teksti antaa aina saman koodin. Muutettu tai toisella avaimella tehty koodi hylätään. Päivänselvä ei koskaan palauta mitään väärää.</dd></div>
+                  <div><dt>Lyhyt numero</dt><dd>Numero koodissa <code>[Nimi 4829133]</code> lasketaan avaimesta ja arvosta. Siksi se on sama kaikilla tietokoneilla, joilla on sama avain, ilman että ne viestivät keskenään.</dd></div>
+                  <div><dt>Koodiluettelo</dt><dd>Tavallisessa kopiomuodossa lyhyt numero on tekstissä ja täydet koodit luettelossa lopussa. Avaimen kanssa luettelo on kaikki, mitä kopion palauttamiseen tarvitaan.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Avain</h3>
+                <dl class="v-spek">
+                  <div><dt>Mikä se on</dt><dd>32 satunnaista tavua, jotka luodaan tietokoneella, kun Päivänselvä käynnistetään ensimmäisen kerran. Aliavaimet koodeille, numeroille ja kuville johdetaan HKDF-SHA256:lla.</dd></div>
+                  <div><dt>Missä se on</dt><dd>Käyttöjärjestelmän suojaama: avainnippu ja Secure Enclave Macissa, DPAPI Windowsissa ja avainnippu (Secret Service) Linuxissa. Avainta pitää se ohjelman osa, joka on kirjoitettu Rustilla. Ikkuna saa sen vain, kun haluat nähdä 24 sanaa.</dd></div>
+                  <div><dt>24 sanaa</dt><dd>Avaimen voi kirjoittaa muistiin 24 sanana 2 048 sanan luettelosta. Luettelo on norjankielinen ja sama kaikissa versioissa. Sanoissa on vain kirjaimet a–z, eivätkä mitkään kaksi muistuta toisiaan. Neljä ensimmäistä kirjainta riittävät sanan tunnistamiseen.</dd></div>
+                  <div><dt>Avaintiedosto</dt><dd>Avain salattuna vähintään kahdentoista merkin tunnuslauseella (Argon2id ja AES-256-GCM).</dd></div>
+                  <div><dt>Avaimen tunnus</dt><dd>Lyhyt tunnus, esimerkiksi <code>K7QM-R3T5</code>. Se kertoo, millä avaimella kopio tehtiin, mutta ei ole itse avain.</dd></div>
+                  <div><dt>Useita avaimia</dt><dd>Kun vaihdat avaimen, vanha pannaan talteen. Palautettaessa Päivänselvä kokeilee ensin nykyistä avainta ja sitten aiempia.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Näin kopio syntyy</h3>
+                <dl class="v-spek">
+                  <div><dt>Word, Excel, PowerPoint</dt><dd>Tiedosto on ZIP, jossa on XML:ää. Päivänselvä vaihtaa arvot paikallaan, myös kun Word on jakanut nimen useaan palaan. Sitten tiedosto siivotaan: kommentit, makrot, upotetut tiedostot, pienoiskuva ja kuvien piilotiedot poistetaan.</dd></div>
+                  <div><dt>PDF</dt><dd>Jokainen sivu piirretään kuvaksi 200 dpi:n tarkkuudella, pieni teksti 300 dpi:llä. Koodit maalataan tietojen päälle, ja peitetty teksti on näkymättömänä alla, joten kopiosta voi hakea.</dd></div>
+                  <div><dt>Kuvat</dt><dd>Kentät maalataan peittoon ja kasvot pikselöidään.</dd></div>
+                  <div><dt>Se, mikä oli alla</dt><dd>Jos kopio pitää voida palauttaa, Päivänselvä tallentaa alkuperäiset pikselit jokaisen kentän alle kopioon salattuina (AES-256-GCM). Tavalliset ohjelmat ohittavat ne.</dd></div>
+                  <div><dt>Sähköposti</dt><dd>Kopiosta tulee siivottu .eml-tiedosto. Viestin reittiä koskevat tekniset otsakkeet poistetaan.</dd></div>
+                  <div><dt>Tiedostonimet</dt><dd>Jos tiedosto- tai kansionimessä on nimi, sekin vaihdetaan.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Tarkistus ennen kopion tekemistä</h3>
+                <p>
+                  Ennen kuin kopio tallennetaan, Päivänselvä lukee sen niin kuin toinen ohjelma sen lukisi: ZIP-tiedoston jokaisen osan, jokaisen XML-attribuutin, PDF:n jokaisen objektin ja jokaisen kuvan tekstin. Jos ohjelma löytää jotain, minkä pitäisi olla peitetty, tai osan, jota se ei pysty lukemaan, tiedostoa ei tehdä. Silloin näet, mitä se koskee.
+                </p>
+              </article>
+
+              <article>
+                <h3>Mitä Päivänselvä tallentaa</h3>
+                <dl class="v-spek">
+                  <div><dt>Projektit</dt><dd>Kansiota koskevat päätökset tallennetaan salattuina tietokoneelle, eikä Spotlight tai Time Machine käsittele niitä. Käyttämätön projekti poistetaan 30 päivän kuluttua.</dd></div>
+                  <div><dt>Varmuuskopio</dt><dd>Kopio alkuperäisistä. Sisältö on salattu AES-256-GCM:llä, ja sen voi lukea vain tietokoneella, jolla se tehtiin. Tiedostonimet ovat ennallaan.</dd></div>
+                  <div><dt>Omat merkinnät</dt><dd>Luettelo siitä, mitä Päivänselvä peittää pyynnöstäsi, tallennetaan salattuna.</dd></div>
+                  <div><dt>Alkuperäiset</dt><dd>Päivänselvä kirjoittaa vain kansioihin, jotka ohjelma on itse luonut. Jokainen koodin kohta, joka poistaa tai siirtää tiedoston, vaatii kirjallisen perustelun. Muuten testi pysäyttää koonnin.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Mitä ei ole</h3>
+                <p>
+                  Ohjelmassa ei ole TLS:ää, se ei voi hakea nimiä verkosta eikä kuuntele mitään porttia. Ei tiliä, ei käyttötilastoja, ei virheraportteja eikä automaattisia päivityksiä. Lisenssi on allekirjoitettu koodi (Ed25519), joka tarkistetaan tietokoneella. Ainoa asia, jonka Päivänselvä tekee internetiin päin: se avaa verkkosivustomme omassa selaimessasi, kun napsautat ”Osta lisenssi”.
+                </p>
+                <p><a class="v-lenke" href="it-osastolle.html">Tarkistukset, jotka IT-osasto voi tehdä itse</a></p>
+              </article>
+            </div>
+          </details>
+        </section>
+
+        <!-- ============ 9. Ansvar ============ -->
+        <section class="v-del v-ansvar" id="ansvar">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Työkalu. Ei takuuta.</h2>
+          </div>
+          <ul class="v-ansvar-liste rise">
+            <li><b>Päivänselvä voi ohittaa jotain.</b> Lue kopiot ennen kuin jaat ne.</li>
+            <li><b>Koodit eivät ole anonymisointia.</b> Avaimen haltija voi muuttaa ne takaisin.</li>
+            <li><b>Vastuu on sinulla.</b> Päivänselvä ei ole oikeudellista neuvontaa. Saat ehdotuksia peitoista, arvioit itse salassapidon ja päätät, mitä luovutetaan.</li>
+          </ul>
+          <p class="rise"><a class="v-lenke" href="mita-se-loytaa.html">Mitä Päivänselvä löytää ja mitä ei</a></p>
+        </section>
+
+        <!-- ============ Går Klart på maskinen din? ============ -->
+        <section class="v-del v-maskin" id="maskin">
+          <div class="v-sjekk rise">
+            <h2 id="v-sjekk-tittel">Toimiiko Päivänselvä tällä tietokoneella?</h2>
+            <p class="v-sjekk-om">Päivänselvä toimii tavallisilla toimistotietokoneilla ilman näytönohjainta.</p>
+            <p class="v-sjekk-fot">
+              Vaatimukset: Mac, jossa on macOS 13 tai uudempi (Apple- tai Intel-suoritin), PC, jossa on Windows 10 tai 11 (64-bittinen), tai Linux .deb-paketeilla (amd64 tai ARM64). Suosittelemme 8 Gt muistia.
+            </p>
+          </div>
+        </section>
+
+        <!-- ============ 10. Last ned (ingen nedlasting ennå) ============ -->
+        <section class="v-hent" id="last-ned">
+          <img class="v-hent-bilde" src="/alles-klar/assets/klart-vinter.jpg" width="1600" height="1067" alt="" loading="lazy" decoding="async" />
+          <div class="v-hent-kort rise">
+            <div class="v-hent-inn">
+            <div class="mobil-send">
+              <p class="mobil-send-tittel">Päivänselvä on tietokoneohjelma.</p>
+              <p class="mobil-send-tekst">Lähetä linkki itsellesi sähköpostilla ja palaa asiaan tietokoneella, kun ohjelma on saatavilla Macille, Windowsille ja Linuxille.</p>
+              <a class="btn" href="mailto:?subject=P%C3%A4iv%C3%A4nselv%C3%A4&amp;body=https%3A%2F%2Fesbjugconsult.com%2Fpaivanselva">Lähetä itsellesi</a>
+              <p class="mobil-send-andre">(Tai jollekulle muulle?)</p>
+            </div>
+            <h2>Kokeile Päivänselvää kansioon.</h2>
+            <p class="v-hent-privat"><b>Ilmainen yksityiskäyttöön.</b></p>
+            <p class="v-hent-virk">Ohjelma Windowsille, Macille ja Linuxille on tulossa pian.</p>
+            <p class="v-hent-virk">Organisaatioille: <b>30 päivää maksutta</b>. Ei rekisteröitymistä. Sen jälkeen tilaus laskulla.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- ================= Bunn ================= -->
+    <footer class="v-bunn">
+      <p class="v-bunn-merke"><i>Päivänselvä</i> <span>Tidemann Esbjugilta</span></p>
+      <nav class="v-bunn-lenker" aria-label="Lisää Päivänselvästä">
+        <a href="mita-se-loytaa.html">Mitä Päivänselvä löytää</a>
+        <a href="it-osastolle.html">IT-osastolle</a>
+        <a href="ehdot/">Ehdot</a>
+        <a href="tietosuoja/">Tietosuoja</a>
+      </nav>
+      <nav class="v-bunn-lenker v-bunn-land" aria-label="Muut maat">
+        <a href="/klart/" hreflang="no" lang="no">Norge · Klart</a>
+        <a href="/alles-klar/" hreflang="de" lang="de">Deutschland · Alles Klar</a>
+        <a href="/glockenklar/" hreflang="de-AT" lang="de-AT">Österreich · Glockenklar</a>
+        <a href="/glatscher/" hreflang="de-CH" lang="de-CH">Schweiz · Suisse · Svizzera · Glatscher</a>
+        <a href="/frostcopy/" hreflang="en-US" lang="en-US">United States · FrostCopy</a>
+        <a href="/frostcopy-uk/" hreflang="en-GB" lang="en-GB">United Kingdom · FrostCopy UK</a>
+        <a href="/frostcopy-ie/" hreflang="en-IE" lang="en-IE">Ireland · FrostCopy</a>
+        <a href="/cest-clair/" hreflang="fr" lang="fr">France · C’est Clair</a>
+        <a href="/clair-klaar/" hreflang="nl-BE" lang="nl-BE">België · Belgique · Clair &amp; Klaar</a>
+        <a href="/clarisimo/" hreflang="es" lang="es">España · Clarísimo</a>
+        <a href="/clarissimo/" hreflang="pt" lang="pt">Portugal · Claríssimo</a>
+        <a href="/chiarissimo/" hreflang="it" lang="it">Italia · Chiarissimo</a>
+        <a href="/klip-en-klaar/" hreflang="nl" lang="nl">Nederland · Klip en Klaar</a>
+        <a href="/wszystko-jasne/" hreflang="pl" lang="pl">Polska · Wszystko Jasne</a>
+        <a href="/klappatochklart/" hreflang="sv-SE" lang="sv-SE">Sverige · Klappat och Klart</a>
+        <a href="/paivanselva/" hreflang="fi-FI" lang="fi-FI" aria-current="page">Suomi · Finland · Päivänselvä</a>
+        <a href="/krystallklart/" hreflang="da" lang="da">Danmark · Krystallklart</a>
+
+      </nav>
+      <p class="v-bunn-liten">Kehitetty Norjassa · Ei oikeudellista neuvontaa</p>
+    </footer>
+
+    <script src="forside.js"></script>
+    <script src="videre.js"></script>
+    <script src="/spiller/spiller.js"></script>
+  </body>
+</html>

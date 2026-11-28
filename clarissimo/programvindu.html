@@ -1,0 +1,378 @@
+<!doctype html>
+<!-- Programvinduet fra /clarissimo alene (eieren 12.11.2026), til heroen på forsiden (esbjugconsult.com/), der det står i en iframe.
+     Kopiert fra GDPR/index.html (figure.kv); endres vinduet der, kjør pv.py igjen eller kopier det over hit.
+     Samme stiler og skript som på /klart, pluss programvindu.css og programvindu.js (høyden til forsiden). -->
+<html lang="pt-PT">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Claríssimo – a janela do programa</title>
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="forhandsvisning.css" />
+    <link rel="stylesheet" href="programvindu.css" />
+  </head>
+  <body class="programvindu">
+        <figure class="kv avklart" data-scene="gjennom">
+          <div class="kv-ramme">
+          <div class="kv-app" aria-hidden="true">
+            <header class="kv-chrome">
+              <span class="kv-lys"><i></i><i></i><i></i></span>
+              <span class="kv-merke"><img src="/clarissimo/clarissimo-ikon.png" alt="" />Claríssimo</span>
+              <span class="kv-sok"><svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.6" /><path d="M10.4 10.4L14 14" /></svg>Pesquisar em todos os ficheiros da pasta<kbd>⌘F</kbd></span>
+              <span class="kv-hoyre">
+                <span class="kv-lagret">✓ Gravação automática</span>
+                <span class="kv-lysknapp">Opções de análise</span>
+                <span class="kv-lysknapp" data-kv="hjem">Ecrã inicial</span>
+                <span class="kv-lysknapp kv-sporsmal">?</span>
+              </span>
+            </header>
+
+            <div class="kv-flate">
+              <!-- Startskjermen: de tre verktøyene, og det som ble tilbakeført under dem -->
+              <div class="kv-scene kv-s-start">
+                <div class="kv-start-inn">
+                  <div class="kv-kortene">
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-rens.png" alt="" />
+                      <h4>Ocultar</h4>
+                      <span class="kv-hvit" data-kv="velg">Escolher uma pasta ou documentos…</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-tilbakefor.png" alt="" />
+                      <h4>Restaurar</h4>
+                      <span class="kv-hvit" data-kv="tbvelg">Escolher cópias…</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-tekst.png" alt="" />
+                      <h4>Ferramenta de texto</h4>
+                      <span class="kv-hvit" data-kv="tekstvelg">Abrir…</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Editoren: filene, dokumentet og registeret for mappen -->
+              <div class="kv-scene kv-s-editor">
+                <aside class="kv-filer">
+                  <div class="kv-filer-topp"><b>Processos</b><span>10 ficheiros</span></div>
+                  <ul data-kv="filer">
+                    <li data-steder="30"><i class="kv-fikon w">W</i><span class="kv-fnavn">01-contrato-trabalho-acme.docx</span><span class="kv-fmeta">30 locais</span><i class="kv-ring"></i></li>
+                    <li data-steder="41" data-uavklart="2" data-dok="vedtak" class="valgt"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">02-sentenca-acompanhamento.pdf</span><span class="kv-fmeta">41 locais</span><i class="kv-ring"></i></li>
+                    <li data-steder="45" data-ekstra="1 matrícula" data-dok="epost"><i class="kv-fikon epost">@</i><span class="kv-fnavn">03-troca-de-emails.eml</span><span class="kv-fmeta">45 locais</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon tekst">T</i><span class="kv-fnavn">04-nota-de-pessoal.md</span><span class="kv-fmeta">21 locais</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon w">W</i><span class="kv-fnavn">05-relatorio-medico.docx</span><span class="kv-fmeta">21 locais</span><i class="kv-ring"></i></li>
+                    <li data-steder="16"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">06-fatura-aurora.pdf</span><span class="kv-fmeta">16 locais</span><i class="kv-ring"></i></li>
+                    <li data-steder="82" data-dok="liste"><i class="kv-fikon x">X</i><span class="kv-fnavn">08-lista-de-clientes.xlsx</span><span class="kv-fmeta">82 locais</span><i class="kv-ring"></i></li>
+                    <li data-steder="43" data-ekstra="2 rostos" data-dok="ppt"><i class="kv-fikon p">P</i><span class="kv-fnavn">09-reuniao-de-acompanhamento.pptx</span><span class="kv-fmeta">43 locais · 2 rostos</span><i class="kv-ring"></i></li>
+                    <li data-steder="18"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">11-anexo-digitalizado.pdf</span><span class="kv-fmeta">18 locais</span><i class="kv-ring"></i></li>
+                    <li data-steder="3" data-ekstra="1 rosto"><i class="kv-fikon bilde">JPG</i><span class="kv-fnavn">16-cartao-de-acesso.jpg</span><span class="kv-fmeta">3 locais · 1 rosto</span><i class="kv-ring"></i></li>
+                  </ul>
+                </aside>
+
+                <div class="kv-midt">
+                  <div class="kv-docket">
+                    <b data-kv="docnavn">02-sentenca-acompanhamento.pdf</b><span class="kv-type" data-kv="doctype">PDF</span>
+                    <span class="kv-kopimerke" data-kv="kopimerke">A cópia · lista de códigos no fim</span>
+                    <span class="kv-verktoy">
+                      <span class="kv-zoom">− &nbsp;86 %&nbsp; +</span>
+                      <span class="kv-hvit" data-kv="vis">Mostrar a cópia</span>
+                    </span>
+                  </div>
+                  <div class="kv-bord">
+                    <div class="kv-pille" data-kv="pille"><i></i>A ler <b data-kv="leser">01-contrato-trabalho-acme.docx</b><span data-kv="nr">1 de 10</span></div>
+
+                    <!-- PDF: vedtak om vergemål -->
+                    <article class="kv-side vist" data-dok="vedtak">
+                      <i class="kv-lesehode"></i>
+                      <p class="kv-avsender">Juízo Local Cível de Lisboa</p>
+                      <h4>Sentença de acompanhamento de maior</h4>
+                      <p class="kv-ref">Processo n.º <mark class="s"><span class="o">412/26.3T8LSB</span><span class="k">[Processo 4906498]</span></mark> · 14/03/2026</p>
+                      <h5>Beneficiário</h5>
+                      <dl>
+                        <dt>Nome</dt><dd><mark class="s"><span class="o">Ana Ferreira Lopes</span><span class="k">[Pessoa 6311794]</span></mark></dd>
+                        <dt>NIF</dt><dd><mark class="s"><span class="o">275 466 795</span><span class="k">[NIF 2215087]</span></mark></dd>
+                        <dt>Morada</dt><dd><mark class="s"><span class="o">Rua das Oliveiras, 27, 1100-123 Lisboa</span><span class="k">[Morada 8950779]</span></mark></dd>
+                      </dl>
+                      <h5>Acompanhante designado</h5>
+                      <dl>
+                        <dt>Nome</dt><dd><mark class="s"><span class="o">Rui Carvalho</span><span class="k">[Pessoa 2656447]</span></mark>, <mark class="b" data-kv="arbeid"><span class="o">Aurora Advogados, SP, RL</span><span class="k">[Organização 5521093]</span></mark></dd>
+                        <dt>E-mail</dt><dd><mark class="s"><span class="o">rui.carvalho@aurora.test</span><span class="k">[E-mail 3278678]</span></mark></dd>
+                        <dt>Telefone</dt><dd><mark class="s"><span class="o">210 555 134</span><span class="k">[Telefone 6289990]</span></mark></dd>
+                      </dl>
+                      <h5>Fundamentação</h5>
+                      <p><mark class="s" data-kv="merknad"><span class="o">O beneficiário está internado desde janeiro com uma depressão e precisa de apoio na gestão das suas finanças.</span><span class="k">[Nota 2760056]</span></mark> O acompanhamento inclui a gestão do saldo da conta <mark class="s"><span class="o">PT50 9999 0001 1234 5678 9010 7</span><span class="k">[IBAN 7719741]</span></mark>.</p>
+                      <p>A sentença produz efeitos a partir da notificação. Dela cabe recurso de apelação no prazo de trinta dias.</p>
+                    </article>
+
+                    <!-- E-post -->
+                    <article class="kv-side kv-epost" data-dok="epost">
+                      <i class="kv-lesehode"></i>
+                      <dl class="kv-hode">
+                        <dt>De</dt><dd><mark class="s"><span class="o">Sofia Martins</span><span class="k">[Pessoa 7320430]</span></mark> &lt;<mark class="s"><span class="o">sofia.martins@aurora.test</span><span class="k">[E-mail 5102284]</span></mark>&gt;</dd>
+                        <dt>Para</dt><dd><mark class="s"><span class="o">Ana Ferreira</span><span class="k">[Pessoa 6311794]</span></mark></dd>
+                        <dt>Assunto</dt><dd><b>Seguimento da nossa conversa</b></dd>
+                        <dt>Data</dt><dd>12 de março de 2026, 09:14</dd>
+                      </dl>
+                      <p>Olá, <mark class="s"><span class="o">Ana</span><span class="k">[Pessoa 6311794]</span></mark>,</p>
+                      <p>obrigada pela conversa de ontem. Como combinámos, envio-lhe uma cópia do relatório médico. Pode ligar-me durante toda a semana para o <mark class="s"><span class="o">210 555 134</span><span class="k">[Telefone 6289990]</span></mark>.</p>
+                      <p>O carro da empresa com a matrícula <mark class="s"><span class="o">AB-12-CD</span><span class="k">[Matrícula 3071552]</span></mark> fica pronto a partir de segunda-feira. Envio a fotografia em anexo.</p>
+                      <p>Com os melhores cumprimentos,<br /><mark class="s"><span class="o">Sofia Martins</span><span class="k">[Pessoa 7320430]</span></mark><br />Aurora Serviços, Lda. · <mark class="s"><span class="o">Rua do Porto, 22, 4050-123 Porto</span><span class="k">[Morada 6113936]</span></mark></p>
+                      <figure class="kv-vedlegg">
+                        <span class="kv-bilramme"><img src="/alles-klar/assets/visning/bil.jpg" alt="" /><span class="kv-skilt" data-kv="skilt"><img src="/alles-klar/assets/visning/bil-skilt.png" alt="" /><em data-kv="skiltlapp">Matrícula · fica oculta</em></span></span>
+                        <figcaption>carro.jpg · 1,2 MB</figcaption>
+                      </figure>
+                    </article>
+
+                    <!-- Regneark -->
+                    <article class="kv-side kv-ark" data-dok="liste">
+                      <i class="kv-lesehode"></i>
+                      <table>
+                        <thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead>
+                        <tbody>
+                          <tr><th>1</th><td><b>Nome</b></td><td><b>NIF</b></td><td><b>Telefone</b></td><td><b>NISS</b></td></tr>
+                          <tr><th>2</th><td><mark class="s"><span class="o">João Bernardes</span><span class="k">[Pessoa 1180342]</span></mark></td><td><mark class="s"><span class="o">218 473 656</span><span class="k">[NIF 4402918]</span></mark></td><td><mark class="s"><span class="o">912 555 142</span><span class="k">[Telefone 2290174]</span></mark></td><td><mark class="s"><span class="o">11847365218</span><span class="k">[NISS 6630215]</span></mark></td></tr>
+                          <tr><th>3</th><td><mark class="s"><span class="o">Inês Lopes</span><span class="k">[Pessoa 5523107]</span></mark></td><td><mark class="s"><span class="o">230 917 453</span><span class="k">[NIF 8817330]</span></mark></td><td><mark class="s"><span class="o">935 555 178</span><span class="k">[Telefone 1047782]</span></mark></td><td><mark class="s"><span class="o">12091745325</span><span class="k">[NISS 3359810]</span></mark></td></tr>
+                          <tr><th>4</th><td><mark class="s"><span class="o">Ahmed Hassan</span><span class="k">[Pessoa 9918066]</span></mark></td><td><mark class="s"><span class="o">271 460 385</span><span class="k">[NIF 2265419]</span></mark></td><td><mark class="s"><span class="o">965 555 111</span><span class="k">[Telefone 7714203]</span></mark></td><td><mark class="s"><span class="o">17146038532</span><span class="k">[NISS 9046631]</span></mark></td></tr>
+                          <tr><th>5</th><td><mark class="s"><span class="o">Maria Soares</span><span class="k">[Pessoa 3301459]</span></mark></td><td><mark class="s"><span class="o">268 530 190</span><span class="k">[NIF 6158820]</span></mark></td><td><mark class="s"><span class="o">915 555 166</span><span class="k">[Telefone 4420987]</span></mark></td><td><mark class="s"><span class="o">16853019876</span><span class="k">[NISS 1872264]</span></mark></td></tr>
+                          <tr><th>6</th><td><mark class="s"><span class="o">José Vidal</span><span class="k">[Pessoa 8045126]</span></mark></td><td><mark class="s"><span class="o">244 718 202</span><span class="k">[NIF 5590743]</span></mark></td><td><mark class="s"><span class="o">925 555 127</span><span class="k">[Telefone 3368201]</span></mark></td><td><mark class="s"><span class="o">14471820391</span><span class="k">[NISS 7701358]</span></mark></td></tr>
+                          <tr><th>7</th><td></td><td></td><td></td><td></td></tr>
+                          <tr><th>8</th><td></td><td></td><td></td><td></td></tr>
+                        </tbody>
+                      </table>
+                    </article>
+
+                    <!-- PowerPoint: lysbildet fra fellesturen, med to ansikter -->
+                    <article class="kv-side kv-ppt" data-dok="ppt">
+                      <i class="kv-lesehode"></i>
+                      <div class="kv-lysbilde">
+                        <p class="kv-lb-tittel">Passeio da empresa em fevereiro</p>
+                        <p class="kv-lb-under">Obrigado à <mark class="s"><span class="o">Ana Lima</span><span class="k">[Pessoa 3390415]</span></mark> e ao <mark class="s"><span class="o">Pedro Santos</span><span class="k">[Pessoa 8812706]</span></mark> pela organização!</p>
+                        <div class="kv-lb-foto">
+                          <img src="/alles-klar/assets/visning/fagtur.jpg" alt="" />
+                          <span class="kv-ansikt a1" data-kv="ansikt1"><img src="/alles-klar/assets/visning/fagtur-ansikt-1.jpg" alt="" /><em>Rosto · pixelizado</em></span>
+                          <span class="kv-ansikt a2" data-kv="ansikt2"><img src="/alles-klar/assets/visning/fagtur-ansikt-2.jpg" alt="" /><em>Rosto · pixelizado</em></span>
+                        </div>
+                        <p class="kv-lb-bunn">Reunião de acompanhamento · Diapositivo 4 de 12</p>
+                      </div>
+                    </article>
+
+                    <div class="kv-gjennom" data-kv="gjennom">
+                      <i class="kv-gjennom-strek" data-kv="gstrek"></i>
+                      <p class="kv-gjennom-topp"><code data-kv="gkode">Nota 2760056</code><b>Pendente</b><span data-kv="gnr">1 de 2</span></p>
+                      <p class="kv-gjennom-hvorfor" data-kv="ghvorfor">O Claríssimo não tem a certeza de que isto pertence à categoria «Nota». · 02-sentenca-acompanhamento.pdf</p>
+                      <p class="kv-gjennom-knapper">
+                        <span class="kv-btn" data-kv="skjul">Ocultar <kbd>↵</kbd></span>
+                        <span class="kv-btn hvit" data-kv="lastaa">Deixar <kbd>B</kbd></span>
+                        <span class="kv-btn hvit av">Voltar <kbd>←</kbd></span>
+                        <span class="kv-btn hvit">Seguinte <kbd>→</kbd></span>
+                        <span class="kv-btn hvit">Terminar <kbd>Esc</kbd></span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <aside class="kv-panel">
+                  <div class="kv-uavklart" data-kv="uavklart">
+                    <h5><svg viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" rx="2" /><path d="M6 2.5v11" /></svg>Pendente</h5>
+                    <div class="kv-uboks">
+                      <p data-kv="u1"><code>Nota 2760056</code><span>O beneficiário está internado desde janeiro…</span><em>1 pendente</em></p>
+                      <p data-kv="u2"><code>Organização 5521093</code><span>Aurora Advogados, SP, RL</span><em>1 pendente</em></p>
+                      <span class="kv-btn bred" data-kv="gaa">Rever os 2 <kbd>G</kbd></span>
+                    </div>
+                  </div>
+                  <div class="kv-imappen">
+                    <h5>Na pasta <span><b data-kv="opplysninger">67</b> dados</span></h5>
+                    <ul data-kv="register">
+                      <li data-n="19" data-s="114"><span>Pessoas</span><em>19 · 114 locais</em></li>
+                      <li data-n="7" data-s="24"><span>NIF / CC</span><em>7 · 24 locais</em></li>
+                      <li data-n="12" data-s="43"><span>Telefone</span><em>12 · 43 locais</em></li>
+                      <li data-n="15" data-s="53"><span>E-mail</span><em>15 · 53 locais</em></li>
+                      <li data-n="7" data-s="29"><span>Moradas</span><em>7 · 29 locais</em></li>
+                      <li data-n="6" data-s="13"><span>Contas</span><em>6 · 13 locais</em></li>
+                      <li data-n="1" data-s="2"><span>Matrículas</span><em>1 · 2 locais</em></li>
+                      <li data-n="3" data-s="12"><span>Sensível</span><em>3 · 12 locais</em></li>
+                      <li data-n="3" data-s="3" data-kv="ansikter"><span>Rostos</span><em>3 · 3 locais</em></li>
+                    </ul>
+                  </div>
+                  <div class="kv-bunn">
+                    <p><b data-kv="skjules">292</b> ocultar <b data-kv="faarstaa">1</b> deixar</p>
+                    <p class="kv-bunn-knapper">
+                      <span class="kv-btn hvit oransje" data-kv="ubtn"><i></i>Pendente 2</span>
+                      <span class="kv-btn stor" data-kv="lag">Criar 10 cópias</span>
+                    </p>
+                  </div>
+                </aside>
+              </div>
+
+              <!-- Tekstverktøy: et ark å skrive eller lime inn på -->
+              <div class="kv-scene kv-s-tekst">
+                <div class="kv-rt-linje">
+                  <span class="kv-rt-tilbake">‹ Ecrã inicial</span>
+                  <span class="kv-faner"><span class="på" data-kv="fanerens"><i>1</i>Ocultar no texto</span><span data-kv="fanetb"><i>2</i>Restaurar o texto</span></span>
+                  <span class="kv-faner kv-rt-visning"><span class="på" data-kv="rtorig">Original</span><span data-kv="rtrenset">Limpo</span></span>
+                  <span class="kv-btn" data-kv="rtkopier">Copiar</span>
+                </div>
+                <div class="kv-rt-kropp">
+                  <div class="kv-rt-ark" data-kv="rtark"><p data-kv="rttekst"></p><i class="kv-markor"></i><p class="kv-rt-svar" data-kv="rtsvar"></p></div>
+                  <aside class="kv-rt-liste">
+                    <h5 data-kv="rtlistetittel">Fica oculto</h5>
+                    <ul data-kv="rtliste"></ul>
+                    <p class="kv-rt-merke">É lido neste computador. Nada é enviado.</p>
+                  </aside>
+                </div>
+                <p class="kv-toast" data-kv="toast">Copiado</p>
+              </div>
+
+              <!-- Skrivebordet: Finder med høyreklikk › Hurtighandlinger › Rens med Klart -->
+              <div class="kv-scene kv-s-finder kv-skrivebord">
+                <div class="kv-finder">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><span class="kv-pil">‹ ›</span><b>Documentos</b></div>
+                  <div class="kv-finder-kropp">
+                    <ul class="kv-sidefelt">
+                      <li class="kv-sf-h">Favoritos</li>
+                      <li>Secretária</li>
+                      <li class="på">Documentos</li>
+                      <li>Transferências</li>
+                      <li class="kv-sf-h">Localizações</li>
+                      <li>iCloud Drive</li>
+                    </ul>
+                    <div class="kv-ikoner">
+                      <span class="kv-mappe" data-kv="fmappe"><i></i>Processos</span>
+                      <span class="kv-mappe"><i></i>Pedidos de acesso março</span>
+                      <span class="kv-mappe"><i></i>Contabilidade 2025</span>
+                      <span class="kv-dokikon"><i>PDF</i>contrato-acme.pdf</span>
+                      <span class="kv-dokikon w"><i>W</i>Ata 10.11.docx</span>
+                      <span class="kv-mappe ny" data-kv="fny"><i></i>Processos-limpo</span>
+                    </div>
+                  </div>
+                  <ul class="kv-meny" data-kv="meny">
+                    <li>Abrir</li>
+                    <li>Abrir num novo separador</li>
+                    <li class="kv-skille"></li>
+                    <li>Mover para o Lixo</li>
+                    <li class="kv-skille"></li>
+                    <li>Obter informações</li>
+                    <li>Mudar o nome</li>
+                    <li>Comprimir «Processos»</li>
+                    <li>Duplicar</li>
+                    <li class="kv-skille"></li>
+                    <li>Copiar</li>
+                    <li>Partilhar…</li>
+                    <li class="kv-skille"></li>
+                    <li class="kv-under" data-kv="hurtig">Ações rápidas<span>›</span></li>
+                    <li class="kv-under">Serviços<span>›</span></li>
+                  </ul>
+                  <ul class="kv-meny kv-undermeny" data-kv="undermeny">
+                    <li data-kv="rensmed">Ocultar com o Claríssimo</li>
+                    <li>Restaurar com o Claríssimo</li>
+                    <li class="kv-skille"></li>
+                    <li>Personalizar…</li>
+                  </ul>
+                </div>
+                <div class="kv-varsel" data-kv="varsel">
+                  <img src="/clarissimo/clarissimo-ikon.png" alt="" />
+                  <p><b data-kv="vtittel">A ocultar «Processos»…</b><span data-kv="vtekst">As cópias são guardadas ao lado. Recebe um aviso quando estiverem prontas.</span></p>
+                  <small>agora</small>
+                </div>
+              </div>
+
+              <!-- Skrivebordet: et KI-verktøy som bare får kodene -->
+              <div class="kv-scene kv-s-ki kv-skrivebord">
+                <div class="kv-ki">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><b>Assistente de IA</b></div>
+                  <div class="kv-ki-samtale">
+                    <div class="kv-ki-bruker" data-kv="kibruker">
+                      <p>Escreve uma resposta curta a esta mensagem:</p>
+                      <p class="kv-ki-sitat">Olá! Pode ligar hoje a <code>[Pessoa 6311794]</code> para o <code>[Telefone 6289990]</code>? Mudou-se para <code>[Morada 8950779]</code> e o vencimento deve agora ir para a conta <code>[IBAN 7719741]</code>.</p>
+                    </div>
+                    <div class="kv-ki-svar" data-kv="kisvar"><p data-kv="kisvartekst"></p><span class="kv-ki-kopier" data-kv="kikopier">Copiar a resposta</span></div>
+                  </div>
+                  <div class="kv-ki-felt" data-kv="kifelt"><span>Escreve uma mensagem…</span><i>↑</i></div>
+                </div>
+                <p class="kv-ki-merke">A IA só recebe os códigos. O nome, o telefone, a morada e a conta ficam no computador.</p>
+              </div>
+
+              <!-- «Før skanningen»: over startskjermen, når mappen er valgt -->
+              <div class="kv-slor kv-s-forvalg">
+                <div class="kv-modal">
+                  <h4>Processos</h4>
+                  <p class="kv-modal-under">10 ficheiros · docx, eml, jpg, md, pdf, pptx, xlsx</p>
+                  <div class="kv-maate">
+                    <p class="på"><i></i><span><b>Com análise</b>O Claríssimo lê os ficheiros e marca o que encontra. O utilizador revê tudo e decide.</span></p>
+                    <p><i></i><span><b>Sem análise</b>Nada é marcado de antemão. O utilizador clica no que quer ocultar.</span></p>
+                  </div>
+                  <p class="kv-sammen"><span><small>A análise procura e oculta</small>Nomes, números de identificação, telefone e e-mail, sensível, matrículas, contas, rostos e mais 5</span><em>Alterar</em></p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Cancelar</span>
+                    <span class="kv-btn stor" data-kv="skann">Analisar <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- «Før kopiene lages»: formen kopiene får -->
+              <div class="kv-slor kv-s-kopivalg">
+                <div class="kv-modal kv-kopivalg">
+                  <h4>Antes de criar as cópias</h4>
+                  <p class="kv-modal-under">10 ficheiros · as cópias vão para Processos-limpo</p>
+                  <div class="kv-maate kv-former" data-kv="former">
+                    <p class="på" data-form="kort"><i></i><span><b>Código curto e lista de códigos</b>Fácil de ler. Pode ser restaurada com a chave do seu escritório.<code>[Pessoa 4814887] + lista</code></span></p>
+                    <p data-form="full"><i></i><span><b>Código completo no texto</b>Sem lista. Pode ser restaurada, mas custa a ler.</span></p>
+                    <p data-form="lapp"><i></i><span><b>Só etiquetas</b>Fácil de ler, mas não pode ser restaurada.</span></p>
+                    <p data-form="svart"><i></i><span><b>Riscado a preto (PDF)</b>O que lá estava desaparece para sempre.<code class="kv-svartprove"></code></span></p>
+                  </div>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Cancelar</span>
+                    <span class="kv-btn stor" data-kv="lagnaa">Criar 10 cópias <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Kopiene er laget -->
+              <div class="kv-slor kv-s-ferdig">
+                <div class="kv-ferdig">
+                  <p class="kv-stor">Concluído.</p>
+                  <p>Foram criadas 10 cópias. Os originais não foram alterados. Leia as cópias antes de as partilhar.</p>
+                  <p class="kv-sti"><span>Documentos/</span>Processos-limpo/</p>
+                  <p class="kv-liten">A lista de códigos está no fim de cada cópia.</p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit">Voltar à pasta</span>
+                    <span class="kv-btn">Abrir as cópias</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+          <span class="kv-peker" aria-hidden="true"></span>
+          <!-- Kapitlene: hopper i avspillingen. Det som spilles nå, er markert. -->
+          <ol class="kv-kapitler" data-kv="kapitler" aria-label="Capítulos da demonstração">
+            <li><button type="button" data-kapittel="0">Ocultar uma pasta</button></li>
+            <li><button type="button" data-kapittel="1">Rever</button></li>
+            <li><button type="button" data-kapittel="2">As cópias</button></li>
+            <li><button type="button" data-kapittel="3">Clique direito no Finder</button></li>
+            <li><button type="button" data-kapittel="4">Ocultar e restaurar texto</button></li>
+          </ol>
+          <!-- Lesingen spilles av mye raskere enn den går på en vanlig maskin. Det skal stå. -->
+          <p class="kv-spol" aria-hidden="true">
+            <svg viewBox="0 0 20 12"><path d="M1 1l8 5-8 5zM10 1l8 5-8 5z" /></svg>
+            <span>Acelerado. O tempo de leitura varia de computador para computador. Num portátil comum é mais lento.</span>
+          </p>
+          <figcaption class="skjult-tekst">
+            Assim trabalha o Claríssimo. Escolha uma pasta e o Claríssimo lê os ficheiros, também PDF,
+            e-mail, folhas de cálculo, PowerPoint e imagens, e marca nomes, números de NIF, contactos,
+            moradas, números de conta, dados sensíveis, matrículas e rostos, que são pixelizados.
+            Onde o Claríssimo tem dúvidas, o utilizador revê e decide: ocultar ou
+            deixar. As cópias podem ter códigos curtos com lista de códigos, códigos completos, só etiquetas
+            ou riscado a preto, e os originais não são alterados. No Finder, pode ocultar
+            uma pasta com o botão direito › Ações rápidas › Ocultar com o Claríssimo. Um texto
+            com códigos pode ser dado a uma ferramenta de IA, e a resposta é restaurada no Claríssimo,
+            de modo que os nomes voltam sem que a IA os tenha visto. A leitura
+            está acelerada: o tempo varia de computador para computador.
+          </figcaption>
+        </figure>
+    <script src="forhandsvisning.js"></script>
+    <script src="programvindu.js"></script>
+  </body>
+</html>

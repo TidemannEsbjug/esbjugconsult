@@ -1,0 +1,383 @@
+<!doctype html>
+<!-- Programvinduet fra /klart alene (eieren 12.11.2026), til heroen på forsiden (esbjugconsult.com/), der det står i en iframe.
+     Kopiert fra GDPR/index.html (figure.kv); endres vinduet der, kjør pv.py igjen eller kopier det over hit.
+     Samme stiler og skript som på /klart, pluss programvindu.css og programvindu.js (høyden til forsiden). -->
+<html lang="de-CH">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Glatscher – das Programmfenster</title>
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="forhandsvisning.css" />
+    <link rel="stylesheet" href="programvindu.css" />
+    <link rel="stylesheet" href="taal.css" />
+    <link rel="alternate" hreflang="de-CH" href="https://esbjugconsult.com/glatscher/programmfenster.html" />
+    <link rel="alternate" hreflang="fr-CH" href="https://esbjugconsult.com/glatscher/fr/apercu.html" />
+    <link rel="alternate" hreflang="it-CH" href="https://esbjugconsult.com/glatscher/it/finestra.html" />
+  </head>
+  <body class="programvindu">
+    <nav class="taal taal-fast" aria-label="Sprache / Langue / Lingua"><span aria-current="true">DE</span><span class="taal-streep" aria-hidden="true">|</span><a href="/glatscher/fr/apercu.html" hreflang="fr" lang="fr">FR</a><span class="taal-streep" aria-hidden="true">|</span><a href="/glatscher/it/finestra.html" hreflang="it" lang="it">IT</a></nav>
+        <figure class="kv avklart" data-scene="gjennom">
+          <div class="kv-ramme">
+          <div class="kv-app" aria-hidden="true">
+            <header class="kv-chrome">
+              <span class="kv-lys"><i></i><i></i><i></i></span>
+              <span class="kv-merke"><img src="/glatscher/glatscher-ikon.png" alt="" />Glatscher</span>
+              <span class="kv-sok"><svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.6" /><path d="M10.4 10.4L14 14" /></svg>In allen Dateien des Ordners suchen<kbd>⌘F</kbd></span>
+              <span class="kv-hoyre">
+                <span class="kv-lagret">✓ Auto-gespeichert</span>
+                <span class="kv-lysknapp">Scanoptionen</span>
+                <span class="kv-lysknapp" data-kv="hjem">Startbildschirm</span>
+                <span class="kv-lysknapp kv-sporsmal">?</span>
+              </span>
+            </header>
+
+            <div class="kv-flate">
+              <!-- Startskjermen: de tre verktøyene, og det som ble tilbakeført under dem -->
+              <div class="kv-scene kv-s-start">
+                <div class="kv-start-inn">
+                  <div class="kv-kortene">
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-rens.png" alt="" />
+                      <h4>Bereinigen</h4>
+                      <span class="kv-hvit" data-kv="velg">Ordner oder Dokumente wählen …</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-tilbakefor.png" alt="" />
+                      <h4>Zurückführen</h4>
+                      <span class="kv-hvit" data-kv="tbvelg">Kopien wählen …</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-tekst.png" alt="" />
+                      <h4>Textwerkzeug</h4>
+                      <span class="kv-hvit" data-kv="tekstvelg">Öffnen …</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Editoren: filene, dokumentet og registeret for mappen -->
+              <div class="kv-scene kv-s-editor">
+                <aside class="kv-filer">
+                  <div class="kv-filer-topp"><b>Mandantenakten</b><span>10 Dateien</span></div>
+                  <ul data-kv="filer">
+                    <li data-steder="30"><i class="kv-fikon w">W</i><span class="kv-fnavn">01-arbeitsvertrag-acme.docx</span><span class="kv-fmeta">30 Stellen</span><i class="kv-ring"></i></li>
+                    <li data-steder="41" data-uavklart="2" data-dok="vedtak" class="valgt"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">02-entscheid-beistandschaft.pdf</span><span class="kv-fmeta">41 Stellen</span><i class="kv-ring"></i></li>
+                    <li data-steder="45" data-ekstra="1 Kennzeichen" data-dok="epost"><i class="kv-fikon epost">@</i><span class="kv-fnavn">03-e-mail-verlauf.eml</span><span class="kv-fmeta">45 Stellen</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon tekst">T</i><span class="kv-fnavn">04-personalnotiz.md</span><span class="kv-fmeta">21 Stellen</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon w">W</i><span class="kv-fnavn">05-aerztliches-attest.docx</span><span class="kv-fmeta">21 Stellen</span><i class="kv-ring"></i></li>
+                    <li data-steder="16"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">06-rechnung-nordlicht.pdf</span><span class="kv-fmeta">16 Stellen</span><i class="kv-ring"></i></li>
+                    <li data-steder="82" data-dok="liste"><i class="kv-fikon x">X</i><span class="kv-fnavn">08-mandantenliste.xlsx</span><span class="kv-fmeta">82 Stellen</span><i class="kv-ring"></i></li>
+                    <li data-steder="43" data-ekstra="2 Gesichter" data-dok="ppt"><i class="kv-fikon p">P</i><span class="kv-fnavn">09-statusbesprechung.pptx</span><span class="kv-fmeta">43 Stellen · 2 Gesichter</span><i class="kv-ring"></i></li>
+                    <li data-steder="18"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">11-gescannte-anlage.pdf</span><span class="kv-fmeta">18 Stellen</span><i class="kv-ring"></i></li>
+                    <li data-steder="3" data-ekstra="1 Gesicht"><i class="kv-fikon bilde">JPG</i><span class="kv-fnavn">16-zugangsausweis.jpg</span><span class="kv-fmeta">3 Stellen · 1 Gesicht</span><i class="kv-ring"></i></li>
+                  </ul>
+                </aside>
+
+                <div class="kv-midt">
+                  <div class="kv-docket">
+                    <b data-kv="docnavn">02-entscheid-beistandschaft.pdf</b><span class="kv-type" data-kv="doctype">PDF</span>
+                    <span class="kv-kopimerke" data-kv="kopimerke">Kopie · Codeliste am Ende</span>
+                    <span class="kv-verktoy">
+                      <span class="kv-zoom">− &nbsp;86 %&nbsp; +</span>
+                      <span class="kv-hvit" data-kv="vis">Kopie zeigen</span>
+                    </span>
+                  </div>
+                  <div class="kv-bord">
+                    <div class="kv-pille" data-kv="pille"><i></i>Liest <b data-kv="leser">01-arbeitsvertrag-acme.docx</b><span data-kv="nr">1 von 10</span></div>
+
+                    <!-- PDF: vedtak om vergemål -->
+                    <article class="kv-side vist" data-dok="vedtak">
+                      <i class="kv-lesehode"></i>
+                      <p class="kv-avsender">Entscheid</p>
+                      <h4>Entscheid über die Errichtung einer Beistandschaft</h4>
+                      <p class="kv-ref">Aktenzeichen <mark class="s"><span class="o">2026-0113</span><span class="k">[Aktenzeichen 4906498]</span></mark> · 14.03.2026</p>
+                      <h5>Betroffene</h5>
+                      <dl>
+                        <dt>Name</dt><dd><mark class="s"><span class="o">Karin Neumann</span><span class="k">[Person 6311794]</span></mark></dd>
+                        <dt>AHV-Nummer</dt><dd><mark class="s"><span class="o">756.5260.1815.91</span><span class="k">[AHV-Nummer 2215087]</span></mark></dd>
+                        <dt>Adresse</dt><dd><mark class="s"><span class="o">Lindenstrasse 27, 3011 Bern</span><span class="k">[Adresse 8950779]</span></mark></dd>
+                      </dl>
+                      <h5>Beistand</h5>
+                      <dl>
+                        <dt>Name</dt><dd><mark class="s"><span class="o">Lukas Hansen</span><span class="k">[Person 2656447]</span></mark>, <mark class="b" data-kv="arbeid"><span class="o">Kanzlei Nordlicht AG</span><span class="k">[Organisation 5521093]</span></mark></dd>
+                        <dt>E-Mail</dt><dd><mark class="s"><span class="o">lukas.hansen@nordlicht.test</span><span class="k">[E-Mail 3278678]</span></mark></dd>
+                        <dt>Telefon</dt><dd><mark class="s"><span class="o">031 555 01 34</span><span class="k">[Telefon 6289990]</span></mark></dd>
+                      </dl>
+                      <h5>Gründe</h5>
+                      <p><mark class="s" data-kv="merknad"><span class="o">Die Betroffene ist seit Januar wegen einer Depression in stationärer Behandlung und braucht Hilfe bei ihren Finanzen.</span><span class="k">[Anmerkung 2760056]</span></mark> Die Beistandschaft umfasst die Verwaltung des Guthabens auf dem Konto <mark class="s"><span class="o">CH93 0076 2011 6238 5295 7</span><span class="k">[Kontonummer 7719741]</span></mark>.</p>
+                      <p>Der Entscheid wird mit der Eröffnung wirksam. Gegen ihn kann innert 30 Tagen Beschwerde erhoben werden.</p>
+                    </article>
+
+                    <!-- E-post -->
+                    <article class="kv-side kv-epost" data-dok="epost">
+                      <i class="kv-lesehode"></i>
+                      <dl class="kv-hode">
+                        <dt>Von</dt><dd><mark class="s"><span class="o">Sabine Jansen</span><span class="k">[Person 7320430]</span></mark> &lt;<mark class="s"><span class="o">sabine.jansen@nordlicht.test</span><span class="k">[E-Mail 5102284]</span></mark>&gt;</dd>
+                        <dt>An</dt><dd><mark class="s"><span class="o">Karin Neumann</span><span class="k">[Person 6311794]</span></mark></dd>
+                        <dt>Betreff</dt><dd><b>Nachgang zu unserem Gespräch</b></dd>
+                        <dt>Datum</dt><dd>12. März 2026, 09:14</dd>
+                      </dl>
+                      <p>Hallo <mark class="s"><span class="o">Karin</span><span class="k">[Person 6311794]</span></mark>,</p>
+                      <p>danke für das Gespräch gestern. Wie besprochen schicke ich dir eine Kopie des ärztlichen Attests. Du erreichst mich die ganze Woche unter <mark class="s"><span class="o">031 555 01 34</span><span class="k">[Telefon 6289990]</span></mark>.</p>
+                      <p>Der Firmenwagen mit dem Kennzeichen <mark class="s"><span class="o">K-NL 4821</span><span class="k">[Kennzeichen 3071552]</span></mark> steht ab Montag bereit. Das Bild hängt an.</p>
+                      <p>Viele Grüsse<br /><mark class="s"><span class="o">Sabine Jansen</span><span class="k">[Person 7320430]</span></mark><br />Nordlicht Service GmbH · <mark class="s"><span class="o">Seefeldstrasse 22, 8008 Zürich</span><span class="k">[Adresse 6113936]</span></mark></p>
+                      <figure class="kv-vedlegg">
+                        <span class="kv-bilramme"><img src="/alles-klar/assets/visning/bil.jpg" alt="" /><span class="kv-skilt" data-kv="skilt"><img src="/alles-klar/assets/visning/bil-skilt.png" alt="" /><em data-kv="skiltlapp">Kennzeichen · wird ausgeblendet</em></span></span>
+                        <figcaption>auto.jpg · 1,2 MB</figcaption>
+                      </figure>
+                    </article>
+
+                    <!-- Regneark -->
+                    <article class="kv-side kv-ark" data-dok="liste">
+                      <i class="kv-lesehode"></i>
+                      <table>
+                        <thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead>
+                        <tbody>
+                          <tr><th>1</th><td><b>Name</b></td><td><b>AHV-Nr.</b></td><td><b>Telefon</b></td><td><b>Kontonummer</b></td></tr>
+                          <tr><th>2</th><td><mark class="s"><span class="o">Jonas Berg</span><span class="k">[Person 1180342]</span></mark></td><td><mark class="s"><span class="o">756.0830.1661.38</span><span class="k">[AHV-Nummer 4402918]</span></mark></td><td><mark class="s"><span class="o">079 555 01 42</span><span class="k">[Telefon 2290174]</span></mark></td><td><mark class="s"><span class="o">0532 013 000</span><span class="k">[Konto 6630215]</span></mark></td></tr>
+                          <tr><th>3</th><td><mark class="s"><span class="o">Ingrid Lange</span><span class="k">[Person 5523107]</span></mark></td><td><mark class="s"><span class="o">756.1860.9139.07</span><span class="k">[AHV-Nummer 8817330]</span></mark></td><td><mark class="s"><span class="o">076 555 01 78</span><span class="k">[Telefon 1047782]</span></mark></td><td><mark class="s"><span class="o">1020 304 050</span><span class="k">[Konto 3359810]</span></mark></td></tr>
+                          <tr><th>4</th><td><mark class="s"><span class="o">Ahmed Hassan</span><span class="k">[Person 9918066]</span></mark></td><td><mark class="s"><span class="o">756.9960.3082.41</span><span class="k">[AHV-Nummer 2265419]</span></mark></td><td><mark class="s"><span class="o">078 555 01 11</span><span class="k">[Telefon 7714203]</span></mark></td><td><mark class="s"><span class="o">0648 489 890</span><span class="k">[Konto 9046631]</span></mark></td></tr>
+                          <tr><th>5</th><td><mark class="s"><span class="o">Marie Schubert</span><span class="k">[Person 3301459]</span></mark></td><td><mark class="s"><span class="o">756.6281.9482.17</span><span class="k">[AHV-Nummer 6158820]</span></mark></td><td><mark class="s"><span class="o">077 555 01 66</span><span class="k">[Telefon 4420987]</span></mark></td><td><mark class="s"><span class="o">2270 815 420</span><span class="k">[Konto 1872264]</span></mark></td></tr>
+                          <tr><th>6</th><td><mark class="s"><span class="o">Jan Vogt</span><span class="k">[Person 8045126]</span></mark></td><td><mark class="s"><span class="o">756.9935.1819.09</span><span class="k">[AHV-Nummer 5590743]</span></mark></td><td><mark class="s"><span class="o">079 555 01 27</span><span class="k">[Telefon 3368201]</span></mark></td><td><mark class="s"><span class="o">0417 730 196</span><span class="k">[Konto 7701358]</span></mark></td></tr>
+                          <tr><th>7</th><td></td><td></td><td></td><td></td></tr>
+                          <tr><th>8</th><td></td><td></td><td></td><td></td></tr>
+                        </tbody>
+                      </table>
+                    </article>
+
+                    <!-- PowerPoint: lysbildet fra fellesturen, med to ansikter -->
+                    <article class="kv-side kv-ppt" data-dok="ppt">
+                      <i class="kv-lesehode"></i>
+                      <div class="kv-lysbilde">
+                        <p class="kv-lb-tittel">Betriebsausflug im Februar</p>
+                        <p class="kv-lb-under">Danke an <mark class="s"><span class="o">Hanna Lang</span><span class="k">[Person 3390415]</span></mark> und <mark class="s"><span class="o">Peter Strand</span><span class="k">[Person 8812706]</span></mark> für die Planung!</p>
+                        <div class="kv-lb-foto">
+                          <img src="/alles-klar/assets/visning/fagtur.jpg" alt="" />
+                          <span class="kv-ansikt a1" data-kv="ansikt1"><img src="/alles-klar/assets/visning/fagtur-ansikt-1.jpg" alt="" /><em>Gesicht · wird verpixelt</em></span>
+                          <span class="kv-ansikt a2" data-kv="ansikt2"><img src="/alles-klar/assets/visning/fagtur-ansikt-2.jpg" alt="" /><em>Gesicht · wird verpixelt</em></span>
+                        </div>
+                        <p class="kv-lb-bunn">Statusbesprechung · Folie 4 von 12</p>
+                      </div>
+                    </article>
+
+                    <div class="kv-gjennom" data-kv="gjennom">
+                      <i class="kv-gjennom-strek" data-kv="gstrek"></i>
+                      <p class="kv-gjennom-topp"><code data-kv="gkode">Anmerkung 2760056</code><b>Ungeklärt</b><span data-kv="gnr">1 von 2</span></p>
+                      <p class="kv-gjennom-hvorfor" data-kv="ghvorfor">Glatscher ist unsicher, ob dies zur Kategorie „Anmerkung“ gehört. · 02-entscheid-beistandschaft.pdf</p>
+                      <p class="kv-gjennom-knapper">
+                        <span class="kv-btn" data-kv="skjul">Ausblenden <kbd>↵</kbd></span>
+                        <span class="kv-btn hvit" data-kv="lastaa">Stehen lassen <kbd>B</kbd></span>
+                        <span class="kv-btn hvit av">Zurück <kbd>←</kbd></span>
+                        <span class="kv-btn hvit">Weiter <kbd>→</kbd></span>
+                        <span class="kv-btn hvit">Beenden <kbd>Esc</kbd></span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <aside class="kv-panel">
+                  <div class="kv-uavklart" data-kv="uavklart">
+                    <h5><svg viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" rx="2" /><path d="M6 2.5v11" /></svg>Ungeklärt</h5>
+                    <div class="kv-uboks">
+                      <p data-kv="u1"><code>Anmerkung 2760056</code><span>Die Betroffene ist seit Januar …</span><em>1 ungeklärt</em></p>
+                      <p data-kv="u2"><code>Organisation 5521093</code><span>Kanzlei Nordlicht AG</span><em>1 ungeklärt</em></p>
+                      <span class="kv-btn bred" data-kv="gaa">Alle 2 durchgehen <kbd>G</kbd></span>
+                    </div>
+                  </div>
+                  <div class="kv-imappen">
+                    <h5>Im Ordner <span><b data-kv="opplysninger">67</b> Angaben</span></h5>
+                    <ul data-kv="register">
+                      <li data-n="19" data-s="114"><span>Personen</span><em>19 · 114 Stellen</em></li>
+                      <li data-n="7" data-s="24"><span>AHV-Nummern</span><em>7 · 24 Stellen</em></li>
+                      <li data-n="12" data-s="43"><span>Telefon</span><em>12 · 43 Stellen</em></li>
+                      <li data-n="15" data-s="53"><span>E-Mail</span><em>15 · 53 Stellen</em></li>
+                      <li data-n="7" data-s="29"><span>Adressen</span><em>7 · 29 Stellen</em></li>
+                      <li data-n="6" data-s="13"><span>Kontonummern</span><em>6 · 13 Stellen</em></li>
+                      <li data-n="1" data-s="2"><span>Kennzeichen</span><em>1 · 2 Stellen</em></li>
+                      <li data-n="3" data-s="12"><span>Sensibel</span><em>3 · 12 Stellen</em></li>
+                      <li data-n="3" data-s="3" data-kv="ansikter"><span>Gesichter</span><em>3 · 3 Stellen</em></li>
+                    </ul>
+                  </div>
+                  <div class="kv-bunn">
+                    <p><b data-kv="skjules">292</b> ausblenden <b data-kv="faarstaa">1</b> stehen lassen</p>
+                    <p class="kv-bunn-knapper">
+                      <span class="kv-btn hvit oransje" data-kv="ubtn"><i></i>Ungeklärt 2</span>
+                      <span class="kv-btn stor" data-kv="lag">10 Kopien erstellen</span>
+                    </p>
+                  </div>
+                </aside>
+              </div>
+
+              <!-- Tekstverktøy: et ark å skrive eller lime inn på -->
+              <div class="kv-scene kv-s-tekst">
+                <div class="kv-rt-linje">
+                  <span class="kv-rt-tilbake">‹ Startbildschirm</span>
+                  <span class="kv-faner"><span class="på" data-kv="fanerens"><i>1</i>Text bereinigen</span><span data-kv="fanetb"><i>2</i>Text zurückführen</span></span>
+                  <span class="kv-faner kv-rt-visning"><span class="på" data-kv="rtorig">Original</span><span data-kv="rtrenset">Bereinigt</span></span>
+                  <span class="kv-btn" data-kv="rtkopier">Kopieren</span>
+                </div>
+                <div class="kv-rt-kropp">
+                  <div class="kv-rt-ark" data-kv="rtark"><p data-kv="rttekst"></p><i class="kv-markor"></i><p class="kv-rt-svar" data-kv="rtsvar"></p></div>
+                  <aside class="kv-rt-liste">
+                    <h5 data-kv="rtlistetittel">Wird ausgeblendet</h5>
+                    <ul data-kv="rtliste"></ul>
+                    <p class="kv-rt-merke">Wird auf diesem Rechner gelesen. Nichts wird gesendet.</p>
+                  </aside>
+                </div>
+                <p class="kv-toast" data-kv="toast">Kopiert</p>
+              </div>
+
+              <!-- Skrivebordet: Finder med høyreklikk › Hurtighandlinger › Rens med Klart -->
+              <div class="kv-scene kv-s-finder kv-skrivebord">
+                <div class="kv-finder">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><span class="kv-pil">‹ ›</span><b>Dokumente</b></div>
+                  <div class="kv-finder-kropp">
+                    <ul class="kv-sidefelt">
+                      <li class="kv-sf-h">Favoriten</li>
+                      <li>Schreibtisch</li>
+                      <li class="på">Dokumente</li>
+                      <li>Downloads</li>
+                      <li class="kv-sf-h">Orte</li>
+                      <li>iCloud Drive</li>
+                    </ul>
+                    <div class="kv-ikoner">
+                      <span class="kv-mappe" data-kv="fmappe"><i></i>Mandantenakten</span>
+                      <span class="kv-mappe"><i></i>Auskunft März</span>
+                      <span class="kv-mappe"><i></i>Buchhaltung 2025</span>
+                      <span class="kv-dokikon"><i>PDF</i>vertrag-acme.pdf</span>
+                      <span class="kv-dokikon w"><i>W</i>Protokoll 10.11.docx</span>
+                      <span class="kv-mappe ny" data-kv="fny"><i></i>Mandantenakten-klar</span>
+                    </div>
+                  </div>
+                  <ul class="kv-meny" data-kv="meny">
+                    <li>Öffnen</li>
+                    <li>In neuem Tab öffnen</li>
+                    <li class="kv-skille"></li>
+                    <li>In den Papierkorb legen</li>
+                    <li class="kv-skille"></li>
+                    <li>Informationen</li>
+                    <li>Umbenennen</li>
+                    <li>„Mandantenakten“ komprimieren</li>
+                    <li>Duplizieren</li>
+                    <li class="kv-skille"></li>
+                    <li>Kopieren</li>
+                    <li>Teilen …</li>
+                    <li class="kv-skille"></li>
+                    <li class="kv-under" data-kv="hurtig">Schnellaktionen<span>›</span></li>
+                    <li class="kv-under">Dienste<span>›</span></li>
+                  </ul>
+                  <ul class="kv-meny kv-undermeny" data-kv="undermeny">
+                    <li data-kv="rensmed">Mit Glatscher bereinigen</li>
+                    <li>Mit Glatscher zurückführen</li>
+                    <li class="kv-skille"></li>
+                    <li>Anpassen …</li>
+                  </ul>
+                </div>
+                <div class="kv-varsel" data-kv="varsel">
+                  <img src="/glatscher/glatscher-ikon.png" alt="" />
+                  <p><b data-kv="vtittel">„Mandantenakten“ wird bereinigt …</b><span data-kv="vtekst">Die Kopien werden daneben abgelegt. Sie erhalten eine Mitteilung, wenn sie fertig sind.</span></p>
+                  <small>jetzt</small>
+                </div>
+              </div>
+
+              <!-- Skrivebordet: et KI-verktøy som bare får kodene -->
+              <div class="kv-scene kv-s-ki kv-skrivebord">
+                <div class="kv-ki">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><b>KI-Assistent</b></div>
+                  <div class="kv-ki-samtale">
+                    <div class="kv-ki-bruker" data-kv="kibruker">
+                      <p>Schreibe eine kurze Antwort auf diese Nachricht:</p>
+                      <p class="kv-ki-sitat">Hallo! Können Sie heute <code>[Person 6311794]</code> unter <code>[Telefon 6289990]</code> anrufen? Sie ist in die <code>[Adresse 8950779]</code> umgezogen, und ihr Gehalt soll jetzt auf das Konto <code>[Kontonummer 7719741]</code> gehen.</p>
+                    </div>
+                    <div class="kv-ki-svar" data-kv="kisvar"><p data-kv="kisvartekst"></p><span class="kv-ki-kopier" data-kv="kikopier">Antwort kopieren</span></div>
+                  </div>
+                  <div class="kv-ki-felt" data-kv="kifelt"><span>Nachricht schreiben …</span><i>↑</i></div>
+                </div>
+                <p class="kv-ki-merke">Die KI erhält nur die Codes. Name, Telefon, Adresse und Konto bleiben auf dem Rechner.</p>
+              </div>
+
+              <!-- «Før skanningen»: over startskjermen, når mappen er valgt -->
+              <div class="kv-slor kv-s-forvalg">
+                <div class="kv-modal">
+                  <h4>Mandantenakten</h4>
+                  <p class="kv-modal-under">10 Dateien · docx, eml, jpg, md, pdf, pptx, xlsx</p>
+                  <div class="kv-maate">
+                    <p class="på"><i></i><span><b>Mit Scan</b>Glatscher liest die Dateien und markiert, was es findet. Sie gehen alles durch und entscheiden.</span></p>
+                    <p><i></i><span><b>Ohne Scan</b>Nichts wird vorab markiert. Sie klicken an, was ausgeblendet werden soll.</span></p>
+                  </div>
+                  <p class="kv-sammen"><span><small>Der Scan sucht und blendet aus</small>Namen, AHV-Nummer und Ausweise, Telefon und E-Mail, Sensibel, Kennzeichen, Konto, Gesichter und 5 weitere</span><em>Ändern</em></p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Abbrechen</span>
+                    <span class="kv-btn stor" data-kv="skann">Scannen <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- «Før kopiene lages»: formen kopiene får -->
+              <div class="kv-slor kv-s-kopivalg">
+                <div class="kv-modal kv-kopivalg">
+                  <h4>Bevor die Kopien erstellt werden</h4>
+                  <p class="kv-modal-under">10 Dateien · die Kopien kommen in Mandantenakten-klar</p>
+                  <div class="kv-maate kv-former" data-kv="former">
+                    <p class="på" data-form="kort"><i></i><span><b>Kurzer Code und Codeliste</b>Gut lesbar. Lässt sich mit dem Schlüssel Ihres Büros zurückführen.<code>[Person 4814887] + Liste</code></span></p>
+                    <p data-form="full"><i></i><span><b>Voller Code im Text</b>Keine Liste. Lässt sich zurückführen, ist aber schwer zu lesen.</span></p>
+                    <p data-form="lapp"><i></i><span><b>Nur Platzhalter</b>Gut lesbar, kann aber nicht zurückgeführt werden.</span></p>
+                    <p data-form="svart"><i></i><span><b>Schwärzung (PDF)</b>Was dort stand, ist endgültig weg.<code class="kv-svartprove"></code></span></p>
+                  </div>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Abbrechen</span>
+                    <span class="kv-btn stor" data-kv="lagnaa">10 Kopien erstellen <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Kopiene er laget -->
+              <div class="kv-slor kv-s-ferdig">
+                <div class="kv-ferdig">
+                  <p class="kv-stor">Alles klar.</p>
+                  <p>10 Kopien wurden erstellt. Die Originale bleiben unberührt. Lesen Sie die Kopien durch, bevor Sie sie weitergeben.</p>
+                  <p class="kv-sti"><span>Dokumente/</span>Mandantenakten-klar/</p>
+                  <p class="kv-liten">Die Codeliste steht am Ende jeder Kopie.</p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit">Zurück zum Ordner</span>
+                    <span class="kv-btn">Kopien öffnen</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+          <span class="kv-peker" aria-hidden="true"></span>
+          <!-- Kapitlene: hopper i avspillingen. Det som spilles nå, er markert. -->
+          <ol class="kv-kapitler" data-kv="kapitler" aria-label="Kapitel der Vorschau">
+            <li><button type="button" data-kapittel="0">Ordner bereinigen</button></li>
+            <li><button type="button" data-kapittel="1">Durchgehen</button></li>
+            <li><button type="button" data-kapittel="2">Die Kopien</button></li>
+            <li><button type="button" data-kapittel="3">Rechtsklick im Finder</button></li>
+            <li><button type="button" data-kapittel="4">Text bereinigen und zurückführen</button></li>
+          </ol>
+          <!-- Lesingen spilles av mye raskere enn den går på en vanlig maskin. Det skal stå. -->
+          <p class="kv-spol" aria-hidden="true">
+            <svg viewBox="0 0 20 12"><path d="M1 1l8 5-8 5zM10 1l8 5-8 5z" /></svg>
+            <span>Vorgespult. Wie lange das Lesen dauert, ist von Rechner zu Rechner verschieden. Auf einem gewöhnlichen Laptop geht es langsamer.</span>
+          </p>
+          <figcaption class="skjult-tekst">
+            So arbeitet Glatscher. Wählen Sie einen Ordner, und Glatscher liest die Dateien, auch PDF,
+            E-Mail, Tabellen, PowerPoint und Bilder, und markiert Namen, AHV-Nummern, Kontaktdaten,
+            Adressen, Kontonummern, sensible Angaben, Kennzeichen und Gesichter, die verpixelt werden.
+            Wobei Glatscher unsicher ist, gehen Sie selbst durch und entscheiden: ausblenden oder
+            stehen lassen. Die Kopien können kurze Codes mit Codeliste, volle Codes, nur Platzhalter
+            oder eine Schwärzung bekommen, und die Originale bleiben unberührt. Im Finder lässt sich
+            ein Ordner mit Rechtsklick › Schnellaktionen › Mit Glatscher bereinigen bereinigen. Text
+            mit Codes kann an ein KI-Werkzeug gegeben werden, und die Antwort wird in Glatscher
+            zurückgeführt, sodass die Namen zurückkommen, ohne dass die KI sie gesehen hat. Das Lesen
+            ist vorgespult: Wie lange es dauert, ist von Rechner zu Rechner verschieden.
+          </figcaption>
+        </figure>
+    <script src="forhandsvisning.js"></script>
+    <script src="programvindu.js"></script>
+  </body>
+</html>

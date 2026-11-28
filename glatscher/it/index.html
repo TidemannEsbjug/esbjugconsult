@@ -1,0 +1,1172 @@
+<!doctype html>
+<!--
+  Hei, du som leser kildekoden. Det var deg vi håpet på.
+
+  Klart lover at dokumentene aldri forlater maskinen. Et sånt løfte skal ikke
+  tas på ordet, så sjekk det:
+
+  - Programmet: /glatscher/it/per-l-informatica har kommandoene som viser hva det snakker med.
+  - Denne siden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
+    uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
+  - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
+    Vi vil heller høre det fra deg enn fra en kunde.
+-->
+<html lang="it-CH">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/glatscher/favicon.png" />
+    <title>Glatscher - oscura i dati personali nei documenti, in locale sul Suo computer</title>
+    <meta
+      name="description"
+      content="Glatscher è un programma per Mac, Windows e Linux sviluppato in Norvegia: un'IA locale oscura i dati personali in un'intera cartella di file Word, Excel, PowerPoint, PDF ed e-mail, in italiano, francese e tedesco. Per domande secondo la legge sulla trasparenza, richieste d'accesso, condivisione, archivio, formazione o strumenti di IA, senza Internet e senza account."
+    />
+    <!-- Himmelen øverst i heroen; forside.js bytter til sidens lyse farge når man har blat forbi. -->
+    <meta name="theme-color" content="#6593c3" />
+    <meta
+      property="og:title"
+      content="Glatscher - oscura i dati personali nei documenti, in locale sul Suo computer"
+    />
+    <meta
+      property="og:description"
+      content="Programma per Mac, Windows e Linux sviluppato in Norvegia. Un'IA locale legge Word, Excel, PowerPoint, PDF, e-mail e testo, trova i dati personali in documenti svizzeri e crea una copia oscurata che Lei verifica. Nulla lascia il computer."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="it_CH" />
+    <meta property="og:url" content="https://esbjugconsult.com/glatscher/it/" />
+    <!-- Delingsbildet (Snapchat, iMessage, Facebook): krystallen på vinterbildet, 1200 × 630. Felles med Alles Klar. -->
+    <meta property="og:image" content="https://esbjugconsult.com/alles-klar/assets/klart-deling.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Glatscher: il cristallo d'argento su un paesaggio invernale con una pista da sci" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://esbjugconsult.com/alles-klar/assets/klart-deling.jpg" />
+    <link rel="apple-touch-icon" href="/glatscher/glatscher-ikon.png" />
+    <!-- Ikke indekser før nedlastingene er på plass. Fjern når Klart lanseres. -->
+    <meta name="robots" content="noindex" />
+    <!-- Fontene ligger på siden selv. Henter vi dem fra Google, får Google
+         IP-adressen til hver besøkende - ikke noe en GDPR-side skal gjøre. -->
+    <link rel="stylesheet" href="/glatscher/fonts.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="videre.css" />
+    <link rel="stylesheet" href="de.css" />
+    <link rel="stylesheet" href="/glatscher/taal.css" />
+    <link rel="alternate" hreflang="de-CH" href="https://esbjugconsult.com/glatscher/" />
+    <link rel="alternate" hreflang="fr-CH" href="https://esbjugconsult.com/glatscher/fr/" />
+    <link rel="alternate" hreflang="it-CH" href="https://esbjugconsult.com/glatscher/it/" />
+    <link rel="stylesheet" href="/spiller/spiller.css" />
+    <link rel="stylesheet" href="/glatscher/film/film.css" />
+  </head>
+  <body>
+    <!-- Scelta della lingua: il programma chiede tedesco, francese o italiano al primo avvio; il sito anche (taal.css). -->
+    <nav class="taal taal-fast" aria-label="Lingua / Sprache / Langue"><a href="/glatscher/" hreflang="de" lang="de">DE</a><span class="taal-streep" aria-hidden="true">|</span><a href="/glatscher/fr/" hreflang="fr" lang="fr">FR</a><span class="taal-streep" aria-hidden="true">|</span><span aria-current="true">IT</span></nav>
+    <!-- Filtype-ikoner: dokumentark bak, appflis foran. -->
+    <svg class="ikonark" width="0" height="0" aria-hidden="true">
+      <defs>
+        <g id="page">
+          <rect
+            x="16"
+            y="2"
+            width="26"
+            height="32"
+            rx="3.5"
+            fill="#fff"
+            stroke="#dcdfda"
+            stroke-width="1.3"
+          />
+          <g fill="#e4e7e2">
+            <rect x="26" y="9" width="12" height="2.4" rx="1.2" />
+            <rect x="26" y="15" width="12" height="2.4" rx="1.2" />
+          </g>
+        </g>
+
+        <symbol id="i-word" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#185abd" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">W</text>
+        </symbol>
+
+        <symbol id="i-excel" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#107c41" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">X</text>
+        </symbol>
+
+        <symbol id="i-ppt" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#c43e1c" />
+          <text x="17.5" y="33" text-anchor="middle" font-size="19">P</text>
+        </symbol>
+
+        <symbol id="i-pdf" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#c8322b" />
+          <text x="17.5" y="31" text-anchor="middle" font-size="11">PDF</text>
+        </symbol>
+
+        <symbol id="i-mail" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#0f6cbd" />
+          <rect
+            x="8.5"
+            y="20"
+            width="18"
+            height="13.5"
+            rx="1.8"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2.1"
+          />
+          <path
+            d="M9.2 21.2l8.3 6.4 8.3-6.4"
+            fill="none"
+            stroke="#fff"
+            stroke-width="2.1"
+          />
+        </symbol>
+
+        <symbol id="i-bilde" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#7a4fd6" />
+          <circle cx="23" cy="20" r="3" fill="#fff" />
+          <path d="M7.5 36l7.5-10 5.5 6.5 3.5-4 6.5 7.5z" fill="#fff" />
+        </symbol>
+
+        <symbol id="i-text" viewBox="0 0 44 44">
+          <use href="#page" />
+          <rect x="2" y="11" width="31" height="31" rx="7.5" fill="#5b6569" />
+          <g fill="#fff">
+            <rect x="9" y="19.5" width="17" height="2.4" rx="1.2" />
+            <rect x="9" y="25.3" width="17" height="2.4" rx="1.2" />
+            <rect x="9" y="31.1" width="10" height="2.4" rx="1.2" />
+          </g>
+        </symbol>
+
+        <!-- Mac Studio for skreddersydd oppsett. Ligger her én
+             gang, så de to nedlastingsfeltene kan bruke den uten like id-er. -->
+        <linearGradient id="mac-front" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f3f5f8" />
+          <stop offset="0.55" stop-color="#e1e6ec" />
+          <stop offset="1" stop-color="#c4cbd4" />
+        </linearGradient>
+        <linearGradient id="mac-kant" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#6d7783" stop-opacity="0.28" />
+          <stop offset="0.08" stop-color="#6d7783" stop-opacity="0" />
+          <stop offset="0.92" stop-color="#6d7783" stop-opacity="0" />
+          <stop offset="1" stop-color="#6d7783" stop-opacity="0.32" />
+        </linearGradient>
+        <linearGradient id="mac-topp" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#e9edf2" />
+          <stop offset="1" stop-color="#fbfcfd" />
+        </linearGradient>
+        <radialGradient id="mac-skygge" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="#050d1f" stop-opacity="0.45" />
+          <stop offset="1" stop-color="#050d1f" stop-opacity="0" />
+        </radialGradient>
+        <symbol id="mac-studio" viewBox="60 80 440 240">
+          <ellipse cx="280" cy="292" rx="236" ry="26" fill="url(#mac-skygge)" />
+          <rect x="122" y="262" width="316" height="24" rx="9" fill="#8d96a1" />
+          <rect x="128" y="276" width="304" height="6" rx="3" fill="#6e7782" />
+          <path d="M96 150 L128 104 Q134 96 146 96 L414 96 Q426 96 432 104 L464 150 Z" fill="url(#mac-topp)" stroke="#d3d9e1" stroke-width="1.2" />
+          <path d="M96 150 H464 V252 Q464 270 446 270 H114 Q96 270 96 252 Z" fill="url(#mac-front)" />
+          <path d="M96 150 H464 V252 Q464 270 446 270 H114 Q96 270 96 252 Z" fill="url(#mac-kant)" />
+          <path d="M96 150.5 H464" stroke="#ffffff" stroke-width="1.6" />
+          <g fill="#2b3139">
+            <rect x="128" y="200" width="22" height="8" rx="4" />
+            <rect x="162" y="200" width="22" height="8" rx="4" />
+            <rect x="386" y="202" width="42" height="4" rx="2" />
+          </g>
+          <circle cx="114" cy="254" r="2.4" fill="#ffffff" />
+          <circle cx="114" cy="254" r="5" fill="#ffffff" opacity="0.25" />
+        </symbol>
+      </defs>
+    </svg>
+
+    <!-- ================= Toppbar ================= -->
+    <header class="topbar">
+      <a class="wordmark" href="#top">
+        <b>Glatscher</b>
+        <span>v0.1.0</span>
+      </a>
+      <nav class="topnav">
+        <a href="#hva">Che cos'è Glatscher</a>
+        <a href="#kjernen">Come funziona</a>
+        <a href="#nokkel">La chiave</a>
+        <a href="#trygt">Sicurezza</a>
+        <a href="#dybde">Nel dettaglio</a>
+        <a href="#ansvar">Responsabilità</a>
+      </nav>
+      <!-- Mobil og nettbrett: e-post med lenken i stedet for «Last ned» (eieren 11.11.2026). -->
+      <a class="btn sm topp-send" href="mailto:?subject=Glatscher&amp;body=https%3A%2F%2Fesbjugconsult.com%2Fglatscher%2Fit%2F">Invia a me</a>
+      <nav class="taal" aria-label="Lingua / Sprache / Langue"><a href="/glatscher/" hreflang="de" lang="de">DE</a><span class="taal-streep" aria-hidden="true">|</span><a href="/glatscher/fr/" hreflang="fr" lang="fr">FR</a><span class="taal-streep" aria-hidden="true">|</span><span aria-current="true">IT</span></nav>
+    </header>
+
+    <main id="top">
+      <!-- ================= Hero ================= -->
+      <section class="hero" id="programmet">
+        <!-- Scenen: vinterbildet fra appen. Skisporet leder opp mot hytta,
+             teksten står i himmelen og knappene nede i snøen. -->
+        <div class="scene">
+          <img class="scene-bilde" src="/alles-klar/assets/hero-vinter.jpg" width="2400" height="1600" fetchpriority="high" alt="" aria-hidden="true" />
+          <!-- Øverst toner himmelen over i én farge, den samme som linjen øverst på telefonen (eieren 11.11.2026). -->
+          <div class="scene-himmel" aria-hidden="true"></div>
+          <!-- Snøen fra forsiden på esbjugconsult.com, bak «Klart» og kortet (forside.js). -->
+          <canvas class="scene-sno" aria-hidden="true"></canvas>
+          <!-- Fnuggene som faller over kortets glass, bak innholdet i kortet. -->
+          <canvas class="scene-sno-midt" aria-hidden="true"></canvas>
+          <!-- Snøen som legger seg på «Klart» og kortet, foran innholdet. -->
+          <canvas class="scene-sno-lag" aria-hidden="true"></canvas>
+          <!-- Lett snø på mobil og nettbrett, bak «Klart» og kortet (forside.js). -->
+          <canvas class="scene-sno-mobil" aria-hidden="true"></canvas>
+
+          <!-- All teksten samlet, nede i snøen. Himmelen, hytta og sporet står fritt over. -->
+          <div class="scene-tekst">
+            <h1 class="rise d-60 hero-logo">
+              <!-- Krystallen over ordet på mobil, som på nedtellingssiden (eieren 11.11.2026). -->
+              <img class="hero-ikon" src="/glatscher/glatscher-ikon.png" width="256" height="256" alt="" aria-hidden="true" />
+              <span class="logo-ord">Glatscher</span>
+            </h1>
+            <!-- Privatpersoner laster ned og bruker Klart gratis; de skal ikke gjennom noe felt.
+                 Virksomheter går gjennom knappen under: 30 dager, så lisens. -->
+            <div class="privat rise d-120">
+              <p class="privat-linje">
+                <span><b>Gratuito per i privati.</b></span>
+              </p>
+              <!-- Mobil og nettbrett: Klart kjører ikke der, så i stedet for nedlasting en e-post med lenken
+                   til seg selv eller andre (eieren 11.11.2026). Vises bare på berøringsskjermer (styles.css). -->
+              <div class="mobil-send">
+                <p class="mobil-send-tittel">Glatscher è un programma per computer.</p>
+                <p class="mobil-send-tekst">Si invii il link per e-mail. Il programma per Mac, Windows e Linux sarà disponibile a breve.</p>
+                <a class="btn" href="mailto:?subject=Glatscher&amp;body=https%3A%2F%2Fesbjugconsult.com%2Fglatscher%2Fit%2F">Invia a me</a>
+                <p class="mobil-send-andre">(O a qualcun altro?)</p>
+              </div>
+              <p class="privat-fin">Il programma per Windows, Mac e Linux sarà disponibile a breve.</p>
+              <p class="privat-fin">Nessuna registrazione, nessun vincolo.</p>
+              <p class="eller"><span>oppure</span></p>
+            </div>
+            <!-- Virksomheter: ingen registeroppslag. Prisene er skjult (eieren 27.11.2026). -->
+            <div class="orgport de-pris rise d-180">
+              <div>
+                <p class="virk-linje">
+                  <span>Per le organizzazioni: <b>30 giorni gratis</b>. Nessuna registrazione. Poi ordine con fattura.</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vis først, forklar etterpå: programvinduet rett under bildet, så filtypene,
+             og til slutt hva Klart er (boksen «om»). -->
+
+        <!-- Forklaringsvideoen der programvinduet sto (eieren 25.11.2026). Laget i GDPR Clean/video-forklaring, nettutgave fra bygg/nett.sh. -->
+        <figure class="film rise">
+          <div class="spl" data-kapitler="13.0,24.3,40.8,48.0,60.7,74.0,86.5,107.2,120.7,136.6" data-lengde="153.3">
+            <video preload="metadata" playsinline width="1920" height="1080" poster="/glatscher/film/forklaring-it.jpg"><source src="/glatscher/film/forklaring-it.mp4" type="video/mp4" /></video>
+          </div>
+        </figure>
+
+        <!-- Filtypene under programvinduet, over boksen. -->
+        <div class="formats rise">
+          <p>Legge i file con cui lavora già</p>
+          <ul>
+            <li>
+              <svg class="ficon"><use href="#i-word" /></svg>
+              <span class="fname">Word</span>
+              <span class="fext">.docx</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-excel" /></svg>
+              <span class="fname">Excel</span>
+              <span class="fext">.xlsx · .xls · .csv</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-ppt" /></svg>
+              <span class="fname">PowerPoint</span>
+              <span class="fext">.pptx</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-pdf" /></svg>
+              <span class="fname">PDF</span>
+              <span class="fext">.pdf</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-mail" /></svg>
+              <span class="fname">E-mail</span>
+              <span class="fext">.eml</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-bilde" /></svg>
+              <span class="fname">Immagini</span>
+              <span class="fext">.jpg · .png · .tiff</span>
+            </li>
+            <li>
+              <svg class="ficon"><use href="#i-text" /></svg>
+              <span class="fname">Testo</span>
+              <span class="fext">.txt · .md</span>
+            </li>
+          </ul>
+          <!-- Eierens tekst (GDPR/index.html, 20.11.2026), på italiensk. -->
+          <p class="formats-unik"><b>Una particolarità:</b> Glatscher copia i file nel formato in cui si trovano, così può continuare a lavorare con i documenti oscurati.</p>
+        </div>
+
+      </section>
+
+      <!-- =====================================================================
+           Resten av siden (videre.css og videre.js). Skrevet 11.11.2026 for
+           Klart slik programmet er nå: koder med faste numre, nøkkelen,
+           tilbakeføring, gjennomgangen, kopikontrollen og de fire kopiformene.
+           Ordene er appens egne (Glatscher, src/ui og src/ny i Klart-it).
+           ===================================================================== -->
+      <div class="videre">
+        <!-- ============ Hva Klart gir deg ============ -->
+        <section class="v-del v-hva" id="hva">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Condividere la pratica. Tenere per sé i nomi.</h2>
+            <p class="v-ingress">
+              Mandi documenti a una consulente, risponda a una richiesta di accesso o chieda aiuto a uno strumento di IA,
+              senza che i nomi escano. Oscurare è molto più rapido che a mano, pagina per pagina.
+            </p>
+          </div>
+          <ul class="v-tre-ord rise">
+            <li><b>Usare l'IA su pratiche vere.</b> Lo strumento vede codici al posto delle persone.</li>
+            <li><b>Dire sì alla condivisione.</b> Con il fiduciario, l'avvocata o un altro ente, in giornata.</li>
+            <li><b>Riavere i nomi quando vuole.</b> La chiave ce l'ha solo Lei.</li>
+          </ul>
+          <p class="v-hva-er rise">Glatscher è un programma sul Suo computer. I documenti non lo lasciano mai.</p>
+        </section>
+
+        <!-- ============ 1. Kjernen: navn blir koder ============ -->
+        <section class="v-del v-kjerne" id="kjernen">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">I nomi diventano codici.</h2>
+            <p class="v-ingress">
+              Glatscher crea una copia dei Suoi documenti. Nella copia c'è un codice dove prima c'erano un nome,
+              un numero AVS o un'altra informazione su una persona.
+            </p>
+          </div>
+
+          <!-- To ark fra samme mappe. Bryteren viser originalen eller kopien; den går av seg
+               selv til noen tar i den (videre.js). Uten JS står arkene som kopi. -->
+          <figure class="v-ark-scene rise" data-v-bytt data-vis="kopi">
+            <div class="v-bryter" role="group" aria-label="Mostra l'originale o la copia">
+              <button type="button" data-v-vis="original" aria-pressed="false">Originale</button>
+              <button type="button" data-v-vis="kopi" aria-pressed="true">Copia</button>
+            </div>
+            <div class="v-ark-par" aria-hidden="true">
+              <article class="v-ark v-ark-a">
+                <header class="v-ark-topp">
+                  <svg class="v-ark-ikon"><use href="#i-pdf" /></svg>
+                  <span>decisione-curatela.pdf</span>
+                </header>
+                <p class="v-ark-h">Decisione dell'autorità di protezione: istituzione di una curatela</p>
+                <dl class="v-ark-rader">
+                  <div>
+                    <dt>Persona interessata</dt>
+                    <dd><span class="v-bytt v-samme"><span class="v-o"><i>Anna Ferri</i></span><span class="v-k"><i>[Nome 4829133]</i></span></span></dd>
+                  </div>
+                  <div>
+                    <dt>Numero AVS</dt>
+                    <dd><span class="v-bytt"><span class="v-o"><i>756.9217.0769.85</i></span><span class="v-k"><i>[Numero AVS 2204716]</i></span></span></dd>
+                  </div>
+                  <div>
+                    <dt>Indirizzo</dt>
+                    <dd><span class="v-bytt"><span class="v-o"><i>Via Ceresio 22, 6900 Lugano</i></span><span class="v-k"><i>[Indirizzo 3310482]</i></span></span></dd>
+                  </div>
+                  <div>
+                    <dt>Curatore</dt>
+                    <dd><span class="v-bytt"><span class="v-o"><i>Paolo Conti</i></span><span class="v-k"><i>[Nome 6071542]</i></span></span></dd>
+                  </div>
+                </dl>
+                <p class="v-ark-p">
+                  Il curatore rappresenta la persona interessata nella gestione del patrimonio.
+                  <span class="v-bytt"><span class="v-o"><i>Anna è in malattia fino al 30 aprile.</i></span><span class="v-k"><i>[Dato personale 2760056]</i></span></span>
+                </p>
+              </article>
+              <article class="v-ark v-ark-b">
+                <header class="v-ark-topp">
+                  <svg class="v-ark-ikon"><use href="#i-mail" /></svg>
+                  <span>risposta-della-banca.eml</span>
+                </header>
+                <p class="v-ark-h">R: Operatività sul conto</p>
+                <p class="v-ark-p">
+                  Buongiorno, facciamo seguito al colloquio con
+                  <span class="v-bytt v-samme"><span class="v-o"><i>Anna Ferri</i>.</span><span class="v-k"><i>[Nome 4829133]</i>.</span></span>
+                </p>
+                <p class="v-ark-p">
+                  Il conto è ora impostato come richiesto dal curatore. Può contattarci al numero
+                  <span class="v-bytt"><span class="v-o"><i>091 555 01 92</i>.</span><span class="v-k"><i>[Telefono 7745190]</i>.</span></span>
+                </p>
+                <p class="v-ark-p v-ark-hilsen">
+                  Cordiali saluti<br />
+                  <span class="v-bytt"><span class="v-o"><i>Elisa Moretti</i></span><span class="v-k"><i>[Nome 5530871]</i></span></span><br />
+                  Consulente clienti
+                </p>
+              </article>
+            </div>
+            <figcaption class="v-samme-linje">
+              <span class="v-kode">[Nome 4829133]</span>
+              <span>La stessa persona riceve sempre lo stesso codice, in tutti i documenti.</span>
+            </figcaption>
+          </figure>
+
+          <ul class="v-tre-ord rise">
+            <li><b>La copia ha l'aspetto dell'originale.</b> Impaginazione, tabelle e loghi restano.</li>
+            <li><b>Chi la legge capisce la pratica.</b> Solo non sa di chi si tratta.</li>
+            <li><b>Gli originali non vengono toccati.</b> Glatscher crea file nuovi accanto.</li>
+          </ul>
+        </section>
+
+        <!-- ============ 2. De tre tingene på startskjermen ============ -->
+        <section class="v-del v-verktoy" id="verktoy">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Tre cose che può fare.</h2>
+          </div>
+          <div class="v-kort-rad">
+            <article class="v-kort rise">
+              <img src="/alles-klar/assets/krom/rens.webp" width="512" height="512" alt="" loading="lazy" decoding="async" />
+              <h3>Oscura</h3>
+              <p>Scelga una cartella o singoli documenti. Riceve copie con codici al posto dei dati personali.</p>
+            </article>
+            <article class="v-kort rise d-60">
+              <img src="/alles-klar/assets/krom/tilbakefor.webp" width="512" height="512" alt="" loading="lazy" decoding="async" />
+              <h3>Ripristina</h3>
+              <p>Trasformi di nuovo i codici in nomi, quando Le servono.</p>
+            </article>
+            <article class="v-kort rise d-120">
+              <img src="/alles-klar/assets/krom/tekst.webp" width="512" height="512" alt="" loading="lazy" decoding="async" />
+              <h3>Strumento testo</h3>
+              <p>Scriva o incolli un testo. Viene oscurato sotto i Suoi occhi.</p>
+            </article>
+          </div>
+
+          <!-- Rens, steg for steg. Streken mellom stegene er et skispor. -->
+          <ol class="v-steg rise">
+            <li><b>Sceglie una cartella</b><span>Oppure la trascina nella finestra.</span></li>
+            <li><b>Glatscher legge</b><span>Lei intanto può continuare a lavorare.</span></li>
+            <li><b>Lei verifica</b><span>Oscurare o lasciare visibile.</span></li>
+            <li><b>Glatscher controlla</b><span>Ogni copia viene riletta.</span></li>
+            <li><b>Le copie sono pronte</b><span>In una cartella a parte, accanto.</span></li>
+          </ol>
+        </section>
+
+        <!-- ============ 3. Nøkkelen ============ -->
+        <section class="v-del v-nokkel" id="nokkel">
+          <div class="v-nokkel-inn">
+            <img class="v-nokkel-bilde rise" src="/alles-klar/assets/krom/nokkel-blaa.webp" width="800" height="386" alt="" loading="lazy" decoding="async" />
+            <div class="v-hode rise">
+              <h2 class="v-tittel">Solo la chiave trasforma di nuovo i codici in nomi.</h2>
+              <p class="v-ingress">
+                La chiave nasce sul Suo computer la prima volta che apre Glatscher, e appartiene solo a Lei.
+                Senza la chiave un codice resta un codice.
+              </p>
+              <!-- Viktig (eieren 11.11.2026): ingen skal tro at alle med Klart kan gjøre om kodene. -->
+              <p class="v-nokkel-bare">
+                <b>Altre persone con Glatscher non possono ritrasformare i Suoi codici.</b>
+                Hanno la propria chiave, e con quella i Suoi codici restano semplici codici.
+              </p>
+            </div>
+
+            <!-- Hvorfor det er nyttig at kodene kan gjøres om: runden ut og hjem igjen. -->
+            <ol class="v-runde rise">
+              <li>
+                <span class="v-runde-nr">1</span>
+                <b>Oscura</b>
+                <span class="v-linje">Persona interessata: <i class="v-kode lys">[Nome 4829133]</i></span>
+              </li>
+              <li>
+                <span class="v-runde-nr">2</span>
+                <b>Condivida la copia</b>
+                <span class="v-runde-tekst">Con una consulente, un altro ente o uno strumento di IA.</span>
+              </li>
+              <li>
+                <span class="v-runde-nr">3</span>
+                <b>Ripristini la risposta</b>
+                <span class="v-linje">Persona interessata: <i class="v-navn">Anna Ferri</i></span>
+              </li>
+            </ol>
+
+            <div class="v-nokkel-par rise">
+              <img src="/alles-klar/assets/krom/skrin-blaa.webp" width="640" height="630" alt="" loading="lazy" decoding="async" />
+              <div>
+                <article>
+                  <h3>Conservi la chiave al sicuro</h3>
+                  <p>24 parole su carta o un file della chiave. Così i codici si possono sempre ritrasformare in nomi.</p>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ Én nøkkel for hele virksomheten ============ -->
+        <section class="v-del v-kontor" id="virksomhet">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Lo stesso codice per tutti i colleghi.</h2>
+            <p class="v-ingress">
+              Con una chiave per tutta l'organizzazione, Anna Ferri ha lo stesso codice su tutti i
+              computer. Una collega può ripristinare una copia creata da Lei.
+            </p>
+          </div>
+          <div class="v-nett rise" aria-hidden="true">
+            <img src="/alles-klar/assets/krom/nokkel.webp" width="800" height="386" alt="" loading="lazy" decoding="async" />
+            <div class="v-nett-rad">
+              <p><span>Pratiche</span><i class="v-kode">[Nome 4829133]</i></p>
+              <p><span>Personale</span><i class="v-kode">[Nome 4829133]</i></p>
+              <p><span>Archivio</span><i class="v-kode">[Nome 4829133]</i></p>
+            </div>
+          </div>
+          <ul class="v-tre-ord rise">
+            <li><b>Una persona ne è responsabile.</b> Crea la chiave e la passa ai colleghi.</li>
+            <li><b>La chiave viaggia in due parti.</b> Un file della chiave e un codice, inviati separatamente.</li>
+            <li><b>L'IT può fissare regole comuni.</b> Per esempio, che cosa viene sempre oscurato.</li>
+          </ul>
+          <!-- Samarbeid på tvers: nøkler fra andre legges inn ved siden av ens egen. -->
+          <div class="v-andres rise">
+            <img src="/alles-klar/assets/krom/nokkel-blaa.webp" width="800" height="386" alt="" loading="lazy" decoding="async" />
+            <div>
+              <h3>Può aggiungere anche le chiavi di altri</h3>
+              <p>
+                Se lavora con un'altra organizzazione, questa può condividere con Lei la propria chiave.
+                Così Lei ripristina le sue copie, e lei le Sue, se Lei condivide la Sua.
+                La Sua chiave resta invariata, e decide Lei chi la riceve.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ Dette ser Klart etter ============ -->
+        <!-- Gruppene og standardvalgene er appens (src/engine/valg.ts, VALG_GRUPPER_IT): ni grupper på, pluss ansiktene. -->
+        <section class="v-del v-ser" id="ser-etter">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Ecco che cosa cerca Glatscher.</h2>
+            <p class="v-ingress">Dieci tipi di dati sono attivi fin dall'inizio. Che cosa includere lo sceglie Lei.</p>
+          </div>
+          <ul class="v-ser-liste rise">
+            <li><b>Nomi</b><span>Nomi di persone</span></li>
+            <li><b>AVS e documenti</b><span>Numero AVS, SIMIC, numero N, passaporto, carta d'identità, tessera d'assicurato e altri numeri</span></li>
+            <li><b>Telefono ed e-mail</b><span>Indirizzi e-mail e numeri di persone</span></li>
+            <li><b>Indirizzo e luogo</b><span>Via, NPA, località</span></li>
+            <li><b>Categorie particolari</b><span>Salute, sindacato, religione e condanne penali</span></li>
+            <li><b>Frasi private</b><span>Frasi intere e note su una persona</span></li>
+            <li><b>Conti</b><span>Numeri di conto, carte e IBAN</span></li>
+            <li><b>Segreti</b><span>Password e chiavi</span></li>
+            <li><b>Targhe</b><span>Nei testi e nelle immagini</span></li>
+            <li class="v-ser-ansikt">
+              <b>Volti</b><span>Vengono pixelati in immagini e pagine scansionate</span>
+            </li>
+          </ul>
+          <p class="v-ser-fot rise">
+            Date, professione e parentela, età, datore di lavoro e numeri di pratica li aggiunge Lei quando servono.
+            <a class="v-lenke" href="cosa-trova.html">Veda che cosa Glatscher trova e che cosa no</a>
+          </p>
+        </section>
+
+        <!-- ============ 4. Du bestemmer ============ -->
+        <section class="v-del v-avgjor" id="du-bestemmer">
+          <div class="v-to">
+            <div class="v-hode rise">
+              <h2 class="v-tittel">Decide Lei che cosa oscurare.</h2>
+              <p class="v-ingress">
+                Glatscher contrassegna ciò che trova. Se non è sicuro, lo chiede a Lei.
+              </p>
+              <ul class="v-punkter">
+                <li>Un clic su una parola la oscura in tutta la cartella.</li>
+                <li>Glatscher ricorda ciò che Lei contrassegna. La cartella successiva viene letta con le Sue parole.</li>
+                <li>I dati della Sua organizzazione restano visibili.</li>
+                <li>Tutto si può annullare.</li>
+              </ul>
+            </div>
+
+            <!-- Gjennomgangen slik den ser ut i appen: tre slags merker og linjen nederst
+                 som spør. Fargene og strekene er appens (heltrukket, stiplet, prikket). -->
+            <figure class="v-gjennom rise" aria-hidden="true">
+              <div class="v-gjennom-ark">
+                <p>Il responsabile diretto è <span class="v-m skjul">Paolo Conti</span>.</p>
+                <p><span class="v-m uavklart">Serena</span> ha consigliato un rientro graduale da maggio.</p>
+                <p>Appuntamenti tramite il centralino, al numero <span class="v-m staa">091 555 01 00</span>.</p>
+              </div>
+              <div class="v-spor">
+                <p class="v-spor-topp">
+                  <span class="v-kode">Nome 5530871</span>
+                  <b>In sospeso</b>
+                  <span class="v-spor-tall">1 di 5</span>
+                </p>
+                <p class="v-spor-grunn">È all'inizio della frase. È un nome o l'aggettivo «serena»?</p>
+                <p class="v-spor-knapper">
+                  <span class="v-knapp">Oscura <kbd>↵</kbd></span>
+                  <span class="v-knapp lys">Lascia visibile <kbd>B</kbd></span>
+                  <span class="v-knapp lys">Avanti <kbd>→</kbd></span>
+                </p>
+              </div>
+              <p class="v-forklaring">
+                <span><i class="v-m skjul">Aa</i> Viene oscurato</span>
+                <span><i class="v-m uavklart">Aa</i> In sospeso</span>
+                <span><i class="v-m staa">Aa</i> Resta visibile</span>
+              </p>
+            </figure>
+          </div>
+        </section>
+
+        <!-- ============ 5. Trygt ============ -->
+        <!-- Hytta fra heroen, på nært hold: dokumentene blir hjemme. Bildet er laget i Midjourney
+             med vinterbildet fra heroen som stilreferanse. -->
+        <section class="v-del v-trygt" id="trygt">
+          <figure class="v-plate rise">
+            <img src="/alles-klar/assets/foto/hytte.webp" width="2200" height="1232" alt="Una piccola baita rossa nella neve alta sotto un cielo azzurro." loading="lazy" decoding="async" />
+            <figcaption>
+              <h2 class="v-tittel">I documenti restano sul computer.</h2>
+            </figcaption>
+          </figure>
+          <div class="v-kort-rad">
+            <article class="v-kort v-hvit rise">
+              <img src="/alles-klar/assets/krom/laas.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>Nessuna via d'uscita</h3>
+              <p>Glatscher non può collegarsi a Internet.</p>
+              <p><a class="v-lenke" href="per-l-informatica.html">L'IT può verificarlo da sé</a></p>
+            </article>
+            <article class="v-kort v-hvit rise d-60">
+              <img src="/alles-klar/assets/krom/maskin.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>L'IA è inclusa</h3>
+              <p>È dentro il programma ed è piccola. Basta un normale Mac da ufficio, senza scheda grafica.</p>
+            </article>
+            <article class="v-kort v-hvit rise d-120">
+              <img src="/alles-klar/assets/krom/hvelv.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>Gli originali non vengono toccati</h3>
+              <p>Glatscher scrive solo copie nuove, in una cartella a parte. Prima di iniziare può creare un backup cifrato.</p>
+            </article>
+            <article class="v-kort v-hvit rise d-180">
+              <img src="/alles-klar/assets/krom/lupe.webp" width="720" height="720" alt="" loading="lazy" decoding="async" />
+              <h3>Controllo prima di creare</h3>
+              <p>Glatscher legge ogni copia come farebbe chi la riceve. Se resta qualcosa, il file non viene creato.</p>
+            </article>
+          </div>
+        </section>
+
+        <!-- ============ 6. Slik kan kopien se ut ============ -->
+        <section class="v-del v-former" id="kopien">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Scelga l'aspetto della copia.</h2>
+            <p class="v-ingress">Quattro varianti. La scelta si fa subito prima di creare le copie.</p>
+          </div>
+          <div class="v-form-rad">
+            <article class="v-form rise">
+              <p class="v-form-merke">La più usata</p>
+              <div class="v-prove">
+                <span>Persona interessata: <i class="v-kode">[Nome 4829133]</i></span>
+                <span class="v-prove-liste">+ elenco dei codici alla fine</span>
+              </div>
+              <h3>Codice breve ed elenco dei codici</h3>
+              <p>Facile da leggere. Si può ripristinare con la chiave.</p>
+            </article>
+            <article class="v-form rise d-60">
+              <div class="v-prove">
+                <span>Persona interessata: <i class="v-kode lang">[PERSON_VBTF60YD0E-Q7MZ2KXA4RWN]</i></span>
+              </div>
+              <h3>Codice completo nel testo</h3>
+              <p>Senza elenco. Si può ripristinare, ma è difficile da leggere.</p>
+            </article>
+            <article class="v-form rise d-120">
+              <div class="v-prove">
+                <span>Persona interessata: <i class="v-kode">[Nome 4829133]</i></span>
+              </div>
+              <h3>Solo etichette</h3>
+              <p>Facile da leggere. Non si può ripristinare.</p>
+            </article>
+            <article class="v-form rise d-180">
+              <div class="v-prove">
+                <span>Persona interessata: <i class="v-sladd"><i>art. 7 cpv. 2 LTras</i></i></span>
+              </div>
+              <h3>Riquadri neri (PDF)</h3>
+              <p>Ciò che c'era scompare per sempre. Sul riquadro può comparire la base giuridica.</p>
+            </article>
+          </div>
+
+        </section>
+
+        <!-- ============ 7. Brukes til ============ -->
+        <section class="v-del v-bruk" id="bruk">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Quando i documenti devono uscire.</h2>
+          </div>
+          <ul class="v-bruk-liste rise">
+            <li><b>Accesso</b><span>Rispondere alle domande di accesso secondo la LTras o la legge cantonale, alla consultazione degli atti e alle richieste d'informazioni secondo la LPD senza oscurare pagina per pagina.</span></li>
+            <li><b>Condivisione</b><span>Con fiduciari, avvocati, fornitori o altri enti.</span></li>
+            <li><b>Strumenti di IA</b><span>La stessa persona ha lo stesso codice, così lo strumento capisce il contesto.</span></li>
+            <li><b>Formazione</b><span>Casi veri come esempi, senza che nessuno sia riconoscibile.</span></li>
+            <li><b>Dati di prova</b><span>Documenti realistici per sistemi nuovi.</span></li>
+            <li><b>Statistica</b><span>Usare i contenuti senza vedere a chi si riferiscono.</span></li>
+          </ul>
+        </section>
+
+        <!-- ============ Vanlige spørsmål ============ -->
+        <section class="v-del v-spm" id="sporsmal">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Domande frequenti.</h2>
+          </div>
+          <dl class="v-spm-liste rise">
+            <div>
+              <dt>La copia è anonima?</dt>
+              <dd>No. Chi ha la chiave può ritrasformare i codici in nomi. Scelga «Solo etichette» o «Riquadri neri (PDF)» se la copia non deve mai poter essere ripristinata, e la rilegga sempre prima di condividerla.</dd>
+            </div>
+            <div>
+              <dt>Altre persone con Glatscher possono ritrasformare i miei codici?</dt>
+              <dd>No. I codici si ripristinano solo con la Sua chiave. Gli altri hanno la propria, e con quella i Suoi codici sono solo codici. Se qualcuno deve poter ripristinare le Sue copie, condivida con lui la Sua chiave.</dd>
+            </div>
+            <div>
+              <dt>E se perdo la chiave?</dt>
+              <dd>Allora nessuno può ritrasformare i codici in nomi. Gli originali restano intatti. Per questo Glatscher Le chiede di mettere al sicuro la chiave, con 24 parole su carta o un file della chiave.</dd>
+            </div>
+            <div>
+              <dt>Glatscher ha bisogno di Internet?</dt>
+              <dd>No. Glatscher non si collega mai a Internet e funziona allo stesso modo offline.</dd>
+            </div>
+            <div>
+              <dt>Funziona sul mio computer?</dt>
+              <dd>Su un normale computer da ufficio, sì, senza scheda grafica: Mac con macOS 13 o successivo, PC con Windows 10 o 11, oppure Linux (pacchetto .deb). <a class="v-lenke" href="#maskin">Requisiti di sistema</a></dd>
+            </div>
+            <div>
+              <dt>Una collega può ripristinare una copia creata da me?</dt>
+              <dd>Sì, se avete la stessa chiave o se la collega ha aggiunto la Sua.</dd>
+            </div>
+            <div>
+              <dt>Glatscher impara da me?</dt>
+              <dd>Sì, da ciò che fa Lei. Se contrassegna un nome, un soprannome o una parola che Glatscher non ha visto, lo ricorda e lo oscura in tutto ciò che legge dopo. L'elenco si chiama «Oscura sempre». È cifrato sul Suo computer e può togliervi delle voci. Nulla viene inviato a noi, e i Suoi documenti non servono ad addestrare alcun modello.</dd>
+            </div>
+            <div>
+              <dt>E se Glatscher non vede qualcosa?</dt>
+              <dd>Può succedere. Per questo Lei verifica ciò che Glatscher trova, e Glatscher controlla ogni copia prima di crearla. <a class="v-lenke" href="cosa-trova.html">Veda che cosa Glatscher trova e che cosa no</a></dd>
+            </div>
+            <div>
+              <dt>Che cosa succede agli originali?</dt>
+              <dd>Nulla. Glatscher scrive solo file nuovi, in una cartella a parte accanto.</dd>
+            </div>
+            <div>
+              <dt>Quanto costa?</dt>
+              <dd>Per i privati Glatscher è gratuito. Aziende, Comuni, Cantoni ed enti pubblici lo provano gratis per 30 giorni e poi ordinano con fattura una licenza per tutta l'organizzazione.</dd>
+            </div>
+          </dl>
+        </section>
+
+        <!-- ============ 8. I dybden ============ -->
+        <section class="v-del v-dybde" id="dybde">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Nel dettaglio.</h2>
+            <p class="v-ingress">Per chi vuole saperne di più. Apra ciò che La interessa.</p>
+          </div>
+
+          <div class="v-fag rise">
+            <details name="v-dybde">
+              <summary><span>Che cosa cerca Glatscher</span></summary>
+              <div class="v-fag-inn">
+                <p>Che cosa cerca l'analisi lo sceglie Lei. I dieci gruppi attivi fin dall'inizio sono in <a class="v-lenke" href="#ser-etter">Ecco che cosa cerca Glatscher</a>.</p>
+                <p>Questi li aggiunge quando servono: <b>Date</b>, <b>Professione e parentela</b>, <b>Età</b>, <b>Datore di lavoro</b> (ente, società e numero IDI) e <b>Numeri di pratica</b> (pratica, protocollo e ruolo).</p>
+                <p>
+                  Il numero AVS viene controllato con la sua cifra di controllo, così come l'IBAN.
+                  Una sequenza qualsiasi di tredici cifre non viene scambiata per un numero AVS.
+                </p>
+                <p>
+                  I dati della Sua organizzazione restano visibili: indirizzo, centralino, numero IDI e conto aziendale.
+                </p>
+                <p><a class="v-lenke" href="cosa-trova.html">I numeri: che cosa Glatscher trova e che cosa no</a></p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Quali file legge Glatscher e come appare la copia</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Word, Excel e PowerPoint</dt>
+                    <dd>Lo stesso file, con i codici al posto dei dati. Impaginazione, loghi e tabelle restano. Commenti, macro, file incorporati e dati nascosti nelle immagini vengono rimossi.</dd>
+                  </div>
+                  <div>
+                    <dt>PDF, anche scansionati</dt>
+                    <dd>Ogni pagina diventa un'immagine con i codici dipinti sopra i dati. Sotto c'è uno strato di testo invisibile, così nella copia si può ancora cercare.</dd>
+                  </div>
+                  <div>
+                    <dt>Immagini</dt>
+                    <dd>Glatscher legge il testo nell'immagine. I dati vengono coperti e i volti pixelati.</dd>
+                  </div>
+                  <div>
+                    <dt>E-mail</dt>
+                    <dd>Legge .eml, Outlook (.msg), Apple Mail (.emlx) e .mbox. La copia diventa un .eml. Gli allegati vengono rimossi, e la copia lo segnala.</dd>
+                  </div>
+                  <div>
+                    <dt>Testo</dt>
+                    <dd>.txt, .md, .csv, .json e .rtf.</dd>
+                  </div>
+                </dl>
+                <p>Vengono oscurati anche i nomi dei file e delle cartelle. Le copie finiscono, insieme a un rapporto, in una cartella nuova accanto all'originale, con «-chiaro» alla fine del nome.</p>
+                <p>I file protetti da password li apre se Lei indica la password. I vecchi file .ppt non si possono leggere. Glatscher lo segnala.</p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Come Glatscher legge i documenti</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Prima le regole</dt>
+                    <dd>Formati svizzeri in tedesco, francese e italiano, cifre di controllo, elenchi di nomi e località. Le regole passano su ogni file.</dd>
+                  </div>
+                  <div>
+                    <dt>Poi un piccolo modello linguistico</dt>
+                    <dd>Basato su distilbert-base-german-cased e addestrato ulteriormente con frasi d'esempio. Valuta se una frase rivela qualcosa di privato su una persona. Per ora legge bene soprattutto il tedesco: le frasi private in italiano e in francese le riconosce meno spesso. Pesa circa 270 MB e non richiede una scheda grafica.</dd>
+                  </div>
+                  <div>
+                    <dt>Testo nelle immagini</dt>
+                    <dd>Le pagine scansionate e le immagini vengono lette con il riconoscimento del testo sul computer.</dd>
+                  </div>
+                  <div>
+                    <dt>Volti</dt>
+                    <dd>Glatscher trova i volti e li pixela. Può anche lasciare visibile un volto.</dd>
+                  </div>
+                </dl>
+                <p>Glatscher non ha un chatbot e non invia nulla a un servizio di IA.</p>
+                <p>Può anche aprire una cartella senza analisi. In quel caso contrassegna Lei ciò che va oscurato.</p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>I codici e la chiave</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Numeri fissi</dt>
+                    <dd>Il numero nel codice viene calcolato dalla chiave e dal dato. Per questo Anna Ferri è <i class="v-kode">[Nome 4829133]</i> in ogni cartella, presso tutti i colleghi con la stessa chiave.</dd>
+                  </div>
+                  <div>
+                    <dt>Il nome è nella copia, cifrato</dt>
+                    <dd>L'elenco dei codici alla fine della copia contiene i codici completi. In essi c'è il testo originale, cifrato con AES-SIV. Solo la chiave lo rende di nuovo leggibile. Non c'è nessun cifrario da custodire.</dd>
+                  </div>
+                  <div>
+                    <dt>Solo la Sua chiave</dt>
+                    <dd>Ogni installazione crea la propria chiave. Un'altra persona con Glatscher non può ripristinare i Suoi codici: senza la Sua chiave sono solo codici, anche per noi.</dd>
+                  </div>
+                  <div>
+                    <dt>Dove si trova la chiave</dt>
+                    <dd>È protetta dal sistema operativo, nel portachiavi del Mac. Se vuole, può tenerla su una chiavetta di sicurezza.</dd>
+                  </div>
+                  <div>
+                    <dt>Riserva</dt>
+                    <dd>24 parole su carta o un file della chiave, protetto da una frase segreta scelta da Lei.</dd>
+                  </div>
+                  <div>
+                    <dt>Nell'organizzazione</dt>
+                    <dd>Una persona è responsabile della chiave e la passa ai colleghi come file della chiave. File e codice vengono inviati separatamente. L'IT può impedire l'esportazione della chiave.</dd>
+                  </div>
+                  <div>
+                    <dt>Chiavi di altri</dt>
+                    <dd>In «Chiave» può aggiungere la chiave di un'altra organizzazione. Resta accanto alla Sua. La copia indica con quale chiave è stata creata, così Glatscher sceglie quella giusta quando ripristina.</dd>
+                  </div>
+                  <div>
+                    <dt>Ripristino</dt>
+                    <dd>Glatscher crea una cartella nuova con «-ripristinato» alla fine del nome. La copia non viene toccata. Per immagini e pagine PDF, ciò che stava sotto i riquadri è nella copia, cifrato, e viene rimesso al suo posto.</dd>
+                  </div>
+                </dl>
+                <p>I codici non sono un'anonimizzazione. Chi ha la chiave può ripristinarli, quindi una copia con i codici contiene ancora dati personali (dati pseudonimizzati secondo la LPD).</p>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Accesso e riquadri neri</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Riquadri neri (PDF)</dt>
+                    <dd>Ogni copia diventa un PDF con riquadri neri. Il resto del testo si può ancora selezionare e cercare.</dd>
+                  </div>
+                  <div>
+                    <dt>La base giuridica sul riquadro</dt>
+                    <dd>Ogni riquadro può riportare la base giuridica su cui si fonda, per esempio «art. 7 cpv. 2 LTras» (sfera privata di terzi) o «art. 9 cpv. 1 LTras». Le basi giuridiche complete vengono scritte in un file a parte, per la risposta.</dd>
+                  </div>
+                  <div>
+                    <dt>Lascia visibile solo questa persona</dt>
+                    <dd>Per chi chiede i propri dati: questa persona resta visibile e tutte le altre vengono oscurate.</dd>
+                  </div>
+                  <div>
+                    <dt>Più versioni della stessa cartella</dt>
+                    <dd>Una per l'interessato, una per la pubblicazione, ognuna con le proprie impostazioni.</dd>
+                  </div>
+                  <div>
+                    <dt>Sfocatura</dt>
+                    <dd>Disegni un rettangolo, un ovale o una forma libera su una parte di un'immagine o di una pagina.</dd>
+                  </div>
+                </dl>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Mentre lavora</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Salvataggio automatico</dt>
+                    <dd>Le Sue decisioni vengono salvate cifrate sul computer. Riprende da dove si era fermato.</dd>
+                  </div>
+                  <div>
+                    <dt>Modifiche</dt>
+                    <dd>Ogni modifica è in un elenco. Ne annulli una o torni al punto di partenza. L'elenco si può esportare in PDF o CSV.</dd>
+                  </div>
+                  <div>
+                    <dt>I Suoi contrassegni</dt>
+                    <dd>Ciò che contrassegna Lei vale in tutte le cartelle e in tutti i testi. L'elenco si può condividere con i colleghi.</dd>
+                  </div>
+                  <div>
+                    <dt>Ricerca</dt>
+                    <dd>Cerchi in tutti i file della cartella in una volta.</dd>
+                  </div>
+                  <div>
+                    <dt>Backup</dt>
+                    <dd>Una copia cifrata della cartella, creata prima dell'analisi. Glatscher Le ricorda i backup più vecchi di 30 giorni.</dd>
+                  </div>
+                  <div>
+                    <dt>Dal Finder</dt>
+                    <dd>Clic destro su un file o una cartella e scelga «Oscura con Glatscher».</dd>
+                  </div>
+                </dl>
+              </div>
+            </details>
+
+            <details name="v-dybde">
+              <summary><span>Per l'IT</span></summary>
+              <div class="v-fag-inn">
+                <dl class="v-tabell">
+                  <div>
+                    <dt>Nessun codice di rete</dt>
+                    <dd>Il programma non ha TLS, non può risolvere nomi in rete e non è in ascolto su nessuna porta. <a class="v-lenke" href="per-l-informatica.html">Verifiche che può fare da sé</a></dd>
+                  </div>
+                  <div>
+                    <dt>Regole in un file</dt>
+                    <dd>Stabilisca che cosa viene sempre oscurato, blocchi la variante della copia, renda obbligatoria l'analisi e decida se la chiave si può esportare.</dd>
+                  </div>
+                  <div>
+                    <dt>Registro delle attività</dt>
+                    <dd>Si può attivare in Impostazioni › Registro delle attività. Non contiene nomi di file né dati dei documenti.</dd>
+                  </div>
+                  <div>
+                    <dt>Riga di comando</dt>
+                    <dd><code>glatscher clean</code> e <code>glatscher restore</code>, con output in JSON. Glatscher può anche sorvegliare una cartella.</dd>
+                  </div>
+                  <div>
+                    <dt>Licenza senza Internet</dt>
+                    <dd>Un codice firmato, verificato sul computer. Una licenza vale per tutta l'organizzazione.</dd>
+                  </div>
+                </dl>
+              </div>
+            </details>
+          </div>
+        </section>
+
+        <!-- ============ Full nerd-out ============ -->
+        <!-- Hele programmet, forklart for den som vil vite hvordan det virker. Veien en fil går
+             står alltid framme; resten åpnes. Tallene og navnene er fra appens kildekode. -->
+        <section class="v-del v-nerd" id="nerd">
+          <div class="v-hode rise">
+            <p class="v-nerd-over">Per i più curiosi</p>
+            <h2 class="v-tittel">Per gli appassionati di tecnica.</h2>
+            <p class="v-ingress">Il percorso completo di un file attraverso Glatscher, e che cosa succede a ogni passo.</p>
+          </div>
+
+          <ol class="v-ror rise">
+            <li><b>Lettura</b><span>Word, Excel, PDF, e-mail e immagini vengono scomposti in testo e posizione sulla pagina.</span></li>
+            <li><b>Regole</b><span>Formati, caratteri di controllo, elenchi di nomi e di parole.</span></li>
+            <li><b>Frasi</b><span>Un piccolo modello linguistico valuta frasi intere (per ora soprattutto in tedesco).</span></li>
+            <li><b>Immagini</b><span>Riconoscimento del testo e dei volti, sul computer.</span></li>
+            <li><b>Indice</b><span>I risultati vengono raccolti per tutta la cartella. Stessa persona, stesso codice.</span></li>
+            <li><b>Lei</b><span>Oscura, lascia visibile e decide ciò che è in sospeso.</span></li>
+            <li><b>Scrittura</b><span>Ogni tipo di file viene riscritto a modo suo.</span></li>
+            <li><b>Controllo</b><span>La copia viene riletta. Se resta qualcosa, viene fermata.</span></li>
+          </ol>
+
+          <details class="v-nerd-alt rise">
+            <summary><span><i class="v-nar-lukket">Apri la sala macchine</i><i class="v-nar-aapen">Chiudi la sala macchine</i></span></summary>
+            <div class="v-nerd-inn">
+              <article>
+                <h3>Che cosa c'è nel pacchetto</h3>
+                <p>
+                  Glatscher è un normale programma desktop. Il guscio è scritto in Rust (Tauri), la finestra è
+                  una vista web con un'interfaccia in TypeScript. Tutto il necessario è nel file di installazione.
+                  Dopo non viene scaricato nulla.
+                </p>
+                <dl class="v-spek">
+                  <div><dt>Motore delle regole</dt><dd>TypeScript. Gira nel programma, senza server.</dd></div>
+                  <div><dt>Modello delle frasi</dt><dd>distilbert-base-german-cased (Apache 2.0), addestrato ulteriormente con frasi d'esempio, circa 270 MB. Gira sul processore, senza scheda grafica.</dd></div>
+                  <div><dt>Testo nelle immagini</dt><dd>Apple Vision sul Mac. Su Windows il riconoscimento del testo di Windows e Tesseract con tedesco, francese e italiano, su Linux Tesseract.</dd></div>
+                  <div><dt>Volti</dt><dd>Apple Vision sul Mac. Piccoli modelli dei volti (YuNet e UltraFace) su Windows e Linux.</dd></div>
+                  <div><dt>PDF</dt><dd>PDFium disegna le pagine e legge lo strato di testo.</dd></div>
+                  <div><dt>Nessun grande modello linguistico</dt><dd>Glatscher non ha un LLM né un chatbot. La compilazione si interrompe se ce n'è uno nel pacchetto.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Dal file al risultato</h3>
+                <p>
+                  Ogni file viene scomposto in pezzi di testo che sanno dove si trovano: paragrafo, cella, casella di testo,
+                  intestazione o un punto su una pagina PDF. Poi tre lettori passano sul testo.
+                </p>
+                <dl class="v-spek">
+                  <div><dt>Le regole</dt><dd>Il numero AVS deve avere la cifra di controllo giusta (EAN-13); anche l'IBAN e il riferimento QR hanno il proprio controllo. I nomi si trovano con elenchi di nomi e con la loro posizione, per esempio dopo «Nome:» o in una firma.</dd></div>
+                  <div><dt>Parole delicate</dt><dd>Un elenco di parole su salute, sindacato, religione e condanne penali, con tutte le forme flesse. «ricoverato», «ricoverata» e «ricovero» sono lo stesso risultato.</dd></div>
+                  <div><dt>Il lettore di frasi</dt><dd>Il modello linguistico dà a ogni frase su una persona un valore che dice quanto è privata. Insieme a un lettore basato sulle parole, questo decide se la frase diventa «Dato personale».</dd></div>
+                  <div><dt>I dati dell'organizzazione</dt><dd>L'indirizzo nell'intestazione, il centralino, il numero IDI e il conto aziendale vengono riconosciuti e restano visibili. Gli indirizzi e-mail vengono comunque oscurati.</dd></div>
+                </dl>
+                <p>
+                  Alla fine i risultati vengono raccolti nell'indice della cartella. «Anna», «Anna Ferri» e «FERRI ANNA»
+                  diventano una persona, in tutti i file. Ciò su cui Glatscher non è sicuro finisce, con il motivo, nella coda «In sospeso»:
+                  il nome è all'inizio della frase, due persone si chiamano allo stesso modo, o la parola è stata aggiunta dopo.
+                </p>
+              </article>
+
+              <article>
+                <h3>I codici</h3>
+                <p>Un codice ha due parti. Una dice chi è. L'altra è il testo originale, cifrato.</p>
+                <p class="v-kodelinje"><code>[PERSON_VBTF60YD0E-J94DW5ZFTYA2GWTWAXFKK0XYBF1KTY19BED6E5TJ832VZ00]</code></p>
+                <dl class="v-spek">
+                  <div><dt>Il codice della persona</dt><dd>HMAC-SHA256 di tipo e valore, accorciato a dieci caratteri. Uguale per tutte le grafie dello stesso nome, così uno strumento di IA capisce che è la stessa persona.</dd></div>
+                  <div><dt>La parte cifrata</dt><dd>AES-SIV (RFC 5297) del testo esattamente com'era. Lo stesso testo dà sempre lo stesso codice. Un codice modificato o creato con un'altra chiave viene rifiutato. Glatscher non inserisce mai nulla di sbagliato.</dd></div>
+                  <div><dt>Il numero breve</dt><dd>Il numero in <code>[Nome 4829133]</code> viene calcolato dalla chiave e dal valore. Per questo è uguale su tutti i computer con la stessa chiave, senza che comunichino tra loro.</dd></div>
+                  <div><dt>L'elenco dei codici</dt><dd>Nella variante più usata, il numero breve è nel testo e i codici completi in un elenco alla fine. Insieme alla chiave, l'elenco è tutto ciò che serve per ripristinare la copia.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>La chiave</h3>
+                <dl class="v-spek">
+                  <div><dt>Che cos'è</dt><dd>32 byte casuali, creati sul computer al primo avvio di Glatscher. Le sottochiavi per codici, numeri e immagini vengono derivate con HKDF-SHA256.</dd></div>
+                  <div><dt>Dove si trova</dt><dd>Protetta dal sistema operativo: portachiavi e Secure Enclave sul Mac, DPAPI su Windows, il portachiavi dell'utente su Linux. La chiave resta nella parte in Rust del programma. La finestra la riceve solo se Lei vuole vedere le 24 parole.</dd></div>
+                  <div><dt>24 parole</dt><dd>La chiave si può scrivere come 24 parole norvegesi da un elenco di 2048. Le parole usano solo le lettere a–z, e non ce ne sono due simili. Bastano le prime quattro lettere per riconoscere una parola.</dd></div>
+                  <div><dt>File della chiave</dt><dd>La chiave, cifrata con una frase segreta di almeno dodici caratteri (Argon2id e AES-256-GCM).</dd></div>
+                  <div><dt>Impronta della chiave</dt><dd>Un breve contrassegno come <code>WJ0R-Q3R5</code>. Indica con quale chiave è stata creata una copia, ma non è la chiave stessa.</dd></div>
+                  <div><dt>Più chiavi</dt><dd>Se cambia chiave, quella vecchia viene messa da parte. Quando ripristina, Glatscher prova prima la chiave attuale, poi quelle precedenti.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Come viene scritta la copia</h3>
+                <dl class="v-spek">
+                  <div><dt>Word, Excel, PowerPoint</dt><dd>Il file è uno ZIP con XML. Glatscher sostituisce i valori sul posto, anche quando Word ha spezzato un nome in più pezzi. Poi il file viene ripulito: commenti, macro, file incorporati, l'anteprima e i dati nascosti nelle immagini vengono rimossi.</dd></div>
+                  <div><dt>PDF</dt><dd>Ogni pagina viene disegnata come immagine a 200 dpi, a 300 con caratteri piccoli. I codici vengono dipinti sopra i dati, e il testo oscurato è invisibile sotto, così nella copia si può cercare.</dd></div>
+                  <div><dt>Immagini</dt><dd>I riquadri vengono coperti e i volti pixelati.</dd></div>
+                  <div><dt>Ciò che c'era sotto</dt><dd>Se la copia deve poter essere ripristinata, Glatscher mette nella copia, cifrati, i pixel originali sotto ogni riquadro (AES-256-GCM). I programmi normali li ignorano.</dd></div>
+                  <div><dt>E-mail</dt><dd>La copia diventa un .eml in ordine. Le intestazioni tecniche sul percorso dell'e-mail vengono rimosse.</dd></div>
+                  <div><dt>Nomi dei file</dt><dd>Se un nome è nel nome di un file o di una cartella, viene sostituito anche lì.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Il controllo prima di creare</h3>
+                <p>
+                  Prima di scrivere una copia, Glatscher la legge come farebbe un altro programma: ogni parte del file ZIP,
+                  ogni attributo XML, ogni oggetto nel PDF e il testo in ogni immagine. Se trova qualcosa che andava oscurato,
+                  o una parte che non sa leggere, il file non viene creato. Lei vede allora di che cosa si tratta.
+                </p>
+              </article>
+
+              <article>
+                <h3>Che cosa conserva Glatscher</h3>
+                <dl class="v-spek">
+                  <div><dt>Il progetto</dt><dd>Le Sue decisioni su una cartella vengono salvate cifrate sul computer ed escluse da Spotlight e Time Machine. Un progetto non usato viene eliminato dopo 30 giorni.</dd></div>
+                  <div><dt>Il backup</dt><dd>Una copia degli originali. Il contenuto è cifrato con AES-256-GCM e leggibile solo sul computer su cui è stato creato. I nomi dei file restano invariati.</dd></div>
+                  <div><dt>I Suoi contrassegni</dt><dd>L'elenco di ciò che Glatscher oscura su Sua richiesta viene salvato cifrato.</dd></div>
+                  <div><dt>Gli originali</dt><dd>Glatscher scrive solo in cartelle che ha creato lui. Ogni punto del codice che elimina o sposta un file richiede una motivazione scritta. Altrimenti un test interrompe la compilazione.</dd></div>
+                </dl>
+              </article>
+
+              <article>
+                <h3>Che cosa non c'è</h3>
+                <p>
+                  Il programma non ha TLS, non può risolvere nomi in rete e non è in ascolto su nessuna porta.
+                  Non ci sono account, statistiche d'uso, segnalazioni di errore né aggiornamenti automatici.
+                  La licenza è un codice firmato (Ed25519), verificato sul computer.
+                  L'unica cosa che Glatscher fa verso Internet: apre il nostro sito nel Suo browser quando fa clic su «Acquista una licenza».
+                </p>
+                <p><a class="v-lenke" href="per-l-informatica.html">Verifiche che l'IT può fare da sé</a></p>
+              </article>
+            </div>
+          </details>
+        </section>
+
+        <!-- ============ 9. Ansvar ============ -->
+        <section class="v-del v-ansvar" id="ansvar">
+          <div class="v-hode rise">
+            <h2 class="v-tittel">Uno strumento. Nessuna garanzia.</h2>
+          </div>
+          <ul class="v-ansvar-liste rise">
+            <li><b>Glatscher può non vedere qualcosa.</b> Rilegga le copie prima di condividerle.</li>
+            <li><b>I codici non sono un'anonimizzazione.</b> Chi ha la chiave può ripristinarli.</li>
+            <li><b>La responsabilità è Sua.</b> Glatscher non è consulenza legale, e decide Lei che cosa viene consegnato.</li>
+          </ul>
+          <p class="rise"><a class="v-lenke" href="cosa-trova.html">Veda che cosa Glatscher trova e che cosa no</a></p>
+        </section>
+
+        <!-- ============ Går Klart på maskinen din? ============ -->
+        <!-- Søket i maskinlisten (/klart/api/maskin) svarer på norsk, så her står bare systemkravene.
+             Uten data-v-maskin gjør videre.js ingenting. Windows og Linux med fra 24.11.2026. -->
+        <section class="v-del v-maskin" id="maskin">
+          <div class="v-sjekk rise">
+            <h2 id="v-sjekk-tittel">Glatscher funziona sul Suo computer?</h2>
+            <p class="v-sjekk-om">Glatscher funziona sui normali computer da ufficio: Mac, PC con Windows e computer con Linux.</p>
+            <p class="v-sjekk-fot">
+              Serve un Mac con macOS 13 o successivo, un PC con Windows 10 o 11 (64 bit, Intel o AMD)
+              oppure Linux con pacchetti .deb, come Debian 12 o Ubuntu 22.04 e successivi (Intel, AMD o ARM64).
+              Consigliamo 8 GB di memoria.
+            </p>
+          </div>
+        </section>
+
+        <!-- ============ 10. Last ned ============ -->
+        <section class="v-hent" id="last-ned">
+          <img class="v-hent-bilde" src="/alles-klar/assets/klart-vinter.jpg" width="1600" height="1067" alt="" loading="lazy" decoding="async" />
+          <div class="v-hent-kort rise">
+            <div class="v-hent-inn">
+            <!-- Mobil og nettbrett: samme e-post som i heroen i stedet for nedlastingen (eieren 11.11.2026). -->
+            <div class="mobil-send">
+              <p class="mobil-send-tittel">Glatscher è un programma per computer.</p>
+              <p class="mobil-send-tekst">Si invii il link per e-mail. Il programma per Mac, Windows e Linux sarà disponibile a breve.</p>
+              <a class="btn" href="mailto:?subject=Glatscher&amp;body=https%3A%2F%2Fesbjugconsult.com%2Fglatscher%2Fit%2F">Invia a me</a>
+              <p class="mobil-send-andre">(O a qualcun altro?)</p>
+            </div>
+            <h2>Provi Glatscher su una cartella.</h2>
+            <p class="v-hent-privat"><b>Gratuito per i privati.</b></p>
+            <p class="v-hent-virk">Il programma per Windows, Mac e Linux sarà disponibile a breve.</p>
+            <p class="v-hent-virk">Per le organizzazioni: <b>30 giorni gratis</b>. Nessuna registrazione. Poi ordine con fattura.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- ================= Bunn ================= -->
+    <footer class="v-bunn">
+      <p class="v-bunn-merke"><i>Glatscher</i> <span>di Tidemann Esbjug</span></p>
+      <nav class="v-bunn-lenker" aria-label="Altro su Glatscher">
+        <a href="cosa-trova.html">Che cosa trova Glatscher</a>
+        <a href="per-l-informatica.html">Per l'IT</a>
+        <a href="finestra.html">La finestra del programma</a>
+        <a href="condizioni/">Condizioni</a>
+        <a href="protezione-dati/">Protezione dei dati</a>
+      </nav>
+      <nav class="v-bunn-lenker v-bunn-land" aria-label="Altri paesi">
+        <a href="/klart/" hreflang="no" lang="no">Norge · Klart</a>
+        <a href="/alles-klar/" hreflang="de" lang="de">Deutschland · Alles Klar</a>
+        <a href="/glockenklar/" hreflang="de-AT" lang="de-AT">Österreich · Glockenklar</a>
+        <a href="/glatscher/it/" hreflang="it-CH" lang="it-CH" aria-current="page">Svizzera · Schweiz · Suisse · Glatscher</a>
+        <a href="/frostcopy/" hreflang="en-US" lang="en-US">United States · FrostCopy</a>
+        <a href="/frostcopy-uk/" hreflang="en-GB" lang="en-GB">United Kingdom · FrostCopy UK</a>
+        <a href="/cest-clair/" hreflang="fr" lang="fr">France · C’est Clair</a>
+        <a href="/clair-klaar/" hreflang="nl-BE" lang="nl-BE">België · Belgique · Clair &amp; Klaar</a>
+        <a href="/clarisimo/" hreflang="es" lang="es">España · Clarísimo</a>
+        <a href="/chiarissimo/" hreflang="it" lang="it">Italia · Chiarissimo</a>
+        <a href="/klip-en-klaar/" hreflang="nl" lang="nl">Nederland · Klip en Klaar</a>
+        <a href="/wszystko-jasne/" hreflang="pl" lang="pl">Polska · Wszystko Jasne</a>
+        <a href="/klappatochklart/" hreflang="sv" lang="sv">Sverige · Klappat och Klart</a>
+        <a href="/krystallklart/" hreflang="da" lang="da">Danmark · Krystallklart</a>
+      </nav>
+      <p class="v-bunn-liten">Sviluppato in Norvegia · Non è consulenza legale</p>
+    </footer>
+
+    <script src="forside.js"></script>
+    <script src="videre.js"></script>
+      <script src="/spiller/spiller.js"></script>
+  </body>
+</html>

@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en-IE">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/frostcopy-ie/ikon.png" />
+    <title>For IT · FrostCopy Ireland</title>
+    <meta
+      name="description"
+      content="The checks that show FrostCopy does not talk to the network, what is in the package and on the disk, and how IT manages FrostCopy centrally. With commands, expected answers and what each check proves."
+    />
+    <meta name="robots" content="noindex" />
+    <script src="til-it-tidlig.js"></script>
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="sider.css" />
+  </head>
+  <body>
+    <header class="s-topp">
+      <div class="s-linje-topp">
+        <a class="s-merke" href="/frostcopy-ie/">FrostCopy</a>
+        <nav class="s-nav" aria-label="Pages">
+          <a href="/frostcopy-ie/">Home</a>
+          <a href="/frostcopy-ie/for-it.html" aria-current="page">For IT</a>
+          <a href="/frostcopy-ie/privacy/">Privacy</a>
+        </nav>
+      </div>
+      <div class="s-hode">
+        <p class="s-over">For the IT department</p>
+        <h1>Do not trust us. Check it.</h1>
+        <p class="s-ingress">
+          FrostCopy promises that the documents never leave the computer. Here are the commands that show it, what they should answer, and what each check actually proves.
+        </p>
+      </div>
+    </header>
+
+    <div class="s-kropp">
+      <nav class="s-innhold" aria-label="Contents">
+        <p>On this page</p>
+        <ol>
+          <li><a href="#kort">In short</a></li>
+          <li><a href="#fil">1 Is this our file?</a></li>
+          <li><a href="#signert">2 Signed and untouched?</a></li>
+          <li><a href="#rettigheter">3 What is it allowed to do?</a></li>
+          <li><a href="#snakker">4 Does it talk to anyone?</a></li>
+          <li><a href="#laget">5 What is it made of?</a></li>
+          <li><a href="#steng">Block it yourself</a></li>
+          <li><a href="#disk">What is on the disk</a></li>
+          <li><a href="#styring">Manage FrostCopy centrally</a></li>
+          <li><a href="#nokkel">The key in an organisation</a></li>
+          <li><a href="#logg">Audit log</a></li>
+          <li><a href="#kommando">Command line</a></li>
+          <li><a href="#krypto">Cryptography</a></li>
+          <li><a href="#krav">System requirements</a></li>
+          <li><a href="#si-fra">Found something?</a></li>
+        </ol>
+      </nav>
+
+      <main class="s-tekst" id="innhold">
+        <section class="s-kort" id="kort">
+          <h2>In short</h2>
+          <ul>
+            <li><b>No way out.</b> The program has no TLS, cannot look up a name on the network and does not listen on any port.</li>
+            <li><b>Everything is in the package.</b> Nothing is downloaded after installation. No updater, no usage statistics, no error reports.</li>
+            <li><b>You can block it.</b> Block all outbound traffic for FrostCopy. The program works just as well.</li>
+            <li><b>You can manage it.</b> One file decides what the users may choose themselves.</li>
+          </ul>
+        </section>
+
+        <div class="s-velg">
+          <p id="velg-tittel">Which system are you checking?</p>
+          <div class="s-velg-knapper" role="group" aria-labelledby="velg-tittel">
+            <button type="button" data-velg="mac" aria-pressed="false">Mac</button>
+            <button type="button" data-velg="windows" aria-pressed="false">Windows</button>
+          </div>
+        </div>
+        <p class="s-skjult" id="melding" role="status" aria-live="polite"></p>
+
+        <section class="s-del" id="fil">
+          <h2><span class="s-nr">1</span>Is this our file?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>shasum -a 256 ~/Downloads/FrostCopy*.dmg</pre></div>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-FileHash "$HOME\Downloads\FrostCopy*.exe"</pre></div>
+          </div>
+          <p class="s-fasit"><b>Expected:</b> the long string of digits and letters is the same as the checksum we publish for the file. FrostCopy for Ireland for Windows, Mac and Linux is coming soon, and the SHA-256 checksums will be published here together with the packages.</p>
+          <p class="s-beviser"><b>Proves:</b> that the file is the one we released. Nothing more. A checksum says nothing about what the program does.</p>
+        </section>
+
+        <section class="s-del" id="signert">
+          <h2><span class="s-nr">2</span>Is it signed by us, and untouched?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>codesign -dv --verbose=4 /Applications/FrostCopy.app 2>&amp;1 | grep -E "Format|TeamIdentifier|flags|Notarization"</pre></div>
+            <p class="s-fasit">
+              <b>Expected:</b> <code>Format=app bundle with Mach-O universal (x86_64 arm64)</code>,
+              <code>flags=0x10000(runtime)</code>, <code>Notarization Ticket=stapled</code> and
+              <code>TeamIdentifier=N5BKVM258S</code>.
+            </p>
+            <div class="cmd"><pre>spctl -a -vv /Applications/FrostCopy.app</pre></div>
+            <p class="s-fasit"><b>Expected:</b> <code>accepted</code> and <code>source=Notarized Developer ID</code>.</p>
+            <p>The package has two more executable files: the helper that looks after the key, and the PDF library. The helper is there once more, inside Contents/Helpers/FrostCopy.app. Check them too:</p>
+            <div class="cmd"><pre>codesign -dv /Applications/FrostCopy.app/Contents/MacOS/klart-hvelv 2>&amp;1 | grep TeamIdentifier
+codesign -dv /Applications/FrostCopy.app/Contents/Resources/bundled/engine/pdfium/libpdfium.dylib 2>&amp;1 | grep TeamIdentifier</pre></div>
+            <p class="s-fasit"><b>Expected:</b> the same <code>TeamIdentifier=N5BKVM258S</code> on both.</p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>The Windows edition is signed by ESBJUG CONSULT, with a timestamp.</p>
+            <div class="cmd"><pre>Get-AuthenticodeSignature "$HOME\Downloads\FrostCopy*.exe" | Format-List Status, SignerCertificate</pre></div>
+            <p class="s-fasit"><b>Expected:</b> <code>Valid</code>, and our name, ESBJUG CONSULT, in <code>SignerCertificate</code>.</p>
+          </div>
+          <p class="s-beviser">
+            <b>Proves:</b> that the code is ours and has not been changed afterwards. This is the test against a rebuilt copy. A copy with a network connection added is a different program, and the signature is what reveals it.
+          </p>
+        </section>
+
+        <section class="s-del" id="rettigheter">
+          <h2><span class="s-nr">3</span>What is it allowed to do?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>codesign -d --entitlements - --xml /Applications/FrostCopy.app 2>/dev/null | plutil -p -</pre></div>
+            <p class="s-fasit">
+              <b>Expected:</b> five lines, all <code>false</code>: <code>automation.apple-events</code>,
+              <code>cs.allow-dyld-environment-variables</code>, <code>cs.allow-jit</code>,
+              <code>cs.allow-unsigned-executable-memory</code> and <code>cs.disable-library-validation</code>. No iCloud entitlements, and neither <code>network.client</code> nor <code>network.server</code>.
+            </p>
+            <p>
+              <b>But read this:</b> FrostCopy does not run in the App Sandbox. So the missing network entitlements are only a piece of information. macOS does not enforce them without the sandbox, and a program with Hardened Runtime can in principle open a connection anyway. We would rather say so than have you find it yourselves. What actually settles the matter is steps 4 and 5, and the rule you set yourselves.
+            </p>
+            <p class="s-beviser"><b>Proves:</b> that the program cannot control other programs, cannot load foreign code, and has no access to iCloud. About the network it proves nothing on its own.</p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>
+              Windows has no corresponding entitlements for ordinary desktop programs. A program installed with an .exe does not ask for permission to use the network. It has it. That is why there is no command here.
+            </p>
+            <p class="s-beviser"><b>Proves:</b> nothing on Windows. The block is the firewall rule further down, and the proof that the program is silent is step 4.</p>
+          </div>
+        </section>
+
+        <section class="s-del" id="snakker">
+          <h2><span class="s-nr">4</span>Does it talk to anyone?</h2>
+          <p>Start FrostCopy, open a folder and let it read. Run the command while it is working.</p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>pgrep -lx frostcopy; lsof +c 0 -nP -a -i -c frostcopy -c com.apple.WebKit.Networking</pre></div>
+            <p class="s-fasit"><b>Expected:</b> one line with the process number and <code>frostcopy</code>, and nothing after it. FrostCopy does not have a single TCP or UDP socket.</p>
+            <p>
+              The FrostCopy window is drawn by WebKit, which comes with macOS. WebKit starts its own helper processes, and one of them is called <code>com.apple.WebKit.Networking</code>. It is included in the command, because it is the one that would fetch something if the window tried. It should be empty too.
+            </p>
+            <p>
+              If rows appear anyway, you probably have Safari, Mail or another program with WebKit open. They share the name of the helper process. Close them and run it again, or look at the process numbers: FrostCopy's helpers have the numbers right after FrostCopy.
+            </p>
+            <p>
+              Mind the <code>-a</code>. Without it, <code>lsof</code> reads the options as “or”, and you get the whole computer's traffic in the list. LuLu or Little Snitch gives the same answer, if you would rather see it that way.
+            </p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-Process frostcopy, tesseract -ErrorAction SilentlyContinue |
+ForEach-Object {
+  "$($_.ProcessName) is running (process $($_.Id))"
+  Get-NetTCPConnection -OwningProcess $_.Id -ErrorAction SilentlyContinue
+  Get-NetUDPEndpoint -OwningProcess $_.Id -ErrorAction SilentlyContinue
+}</pre></div>
+            <p class="s-fasit"><b>Expected:</b> only the lines that say <code>frostcopy</code> is running, and <code>tesseract</code> while FrostCopy reads an image. No tables of addresses and ports.</p>
+            <p>
+              The FrostCopy window is drawn by WebView2, which is Microsoft's and comes with Windows. It runs as separate processes, <code>msedgewebview2.exe</code>. The content of the window may not fetch anything: the rules in step 5 block that. But WebView2 itself can talk to Microsoft, for example about its own updates. That is Microsoft's traffic, and it contains nothing from FrostCopy or the documents. If you want it completely silent, block both in the firewall.
+            </p>
+            <p>Resource Monitor (<code>resmon</code>), the Network tab, gives the same answer if you would rather see it that way.</p>
+          </div>
+          <p class="s-beviser"><b>Proves:</b> that the program, as it runs on your computers, has no way out. This is the check we trust most ourselves.</p>
+        </section>
+
+        <section class="s-del" id="laget">
+          <h2><span class="s-nr">5</span>What is it made of?</h2>
+          <p>The whole package on Mac is 379 MB installed. This is everything in it:</p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>MacOS/frostcopy</code></dt>
+              <dd>The program. 111 MB, for both Intel and Apple processors. The shell is Rust (Tauri 2), the window is TypeScript.</dd>
+            </div>
+            <div>
+              <dt><code>MacOS/klart-hvelv</code></dt>
+              <dd>A small helper (0.2 MB) that wraps and unwraps the key with the keychain and the Secure Enclave.</dd>
+            </div>
+            <div>
+              <dt><code>setning/distilbert-english.onnx</code></dt>
+              <dd>The sentence model: based on distilbert-base-cased and fine-tuned for FrostCopy, 249 MB. It runs on the processor, inside the program itself. It is not a separate process.</dd>
+            </div>
+            <div>
+              <dt><code>setning/vocab.txt</code></dt>
+              <dd>The model's word list, 0.2 MB.</dd>
+            </div>
+            <div>
+              <dt><code>pdfium/libpdfium.dylib</code></dt>
+              <dd>PDFium, the library that reads and draws PDFs. 15 MB.</dd>
+            </div>
+          </dl>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>find /Applications/FrostCopy.app/Contents -type f -size +100k -exec ls -lh {} \;</pre></div>
+            <p class="s-fasit"><b>Expected:</b> the five files above, the key helper once more under Contents/Helpers, the licence file THIRD-PARTY-CODE.txt and the app icons. No <code>llama-server</code>, no <code>.gguf</code>, no other models.</p>
+          </div>
+          <p>
+            The program has no TLS and no HTTP client that can reach a host. It cannot listen on a port, and it cannot look up a name on the network. You can see that in the file itself:
+          </p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>otool -L /Applications/FrostCopy.app/Contents/MacOS/frostcopy | grep -iE 'curl|CFNetwork|Network\.framework|ssl'
+nm -u /Applications/FrostCopy.app/Contents/MacOS/frostcopy | grep -E '_(bind|listen|accept|getaddrinfo)$'</pre></div>
+            <p class="s-fasit"><b>Expected:</b> no lines from either of them.</p>
+            <p>
+              <b>What you will find, and what it is:</b> the file has <code>socket</code> and <code>connect</code>, and the word
+              <code>llama-server</code> is in it. These are remnants of a local language model that was taken out on 4 November 2026. The code that talked to it over a file socket is still there, but the package has no model to start. At startup FrostCopy looks for an old model process that may have been left running, with <code>pgrep</code>. A monitoring tool will notice that.
+            </p>
+            <p>
+              The file is also linked against <code>CloudKit</code> and <code>CoreData</code>. That comes from the window library, not from us. FrostCopy uses neither of them, and has no iCloud entitlements (step 3).
+            </p>
+          </div>
+          <p>If you have the source code, these are the places to look:</p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>src-tauri/Cargo.toml</code></dt>
+              <dd>No reqwest, hyper, rustls, native-tls or openssl. <code>tokio</code> is built without <code>net</code>. Some of the names are in <code>Cargo.lock</code> anyway, because a library has them for mobile. They are never built in. That is why <code>cargo tree</code> is what counts, and a search in the lock file is not.</dd>
+            </div>
+            <div>
+              <dt><code>tauri.conf.json</code></dt>
+              <dd>CSP for the window: <code>default-src 'self'</code> and <code>connect-src ipc: http://ipc.localhost</code>. The window may only talk to the program it is in. No frames, no embedded objects, no forms out. In addition, the program stops any navigation away from itself.</dd>
+            </div>
+            <div>
+              <dt><code>capabilities/default.json</code></dt>
+              <dd>The window is denied opening addresses and paths: <code>opener:deny-open-url</code>, <code>deny-open-path</code> and <code>deny-reveal-item-in-dir</code>. No http plugin, no updater.</dd>
+            </div>
+            <div>
+              <dt><code>scripts/sjekk-nett.sh</code></dt>
+              <dd>Runs before every build. It reads the compiled dependency graph, looks for addresses and for <code>std::net</code> in the Rust code, and stops the build if any of this comes back.</dd>
+            </div>
+          </dl>
+          <div class="cmd" data-hvor="In the folder with the source code"><pre>cd src-tauri &amp;&amp; cargo tree -e normal | grep -E 'reqwest|hyper|rustls|native-tls|openssl'</pre></div>
+          <p class="s-fasit"><b>Expected:</b> no hits.</p>
+          <p>
+            In one place FrostCopy opens a web address: when the user presses “Buy a licence”, the program asks the system to open <code>https://esbjugconsult.com/klart/us/buy?hva=…&amp;maskin=…</code> in the user's own browser. FrostCopy does not connect there itself. The machine code in the address is a SHA-256 of the computer's ID, and says nothing about the user or the documents.
+          </p>
+          <h3>The libraries that read the documents</h3>
+          <p>These receive files you did not make yourselves, so you will want to know about them:</p>
+          <dl class="s-tabell">
+            <div><dt>PDF</dt><dd>PDFium 158, pdf.js 4.10.38 and pdf-lib 1.17.1. pdf.js runs without <code>eval</code>.</dd></div>
+            <div><dt>Word</dt><dd>JSZip 3.10.1 and docx-preview 0.4.1.</dd></div>
+            <div><dt>Excel</dt><dd>SheetJS (xlsx) 0.18.5.</dd></div>
+            <div><dt>Images</dt><dd>Apple Vision on Mac. Windows' own text recognition and Tesseract 5 on Windows. Tesseract on Linux. Tesseract reads English and Irish.</dd></div>
+            <div><dt>Sentences</dt><dd>A fine-tuned distilbert-base-cased, run with tract-onnx 0.23.</dd></div>
+          </dl>
+          <p class="s-beviser"><b>Proves:</b> that there is no code in the program that can send anything. If you have the source, you can build it yourselves and compare.</p>
+        </section>
+
+        <section class="s-del" id="steng">
+          <h2>Block it yourself</h2>
+          <p>Do not trust us. Block outbound traffic for FrostCopy in the firewall or with MDM. The program works just as well. That is the whole point of building it this way.</p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <p>The firewall that comes with macOS only stops incoming traffic. Put the path in a rule in your MDM's network filter, or in LuLu or Little Snitch:</p>
+            <div class="cmd" data-hvor="Path"><pre>/Applications/FrostCopy.app/Contents/MacOS/frostcopy</pre></div>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>The installer (.exe) tries to add the rule itself. This is how you see whether it is there:</p>
+            <div class="cmd"><pre>Get-NetFirewallRule -DisplayName "FrostCopy*" | Get-NetFirewallApplicationFilter</pre></div>
+            <p class="s-fasit"><b>Expected:</b> a rule called “FrostCopy - block outbound”, with the path to <code>frostcopy.exe</code>.</p>
+            <p>If it is missing, add it like this, in PowerShell as administrator:</p>
+            <div class="cmd"><pre>New-NetFirewallRule -DisplayName "FrostCopy - block outbound" `
+  -Direction Outbound -Action Block -Profile Any `
+  -Program (Get-Process frostcopy).Path</pre></div>
+            <p>
+              Run it while FrostCopy is open, and the command finds the path itself. Also include <code>tesseract.exe</code>, which is in the folder <code>bundled</code> under FrostCopy. It is a separate executable file. Via Intune: make the same rules in a firewall policy under Endpoint security.
+            </p>
+          </div>
+          <p>When the rule is yours, you do not need to take our word for any of the above.</p>
+        </section>
+
+        <section class="s-del" id="disk">
+          <h2>What is on the disk</h2>
+          <p>
+            FrostCopy stores everything of its own in one folder per user. On Mac it is
+            <code>~/Library/Application Support/ie.frostcopy.app/</code>, on Windows
+            <code>%APPDATA%\ie.frostcopy.app\</code>.
+          </p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>prosjekter/</code></dt>
+              <dd>What the user has decided in each folder, and the text FrostCopy has read from the files. The latter is personal information. Everything is encrypted with AES-256-GCM, and the folders have names that cannot be read back to the path. A project that is not used is forgotten after 30 days.</dd>
+            </div>
+            <div>
+              <dt><code>pseudonym/</code></dt>
+              <dd>The key (<code>nokkel.nokkelring</code> on Mac, <code>nokkel.dpapi</code> on Windows), earlier keys that have been set aside, and the number book. The number book links codes to numbers and has no names.</dd>
+            </div>
+            <div>
+              <dt><code>secure-enclave.nokkel</code></dt>
+              <dd>On Macs with a Secure Enclave: a reference to a key in the chip. It is useless on another computer.</dd>
+            </div>
+            <div>
+              <dt><code>ror/</code></dt>
+              <dd>The user's own marks and the texts from the Text tool. Encrypted.</dd>
+            </div>
+            <div>
+              <dt><code>sikkerhetskopier/</code></dt>
+              <dd>Copies of the originals, taken before the scan when the user asks for it. The content of each file is encrypted with AES-256-GCM. <b>The file and folder names are in plain text.</b> The copies are not deleted by themselves. FrostCopy reminds the user about them after 30 days.</dd>
+            </div>
+            <div>
+              <dt><code>revisjon/</code></dt>
+              <dd>The audit log, when it is turned on. One file per month, the last 13 months.</dd>
+            </div>
+            <div>
+              <dt>Three small files</dt>
+              <dd><code>aktivering.json</code> (the licence code), <code>innstillinger.json</code> and <code>vindu.json</code>. Not encrypted, and with nothing from the documents.</dd>
+            </div>
+          </dl>
+          <h3>How the keys are protected</h3>
+          <p>
+            On Mac the key is wrapped with another key that is in the keychain (the service
+            <code>no.klart.pseudonym.ie.frostcopy.app</code>), and with the Secure Enclave where there is one. On Windows, DPAPI for the user is used. That protects against another user and against a disk that goes astray. It does not protect against a program that runs as the same user. That is the limit of both the keychain and DPAPI, and you should know about it.
+          </p>
+          <h3>Backup and search</h3>
+          <p>
+            <code>prosjekter/</code>, <code>sikkerhetskopier/</code> and <code>revisjon/</code> are kept out of Spotlight and Time Machine (and Windows Search). <code>ror/</code> and <code>pseudonym/</code> are included in Time Machine. They are encrypted, and the key file can only be opened with the keychain on the computer it came from.
+          </p>
+          <h3>What FrostCopy adds to the system</h3>
+          <dl class="s-tabell">
+            <div><dt>Services in Finder</dt><dd>On Mac, FrostCopy writes four services to <code>~/Library/Services/</code> at startup: “Clean with FrostCopy”, “Restore with FrostCopy”, “Clean Text with FrostCopy” and “Restore Text with FrostCopy”. The last two receive selected text from other programs. With <code>"kommandolinje": false</code> in the policy, all four are removed.</dd></div>
+            <div><dt>Addresses and file types</dt><dd>FrostCopy accepts <code>frostcopy://</code>links, and the file types <code>.frostcopyielicence</code> and <code>.frostcopyiemarks</code>. A link can suggest a licence. The user is always asked, and a key package still needs its code.</dd></div>
+            <div><dt>Nothing in the background</dt><dd>No service, no startup entry and no process that stays when the window is closed.</dd></div>
+            <div><dt>What your monitoring will see</dt><dd>FrostCopy starts some short helpers from the system: <code>klart-hvelv</code> (the key), <code>ioreg</code> (the machine code), <code>id</code> and <code>scutil</code> (user and computer name for the list of changes), <code>tmutil</code> (keeping folders out of Time Machine), <code>open</code> (showing the copy folder) and <code>osascript</code> (notifications).</dd></div>
+          </dl>
+          <h3>Remove everything</h3>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <p>Delete the program, and then this:</p>
+            <div class="cmd"><pre>rm -rf ~/Library/Application\ Support/ie.frostcopy.app ~/Library/WebKit/ie.frostcopy.app ~/Library/Caches/ie.frostcopy.app
+rm -f ~/Library/Preferences/ie.frostcopy.app.plist
+rm -rf ~/Library/Services/*FrostCopy.workflow
+security delete-generic-password -s no.klart.pseudonym.ie.frostcopy.app</pre></div>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Uninstall the program, and then delete <code>%APPDATA%\ie.frostcopy.app\</code>, <code>%LOCALAPPDATA%\ie.frostcopy.app\</code> and <code>%ProgramData%\FrostCopy\</code>.</p>
+          </div>
+          <p class="s-notis varsel">
+            <b>Keep the key safe first.</b> If the data folder is deleted before the key is written down or saved as a key file, no copy with codes can ever be restored.
+          </p>
+        </section>
+
+        <section class="s-del" id="styring">
+          <h2>Manage FrostCopy centrally</h2>
+          <p>
+            One file decides what the user otherwise chooses. Deploy it with MDM, Intune, group policy or a script. Both locations require an administrator to write, so the user cannot undo what you have locked. The file name and the field names are Norwegian in this version.
+          </p>
+          <dl class="s-tabell">
+            <div><dt>Mac</dt><dd><code>/Library/Application Support/FrostCopy/retningslinjer.json</code></dd></div>
+            <div><dt>Windows</dt><dd><code>%ProgramData%\FrostCopy\retningslinjer.json</code></dd></div>
+          </dl>
+          <div class="cmd" data-hvor="retningslinjer.json"><pre>{
+  "versjon": 1,
+  "virksomhet": "Acme Ltd",
+  "alltidSkjult": ["navn", "fnr", "helse"],
+  "kodeform": "kort",
+  "ansikterAlltid": true,
+  "utenSkanning": false,
+  "glemEtterDager": 30,
+  "revisjonslogg": true,
+  "nokkelEksport": false
+}</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>versjon</code></dt><dd>Required. Only <code>1</code> exists.</dd></div>
+            <div><dt><code>virksomhet</code></dt><dd>The name shown next to what is locked: “Set by Acme Ltd”.</dd></div>
+            <div><dt><code>alltidSkjult</code></dt><dd>The groups that are always hidden. They cannot be turned off, and nothing in them can be set to keep. The groups are called <code>navn</code>, <code>fnr</code>, <code>kontakt</code>, <code>helse</code>, <code>setninger</code>, <code>skilt</code>, <code>penger</code>, <code>hemmelig</code>, <code>sted</code>, <code>dato</code>, <code>org</code> and <code>sak</code>.</dd></div>
+            <div><dt><code>standardGrupper</code></dt><dd>The groups that are on when a folder is opened for the first time. Without it: FrostCopy's own.</dd></div>
+            <div><dt><code>kodeform</code></dt><dd><code>lapp</code>, <code>kort</code> or <code>full</code>. Without it: the user chooses.</dd></div>
+            <div><dt><code>ansikterAlltid</code></dt><dd>Faces are always pixelated, and none can be set to keep.</dd></div>
+            <div><dt><code>utenSkanning</code></dt><dd><code>false</code> requires that FrostCopy always reads the files. By default the user can also mark everything by hand.</dd></div>
+            <div><dt><code>prosjekter</code></dt><dd><code>false</code>: FrostCopy remembers nothing about the folders between sessions.</dd></div>
+            <div><dt><code>glemEtterDager</code></dt><dd>How long an unused project is kept, 1 to 365. The default is 30.</dd></div>
+            <div><dt><code>kommandolinje</code></dt><dd><code>false</code> turns off the command line and the watched folder.</dd></div>
+            <div><dt><code>revisjonslogg</code></dt><dd>Turns on the log. <code>revisjonsmappe</code> also gives a copy on a shared drive.</dd></div>
+            <div><dt><code>rapportJson</code></dt><dd>Writes <code>rapport.json</code> next to <code>rapport.txt</code> in every copy folder.</dd></div>
+            <div><dt><code>nokkelEksport</code></dt><dd><code>false</code>: nobody can take the key out as words or as a file. New computers are enrolled by the key manager.</dd></div>
+          </dl>
+          <p>
+            The licence can sit next to it, in <code>licence.frostcopy</code>. Then no user needs to paste anything in. If the user has a valid licence of their own, it takes precedence.
+          </p>
+          <p class="s-notis varsel">
+            <b>If the file cannot be read, FrostCopy does not start.</b> A typo, an unknown field or a value outside what is allowed must not lead to FrostCopy cleaning with less than you decided. The error message says which field it concerns.
+          </p>
+        </section>
+
+        <section class="s-del" id="nokkel">
+          <h2>The key in an organisation</h2>
+          <p>
+            The codes in the copies can only be turned back into names with the key. In an organisation everyone should have the same one. Otherwise the same person gets different codes with different colleagues.
+          </p>
+          <dl class="s-tabell">
+            <div><dt>Key manager</dt><dd>Makes the organisation's key, shares it and enrolls colleagues.</dd></div>
+            <div><dt>Member</dt><dd>Uses the key. The program does not let a member take it out. That is a rule in the program and it is not cryptography: the computer has the whole key.</dd></div>
+            <div><dt>Key package</dt><dd>The key encrypted with a key code of twelve characters (Argon2id and AES-256-GCM). The package and the code are sent separately. The code can be used several times, so treat it like the key.</dd></div>
+            <div><dt>Enrolment without a network</dt><dd>The colleague's computer makes a request. The key manager answers with an enrolment that only that computer can open (X25519). A check code of six digits is read aloud, so both know they are talking to the right computer.</dd></div>
+            <div><dt>Recovery</dt><dd>24 words on paper, or a key file locked with a passphrase (Argon2id and AES-256-GCM).</dd></div>
+          </dl>
+          <p class="s-notis varsel">
+            <b>Silent rollout has a price.</b> You can put the key package next to <code>retningslinjer.json</code>
+            and write the key code in the file (<code>nokkelkode</code>). Then FrostCopy starts using the key without the user doing anything. But then the key is no safer than the folder: whoever can read both files has the organisation's key.
+          </p>
+        </section>
+
+        <section class="s-del" id="logg">
+          <h2>Audit log</h2>
+          <p>
+            The log says what FrostCopy has done, when and by whom. It has nothing from the documents: no file names, no paths and no values. It is off until you turn it on with
+            <code>"revisjonslogg": true</code>.
+          </p>
+          <div class="cmd" data-hvor="One line in the log"><pre>{"format":1,"tid":"2026-11-05T11:50:25.332Z","hendelse":"rens","via":"kommandolinjen",
+ "kilde":"DXmRKTRw4ZJMiUixyVeUYA","filer":18,"skrevet":14,"ikkeLevert":4,"steder":193,
+ "skjult":{"person":140,"fnr":19,"health":25},"kodeform":"kort","grupper":["helse","navn","fnr"],
+ "ansikter":true,"gjennomgått":false,"bruker":"olivia","maskin":"OLIVIA-MAC","klart":"0.1.0"}</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>hendelse</code></dt><dd><code>rens</code>, <code>prøve</code>, <code>skann</code>, <code>glem</code>, <code>tilbake</code> or <code>logg</code> (the list of changes has been exported).</dd></div>
+            <div><dt><code>via</code></dt><dd><code>appen</code>, <code>kommandolinjen</code> or <code>vaktmappen</code>.</dd></div>
+            <div><dt><code>kilde</code></dt><dd>A fingerprint of the folder, computed with a key on the computer. The same case has the same value in every line on that computer, but the path cannot be read out of it. Another computer gives a different value for the same folder.</dd></div>
+            <div><dt><code>bruker</code>, <code>maskin</code>, <code>tid</code></dt><dd>Set by the program itself, never by the window.</dd></div>
+            <div><dt>Where</dt><dd><code>revisjon/YYYY-MM.jsonl</code> in the data folder. With <code>revisjonsmappe</code> also <code>&lt;maskin&gt;-&lt;bruker&gt;.jsonl</code> on a shared drive. FrostCopy does not create that folder. If the drive is not connected, the local log says so.</dd></div>
+          </dl>
+          <p class="s-notis">
+            <b>The log is an ordinary text file.</b> The user can change it. If you need a log that cannot be touched, point <code>revisjonsmappe</code> to a location where the user can only append.
+          </p>
+        </section>
+
+        <section class="s-del" id="kommando">
+          <h2>Command line and watched folder</h2>
+          <p>
+            The same program, with no window. The channel in is the command line. The channel out is stdout, stderr and the files you point to. Nothing opens a port.
+          </p>
+          <div class="cmd"><pre>FROSTCOPY=/Applications/FrostCopy.app/Contents/MacOS/frostcopy
+
+$FROSTCOPY scan ~/Cases/2026-114                          # read ahead
+$FROSTCOPY clean ~/Cases/2026-114 --out ~/For-AI          # make cleaned copies
+$FROSTCOPY clean ~/Cases/2026-114 --out ~/For-AI --changed-only
+$FROSTCOPY watch ~/Inbox --out ~/For-AI                   # watched folder
+$FROSTCOPY restore ~/For-AI/2026-114-clean                # restore with the key
+$FROSTCOPY forget ~/Cases/2026-114                        # forget everything about the case</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>--codes</code></dt><dd><code>lapp</code>, <code>kort</code>, <code>full</code> or <code>svart</code>.</dd></div>
+            <div><dt><code>--groups</code></dt><dd>What is replaced, such as <code>navn,fnr,helse</code>.</dd></div>
+            <div><dt><code>--dry-run</code></dt><dd>Does everything, including the check of each copy, but writes nothing.</dd></div>
+            <div><dt><code>--no-project</code></dt><dd>Remembers nothing, and does not use what was decided in the window.</dd></div>
+            <div><dt>The reply</dt><dd>One JSON line on stdout, with <code>format: 1</code>. Progress goes to stderr, as numbers only.</dd></div>
+            <div><dt>Exit code</dt><dd><code>0</code>: everything was delivered. <code>2</code>: something was held back, because a copy did not pass the check or a file could not be read. <code>1</code>: error.</dd></div>
+          </dl>
+        </section>
+
+        <section class="s-del" id="krypto">
+          <h2>Cryptography</h2>
+          <dl class="s-tabell">
+            <div><dt>The key</dt><dd>32 random bytes from the operating system. Subkeys with HKDF-SHA256.</dd></div>
+            <div><dt>The codes</dt><dd>Who it is: HMAC-SHA256. The text that was there: AES-SIV (RFC 5297), which is deterministic and authenticated.</dd></div>
+            <div><dt>The key on disk</dt><dd>Mac: the keychain and the Secure Enclave. Windows: DPAPI.</dd></div>
+            <div><dt>Key file</dt><dd>Argon2id (64 MiB, 3 rounds) and AES-256-GCM.</dd></div>
+            <div><dt>The 24 words</dt><dd>A 256-bit key and an 8-bit checksum, 11 bits per word, from a list of 2,048 Norwegian words.</dd></div>
+            <div><dt>Enrolment</dt><dd>X25519.</dd></div>
+            <div><dt>Projects, your marks and texts</dt><dd>AES-256-GCM, with keys from HKDF-SHA256. The file names are HMAC fingerprints.</dd></div>
+            <div><dt>Backups, and the pixels under the boxes in a copy</dt><dd>AES-256-GCM.</dd></div>
+            <div><dt>The licence code</dt><dd>Ed25519. The signature is checked on the computer.</dd></div>
+          </dl>
+          <p>All of it is well-known algorithms from open libraries (RustCrypto and dalek). We have not made anything of our own.</p>
+        </section>
+
+        <section class="s-del" id="krav">
+          <h2>System requirements</h2>
+          <dl class="s-tabell">
+            <div><dt>Mac</dt><dd>macOS 13 or later. Intel and Apple processors in the same package.</dd></div>
+            <div><dt>Windows</dt><dd>Windows 10 or 11, 64-bit with Intel or AMD. Installed for all users, with an .exe.</dd></div>
+            <div><dt>Linux</dt><dd>A .deb package for amd64 (Intel or AMD). It depends on tesseract-ocr and xdg-utils, which the package manager installs.</dd></div>
+            <div><dt>Memory</dt><dd>FrostCopy uses the most memory while the sentence model is loaded. We recommend 8 GB in the computer.</dd></div>
+            <div><dt>Disk</dt><dd>The size of the installed program is given with the packages. In addition come backups and what FrostCopy remembers about the folders.</dd></div>
+            <div><dt>Graphics card</dt><dd>Not needed. Everything runs on the processor.</dd></div>
+            <div><dt>Network</dt><dd>Not needed, neither for installation, activation nor use.</dd></div>
+          </dl>
+          <p>
+            The first time FrostCopy reads images on a Mac, macOS can take a few minutes to prepare its own text recognition. It happens once.
+          </p>
+          <p>Black redaction as PDF, the services in Finder and licence links are only on Mac for now.</p>
+          <p>An update is a new installer you fetch yourselves, when you want. FrostCopy does not look for new versions.</p>
+        </section>
+
+        <section class="s-del" id="si-fra">
+          <h2>Found something?</h2>
+          <p>
+            Write to <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a>. We answer personally, and would rather hear it from you than from a customer. See also <a href="/.well-known/security.txt">security.txt</a>.
+          </p>
+          <p class="s-dato">Last changed 27 November 2026. The Mac answers in steps 2, 3 and 5 were run against the US edition’s build from 20 November 2026, which is made the same way. The Irish edition has not been built yet, so its packages have not been run through them.</p>
+        </section>
+      </main>
+    </div>
+
+    <footer class="s-bunn">
+      <p class="s-bunn-merke"><i>FrostCopy</i> <span>by Tidemann Esbjug</span></p>
+      <nav aria-label="More about FrostCopy">
+        <a href="/frostcopy-ie/">Home</a>
+        <a href="/frostcopy-ie/what-it-catches.html">What FrostCopy catches</a>
+        <a href="/frostcopy-ie/privacy/">Privacy</a>
+        <a href="/frostcopy-ie/terms/">Terms</a>
+      </nav>
+      <p class="s-bunn-liten">Made in Norway</p>
+    </footer>
+
+    <script src="til-it.js"></script>
+  </body>
+</html>

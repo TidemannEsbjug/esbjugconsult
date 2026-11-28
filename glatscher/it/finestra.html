@@ -1,0 +1,383 @@
+<!doctype html>
+<!-- Programvinduet fra /klart alene (eieren 12.11.2026), til heroen på forsiden (esbjugconsult.com/), der det står i en iframe.
+     Kopiert fra GDPR/index.html (figure.kv); endres vinduet der, kjør pv.py igjen eller kopier det over hit.
+     Samme stiler og skript som på /klart, pluss programvindu.css og programvindu.js (høyden til forsiden). -->
+<html lang="it-CH">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Glatscher – la finestra del programma</title>
+    <link rel="icon" type="image/png" href="/glatscher/favicon.png" />
+    <link rel="alternate" hreflang="de-CH" href="https://esbjugconsult.com/glatscher/programmfenster.html" />
+    <link rel="alternate" hreflang="fr-CH" href="https://esbjugconsult.com/glatscher/fr/apercu.html" />
+    <link rel="alternate" hreflang="it-CH" href="https://esbjugconsult.com/glatscher/it/finestra.html" />
+    <link rel="stylesheet" href="/glatscher/fonts.css" />
+    <link rel="stylesheet" href="/glatscher/taal.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="forhandsvisning.css" />
+    <link rel="stylesheet" href="programvindu.css" />
+  </head>
+  <body class="programvindu">
+    <nav class="taal taal-fast" aria-label="Lingua / Sprache / Langue"><a href="/glatscher/programmfenster.html" hreflang="de" lang="de">DE</a><span class="taal-streep" aria-hidden="true">|</span><a href="/glatscher/fr/apercu.html" hreflang="fr" lang="fr">FR</a><span class="taal-streep" aria-hidden="true">|</span><span aria-current="true">IT</span></nav>
+        <figure class="kv avklart" data-scene="gjennom">
+          <div class="kv-ramme">
+          <div class="kv-app" aria-hidden="true">
+            <header class="kv-chrome">
+              <span class="kv-lys"><i></i><i></i><i></i></span>
+              <span class="kv-merke"><img src="/glatscher/glatscher-ikon.png" alt="" />Glatscher</span>
+              <span class="kv-sok"><svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.6" /><path d="M10.4 10.4L14 14" /></svg>Cerca in tutti i file della cartella<kbd>⌘F</kbd></span>
+              <span class="kv-hoyre">
+                <span class="kv-lagret">✓ Salvataggio automatico</span>
+                <span class="kv-lysknapp">Analisi</span>
+                <span class="kv-lysknapp" data-kv="hjem">Schermata iniziale</span>
+                <span class="kv-lysknapp kv-sporsmal">?</span>
+              </span>
+            </header>
+
+            <div class="kv-flate">
+              <!-- Startskjermen: de tre verktøyene, og det som ble tilbakeført under dem -->
+              <div class="kv-scene kv-s-start">
+                <div class="kv-start-inn">
+                  <div class="kv-kortene">
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-rens.png" alt="" />
+                      <h4>Oscura</h4>
+                      <span class="kv-hvit" data-kv="velg">Scegli una cartella o dei documenti…</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-tilbakefor.png" alt="" />
+                      <h4>Ripristina</h4>
+                      <span class="kv-hvit" data-kv="tbvelg">Scegli le copie…</span>
+                    </div>
+                    <div class="kv-startkort">
+                      <img src="/alles-klar/assets/visning/ikon-tekst.png" alt="" />
+                      <h4>Strumento testo</h4>
+                      <span class="kv-hvit" data-kv="tekstvelg">Apri…</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Editoren: filene, dokumentet og registeret for mappen -->
+              <div class="kv-scene kv-s-editor">
+                <aside class="kv-filer">
+                  <div class="kv-filer-topp"><b>Pratiche clienti</b><span>10 file</span></div>
+                  <ul data-kv="filer">
+                    <li data-steder="30"><i class="kv-fikon w">W</i><span class="kv-fnavn">01-contratto-lavoro-acme.docx</span><span class="kv-fmeta">30 occorrenze</span><i class="kv-ring"></i></li>
+                    <li data-steder="41" data-uavklart="2" data-dok="vedtak" class="valgt"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">02-decisione-curatela.pdf</span><span class="kv-fmeta">41 occorrenze</span><i class="kv-ring"></i></li>
+                    <li data-steder="45" data-ekstra="1 targa" data-dok="epost"><i class="kv-fikon epost">@</i><span class="kv-fnavn">03-scambio-email.eml</span><span class="kv-fmeta">45 occorrenze</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon tekst">T</i><span class="kv-fnavn">04-nota-personale.md</span><span class="kv-fmeta">21 occorrenze</span><i class="kv-ring"></i></li>
+                    <li data-steder="21"><i class="kv-fikon w">W</i><span class="kv-fnavn">05-certificato-medico.docx</span><span class="kv-fmeta">21 occorrenze</span><i class="kv-ring"></i></li>
+                    <li data-steder="16"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">06-fattura-studio-aurora.pdf</span><span class="kv-fmeta">16 occorrenze</span><i class="kv-ring"></i></li>
+                    <li data-steder="82" data-dok="liste"><i class="kv-fikon x">X</i><span class="kv-fnavn">08-elenco-clienti.xlsx</span><span class="kv-fmeta">82 occorrenze</span><i class="kv-ring"></i></li>
+                    <li data-steder="43" data-ekstra="2 volti" data-dok="ppt"><i class="kv-fikon p">P</i><span class="kv-fnavn">09-riunione-avanzamento.pptx</span><span class="kv-fmeta">43 occorrenze · 2 volti</span><i class="kv-ring"></i></li>
+                    <li data-steder="18"><i class="kv-fikon pdf">PDF</i><span class="kv-fnavn">11-allegato-scansionato.pdf</span><span class="kv-fmeta">18 occorrenze</span><i class="kv-ring"></i></li>
+                    <li data-steder="3" data-ekstra="1 volto"><i class="kv-fikon bilde">JPG</i><span class="kv-fnavn">16-badge-accesso.jpg</span><span class="kv-fmeta">3 occorrenze · 1 volto</span><i class="kv-ring"></i></li>
+                  </ul>
+                </aside>
+
+                <div class="kv-midt">
+                  <div class="kv-docket">
+                    <b data-kv="docnavn">02-decisione-curatela.pdf</b><span class="kv-type" data-kv="doctype">PDF</span>
+                    <span class="kv-kopimerke" data-kv="kopimerke">La copia · elenco dei codici alla fine</span>
+                    <span class="kv-verktoy">
+                      <span class="kv-zoom">− &nbsp;86 %&nbsp; +</span>
+                      <span class="kv-hvit" data-kv="vis">Mostra la copia</span>
+                    </span>
+                  </div>
+                  <div class="kv-bord">
+                    <div class="kv-pille" data-kv="pille"><i></i>Lettura <b data-kv="leser">01-contratto-lavoro-acme.docx</b><span data-kv="nr">1 di 10</span></div>
+
+                    <!-- PDF: decisione di curatela (ARP) -->
+                    <article class="kv-side vist" data-dok="vedtak">
+                      <i class="kv-lesehode"></i>
+                      <p class="kv-avsender">Autorità regionale di protezione 5 · Lugano</p>
+                      <h4>Decisione: istituzione di una curatela di rappresentanza</h4>
+                      <p class="kv-ref">Inc. <mark class="s"><span class="o">2026-0187</span><span class="k">[Numero di pratica 4906498]</span></mark> · 14.03.2026</p>
+                      <h5>Persona interessata</h5>
+                      <dl>
+                        <dt>Nome</dt><dd><mark class="s"><span class="o">Giulia Bianchi</span><span class="k">[Nome 6311794]</span></mark></dd>
+                        <dt>Numero AVS</dt><dd><mark class="s"><span class="o">756.3812.0471.59</span><span class="k">[Numero AVS 2215087]</span></mark></dd>
+                        <dt>Indirizzo</dt><dd><mark class="s"><span class="o">Via Ceresio 22, 6900 Lugano</span><span class="k">[Indirizzo 8950779]</span></mark></dd>
+                      </dl>
+                      <h5>Curatore</h5>
+                      <dl>
+                        <dt>Nome</dt><dd><mark class="s"><span class="o">Luca Ferrari</span><span class="k">[Nome 2656447]</span></mark>, <mark class="b" data-kv="arbeid"><span class="o">Studio Legale Aurora</span><span class="k">[Ente 5521093]</span></mark></dd>
+                        <dt>E-mail</dt><dd><mark class="s"><span class="o">luca.ferrari@studioaurora.test</span><span class="k">[E-mail 3278678]</span></mark></dd>
+                        <dt>Telefono</dt><dd><mark class="s"><span class="o">091 555 01 34</span><span class="k">[Telefono 6289990]</span></mark></dd>
+                      </dl>
+                      <h5>Motivi</h5>
+                      <p><mark class="s" data-kv="merknad"><span class="o">La persona interessata è ricoverata da gennaio per una depressione e ha bisogno di aiuto nella gestione delle sue finanze.</span><span class="k">[Dato personale 2760056]</span></mark> La curatela comprende la gestione del saldo sul conto <mark class="s"><span class="o">CH47 0839 0012 3456 7890 1</span><span class="k">[IBAN 7719741]</span></mark>.</p>
+                      <p>Contro la presente decisione è dato reclamo entro 30 giorni dalla notificazione.</p>
+                    </article>
+
+                    <!-- E-post -->
+                    <article class="kv-side kv-epost" data-dok="epost">
+                      <i class="kv-lesehode"></i>
+                      <dl class="kv-hode">
+                        <dt>Da</dt><dd><mark class="s"><span class="o">Chiara Russo</span><span class="k">[Nome 7320430]</span></mark> &lt;<mark class="s"><span class="o">chiara.russo@studioaurora.test</span><span class="k">[E-mail 5102284]</span></mark>&gt;</dd>
+                        <dt>A</dt><dd><mark class="s"><span class="o">Giulia Bianchi</span><span class="k">[Nome 6311794]</span></mark></dd>
+                        <dt>Oggetto</dt><dd><b>Seguito al nostro colloquio</b></dd>
+                        <dt>Data</dt><dd>12 marzo 2026, 09:14</dd>
+                      </dl>
+                      <p>Gentile <mark class="s"><span class="o">Giulia</span><span class="k">[Nome 6311794]</span></mark>,</p>
+                      <p>grazie per il colloquio di ieri. Come d'accordo Le invio una copia del certificato medico. Mi trova per tutta la settimana al numero <mark class="s"><span class="o">091 555 01 34</span><span class="k">[Telefono 6289990]</span></mark>.</p>
+                      <p>L'auto aziendale è disponibile da lunedì. La foto è in allegato.</p>
+                      <p>Cordiali saluti<br /><mark class="s"><span class="o">Chiara Russo</span><span class="k">[Nome 7320430]</span></mark><br />Aurora Servizi SA · <mark class="s"><span class="o">Viale Stazione 8, 6500 Bellinzona</span><span class="k">[Indirizzo 6113936]</span></mark></p>
+                      <figure class="kv-vedlegg">
+                        <span class="kv-bilramme"><img src="/alles-klar/assets/visning/bil.jpg" alt="" /><span class="kv-skilt" data-kv="skilt"><img src="/alles-klar/assets/visning/bil-skilt.png" alt="" /><em data-kv="skiltlapp">Targa · viene oscurata</em></span></span>
+                        <figcaption>auto.jpg · 1,2 MB</figcaption>
+                      </figure>
+                    </article>
+
+                    <!-- Regneark -->
+                    <article class="kv-side kv-ark" data-dok="liste">
+                      <i class="kv-lesehode"></i>
+                      <table>
+                        <thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead>
+                        <tbody>
+                          <tr><th>1</th><td><b>Nome</b></td><td><b>Numero AVS</b></td><td><b>Telefono</b></td><td><b>Conto</b></td></tr>
+                          <tr><th>2</th><td><mark class="s"><span class="o">Marco Bernasconi</span><span class="k">[Nome 1180342]</span></mark></td><td><mark class="s"><span class="o">756.9044.1726.38</span><span class="k">[Numero AVS 4402918]</span></mark></td><td><mark class="s"><span class="o">079 555 01 42</span><span class="k">[Telefono 2290174]</span></mark></td><td><mark class="s"><span class="o">000012345678</span><span class="k">[Conto bancario 6630215]</span></mark></td></tr>
+                          <tr><th>3</th><td><mark class="s"><span class="o">Francesca Pedrazzini</span><span class="k">[Nome 5523107]</span></mark></td><td><mark class="s"><span class="o">756.5123.9804.77</span><span class="k">[Numero AVS 8817330]</span></mark></td><td><mark class="s"><span class="o">076 555 01 78</span><span class="k">[Telefono 1047782]</span></mark></td><td><mark class="s"><span class="o">000098765432</span><span class="k">[Conto bancario 3359810]</span></mark></td></tr>
+                          <tr><th>4</th><td><mark class="s"><span class="o">Youssef El Amrani</span><span class="k">[Nome 9918066]</span></mark></td><td><mark class="s"><span class="o">756.2770.4519.85</span><span class="k">[Numero AVS 2265419]</span></mark></td><td><mark class="s"><span class="o">078 555 01 11</span><span class="k">[Telefono 7714203]</span></mark></td><td><mark class="s"><span class="o">000045678901</span><span class="k">[Conto bancario 9046631]</span></mark></td></tr>
+                          <tr><th>5</th><td><mark class="s"><span class="o">Elena Rusconi</span><span class="k">[Nome 3301459]</span></mark></td><td><mark class="s"><span class="o">756.6309.1827.46</span><span class="k">[Numero AVS 6158820]</span></mark></td><td><mark class="s"><span class="o">077 555 01 66</span><span class="k">[Telefono 4420987]</span></mark></td><td><mark class="s"><span class="o">000023456789</span><span class="k">[Conto bancario 1872264]</span></mark></td></tr>
+                          <tr><th>6</th><td><mark class="s"><span class="o">Paolo Lepori</span><span class="k">[Nome 8045126]</span></mark></td><td><mark class="s"><span class="o">756.1488.6293.03</span><span class="k">[Numero AVS 5590743]</span></mark></td><td><mark class="s"><span class="o">079 555 01 27</span><span class="k">[Telefono 3368201]</span></mark></td><td><mark class="s"><span class="o">000067890123</span><span class="k">[Conto bancario 7701358]</span></mark></td></tr>
+                          <tr><th>7</th><td></td><td></td><td></td><td></td></tr>
+                          <tr><th>8</th><td></td><td></td><td></td><td></td></tr>
+                        </tbody>
+                      </table>
+                    </article>
+
+                    <!-- PowerPoint: lysbildet fra fellesturen, med to ansikter -->
+                    <article class="kv-side kv-ppt" data-dok="ppt">
+                      <i class="kv-lesehode"></i>
+                      <div class="kv-lysbilde">
+                        <p class="kv-lb-tittel">La gita aziendale di febbraio</p>
+                        <p class="kv-lb-under">Grazie a <mark class="s"><span class="o">Sara Greco</span><span class="k">[Nome 3390415]</span></mark> e <mark class="s"><span class="o">Davide Marino</span><span class="k">[Nome 8812706]</span></mark> per l'organizzazione!</p>
+                        <div class="kv-lb-foto">
+                          <img src="/alles-klar/assets/visning/fagtur.jpg" alt="" />
+                          <span class="kv-ansikt a1" data-kv="ansikt1"><img src="/alles-klar/assets/visning/fagtur-ansikt-1.jpg" alt="" /><em>Volto · viene pixelato</em></span>
+                          <span class="kv-ansikt a2" data-kv="ansikt2"><img src="/alles-klar/assets/visning/fagtur-ansikt-2.jpg" alt="" /><em>Volto · viene pixelato</em></span>
+                        </div>
+                        <p class="kv-lb-bunn">Riunione di avanzamento · Diapositiva 4 di 12</p>
+                      </div>
+                    </article>
+
+                    <div class="kv-gjennom" data-kv="gjennom">
+                      <i class="kv-gjennom-strek" data-kv="gstrek"></i>
+                      <p class="kv-gjennom-topp"><code data-kv="gkode">Dato personale 2760056</code><b>In sospeso</b><span data-kv="gnr">1 di 2</span></p>
+                      <p class="kv-gjennom-hvorfor" data-kv="ghvorfor">Glatscher non è sicuro che si tratti di «Dato personale». · 02-decisione-curatela.pdf</p>
+                      <p class="kv-gjennom-knapper">
+                        <span class="kv-btn" data-kv="skjul">Oscura <kbd>↵</kbd></span>
+                        <span class="kv-btn hvit" data-kv="lastaa">Lascia <kbd>B</kbd></span>
+                        <span class="kv-btn hvit av">Indietro <kbd>←</kbd></span>
+                        <span class="kv-btn hvit">Avanti <kbd>→</kbd></span>
+                        <span class="kv-btn hvit">Fine <kbd>Esc</kbd></span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <aside class="kv-panel">
+                  <div class="kv-uavklart" data-kv="uavklart">
+                    <h5><svg viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" rx="2" /><path d="M6 2.5v11" /></svg>In sospeso</h5>
+                    <div class="kv-uboks">
+                      <p data-kv="u1"><code>Dato personale 2760056</code><span>La persona interessata è ricoverata da gennaio …</span><em>1 in sospeso</em></p>
+                      <p data-kv="u2"><code>Ente 5521093</code><span>Studio Legale Aurora</span><em>1 in sospeso</em></p>
+                      <span class="kv-btn bred" data-kv="gaa">Verifica tutte le 2 <kbd>G</kbd></span>
+                    </div>
+                  </div>
+                  <div class="kv-imappen">
+                    <h5>Nella cartella <span><b data-kv="opplysninger">67</b> dati</span></h5>
+                    <ul data-kv="register">
+                      <li data-n="19" data-s="114"><span>Nomi</span><em>19 · 114 occorrenze</em></li>
+                      <li data-n="7" data-s="24"><span>Numeri AVS</span><em>7 · 24 occorrenze</em></li>
+                      <li data-n="12" data-s="43"><span>Telefono</span><em>12 · 43 occorrenze</em></li>
+                      <li data-n="15" data-s="53"><span>E-mail</span><em>15 · 53 occorrenze</em></li>
+                      <li data-n="7" data-s="29"><span>Indirizzi</span><em>7 · 29 occorrenze</em></li>
+                      <li data-n="6" data-s="13"><span>IBAN e conti</span><em>6 · 13 occorrenze</em></li>
+                      <li data-n="1" data-s="2"><span>Targhe</span><em>1 · 2 occorrenze</em></li>
+                      <li data-n="3" data-s="12"><span>Categorie particolari</span><em>3 · 12 occorrenze</em></li>
+                      <li data-n="3" data-s="3" data-kv="ansikter"><span>Volti</span><em>3 · 3 occorrenze</em></li>
+                    </ul>
+                  </div>
+                  <div class="kv-bunn">
+                    <p><b data-kv="skjules">292</b> da oscurare <b data-kv="faarstaa">1</b> lasciati visibili</p>
+                    <p class="kv-bunn-knapper">
+                      <span class="kv-btn hvit oransje" data-kv="ubtn"><i></i>In sospeso 2</span>
+                      <span class="kv-btn stor" data-kv="lag">Crea 10 copie</span>
+                    </p>
+                  </div>
+                </aside>
+              </div>
+
+              <!-- Tekstverktøy: et ark å skrive eller lime inn på -->
+              <div class="kv-scene kv-s-tekst">
+                <div class="kv-rt-linje">
+                  <span class="kv-rt-tilbake">‹ Schermata iniziale</span>
+                  <span class="kv-faner"><span class="på" data-kv="fanerens"><i>1</i>Oscura il testo</span><span data-kv="fanetb"><i>2</i>Ripristina il testo</span></span>
+                  <span class="kv-faner kv-rt-visning"><span class="på" data-kv="rtorig">Originale</span><span data-kv="rtrenset">Oscurato</span></span>
+                  <span class="kv-btn" data-kv="rtkopier">Copia</span>
+                </div>
+                <div class="kv-rt-kropp">
+                  <div class="kv-rt-ark" data-kv="rtark"><p data-kv="rttekst"></p><i class="kv-markor"></i><p class="kv-rt-svar" data-kv="rtsvar"></p></div>
+                  <aside class="kv-rt-liste">
+                    <h5 data-kv="rtlistetittel">Oscurato</h5>
+                    <ul data-kv="rtliste"></ul>
+                    <p class="kv-rt-merke">Letto su questo computer. Nulla viene inviato.</p>
+                  </aside>
+                </div>
+                <p class="kv-toast" data-kv="toast">Copiato</p>
+              </div>
+
+              <!-- Skrivebordet: Finder med høyreklikk › Hurtighandlinger › Oscura con Glatscher -->
+              <div class="kv-scene kv-s-finder kv-skrivebord">
+                <div class="kv-finder">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><span class="kv-pil">‹ ›</span><b>Documenti</b></div>
+                  <div class="kv-finder-kropp">
+                    <ul class="kv-sidefelt">
+                      <li class="kv-sf-h">Preferiti</li>
+                      <li>Scrivania</li>
+                      <li class="på">Documenti</li>
+                      <li>Download</li>
+                      <li class="kv-sf-h">Posizioni</li>
+                      <li>iCloud Drive</li>
+                    </ul>
+                    <div class="kv-ikoner">
+                      <span class="kv-mappe" data-kv="fmappe"><i></i>Pratiche clienti</span>
+                      <span class="kv-mappe"><i></i>Domande LTras marzo</span>
+                      <span class="kv-mappe"><i></i>Contabilità 2025</span>
+                      <span class="kv-dokikon"><i>PDF</i>contratto-acme.pdf</span>
+                      <span class="kv-dokikon w"><i>W</i>Verbale 10.11.docx</span>
+                      <span class="kv-mappe ny" data-kv="fny"><i></i>Pratiche clienti-chiaro</span>
+                    </div>
+                  </div>
+                  <ul class="kv-meny" data-kv="meny">
+                    <li>Apri</li>
+                    <li>Apri in un nuovo pannello</li>
+                    <li class="kv-skille"></li>
+                    <li>Sposta nel Cestino</li>
+                    <li class="kv-skille"></li>
+                    <li>Ottieni informazioni</li>
+                    <li>Rinomina</li>
+                    <li>Comprimi «Pratiche clienti»</li>
+                    <li>Duplica</li>
+                    <li class="kv-skille"></li>
+                    <li>Copia</li>
+                    <li>Condividi…</li>
+                    <li class="kv-skille"></li>
+                    <li class="kv-under" data-kv="hurtig">Azioni rapide<span>›</span></li>
+                    <li class="kv-under">Servizi<span>›</span></li>
+                  </ul>
+                  <ul class="kv-meny kv-undermeny" data-kv="undermeny">
+                    <li data-kv="rensmed">Oscura con Glatscher</li>
+                    <li>Ripristina con Glatscher</li>
+                    <li class="kv-skille"></li>
+                    <li>Personalizza…</li>
+                  </ul>
+                </div>
+                <div class="kv-varsel" data-kv="varsel">
+                  <img src="/glatscher/glatscher-ikon.png" alt="" />
+                  <p><b data-kv="vtittel">Oscuramento di «Pratiche clienti»…</b><span data-kv="vtekst">Le copie vengono salvate accanto agli originali. Riceverà una notifica quando saranno pronte.</span></p>
+                  <small>ora</small>
+                </div>
+              </div>
+
+              <!-- Skrivebordet: et KI-verktøy som bare får kodene -->
+              <div class="kv-scene kv-s-ki kv-skrivebord">
+                <div class="kv-ki">
+                  <div class="kv-vindulinje"><span class="kv-lys"><i></i><i></i><i></i></span><b>Assistente IA</b></div>
+                  <div class="kv-ki-samtale">
+                    <div class="kv-ki-bruker" data-kv="kibruker">
+                      <p>Scrivi una breve risposta a questo messaggio:</p>
+                      <p class="kv-ki-sitat">Buongiorno! Può chiamare oggi <code>[Nome 6311794]</code> al numero <code>[Telefono 6289990]</code>? Si è trasferita in <code>[Indirizzo 8950779]</code> e da ora lo stipendio va accreditato sul conto <code>[IBAN 7719741]</code>.</p>
+                    </div>
+                    <div class="kv-ki-svar" data-kv="kisvar"><p data-kv="kisvartekst"></p><span class="kv-ki-kopier" data-kv="kikopier">Copia la risposta</span></div>
+                  </div>
+                  <div class="kv-ki-felt" data-kv="kifelt"><span>Scrivi un messaggio…</span><i>↑</i></div>
+                </div>
+                <p class="kv-ki-merke">L'IA riceve solo i codici. Nome, telefono, indirizzo e conto restano sul computer.</p>
+              </div>
+
+              <!-- «Før skanningen»: over startskjermen, når mappen er valgt -->
+              <div class="kv-slor kv-s-forvalg">
+                <div class="kv-modal">
+                  <h4>Pratiche clienti</h4>
+                  <p class="kv-modal-under">10 file · docx, eml, jpg, md, pdf, pptx, xlsx</p>
+                  <div class="kv-maate">
+                    <p class="på"><i></i><span><b>Con analisi</b>Glatscher legge i file e contrassegna ciò che trova. Lei verifica tutto e decide.</span></p>
+                    <p><i></i><span><b>Senza analisi</b>Nulla viene contrassegnato in anticipo. Lei fa clic su ciò che va oscurato.</span></p>
+                  </div>
+                  <p class="kv-sammen"><span><small>L'analisi cerca e oscura</small>Nomi, AVS e documenti, telefono ed e-mail, categorie particolari, targhe, conti, volti e altri 5</span><em>Modifica</em></p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Annulla</span>
+                    <span class="kv-btn stor" data-kv="skann">Analizza <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- «Før kopiene lages»: formen kopiene får -->
+              <div class="kv-slor kv-s-kopivalg">
+                <div class="kv-modal kv-kopivalg">
+                  <h4>Prima di creare le copie</h4>
+                  <p class="kv-modal-under">10 file · le copie vanno in Pratiche clienti-chiaro</p>
+                  <div class="kv-maate kv-former" data-kv="former">
+                    <p class="på" data-form="kort"><i></i><span><b>Codice breve ed elenco dei codici</b>Facile da leggere. Si può ripristinare con la chiave del Suo ufficio.<code>[Nome 4814887] + elenco</code></span></p>
+                    <p data-form="full"><i></i><span><b>Codice completo nel testo</b>Senza elenco. Si può ripristinare, ma è difficile da leggere.</span></p>
+                    <p data-form="lapp"><i></i><span><b>Solo etichette</b>Facile da leggere, ma l'originale non si può ripristinare.</span></p>
+                    <p data-form="svart"><i></i><span><b>Riquadri neri (PDF)</b>Ciò che c'era sotto scompare per sempre.<code class="kv-svartprove"></code></span></p>
+                  </div>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit stor">Annulla</span>
+                    <span class="kv-btn stor" data-kv="lagnaa">Crea 10 copie <kbd>↵</kbd></span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Kopiene er laget -->
+              <div class="kv-slor kv-s-ferdig">
+                <div class="kv-ferdig">
+                  <p class="kv-stor">Fatto.</p>
+                  <p>10 copie sono state create. Gli originali non sono stati toccati. Legga le copie prima di condividerle.</p>
+                  <p class="kv-sti"><span>Documenti/</span>Pratiche clienti-chiaro/</p>
+                  <p class="kv-liten">L'elenco dei codici è alla fine di ogni copia.</p>
+                  <p class="kv-modal-bunn">
+                    <span class="kv-btn hvit">Torna alla cartella</span>
+                    <span class="kv-btn">Apri le copie</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+          <span class="kv-peker" aria-hidden="true"></span>
+          <!-- Kapitlene: hopper i avspillingen. Det som spilles nå, er markert. -->
+          <ol class="kv-kapitler" data-kv="kapitler" aria-label="Capitoli dell'anteprima">
+            <li><button type="button" data-kapittel="0">Oscurare una cartella</button></li>
+            <li><button type="button" data-kapittel="1">Verificare</button></li>
+            <li><button type="button" data-kapittel="2">Le copie</button></li>
+            <li><button type="button" data-kapittel="3">Clic destro nel Finder</button></li>
+            <li><button type="button" data-kapittel="4">Oscurare e ripristinare un testo</button></li>
+          </ol>
+          <!-- Lesingen spilles av mye raskere enn den går på en vanlig maskin. Det skal stå. -->
+          <p class="kv-spol" aria-hidden="true">
+            <svg viewBox="0 0 20 12"><path d="M1 1l8 5-8 5zM10 1l8 5-8 5z" /></svg>
+            <span>Accelerato. Il tempo di lettura varia da computer a computer. Su un normale portatile è più lento.</span>
+          </p>
+          <figcaption class="skjult-tekst">
+            Così funziona Glatscher. Lei sceglie una cartella e Glatscher legge i file, anche PDF, e-mail,
+            fogli di calcolo, PowerPoint e immagini, e contrassegna nomi, numeri AVS, dati di contatto,
+            indirizzi, IBAN e numeri di conto, dati particolari, targhe e volti, che vengono pixelati.
+            Ciò su cui Glatscher non è sicuro lo verifica Lei e decide: oscurare o lasciare visibile.
+            Le copie possono avere codici brevi con elenco dei codici, codici completi, solo etichette o
+            riquadri neri, e gli originali non vengono toccati. Nel Finder una cartella si oscura con clic
+            destro › Azioni rapide › Oscura con Glatscher. Un testo con i codici può essere dato a uno
+            strumento di IA, e la risposta viene ripristinata in Glatscher, così i nomi tornano senza che
+            l'IA li abbia visti. La lettura è accelerata: il tempo che richiede varia da computer a computer.
+          </figcaption>
+        </figure>
+    <script src="forhandsvisning.js"></script>
+    <script src="programvindu.js"></script>
+  </body>
+</html>

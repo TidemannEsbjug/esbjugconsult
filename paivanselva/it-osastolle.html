@@ -1,0 +1,566 @@
+<!doctype html>
+<!--
+  Hei, du som leser kildekoden. Det var deg vi håpet på.
+
+  Päivänselvä lover at dokumentene aldri forlater maskinen. Et sånt løfte skal ikke
+  tas på ordet, så sjekk det:
+
+  - Programmet: denne siden har kommandoene som viser hva det snakker med.
+  - Nettsiden: se svarhodene. CSP-en tillater bare filer fra dette domenet,
+    uten inline-skript. Koden er ikke minifisert, så den kan leses som den er.
+  - Fant du noe? Skriv til tidemann@esbjugconsult.com (se /.well-known/security.txt).
+
+  Oversatt fra den svenske utgavens for-it.html (27.11.2026). Navn, stier og brannmurregelen er hentet fra Klart-fi
+  (claude/fi b312a0f8): fi_nimi!, tauri.fi.conf.json, brannmur-fi.nsh, retningslinjer.rs, nokkelpakke.rs,
+  aktivering.rs, kart/NIMI-PAIKAT.md. Ingen pakker er bygd ennå: sjekksummene publiseres med pakkene.
+  TeamIdentifier og Windows-signaturen er de samme som for de andre utgavene (samme utvikler-ID og samme
+  signeringsprofil), men den finske pakken er ikke bygd og ikke kontrollert.
+-->
+<html lang="fi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="/paivanselva/favicon.png" />
+    <title>IT-osastolle · Päivänselvä</title>
+    <meta
+      name="description"
+      content="Tarkistukset, jotka osoittavat, ettei Päivänselvä viesti verkon kautta, mitä paketissa ja levyllä on ja miten IT-osasto ohjaa ohjelmaa keskitetysti. Komennot, odotetut tulokset ja mitä kukin tarkistus todistaa."
+    />
+    <meta name="robots" content="noindex" />
+    <!-- Ingen skrifter, bilder eller skript utenfra. Skriptene kopierer kommandoene. -->
+    <script src="til-it-tidlig.js"></script>
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="sider.css" />
+    <link rel="stylesheet" href="/paivanselva/taal.css" />
+    <link rel="alternate" hreflang="fi-FI" href="https://esbjugconsult.com/paivanselva/it-osastolle.html" />
+    <link rel="alternate" hreflang="sv-FI" href="https://esbjugconsult.com/paivanselva/sv/for-it.html" />
+  </head>
+  <body>
+    <header class="s-topp">
+      <div class="s-linje-topp">
+        <a class="s-merke" href="./">Päivänselvä</a>
+        <nav class="s-nav" aria-label="Sivut">
+          <a href="./">Etusivu</a>
+          <a href="it-osastolle.html" aria-current="page">IT-osastolle</a>
+          <a href="tietosuoja/">Tietosuoja</a>
+        </nav>
+        <nav class="taal" aria-label="Kieli / Språk"><span aria-current="true">FI</span><span class="taal-streep" aria-hidden="true">|</span><a href="/paivanselva/sv/for-it.html" hreflang="sv" lang="sv">SV</a></nav>
+      </div>
+      <div class="s-hode">
+        <p class="s-over">IT-osastolle</p>
+        <h1>Älä luota meihin. Tarkista itse.</h1>
+        <p class="s-ingress">
+          Päivänselvä lupaa, etteivät asiakirjat koskaan lähde tietokoneelta. Tässä ovat komennot, jotka osoittavat sen,
+          tulokset, jotka niiden pitää antaa, ja mitä kukin tarkistus todella todistaa.
+        </p>
+      </div>
+    </header>
+
+    <div class="s-kropp">
+      <nav class="s-innhold" aria-label="Sisältö">
+        <p>Tällä sivulla</p>
+        <ol>
+          <li><a href="#kort">Lyhyesti</a></li>
+          <li><a href="#fil">1 Onko tiedosto meidän?</a></li>
+          <li><a href="#signert">2 Allekirjoitettu ja muuttamaton?</a></li>
+          <li><a href="#rettigheter">3 Mitä ohjelma saa tehdä?</a></li>
+          <li><a href="#snakker">4 Puhuuko se jonkun kanssa?</a></li>
+          <li><a href="#laget">5 Mistä se koostuu?</a></li>
+          <li><a href="#steng">Estä itse</a></li>
+          <li><a href="#disk">Mitä levyllä on</a></li>
+          <li><a href="#styring">Keskitetty ohjaus</a></li>
+          <li><a href="#nokkel">Avain organisaatiossa</a></li>
+          <li><a href="#logg">Tarkastusloki</a></li>
+          <li><a href="#kommando">Komentorivi</a></li>
+          <li><a href="#krypto">Kryptografia</a></li>
+          <li><a href="#krav">Järjestelmävaatimukset</a></li>
+          <li><a href="#si-fra">Löysitkö jotain?</a></li>
+        </ol>
+      </nav>
+
+      <main class="s-tekst" id="innhold">
+        <section class="s-kort" id="kort">
+          <h2>Lyhyesti</h2>
+          <ul>
+            <li><b>Ei tietä ulos.</b> Ohjelmassa ei ole TLS:ää, se ei hae nimiä verkosta eikä kuuntele mitään porttia.</li>
+            <li><b>Kaikki on paketissa.</b> Mitään ei haeta asennuksen jälkeen. Ei automaattisia päivityksiä, ei käyttötilastoja eikä virheraportteja.</li>
+            <li><b>Sen voi estää.</b> Estä kaikki Päivänselvän lähtevä liikenne. Ohjelma toimii yhtä hyvin.</li>
+            <li><b>Sitä voi ohjata.</b> Yksi tiedosto päättää, mitä käyttäjät saavat valita itse.</li>
+          </ul>
+        </section>
+
+        <div class="s-velg">
+          <p id="velg-tittel">Mitä järjestelmää tarkistat?</p>
+          <div class="s-velg-knapper" role="group" aria-labelledby="velg-tittel">
+            <button type="button" data-velg="mac" aria-pressed="false">Mac</button>
+            <button type="button" data-velg="windows" aria-pressed="false">Windows</button>
+          </div>
+        </div>
+        <p class="s-skjult" id="melding" role="status" aria-live="polite"></p>
+
+        <!-- ============ 1 ============ -->
+        <section class="s-del" id="fil">
+          <h2><span class="s-nr">1</span>Onko tiedosto meidän?</h2>
+          <p>Ohjelma Windowsille, Macille ja Linuxille on tulossa pian. Kun lataat sen, laske tiedoston tarkistussumma:</p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>shasum -a 256 ~/Downloads/P*selv*.dmg</pre></div>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-FileHash "$HOME\Downloads\P*selv*.exe"</pre></div>
+          </div>
+          <p>Linuxissa: <code>sha256sum ~/Lataukset/*.deb</code></p>
+          <p class="s-fasit"><b>Odotettu tulos:</b> pitkä numeroiden ja kirjainten rivi täsmää tälle versiolle julkaisemaamme tarkistussummaan. Tarkistussummat julkaistaan tällä sivulla yhdessä pakettien kanssa.</p>
+          <p class="s-beviser"><b>Todistaa:</b> että tiedosto on se, jonka julkaisimme. Ei muuta. Tarkistussumma ei kerro mitään siitä, mitä ohjelma tekee.</p>
+        </section>
+
+        <!-- ============ 2 ============ -->
+        <section class="s-del" id="signert">
+          <h2><span class="s-nr">2</span>Meidän allekirjoittamamme ja muuttamaton?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>codesign -dv --verbose=4 "/Applications/Päivänselvä.app" 2>&amp;1 | grep -E "Format|TeamIdentifier|flags|Notarization"</pre></div>
+            <p class="s-fasit">
+              <b>Odotettu tulos:</b> <code>Format=app bundle with Mach-O universal (x86_64 arm64)</code>,
+              <code>flags=0x10000(runtime)</code>, <code>Notarization Ticket=stapled</code> ja
+              <code>TeamIdentifier=N5BKVM258S</code>.
+            </p>
+            <div class="cmd"><pre>spctl -a -vv "/Applications/Päivänselvä.app"</pre></div>
+            <p class="s-fasit"><b>Odotettu tulos:</b> <code>accepted</code> ja <code>source=Notarized Developer ID</code>.</p>
+            <p>Paketissa on kaksi muuta suoritettavaa tiedostoa: avainta käsittelevä apuohjelma ja PDF-kirjasto. Tarkista nekin:</p>
+            <div class="cmd"><pre>codesign -dv "/Applications/Päivänselvä.app/Contents/MacOS/klart-hvelv" 2>&amp;1 | grep TeamIdentifier
+codesign -dv "/Applications/Päivänselvä.app/Contents/Resources/bundled/engine/pdfium/libpdfium.dylib" 2>&amp;1 | grep TeamIdentifier</pre></div>
+            <p class="s-fasit"><b>Odotettu tulos:</b> sama <code>TeamIdentifier=N5BKVM258S</code> molemmille.</p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Windows-version on allekirjoittanut ESBJUG CONSULT. Komento tulostaa <code>Valid</code> ja näyttää varmenteen nimen.</p>
+            <div class="cmd"><pre>Get-AuthenticodeSignature "$HOME\Downloads\P*selv*.exe" | Format-List Status, SignerCertificate</pre></div>
+            <p class="s-fasit"><b>Odotettu tulos:</b> <code>Valid</code> ja nimemme kohdassa <code>SignerCertificate</code>.</p>
+          </div>
+          <p class="s-beviser">
+            <b>Todistaa:</b> että koodi on meiltä eikä sitä ole muutettu jälkikäteen. Se on tarkistus manipuloitua kopiota vastaan.
+            Kopio, johon on lisätty verkkoyhteys, on eri ohjelma, ja allekirjoitus paljastaa sen.
+          </p>
+        </section>
+
+        <!-- ============ 3 ============ -->
+        <section class="s-del" id="rettigheter">
+          <h2><span class="s-nr">3</span>Mitä ohjelma saa tehdä?</h2>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>codesign -d --entitlements - --xml "/Applications/Päivänselvä.app" 2>/dev/null | plutil -p -</pre></div>
+            <p class="s-fasit">
+              <b>Odotettu tulos:</b> viisi riviä, kaikki <code>false</code>: <code>automation.apple-events</code>,
+              <code>cs.allow-dyld-environment-variables</code>, <code>cs.allow-jit</code>,
+              <code>cs.allow-unsigned-executable-memory</code> ja <code>cs.disable-library-validation</code>.
+              Ei iCloud-oikeuksia eikä <code>network.client</code>- tai <code>network.server</code>-oikeutta.
+            </p>
+            <p>
+              <b>Huomaa silti:</b> Päivänselvä ei toimi App Sandboxissa. Puuttuvat verkko-oikeudet ovat siksi
+              vain ilmoitus. Ilman hiekkalaatikkoa macOS ei valvo niitä, ja Hardened Runtime -ohjelma
+              voi periaatteessa silti avata yhteyden. Kerromme sen mieluummin itse kuin että huomaat sen myöhemmin.
+              Kohdat 4 ja 5 sekä itse asettamasi sääntö ratkaisevat asian.
+            </p>
+            <p class="s-beviser"><b>Todistaa:</b> ettei ohjelma voi ohjata muita ohjelmia, ladata vierasta koodia eikä käyttää iCloudia. Verkosta se ei sinänsä todista mitään.</p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>
+              Windowsissa tavallisilla työpöytäohjelmilla ei ole vastaavia oikeuksia. .exe-tiedostolla asennettava ohjelma
+              ei pyydä verkkoyhteyttä. Sillä yksinkertaisesti on se. Siksi tässä ei ole komentoa.
+            </p>
+            <p class="s-beviser"><b>Todistaa:</b> Windowsissa ei mitään. Esto on alla oleva palomuurisääntö, ja todiste ohjelman hiljaisuudesta on kohta 4.</p>
+          </div>
+        </section>
+
+        <!-- ============ 4 ============ -->
+        <section class="s-del" id="snakker">
+          <h2><span class="s-nr">4</span>Puhuuko se jonkun kanssa?</h2>
+          <p>Käynnistä Päivänselvä, avaa kansio ja anna ohjelman käydä se läpi. Suorita komento ohjelman työskennellessä.</p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>pgrep -lx paivanselva; lsof +c 0 -nP -a -i -c paivanselva -c com.apple.WebKit.Networking</pre></div>
+            <p class="s-fasit"><b>Odotettu tulos:</b> rivi, jossa on prosessinumero ja <code>paivanselva</code>, sitten ei mitään. Päivänselvällä ei ole yhtään TCP- tai UDP-sokettia.</p>
+            <p>
+              Päivänselvän ikkunan näyttää WebKit, joka on osa macOS:ää. WebKit käynnistää omia apuprosessejaan,
+              ja yksi niistä on nimeltään <code>com.apple.WebKit.Networking</code>. Se on komennossa mukana, koska juuri se
+              hakisi jotain, jos ikkuna yrittäisi. Senkin pitää olla tyhjä.
+            </p>
+            <p>
+              Jos rivejä silti ilmestyy, Safari, Mail tai jokin muu WebKitiä käyttävä ohjelma on todennäköisesti auki.
+              Ne jakavat apuprosessin nimen. Sulje ne ja suorita komento uudelleen, tai katso prosessinumeroita:
+              Päivänselvän apuprosesseilla on numerot heti ohjelman jälkeen.
+            </p>
+            <p>
+              Huomaa <code>-a</code>. Ilman sitä <code>lsof</code> yhdistää ehdot sanalla ”tai”, ja koko tietokoneen
+              liikenne päätyy luetteloon. LuLu tai Little Snitch antaa saman tuloksen, jos haluat mieluummin nähdä sen niistä.
+            </p>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <div class="cmd"><pre>Get-Process paivanselva, tesseract -ErrorAction SilentlyContinue |
+ForEach-Object {
+  "$($_.ProcessName) on käynnissä (prosessi $($_.Id))"
+  Get-NetTCPConnection -OwningProcess $_.Id -ErrorAction SilentlyContinue
+  Get-NetUDPEndpoint -OwningProcess $_.Id -ErrorAction SilentlyContinue
+}</pre></div>
+            <p class="s-fasit"><b>Odotettu tulos:</b> vain rivit, joiden mukaan <code>paivanselva</code> on käynnissä, ja <code>tesseract</code>, kun Päivänselvä lukee kuvaa. Ei taulukoita osoitteista ja porteista.</p>
+            <p>
+              Päivänselvän ikkunan näyttää WebView2, joka tulee Microsoftilta ja on osa Windowsia. Se toimii
+              omissa prosesseissaan, <code>msedgewebview2.exe</code>. Ikkunan sisältö ei voi hakea mitään:
+              kohdan 5 säännöt estävät sen. WebView2 itse voi sen sijaan viestiä Microsoftin kanssa, esimerkiksi
+              omista päivityksistään. Se on Microsoftin liikennettä, eikä siinä ole mitään Päivänselvästä tai asiakirjoista.
+              Jos haluat täyden hiljaisuuden, estä molemmat palomuurissa.
+            </p>
+            <p>Resurssienvalvonta (<code>resmon</code>), välilehti Verkko, antaa saman tuloksen, jos haluat mieluummin nähdä sen siellä.</p>
+          </div>
+          <p class="s-beviser"><b>Todistaa:</b> ettei ohjelmalla, sellaisena kuin se toimii luonasi, ole tietä ulos. Se on tarkistus, johon itse luotamme eniten.</p>
+        </section>
+
+        <!-- ============ 5 ============ -->
+        <section class="s-del" id="laget">
+          <h2><span class="s-nr">5</span>Mistä se koostuu?</h2>
+          <p>Tämä on kaikki, mitä Mac-paketissa on:</p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>MacOS/paivanselva</code></dt>
+              <dd>Ohjelma Intelin ja Applen suorittimille. Kuori on kirjoitettu Rustilla (Tauri 2), ikkuna TypeScriptillä.</dd>
+            </div>
+            <div>
+              <dt><code>MacOS/klart-hvelv</code></dt>
+              <dd>Pieni apuohjelma, joka lukitsee ja avaa avaimen avainnipun ja Secure Enclaven avulla.</dd>
+            </div>
+            <div>
+              <dt><code>bert-swedish.onnx</code></dt>
+              <dd>Ruotsinkielisten asiakirjojen lausemalli, joka perustuu KB-BERTiin (KBLab/bert-base-swedish-cased, Ruotsin kuninkaallinen kirjasto, CC0 1.0) ja jonka olemme hienosäätäneet. Se toimii suorittimella itse ohjelmassa. Se ei ole oma prosessinsa.</dd>
+            </div>
+            <div>
+              <dt><code>vocab.txt</code></dt>
+              <dd>Mallin sanasto.</dd>
+            </div>
+            <div>
+              <dt><code>pdfium/libpdfium.dylib</code></dt>
+              <dd>PDFium, kirjasto, joka lukee ja piirtää PDF-tiedostot.</dd>
+            </div>
+          </dl>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>find "/Applications/Päivänselvä.app/Contents" -type f -size +100k -exec ls -lh {} \;</pre></div>
+            <p class="s-fasit"><b>Odotettu tulos:</b> yllä luetellut tiedostot, sovelluksen kuvake ja lisenssitekstit kansiossa <code>lisenssit</code>. Ei <code>llama-server</code>-ohjelmaa, ei <code>.gguf</code>-tiedostoja eikä muita malleja.</p>
+          </div>
+          <p>
+            Ohjelmassa ei ole TLS:ää eikä HTTP-asiakasta, joka voisi tavoittaa minkään palvelimen. Se ei voi kuunnella porttia
+            eikä hakea nimiä verkosta. Sen näkee itse tiedostosta:
+          </p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <div class="cmd"><pre>otool -L "/Applications/Päivänselvä.app/Contents/MacOS/paivanselva" | grep -iE 'curl|CFNetwork|Network\.framework|ssl'
+nm -u "/Applications/Päivänselvä.app/Contents/MacOS/paivanselva" | grep -E '_(bind|listen|accept|getaddrinfo)$'</pre></div>
+            <p class="s-fasit"><b>Odotettu tulos:</b> ei yhtään riviä kummastakaan komennosta.</p>
+            <p>
+              <b>Tämän löydät, ja tätä se on:</b> tiedosto on linkitetty <code>CloudKit</code>- ja <code>CoreData</code>-kirjastoihin. Se tulee ikkunakirjastosta,
+              ei meiltä. Päivänselvä ei käytä kumpaakaan, eikä sillä ole iCloud-oikeuksia (kohta 3).
+            </p>
+          </div>
+          <p>Jos sinulla on lähdekoodi, näitä kohtia kannattaa katsoa:</p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>src-tauri/Cargo.toml</code></dt>
+              <dd>Ei reqwestiä, hyperiä, rustlsia, native-tlsia eikä opensslää. <code>tokio</code> käännetään ilman <code>net</code>-ominaisuutta. Osa nimistä on silti tiedostossa <code>Cargo.lock</code>, koska yksi kirjastoista tuo ne mobiilialustoja varten. Niitä ei koskaan käännetä. Siksi ratkaisee <code>cargo tree</code>, ei haku lukkotiedostosta.</dd>
+            </div>
+            <div>
+              <dt><code>tauri.conf.json</code></dt>
+              <dd>Ikkunan CSP: <code>default-src 'self'</code> ja <code>connect-src ipc: http://ipc.localhost</code>. Ikkuna voi viestiä vain sen ohjelman kanssa, jossa se toimii. Ei kehyksiä, upotettuja objekteja eikä ulos lähetettäviä lomakkeita. Lisäksi ohjelma estää kaiken siirtymisen pois itsestään.</dd>
+            </div>
+            <div>
+              <dt><code>capabilities/default.json</code></dt>
+              <dd>Ikkuna ei voi avata osoitteita eikä polkuja: <code>opener:deny-open-url</code>, <code>deny-open-path</code> ja <code>deny-reveal-item-in-dir</code>. Ei HTTP-laajennusta eikä päivitystoimintoa.</dd>
+            </div>
+            <div>
+              <dt><code>scripts/sjekk-nett.sh</code></dt>
+              <dd>Suoritetaan ennen jokaista koontia. Lukee käännetyn riippuvuusgraafin, etsii Rust-koodista osoitteita, <code>std::net</code>-käyttöä ja Unix-soketteja ja keskeyttää koonnin, jos jokin niistä ilmestyy takaisin.</dd>
+            </div>
+          </dl>
+          <div class="cmd" data-hvor="Lähdekoodikansiossa"><pre>cd src-tauri &amp;&amp; cargo tree -e normal | grep -E 'reqwest|hyper|rustls|native-tls|openssl'</pre></div>
+          <p class="s-fasit"><b>Odotettu tulos:</b> ei osumia.</p>
+          <p class="s-notis">
+            Ainoassa kohdassa Päivänselvä avaa verkko-osoitteen: kun käyttäjä napsauttaa ”Osta lisenssi”, ohjelma pyytää järjestelmää
+            avaamaan osoitteen <code>https://esbjugconsult.com/paivanselva/aktivera?hva=kjop&amp;maskin=…</code> käyttäjän omassa selaimessa.
+            Päivänselvä ei itse muodosta sinne yhteyttä. Sivulla kerrotaan, miten lisenssi tilataan laskulla. Osoitteen laitekoodi on SHA-256-tiiviste tietokoneen tunnisteesta, eikä se kerro mitään
+            käyttäjästä tai asiakirjoista.
+          </p>
+          <h3>Asiakirjoja lukevat kirjastot</h3>
+          <p>Ne käsittelevät tiedostoja, joita et ole itse luonut, joten ne on hyvä tuntea:</p>
+          <dl class="s-tabell">
+            <div><dt>PDF</dt><dd>PDFium, pdf.js ja pdf-lib. pdf.js toimii ilman <code>eval</code>-kutsua.</dd></div>
+            <div><dt>Word</dt><dd>JSZip ja docx-preview.</dd></div>
+            <div><dt>Excel</dt><dd>SheetJS (xlsx).</dd></div>
+            <div><dt>Kuvat</dt><dd>Apple Vision Macissa. Windowsin oma tekstintunnistus ja Tesseract Windowsissa, Tesseract Linuxissa (suomi ja ruotsi).</dd></div>
+            <div><dt>Lauseet</dt><dd>KB-BERT (bert-base-swedish-cased) ruotsinkielisille asiakirjoille, ajettuna tract-onnx-kirjastolla.</dd></div>
+          </dl>
+          <p class="s-beviser"><b>Todistaa:</b> ettei ohjelmassa ole koodia, joka voisi lähettää mitään. Lähdekoodin avulla voit koota sen itse ja verrata.</p>
+        </section>
+
+        <!-- ============ Steng selv ============ -->
+        <section class="s-del" id="steng">
+          <h2>Estä itse</h2>
+          <p>Älä luota meihin. Estä Päivänselvän lähtevä liikenne palomuurissa tai MDM:n kautta. Ohjelma toimii yhtä hyvin. Juuri siksi olemme rakentaneet sen näin.</p>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <p>macOS:n sisäänrakennettu palomuuri estää vain saapuvan liikenteen. Anna polku MDM-ratkaisusi verkkosuodattimen säännössä tai LuLussa tai Little Snitchissä:</p>
+            <div class="cmd" data-hvor="Polku"><pre>/Applications/Päivänselvä.app/Contents/MacOS/paivanselva</pre></div>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Asennusohjelma (.exe) yrittää luoda säännön itse. Näin tarkistat, että se on olemassa:</p>
+            <div class="cmd"><pre>Get-NetFirewallRule -DisplayName "Paivanselva*" | Get-NetFirewallApplicationFilter</pre></div>
+            <p class="s-fasit"><b>Odotettu tulos:</b> sääntö nimeltä ”Paivanselva - esta lahteva”, jossa on polku tiedostoon <code>paivanselva.exe</code>.</p>
+            <p>Jos sitä ei ole, luo se näin PowerShellissä järjestelmänvalvojana:</p>
+            <div class="cmd"><pre>New-NetFirewallRule -DisplayName "Paivanselva - esta lahteva" `
+  -Direction Outbound -Action Block -Profile Any `
+  -Program (Get-Process paivanselva).Path</pre></div>
+            <p>
+              Suorita komento Päivänselvän ollessa auki, niin se löytää polun itse. Lisää myös <code>tesseract.exe</code>,
+              joka on Päivänselvän kansiossa <code>bundled</code>. Se on oma suoritettava tiedostonsa.
+              Intunen kautta: samat säännöt voi luoda palomuurikäytännöissä kohdassa Päätepisteen suojaus.
+            </p>
+          </div>
+          <p>Kun sääntö tulee sinulta, sinun ei tarvitse uskoa mitään siitä, mitä yllä kirjoitamme.</p>
+        </section>
+
+        <!-- ============ Disk ============ -->
+        <section class="s-del" id="disk">
+          <h2>Mitä levyllä on</h2>
+          <p>
+            Päivänselvä tallentaa kaikki tietonsa käyttäjäkohtaiseen kansioon:
+            <code>~/Library/Application Support/fi.paivanselva.app/</code> (Windowsissa <code>%APPDATA%\fi.paivanselva.app\</code>). Kansioiden nimet sen sisällä ovat yhteisiä kaikille versioille ja siksi norjaksi.
+          </p>
+          <dl class="s-tabell">
+            <div>
+              <dt><code>prosjekter/</code></dt>
+              <dd>Se, mitä käyttäjä on päättänyt kustakin kansiosta, ja teksti, jonka Päivänselvä on lukenut tiedostoista. Teksti sisältää henkilötietoja. Kaikki on salattu AES-256-GCM:llä, eikä kansioiden nimistä voi päätellä polkua. Käyttämätön projekti unohdetaan 30 päivän kuluttua.</dd>
+            </div>
+            <div>
+              <dt><code>pseudonym/</code></dt>
+              <dd>Avain, aiemmin talteen pannut avaimet ja numerorekisteri (<code>nummerbok.json</code>). Rekisteri yhdistää numerot koodeihin, eikä siinä ole nimiä.</dd>
+            </div>
+            <div>
+              <dt><code>lager/</code></dt>
+              <dd>Käyttäjän omat merkinnät, luettelot ”Peitetään aina” ja ”Jätetään aina” sekä tekstityökalun tekstit. Salattu.</dd>
+            </div>
+            <div>
+              <dt>Varmuuskopiot</dt>
+              <dd>Kopiot alkuperäisistä, jotka tehdään ennen läpikäyntiä, jos käyttäjä haluaa. Kunkin tiedoston sisältö on salattu AES-256-GCM:llä. Kopioita ei poisteta automaattisesti.</dd>
+            </div>
+            <div>
+              <dt><code>revisjon/</code></dt>
+              <dd>Tarkastusloki, jos se on käytössä. Yksi tiedosto kuukaudessa, viimeiset 13 kuukautta.</dd>
+            </div>
+            <div>
+              <dt>Pienet tiedostot</dt>
+              <dd>Muun muassa lisenssikoodi, <code>innstillinger.json</code> ja ikkunan sijainti. Salaamattomia, eikä niissä ole sisältöä asiakirjoista.</dd>
+            </div>
+          </dl>
+          <h3>Näin avaimet suojataan</h3>
+          <p>
+            Macissa avain on lukittu vielä yhdellä avaimella avainnipusta (palvelu
+            <code>no.klart.pseudonym.fi.paivanselva.app</code>) ja lisäksi Secure Enclavella, jos tietokoneessa sellainen on. Windowsissa käytetään käyttäjän DPAPI:a.
+            Se suojaa muilta käyttäjiltä ja kadonneelta levyltä. Se ei suojaa ohjelmalta, joka toimii
+            samana käyttäjänä. Se on sekä avainnipun että DPAPI:n raja, ja se on hyvä tietää.
+          </p>
+          <p>
+            Avaimet voivat olla myös avainmuistilla (USB). Silloin ohjelma saa ne käyttöönsä vain, kun muisti on kiinni.
+          </p>
+          <h3>Mitä Päivänselvä asentaa järjestelmään</h3>
+          <dl class="s-tabell">
+            <div><dt>Finderin palvelut</dt><dd>Macissa Päivänselvä kirjoittaa käynnistyessään neljä palvelua kansioon <code>~/Library/Services/</code>: ”Peitä Päivänselvällä” ja ”Palauta Päivänselvällä” tiedostoille sekä ”Peitä teksti Päivänselvällä” ja ”Palauta teksti Päivänselvällä” valitulle tekstille. Kaksi viimeistä vastaanottavat valittua tekstiä muista ohjelmista. <code>"kommandolinje": false</code> käytännöissä poistaa kaikki neljä.</dd></div>
+            <div><dt>Osoitteet ja tiedostotyypit</dt><dd>Päivänselvä vastaanottaa linkit, jotka alkavat <code>paivanselva://</code>, sekä tiedostotyypit <code>.paivanselvalisenssi</code>, <code>.paivanselvamerkinnat</code> ja <code>.paivanselvaprojekti</code>. Linkki voi ehdottaa lisenssiä. Käyttäjältä kysytään aina, ja avainpaketti vaatii edelleen koodinsa.</dd></div>
+            <div><dt>Ei mitään taustalla</dt><dd>Ei palvelua, ei automaattista käynnistystä eikä prosessia, joka jatkaisi ikkunan sulkemisen jälkeen.</dd></div>
+            <div><dt>Tämän valvonta näkee</dt><dd>Päivänselvä käynnistää muutamia lyhytikäisiä järjestelmäapureita, muun muassa <code>klart-hvelv</code> (avain), <code>ioreg</code> (laitekoodi), <code>tmutil</code> (rajaa kansiot Time Machinen ulkopuolelle), <code>open</code> (näyttää kopiokansion) ja <code>osascript</code> (ilmoitukset).</dd></div>
+          </dl>
+          <h3>Poista kaikki</h3>
+          <div class="os" data-os="mac" data-navn="Mac">
+            <p>Poista ohjelma ja sitten:</p>
+            <div class="cmd"><pre>rm -rf ~/Library/Application\ Support/fi.paivanselva.app ~/Library/WebKit/fi.paivanselva.app ~/Library/Caches/fi.paivanselva.app
+rm -f ~/Library/Preferences/fi.paivanselva.app.plist
+rm -rf ~/Library/Services/*P*ivänselv*.workflow
+security delete-generic-password -s no.klart.pseudonym.fi.paivanselva.app</pre></div>
+          </div>
+          <div class="os" data-os="windows" data-navn="Windows">
+            <p>Poista ohjelman asennus ja poista sitten <code>%APPDATA%\fi.paivanselva.app\</code>, <code>%LOCALAPPDATA%\fi.paivanselva.app\</code> ja <code>%ProgramData%\Paivanselva\</code>.</p>
+          </div>
+          <p class="s-notis varsel">
+            <b>Varmista avain ensin.</b> Jos tietokansio poistetaan ennen kuin avain on tallennettu sanoina tai avaintiedostona,
+            yhtään koodeja sisältävää kopiota ei voi enää palauttaa.
+          </p>
+        </section>
+
+        <!-- ============ Styring ============ -->
+        <section class="s-del" id="styring">
+          <h2>Ohjaa Päivänselvää keskitetysti</h2>
+          <p>
+            Yksi tiedosto päättää siitä, minkä käyttäjä muuten valitsee itse. Sen voi jakaa MDM:llä, Intunella, ryhmäkäytännöillä tai skriptillä.
+            Kirjoittaminen kumpaankin paikkaan vaatii järjestelmänvalvojan oikeudet, joten käyttäjä ei voi kumota sitä, minkä olet lukinnut.
+          </p>
+          <dl class="s-tabell">
+            <div><dt>Mac</dt><dd><code>/Library/Application Support/Paivanselva/retningslinjer.json</code></dd></div>
+            <div><dt>Windows</dt><dd><code>%ProgramData%\Paivanselva\retningslinjer.json</code></dd></div>
+          </dl>
+          <p>Tiedoston avaimet ovat yhteisiä kaikille versioille ja siksi norjaksi.</p>
+          <div class="cmd" data-hvor="retningslinjer.json"><pre>{
+  "versjon": 1,
+  "virksomhet": "Esimerkkikunta",
+  "alltidSkjult": ["navn", "fnr", "helse"],
+  "kodeform": "kort",
+  "ansikterAlltid": true,
+  "utenSkanning": false,
+  "glemEtterDager": 30,
+  "revisjonslogg": true,
+  "nokkelEksport": false
+}</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>versjon</code></dt><dd>Pakollinen. Vain <code>1</code> on olemassa.</dd></div>
+            <div><dt><code>virksomhet</code></dt><dd>Nimi, joka näytetään lukittujen asetusten kohdalla.</dd></div>
+            <div><dt><code>alltidSkjult</code></dt><dd>Ryhmät, jotka peitetään aina. Niitä ei voi poistaa käytöstä, eikä mitään niistä voi asettaa tilaan ”Jätä”. Ryhmät ovat <code>navn</code> (nimet), <code>fnr</code> (henkilötunnus ja tunnistenumerot), <code>kontakt</code> (puhelin ja sähköposti), <code>helse</code> (arkaluonteiset tiedot), <code>setninger</code> (yksityiset lauseet), <code>skilt</code> (rekisterinumerot), <code>penger</code> (tilit), <code>hemmelig</code> (salasanat), <code>sted</code> (osoite ja paikka), <code>dato</code> (päivämäärät), <code>jobb</code> (ammatti ja sukulaisuus), <code>alder</code> (ikä), <code>org</code> (työnantaja ja Y-tunnus) ja <code>sak</code> (asianumerot).</dd></div>
+            <div><dt><code>standardGrupper</code></dt><dd>Ryhmät, jotka ovat käytössä, kun kansio avataan ensimmäisen kerran. Ilman arvoa: Päivänselvän oletusvalinta.</dd></div>
+            <div><dt><code>kodeform</code></dt><dd><code>lapp</code> (vain tunnisteet), <code>kort</code> (lyhyt koodi ja koodiluettelo), <code>full</code> (täysi koodi tekstissä) tai <code>svart</code> (musta peitto, PDF). Ilman arvoa: käyttäjä valitsee.</dd></div>
+            <div><dt><code>ansikterAlltid</code></dt><dd>Kasvot pikselöidään aina, eikä mitään kasvoja voi asettaa tilaan ”Jätä”.</dd></div>
+            <div><dt><code>utenSkanning</code></dt><dd><code>false</code> vaatii, että Päivänselvä käy tiedostot aina läpi. Oletuksena käyttäjä voi myös merkitä kaiken itse.</dd></div>
+            <div><dt><code>prosjekter</code></dt><dd><code>false</code>: Päivänselvä ei muista kansioista mitään istuntojen välillä.</dd></div>
+            <div><dt><code>glemEtterDager</code></dt><dd>Kuinka kauan käyttämätön projekti säilytetään, 1–365 päivää. Oletus on 30.</dd></div>
+            <div><dt><code>kommandolinje</code></dt><dd><code>false</code> poistaa käytöstä komentorivin, valvotun kansion ja Finderin palvelut.</dd></div>
+            <div><dt><code>revisjonslogg</code></dt><dd>Ottaa tarkastuslokin käyttöön. <code>revisjonsmappe</code> kirjoittaa lisäksi kopion verkkoresurssiin.</dd></div>
+            <div><dt><code>rapportJson</code></dt><dd>Kirjoittaa JSON-raportin jokaiseen kopiokansioon tiedoston <code>raportti.txt</code> viereen.</dd></div>
+            <div><dt><code>nokkelEksport</code></dt><dd><code>false</code>: kukaan ei voi viedä avainta sanoina tai tiedostona. Uudet tietokoneet liittää avaimesta vastaava.</dd></div>
+          </dl>
+          <p>
+            Viereen voi sijoittaa lisenssin tiedostoon <code>licens.paivanselva</code>. Tiedostossa on koodi, joka alkaa <code>PAIVANSELVA-</code>. Silloin kenenkään käyttäjän ei tarvitse liittää mitään.
+            Jos käyttäjällä on oma voimassa oleva lisenssi, se menee edelle.
+          </p>
+          <p class="s-notis varsel">
+            <b>Jos tiedostoa ei voi lukea, Päivänselvä ei käynnisty.</b> Kirjoitusvirhe, tuntematon kenttä tai sallitun ulkopuolinen arvo
+            ei saa johtaa siihen, että Päivänselvä peittää vähemmän kuin olet päättänyt. Virheilmoitus kertoo, mitä kenttää se koskee.
+          </p>
+        </section>
+
+        <!-- ============ Nøkkelen ============ -->
+        <section class="s-del" id="nokkel">
+          <h2>Avain organisaatiossa</h2>
+          <p>
+            Kopioiden koodeista voi tulla taas nimiä vain avaimella. Organisaatiossa kaikilla pitäisi olla sama avain,
+            muuten sama henkilö saa eri koodit eri kollegoilla.
+          </p>
+          <dl class="s-tabell">
+            <div><dt>Avaimesta vastaava</dt><dd>Luo organisaation avaimen, jakaa sen ja liittää kollegat.</dd></div>
+            <div><dt>Jäsen</dt><dd>Käyttää avainta. Ohjelma ei anna jäsenen viedä sitä. Se on ohjelman sääntö, ei kryptografiaa: tietokoneella on koko avain.</dd></div>
+            <div><dt>Avainpaketti</dt><dd>Avain salattuna kahdentoista merkin avainkoodilla (Argon2id ja AES-256-GCM). Paketti ja koodi luovutetaan erikseen. Koodia voi käyttää useita kertoja, joten sitä on käsiteltävä kuin itse avainta.</dd></div>
+            <div><dt>Liittäminen ilman verkkoa</dt><dd>Kollegan tietokone luo pyynnön. Avaimesta vastaava vastaa liittymisellä, jonka vain se tietokone voi avata (X25519). Kuusitoistamerkkinen tarkistuskoodi luetaan ääneen, jotta molemmat tietävät olevansa tekemisissä oikean tietokoneen kanssa.</dd></div>
+            <div><dt>Varmuus</dt><dd>24 sanaa (norjankielisestä sanaluettelosta, joka on yhteinen kaikille versioille) paperilla tai salasanalla suojattu avaintiedosto (Argon2id ja AES-256-GCM).</dd></div>
+          </dl>
+          <p class="s-notis varsel">
+            <b>Hiljaisella jakelulla on hintansa.</b> Voit sijoittaa avainpaketin (<code>avain.paivanselvapaketti</code>) tiedoston <code>retningslinjer.json</code> viereen
+            ja kirjoittaa avainkoodin tiedostoon (<code>nokkelkode</code>). Silloin Päivänselvä ottaa avaimen käyttöön ilman käyttäjän toimia.
+            Avain ei ole silloin kansiota turvallisempi: se, joka voi lukea molemmat tiedostot, saa organisaation avaimen.
+          </p>
+        </section>
+
+        <!-- ============ Revisjonslogg ============ -->
+        <section class="s-del" id="logg">
+          <h2>Tarkastusloki</h2>
+          <p>
+            Loki kirjaa, mitä Päivänselvä on tehnyt, milloin ja kuka. Siinä ei ole mitään asiakirjoista:
+            ei tiedostonimiä, polkuja eikä arvoja. Se on pois päältä, kunnes otat sen käyttöön asetuksella
+            <code>"revisjonslogg": true</code>. Kenttien nimet ovat norjaksi, yhteiset kaikille versioille.
+          </p>
+          <dl class="s-tabell">
+            <div><dt><code>hendelse</code></dt><dd>Mitä tapahtui: kopiot tehty, läpikäynti, unohdettu, palautettu tai avaimeen liittyvä toiminto (esimerkiksi vienti).</dd></div>
+            <div><dt><code>via</code></dt><dd>Sovellus, komentorivi tai valvottu kansio.</dd></div>
+            <div><dt><code>kilde</code></dt><dd>Kansion sormenjälki, laskettu tietokoneella olevalla avaimella. Samalla asialla on sama arvo jokaisella rivillä tällä tietokoneella, mutta polkua ei voi lukea siitä. Toinen tietokone antaa samalle kansiolle eri arvon.</dd></div>
+            <div><dt><code>bruker</code>, <code>maskin</code>, <code>tid</code></dt><dd>Ohjelma asettaa ne itse, ei ikkuna.</dd></div>
+            <div><dt>Missä se säilytetään</dt><dd><code>revisjon/VVVV-KK.jsonl</code> tietokansiossa. <code>revisjonsmappe</code>-asetuksella lisäksi <code>&lt;tietokone&gt;-&lt;käyttäjä&gt;.jsonl</code> verkkoresurssissa. Päivänselvä ei luo sitä kansiota. Jos resurssi ei ole yhdistettynä, se kirjataan paikalliseen lokiin.</dd></div>
+          </dl>
+          <p class="s-notis">
+            Loki on tavallinen tekstitiedosto. Käyttäjä voi muuttaa sitä. Jos tarvitset lokin, jota ei voi muuttaa,
+            osoita <code>revisjonsmappe</code> paikkaan, johon käyttäjä voi vain lisätä.
+          </p>
+        </section>
+
+        <!-- ============ Kommandolinje ============ -->
+        <section class="s-del" id="kommando">
+          <h2>Komentorivi ja valvottu kansio</h2>
+          <p>
+            Sama ohjelma ilman ikkunaa. Sisään tulee komentorivi. Ulos menevät stdout, stderr ja tiedostot,
+            jotka osoitat. Mikään ei avaa porttia.
+          </p>
+          <div class="cmd"><pre>PS="/Applications/Päivänselvä.app/Contents/MacOS/paivanselva"
+# Windows: "C:\Program Files\Päivänselvä\paivanselva.exe"   Linux: /usr/bin/paivanselva
+
+"$PS" scan  ~/Asiat/2026-114                       # tarkista ensin
+"$PS" clean ~/Asiat/2026-114 --out ~/Tekoalylle    # tee peitetyt kopiot
+"$PS" clean ~/Asiat/2026-114 --out ~/Tekoalylle --changed-only
+"$PS" watch ~/Saapuneet --out ~/Tekoalylle         # valvottu kansio
+"$PS" restore ~/Tekoalylle/2026-114-peitetty       # palauta avaimella
+"$PS" forget ~/Asiat/2026-114                      # unohda kaikki asiasta</pre></div>
+          <dl class="s-tabell">
+            <div><dt><code>--codes</code></dt><dd><code>lapp</code> (oletus), <code>kort</code>, <code>full</code> tai <code>svart</code>.</dd></div>
+            <div><dt><code>--groups</code></dt><dd>Mitä peitetään, esimerkiksi <code>navn,fnr,helse</code>.</dd></div>
+            <div><dt><code>--dry-run</code></dt><dd>Tekee kaiken, myös jokaisen kopion tarkistuksen, mutta ei tallenna mitään.</dd></div>
+            <div><dt><code>--no-project</code></dt><dd>Ei muista mitään eikä käytä ikkunassa tehtyjä päätöksiä.</dd></div>
+            <div><dt>Tuloste</dt><dd>Yksi JSON-rivi stdoutiin, <code>format: 1</code>. Edistyminen menee stderriin.</dd></div>
+            <div><dt>Paluukoodi</dt><dd>0: kaikki toimitettu. 1: virhe. 2: kopioon jäi jotain tai sitä ei toimitettu. 3: käyttöehtoja ei ole vielä hyväksytty tällä tietokoneella. 4: lähde on käytössä. 5: organisaation käytännöt eivät salli sitä. 6: avain on avainmuistilla, joka ei ole kiinni. 64: virhe komennossa.</dd></div>
+          </dl>
+          <p><code>"$PS" help</code> näyttää kaikki komennot ja valinnat.</p>
+        </section>
+
+        <!-- ============ Krypto ============ -->
+        <section class="s-del" id="krypto">
+          <h2>Kryptografia</h2>
+          <dl class="s-tabell">
+            <div><dt>Avain</dt><dd>32 satunnaista tavua käyttöjärjestelmältä. Aliavaimet HKDF-SHA256:lla.</dd></div>
+            <div><dt>Koodit</dt><dd>Kuka henkilö on: HMAC-SHA256. Alkuperäinen teksti: AES-SIV (RFC 5297), deterministinen ja todennettu.</dd></div>
+            <div><dt>Avain levyllä</dt><dd>Mac: avainnippu ja Secure Enclave. Windows: DPAPI. Linux: avainnippu (Secret Service).</dd></div>
+            <div><dt>Avaintiedosto</dt><dd>Argon2id (64 MiB, 3 kierrosta) ja AES-256-GCM.</dd></div>
+            <div><dt>24 sanaa</dt><dd>256 bittiä avainta ja 8 bitin tarkistussumma, 11 bittiä sanaa kohden, 2 048 norjankielisen sanan luettelosta.</dd></div>
+            <div><dt>Liittäminen</dt><dd>X25519.</dd></div>
+            <div><dt>Projektit, omat merkinnät ja tekstit</dt><dd>AES-256-GCM, avaimet HKDF-SHA256:lla. Tiedostonimet ovat HMAC-sormenjälkiä.</dd></div>
+            <div><dt>Varmuuskopiot ja peittojen alla olevat pikselit kopiossa</dt><dd>AES-256-GCM.</dd></div>
+            <div><dt>Lisenssikoodi</dt><dd>Ed25519. Allekirjoitus tarkistetaan tietokoneella.</dd></div>
+          </dl>
+          <p>Kaikki ovat tunnettuja algoritmeja avoimista kirjastoista (RustCrypto ja dalek). Mitään niistä emme ole keksineet itse.</p>
+        </section>
+
+        <!-- ============ Systemkrav ============ -->
+        <section class="s-del" id="krav">
+          <h2>Järjestelmävaatimukset</h2>
+          <dl class="s-tabell">
+            <div><dt>Mac</dt><dd>macOS 13 tai uudempi. Intelin ja Applen suorittimet samassa paketissa.</dd></div>
+            <div><dt>Windows</dt><dd>Windows 10 tai 11, 64-bittinen, Intelin tai AMD:n suoritin. Asennetaan kaikille käyttäjille .exe-tiedostolla.</dd></div>
+            <div><dt>Linux</dt><dd>.deb-paketti (Debian, Ubuntu ja lähisukuiset) amd64- tai ARM64-arkkitehtuurille. Paketti vaatii <code>tesseract-ocr</code>- ja <code>xdg-utils</code>-paketit.</dd></div>
+            <div><dt>Muisti</dt><dd>Päivänselvä käyttää noin puoli gigatavua, kun lausemalli on ladattu. Suosittelemme tietokoneeseen 8 Gt.</dd></div>
+            <div><dt>Näytönohjain</dt><dd>Ei tarvita. Kaikki toimii suorittimella.</dd></div>
+            <div><dt>Verkko</dt><dd>Ei tarvita asennukseen, aktivointiin eikä käyttöön.</dd></div>
+          </dl>
+          <p>
+            Kun Päivänselvä lukee kuvia Macilla ensimmäisen kerran, macOS voi tarvita muutaman minuutin oman
+            tekstintunnistuksensa valmisteluun. Se tapahtuu vain kerran.
+          </p>
+          <p>Päivitys on uusi asennustiedosto, jonka haet itse, kun haluat. Päivänselvä ei etsi uusia versioita.</p>
+        </section>
+
+        <!-- ============ Si fra ============ -->
+        <section class="s-del" id="si-fra">
+          <h2>Löysitkö jotain?</h2>
+          <p>
+            Kirjoita osoitteeseen <a href="mailto:tidemann@esbjugconsult.com">tidemann@esbjugconsult.com</a>.
+            Vastaamme henkilökohtaisesti ja kuulemme sen mieluummin sinulta kuin asiakkaalta.
+            Katso myös <a href="/.well-known/security.txt">security.txt</a>.
+          </p>
+          <p class="s-dato">Viimeksi muutettu: 27. marraskuuta 2026.</p>
+        </section>
+      </main>
+    </div>
+
+    <footer class="s-bunn">
+      <p class="s-bunn-merke"><i>Päivänselvä</i> <span>Tidemann Esbjugilta</span></p>
+      <nav aria-label="Lisää Päivänselvästä">
+        <a href="./">Etusivu</a>
+        <a href="mita-se-loytaa.html">Mitä Päivänselvä löytää</a>
+        <a href="tietosuoja/">Tietosuoja</a>
+        <a href="ehdot/">Ehdot</a>
+      </nav>
+      <p class="s-bunn-liten">Valmistettu Norjassa</p>
+    </footer>
+
+    <script src="til-it.js"></script>
+  </body>
+</html>
